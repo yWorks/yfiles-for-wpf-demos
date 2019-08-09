@@ -1,0 +1,118 @@
+<!-- ************************************************************************ -->
+<!-- This demo file is part of yFiles WPF 3.2.                           -->
+<!-- Copyright (c) 2000-2019 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
+<!-- 72070 Tuebingen, Germany. All rights reserved.                           -->
+<!--                                                                          -->
+<!-- yFiles demo files exhibit yFiles WPF functionalities. Any redistribution  -->
+<!-- of demo resource files, with or without modification, is not permitted.  -->
+<!--                                                                          -->
+<!-- Owners of a valid software license for a yFiles WPF version that this     -->
+<!-- demo is shipped with are allowed to use the resource file as basis for   -->
+<!-- their own yFiles WPF powered applications. Use of such programs is        -->
+<!-- governed by the rights and conditions as set out in the yFiles WPF        -->
+<!-- license agreement.                                                       -->
+<!--                                                                          -->
+<!-- THIS SOFTWARE IS PROVIDED ''AS IS'' AND ANY EXPRESS OR IMPLIED           -->
+<!-- WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF     -->
+<!-- MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN  -->
+<!-- NO EVENT SHALL yWorks BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,    -->
+<!-- SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED -->
+<!-- TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR   -->
+<!-- PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF   -->
+<!-- LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING     -->
+<!-- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS       -->
+<!-- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.             -->
+<!--                                                                          -->
+<!-- ************************************************************************ -->
+<Window x:Class="Tutorial.CustomStyles.SimpleCustomStyleForm"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:y="http://www.yworks.com/xml/yfiles-wpf/3.0/xaml"
+    Title="Style Tutorial 06: GetBounds" Height="680" Width="950"
+        Loaded="OnLoaded" >
+    <HeaderedContentControl Style="{StaticResource DemoStyle}">
+        <HeaderedContentControl.Header>
+            <RichTextBox BorderThickness="0" IsReadOnly="True">
+                <FlowDocument FontFamily="Segoe UI" FontSize="12">
+                    <Paragraph>
+                        <Run FontWeight="Bold">Description</Run>
+                    </Paragraph>
+                    <Paragraph>
+                        This step shows how to override the NodeStyleBase&lt;TVisual&gt;.GetBounds() method.
+                    </Paragraph>
+                    <Paragraph>
+                        Also, GetOutline() is implemented, so implementations of GetIntersection(), IsInside() 
+                    and IsHit() aren't necessary any more.
+                    </Paragraph>
+                    <Paragraph>
+                        <Run FontWeight="Bold">Things to Try</Run>
+                    </Paragraph>
+                    <List>
+                        <ListItem>
+                            <Paragraph>Take a look at MySimpleNodeStyle.GetBounds().
+                            </Paragraph>
+                        </ListItem>
+                        <ListItem>
+                            <Paragraph>Zoom in until the horizontal scrollbar appears. Scroll to the right end of the graph. 
+                    You will notice the shadow of the right node is completely visible.
+                            </Paragraph>
+                        </ListItem>
+                        <ListItem>
+                            <Paragraph>Now comment in the first line in GetBounds() so the implementation in the base class is 
+                    called and do the same thing again. Now the viewport will end at the right side of the 
+                    node without taking the shadow into account.
+                            </Paragraph>
+                        </ListItem>
+                        <ListItem>
+                            <Paragraph>
+                                Please note that GetIntersection(), IsInside() and IsHit() are still implemented for the sake of completeness and performance here. The base class 
+                        		implementation takes the result of GetOutline() for hit testing which calculates exactly the same thing, with the 
+                                difference that GetOutline() needs to build a GeneralPath first which is more expensive than an effective 
+                                implementation as shown in GetIntersection(), IsInside() and IsHit().
+                            </Paragraph>
+                        </ListItem>
+                    </List>
+                    <Paragraph>
+                        <Run FontWeight="Bold">Left to Do</Run>
+                    </Paragraph>
+                    <List>
+                        <ListItem>
+                            <Paragraph>Find a way to draw a well-performing drop shadow.
+                            </Paragraph>
+                        </ListItem>
+                        <ListItem>
+                            <Paragraph>Draw edges from nodes to their labels.
+                            </Paragraph>
+                        </ListItem>
+                        <ListItem>
+                            <Paragraph>Create a custom label style.
+                            </Paragraph>
+                        </ListItem>
+                        <ListItem>
+                            <Paragraph>Create a custom edge style.
+                            </Paragraph>
+                        </ListItem>
+                        <ListItem>
+                            <Paragraph>Create a custom port style for nodes.
+                            </Paragraph>
+                        </ListItem>
+                    </List>
+                </FlowDocument>
+            </RichTextBox>
+        </HeaderedContentControl.Header>
+        <DockPanel Grid.Column="2">
+        <Menu Name="menu" DockPanel.Dock="Top">
+            <MenuItem Header="File">
+                <MenuItem Header="Open" Command="Open" CommandTarget="{Binding ElementName=graphControl}"/>
+                <MenuItem Header="Save" Command="SaveAs" CommandTarget="{Binding ElementName=graphControl}"/>
+            </MenuItem>
+            <MenuItem Header="View">
+                <MenuItem Header="Zoom In" Command="IncreaseZoom" CommandTarget="{Binding ElementName=graphControl}"/>
+                <MenuItem Header="Zoom Out" Command="DecreaseZoom" CommandTarget="{Binding ElementName=graphControl}"/>
+                <MenuItem Header="Fit Content" Command="{x:Static y:GraphControl.FitGraphBoundsCommand}" CommandTarget="{Binding ElementName=graphControl}"/>
+            </MenuItem>
+        </Menu>
+        <y:GraphControl Name="graphControl" FileOperationsEnabled="True"/>
+    </DockPanel>
+    </HeaderedContentControl>
+</Window>

@@ -1,0 +1,294 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--Created by yFiles WPF 2.1-->
+<graphml xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/3.0/xaml" xmlns:y="http://www.yworks.com/xml/yfiles-common/3.0" xmlns:demo="http://www.yworks.com/yfiles-wpf/2.1/demos/ControlStyles" xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/3.0" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml.wpf/2.0/ygraphml.xsd " xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://graphml.graphdrawing.org/xmlns">
+  <key id="d0" for="all" attr.name="UserTags" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/UserTags" />
+  <key id="d1" for="node" attr.name="NodeLabels" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeLabels" />
+  <key id="d2" for="node" attr.name="NodeGeometry" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeGeometry" />
+  <key id="d3" for="node" attr.name="NodeStyle" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeStyle" />
+  <key id="d4" for="edge" attr.name="EdgeLabels" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/EdgeLabels" />
+  <key id="d5" for="edge" attr.name="EdgeGeometry" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/EdgeGeometry" />
+  <key id="d6" for="edge" attr.name="EdgeStyle" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/EdgeStyle" />
+  <key id="d7" for="port" attr.name="PortLocationParameter" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/PortLocationParameter">
+    <default>
+      <x:Static Member="y:FreeNodePortLocationModel.NodeCenterAnchored" />
+    </default>
+  </key>
+  <key id="d8" for="port" attr.name="PortStyle" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/PortStyle">
+    <default>
+      <ywpf:PortControlPortStyle StyleResourceKey="PortTemplate" RenderSize="5,5" />
+    </default>
+  </key>
+  <key id="d9" attr.name="SharedData" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/SharedData" />
+  <data key="d9">
+    <y:SharedData>
+      <ywpf:NodeControlNodeStyle x:Key="1" StyleResourceKey="CustomerNodeTemplate" />
+      <ywpf:NodeControlNodeStyle x:Key="2" StyleResourceKey="ProductNodeTemplate" />
+      <demo:Customer x:Key="3" Name="Lucy Osbourne" Location="Arizona" Id="13413" />
+      <demo:Product x:Key="4" Name="Donut Maker" Id="8971" InStock="True" />
+      <ywpf:EdgeSegmentControlEdgeStyle x:Key="5" StyleResourceKey="EdgeSegmentTemplate" SegmentThickness="5">
+        <ywpf:EdgeSegmentControlEdgeStyle.PathStyle>
+          <ywpf:PolylineEdgeStyle TargetArrow="None" SourceArrow="None">
+            <ywpf:PolylineEdgeStyle.Pen>
+              <Pen Brush="#FF000000" Thickness="5" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" />
+            </ywpf:PolylineEdgeStyle.Pen>
+          </ywpf:PolylineEdgeStyle>
+        </ywpf:EdgeSegmentControlEdgeStyle.PathStyle>
+      </ywpf:EdgeSegmentControlEdgeStyle>
+      <y:EdgeSegmentLabelModelParameter x:Key="6">
+        <y:EdgeSegmentLabelModelParameter.Model>
+          <y:EdgeSegmentLabelModel Distance="0" Angle="0" />
+        </y:EdgeSegmentLabelModelParameter.Model>
+      </y:EdgeSegmentLabelModelParameter>
+      <ywpf:LabelControlLabelStyle x:Key="7" StyleResourceKey="LabelTemplate" />
+      <demo:Product x:Key="8" Name="Snow Boots" Id="8972" InStock="True" />
+      <demo:Product x:Key="9" Name="Cowboy Hat" Id="8973" InStock="False" />
+      <demo:Customer x:Key="10" Name="Stephanie Cornwell" Location="Oregon" Id="13414" />
+      <demo:Customer x:Key="11" Name="Mark Wright" Location="Michigan" Id="13415" />
+      <demo:Customer x:Key="12" Name="Ruby Turner" Location="South Carolina" Id="13416" />
+      <demo:Customer x:Key="13" Name="Norman Johnson" Location="Montana" Id="13417" />
+    </y:SharedData>
+  </data>
+  <graph id="G" edgedefault="directed">
+    <node id="n0">
+      <data key="d2">
+        <y:RectD X="296" Y="221" Width="150" Height="80" />
+      </data>
+      <data key="d3">
+        <y:GraphMLReference ResourceKey="1" />
+      </data>
+      <data key="d0">
+        <y:GraphMLReference ResourceKey="3" />
+      </data>
+      <port name="p0" />
+      <port name="p1" />
+      <port name="p2" />
+    </node>
+    <node id="n1">
+      <data key="d2">
+        <y:RectD X="682" Y="55" Width="150" Height="80" />
+      </data>
+      <data key="d3">
+        <y:GraphMLReference ResourceKey="1" />
+      </data>
+      <data key="d0">
+        <y:GraphMLReference ResourceKey="10" />
+      </data>
+      <port name="p0" />
+      <port name="p1" />
+    </node>
+    <node id="n2">
+      <data key="d2">
+        <y:RectD X="582" Y="497" Width="150" Height="80" />
+      </data>
+      <data key="d3">
+        <y:GraphMLReference ResourceKey="1" />
+      </data>
+      <data key="d0">
+        <y:GraphMLReference ResourceKey="11" />
+      </data>
+      <port name="p0" />
+      <port name="p1" />
+    </node>
+    <node id="n3">
+      <data key="d2">
+        <y:RectD X="0" Y="477" Width="150" Height="80" />
+      </data>
+      <data key="d3">
+        <y:GraphMLReference ResourceKey="1" />
+      </data>
+      <data key="d0">
+        <y:GraphMLReference ResourceKey="12" />
+      </data>
+      <port name="p0" />
+    </node>
+    <node id="n4">
+      <data key="d2">
+        <y:RectD X="881" Y="368" Width="150" Height="80" />
+      </data>
+      <data key="d3">
+        <y:GraphMLReference ResourceKey="1" />
+      </data>
+      <data key="d0">
+        <y:GraphMLReference ResourceKey="13" />
+      </data>
+      <port name="p0" />
+    </node>
+    <node id="n5">
+      <data key="d2">
+        <y:RectD X="391" Y="0" Width="150" Height="80" />
+      </data>
+      <data key="d3">
+        <y:GraphMLReference ResourceKey="2" />
+      </data>
+      <data key="d0">
+        <y:GraphMLReference ResourceKey="4" />
+      </data>
+      <port name="p0" />
+      <port name="p1" />
+    </node>
+    <node id="n6">
+      <data key="d2">
+        <y:RectD X="291" Y="442" Width="150" Height="80" />
+      </data>
+      <data key="d3">
+        <y:GraphMLReference ResourceKey="2" />
+      </data>
+      <data key="d0">
+        <y:GraphMLReference ResourceKey="8" />
+      </data>
+      <port name="p0" />
+      <port name="p1" />
+      <port name="p2" />
+    </node>
+    <node id="n7">
+      <data key="d2">
+        <y:RectD X="590" Y="276" Width="150" Height="80" />
+      </data>
+      <data key="d3">
+        <y:GraphMLReference ResourceKey="2" />
+      </data>
+      <data key="d0">
+        <y:GraphMLReference ResourceKey="9" />
+      </data>
+      <port name="p0" />
+      <port name="p1" />
+      <port name="p2" />
+      <port name="p3" />
+    </node>
+    <edge id="e0" source="n0" target="n5" sourceport="p0" targetport="p0">
+      <data key="d6">
+        <y:GraphMLReference ResourceKey="5" />
+      </data>
+      <data key="d4">
+        <x:List>
+          <y:Label LayoutParameter="{y:GraphMLReference 6}" Style="{y:GraphMLReference 7}" PreferredSize="100,39.94">
+            <y:Label.Text>13413-&gt;8971</y:Label.Text>
+            <y:Label.Tag>
+              <demo:Relation Customer="{y:GraphMLReference 3}" Product="{y:GraphMLReference 4}" />
+            </y:Label.Tag>
+          </y:Label>
+        </x:List>
+      </data>
+    </edge>
+    <edge id="e1" source="n0" target="n6" sourceport="p1" targetport="p0">
+      <data key="d6">
+        <y:GraphMLReference ResourceKey="5" />
+      </data>
+      <data key="d4">
+        <x:List>
+          <y:Label LayoutParameter="{y:GraphMLReference 6}" Style="{y:GraphMLReference 7}" PreferredSize="100,39.94">
+            <y:Label.Text>13413-&gt;8972</y:Label.Text>
+            <y:Label.Tag>
+              <demo:Relation Customer="{y:GraphMLReference 3}" Product="{y:GraphMLReference 8}" />
+            </y:Label.Tag>
+          </y:Label>
+        </x:List>
+      </data>
+    </edge>
+    <edge id="e2" source="n0" target="n7" sourceport="p2" targetport="p0">
+      <data key="d6">
+        <y:GraphMLReference ResourceKey="5" />
+      </data>
+      <data key="d4">
+        <x:List>
+          <y:Label LayoutParameter="{y:GraphMLReference 6}" Style="{y:GraphMLReference 7}" PreferredSize="100,39.94">
+            <y:Label.Text>13413-&gt;8973</y:Label.Text>
+            <y:Label.Tag>
+              <demo:Relation Customer="{y:GraphMLReference 3}" Product="{y:GraphMLReference 9}" />
+            </y:Label.Tag>
+          </y:Label>
+        </x:List>
+      </data>
+    </edge>
+    <edge id="e3" source="n1" target="n5" sourceport="p0" targetport="p1">
+      <data key="d6">
+        <y:GraphMLReference ResourceKey="5" />
+      </data>
+      <data key="d4">
+        <x:List>
+          <y:Label LayoutParameter="{y:GraphMLReference 6}" Style="{y:GraphMLReference 7}" PreferredSize="105.686666666667,39.94">
+            <y:Label.Text>13414-&gt;8971</y:Label.Text>
+            <y:Label.Tag>
+              <demo:Relation Customer="{y:GraphMLReference 10}" Product="{y:GraphMLReference 4}" />
+            </y:Label.Tag>
+          </y:Label>
+        </x:List>
+      </data>
+    </edge>
+    <edge id="e4" source="n1" target="n7" sourceport="p1" targetport="p1">
+      <data key="d6">
+        <y:GraphMLReference ResourceKey="5" />
+      </data>
+      <data key="d4">
+        <x:List>
+          <y:Label LayoutParameter="{y:GraphMLReference 6}" Style="{y:GraphMLReference 7}" PreferredSize="103.35,39.94">
+            <y:Label.Text>13414-&gt;8973</y:Label.Text>
+            <y:Label.Tag>
+              <demo:Relation Customer="{y:GraphMLReference 10}" Product="{y:GraphMLReference 9}" />
+            </y:Label.Tag>
+          </y:Label>
+        </x:List>
+      </data>
+    </edge>
+    <edge id="e5" source="n2" target="n6" sourceport="p0" targetport="p1">
+      <data key="d6">
+        <y:GraphMLReference ResourceKey="5" />
+      </data>
+      <data key="d4">
+        <x:List>
+          <y:Label LayoutParameter="{y:GraphMLReference 6}" Style="{y:GraphMLReference 7}" PreferredSize="100,39.94">
+            <y:Label.Text>13415-&gt;8972</y:Label.Text>
+            <y:Label.Tag>
+              <demo:Relation Customer="{y:GraphMLReference 11}" Product="{y:GraphMLReference 8}" />
+            </y:Label.Tag>
+          </y:Label>
+        </x:List>
+      </data>
+    </edge>
+    <edge id="e6" source="n2" target="n7" sourceport="p1" targetport="p2">
+      <data key="d6">
+        <y:GraphMLReference ResourceKey="5" />
+      </data>
+      <data key="d4">
+        <x:List>
+          <y:Label LayoutParameter="{y:GraphMLReference 6}" Style="{y:GraphMLReference 7}" PreferredSize="100,39.94">
+            <y:Label.Text>13415-&gt;8973</y:Label.Text>
+            <y:Label.Tag>
+              <demo:Relation Customer="{y:GraphMLReference 11}" Product="{y:GraphMLReference 9}" />
+            </y:Label.Tag>
+          </y:Label>
+        </x:List>
+      </data>
+    </edge>
+    <edge id="e7" source="n3" target="n6" sourceport="p0" targetport="p2">
+      <data key="d6">
+        <y:GraphMLReference ResourceKey="5" />
+      </data>
+      <data key="d4">
+        <x:List>
+          <y:Label LayoutParameter="{y:GraphMLReference 6}" Style="{y:GraphMLReference 7}" PreferredSize="100,39.94">
+            <y:Label.Text>13416-&gt;8972</y:Label.Text>
+            <y:Label.Tag>
+              <demo:Relation Customer="{y:GraphMLReference 12}" Product="{y:GraphMLReference 8}" />
+            </y:Label.Tag>
+          </y:Label>
+        </x:List>
+      </data>
+    </edge>
+    <edge id="e8" source="n4" target="n7" sourceport="p0" targetport="p3">
+      <data key="d6">
+        <y:GraphMLReference ResourceKey="5" />
+      </data>
+      <data key="d4">
+        <x:List>
+          <y:Label LayoutParameter="{y:GraphMLReference 6}" Style="{y:GraphMLReference 7}" PreferredSize="100,39.94">
+            <y:Label.Text>13417-&gt;8973</y:Label.Text>
+            <y:Label.Tag>
+              <demo:Relation Customer="{y:GraphMLReference 13}" Product="{y:GraphMLReference 9}" />
+            </y:Label.Tag>
+          </y:Label>
+        </x:List>
+      </data>
+    </edge>
+  </graph>
+</graphml>

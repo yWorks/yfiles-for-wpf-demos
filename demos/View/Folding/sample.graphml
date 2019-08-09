@@ -1,0 +1,258 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--Created by yFiles WPF 2.1-->
+<graphml xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/3.0" xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/3.0/xaml" xmlns:y="http://www.yworks.com/xml/yfiles-common/3.0" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml.wpf/2.0/ygraphml.xsd " xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://graphml.graphdrawing.org/xmlns">
+  <key id="d0" for="all" attr.name="UserTags" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/UserTags" />
+  <key id="d1" for="node" attr.name="NodeLabels" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeLabels" />
+  <key id="d2" for="node" attr.name="NodeGeometry" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeGeometry" />
+  <key id="d3" for="node" attr.name="NodeStyle" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeStyle" />
+  <key id="d4" for="node" attr.type="boolean" attr.name="Expanded" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/folding/Expanded">
+    <default>true</default>
+  </key>
+  <key id="d5" for="node" attr.name="NodeViewState" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/folding/1.1/NodeViewState" />
+  <key id="d6" for="edge" attr.name="EdgeLabels" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/EdgeLabels" />
+  <key id="d7" for="edge" attr.name="EdgeGeometry" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/EdgeGeometry" />
+  <key id="d8" for="edge" attr.name="EdgeStyle" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/EdgeStyle" />
+  <key id="d9" for="edge" attr.name="EdgeViewState" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/folding/1.1/EdgeViewState" />
+  <key id="d10" for="port" attr.name="PortLocationParameter" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/PortLocationParameter">
+    <default>
+      <x:Static Member="y:FreeNodePortLocationModel.NodeCenterAnchored" />
+    </default>
+  </key>
+  <key id="d11" for="port" attr.name="PortStyle" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/PortStyle">
+    <default>
+      <x:Static Member="y:VoidPortStyle.Instance" />
+    </default>
+  </key>
+  <key id="d12" for="port" attr.name="PortViewState" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/folding/1.1PortViewState" />
+  <key id="d13" attr.name="SharedData" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/SharedData" />
+  <data key="d13">
+    <y:SharedData>
+      <ywpf:PanelNodeStyle x:Key="1" Color="#FF87CEFA" LabelInsetsColor="#FFD3D3D3" Insets="5,5,5,5" />
+      <ywpf:PolylineEdgeStyle x:Key="2" Pen="Red" TargetArrow="Default" SourceArrow="None"/>
+      <ywpf:NodeStylePortStyleAdapter x:Key="3" RenderSize="3,3"><ywpf:ShapeNodeStyle Shape="Ellipse" Brush="#7F00FF00" Pen="{x:Null}"/></ywpf:NodeStylePortStyleAdapter> 
+      <ywpf:NodeStylePortStyleAdapter x:Key="4" RenderSize="3,3"><ywpf:ShapeNodeStyle Shape="Ellipse" Brush="#7F0000FF" Pen="{x:Null}"/></ywpf:NodeStylePortStyleAdapter>
+    </y:SharedData>
+  </data>
+  <graph id="G" edgedefault="directed">
+    <node id="n0">
+      <data key="d3">
+        <ywpf:CollapsibleNodeStyleDecorator Wrapped="{y:GraphMLReference 1}" ButtonPlacement="{x:Static y:InteriorLabelModel.NorthWest}"/>
+      </data>
+      <data key="d2">
+        <y:RectD X="25.5" Y="70" Width="66.5" Height="126" />
+      </data>
+      <graph id="n0:" edgedefault="directed">
+        <node id="n0::n0">
+          <data key="d3">
+            <ywpf:ShinyPlateNodeStyle Brush="Black" />
+          </data>
+          <data key="d2">
+            <y:RectD X="41" Y="86" Width="30" Height="30" />
+          </data>
+          <port name="p0">
+            <data key="d10">
+              <y:FreeNodePortLocationModelParameter Ratio="0.5,1" />
+            </data>
+          </port>
+          <port name="p1">
+            <data key="d10">
+              <y:FreeNodePortLocationModelParameter Ratio="0.5,0" />
+            </data>
+          </port>
+        </node>
+        <node id="n0::n1">
+          <data key="d3">
+            <ywpf:ShinyPlateNodeStyle Brush="Black" />
+          </data>
+          <data key="d2">
+            <y:RectD X="56" Y="161" Width="30" Height="30" />
+          </data>
+          <port name="p0">
+            <data key="d10">
+              <y:FreeNodePortLocationModelParameter Ratio="0.25,0" />
+            </data>
+          </port>
+          <port name="p1">
+            <data key="d10">
+              <y:FreeNodePortLocationModelParameter Ratio="0.75,0" />
+            </data>
+          </port>
+          <port name="p2">
+            <data key="d10">
+              <y:FreeNodePortLocationModelParameter Ratio="0.5,1" />
+            </data>
+          </port>
+        </node>
+        <edge id="n0::e0" source="n0::n0" target="n0::n1" sourceport="p0" targetport="p0">
+          <data key="d8">
+            <ywpf:PolylineEdgeStyle TargetArrow="Default" SourceArrow="None"/>
+          </data>
+          <data key="d7">
+            <x:List>
+              <y:Bend Location="56,126" />
+              <y:Bend Location="63.5,146" />
+            </x:List>
+          </data>
+        </edge>
+      </graph>
+      <port name="p0">
+        <data key="d10">
+          <y:FreeNodePortLocationModelParameter Ratio="0.1079,0" />
+        </data>
+      </port>
+    </node>
+    <node id="n1">
+      <data key="d4">false</data>
+      <data key="d3">
+        <ywpf:CollapsibleNodeStyleDecorator Wrapped="{y:GraphMLReference 1}" ButtonPlacement="{x:Static y:InteriorLabelModel.NorthWest}"/>
+      </data>
+      <data key="d5">
+        <y:ViewState>
+          <y:FolderNodeState x:Key="c|view" Layout="-76,152.5,40,40">
+            <y:FolderNodeState.Style>
+              <ywpf:CollapsibleNodeStyleDecorator ButtonPlacement="{x:Static y:InteriorLabelModel.NorthWest}">
+                <ywpf:PanelNodeStyle Color="#FFFFA500" LabelInsetsColor="#FFD3D3D3" Insets="5,5,5,5" />
+              </ywpf:CollapsibleNodeStyleDecorator>
+            </y:FolderNodeState.Style>
+          </y:FolderNodeState>
+        </y:ViewState>
+      </data>
+      <data key="d2">
+        <y:RectD X="0" Y="216" Width="92" Height="51" />
+      </data>
+      <graph id="n1:" edgedefault="directed">
+        <node id="n1::n0">
+          <data key="d3">
+            <ywpf:ShinyPlateNodeStyle Brush="Black" />
+          </data>
+          <data key="d2">
+            <y:RectD X="56" Y="232" Width="30" Height="30" />
+          </data>
+          <port name="p0">
+            <data key="d10">
+              <y:FreeNodePortLocationModelParameter Ratio="0.5,0" />
+            </data>
+          </port>
+        </node>
+      </graph>
+      <port name="p0">
+        <data key="d12">
+          <y:ViewState>
+            <y:Port x:Key="c|view" Style="{x:Static y:VoidPortStyle.Instance}" LocationParameter="{x:Static y:FreeNodePortLocationModel.NodeCenterAnchored}"/>
+          </y:ViewState>
+        </data>
+        <data key="d10">
+          <y:FreeNodePortLocationModelParameter Ratio="0.1142,0" />
+        </data>
+      </port>
+    </node>
+    <node id="n2">
+      <data key="d3">
+        <ywpf:ShinyPlateNodeStyle Brush="Black" />
+      </data>
+      <data key="d2">
+        <y:RectD X="24.75" Y="0" Width="30" Height="30" />
+      </data>
+      <port name="p0">
+        <data key="d10">
+          <y:FreeNodePortLocationModelParameter Ratio="0.375,1" />
+        </data>
+      </port>
+      <port name="p1">
+        <data key="d10">
+          <y:FreeNodePortLocationModelParameter Ratio="0.625,1" />
+        </data>
+      </port>
+      <port name="p2">
+        <data key="d10">
+          <y:FreeNodePortLocationModelParameter Ratio="0.875,1" />
+        </data>
+      </port>
+      <port name="p3">
+        <data key="d10">
+          <y:FreeNodePortLocationModelParameter Ratio="0.125,1" />
+        </data>
+      </port>
+    </node>
+    <node id="n3">
+      <data key="d3">
+        <ywpf:ShinyPlateNodeStyle Brush="Black" />
+      </data>
+      <data key="d2">
+        <y:RectD X="84.75" Y="0" Width="30" Height="30" />
+      </data>
+    </node>
+    <edge id="e0" source="n2" target="n0" sourceport="p0" targetport="p0">
+      <data key="d8">
+        <ywpf:PolylineEdgeStyle TargetArrow="Default" SourceArrow="None"/>
+      </data>
+    </edge>
+    <edge id="e1" source="n2" target="n0::n0" sourceport="p1" targetport="p1">
+      <data key="d8">
+        <ywpf:PolylineEdgeStyle TargetArrow="Default" SourceArrow="None"/>
+      </data>
+      <data key="d7">
+        <x:List>
+          <y:Bend Location="43.5,45" />
+          <y:Bend Location="56,65" />
+        </x:List>
+      </data>
+    </edge>
+    <edge id="e2" source="n0::n1" target="n2" sourceport="p1" targetport="p2">
+      <data key="d8">
+        <ywpf:PolylineEdgeStyle TargetArrow="Default" SourceArrow="None"/>
+      </data>
+      <data key="d7">
+        <x:List>
+          <y:Bend Location="78.5,151" />
+          <y:Bend Location="86,116" />
+          <y:Bend Location="86,65" />
+          <y:Bend Location="51,45" />
+        </x:List>
+      </data>
+    </edge>
+    <edge id="e3" source="n0::n1" target="n1::n0" sourceport="p2" targetport="p0">
+      <data key="d8">
+        <ywpf:PolylineEdgeStyle TargetArrow="Default" SourceArrow="None"/>
+      </data>
+      <data key="d9">
+        <y:ViewState>
+          <y:FoldingEdgeState x:Key="n0::n1|x|n1|c|view" Style="{y:GraphMLReference 2}">
+            <y:FoldingEdgeState.Bends>
+              <y:Bend Location="-14.1751026097731,253.818008983195" />
+            </y:FoldingEdgeState.Bends>
+            <y:FoldingEdgeState.SourcePort>
+              <y:Port Style="{y:GraphMLReference 3}" LocationParameter="{x:Static y:FreeNodePortLocationModel.NodeCenterAnchored}"/>
+            </y:FoldingEdgeState.SourcePort>
+            <y:FoldingEdgeState.TargetPort>
+              <y:Port Style="{y:GraphMLReference 4}" LocationParameter="{x:Static y:FreeNodePortLocationModel.NodeCenterAnchored}"/>
+            </y:FoldingEdgeState.TargetPort>
+          </y:FoldingEdgeState>
+        </y:ViewState>
+      </data>
+    </edge>
+    <edge id="e4" source="n1" target="n2" sourceport="p0" targetport="p3">
+      <data key="d8">
+        <ywpf:PolylineEdgeStyle TargetArrow="Default" SourceArrow="None"/>
+      </data>
+      <data key="d9">
+        <y:ViewState>
+          <y:FoldingEdgeState x:Key="n1|c|n2|x|view" Style="{y:GraphMLReference 2}">
+            <y:FoldingEdgeState.SourcePort>
+              <y:Port Style="{y:GraphMLReference 3}" LocationParameter="{x:Static y:FreeNodePortLocationModel.NodeCenterAnchored}"/>
+            </y:FoldingEdgeState.SourcePort>
+            <y:FoldingEdgeState.TargetPort>
+              <y:Port Style="{y:GraphMLReference 4}" LocationParameter="{x:Static y:FreeNodePortLocationModel.NodeCenterAnchored}"/>
+            </y:FoldingEdgeState.TargetPort>
+          </y:FoldingEdgeState>
+        </y:ViewState>
+      </data>
+      <data key="d7">
+        <x:List>
+          <y:Bend Location="10.5,81" />
+          <y:Bend Location="28.5,45" />
+        </x:List>
+      </data>
+    </edge>
+  </graph>
+</graphml>

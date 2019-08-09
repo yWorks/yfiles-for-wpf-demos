@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--Created by yFiles WPF 3.0-->
+<graphml xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/3.0/xaml" xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/3.0" xmlns:y="http://www.yworks.com/xml/yfiles-common/3.0" xmlns:bpmn="http://www.yworks.com/xml/yfiles-bpmn/1.0" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml.wpf/2.0/ygraphml.xsd " xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://graphml.graphdrawing.org/xmlns">
+  <key id="d0" attr.type="boolean" attr.name="Expanded" for="node" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/folding/Expanded">
+    <default>true</default>
+  </key>
+  <key id="d1" attr.name="NodeStyle" for="node" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeStyle" />
+  <key id="d2" attr.name="NodeViewState" for="node" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/folding/1.1/NodeViewState" />
+  <key id="d3" attr.name="NodeLabels" for="node" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeLabels" />
+  <key id="d4" attr.name="NodeGeometry" for="node" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeGeometry" />
+  <key id="d5" attr.name="UserTags" for="all" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/UserTags" />
+  <key id="d6" attr.name="EdgeViewState" for="edge" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/folding/1.1/EdgeViewState" />
+  <key id="d7" attr.name="EdgeStyle" for="edge" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/EdgeStyle" />
+  <key id="d8" attr.name="EdgeLabels" for="edge" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/EdgeLabels" />
+  <key id="d9" attr.name="EdgeGeometry" for="edge" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/EdgeGeometry" />
+  <key id="d10" attr.name="PortViewState" for="port" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/folding/1.1/PortViewState" />
+  <key id="d11" attr.name="PortLocationParameter" for="port" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/PortLocationParameter">
+    <default>
+      <x:Static Member="y:FreeNodePortLocationModel.NodeCenterAnchored" />
+    </default>
+  </key>
+  <key id="d12" attr.name="PortStyle" for="port" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/PortStyle">
+    <default>
+      <x:Static Member="y:VoidPortStyle.Instance" />
+    </default>
+  </key>
+  <key id="d13" attr.name="SharedData" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/SharedData" />
+  <data key="d13">
+    <y:SharedData>
+      <ywpf:Typeface xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/3.0/xaml" x:Key="1" />
+      <y:InteriorLabelModel x:Key="2" />
+      <bpmn:BpmnEdgeStyle x:Key="3" />
+      <ywpf:DefaultLabelStyle x:Key="4" Typeface="{y:GraphMLReference 1}" TextSize="10" />
+    </y:SharedData>
+  </data>
+  <graph id="G">
+    <node id="n0">
+      <data key="d1">
+        <bpmn:EventNodeStyle Type="Message" MinimumSize="20,20" />
+      </data>
+      <data key="d3">
+        <x:List>
+          <y:Label PreferredSize="55,24">
+            <y:Label.Text><![CDATA[Working
+group active]]></y:Label.Text>
+            <y:Label.LayoutParameter>
+              <y:ExteriorLabelModelParameter Position="West">
+                <y:ExteriorLabelModelParameter.Model>
+                  <y:ExteriorLabelModel />
+                </y:ExteriorLabelModelParameter.Model>
+              </y:ExteriorLabelModelParameter>
+            </y:Label.LayoutParameter>
+            <y:Label.Style>
+              <ywpf:DefaultLabelStyle Typeface="{y:GraphMLReference 1}" TextSize="10" />
+            </y:Label.Style>
+          </y:Label>
+        </x:List>
+      </data>
+      <data key="d4">
+        <y:RectD X="55" Y="-62.013888888888886" Width="30" Height="30" />
+      </data>
+      <port name="p0" />
+      <port name="p1">
+        <data key="d11">
+          <y:FreeNodePortLocationModelParameter Ratio="1,0.5" />
+        </data>
+      </port>
+    </node>
+    <node id="n1">
+      <data key="d1">
+        <bpmn:EventNodeStyle Type="Timer" MinimumSize="20,20" />
+      </data>
+      <data key="d3">
+        <x:List>
+          <y:Label PreferredSize="39,24">
+            <y:Label.Text><![CDATA[Friday at
+18:00h]]></y:Label.Text>
+            <y:Label.LayoutParameter>
+              <y:ExteriorLabelModelParameter Position="South">
+                <y:ExteriorLabelModelParameter.Model>
+                  <y:ExteriorLabelModel />
+                </y:ExteriorLabelModelParameter.Model>
+              </y:ExteriorLabelModelParameter>
+            </y:Label.LayoutParameter>
+            <y:Label.Style>
+              <ywpf:DefaultLabelStyle Typeface="{y:GraphMLReference 1}" TextSize="10" />
+            </y:Label.Style>
+          </y:Label>
+        </x:List>
+      </data>
+      <data key="d4">
+        <y:RectD X="125" Y="-62.013888888888886" Width="30" Height="30" />
+      </data>
+      <port name="p0" />
+      <port name="p1">
+        <data key="d11">
+          <y:FreeNodePortLocationModelParameter Ratio="0,0.5" />
+        </data>
+      </port>
+      <port name="p2">
+        <data key="d11">
+          <y:FreeNodePortLocationModelParameter Ratio="0.5,0" />
+        </data>
+      </port>
+      <port name="p3">
+        <data key="d11">
+          <y:FreeNodePortLocationModelParameter Ratio="1,0.5" />
+        </data>
+      </port>
+    </node>
+    <node id="n2">
+      <data key="d1">
+        <bpmn:ActivityNodeStyle MinimumSize="40,40" />
+      </data>
+      <data key="d3">
+        <x:List>
+          <y:Label PreferredSize="69,24">
+            <y:Label.Text><![CDATA[Check status of
+working group]]></y:Label.Text>
+            <y:Label.LayoutParameter>
+              <y:InteriorLabelModelParameter Position="Center" Model="{y:GraphMLReference 2}" />
+            </y:Label.LayoutParameter>
+            <y:Label.Style>
+              <ywpf:DefaultLabelStyle Typeface="{y:GraphMLReference 1}" TextSize="10" />
+            </y:Label.Style>
+          </y:Label>
+        </x:List>
+      </data>
+      <data key="d4">
+        <y:RectD X="195" Y="-67.013888888888886" Width="99.583333333333314" Height="40" />
+      </data>
+      <port name="p0" />
+      <port name="p1">
+        <data key="d11">
+          <y:FreeNodePortLocationModelParameter Ratio="0,0.5" />
+        </data>
+      </port>
+      <port name="p2">
+        <data key="d11">
+          <y:FreeNodePortLocationModelParameter Ratio="1,0.5" />
+        </data>
+      </port>
+    </node>
+    <node id="n3">
+      <data key="d1">
+        <bpmn:GatewayNodeStyle MinimumSize="20,20" />
+      </data>
+      <data key="d3">
+        <x:List>
+          <y:Label PreferredSize="43,35">
+            <y:Label.Text><![CDATA[Working
+group still
+active?]]></y:Label.Text>
+            <y:Label.LayoutParameter>
+              <y:InteriorLabelModelParameter Position="Center" Model="{y:GraphMLReference 2}" />
+            </y:Label.LayoutParameter>
+            <y:Label.Style>
+              <ywpf:DefaultLabelStyle Typeface="{y:GraphMLReference 1}" TextSize="10" />
+            </y:Label.Style>
+          </y:Label>
+        </x:List>
+      </data>
+      <data key="d4">
+        <y:RectD X="334.58333333333326" Y="-84.027777777777743" Width="74.027777777777771" Height="74.027777777777715" />
+      </data>
+      <port name="p0" />
+      <port name="p1">
+        <data key="d11">
+          <y:FreeNodePortLocationModelParameter Ratio="7.6786607091523E-16,0.5" />
+        </data>
+      </port>
+      <port name="p2">
+        <data key="d11">
+          <y:FreeNodePortLocationModelParameter Ratio="1,0.5" />
+        </data>
+      </port>
+      <port name="p3">
+        <data key="d11">
+          <y:FreeNodePortLocationModelParameter Ratio="0.5,0" />
+        </data>
+      </port>
+    </node>
+    <node id="n4">
+      <data key="d1">
+        <bpmn:EventNodeStyle Type="Terminate" Characteristic="End" MinimumSize="20,20" />
+      </data>
+      <data key="d4">
+        <y:RectD X="448.61111111111109" Y="-62.013888888888886" Width="30" Height="30" />
+      </data>
+      <port name="p0" />
+      <port name="p1">
+        <data key="d11">
+          <y:FreeNodePortLocationModelParameter Ratio="0,0.5" />
+        </data>
+      </port>
+    </node>
+    <node id="n5">
+      <data key="d1">
+        <bpmn:ActivityNodeStyle MinimumSize="40,40" />
+      </data>
+      <data key="d3">
+        <x:List>
+          <y:Label PreferredSize="58,35">
+            <y:Label.Text><![CDATA[[Send]
+Send current
+issue list]]></y:Label.Text>
+            <y:Label.LayoutParameter>
+              <y:InteriorLabelModelParameter Position="Center" Model="{y:GraphMLReference 2}" />
+            </y:Label.LayoutParameter>
+            <y:Label.Style>
+              <ywpf:DefaultLabelStyle Typeface="{y:GraphMLReference 1}" TextSize="10" />
+            </y:Label.Style>
+          </y:Label>
+        </x:List>
+      </data>
+      <data key="d4">
+        <y:RectD X="207.77777777777774" Y="-158.81944444444443" Width="74.027777777777828" Height="51.805555555555543" />
+      </data>
+      <port name="p0" />
+      <port name="p1">
+        <data key="d11">
+          <y:FreeNodePortLocationModelParameter Ratio="0,0.5" />
+        </data>
+      </port>
+      <port name="p2">
+        <data key="d11">
+          <y:FreeNodePortLocationModelParameter Ratio="1,0.5" />
+        </data>
+      </port>
+      <port name="p3">
+        <data key="d11">
+          <y:FreeNodePortLocationModelParameter Ratio="0.5,0" />
+        </data>
+      </port>
+    </node>
+    <node id="n6">
+      <data key="d1">
+        <bpmn:DataObjectNodeStyle MinimumSize="25,30" />
+      </data>
+      <data key="d3">
+        <x:List>
+          <y:Label Style="{y:GraphMLReference 4}" PreferredSize="39,12">
+            <y:Label.Text><![CDATA[Issue list]]></y:Label.Text>
+            <y:Label.LayoutParameter>
+              <y:ExteriorLabelModelParameter Position="West">
+                <y:ExteriorLabelModelParameter.Model>
+                  <y:ExteriorLabelModel />
+                </y:ExteriorLabelModelParameter.Model>
+              </y:ExteriorLabelModelParameter>
+            </y:Label.LayoutParameter>
+          </y:Label>
+        </x:List>
+      </data>
+      <data key="d4">
+        <y:RectD X="229.79166666666666" Y="-253.81944444444446" Width="30" Height="45" />
+      </data>
+      <port name="p0" />
+      <port name="p1">
+        <data key="d11">
+          <y:FreeNodePortLocationModelParameter Ratio="0.5,1" />
+        </data>
+      </port>
+    </node>
+    <edge id="e0" source="n0" target="n1" sourceport="p1" targetport="p1">
+      <data key="d7">
+        <y:GraphMLReference ResourceKey="3" />
+      </data>
+    </edge>
+    <edge id="e1" source="n1" target="n2" sourceport="p3" targetport="p1">
+      <data key="d7">
+        <y:GraphMLReference ResourceKey="3" />
+      </data>
+    </edge>
+    <edge id="e2" source="n2" target="n3" sourceport="p2" targetport="p1">
+      <data key="d7">
+        <y:GraphMLReference ResourceKey="3" />
+      </data>
+    </edge>
+    <edge id="e3" source="n3" target="n4" sourceport="p2" targetport="p1">
+      <data key="d7">
+        <y:GraphMLReference ResourceKey="3" />
+      </data>
+      <data key="d8">
+        <x:List>
+          <y:Label Style="{y:GraphMLReference 4}" PreferredSize="13,12">
+            <y:Label.Text>No</y:Label.Text>
+            <y:Label.LayoutParameter>
+              <y:EdgeSegmentLabelModelParameter SideOfEdge="LeftOfEdge" SegmentRatio="0">
+                <y:EdgeSegmentLabelModelParameter.Model>
+                  <y:EdgeSegmentLabelModel Distance="0.99" />
+                </y:EdgeSegmentLabelModelParameter.Model>
+              </y:EdgeSegmentLabelModelParameter>
+            </y:Label.LayoutParameter>
+          </y:Label>
+        </x:List>
+      </data>
+    </edge>
+    <edge id="e4" source="n3" target="n5" sourceport="p3" targetport="p2">
+      <data key="d7">
+        <y:GraphMLReference ResourceKey="3" />
+      </data>
+      <data key="d8">
+        <x:List>
+          <y:Label Style="{y:GraphMLReference 4}" PreferredSize="17,12">
+            <y:Label.Text>Yes</y:Label.Text>
+            <y:Label.LayoutParameter>
+              <y:EdgeSegmentLabelModelParameter SideOfEdge="RightOfEdge" SegmentRatio="0">
+                <y:EdgeSegmentLabelModelParameter.Model>
+                  <y:EdgeSegmentLabelModel Distance="0.99" />
+                </y:EdgeSegmentLabelModelParameter.Model>
+              </y:EdgeSegmentLabelModelParameter>
+            </y:Label.LayoutParameter>
+          </y:Label>
+        </x:List>
+      </data>
+      <data key="d9">
+        <x:List>
+          <y:Bend Location="371.597222222222,-132.916666666667" />
+        </x:List>
+      </data>
+    </edge>
+    <edge id="e5" source="n5" target="n1" sourceport="p1" targetport="p2">
+      <data key="d7">
+        <y:GraphMLReference ResourceKey="3" />
+      </data>
+      <data key="d9">
+        <x:List>
+          <y:Bend Location="140,-132.916666666667" />
+        </x:List>
+      </data>
+    </edge>
+    <edge id="e6" source="n6" target="n5" sourceport="p1" targetport="p3">
+      <data key="d7">
+        <bpmn:BpmnEdgeStyle Type="DirectedAssociation" />
+      </data>
+    </edge>
+  </graph>
+</graphml>

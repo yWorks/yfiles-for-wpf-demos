@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>yFiles WPF 01 Getting Started</title>
+  <link rel="stylesheet" type="text/css" href="../../../doc/documentation-style.css"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+</head>
+
+<body>
+<header>
+  <div class="logo"></div>
+  <div class="title">
+    <a href="../../../README.html">yFiles WPF</a>
+    <span class="angle-right"></span>
+    01 Getting Started
+  </div>
+</header>
+<div class="content">
+
+    <h1>
+        01 Getting Started</h1>
+    <p>
+        <p>
+The yFiles WPF tutorial is a step-by-step introduction to the concepts and the features 
+of the yFiles WPF diagramming library. 
+It is intended for developers that want to get started with the library in an effective 
+way.
+<br />
+The tutorial shows you both basic concepts and also how to build a diagramming application 
+that supports custom styles, full user interaction, Undo/Redo, clipboard, I/O, grouping 
+and folding.
+</p><p>
+If you are new to the yFiles WPF diagramming library, it is recommended to start 
+by going through the projects in this tutorial one by one.
+To make full use of the tutorial, it is also recommended to review and possibly modify the source code for each sample project.
+</p></p>
+    <p>
+        You will find the following programming samples in this package:
+    </p>
+    <table>
+        <tr>
+            <th>
+                Name
+            </th>
+            <th>
+                Description
+            </th>
+        </tr>
+        
+       <tr valign="top">
+         <td><b>01 Creating the View<b></td>
+         <td>
+      Introduces class <code>GraphControl</code>, which is the central UI element for working with graphs in yFiles WPF.
+    </td>
+       </tr>
+       <tr valign="top">
+         <td><b>02 Creating Graph Elements<b></td>
+         <td>
+  Shows how to create the basic graph elements in yFiles WPF.
+    </td>
+       </tr>
+       <tr valign="top">
+         <td><b>03 Managing the Viewport<b></td>
+         <td>
+      Shows how to work with the Viewport. It introduces basic viewport handling such
+      as zooming and "fit to content".
+    </td>
+       </tr>
+       <tr valign="top">
+         <td><b>04 Customizing Styles<b></td>
+         <td>
+      Shows how to configure the visual appearance of graph elements (using so called styles).
+    </td>
+       </tr>
+       <tr valign="top">
+         <td><b>05 Placing Labels<b></td>
+         <td>
+      Shows how to control label placement with the help of so called label model parameters.
+    </td>
+       </tr>
+       <tr valign="top">
+         <td><b>06 Basic Interaction<b></td>
+         <td>
+      Shows the default interaction possibilities that are provided by class
+<code>GraphEditorInputMode</code>.
+    </td>
+       </tr>
+       <tr valign="top">
+         <td><b>07 Undo and Clipboard Support<b></td>
+         <td>
+      Shows how to use undo and clipboard functionality present in yFiles WPF.
+    </td>
+       </tr>
+       <tr valign="top">
+         <td><b>08 Input and Output<b></td>
+         <td>
+      Shows how to use GraphML I/O functionality.
+    </td>
+       </tr>
+       <tr valign="top">
+         <td><b>09 Customizing Behavior<b></td>
+         <td>
+      Presents the <code>ILookup</code> interface.
+      <br /><code>ILookup</code> is a central concept in yFiles WPF which is used
+      to customize many aspects of interaction and appearance. Please refer to the
+      additional bundled sample demos as well as the yFiles WPF Developer's Guide
+      for many more examples of how to use the <code>ILookup</code> pattern.
+    </td>
+       </tr>
+       <tr valign="top">
+         <td><b>10 Grouped Graphs<b></td>
+         <td>
+  Shows how to enable support for grouped (or hierarchically organized)
+  graphs and  presents the default grouping interaction capabilities available
+  in yFiles WPF.
+    </td>
+       </tr>
+       <tr valign="top">
+         <td><b>11 Folding<b></td>
+         <td>
+      Shows how to enable collapse/expand functionality for grouped graphs.
+    </td>
+       </tr>
+       <tr valign="top">
+         <td><b>12 Binding Data to Graph Elements<b></td>
+         <td>
+      Shows how to bind data to graph elements.
+    </td>
+       </tr>
+       <tr valign="top">
+         <td><b>13 GraphML IO for Custom Data<b></td>
+         <td>
+  Shows how to read and write data that is bound to graph elements
+  to/from a graphml file.
+    </td>
+       </tr>
+       <tr valign="top">
+         <td><b>14 Automatic Graph Layout<b></td>
+         <td>
+  Shows how to use the layout algorithms in yFiles WPF to automatically
+  place the graph elements.
+    </td>
+       </tr>
+       <tr valign="top">
+         <td><b>15 Snapping<b></td>
+         <td>
+Shows how to enable snapping for interactively modified items to snap lines.
+    </td>
+       </tr>
+       <tr valign="top">
+         <td><b>16 Grid Snapping<b></td>
+         <td>
+Shows how to enable use an interactive magnetic grid when elements are moved.
+    </td>
+       </tr>
+       <tr valign="top">
+         <td><b>17 Orthogonal Edge Creation<b></td>
+         <td>
+Shows how to create and edit edges in an orthogonal fashion.
+    </td>
+       </tr>
+    </table>
+    <h2>
+        Running the Demos</h2>
+    <h3>
+        With Visual Studio</h3>
+    <ul>
+        <li>
+            To load all samples into Visual Studio you can simply open the solution file yFiles Tutorials.sln.
+        </li>
+        <li>
+            To load a single sample into Visual Studio you can open the project file (.csproj)
+            in the sample's directory.
+        </li>
+    </ul>
+
+</div>
+<footer>
+  <div class="footer-block">
+    <h4>Contents</h4>
+    <a href="./README.html">Welcome Page</a><br>
+    <a href="doc/api/index.html">API Documentation</a><br>
+    <a href="doc/api/index.html#/dguide/getting_started">Getting Started</a><br>
+    <a href="doc/readme/legal/SOFTWARE_LICENSE_AGREEMENT.html">License Agreement</a><br>
+    <a href="doc/readme/support.html">Help and Support</a>
+  </div>
+  <div class="footer-block">
+    <h4>Contact</h4>
+    yWorks GmbH<br>
+    Vor dem Kreuzberg 28<br>
+    72070 T&uuml;bingen<br>
+    Germany<br>
+    Phone: <a href="tel:+497071979050">+49 7071 979050</a><br>
+    Email: <a href="https://www.yworks.com/contact">contact(at)yworks.com</a><br>
+  </div>
+  <div class="footer-block">
+    <h4>Follow Us</h4>
+    <div class="social">
+      <a href="@PRODUCT_URL@" target="_blank" class="web">
+        Homepage
+      </a>
+      <a href="https://www.yworks.com/newsfeed" target="_blank" class="rss">
+        RSS-Feed
+      </a>
+      <a href="https://twitter.com/yworks" target="_blank" class="tw">
+        Twitter
+      </a>
+      <a href="http://www.youtube.com/user/yWorksTube" target="_blank" class="yt">
+        YouTube
+      </a>
+    </div>
+    <span class="copyright">COPYRIGHT &#x00A9; 2019 yWorks</span><br>
+    <a href="https://www.yworks.com/company/legal/imprint">Imprint</a>
+    | <a href="https://www.yworks.com/company/legal/terms-of-use">Terms of Use</a>
+    | <a href="https://www.yworks.com/company/legal/privacy">Privacy Policy</a>
+  </div>
+  <div class="footer-block logo">
+  </div>
+</footer>
+</body>
+</html>

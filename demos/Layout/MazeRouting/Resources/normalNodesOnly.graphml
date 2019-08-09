@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<graphml xmlns:y="http://www.yworks.com/xml/yfiles-common/3.0" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml.wpf/3.0/ygraphml.xsd " xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://graphml.graphdrawing.org/xmlns">
+  <key id="d0" attr.type="boolean" attr.name="Expanded" for="node" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/folding/Expanded">
+    <default>true</default>
+  </key>
+  <key id="d1" attr.name="NodeGeometry" for="node" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeGeometry" />
+  <key id="d2" attr.name="UserTags" for="all" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/UserTags" />
+  <key id="d3" attr.name="NodeViewState" for="node" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/folding/1.1/NodeViewState" />
+  <key id="d4" attr.name="EdgeGeometry" for="edge" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/EdgeGeometry" />
+  <key id="d5" attr.name="EdgeViewState" for="edge" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/folding/1.1/EdgeViewState" />
+  <key id="d6" attr.name="PortLocationParameter" for="port" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/PortLocationParameter">
+    <default>
+      <x:Static xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/3.0" Member="y:FreeNodePortLocationModel.NodeCenterAnchored" />
+    </default>
+  </key>
+  <key id="d7" attr.name="PortViewState" for="port" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/folding/1.1/PortViewState" />
+  <key id="d8" attr.name="SharedData" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/SharedData" />
+  <data key="d8">
+    <y:SharedData />
+  </data>
+  <graph id="G">
+    <node id="n0">
+      <data key="d1">
+        <y:RectD X="19" Y="598" Width="30" Height="30" />
+      </data>
+      <port name="p0" />
+    </node>
+    <node id="n1">
+      <data key="d1">
+        <y:RectD X="380" Y="235" Width="30" Height="30" />
+      </data>
+      <port name="p0" />
+    </node>
+    <node id="n2">
+      <data key="d1">
+        <y:RectD X="89" Y="380" Width="30" Height="30" />
+      </data>
+      <port name="p0" />
+    </node>
+    <node id="n3">
+      <data key="d1">
+        <y:RectD X="165" Y="20" Width="30" Height="30" />
+      </data>
+      <port name="p0" />
+    </node>
+    <node id="n4">
+      <data key="d1">
+        <y:RectD X="309" Y="448" Width="30" Height="30" />
+      </data>
+      <port name="p0" />
+    </node>
+    <node id="n5">
+      <data key="d1">
+        <y:RectD X="237" Y="448" Width="30" Height="30" />
+      </data>
+      <port name="p0" />
+    </node>
+    <node id="n6">
+      <data key="d1">
+        <y:RectD X="236" Y="524" Width="30" Height="30" />
+      </data>
+      <port name="p0" />
+    </node>
+    <node id="n7">
+      <data key="d1">
+        <y:RectD X="380" Y="20" Width="30" Height="30" />
+      </data>
+      <port name="p0" />
+    </node>
+    <node id="n8">
+      <data key="d1">
+        <y:RectD X="651" Y="597" Width="30" Height="30" />
+      </data>
+      <port name="p0" />
+    </node>
+    <node id="n9">
+      <data key="d1">
+        <y:RectD X="598" Y="380" Width="30" Height="30" />
+      </data>
+      <port name="p0" />
+    </node>
+    <edge id="e0" source="n5" target="n6" sourceport="p0" targetport="p0" />
+    <edge id="e1" source="n3" target="n4" sourceport="p0" targetport="p0" />
+    <edge id="e2" source="n9" target="n2" sourceport="p0" targetport="p0" />
+    <edge id="e3" source="n0" target="n1" sourceport="p0" targetport="p0" />
+    <edge id="e4" source="n7" target="n8" sourceport="p0" targetport="p0" />
+  </graph>
+</graphml>

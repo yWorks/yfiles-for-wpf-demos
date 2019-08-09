@@ -1,0 +1,170 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Demo.yFiles.GraphEditor.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="LastOpenFile" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="MruFiles" Type="System.Collections.Specialized.StringCollection" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="LastLocation" Type="System.Windows.Point" Scope="User">
+      <Value Profile="(Default)">0,0</Value>
+    </Setting>
+    <Setting Name="LastState" Type="System.Windows.WindowState" Scope="User">
+      <Value Profile="(Default)">Normal</Value>
+    </Setting>
+    <Setting Name="ShowOverviewState" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="ShowStructureViewState" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="ShowPropertyViewState" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="UpgradeSettings" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="LayoutModuleState" Type="System.Xml.XmlDocument" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="AutoAdjustContentRectangle" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="AutomaticallyRemoveEmptyLabels" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="GridEnabled" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="GridWidth" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">5</Value>
+    </Setting>
+    <Setting Name="UndoSize" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">50</Value>
+    </Setting>
+    <Setting Name="HitTestRadius" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">3</Value>
+    </Setting>
+    <Setting Name="MainSize" Type="System.Windows.Size" Scope="User">
+      <Value Profile="(Default)">1024,768</Value>
+    </Setting>
+    <Setting Name="DefaultGraphSettings" Type="System.Xml.XmlDocument" Scope="User">
+      <Value Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
+&lt;graphml xmlns:y="http://www.yworks.com/xml/graphml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns/graphml http://www.yworks.com/xml/schema/graphml.net/1.0/ygraphml.xsd " version="1.2" xmlns="http://graphml.graphdrawing.org/xmlns/graphml"&gt;
+  &lt;key id="d0" for="node" attr.name="labels" attr.type="complex" /&gt;
+  &lt;key id="d1" for="node" attr.name="geometry" attr.type="complex" /&gt;
+  &lt;key id="d2" for="node" attr.name="style" attr.type="complex" /&gt;
+  &lt;key id="d3" for="edge" attr.name="labels" attr.type="complex" /&gt;
+  &lt;key id="d4" for="edge" attr.name="geometry" attr.type="complex" /&gt;
+  &lt;key id="d5" for="edge" attr.name="style" attr.type="complex" /&gt;
+  &lt;key id="d6" for="graph" attr.name="graphSettings" attr.type="complex" /&gt;
+  &lt;key id="d7" for="graph" attr.name="customSettings" attr.type="complex" /&gt;
+  &lt;key id="d8" for="graph" attr.name="sharedData" attr.type="complex" /&gt;
+  &lt;key id="d9" for="port" attr.name="geometry" attr.type="complex"&gt;
+    &lt;default&gt;
+      &lt;y:Geometry x="0" y="0" /&gt;
+    &lt;/default&gt;
+  &lt;/key&gt;
+  &lt;key id="d10" for="port" attr.name="style" attr.type="complex" /&gt;
+  &lt;graph id="G" edgedefault="directed"&gt;
+    &lt;data key="d8"&gt;
+      &lt;y:SharedData&gt;
+        &lt;y:Font family="Microsoft Sans Serif" points="10" style="Regular" id="1" /&gt;
+      &lt;/y:SharedData&gt;
+    &lt;/data&gt;
+    &lt;data key="d7"&gt;
+      &lt;y:MyDefaultSettings&gt;
+        &lt;!--Specialized Group Node settings--&gt;
+        &lt;!--Default Styles--&gt;
+        &lt;y:DefaultGroupNodeLabelStyle&gt;
+          &lt;y:ISimpleLabelStyle autoFlip="true" clipText="true"&gt;
+            &lt;y:StringFormat alignment="Far" /&gt;
+            &lt;y:Font refid="1" /&gt;
+            &lt;y:Brush name="SolidBrush" color="Black" /&gt;
+          &lt;/y:ISimpleLabelStyle&gt;
+        &lt;/y:DefaultGroupNodeLabelStyle&gt;
+        &lt;!--Label models and parameters--&gt;
+        &lt;y:DefaultGroupNodeLabelModelParameter&gt;
+          &lt;y:InteriorStretchLabelModel position="North"&gt;
+            &lt;y:ModelState type="InteriorStretchLabelModel"&gt;
+              &lt;y:Insets left="0" right="0" top="0" bottom="0" /&gt;
+            &lt;/y:ModelState&gt;
+          &lt;/y:InteriorStretchLabelModel&gt;
+        &lt;/y:DefaultGroupNodeLabelModelParameter&gt;
+      &lt;/y:MyDefaultSettings&gt;
+    &lt;/data&gt;
+    &lt;data key="d6"&gt;
+      &lt;y:GraphSettings&gt;
+        &lt;!--Boolean flags--&gt;
+        &lt;y:Flags autoAdjustPreferredLabelSize="true" autoCleanupPorts="true" shareDefaultEdgeLayoutParameter="false" shareDefaultEdgeLabelStyleInstance="false" shareDefaultEdgeStyleInstance="false" shareDefaultNodeLayoutParameter="false" shareDefaultNodeLabelStyleInstance="false" shareDefaultNodeStyleInstance="false" shareDefaultPortStyleInstance="false" usePortCandidateProviders="false" /&gt;
+        &lt;!--Default Styles--&gt;
+        &lt;y:DefaultEdgeStyle&gt;
+          &lt;y:IPolylineEdgeStyle&gt;
+            &lt;y:Pen name="SolidColor" color="#FF000000" width="1" /&gt;
+            &lt;y:SourceArrow&gt;
+              &lt;y:DefaultArrow type="None" /&gt;
+            &lt;/y:SourceArrow&gt;
+            &lt;y:TargetArrow&gt;
+              &lt;y:DefaultArrow type="Default" cropLength="0" scale="1"&gt;
+                &lt;y:Brush name="SolidBrush" color="Black" /&gt;
+              &lt;/y:DefaultArrow&gt;
+            &lt;/y:TargetArrow&gt;
+          &lt;/y:IPolylineEdgeStyle&gt;
+        &lt;/y:DefaultEdgeStyle&gt;
+        &lt;y:DefaultNodeStyle&gt;
+          &lt;y:IBevelNodeStyle color="DarkOrange" radius="5" inset="2" /&gt;
+        &lt;/y:DefaultNodeStyle&gt;
+        &lt;y:DefaultPortStyle /&gt;
+        &lt;y:DefaultEdgeLabelStyle&gt;
+          &lt;y:ISimpleLabelStyle autoFlip="true" clipText="true"&gt;
+            &lt;y:Font refid="1" /&gt;
+            &lt;y:Brush name="SolidBrush" color="Black" /&gt;
+          &lt;/y:ISimpleLabelStyle&gt;
+        &lt;/y:DefaultEdgeLabelStyle&gt;
+        &lt;y:DefaultNodeLabelStyle&gt;
+          &lt;y:ISimpleLabelStyle autoFlip="true" clipText="true"&gt;
+            &lt;y:Font refid="1" /&gt;
+            &lt;y:Brush name="SolidBrush" color="Black" /&gt;
+          &lt;/y:ISimpleLabelStyle&gt;
+        &lt;/y:DefaultNodeLabelStyle&gt;
+        &lt;!--Label models and parameters--&gt;
+        &lt;y:DefaultEdgeLabelModelParameter&gt;
+          &lt;y:SliderEdgeLabelModel index="1" ratio="0"&gt;
+            &lt;y:ModelState type="SliderEdgeLabelModel" distance="0" angle="0" edgeRelativeDistance="true" /&gt;
+          &lt;/y:SliderEdgeLabelModel&gt;
+        &lt;/y:DefaultEdgeLabelModelParameter&gt;
+        &lt;y:DefaultNodeLabelModelParameter&gt;
+          &lt;y:InteriorLabelModel position="Center"&gt;
+            &lt;y:ModelState type="InteriorLabelModel"&gt;
+              &lt;y:Insets left="0" right="0" top="0" bottom="0" /&gt;
+            &lt;/y:ModelState&gt;
+          &lt;/y:InteriorLabelModel&gt;
+        &lt;/y:DefaultNodeLabelModelParameter&gt;
+        &lt;y:DefaultGroupNodeStyle&gt;
+          &lt;y:IPanelNodeStyle color="#FFCFE2F8" labelInsetsColor="#FFCFE2F8"&gt;
+            &lt;y:InsetsRectangle x="5" y="5" width="5" height="5" /&gt;
+          &lt;/y:IPanelNodeStyle&gt;
+        &lt;/y:DefaultGroupNodeStyle&gt;
+        &lt;!--Misc settings--&gt;
+        &lt;y:DefaultNodeSize width="50" height="30" /&gt;
+      &lt;/y:GraphSettings&gt;
+    &lt;/data&gt;
+  &lt;/graph&gt;
+&lt;/graphml&gt;</Value>
+    </Setting>
+    <Setting Name="GridVisible" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="SnappingEnabled" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="OrthogonalEdgesEnabled" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="GridSnapType" Type="yWorks.Canvas.GridSnapType" Scope="User">
+      <Value Profile="(Default)">GridPoints</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

@@ -1,0 +1,147 @@
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <ProjectType>Local</ProjectType>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{E7B6E618-AAB0-4F0E-B021-8B3211673331}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <AssemblyName>TreeDemo</AssemblyName>
+    <DelaySign>false</DelaySign>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>Demo.yFiles.Layout.Tree</RootNamespace>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileUpgradeFlags></FileUpgradeFlags>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <UpgradeBackupLocation />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\x86\Release</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\x86\Debug</OutputPath>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="System">
+      <Name>System</Name>
+    </Reference>
+    <Reference Include="System.Data">
+      <Name>System.Data</Name>
+    </Reference>
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.Xml">
+      <Name>System.XML</Name>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="WindowsBase" />
+    <Reference Include="yWorks.yFilesWPF.Viewer">
+      <HintPath>..\..\..\..\lib\net40\\yWorks.yFilesWPF.Viewer.dll</HintPath>
+    </Reference>
+    <Reference Include="yWorks.yFilesWPF.Adapter">
+      <HintPath>..\..\..\..\lib\net40\\yWorks.yFilesWPF.Adapter.dll</HintPath>
+    </Reference>
+    <Reference Include="yWorks.yFilesWPF.Algorithms">
+      <HintPath>..\..\..\..\lib\net40\\yWorks.yFilesWPF.Algorithms.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Core" />
+  </ItemGroup>
+  <ItemGroup>
+    <ApplicationDefinition Include="App.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </ApplicationDefinition>
+    <Page Include="TreeDemo.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="NodePlacerPanel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Utils\Option\Option.csproj">
+      <Project>{5AD8C0FF-B1B6-4528-A777-BD9507E3A829}</Project>
+      <Name>Demo.yFiles.Option</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Utils\DemoToolkit\DemoToolkit.csproj">
+      <Project>{AAA67DCC-AA93-4EB4-8B93-F09D77292C09}</Project>
+      <Name>Demo.yFiles.Toolkit</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Configuration\ARNodePlacerConfiguration.cs" />
+    <Compile Include="Configuration\AssistantPlacerConfiguration.cs" />
+    <Compile Include="Configuration\BusPlacerConfiguration.cs" />
+    <Compile Include="Configuration\DefaultNodePlacerConfiguration.cs" />
+    <Compile Include="Configuration\DoubleLinePlacerConfiguration.cs" />
+    <Compile Include="Configuration\RotatableNodePlacerConfigurationBase.cs" />
+    <Compile Include="TreeDemo.xaml.cs">
+      <DependentUpon>TreeDemo.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Configuration\LeftRightPlacerConfiguration.cs" />
+    <Compile Include="Configuration\NodePlacerDescriptor.cs" />
+    <Compile Include="NodePlacerPanel.xaml.cs">
+      <DependentUpon>NodePlacerPanel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Configuration\SimpleNodePlacerConfiguration.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\licenses.licx" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="Resources\orgchartmodel.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent></PreBuildEvent>
+    <PostBuildEvent></PostBuildEvent>
+  </PropertyGroup>
+  <!--The following target ensures that the project will build even when the ZIP file has been-->
+  <!--extracted with Explorer or another tool that retains the origin zone marker for the files.-->
+  <!--If that does not work, an error message will be shown in Visual Studio's Error List.-->
+  <!--See http://kb.yworks.com/article/736 for details.-->
+  <Target Name="BeforeBuild">
+    <Exec Command="if exist &quot;%(Reference.HintPath)&quot; (&gt;nul 2&gt;nul (&gt;nul 2&gt;nul findstr ZoneId&lt;&quot;%(Reference.HintPath):Zone.Identifier&quot;) &amp;&amp; ((&gt;nul 2&gt;nul powershell -noprofile -nologo -command &quot;Unblock-File '%(Reference.HintPath)'&quot;) || (2&gt;nul type nul &gt;&quot;%(Reference.HintPath):Zone.Identifier&quot;) || (&lt;nul &gt;&amp;2 set /p _=Err&amp;&gt;&amp;2 echo or: The file @(Reference) originates from the Internet Zone and prevents compilation. Please unblock it manually in its properties. See the Knowledge Base at http://kb.yworks.com/article/736.)))" IgnoreExitCode="True" />
+  </Target>
+</Project>

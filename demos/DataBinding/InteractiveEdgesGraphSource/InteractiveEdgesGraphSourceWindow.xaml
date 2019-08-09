@@ -1,0 +1,286 @@
+<!-- ************************************************************************ -->
+<!-- This demo file is part of yFiles WPF 3.2.                           -->
+<!-- Copyright (c) 2000-2019 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
+<!-- 72070 Tuebingen, Germany. All rights reserved.                           -->
+<!--                                                                          -->
+<!-- yFiles demo files exhibit yFiles WPF functionalities. Any redistribution  -->
+<!-- of demo resource files, with or without modification, is not permitted.  -->
+<!--                                                                          -->
+<!-- Owners of a valid software license for a yFiles WPF version that this     -->
+<!-- demo is shipped with are allowed to use the resource file as basis for   -->
+<!-- their own yFiles WPF powered applications. Use of such programs is        -->
+<!-- governed by the rights and conditions as set out in the yFiles WPF        -->
+<!-- license agreement.                                                       -->
+<!--                                                                          -->
+<!-- THIS SOFTWARE IS PROVIDED ''AS IS'' AND ANY EXPRESS OR IMPLIED           -->
+<!-- WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF     -->
+<!-- MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN  -->
+<!-- NO EVENT SHALL yWorks BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,    -->
+<!-- SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED -->
+<!-- TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR   -->
+<!-- PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF   -->
+<!-- LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING     -->
+<!-- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS       -->
+<!-- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.             -->
+<!--                                                                          -->
+<!-- ************************************************************************ -->
+<Window x:Class="Demo.yFiles.DataBinding.InteractiveEdgesGraphSource.InteractiveEdgesGraphSourceWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/3.0/xaml" xmlns:InteractiveEdgesGraphSource="clr-namespace:Demo.yFiles.DataBinding.InteractiveEdgesGraphSource"
+        Title="Data Binding using an AdjacentEdgesGraphSource" Height="850" Width="1280" Loaded="GraphSourceWindow_OnLoaded"
+        Style="{StaticResource DemoWindow}">
+    <Window.Resources>
+        <DataTemplate x:Key="EventTemplate">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="{Binding Path=Source.Name}"/>
+                <TextBlock Text="#"/>
+                <TextBlock Text="{Binding Path=Name}"/>
+            </StackPanel>
+        </DataTemplate>
+        <DataTemplate x:Key="MethodTemplate">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="{Binding Path=Target.Name}"/>
+                <TextBlock Text="#"/>
+                <TextBlock Text="{Binding Path=Name}"/>
+            </StackPanel>
+        </DataTemplate>
+        
+        <ywpf:AdjacentEdgesGraphSource x:Key="GraphSource" DynamicUpdates="true">
+            <ywpf:AdjacentEdgesGraphSource.InEdgesBinding>
+                <Binding Path="EventRegistrations"/>
+            </ywpf:AdjacentEdgesGraphSource.InEdgesBinding>
+            <ywpf:AdjacentEdgesGraphSource.OutEdgesBinding>
+                <Binding Path="MethodCalls"/>
+            </ywpf:AdjacentEdgesGraphSource.OutEdgesBinding>
+            <ywpf:AdjacentEdgesGraphSource.SourceNodeBinding>
+                <Binding Path="Source"/>
+            </ywpf:AdjacentEdgesGraphSource.SourceNodeBinding>
+            <ywpf:AdjacentEdgesGraphSource.TargetNodeBinding>
+                <Binding Path="Target"/>
+            </ywpf:AdjacentEdgesGraphSource.TargetNodeBinding>
+            <ywpf:AdjacentEdgesGraphSource.EdgeLabelBinding>
+                <Binding Path="Name"/>
+            </ywpf:AdjacentEdgesGraphSource.EdgeLabelBinding>
+            <ywpf:AdjacentEdgesGraphSource.NodeControlStyle>
+                <Style TargetType="ywpf:NodeControl" />
+            </ywpf:AdjacentEdgesGraphSource.NodeControlStyle>
+        </ywpf:AdjacentEdgesGraphSource>
+        <InteractiveEdgesGraphSource:NodeToBusinessObjectConverter x:Key="NodeToBusinessObjectConverter" GraphSource="{StaticResource GraphSource}"/>
+        <InteractiveEdgesGraphSource:ObjectToBoolConverter x:Key="ObjectToBoolConverter"/>
+    </Window.Resources>
+    <DockPanel x:Name="MainPanel">
+        <!-- The visual components of the application. -->
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="250" />
+                <ColumnDefinition Width="5" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="5" />
+                <ColumnDefinition Width="200" />
+            </Grid.ColumnDefinitions>
+            <!-- The left part of the application view -->
+            <!-- The Help view -->
+            <DockPanel Grid.Column="0">
+                <HeaderedContentControl Header="Description" Style="{StaticResource DescriptionStyle}">
+                    <RichTextBox BorderThickness="0" IsReadOnly="True">
+                        <FlowDocument>
+                            <Paragraph>
+                                <Run>
+                                    Shows data binding with class
+                                </Run>
+                                <Italic>
+                                    AdjacentEdgesGraphSource.
+                                </Italic>
+                            </Paragraph>
+                            <Paragraph Style="{StaticResource HtmlH2}">
+                                Usage
+                            </Paragraph>
+                            <Paragraph>
+                                <Run>The graph's nodes represent classes or interfaces. Outgoing edges act as method calls between two classes. Incoming edges describe event handlers.
+                                </Run>
+                            </Paragraph>
+                            <List>
+                                <ListItem>
+                                    <Paragraph>
+                                        <Bold>NodesSource</Bold>
+                                        contains the classes and interfaces forming the basic set of nodes. Additional nodes can be added by incoming or outgoing edges of nodes.</Paragraph>
+                                </ListItem>
+                                <ListItem>
+                                    <Paragraph>
+                                        <Bold>Current Item</Bold>
+                                        displays the node that is currently focused in the graph.</Paragraph>
+                                </ListItem>
+                                <ListItem>
+                                    <Paragraph>
+                                        <Bold>Registered Events</Bold>
+                                        contains event handlers that the currently selected class has registered on another class or interface. Events are visualized using red edges.</Paragraph>
+                                </ListItem>
+                                <ListItem>
+                                    <Paragraph>
+                                        <Bold>Method Calls</Bold>
+                                        contains methods that the currently selected class calls on another class or interface. Methods are visualized using gray edges.</Paragraph>
+                                </ListItem>
+                                <ListItem>
+                                    <Paragraph>See the XAML file and the code behind for details.</Paragraph>
+                                </ListItem>
+                            </List>
+                            <Paragraph>
+                            	<Run>
+                            		NodesSource defines the basic nodes of the graph. Edges are added to the graph by the collections specified on the nodes by the InEdges- and OutEdgesBinding. Nodes that are only defined by edge bindings
+                            		and are not part of the NodesSource are removed from the graph if the respective edge is removed. This may lead to whole graph components being deleted if a certain 
+                            		edge is removed.
+                            	</Run>
+                            </Paragraph>
+                            <Paragraph Style="{StaticResource HtmlH2}">
+                                Things to Try
+                            </Paragraph>
+                            <List>
+                                <ListItem>
+                                    <Paragraph>
+                                        Click a node in the graph to make it the current item. Inspect its registered events and method calls.
+                                    </Paragraph>
+                                </ListItem>
+                                <ListItem>
+                                    <Paragraph>
+                                        Add a new class or interface by clicking the <Bold>+</Bold> button of 'NodesSource'. Define the methods and events this class provides in the dialog.
+                                    </Paragraph>
+                                </ListItem>
+                                <ListItem>
+                                    <Paragraph>
+                                        Select a class or interface in 'NodesSource' and click the <Bold>-</Bold> button to remove it from the basic nodes. Please note that the removed node might not be removed from the graph if it is still referenced by an edge.
+                                    </Paragraph>
+                                </ListItem>
+                                <ListItem>
+                                    <Paragraph>
+                                        Add a new event registration (method call) to the current node by clicking the <Bold>+</Bold> button.
+                                    </Paragraph>
+                                </ListItem>
+                                <ListItem>
+                                    <Paragraph>
+                                        Remove an event registration (method call) of the current item by selecting it in the list and clicking the <Bold>-</Bold> button.
+                                    </Paragraph>
+                                </ListItem>
+                                <ListItem>
+                                    <Paragraph>
+                                        Drag a class from 'NodesSource' to one of the other lists to create a new method call or event handler between the current and the dragged class.
+                                    </Paragraph>
+                                </ListItem>
+                                <ListItem>
+                                    <Paragraph>
+                                        Drag an item from one of the two other lists into 'NodesSource' to add the respective class to the basic nodes.
+                                    </Paragraph>
+                                </ListItem>
+                                <ListItem>
+                                    <Paragraph>
+                                        Drag an item from any lists into the trashcan to remove the respective class, event handler or method call.
+                                    </Paragraph>
+                                </ListItem>
+                            </List>
+                        </FlowDocument>
+                    </RichTextBox>
+                </HeaderedContentControl>
+            </DockPanel>
+            <!-- End of the left part of the application view -->
+            <GridSplitter Width="5" Grid.Column="1" ResizeBehavior="PreviousAndNext" />
+            <!-- The central part of the application view -->
+            <DockPanel Grid.Column="2">
+                <ywpf:GraphControl Width="Auto" Name="graphControl" Graph="{Binding Source={StaticResource GraphSource}, Path=Graph }">
+                    <ywpf:GraphControl.CommandBindings>
+                        <CommandBinding Command="InteractiveEdgesGraphSource:InteractiveEdgesGraphSourceWindow.AddNodeCommand" Executed="AddNodeExecuted" />
+                        <CommandBinding Command="InteractiveEdgesGraphSource:InteractiveEdgesGraphSourceWindow.RemoveNodeCommand" Executed="RemoveNodeExecuted" CanExecute="RemoveCanExecute" />
+                        <CommandBinding Command="InteractiveEdgesGraphSource:InteractiveEdgesGraphSourceWindow.AddEventRegistrationCommand" Executed="AddEventRegistrationExecuted" CanExecute="AddConnectionCanExecute" />
+                        <CommandBinding Command="InteractiveEdgesGraphSource:InteractiveEdgesGraphSourceWindow.RemoveEventRegistrationCommand" Executed="RemoveEventRegistrationExecuted" CanExecute="RemoveCanExecute" />
+                        <CommandBinding Command="InteractiveEdgesGraphSource:InteractiveEdgesGraphSourceWindow.AddMethodCallCommand" Executed="AddMethodCallExecuted" CanExecute="AddConnectionCanExecute" />
+                        <CommandBinding Command="InteractiveEdgesGraphSource:InteractiveEdgesGraphSourceWindow.RemoveMethodCallCommand" Executed="RemoveMethodCallExecuted" CanExecute="RemoveCanExecute" />
+                    </ywpf:GraphControl.CommandBindings>
+                    <ywpf:GraphControl.InputMode>
+                        <ywpf:GraphViewerInputMode SelectableItems="None"/>
+                    </ywpf:GraphControl.InputMode>
+                </ywpf:GraphControl>
+            </DockPanel>
+            <!-- End of the central part of the application view -->
+            <GridSplitter Width="5" Grid.Column="3" ResizeBehavior="PreviousAndNext" BorderThickness="0,0,1,0" BorderBrush="{StaticResource HeaderBackgroundBrush}"/>
+            <!-- The right part of the application view -->
+            <StackPanel Grid.Column="4">
+                <HeaderedContentControl Header="NodesSource" Style="{StaticResource HeaderedContentStyle}">
+                    <DockPanel Height="250" LastChildFill="True">
+                        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,5,0,10">
+                            <!--This button is just there to omit an implicit styling wpf bug-->
+                            <Button Visibility="Collapsed"/>
+                            <Button ToolTip="New Class" Padding="6,0,6,0"
+                                        Command="InteractiveEdgesGraphSource:InteractiveEdgesGraphSourceWindow.AddNodeCommand"
+                                        CommandParameter="{Binding ElementName=nodesSourceListBox}"
+                                        CommandTarget="{Binding ElementName=graphControl}">+</Button>
+                            <Button ToolTip="Delete Class" Padding="6,0,6,0"
+                                        Command="InteractiveEdgesGraphSource:InteractiveEdgesGraphSourceWindow.RemoveNodeCommand"
+                                        CommandParameter="{Binding ElementName=nodesSourceListBox}"
+                                        CommandTarget="{Binding ElementName=graphControl}">-</Button>
+                        </StackPanel>
+                        <ScrollViewer HorizontalScrollBarVisibility="Hidden">
+                            <ListView x:Name="nodesSourceListBox" ItemTemplate="{StaticResource SimpleNodeTemplate}" SelectionMode="Single" KeyDown="ListBox_KeyDown"
+                              PreviewMouseLeftButtonDown="OnListMouseDown" PreviewMouseMove="OnListMouseMove" PreviewMouseLeftButtonUp="OnListMouseUp"
+                              AllowDrop="True" Drop="NodesSourceListBox_OnDrop" BorderThickness="0,0,1,1" 
+                              ItemsSource="{Binding Source={StaticResource GraphSource}, Path=NodesSource}" 
+                              SelectedItem="{Binding ElementName=graphControl, Path=CurrentItem, Converter={StaticResource NodeToBusinessObjectConverter}, Mode=TwoWay}"/>
+                        </ScrollViewer>
+                    </DockPanel>
+                </HeaderedContentControl>
+                <HeaderedContentControl Header="Current Item" Style="{StaticResource HeaderedContentStyle}">
+                    <StackPanel x:Name="nodeDetails" DataContext="{Binding ElementName=graphControl, Path=CurrentItem, Converter={StaticResource NodeToBusinessObjectConverter}}">
+                        <!-- Display the current item -->
+                        <StackPanel Height="100">
+                            <ContentPresenter Content="{Binding}" Mouse.MouseLeave="CurrentNode_OnMouseLeave"/>
+                        </StackPanel>
+                        <Separator Margin="0,3,0,0"/>
+                        <!-- ListView for Events -->
+                        <DockPanel Margin="0,11,0,3" LastChildFill="True">
+                            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right">
+                                <Button ToolTip="Register New Event" Padding="6,0,6,0"
+                                        Command="InteractiveEdgesGraphSource:InteractiveEdgesGraphSourceWindow.AddEventRegistrationCommand"
+                                        CommandParameter="{Binding ElementName=eventsListBox}"
+                                        CommandTarget="{Binding ElementName=graphControl}">+</Button>
+                                <Button ToolTip="Delete Registered Event" Padding="6,0,6,0"
+                                        Command="InteractiveEdgesGraphSource:InteractiveEdgesGraphSourceWindow.RemoveEventRegistrationCommand"
+                                        CommandParameter="{Binding ElementName=eventsListBox}"
+                                        CommandTarget="{Binding ElementName=graphControl}">-</Button>
+                            </StackPanel>
+                            <Label Content="Registered Events" />
+                        </DockPanel>
+                        <ScrollViewer Height="200" HorizontalScrollBarVisibility="Hidden">
+                            <ListView x:Name="eventsListBox" ItemTemplate="{StaticResource EventTemplate}" SelectionMode="Single" KeyDown="ListBox_KeyDown" 
+                                  PreviewMouseLeftButtonDown="OnListMouseDown" PreviewMouseMove="OnListMouseMove" PreviewMouseLeftButtonUp="OnListMouseUp"
+                                  AllowDrop="True" Drop="EventsListBox_OnDrop" BorderThickness="0,1,1,1" 
+                                  ItemsSource="{Binding EventRegistrations}" 
+                                  IsEnabled="{Binding Converter={StaticResource ObjectToBoolConverter}}" />
+                        </ScrollViewer>
+                        <!-- ListView for Method Calls -->
+                        <DockPanel Margin="0,11,0,3" LastChildFill="True">
+                            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right">
+                                <Button ToolTip="New Method Call" Padding="6,0,6,0"
+                                        Command="InteractiveEdgesGraphSource:InteractiveEdgesGraphSourceWindow.AddMethodCallCommand"
+                                        CommandParameter="{Binding ElementName=methodsListBox}"
+                                        CommandTarget="{Binding ElementName=graphControl}">+</Button>
+                                <Button ToolTip="Delete Method Call" Padding="6,0,6,0"
+                                        Command="InteractiveEdgesGraphSource:InteractiveEdgesGraphSourceWindow.RemoveMethodCallCommand"
+                                        CommandParameter="{Binding ElementName=methodsListBox}"
+                                        CommandTarget="{Binding ElementName=graphControl}">-</Button>
+                            </StackPanel>
+                            <Label Content="Method Calls" />
+                        </DockPanel>
+                        <ScrollViewer Height="200" HorizontalScrollBarVisibility="Hidden">
+                            <ListView x:Name="methodsListBox" ItemTemplate="{StaticResource MethodTemplate}" AllowDrop="True" SelectionMode="Single" KeyDown="ListBox_KeyDown"
+                                  PreviewMouseLeftButtonDown="OnListMouseDown" PreviewMouseMove="OnListMouseMove" PreviewMouseLeftButtonUp="OnListMouseUp"
+                                  Drop="MethodsListBox_OnDrop" BorderThickness="0,1,1,1" 
+                                  ItemsSource="{Binding MethodCalls, Mode=OneWay}" 
+                                  IsEnabled="{Binding Converter={StaticResource ObjectToBoolConverter}}"/>
+                        </ScrollViewer>
+                    </StackPanel>
+                </HeaderedContentControl>
+                <!-- The trashcan icon -->
+                <Image Source="{StaticResource TrashIcon}"  AllowDrop="True" Drop="Trashcan_OnDrop" Margin="0,5,0,0" Width="32" Height="32"/>
+            </StackPanel>
+            <!-- End of the right part of the application view -->
+        </Grid>
+    </DockPanel>
+</Window>

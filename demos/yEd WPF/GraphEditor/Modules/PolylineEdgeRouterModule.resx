@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="POLYLINE_EDGE_ROUTER" xml:space="preserve">
+    <value>Polyline Edge Router</value>
+  </data>
+  <data name="POLYLINE_EDGE_ROUTER.LAYOUT.SCOPE" xml:space="preserve">
+    <value>Scope</value>
+  </data>
+  <data name="POLYLINE_EDGE_ROUTER.LAYOUT.SCOPE.VALUE.SCOPE_ALL_EDGES" xml:space="preserve">
+    <value>All Edges</value>
+  </data>
+  <data name="POLYLINE_EDGE_ROUTER.LAYOUT.SCOPE.VALUE.SCOPE_SELECTED_EDGES" xml:space="preserve">
+    <value>Selected Edges</value>
+  </data>
+  <data name="POLYLINE_EDGE_ROUTER.LAYOUT.SCOPE.VALUE.SCOPE_EDGES_AT_SELECTED_NODES" xml:space="preserve">
+    <value>Edges at Selected Nodes</value>
+  </data>
+  <data name="POLYLINE_EDGE_ROUTER.LAYOUT.MINIMUM_DISTANCE_TO_EDGE" xml:space="preserve">
+    <value>Minimum Distance of Edges</value>
+  </data>
+  <data name="POLYLINE_EDGE_ROUTER.LAYOUT.ROUTE_ON_GRID" xml:space="preserve">
+    <value>Route on Grid</value>
+  </data>
+  <data name="POLYLINE_EDGE_ROUTER.LAYOUT.GRID_SPACING" xml:space="preserve">
+    <value>Grid Spacing</value>
+  </data>
+  <data name="POLYLINE_EDGE_ROUTER.CROSSING_MINIMIZATION.LOCAL_CROSSING_MINIMIZATION" xml:space="preserve">
+    <value>Local Crossing Minimization</value>
+  </data>
+  <data name="POLYLINE_EDGE_ROUTER.CROSSING_MINIMIZATION.CROSSING_COST" xml:space="preserve">
+    <value>Crossing Cost</value>
+  </data>
+  <data name="POLYLINE_EDGE_ROUTER.LAYOUT.ENABLE_REROUTING" xml:space="preserve">
+    <value>Reroute Crossing Edges</value>
+  </data>
+  <data name="POLYLINE_EDGE_ROUTER.LAYOUT" xml:space="preserve">
+    <value>Layout</value>
+  </data>
+  <data name="POLYLINE_EDGE_ROUTER.CROSSING_MINIMIZATION" xml:space="preserve">
+    <value>Crossing Minimization</value>
+  </data>
+  <data name="POLYLINE_EDGE_ROUTER.LAYOUT.CONSIDER_NODE_LABELS" xml:space="preserve">
+    <value>Consider Node Labels</value>
+  </data>
+  <data name="POLYLINE_EDGE_ROUTER.LAYOUT.ENFORCE_MONOTONIC_RESTRICTIONS" xml:space="preserve">
+    <value>Enforce Monotonic Path Restrictions</value>
+  </data>
+  <data name="POLYLINE_EDGE_ROUTER.LAYOUT.MONOTONIC_RESTRICTION" xml:space="preserve">
+    <value>Monotonic Path Restrictions</value>
+  </data>
+  <data name="POLYLINE_EDGE_ROUTER.LAYOUT.MONOTONIC_RESTRICTION.VALUE.MONOTONIC_BOTH" xml:space="preserve">
+    <value>Both</value>
+  </data>
+  <data name="POLYLINE_EDGE_ROUTER.LAYOUT.MONOTONIC_RESTRICTION.VALUE.MONOTONIC_HORIZONTAL" xml:space="preserve">
+    <value>Horizontal</value>
+  </data>
+  <data name="POLYLINE_EDGE_ROUTER.LAYOUT.MONOTONIC_RESTRICTION.VALUE.MONOTONIC_NONE" xml:space="preserve">
+    <value>None</value>
+  </data>
+  <data name="POLYLINE_EDGE_ROUTER.LAYOUT.MONOTONIC_RESTRICTION.VALUE.MONOTONIC_VERTICAL" xml:space="preserve">
+    <value>Vertical</value>
+  </data>
+  <data name="POLYLINE_EDGE_ROUTER.GRID_SETTINGS" xml:space="preserve">
+    <value>Grid Settings</value>
+  </data>
+  <data name="POLYLINE_EDGE_ROUTER.GRID_SETTINGS.GRID_ENABLED" xml:space="preserve">
+    <value>Grid Routing Enabled</value>
+  </data>
+  <data name="POLYLINE_EDGE_ROUTER.GRID_SETTINGS.GRID_SPACING" xml:space="preserve">
+    <value>Grid Spacing</value>
+  </data>
+  <data name="POLYLINE_EDGE_ROUTER.LAYOUT.CONSIDER_EDGE_LABELS" xml:space="preserve">
+    <value>Consider Fixed Edges' Labels</value>
+  </data>
+  <data name="POLYLINE_EDGE_ROUTER.LAYOUT.MAXIMUM_DURATION" xml:space="preserve">
+    <value>Maximum Duration</value>
+  </data>
+  <data name="POLYLINE_EDGE_ROUTER.LAYOUT.OPTIMIZATION_STRATEGY" xml:space="preserve">
+    <value>Optimization Strategy</value>
+  </data>
+  <data name="POLYLINE_EDGE_ROUTER.LAYOUT.OPTIMIZATION_STRATEGY.VALUE.STRATEGY_BALANCED" xml:space="preserve">
+    <value>Balanced</value>
+  </data>
+  <data name="POLYLINE_EDGE_ROUTER.LAYOUT.OPTIMIZATION_STRATEGY.VALUE.STRATEGY_MINIMIZE_BENDS" xml:space="preserve">
+    <value>Less Bends</value>
+  </data>
+  <data name="POLYLINE_EDGE_ROUTER.LAYOUT.OPTIMIZATION_STRATEGY.VALUE.STRATEGY_MINIMIZE_CROSSINGS" xml:space="preserve">
+    <value>Less Crossings</value>
+  </data>
+  <data name="POLYLINE_EDGE_ROUTER.MINIMAL_DISTANCES" xml:space="preserve">
+    <value>Minimal Distances</value>
+  </data>
+  <data name="POLYLINE_EDGE_ROUTER.MINIMAL_DISTANCES.MINIMAL_EDGE_TO_EDGE_DISTANCE" xml:space="preserve">
+    <value>Edge to Edge</value>
+  </data>
+  <data name="POLYLINE_EDGE_ROUTER.MINIMAL_DISTANCES.MINIMAL_FIRST_SEGMENT_LENGTH" xml:space="preserve">
+    <value>First Segment</value>
+  </data>
+  <data name="POLYLINE_EDGE_ROUTER.MINIMAL_DISTANCES.MINIMAL_LAST_SEGMENT_LENGTH" xml:space="preserve">
+    <value>Last Segment</value>
+  </data>
+  <data name="POLYLINE_EDGE_ROUTER.MINIMAL_DISTANCES.MINIMAL_NODE_CORNER_DISTANCE" xml:space="preserve">
+    <value>Port to Node Corner</value>
+  </data>
+  <data name="POLYLINE_EDGE_ROUTER.MINIMAL_DISTANCES.MINIMAL_NODE_TO_EDGE_DISTANCE" xml:space="preserve">
+    <value>Node to Edge</value>
+  </data>
+  <data name="POLYLINE_EDGE_ROUTER.POLYLINE_ROUTING" xml:space="preserve">
+    <value>Polyline Routing</value>
+  </data>
+  <data name="POLYLINE_EDGE_ROUTER.POLYLINE_ROUTING.ENABLE_POLYLINE_ROUTING" xml:space="preserve">
+    <value>Enable Polyline Routing</value>
+  </data>
+  <data name="POLYLINE_EDGE_ROUTER.POLYLINE_ROUTING.PREFERRED_POLYLINE_SEGMENT_LENGTH" xml:space="preserve">
+    <value>Preferred Polyline Segment Length</value>
+  </data>
+  <data name="POLYLINE_EDGE_ROUTER.LAYOUT.OPTIMIZATION_STRATEGY.VALUE.STRATEGY_MINIMIZE_EDGE_LENGTH" xml:space="preserve">
+    <value>Shorter Edges</value>
+  </data>
+</root>

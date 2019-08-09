@@ -1,0 +1,393 @@
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{D46AF1EA-4B13-4FF6-A484-06C9B9C64DE2}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Demo.yFiles.GraphEditor</RootNamespace>
+    <AssemblyName>yEd WPF</AssemblyName>
+    <ApplicationIcon>yFiles.ico</ApplicationIcon>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <ProductName>Demo.yFiles.GraphEditor</ProductName>
+    <PublisherName>yWorks GmbH</PublisherName>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\x86\Release</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\x86\Debug</OutputPath>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="PresentationCore"></Reference>
+    <Reference Include="PresentationFramework"></Reference>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="UIAutomationProvider"></Reference>
+    <Reference Include="WindowsBase"></Reference>
+    <Reference Include="yWorks.yFilesWPF.Viewer">
+      <HintPath>..\..\..\..\lib\net40\\yWorks.yFilesWPF.Viewer.dll</HintPath>
+    </Reference>
+    <Reference Include="yWorks.yFilesWPF.Adapter">
+      <HintPath>..\..\..\..\lib\net40\\yWorks.yFilesWPF.Adapter.dll</HintPath>
+    </Reference>
+    <Reference Include="yWorks.yFilesWPF.Algorithms">
+      <HintPath>..\..\..\..\lib\net40\\yWorks.yFilesWPF.Algorithms.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Core" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Modules\AbortDialog.xaml.cs">
+      <DependentUpon>AbortDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\BalloonLayoutModule.cs" />
+    <Compile Include="Modules\BusRouterModule.cs" />
+    <Compile Include="Modules\ChannelEdgeRouterModule.cs" />
+    <Compile Include="Modules\CircularLayoutModule.cs" />
+    <Compile Include="Modules\CompactOrthogonalLayoutModule.cs" />
+    <Compile Include="Modules\ComponentLayoutModule.cs" />
+    <Compile Include="Modules\GraphTransformerModule.cs" />
+    <Compile Include="Modules\HierarchicLayoutModule.cs" />
+    <Compile Include="Modules\LabelingModule.cs" />
+    <Compile Include="Modules\LayoutModule.cs" />
+    <Compile Include="Modules\ModuleForm.cs">
+      <DependentUpon>ModuleForm.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\OrganicEdgeRouterModule.cs" />
+    <Compile Include="Modules\OrganicLayoutModule.cs" />
+    <Compile Include="Modules\OrthogonalLayoutModule.cs" />
+    <Compile Include="Modules\ParallelEdgeRouterModule.cs" />
+    <Compile Include="Modules\PartialLayoutModule.cs" />
+    <Compile Include="Modules\PolylineEdgeRouterModule.cs" />
+    <Compile Include="Modules\RadialLayoutModule.cs" />
+    <Compile Include="Modules\SeriesParallelLayoutModule.cs" />
+    <Compile Include="Modules\SmartOrganicLayoutModule.cs" />
+    <Compile Include="Modules\TreeLayoutModule.cs" />
+    <Compile Include="Modules\YModule.cs" />
+    <Compile Include="Styles\CirclePortStyle.cs" />
+    <Compile Include="Styles\ArcEdgeStyle.cs" />
+    <Compile Include="Styles\DynamicArrowEdgeStyleBase.cs" />
+    <Compile Include="Styles\GroupNodeStyle.cs" />
+    <Compile Include="Styles\LabelStyle.cs" />
+    <Compile Include="Support\FontFamilyDomain.cs" />
+    <Compile Include="Generators\RandomGraphGenerator.cs" />
+    <Compile Include="Generators\RandomSupport.cs" />
+    <Compile Include="Generators\TreeGenerator.cs" />
+    <Compile Include="Support\ModuleNameConverter.cs" />
+    <Compile Include="Support\FileNameConverter.cs" />
+    <Compile Include="GraphEditorWindow.xaml.cs">
+      <DependentUpon>GraphEditorWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Input\ConstrainedEdgeEndHandleProvider.cs" />
+    <Compile Include="Input\CustomOrthogonalEdgeHelper.cs" />
+    <Compile Include="Input\CustomPortCandidateProvider.cs" />
+    <Compile Include="Input\LabelInsetsProvider.cs" />
+    <Compile Include="Input\LabelSizeConstraintProvider.cs" />
+    <Compile Include="Support\ItemCollectionExtensions.cs" />
+    <Compile Include="Styles\PolylineEdgeStyle.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UI\DefaultPortOptionBuilder.cs" />
+    <Compile Include="UI\PortConstraintsConfigurator.cs" />
+    <Compile Include="UI\RandomGraphGeneratorModule.cs" />
+    <Compile Include="UI\StyleChooser.xaml.cs">
+      <DependentUpon>StyleChooser.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\StylePalette.xaml.cs">
+      <DependentUpon>StylePalette.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\StylePanel.cs" />
+    <Compile Include="UI\TreeGeneratorModule.cs" />
+    <Compile Include="Styles\VectorNodeStyle.cs" />
+    <EmbeddedResource Include="Modules\BalloonLayoutModule.resx">
+      <DependentUpon>BalloonLayoutModule.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\BusRouterModule.resx">
+      <DependentUpon>BusRouterModule.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\ChannelEdgeRouterModule.resX">
+      <DependentUpon>ChannelEdgeRouterModule.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\CircularLayoutModule.resx">
+      <DependentUpon>CircularLayoutModule.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\CompactOrthogonalLayoutModule.resX">
+      <DependentUpon>CompactOrthogonalLayoutModule.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\ComponentLayoutModule.resx">
+      <DependentUpon>ComponentLayoutModule.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\GraphTransformerModule.resx">
+      <DependentUpon>GraphTransformerModule.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\HierarchicLayoutModule.resx">
+      <DependentUpon>HierarchicLayoutModule.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\LabelingModule.resx">
+      <DependentUpon>LabelingModule.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\OrganicEdgeRouterModule.resx">
+      <DependentUpon>OrganicEdgeRouterModule.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\OrganicLayoutModule.resx">
+      <DependentUpon>OrganicLayoutModule.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\OrthogonalLayoutModule.resx">
+      <DependentUpon>OrthogonalLayoutModule.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\ParallelEdgeRouterModule.resx">
+      <DependentUpon>ParallelEdgeRouterModule.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\PartialLayoutModule.resx">
+      <DependentUpon>PartialLayoutModule.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\PolylineEdgeRouterModule.resx">
+      <DependentUpon>PolylineEdgeRouterModule.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\RadialLayoutModule.resx">
+      <DependentUpon>RadialLayoutModule.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\SeriesParallelLayoutModule.resx">
+      <DependentUpon>SeriesParallelLayoutModule.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\SmartOrganicLayoutModule.resx">
+      <DependentUpon>SmartOrganicLayoutModule.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\TreeLayoutModule.resx">
+      <DependentUpon>TreeLayoutModule.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\RandomGraphGeneratorModule.resx">
+      <DependentUpon>RandomGraphGeneratorModule.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\TreeGeneratorModule.resx">
+      <DependentUpon>TreeGeneratorModule.cs</DependentUpon>
+    </EmbeddedResource>
+    <None Include="Resources\Samples\computer-network.graphml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\Samples\family-tree.graphml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\Samples\hierarchy.graphml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\Samples\large-tree.graphml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\Samples\movies.graphml">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\Samples\nesting.graphml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\Samples\social-network.graphml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\Samples\uml-diagram.graphml">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <EmbeddedResource Include="I18N\DefaultOptionI18N.resX">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="I18N\DefaultsEditorI18N.resX">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="I18N\EdgePropertiesI18N.resX">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="I18N\ImageExportFormI18N.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="I18N\LabelPropertiesI18N.resX">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="I18N\NodePropertiesI18N.resX">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="I18N\DefaultStringResources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>DefaultStringResources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="I18N\DefaultStringResources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>DefaultStringResources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <Compile Include="Properties\Settings.cs" />
+    <Compile Include="Support\FilteredMapper.cs" />
+    <Compile Include="UI\AboutBox.xaml.cs">
+      <DependentUpon>AboutBox.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\DefaultEdgeOptionBuilder.cs" />
+    <Compile Include="UI\DefaultLabelOptionBuilder.cs" />
+    <Compile Include="UI\DefaultNodeOptionBuilder.cs" />
+    <Compile Include="UI\DefaultsEditor.cs" />
+    <Compile Include="UI\EdgeGroupConfigurator.cs" />
+    <Compile Include="UI\IGraphModule.cs" />
+    <Compile Include="UI\PenItemEditor.xaml.cs">
+      <DependentUpon>PenItemEditor.xaml</DependentUpon>
+    </Compile>
+    <None Include="Resources\defaults.graphml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
+    </None>
+    <EmbeddedResource Include="Properties\licenses.licx" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\View\ImageExport\ImageExport.csproj">
+      <Project>{5965F57D-A8A3-498B-BA90-E0CF31C92373}</Project>
+      <Name>Demo.yFiles.ImageExport</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Utils\Option\Option.csproj">
+      <Project>{5AD8C0FF-B1B6-4528-A777-BD9507E3A829}</Project>
+      <Name>Demo.yFiles.Option</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\View\Printing\Printing.csproj">
+      <Project>{D552E90B-F012-438E-9953-A96A6BD61CED}</Project>
+      <Name>Demo.yFiles.Printing</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Utils\DemoToolkit\DemoToolkit.csproj">
+      <Project>{AAA67DCC-AA93-4EB4-8B93-F09D77292C09}</Project>
+      <Name>Demo.yFiles.Toolkit</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\yWorks.gif" />
+    <Resource Include="yFiles.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ApplicationDefinition Include="App.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </ApplicationDefinition>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="GraphEditorWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Modules\AbortDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Modules\ModuleForm.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Resources\Icons_Computer.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Resources\Icons_Movies.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Resources\Icons_People.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UI\AboutBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UI\PenItemEditor.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UI\StyleChooser.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UI\StylePalette.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Actions\" />
+    <Folder Include="IO\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <!--The following target ensures that the project will build even when the ZIP file has been-->
+  <!--extracted with Explorer or another tool that retains the origin zone marker for the files.-->
+  <!--If that does not work, an error message will be shown in Visual Studio's Error List.-->
+  <!--See http://kb.yworks.com/article/736 for details.-->
+  <Target Name="BeforeBuild">
+    <Exec Command="if exist &quot;%(Reference.HintPath)&quot; (&gt;nul 2&gt;nul (&gt;nul 2&gt;nul findstr ZoneId&lt;&quot;%(Reference.HintPath):Zone.Identifier&quot;) &amp;&amp; ((&gt;nul 2&gt;nul powershell -noprofile -nologo -command &quot;Unblock-File '%(Reference.HintPath)'&quot;) || (2&gt;nul type nul &gt;&quot;%(Reference.HintPath):Zone.Identifier&quot;) || (&lt;nul &gt;&amp;2 set /p _=Err&amp;&gt;&amp;2 echo or: The file @(Reference) originates from the Internet Zone and prevents compilation. Please unblock it manually in its properties. See the Knowledge Base at http://kb.yworks.com/article/736.)))" IgnoreExitCode="True" />
+  </Target>
+</Project>

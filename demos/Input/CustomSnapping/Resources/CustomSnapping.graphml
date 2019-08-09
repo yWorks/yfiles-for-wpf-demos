@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--Created by yFiles WPF 2.2-->
+<graphml xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/3.0" xmlns:y="http://www.yworks.com/xml/yfiles-common/3.0" xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/3.0/xaml" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml.wpf/2.0/ygraphml.xsd " xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://graphml.graphdrawing.org/xmlns">
+  <key id="d0" for="all" attr.name="UserTags" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/UserTags" />
+  <key id="d1" for="node" attr.name="NodeLabels" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeLabels" />
+  <key id="d2" for="node" attr.name="NodeGeometry" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeGeometry" />
+  <key id="d3" for="node" attr.name="NodeStyle" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeStyle" />
+  <key id="d4" for="edge" attr.name="EdgeLabels" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/EdgeLabels" />
+  <key id="d5" for="edge" attr.name="EdgeGeometry" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/EdgeGeometry" />
+  <key id="d6" for="edge" attr.name="EdgeStyle" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/EdgeStyle" />
+  <key id="d7" for="port" attr.name="PortLocationParameter" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/PortLocationParameter">
+    <default>
+      <x:Static Member="y:FreeNodePortLocationModel.NodeCenterAnchored" />
+    </default>
+  </key>
+  <key id="d8" for="port" attr.name="PortStyle" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/PortStyle">
+    <default>
+      <x:Static Member="y:VoidPortStyle.Instance" />
+    </default>
+  </key>
+  <key id="d9" attr.name="SharedData" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/SharedData" />
+  <data key="d9">
+    <y:SharedData>
+      <ywpf:Typeface x:Key="1" />
+    </y:SharedData>
+  </data>
+  <graph id="G" edgedefault="directed">
+    <node id="n0">
+      <data key="d2">
+        <y:RectD X="-92.25" Y="266.5" Width="75" Height="75" />
+      </data>
+      <data key="d3">
+        <ywpf:ShapeNodeStyle Brush="Green" Shape="Star5" />
+      </data>
+    </node>
+    <node id="n1">
+      <data key="d2">
+        <y:RectD X="34.75" Y="266.5" Width="75" Height="75" />
+      </data>
+      <data key="d3">
+        <ywpf:ShapeNodeStyle Brush="Green" Shape="Star5" />
+      </data>
+    </node>
+    <node id="n2">
+      <data key="d2">
+        <y:RectD X="-79.75" Y="57" Width="50" Height="50" />
+      </data>
+      <data key="d3">
+        <ywpf:BevelNodeStyle Inset="3" Radius="10" />
+      </data>
+      <data key="d1">
+        <x:List>
+          <y:Label PreferredSize="286,28">
+            <y:Label.Text><![CDATA[This node label has an extra extended super long text
+so you can see how nodes snap all along its border.]]></y:Label.Text>
+            <y:Label.LayoutParameter>
+              <y:RatioAnchoredLabelModelParameter LayoutRatio="0.5,0" LayoutOffset="0,-25" LabelRatio="0.5,0.5" />
+            </y:Label.LayoutParameter>
+            <y:Label.Style>
+              <ywpf:DefaultLabelStyle Typeface="{y:GraphMLReference 1}" />
+            </y:Label.Style>
+          </y:Label>
+        </x:List>
+      </data>
+      <port name="p0" />
+    </node>
+    <node id="n3">
+      <data key="d2">
+        <y:RectD X="357.75" Y="279" Width="50" Height="50" />
+      </data>
+      <data key="d3">
+        <ywpf:BevelNodeStyle Inset="3" Radius="10" Color="#FF000000" />
+      </data>
+      <port name="p0" />
+    </node>
+    <node id="n4">
+      <data key="d2">
+        <y:RectD X="47.25" Y="-86" Width="50" Height="50" />
+      </data>
+      <data key="d3">
+        <ywpf:BevelNodeStyle Inset="3" Radius="10" Color="#FF000000" />
+      </data>
+    </node>
+    <edge id="e0" source="n2" target="n3" sourceport="p0" targetport="p0">
+      <data key="d5">
+        <x:List>
+          <y:Bend Location="128.25,82" />
+          <y:Bend Location="128.25,213" />
+          <y:Bend Location="282.189691817216,213" />
+          <y:Bend Location="322.189691817216,304" />
+        </x:List>
+      </data>
+      <data key="d6">
+        <ywpf:PolylineEdgeStyle TargetArrow="Default" SourceArrow="None" />
+      </data>
+      <data key="d4">
+        <x:List>
+          <y:Label PreferredSize="149,42">
+            <y:Label.Text><![CDATA[Other graph items can snap
+to this edge label as long as
+it is orthogonal.]]></y:Label.Text>
+            <y:Label.LayoutParameter>
+              <y:SmartEdgeLabelModelParameter SegmentIndex="2" Distance="9">
+                <y:SmartEdgeLabelModelParameter.Model>
+                  <y:SmartEdgeLabelModel />
+                </y:SmartEdgeLabelModelParameter.Model>
+              </y:SmartEdgeLabelModelParameter>
+            </y:Label.LayoutParameter>
+            <y:Label.Style>
+              <ywpf:DefaultLabelStyle Typeface="{y:GraphMLReference 1}" />
+            </y:Label.Style>
+          </y:Label>
+        </x:List>
+      </data>
+    </edge>
+  </graph>
+</graphml>

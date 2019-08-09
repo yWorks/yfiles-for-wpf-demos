@@ -1,0 +1,144 @@
+<!-- ************************************************************************ -->
+<!-- This demo file is part of yFiles WPF 3.2.                           -->
+<!-- Copyright (c) 2000-2019 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
+<!-- 72070 Tuebingen, Germany. All rights reserved.                           -->
+<!--                                                                          -->
+<!-- yFiles demo files exhibit yFiles WPF functionalities. Any redistribution  -->
+<!-- of demo resource files, with or without modification, is not permitted.  -->
+<!--                                                                          -->
+<!-- Owners of a valid software license for a yFiles WPF version that this     -->
+<!-- demo is shipped with are allowed to use the resource file as basis for   -->
+<!-- their own yFiles WPF powered applications. Use of such programs is        -->
+<!-- governed by the rights and conditions as set out in the yFiles WPF        -->
+<!-- license agreement.                                                       -->
+<!--                                                                          -->
+<!-- THIS SOFTWARE IS PROVIDED ''AS IS'' AND ANY EXPRESS OR IMPLIED           -->
+<!-- WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF     -->
+<!-- MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN  -->
+<!-- NO EVENT SHALL yWorks BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,    -->
+<!-- SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED -->
+<!-- TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR   -->
+<!-- PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF   -->
+<!-- LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING     -->
+<!-- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS       -->
+<!-- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.             -->
+<!--                                                                          -->
+<!-- ************************************************************************ -->
+<Window x:Class="Demo.yFiles.Graph.Input.MoveUnselectedNodes.MoveUnselectedNodesWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/3.0/xaml"
+    Title="Demo.yFiles.Graph.Input.MoveUnselectedNodes" Height="473" Width="800" 
+        Loaded="OnLoaded" Style="{StaticResource DemoWindow}" 
+    >
+    <HeaderedContentControl Style="{StaticResource DemoStyle}">
+        <HeaderedContentControl.Header>
+            <RichTextBox IsReadOnly="True" BorderThickness="0">
+                <FlowDocument>
+                    <Paragraph>
+                        This demo shows a special input mode that allows you to move nodes without selecting
+                                    them first.
+                    </Paragraph>
+                    <Paragraph>
+                        This is done with the
+                        <Run Style="{StaticResource HtmlCode}">MoveUnselectedInputMode</Run> of
+                        <Run Style="{StaticResource HtmlCode}">GraphEditorInputMode</Run> .
+                    </Paragraph>
+                    <Paragraph Style="{StaticResource HtmlH2}">
+                        Things to Try
+                    </Paragraph>
+                    <List>
+                        <ListItem>
+                            <Paragraph>
+                                Move a node around by dragging it without selecting it first.
+                                            Note that the cursor indicates that the node can be moved.
+                            </Paragraph>
+                        </ListItem>
+                        <ListItem>
+                            <Paragraph>
+                                Try the different modes provided by the
+                                <Run Style="{StaticResource HtmlEm}">Move Unselected Nodes</Run> combo box.
+                            </Paragraph>
+                        </ListItem>
+                        <ListItem>
+                            <Paragraph>
+                                Enable the
+                                <Run Style="{StaticResource HtmlEm}">Classic Mode</Run> ,
+                                            that is the standard move input mode.
+                                            Now selected nodes are movable, regardless of the
+                                <Run Style="{StaticResource HtmlEm}">Move Unselected Nodes</Run> setting.
+                                            Note that both the standard and the special move input mode can be enabled at the same time.
+                            </Paragraph>
+                        </ListItem>
+                    </List>
+
+                    <Paragraph Style="{StaticResource HtmlH2}">
+                        Input Mode Properties
+                    </Paragraph>
+                    <Paragraph>
+                        The
+                        <Run Style="{StaticResource HtmlEm}">Move Unselected Nodes</Run> combo box provides 
+                                    different modes which determine whether a node can be moved.
+                    </Paragraph>
+                    <Paragraph Style="{StaticResource HtmlDt}">Always</Paragraph>
+                    <Paragraph Style="{StaticResource HtmlDi}">
+                        Nodes can always be moved by dragging them without selecting them first.
+                                    This is the standard behavior of the special move input mode.
+                    </Paragraph>
+                    <Paragraph Style="{StaticResource HtmlDt}">Shift Not Pressed</Paragraph>
+                    <Paragraph Style="{StaticResource HtmlDi}">
+                        Nodes cannot be moved if the Shift key is held down while dragging. Instead, this 
+                                    gesture starts edge creation.
+                    </Paragraph>
+                    <Paragraph Style="{StaticResource HtmlDt}">Top of Node</Paragraph>
+                    <Paragraph Style="{StaticResource HtmlDi}">
+                        Nodes can only be moved when dragged at their top. Note how the cursor changes 
+                                    when you hover over different areas of the node.
+                    </Paragraph>
+                    <Paragraph Style="{StaticResource HtmlDt}">If Move Enabled</Paragraph>
+                    <Paragraph Style="{StaticResource HtmlDi}">
+                        Nodes can only be moved if the
+                        <Run Style="{StaticResource HtmlEm}">Move Enabled</Run> button is activated.
+                    </Paragraph>
+                    <Paragraph Style="{StaticResource HtmlDt}">Never</Paragraph>
+                    <Paragraph Style="{StaticResource HtmlDi}">
+                        Unselected nodes cannot be moved.
+                    </Paragraph>
+                </FlowDocument>
+            </RichTextBox>
+        </HeaderedContentControl.Header>
+        <DockPanel>
+            <ToolBarTray Height="Auto" Name="toolBarTray" Width="Auto" DockPanel.Dock="Top">
+                <ToolBar Width="{Binding ActualWidth, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ToolBarTray}}}" Height="Auto" Name="toolBar">
+                    <Button Command="IncreaseZoom" CommandTarget="{Binding ElementName=graphControl}"/>
+                    <Button Command="DecreaseZoom" CommandTarget="{Binding ElementName=graphControl}"/>
+                    <Button Command="{x:Static ywpf:GraphControl.FitGraphBoundsCommand}" CommandTarget="{Binding ElementName=graphControl}"/>
+                    <Separator />
+                    <Label>Move Unselected Nodes:</Label>
+                    <ComboBox Name="cmbMode" SelectedIndex="0" Width="200" SelectionChanged="OnMoveModeChanged">
+                        <ComboBoxItem>Always</ComboBoxItem>
+                        <ComboBoxItem>Shift Not Pressed</ComboBoxItem>
+                        <ComboBoxItem>Drag at Top</ComboBoxItem>
+                        <ComboBoxItem>If Move Enabled</ComboBoxItem>
+                        <ComboBoxItem>Never</ComboBoxItem>
+                    </ComboBox>
+                    <ToggleButton Name="btnEnable" Margin="3,0,0,0">Move Enabled
+                        <ToggleButton.Style>
+                            <Style TargetType="{x:Type ToggleButton}">
+                                <Setter Property="IsEnabled" Value="False"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding SelectedIndex, ElementName=cmbMode}" Value="3">
+                                        <Setter Property="IsEnabled" Value="True"></Setter>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ToggleButton.Style>
+                    </ToggleButton>
+                    <Separator />
+                    <ToggleButton Name="btnClassic" Click="OnClassicClicked">Classic Mode</ToggleButton>
+                </ToolBar>
+            </ToolBarTray>
+            <ywpf:GraphControl Width="Auto" x:Name="graphControl" FileOperationsEnabled="True"/>
+        </DockPanel>
+    </HeaderedContentControl>
+</Window>

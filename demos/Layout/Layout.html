@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>yFiles WPF Layout Demos</title>
+  <link rel="stylesheet" type="text/css" href="../../../doc/documentation-style.css"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+</head>
+
+<body>
+<header>
+  <div class="logo"></div>
+  <div class="title">
+    <a href="../../../README.html">yFiles WPF</a>
+    <span class="angle-right"></span>
+    Layout Demos
+  </div>
+</header>
+<div class="content">
+
+    <h1>
+        Layout Demos</h1>
+    <p>
+        
+      These source code samples demonstrate the basic usage of the yFiles WPF layout algorithms
+      to assign coordinates to your graph elements. For more complex examples, please see the samples in
+      <a href="../CompleteDemos/CompleteDemos.html">yFiles WPF Complete demos</a>.
+    </p>
+    <p>
+        You will find the following programming samples in this package:
+    </p>
+    <table>
+        <tr>
+            <th>
+                Name
+            </th>
+            <th>
+                Description
+            </th>
+        </tr>
+        
+       <tr valign="top">
+         <td><b>AbortHandler<b></td>
+         <td>
+      Shows how to abort running layout algorithms.
+    </td>
+       </tr>
+       <tr valign="top">
+         <td><b>BusRouter<b></td>
+         <td>
+      This Demo shows how to use a BusRouter as layout.
+    </td>
+       </tr>
+       <tr valign="top">
+         <td><b>EdgeLabeling<b></td>
+         <td>
+      Shows how to use a labeling algorithm to place edge labels with different label models. Also demonstrates how to wrap multiple existing label models using CompositeLabelModel.
+    </td>
+       </tr>
+       <tr valign="top">
+         <td><b>IncrementalHierarchicLayout<b></td>
+         <td>
+      Demonstrates the use of the incremental layout facility provided by class HierarchicLayout.
+    </td>
+       </tr>
+       <tr valign="top">
+         <td><b>InteractiveOrganic<b></td>
+         <td>
+      Sample Form that demonstrates the usage of InteractiveOrganicLayout.
+    </td>
+       </tr>
+       <tr valign="top">
+         <td><b>LayerConstraints<b></td>
+         <td>
+      Demonstrates how to use layer constraints with the HierarchicLayout to
+      restrict the node layering.
+    </td>
+       </tr>
+       <tr valign="top">
+         <td><b>LayoutConfigurations<b></td>
+         <td>
+      A demo library which provides several configurations for layout algorithms to be used with the
+      option handler as shown in the LayoutStyles demo.
+    </td>
+       </tr>
+       <tr valign="top">
+         <td><b>LayoutStyles<b></td>
+         <td>
+      This demo demonstrates the automatic layout algorithms shipped with yFiles
+      and how the different settings affect the generated layout.
+      <br /><b>Note: </b>This demo depends on the layout configurations from the <code>Demo.yFiles.Layout.Configurations</code>
+      programming sample and on the option editor from the sample <code>Demo.yFiles.Toolkit.OptionHandler</code>.
+    </td>
+       </tr>
+       <tr valign="top">
+         <td><b>MazeRouting<b></td>
+         <td>
+      This demo shows how the automatic edge routing finds routes through a maze.
+    </td>
+       </tr>
+       <tr valign="top">
+         <td><b>MixedLayout<b></td>
+         <td>
+      This demo shows how to use the recursive group layout to apply different layouts to the contents of group nodes.
+    </td>
+       </tr>
+       <tr valign="top">
+         <td><b>MultiPage<b></td>
+         <td>
+      Shows how to use the multipage layout.
+    </td>
+       </tr>
+       <tr valign="top">
+         <td><b>NodeLabeling<b></td>
+         <td>
+      Shows how to use a node labeling algorithm with different label models.
+    </td>
+       </tr>
+       <tr valign="top">
+         <td><b>PartialLayout<b></td>
+         <td>
+     This demo shows how to apply <code>PartialLayout</code> to orthogonal, organic, hierarchic or
+     circular layouts and the effect of some of its configuration settings.
+    </td>
+       </tr>
+       <tr valign="top">
+         <td><b>PortCandidate<b></td>
+         <td>
+      This demo shows how to use PortCandidateSets in conjunction with HierarchicLayout.
+    </td>
+       </tr>
+       <tr valign="top">
+         <td><b>PreferredLabelPlacement<b></td>
+         <td>
+      Shows how the PreferredPlacementDescriptor for edge labels affects the label placement of layout algorithms.
+    </td>
+       </tr>
+       <tr valign="top">
+         <td><b>SequenceConstraints<b></td>
+         <td>
+      Demonstrates how to use sequence constraints with the HierarchicLayout to
+      restrict the node sequencing.
+    </td>
+       </tr>
+       <tr valign="top">
+         <td><b>TreeLayout<b></td>
+         <td>
+     This demo demonstrates the different <code>INodePlacer</code> implementations for the
+     <code>TreeLayout</code> algorithm.
+    </td>
+       </tr>
+    </table>
+    <h2>
+        Running the Demos</h2>
+    <h3>
+        With Visual Studio</h3>
+    <ul>
+        <li>
+            To load all samples into Visual Studio you can simply open the solution file yFiles Demos.sln.
+        </li>
+        <li>
+            To load a single sample into Visual Studio you can open the project file (.csproj)
+            in the sample's directory.
+        </li>
+    </ul>
+
+</div>
+<footer>
+  <div class="footer-block">
+    <h4>Contents</h4>
+    <a href="./README.html">Welcome Page</a><br>
+    <a href="doc/api/index.html">API Documentation</a><br>
+    <a href="doc/api/index.html#/dguide/getting_started">Getting Started</a><br>
+    <a href="doc/readme/legal/SOFTWARE_LICENSE_AGREEMENT.html">License Agreement</a><br>
+    <a href="doc/readme/support.html">Help and Support</a>
+  </div>
+  <div class="footer-block">
+    <h4>Contact</h4>
+    yWorks GmbH<br>
+    Vor dem Kreuzberg 28<br>
+    72070 T&uuml;bingen<br>
+    Germany<br>
+    Phone: <a href="tel:+497071979050">+49 7071 979050</a><br>
+    Email: <a href="https://www.yworks.com/contact">contact(at)yworks.com</a><br>
+  </div>
+  <div class="footer-block">
+    <h4>Follow Us</h4>
+    <div class="social">
+      <a href="@PRODUCT_URL@" target="_blank" class="web">
+        Homepage
+      </a>
+      <a href="https://www.yworks.com/newsfeed" target="_blank" class="rss">
+        RSS-Feed
+      </a>
+      <a href="https://twitter.com/yworks" target="_blank" class="tw">
+        Twitter
+      </a>
+      <a href="http://www.youtube.com/user/yWorksTube" target="_blank" class="yt">
+        YouTube
+      </a>
+    </div>
+    <span class="copyright">COPYRIGHT &#x00A9; 2019 yWorks</span><br>
+    <a href="https://www.yworks.com/company/legal/imprint">Imprint</a>
+    | <a href="https://www.yworks.com/company/legal/terms-of-use">Terms of Use</a>
+    | <a href="https://www.yworks.com/company/legal/privacy">Privacy Policy</a>
+  </div>
+  <div class="footer-block logo">
+  </div>
+</footer>
+</body>
+</html>

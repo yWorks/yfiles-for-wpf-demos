@@ -1,0 +1,465 @@
+<!-- ************************************************************************ -->
+<!-- This demo file is part of yFiles WPF 3.2.                           -->
+<!-- Copyright (c) 2000-2019 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
+<!-- 72070 Tuebingen, Germany. All rights reserved.                           -->
+<!--                                                                          -->
+<!-- yFiles demo files exhibit yFiles WPF functionalities. Any redistribution  -->
+<!-- of demo resource files, with or without modification, is not permitted.  -->
+<!--                                                                          -->
+<!-- Owners of a valid software license for a yFiles WPF version that this     -->
+<!-- demo is shipped with are allowed to use the resource file as basis for   -->
+<!-- their own yFiles WPF powered applications. Use of such programs is        -->
+<!-- governed by the rights and conditions as set out in the yFiles WPF        -->
+<!-- license agreement.                                                       -->
+<!--                                                                          -->
+<!-- THIS SOFTWARE IS PROVIDED ''AS IS'' AND ANY EXPRESS OR IMPLIED           -->
+<!-- WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF     -->
+<!-- MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN  -->
+<!-- NO EVENT SHALL yWorks BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,    -->
+<!-- SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED -->
+<!-- TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR   -->
+<!-- PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF   -->
+<!-- LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING     -->
+<!-- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS       -->
+<!-- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.             -->
+<!--                                                                          -->
+<!-- ************************************************************************ -->
+<Window x:Class="Demo.yFiles.GraphEditor.GraphEditorWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/3.0/xaml"
+        xmlns:local="clr-namespace:Demo.yFiles.GraphEditor"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
+        xmlns:Editor="clr-namespace:Demo.yFiles.Graph.Editor" 
+        xmlns:UI="clr-namespace:Demo.yFiles.GraphEditor.UI" xmlns:Layout="clr-namespace:Demo.yFiles.GraphEditor.Modules.Layout"
+        xmlns:option="http://www.yworks.com/yfilesWPF/3.0/demos/optionhandler"
+        Title="yEd WPF" Height="600" Width="800" Loaded="OnLoaded" ResizeMode="CanResizeWithGrip"
+    Closing="OnWindowClosing" Style="{StaticResource ResourceKey={x:Type Window}}">
+    <Window.Resources>
+        <local:FileNameConverter x:Key="FileNameConverter"/>
+        <ywpf:GraphEditorInputMode x:Key="EditMode"/>
+        <local:ModuleNameConverter x:Key="ModuleNameConverter" />
+        <local:FontFamilyDomain x:Key="FontFamilyDomain"/>
+    </Window.Resources>
+    <Window.CommandBindings>
+        <CommandBinding Command="Properties" Executed="OnPropertiesExecuted" CanExecute="OnCanExecutePropertiesCommand"/>
+        <CommandBinding Command="Open" Executed="OnOpenExecuted"/>
+        <CommandBinding Command="New" Executed="OnNewExecuted"/>
+        <CommandBinding Command="Save" Executed="OnSaveExecuted"/> 
+        <CommandBinding Command="SaveAs" Executed="OnSaveAsExecuted"/>
+        <CommandBinding Command="Help" Executed="OnHelpExecuted"/>
+        <CommandBinding Command="Print" Executed="OnPrintPreviewExecuted"/>
+        <CommandBinding Command="PrintPreview" Executed="OnPrintPreviewExecuted"/>
+        <CommandBinding Command="{x:Static local:GraphEditorWindow.OriginalViewCommand}" Executed="OnOriginalViewExecuted"/>
+        <CommandBinding Command="{x:Static local:GraphEditorWindow.ApplyStyleCommand}" Executed="OnApplyStyleExecuted" CanExecute="OnCanApplyStyleExecuted"/>
+        <CommandBinding Command="{x:Static local:GraphEditorWindow.SetStyleDefaultCommand}" Executed="OnSetStyleDefaultExecuted"/>
+        <CommandBinding Command="{x:Static local:GraphEditorWindow.PreferencesCommand}" Executed="OnPreferencesExecuted"/>
+        <CommandBinding Command="{x:Static local:GraphEditorWindow.ResetSettingsCommand}" Executed="OnResetSettingsExecuted"/>
+        <CommandBinding Command="{x:Static local:GraphEditorWindow.ExportCommand}" Executed="OnExportExecuted"/>
+        <CommandBinding Command="{x:Static local:GraphEditorWindow.ExitCommand}" Executed="OnExitExecuted"/>
+        <CommandBinding Command="{x:Static local:GraphEditorWindow.RunModuleCommand}" Executed="OnRunModuleExecuted" CanExecute="OnCanRunModuleExecuted"/>
+        <CommandBinding Command="Close" Executed="OnExitExecuted"/>
+        <CommandBinding Command="{x:Static local:GraphEditorWindow.AboutCommand}" Executed="OnAboutExecuted"/>
+        <CommandBinding Command="{x:Static local:GraphEditorWindow.ToggleGridCommand}" Executed="OnToggleGridExecuted"/>
+        <CommandBinding Command="{x:Static local:GraphEditorWindow.ToggleSnapLinesCommand}" Executed="OnToggleSnapLinesExecuted"/>
+        <CommandBinding Command="{x:Static local:GraphEditorWindow.ToggleOrthogonalEdgesCommand}" Executed="OnToggleOrthogonalEdgesExecuted"/>
+        <CommandBinding Command="{x:Static local:GraphEditorWindow.ToggleSelectionModeCommand}" Executed="OnToggleSelectionModeExecuted"/>
+        <CommandBinding Command="{x:Static local:GraphEditorWindow.SampleFilesCommand}" Executed="OnSampleFilesExecuted"/>
+    </Window.CommandBindings>
+    <DockPanel>
+        <Menu x:Name="menu" DockPanel.Dock="Top">
+            <MenuItem Header="File">
+                <MenuItem Command="New" CommandTarget="{Binding ElementName=graphControl}"/>
+                <MenuItem Command="Open" CommandTarget="{Binding ElementName=graphControl}"/>
+                <MenuItem Header="Recent Documents" MenuItem.Click="RecentDocumentMenuClick" ItemsSource="{DynamicResource RecentDocuments}" >
+                    <MenuItem.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Converter={StaticResource FileNameConverter}}" ToolTip="{Binding}"/>
+                        </DataTemplate>
+                    </MenuItem.ItemTemplate>
+                </MenuItem>
+                <MenuItem Command="Save" CommandTarget="{Binding ElementName=graphControl}"/>
+                <MenuItem Command="SaveAs" CommandTarget="{Binding ElementName=graphControl}"/>
+                <MenuItem Command="{x:Static local:GraphEditorWindow.ExportCommand}"/>
+                <Separator/>
+                <MenuItem Command="PrintPreview" CommandTarget="{Binding ElementName=graphControl}"/>
+                <Separator/>
+                <MenuItem Command="{x:Static local:GraphEditorWindow.PreferencesCommand}"/>
+                <MenuItem Command="{x:Static local:GraphEditorWindow.ResetSettingsCommand}"/>
+                <MenuItem Command="{x:Static local:GraphEditorWindow.ExitCommand}"/>
+            </MenuItem>
+            <MenuItem x:Name="editMenu" Header="Edit">
+                <MenuItem Command="Undo" CommandTarget="{Binding ElementName=graphControl}"/>
+                <MenuItem Command="Redo" CommandTarget="{Binding ElementName=graphControl}"/>
+                <Separator/>
+                <MenuItem Command="Cut" CommandTarget="{Binding ElementName=graphControl}"/>
+                <MenuItem Command="Copy" CommandTarget="{Binding ElementName=graphControl}"/>
+                <MenuItem Command="Paste" CommandTarget="{Binding ElementName=graphControl}"/>
+                <MenuItem Command="Delete" CommandTarget="{Binding ElementName=graphControl}"/>
+                <Separator/>
+                <MenuItem Command="{x:Static ywpf:GraphCommands.Duplicate}" CommandTarget="{Binding ElementName=graphControl}"/>
+                <MenuItem Command="{x:Static ywpf:GraphCommands.ReverseEdge}" CommandTarget="{Binding ElementName=graphControl}"/>
+                <Separator/>
+                <MenuItem Command="SelectAll" CommandTarget="{Binding ElementName=graphControl}"/>
+                <MenuItem Command="{x:Static ywpf:GraphCommands.DeselectAll}" CommandTarget="{Binding ElementName=graphControl}"/>
+                <Separator/>
+                <MenuItem Command="Properties" CommandTarget="{Binding ElementName=graphControl}"/>
+            </MenuItem>
+            <MenuItem Header="View" x:Name="viewMenu">
+                <MenuItem Header="Show Overview" Click="OnShowOverview"/>
+                <MenuItem Command="IncreaseZoom" CommandTarget="{Binding ElementName=graphControl}"/>
+                <MenuItem Command="DecreaseZoom" CommandTarget="{Binding ElementName=graphControl}"/>
+                <MenuItem Header="Zoom 1:1" Command="Zoom" CommandParameter="1" CommandTarget="{Binding ElementName=graphControl}"/>
+                <MenuItem Command="{x:Static ywpf:GraphControl.FitGraphBoundsCommand}"/>
+                <MenuItem x:Name="ZoomMenu" Header="Zoom" MenuItem.Click="ZoomMenuClicked" ItemsSource="{DynamicResource ZoomLevels}">
+                    <MenuItem.ItemTemplate>
+                        <DataTemplate DataType="{x:Type sys:Int32}">
+                            <TextBlock>
+                            <Span><TextBlock Text="{Binding}"/>%</Span>
+                            </TextBlock>
+                        </DataTemplate>
+                    </MenuItem.ItemTemplate>
+                </MenuItem>
+            </MenuItem>
+                <MenuItem Header="Layout" x:Name="layoutMenu">
+                    <MenuItem Header="Hierarchic" Command="local:GraphEditorWindow.RunModuleCommand">
+                        <MenuItem.CommandParameter>
+                            <Layout:HierarchicLayoutModule/>
+                        </MenuItem.CommandParameter>
+                    </MenuItem>
+                    <MenuItem Header="Organic" Command="local:GraphEditorWindow.RunModuleCommand">
+                        <MenuItem.CommandParameter>
+                            <Layout:SmartOrganicLayoutModule/>
+                        </MenuItem.CommandParameter>
+                    </MenuItem>
+                    <MenuItem Header="Edge Routing">
+                        <MenuItem Header="Polyline Edge Router" Command="local:GraphEditorWindow.RunModuleCommand">
+                            <MenuItem.CommandParameter>
+                                <Layout:PolylineEdgeRouterModule/>
+                            </MenuItem.CommandParameter>
+                        </MenuItem>
+                        <MenuItem Header="Channel Edge Router" Command="local:GraphEditorWindow.RunModuleCommand">
+                            <MenuItem.CommandParameter>
+                                <Layout:ChannelEdgeRouterModule/>
+                            </MenuItem.CommandParameter>
+                        </MenuItem>
+                        <MenuItem Header="Bus Router" Command="local:GraphEditorWindow.RunModuleCommand">
+                            <MenuItem.CommandParameter>
+                                <Layout:BusRouterModule/>
+                            </MenuItem.CommandParameter>
+                        </MenuItem>
+                        <MenuItem Header="Organic Edge Router" Command="local:GraphEditorWindow.RunModuleCommand">
+                            <MenuItem.CommandParameter>
+                                <Layout:OrganicEdgeRouterModule/>
+                            </MenuItem.CommandParameter>
+                        </MenuItem>
+                        <MenuItem Header="Parallel Edge Layout" Command="local:GraphEditorWindow.RunModuleCommand">
+                            <MenuItem.CommandParameter>
+                                <Layout:ParallelEdgeRouterModule/>
+                            </MenuItem.CommandParameter>
+                        </MenuItem>
+                    </MenuItem>
+                    <MenuItem Header="Orthogonal">
+                        <MenuItem Header="Orthogonal" Command="local:GraphEditorWindow.RunModuleCommand">
+                            <MenuItem.CommandParameter>
+                                <Layout:OrthogonalLayoutModule/>
+                            </MenuItem.CommandParameter>
+                        </MenuItem>
+                        <MenuItem Header="Compact" Command="local:GraphEditorWindow.RunModuleCommand">
+                            <MenuItem.CommandParameter>
+                                <Layout:CompactOrthogonalLayoutModule/>
+                            </MenuItem.CommandParameter>
+                        </MenuItem>
+                    </MenuItem>
+                    <MenuItem Header="Circular" Command="local:GraphEditorWindow.RunModuleCommand">
+                        <MenuItem.CommandParameter>
+                            <Layout:CircularLayoutModule/>
+                        </MenuItem.CommandParameter>
+                    </MenuItem>
+                    <MenuItem Header="Tree" Command="local:GraphEditorWindow.RunModuleCommand">
+                        <MenuItem.CommandParameter>
+                            <Layout:TreeLayoutModule/>
+                        </MenuItem.CommandParameter>
+                    </MenuItem>
+                    <MenuItem Header="Balloon" Command="local:GraphEditorWindow.RunModuleCommand">
+                        <MenuItem.CommandParameter>
+                            <Layout:BalloonLayoutModule/>
+                        </MenuItem.CommandParameter>
+                    </MenuItem>
+                    <MenuItem Header="Radial" Command="local:GraphEditorWindow.RunModuleCommand">
+                        <MenuItem.CommandParameter>
+                            <Layout:RadialLayoutModule/>
+                        </MenuItem.CommandParameter>
+                    </MenuItem>
+                    <MenuItem Header="Series-Parallel" Command="local:GraphEditorWindow.RunModuleCommand">
+                        <MenuItem.CommandParameter>
+                            <Layout:SeriesParallelLayoutModule/>
+                        </MenuItem.CommandParameter>
+                    </MenuItem>
+                    <MenuItem Header="Labeling" Command="local:GraphEditorWindow.RunModuleCommand">
+                        <MenuItem.CommandParameter>
+                            <Layout:LabelingModule/>
+                        </MenuItem.CommandParameter>
+                    </MenuItem>
+                    <MenuItem Header="Components" Command="local:GraphEditorWindow.RunModuleCommand">
+                        <MenuItem.CommandParameter>
+                            <Layout:ComponentLayoutModule/>
+                        </MenuItem.CommandParameter>
+                    </MenuItem>
+                    <MenuItem Header="Partial Layout" Command="local:GraphEditorWindow.RunModuleCommand">
+                        <MenuItem.CommandParameter>
+                            <Layout:PartialLayoutModule/>
+                        </MenuItem.CommandParameter>
+                    </MenuItem>
+                    <MenuItem Header="Transform" Command="local:GraphEditorWindow.RunModuleCommand">
+                        <MenuItem.CommandParameter>
+                            <Layout:GraphTransformerModule/>
+                        </MenuItem.CommandParameter>
+                    </MenuItem>
+                </MenuItem>
+                <MenuItem Header="Tools" x:Name="toolsMenu">
+                <MenuItem Header="Generate Graph">
+                    <MenuItem Header="Random..." Command="local:GraphEditorWindow.RunModuleCommand">
+                        <MenuItem.CommandParameter>
+                            <UI:RandomGraphGeneratorModule/>
+                        </MenuItem.CommandParameter>
+                    </MenuItem>
+                    <MenuItem Header="Tree..." Command="local:GraphEditorWindow.RunModuleCommand">
+                        <MenuItem.CommandParameter>
+                            <UI:TreeGeneratorModule/>
+                        </MenuItem.CommandParameter>
+                    </MenuItem>
+                </MenuItem>
+                <MenuItem Header="Configure Ports..." Command="local:GraphEditorWindow.RunModuleCommand">
+                    <MenuItem.CommandParameter>
+                        <UI:PortConstraintsConfigurator/>
+                    </MenuItem.CommandParameter>
+                </MenuItem>
+                <MenuItem Header="Configure Edge Groups..." Command="local:GraphEditorWindow.RunModuleCommand">
+                    <MenuItem.CommandParameter>
+                        <UI:EdgeGroupConfigurator/>
+                     </MenuItem.CommandParameter>
+                  </MenuItem>
+            </MenuItem>
+
+            <MenuItem x:Name="hierarchyMenu" Header="Grouping">
+                <MenuItem Command="{x:Static ywpf:GraphCommands.GroupSelection}" CommandTarget="{Binding ElementName=graphControl}"/>
+                <MenuItem Command="{x:Static ywpf:GraphCommands.UngroupSelection}" CommandTarget="{Binding ElementName=graphControl}"/>
+                <Separator/>
+                <MenuItem Command="{x:Static ywpf:GraphCommands.AdjustGroupNodeSize}" CommandTarget="{Binding ElementName=graphControl}"/>
+                <Separator/>
+                <MenuItem Command="{x:Static ywpf:GraphCommands.CollapseGroup}" CommandTarget="{Binding ElementName=graphControl}"/>
+                <MenuItem Command="{x:Static ywpf:GraphCommands.ExpandGroup}" CommandTarget="{Binding ElementName=graphControl}"/>
+                <Separator/>
+                <MenuItem Command="{x:Static ywpf:GraphCommands.EnterGroup}" CommandTarget="{Binding ElementName=graphControl}"/>
+                <MenuItem Command="{x:Static ywpf:GraphCommands.ExitGroup}" CommandTarget="{Binding ElementName=graphControl}"/>
+            </MenuItem>
+            <MenuItem Header="Help" x:Name="helpMenu">
+                <MenuItem Command="Help"/>
+                <MenuItem Header="Sample Files" ItemsSource="{DynamicResource SampleFiles}" MenuItem.Click="SampleFileMenuClickHandler">
+                    <MenuItem.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Converter={StaticResource FileNameConverter}}" ToolTip="{Binding}"/>
+                        </DataTemplate>
+                    </MenuItem.ItemTemplate>
+                </MenuItem>
+                <MenuItem Command="{x:Static local:GraphEditorWindow.AboutCommand}" />
+            </MenuItem>
+        </Menu>
+        <ToolBarTray Height="Auto" x:Name="toolBarTray" Width="Auto" DockPanel.Dock="Top">
+            <ToolBar Width="{Binding ActualWidth, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ToolBarTray}}}" Height="Auto" x:Name="toolBar" >
+                <ToolBar.Resources>
+                    <Style TargetType="{x:Type Image}">
+                        <Setter Property="Width" Value="16"/>
+                        <Setter Property="Height" Value="16"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType={x:Type ButtonBase}, AncestorLevel=1}, Path=IsEnabled}" Value="False">
+                                <Setter Property="Opacity" Value="0.50"></Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </ToolBar.Resources>
+                <Button Command="New" CommandTarget="{Binding ElementName=graphControl}"/>
+                <Button Command="Open" CommandTarget="{Binding ElementName=graphControl}"/>
+                <Button Command="Save" ToolTip="Save" CommandTarget="{Binding ElementName=graphControl}"/>
+                <Button Command="Print" ToolTip="Print..." CommandTarget="{Binding ElementName=graphControl}"/>
+                <Separator/>
+                <Button Command="Cut" CommandTarget="{Binding ElementName=graphControl}"/>
+                <Button Command="Copy" CommandTarget="{Binding ElementName=graphControl}"/>
+                <Button Command="Paste" CommandTarget="{Binding ElementName=graphControl}"/>
+                <Separator/>
+                <!-- Tooltips for Undo and Redo are generated dynamically. -->
+                <Button x:Name="undoButton" Command="Undo" CommandTarget="{Binding ElementName=graphControl}"/>
+                <Button x:Name="redoButton" Command="Redo" CommandTarget="{Binding ElementName=graphControl}"/>
+                <Separator/>
+                <Button Command="IncreaseZoom" CommandTarget="{Binding ElementName=graphControl}"/>
+                <Button Command="DecreaseZoom" CommandTarget="{Binding ElementName=graphControl}"/>
+                <Button Command="Zoom" CommandParameter="1" CommandTarget="{Binding ElementName=graphControl}" ContentTemplate="{StaticResource ImageButtonContentTemplate}" Content="{StaticResource Zoom100Icon}"/>
+                <Button Command="{x:Static ywpf:GraphControl.FitGraphBoundsCommand}" CommandTarget="{Binding ElementName=graphControl}"/>
+                <Separator/>
+                <ToggleButton x:Name="toggleOrthogonalEdgesButton" IsChecked="True"
+                             ToolTip="Orthogonal Edges"
+                             Command="{x:Static local:GraphEditorWindow.ToggleOrthogonalEdgesCommand}" ContentTemplate="{StaticResource ImageButtonContentTemplate}" Content="{StaticResource OrthogonalEditingIcon}"/>
+                <ToggleButton x:Name="toggleSnaplinesButton" IsChecked="True"
+                             ToolTip="Snapping"
+                             Command="{x:Static local:GraphEditorWindow.ToggleSnapLinesCommand}" ContentTemplate="{StaticResource ImageButtonContentTemplate}" Content="{StaticResource SnappingIcon}"/>
+                <ToggleButton x:Name="toggleGridButton" IsChecked="True"
+                             ToolTip="Use Grid"
+                             Command="{x:Static local:GraphEditorWindow.ToggleGridCommand}" ContentTemplate="{StaticResource ImageButtonContentTemplate}" Content="{StaticResource GridIcon}"/>
+                <ToggleButton x:Name="toggleSelectionMode" IsChecked="False"
+                             ToolTip="Use Lasso Selection"
+                             Command="{x:Static local:GraphEditorWindow.ToggleSelectionModeCommand}" ContentTemplate="{StaticResource ImageButtonContentTemplate}" Content="{StaticResource LassoIcon}"/>
+                <Separator />
+                <Button Command="{x:Static ywpf:GraphCommands.Raise}" CommandTarget="{Binding ElementName=graphControl}" />
+                <Button Command="{x:Static ywpf:GraphCommands.Lower}" CommandTarget="{Binding ElementName=graphControl}" />
+                <Button Command="{x:Static ywpf:GraphCommands.ToFront}" CommandTarget="{Binding ElementName=graphControl}" />
+                <Button Command="{x:Static ywpf:GraphCommands.ToBack}" CommandTarget="{Binding ElementName=graphControl}" />
+
+            </ToolBar>
+        </ToolBarTray>
+        <StatusBar DockPanel.Dock="Bottom" Width="Auto">
+                <StatusBarItem x:Name="statusLabel1" Content="Nodes: 0"/>
+                <StatusBarItem x:Name="statusLabel2" Content="Edges:0"/>
+                <Separator/>
+                <StatusBarItem x:Name="zoomStatusLabel"/>
+        </StatusBar>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="5"/>
+                <ColumnDefinition Width="300*"/>
+                <ColumnDefinition Width="5"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Expander IsExpanded="true" Grid.Column="0" Header="Palette" Style="{StaticResource ToolWindowExpander}" HeaderTemplate="{StaticResource HeaderTemplate}">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <Editor:StylePalette x:Name="stylePalette" DefaultsGraph="Resources/defaults.graphml"/>
+                </ScrollViewer>
+        </Expander>
+            <GridSplitter IsEnabled="false" Grid.Column="1" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" Width="5" ResizeDirection="Columns" ResizeBehavior="PreviousAndNext"
+                          BorderThickness="1,0,0,0" BorderBrush="{StaticResource HeaderBackgroundBrush}"/>
+            <ywpf:GraphControl ZoomChanged="GraphControl_ZoomChanged"  Grid.Column="2" Width="Auto" x:Name="graphControl" InputMode="{StaticResource EditMode}">
+                <ywpf:GraphControl.CommandBindings>
+                    <!-- Disable default bindings -->
+                    <CommandBinding Command="Print" Executed="OnPrintPreviewExecuted"/>
+                    <CommandBinding Command="PrintPreview" Executed="OnPrintPreviewExecuted"/>
+                </ywpf:GraphControl.CommandBindings>
+            </ywpf:GraphControl>
+            <GridSplitter IsEnabled="false" Grid.Column="3" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" Width="5" ResizeDirection="Columns" ResizeBehavior="PreviousAndNext"
+                          BorderThickness="0,0,1,0" BorderBrush="{StaticResource HeaderBackgroundBrush}"/>
+            <Expander IsExpanded="false" Style="{StaticResource ToolWindowExpander}" Header="Properties" HeaderTemplate="{StaticResource HeaderTemplate}" Grid.Column="5" VerticalAlignment="Stretch">
+                <DockPanel VerticalAlignment="Stretch" Width="300">
+                    <DockPanel.Resources>
+                        <option:OptionItemAttributeConverter x:Key="OptionItemAttributeConverter"/>
+                        <option:XamlLocalizingConverter x:Key="ItemNameLocalizer"/>
+                        <Style x:Key="System.Windows.Media.Pen.OptionItemPresenter" TargetType="option:OptionItemPresenter">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="option:OptionItemPresenter">
+                                        <HeaderedContentControl Style="{DynamicResource GroupBoxStyle}" Header="{TemplateBinding ItemName}">
+                                            <UI:PenItemEditor Pen="{Binding RelativeSource={RelativeSource TemplatedParent},Mode=TwoWay, Path=Value}" AllowNull="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Item,Converter={StaticResource OptionItemAttributeConverter}, ConverterParameter={x:Static option:OptionItem.SupportNullValueAttribute}}"/>
+                                        </HeaderedContentControl>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                        <!-- This could be improved, of course....-->
+                        <Style x:Key="yWorks.yFiles.UI.Drawing.TypefaceFormat.OptionItemPresenter" TargetType="option:OptionItemPresenter">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="option:OptionItemPresenter">
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                        <Style x:Key="System.Windows.FontWeight.OptionItemPresenter" TargetType="option:OptionItemPresenter" BasedOn="{StaticResource ResourceKey={x:Type option:OptionItemPresenter}}">
+                            <Setter Property="EditorTemplate">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="ContentControl">
+                                        <ComboBox SelectedValue="{Binding Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}, Path=Content}">
+                                            <ComboBox.Items>
+                                                <x:StaticExtension Member="FontWeights.Normal"/>
+                                                <x:StaticExtension Member="FontWeights.Bold"/>
+                                                <x:StaticExtension Member="FontWeights.Black"/>
+                                                <x:StaticExtension Member="FontWeights.Regular"/>
+                                                <x:StaticExtension Member="FontWeights.Thin"/>
+                                            </ComboBox.Items>
+                                        </ComboBox>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                        <Style x:Key="System.Windows.FontStyle.OptionItemPresenter" TargetType="option:OptionItemPresenter" BasedOn="{StaticResource ResourceKey={x:Type option:OptionItemPresenter}}">
+                            <Setter Property="EditorTemplate">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="ContentControl">
+                                        <ComboBox SelectedValue="{Binding Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}, Path=Content}">
+                                            <ComboBox.Items>
+                                                <x:StaticExtension Member="FontStyles.Normal"/>
+                                                <x:StaticExtension Member="FontStyles.Oblique"/>
+                                                <x:StaticExtension Member="FontStyles.Italic"/>
+                                            </ComboBox.Items>
+                                        </ComboBox>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                        <Style x:Key="System.Windows.Media.FontFamily.OptionItemPresenter" TargetType="option:OptionItemPresenter" BasedOn="{StaticResource ResourceKey={x:Type option:OptionItemPresenter}}">
+                            <Setter Property="EditorTemplate">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="ContentControl">
+                                        <ComboBox SelectedValue="{Binding Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}, Path=Content}" ItemsSource="{StaticResource FontFamilyDomain}">
+                                            <ComboBox.ItemTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Text="{Binding}">
+                                                        <TextBlock.ToolTip>
+                                                            <TextBlock Text="AaBbCcDd" FontFamily="{Binding}"/>
+                                                        </TextBlock.ToolTip>
+                                                    </TextBlock>
+                                                </DataTemplate>
+                                            </ComboBox.ItemTemplate>
+                                        </ComboBox>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                        <Style x:Key="OptionGroupPresenter" TargetType="option:OptionItemPresenter">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="option:OptionItemPresenter">
+                                        <ItemsControl ItemsSource="{TemplateBinding ChildItems}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" KeyboardNavigation.IsTabStop="false">
+                                            <ItemsControl.ItemsPanel>
+                                                <ItemsPanelTemplate>
+                                                    <StackPanel HorizontalAlignment="Stretch" Orientation="Vertical"/>
+                                                </ItemsPanelTemplate>
+                                            </ItemsControl.ItemsPanel>
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Expander Style="{StaticResource AccordionItemStyle}"  ExpandDirection="Down" Header="{Binding Converter={StaticResource ItemNameLocalizer}, Mode=OneWay}" Content="{Binding}" IsExpanded="true" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
+                                                        <Expander.ContentTemplate>
+                                                            <DataTemplate>
+                                                                <option:OptionItemPresenter Item="{Binding}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"/>
+                                                            </DataTemplate>
+                                                        </Expander.ContentTemplate>
+                                                    </Expander>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+
+                    </DockPanel.Resources>
+                	<ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" DockPanel.Dock="Top">
+                		<option:EditorControl x:Name="editorControl" IsAutoAdopt="True" IsAutoCommit="True">
+                			<option:EditorControl.Resources>
+                				<Style x:Key="OptionGroup.Level1.OptionItemPresenter" TargetType="option:OptionItemPresenter" BasedOn="{StaticResource OptionGroupPresenter}" />
+                			</option:EditorControl.Resources>
+                		</option:EditorControl>
+                	</ScrollViewer>
+                </DockPanel>
+            </Expander>
+        </Grid>
+    </DockPanel>
+</Window>

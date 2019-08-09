@@ -1,0 +1,138 @@
+<!-- ************************************************************************ -->
+<!-- This demo file is part of yFiles WPF 3.2.                           -->
+<!-- Copyright (c) 2000-2019 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
+<!-- 72070 Tuebingen, Germany. All rights reserved.                           -->
+<!--                                                                          -->
+<!-- yFiles demo files exhibit yFiles WPF functionalities. Any redistribution  -->
+<!-- of demo resource files, with or without modification, is not permitted.  -->
+<!--                                                                          -->
+<!-- Owners of a valid software license for a yFiles WPF version that this     -->
+<!-- demo is shipped with are allowed to use the resource file as basis for   -->
+<!-- their own yFiles WPF powered applications. Use of such programs is        -->
+<!-- governed by the rights and conditions as set out in the yFiles WPF        -->
+<!-- license agreement.                                                       -->
+<!--                                                                          -->
+<!-- THIS SOFTWARE IS PROVIDED ''AS IS'' AND ANY EXPRESS OR IMPLIED           -->
+<!-- WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF     -->
+<!-- MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN  -->
+<!-- NO EVENT SHALL yWorks BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,    -->
+<!-- SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED -->
+<!-- TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR   -->
+<!-- PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF   -->
+<!-- LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING     -->
+<!-- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS       -->
+<!-- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.             -->
+<!--                                                                          -->
+<!-- ************************************************************************ -->
+<Window x:Class="Demo.yFiles.Layout.AbortHandler.AbortHandlerWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/3.0/xaml"
+    Title="Demo.yFiles.Layout.AbortHandler" Height="473" Width="800" 
+        Loaded="OnLoaded" Style="{StaticResource DemoWindow}" 
+    >
+    <HeaderedContentControl Style="{StaticResource DemoStyle}">
+        <HeaderedContentControl.Header>
+            <RichTextBox BorderThickness="0" IsReadOnly="True">
+                <FlowDocument>
+                    <Paragraph>
+                        This demo shows how to use an
+                        <Run Style="{StaticResource HtmlCode}">AbortHandler</Run>
+                        to stop a layout algorithm which is running in the background.
+                    </Paragraph>
+                    <Paragraph Style="{StaticResource HtmlH2}">
+                        Things to Try
+                    </Paragraph>
+                    <List>
+                        <ListItem>
+                            <Paragraph>Select a layout algorithm and click the "Layout" button to start it.</Paragraph>
+                        </ListItem>
+                        <ListItem>
+                            <Paragraph>Stop the layout algorithm by clicking the "Stop" button on the layout progress dialog.
+                                            Note that the layout will not necessarily stop immediately. Read on below for details.</Paragraph>
+                        </ListItem>
+                        <ListItem>
+                            <Paragraph>Re-run the same algorithm without stopping it. Compare the result with the result obtained after stopping.</Paragraph>
+                            <Paragraph>The second result should look more "finished", because the algorithm tried to quit as soon as the request was issued.</Paragraph>
+                        </ListItem>
+                        <ListItem>
+                            <Paragraph>Cancel the layout algorithm by clicking "Stop" and then clicking "Abort Immediately". Note that 
+                                if you pressed the button quickly enough the graph doesn't change, because the layout was aborted and the intermediate results were discarded completely.</Paragraph>
+                        </ListItem>
+                        <ListItem>
+                            <Paragraph>Instead of interactively hitting the "Stop" and "Abort Immediately" buttons in the dialog, you can
+                                also enter the time in seconds when the layout should be stopped or aborted automatically.
+                                A value of 0 or invalid input disables this feature.
+                            </Paragraph>
+                        </ListItem>
+                    </List>
+                    <Paragraph Style="{StaticResource HtmlH2}">
+                        Aborting a Layout Algorithm
+                    </Paragraph>
+                    <Paragraph Style="{StaticResource HtmlDt}">
+                        Stop
+                    </Paragraph>
+                    <Paragraph Style="{StaticResource HtmlDi}">
+                        Calling
+                        <Run Style="{StaticResource HtmlEm}">Stop</Run> on the
+                        <Run Style="{StaticResource HtmlCode}">AbortHandler</Run> will not stop the algorithm immediately.
+                                    Instead, the layout calculation will stop at a time when it is able to deliver a consistent result. 
+                                    A hierarchic layout, for example, might stop
+                                    after layering but before sequencing. The intermediate result will be applied to the graph.
+                    </Paragraph>
+                    <Paragraph Style="{StaticResource HtmlDt}">
+                        Cancel
+                    </Paragraph>
+                    <Paragraph Style="{StaticResource HtmlDi}">
+                        Calling
+                        <Run Style="{StaticResource HtmlEm}">Cancel</Run> on the
+                        <Run Style="{StaticResource HtmlCode}">AbortHandler</Run> will stop the algorithm immediately. Since the intermediate result might
+                                    not be in a consistent state the original graph will not be changed. All work done so far will be discarded.
+                    </Paragraph>
+                    <Paragraph Style="{StaticResource HtmlDt}">
+                        Stop and Cancel Duration
+                    </Paragraph>
+                    <Paragraph Style="{StaticResource HtmlDi}">
+                        Setting a duration will make the layout stop or cancel automatically once that time has expired.
+                        This will also work for single-threaded scenarios, where the layout cannot be stopped via the interaction of another thread.
+                    </Paragraph>
+                </FlowDocument>
+            </RichTextBox>
+        </HeaderedContentControl.Header>
+        <DockPanel>
+            <ToolBarTray Height="Auto" Name="toolBarTray" Width="Auto" DockPanel.Dock="Top">
+                <ToolBar Width="{Binding ActualWidth, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ToolBarTray}}}" Height="Auto" Name="toolBar">
+                    <Button Command="IncreaseZoom" CommandTarget="{Binding ElementName=graphControl}"/>
+                    <Button Command="DecreaseZoom" CommandTarget="{Binding ElementName=graphControl}"/>
+                    <Button Command="{x:Static ywpf:GraphControl.FitGraphBoundsCommand}" CommandTarget="{Binding ElementName=graphControl}"/>
+                    <Separator />
+                    <Button Command="Undo" CommandTarget="{Binding ElementName=graphControl}"/>
+                    <Button Command="Redo" CommandTarget="{Binding ElementName=graphControl}"/>
+                    <Separator />
+                    <Button Command="Cut" CommandTarget="{Binding ElementName=graphControl}"/>
+                    <Button Command="Copy" CommandTarget="{Binding ElementName=graphControl}"/>
+                    <Button Command="Paste" CommandTarget="{Binding ElementName=graphControl}"/>
+                    <Button Command="Delete" CommandTarget="{Binding ElementName=graphControl}"/>
+                    <Separator />
+                    <ComboBox x:Name="layoutComboBox" Width="125" SelectedIndex="1">
+                        <ComboBoxItem>Hierarchic</ComboBoxItem>
+                        <ComboBoxItem>Organic</ComboBoxItem>
+                        <ComboBoxItem>Orthogonal</ComboBoxItem>
+                    </ComboBox>
+                    <Label Target="{Binding ElementName=stopDuration}" Content="Stop Seconds"/>
+                    <TextBox Name="stopDuration" MaxLines="1" MinWidth="30">0</TextBox>
+                    <Label Target="{Binding ElementName=cancelDuration}" Content="Cancel Seconds"/>
+                    <TextBox Name="cancelDuration" MaxLines="1" MinWidth="30">0</TextBox>
+                    <Separator />
+                    <Button Name="runLayoutButton" Click="OnLayoutButtonClicked" Style="{StaticResource BaseToolBarButtonStyle}" ToolTip="Layout" Margin="5,0,0,0" >
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="{StaticResource LayoutHierarchicIcon}" Margin="0,0,4,0"/>
+                            <TextBlock>Layout</TextBlock>
+                        </StackPanel>
+                    </Button>
+                </ToolBar>
+            </ToolBarTray>
+            <ywpf:GraphControl Width="Auto" x:Name="graphControl" FileOperationsEnabled="True"/>
+        </DockPanel>
+    </HeaderedContentControl>
+</Window>

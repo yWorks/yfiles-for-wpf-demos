@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="SMARTORGANIC.ALGORITHM.MAXIMAL_DURATION" xml:space="preserve">
+    <value>Maximal Duration (sec)</value>
+  </data>
+  <data name="SMARTORGANIC.VISUAL.OBEY_NODE_SIZES" xml:space="preserve">
+    <value>Obey Node Sizes</value>
+  </data>
+  <data name="SMARTORGANIC.VISUAL.PREFERRED_EDGE_LENGTH" xml:space="preserve">
+    <value>Preferred Edge Length</value>
+  </data>
+  <data name="SMARTORGANIC.VISUAL.SCOPE.VALUE.ALL" xml:space="preserve">
+    <value>All</value>
+  </data>
+  <data name="SMARTORGANIC.VISUAL.SCOPE.VALUE.MAINLY_SUBSET" xml:space="preserve">
+    <value>Mainly Selection</value>
+  </data>
+  <data name="SMARTORGANIC.VISUAL.SCOPE.VALUE.SUBSET" xml:space="preserve">
+    <value>Only Selection</value>
+  </data>
+  <data name="SMARTORGANIC.VISUAL.SCOPE" xml:space="preserve">
+    <value>Scope</value>
+  </data>
+  <data name="SMARTORGANIC.VISUAL" xml:space="preserve">
+    <value>Visual</value>
+  </data>
+  <data name="SMARTORGANIC.ALGORITHM.ACTIVATE_DETERMINISTIC_MODE" xml:space="preserve">
+    <value>Activate Deterministic Mode</value>
+  </data>
+  <data name="SMARTORGANIC.ALGORITHM" xml:space="preserve">
+    <value>Algorithm</value>
+  </data>
+  <data name="SMARTORGANIC" xml:space="preserve">
+    <value>Organic Layout</value>
+  </data>
+  <data name="SMARTORGANIC.ONLINE_HELP.URL" xml:space="preserve">
+    <value>help://en/layout_smartorganic.html</value>
+  </data>
+  <data name="SMARTORGANIC.VISUAL.COMPACTNESS" xml:space="preserve">
+    <value>Compactness</value>
+  </data>
+  <data name="SMARTORGANIC.ALGORITHM.QUALITY_TIME_RATIO" xml:space="preserve">
+    <value>Quality/Time Ratio</value>
+  </data>
+  <data name="SMARTORGANIC.ALGORITHM.QUALITY_TIME_RATIO.SPEED" xml:space="preserve">
+    <value>Speed</value>
+  </data>
+  <data name="SMARTORGANIC.ALGORITHM.QUALITY_TIME_RATIO.QUALITY" xml:space="preserve">
+    <value>Quality</value>
+  </data>
+  <data name="SMARTORGANIC.VISUAL.ALLOW_NODE_OVERLAPS" xml:space="preserve">
+    <value>Allow Overlapping Nodes</value>
+  </data>
+  <data name="SMARTORGANIC.VISUAL.MINIMAL_NODE_DISTANCE" xml:space="preserve">
+    <value>Minimal Node Distance</value>
+  </data>
+  <data name="SMARTORGANIC.VISUAL.AVOID_NODE_EDGE_OVERLAPS" xml:space="preserve">
+    <value>Avoid Node/Edge Overlaps</value>
+  </data>
+  <data name="SMARTORGANIC.RESTRICTIONS" xml:space="preserve">
+    <value>Restrictions</value>
+  </data>
+  <data name="SMARTORGANIC.RESTRICTIONS.BOUNDS.CAGE_X" xml:space="preserve">
+    <value>Top Left X</value>
+  </data>
+  <data name="SMARTORGANIC.RESTRICTIONS.BOUNDS.CAGE_Y" xml:space="preserve">
+    <value>Top Left Y</value>
+  </data>
+  <data name="SMARTORGANIC.RESTRICTIONS.BOUNDS.CAGE_WIDTH" xml:space="preserve">
+    <value>Width</value>
+  </data>
+  <data name="SMARTORGANIC.RESTRICTIONS.BOUNDS.CAGE_HEIGHT" xml:space="preserve">
+    <value>Height</value>
+  </data>
+  <data name="SMARTORGANIC.RESTRICTIONS.BOUNDS.CAGE_CENTER_X" xml:space="preserve">
+    <value>Center X</value>
+  </data>
+  <data name="SMARTORGANIC.RESTRICTIONS.BOUNDS.CAGE_CENTER_Y" xml:space="preserve">
+    <value>Center Y</value>
+  </data>
+  <data name="SMARTORGANIC.RESTRICTIONS.OUTPUT_AR.CAGE_RATIO" xml:space="preserve">
+    <value>Aspect Ratio</value>
+  </data>
+  <data name="SMARTORGANIC.RESTRICTIONS.RESTRICT_OUTPUT" xml:space="preserve">
+    <value>Output Area</value>
+  </data>
+  <data name="SMARTORGANIC.RESTRICTIONS.RESTRICT_OUTPUT.VALUE.NONE" xml:space="preserve">
+    <value>Unrestricted</value>
+  </data>
+  <data name="SMARTORGANIC.RESTRICTIONS.RESTRICT_OUTPUT.VALUE.OUTPUT_CAGE" xml:space="preserve">
+    <value>Rectangular</value>
+  </data>
+  <data name="SMARTORGANIC.RESTRICTIONS.RESTRICT_OUTPUT.VALUE.OUTPUT_CIRCULAR_CAGE" xml:space="preserve">
+    <value>Circular</value>
+  </data>
+  <data name="SMARTORGANIC.RESTRICTIONS.RESTRICT_OUTPUT.VALUE.OUTPUT_AR" xml:space="preserve">
+    <value>Aspect Ratio</value>
+  </data>
+  <data name="SMARTORGANIC.RESTRICTIONS.RESTRICT_OUTPUT.VALUE.OUTPUT_ELLIPTICAL_CAGE" xml:space="preserve">
+    <value>Elliptical</value>
+  </data>
+  <data name="SMARTORGANIC.RESTRICTIONS.OUTPUT_AR.AR_CAGE_USE_VIEW" xml:space="preserve">
+    <value>Use Ratio of View</value>
+  </data>
+  <data name="SMARTORGANIC.RESTRICTIONS.BOUNDS.RECT_CAGE_USE_VIEW" xml:space="preserve">
+    <value>Use Visible Area</value>
+  </data>
+  <data name="SMARTORGANIC.GROUPING" xml:space="preserve">
+    <value>Grouping</value>
+  </data>
+  <data name="SMARTORGANIC.GROUPING.GROUP_LAYOUT_POLICY" xml:space="preserve">
+    <value>Group Layout Policy</value>
+  </data>
+  <data name="SMARTORGANIC.GROUPING.GROUP_LAYOUT_POLICY.VALUE.FIX_GROUP_CONTENTS" xml:space="preserve">
+    <value>Fix Contents of Groups</value>
+  </data>
+  <data name="SMARTORGANIC.GROUPING.GROUP_LAYOUT_POLICY.VALUE.FIX_GROUP_BOUNDS" xml:space="preserve">
+    <value>Fix Bounds of Groups</value>
+  </data>
+  <data name="SMARTORGANIC.GROUPING.GROUP_LAYOUT_POLICY.VALUE.IGNORE_GROUPS" xml:space="preserve">
+    <value>Ignore Groups</value>
+  </data>
+  <data name="SMARTORGANIC.GROUPING.GROUP_LAYOUT_POLICY.VALUE.LAYOUT_GROUPS" xml:space="preserve">
+    <value>Layout Groups</value>
+  </data>
+  <data name="SMARTORGANIC.GROUP.OUTPUT_ELLIPTICAL_CAGE" xml:space="preserve">
+    <value>Elliptical</value>
+  </data>
+  <data name="SMARTORGANIC.RESTRICTIONS.BOUNDS" xml:space="preserve">
+    <value>Bounds</value>
+  </data>
+  <data name="SMARTORGANIC.GROUP.OUTPUT_CIRCULAR_CAGE" xml:space="preserve">
+    <value>Circular</value>
+  </data>
+  <data name="SMARTORGANIC.RESTRICTIONS.OUTPUT_AR" xml:space="preserve">
+    <value>Aspect Ratio</value>
+  </data>
+  <data name="SMARTORGANIC.VISUAL.CONSIDER_NODE_LABELS" xml:space="preserve">
+    <value>Consider Node Labels</value>
+  </data>
+  <data name="SMARTORGANIC.VISUAL.AUTO_CLUSTERING_QUALITY" xml:space="preserve">
+    <value>Natural Clustering Quality</value>
+  </data>
+  <data name="SMARTORGANIC.VISUAL.USE_AUTO_CLUSTERING" xml:space="preserve">
+    <value>Use Natural Clustering</value>
+  </data>
+  <data name="SMARTORGANIC.ALGORITHM.ALLOW_MULTI_THREADING" xml:space="preserve">
+    <value>Activate Multi-Threading</value>
+  </data>
+</root>

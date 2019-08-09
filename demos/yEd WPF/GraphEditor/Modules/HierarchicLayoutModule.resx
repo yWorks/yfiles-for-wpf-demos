@@ -1,0 +1,430 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="INCREMENTAL_HIERARCHIC" xml:space="preserve">
+    <value>Hierarchic Layout</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.ONLINE_HELP.URL" xml:space="preserve">
+    <value>help://en/layout_hierarchic_incremental.html</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.LABELING.EDGE_PROPERTIES" xml:space="preserve">
+    <value>Edge Settings</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.RANKS.FROM_SKETCH_PROPERTIES" xml:space="preserve">
+    <value>From Sketch Settings</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.GROUP.MINIMUM_DISTANCES" xml:space="preserve">
+    <value>Minimum Distances</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.GENERAL.INTERACTION" xml:space="preserve">
+    <value>Interactive Settings</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.LABELING.NODE_PROPERTIES" xml:space="preserve">
+    <value>Node Settings</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.GROUP.PORT_PROPERTIES" xml:space="preserve">
+    <value>Port Settings</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.GENERAL" xml:space="preserve">
+    <value>General</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.GENERAL.MINIMUM_DISTANCES.EDGE_TO_EDGE_DISTANCE" xml:space="preserve">
+    <value>Edge to Edge Distance</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.GENERAL.LAYOUT_COMPONENTS_SEPARATELY" xml:space="preserve">
+    <value>Layout Components Separately</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.GENERAL.MINIMUM_DISTANCES" xml:space="preserve">
+    <value>Minimum Distances</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.GENERAL.MINIMUM_DISTANCES.MINIMUM_LAYER_DISTANCE" xml:space="preserve">
+    <value>Layer to Layer Distance</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.GENERAL.MINIMUM_DISTANCES.NODE_TO_EDGE_DISTANCE" xml:space="preserve">
+    <value>Node to Edge Distance</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.GENERAL.MINIMUM_DISTANCES.NODE_TO_NODE_DISTANCE" xml:space="preserve">
+    <value>Node to Node Distance</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.GENERAL.ORIENTATION" xml:space="preserve">
+    <value>Orientation</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.GENERAL.ORIENTATION.VALUE.BOTTOM_TO_TOP" xml:space="preserve">
+    <value>Bottom to Top</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.GENERAL.ORIENTATION.VALUE.LEFT_TO_RIGHT" xml:space="preserve">
+    <value>Left to Right</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.GENERAL.ORIENTATION.VALUE.RIGHT_TO_LEFT" xml:space="preserve">
+    <value>Right to Left</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.GENERAL.ORIENTATION.VALUE.TOP_TO_BOTTOM" xml:space="preserve">
+    <value>Top to Bottom</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.GENERAL.INTERACTION.SELECTED_ELEMENTS_INCREMENTALLY" xml:space="preserve">
+    <value>Selected Elements Incrementally</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.GENERAL.SYMMETRIC_PLACEMENT" xml:space="preserve">
+    <value>Symmetric Placement</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.GENERAL.INTERACTION.USE_DRAWING_AS_SKETCH" xml:space="preserve">
+    <value>Use Drawing As Sketch</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.EDGE_SETTINGS" xml:space="preserve">
+    <value>Edges</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.EDGE_SETTINGS.BACKLOOP_ROUTING" xml:space="preserve">
+    <value>Backloop Routing</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.EDGE_SETTINGS.EDGE_STRAIGHTENING_OPTIMIZATION_ENABLED" xml:space="preserve">
+    <value>Straighten Edges</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.EDGE_SETTINGS.CONSIDER_EDGE_THICKNESS" xml:space="preserve">
+    <value>Consider Edge Thickness</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.EDGE_SETTINGS.CONSIDER_EDGE_DIRECTION" xml:space="preserve">
+    <value>Arrows define Edge Direction</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.EDGE_SETTINGS.RECURSIVE_EDGE_ROUTING" xml:space="preserve">
+    <value>Recursive Edge Routing</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.EDGE_SETTINGS.RECURSIVE_EDGE_ROUTING.VALUE.RECURSIVE_EDGE_ROUTING_OFF" xml:space="preserve">
+    <value>Off</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.EDGE_SETTINGS.RECURSIVE_EDGE_ROUTING.VALUE.RECURSIVE_EDGE_ROUTING_DIRECTED" xml:space="preserve">
+    <value>Directed</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.EDGE_SETTINGS.RECURSIVE_EDGE_ROUTING.VALUE.RECURSIVE_EDGE_ROUTING_UNDIRECTED" xml:space="preserve">
+    <value>Undirected</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.EDGE_SETTINGS.EDGE_ROUTING" xml:space="preserve">
+    <value>Routing Style</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.EDGE_SETTINGS.EDGE_ROUTING.VALUE.EDGE_ROUTING_ORTHOGONAL" xml:space="preserve">
+    <value>Orthogonal</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.EDGE_SETTINGS.EDGE_ROUTING.VALUE.EDGE_ROUTING_POLYLINE" xml:space="preserve">
+    <value>Polyline</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.EDGE_SETTINGS.MINIMUM_EDGE_DISTANCE" xml:space="preserve">
+    <value>Minimum Edge Distance</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.EDGE_SETTINGS.MINIMUM_EDGE_LENGTH" xml:space="preserve">
+    <value>Minimum Length</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.EDGE_SETTINGS.MINIMUM_FIRST_SEGMENT_LENGTH" xml:space="preserve">
+    <value>Minimum First Segment Length</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.EDGE_SETTINGS.MINIMUM_LAST_SEGMENT_LENGTH" xml:space="preserve">
+    <value>Minimum Last Segment Length</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.EDGE_SETTINGS.MINIMUM_SLOPE" xml:space="preserve">
+    <value>Minimum Slope</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.EDGE_SETTINGS.PC_OPTIMIZATION_ENABLED" xml:space="preserve">
+    <value>Port Constraint Optimization</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.LABELING" xml:space="preserve">
+    <value>Labeling</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.LABELING.NODE_PROPERTIES.CONSIDER_NODE_LABELS" xml:space="preserve">
+    <value>Consider Node Labels</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.LABELING.EDGE_PROPERTIES.EDGE_LABELING" xml:space="preserve">
+    <value>Edge Labeling</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.LABELING.EDGE_PROPERTIES.EDGE_LABELING.VALUE.EDGE_LABELING_GENERIC" xml:space="preserve">
+    <value>Generic</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.LABELING.EDGE_PROPERTIES.EDGE_LABELING.VALUE.EDGE_LABELING_HIERARCHIC" xml:space="preserve">
+    <value>Hierarchic</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.LABELING.EDGE_PROPERTIES.EDGE_LABELING.VALUE.EDGE_LABELING_NONE" xml:space="preserve">
+    <value>None</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.LABELING.EDGE_PROPERTIES.EDGE_LABEL_MODEL" xml:space="preserve">
+    <value>Edge Label Model</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.LABELING.EDGE_PROPERTIES.EDGE_LABEL_MODEL.VALUE.EDGE_LABEL_MODEL_AS_IS" xml:space="preserve">
+    <value>As Is</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.LABELING.EDGE_PROPERTIES.EDGE_LABEL_MODEL.VALUE.EDGE_LABEL_MODEL_BEST" xml:space="preserve">
+    <value>Best</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.LABELING.EDGE_PROPERTIES.EDGE_LABEL_MODEL.VALUE.EDGE_LABEL_MODEL_CENTER_SLIDER" xml:space="preserve">
+    <value>Center Slider</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.LABELING.EDGE_PROPERTIES.EDGE_LABEL_MODEL.VALUE.EDGE_LABEL_MODEL_FREE" xml:space="preserve">
+    <value>Free</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.LABELING.EDGE_PROPERTIES.EDGE_LABEL_MODEL.VALUE.EDGE_LABEL_MODEL_SIDE_SLIDER" xml:space="preserve">
+    <value>Side Slider</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.LABELING.NODE_LABEL_CONSIDERATION" xml:space="preserve">
+    <value>Node Label Consideration</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.LABELING.NODE_LABEL_CONSIDERATION.VALUE.NODE_LABEL_CONSIDERATION_PLACEMENT" xml:space="preserve">
+    <value>During Placement</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.LABELING.NODE_LABEL_CONSIDERATION.VALUE.NODE_LABEL_CONSIDERATION_ROUTING" xml:space="preserve">
+    <value>During Routing</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.LABELING.NODE_LABEL_CONSIDERATION.VALUE.NODE_LABEL_CONSIDERATION_SELFLOOPS" xml:space="preserve">
+    <value>For Selfloops</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.RANKS" xml:space="preserve">
+    <value>Layers</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.RANKS.FROM_SKETCH_PROPERTIES.HALO" xml:space="preserve">
+    <value>Halo</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.RANKS.FROM_SKETCH_PROPERTIES.MAXIMUM_SIZE" xml:space="preserve">
+    <value>Maximum Size</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.RANKS.MINIMUM_LAYER_HEIGHT" xml:space="preserve">
+    <value>Minimum Layer Height</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.RANKS.FROM_SKETCH_PROPERTIES.MINIMUM_SIZE" xml:space="preserve">
+    <value>Minimum Size</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.RANKS.RANKING_POLICY" xml:space="preserve">
+    <value>Layer Assignment Policy</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.RANKS.RANKING_POLICY.VALUE.BFS_LAYERS" xml:space="preserve">
+    <value>BFS Layering</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.RANKS.RANKING_POLICY.VALUE.FROM_SKETCH" xml:space="preserve">
+    <value>From Sketch</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.RANKS.RANKING_POLICY.VALUE.HIERARCHICAL_OPTIMAL" xml:space="preserve">
+    <value>Hierarchical - Optimal</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.RANKS.RANKING_POLICY.VALUE.HIERARCHICAL_TIGHT_TREE_HEURISTIC" xml:space="preserve">
+    <value>Hierarchical - Tight Tree Heuristic</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.RANKS.RANKING_POLICY.VALUE.HIERARCHICAL_TOPMOST" xml:space="preserve">
+    <value>Hierarchical - Topmost</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.RANKS.FROM_SKETCH_PROPERTIES.SCALE" xml:space="preserve">
+    <value>Scale</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.RANKS.LAYER_ALIGNMENT" xml:space="preserve">
+    <value>Alignment within Layer</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.RANKS.LAYER_ALIGNMENT.VALUE.TOP" xml:space="preserve">
+    <value>Top Border of Nodes</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.RANKS.LAYER_ALIGNMENT.VALUE.CENTER" xml:space="preserve">
+    <value>Center of Nodes</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.RANKS.LAYER_ALIGNMENT.VALUE.BOTTOM" xml:space="preserve">
+    <value>Bottom Border of Nodes</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.GROUPING" xml:space="preserve">
+    <value>Grouping</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.GROUPING.GROUP_ALIGNMENT" xml:space="preserve">
+    <value>Vertical Alignment</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.GROUPING.GROUP_ALIGNMENT.VALUE.GROUP_ALIGN_BOTTOM" xml:space="preserve">
+    <value>Bottom</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.GROUPING.GROUP_ALIGNMENT.VALUE.GROUP_ALIGN_CENTER" xml:space="preserve">
+    <value>Center</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.GROUPING.GROUP_ALIGNMENT.VALUE.GROUP_ALIGN_TOP" xml:space="preserve">
+    <value>Top</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.GROUPING.GROUP_ENABLE_COMPACTION" xml:space="preserve">
+    <value>Compact Layers</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.GROUPING.GROUP_HORIZONTAL_COMPACTION" xml:space="preserve">
+    <value>Horizontal Group Compaction</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.GROUPING.GROUP_HORIZONTAL_COMPACTION.VALUE.GROUP_HORIZONTAL_COMPACTION_MAX" xml:space="preserve">
+    <value>Strong</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.GROUPING.GROUP_HORIZONTAL_COMPACTION.VALUE.GROUP_HORIZONTAL_COMPACTION_NONE" xml:space="preserve">
+    <value>Weak</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.GROUPING.GROUP_LAYERING_STRATEGY" xml:space="preserve">
+    <value>Layering Strategy</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.GROUPING.GROUP_LAYERING_STRATEGY.VALUE.GLOBAL_LAYERING" xml:space="preserve">
+    <value>Ignore Groups</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.GROUPING.GROUP_LAYERING_STRATEGY.VALUE.RECURSIVE_LAYERING" xml:space="preserve">
+    <value>Layout Groups</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.EDGE_SETTINGS.AUTOMATIC_EDGE_GROUPING_ENABLED" xml:space="preserve">
+    <value>Automatic Edge Grouping</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.GENERAL.MAXIMUM_DURATION" xml:space="preserve">
+    <value>Maximum Duration</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.SWIMLANES" xml:space="preserve">
+    <value>Swimlanes</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.SWIMLANES.SWIMLANE_SPACING" xml:space="preserve">
+    <value>Lane Spacing</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.SWIMLANES.TREAT_ROOT_GROUPS_AS_SWIMLANES" xml:space="preserve">
+    <value>Treat Groups as Swimlanes</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.SWIMLANES.USE_ORDER_FROM_SKETCH" xml:space="preserve">
+    <value>Use Sketch for Lane Order</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.RANKS.COMPONENT_ARRANGEMENT_POLICY" xml:space="preserve">
+    <value>Component Arrangement</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.RANKS.COMPONENT_ARRANGEMENT_POLICY.VALUE.POLICY_COMPACT" xml:space="preserve">
+    <value>Compact</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.RANKS.COMPONENT_ARRANGEMENT_POLICY.VALUE.POLICY_TOPMOST" xml:space="preserve">
+    <value>Topmost</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.EDGE_SETTINGS.EDGE_ROUTING.VALUE.EDGE_ROUTING_OCTILINEAR" xml:space="preserve">
+    <value>Octilinear</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.LABELING.EDGE_PROPERTIES.COMPACT_EDGE_LABEL_PLACEMENT" xml:space="preserve">
+    <value>Compact Placement</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.GRID" xml:space="preserve">
+    <value>Grid</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.GRID.GRID_ENABLED" xml:space="preserve">
+    <value>Enable Grid</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.GRID.GRID_SPACING" xml:space="preserve">
+    <value>Grid Spacing</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.GRID.GRID_PORT_ASSIGNMENT" xml:space="preserve">
+    <value>Port Assignment</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.GRID.GRID_PORT_ASSIGNMENT.VALUE.GRID_PORT_ASSIGNMENT_DEFAULT" xml:space="preserve">
+    <value>Default</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.GRID.GRID_PORT_ASSIGNMENT.VALUE.GRID_PORT_ASSIGNMENT_ON_GRID" xml:space="preserve">
+    <value>On Grid</value>
+  </data>
+  <data name="INCREMENTAL_HIERARCHIC.GRID.GRID_PORT_ASSIGNMENT.VALUE.GRID_PORT_ASSIGNMENT_ON_SUBGRID" xml:space="preserve">
+    <value>On Subgrid</value>
+  </data>
+
+</root>

@@ -1,0 +1,711 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--Created by yFiles for WPF 2.1-->
+<graphml xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/3.0" xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/3.0/xaml" xmlns:y="http://www.yworks.com/xml/yfiles-common/3.0" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml.wpf/2.0/ygraphml.xsd " xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://graphml.graphdrawing.org/xmlns">
+  <key id="d0" for="all" attr.name="UserTags" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/UserTags" />
+  <key id="d1" for="node" attr.name="NodeLabels" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeLabels" />
+  <key id="d2" for="node" attr.name="NodeGeometry" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeGeometry" />
+  <key id="d3" for="node" attr.name="NodeStyle" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeStyle" />
+  <key id="d4" for="node" attr.type="boolean" attr.name="Expanded" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/folding/Expanded">
+    <default>true</default>
+  </key>
+  <key id="d5" for="node" attr.name="NodeViewState" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/folding/NodeViewState" />
+  <key id="d6" for="edge" attr.name="EdgeLabels" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/EdgeLabels" />
+  <key id="d7" for="edge" attr.name="EdgeGeometry" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/EdgeGeometry" />
+  <key id="d8" for="edge" attr.name="EdgeStyle" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/EdgeStyle" />
+  <key id="d9" for="edge" attr.name="EdgeViewState" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/folding/EdgeViewState" />
+  <key id="d10" for="port" attr.name="PortLocationParameter" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/PortLocationParameter">
+    <default>
+      <x:Static Member="y:FreeNodePortLocationModel.NodeCenterAnchored" />
+    </default>
+  </key>
+  <key id="d11" for="port" attr.name="PortStyle" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/PortStyle">
+    <default>
+      <x:Static Member="y:VoidPortStyle.Instance" />
+    </default>
+  </key>
+  <key id="d12" for="port" attr.name="PortViewState" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/folding/PortViewState" />
+  <key id="d13" attr.name="SharedData" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/SharedData" />
+  <data key="d13">
+    <y:SharedData>
+      <ywpf:TypefaceFormat x:Key="1" Size="14" />
+    </y:SharedData>
+  </data>
+  <graph id="G" edgedefault="directed">
+    <node id="modern0">
+      <data key="d3">
+        <ywpf:BevelNodeStyle Inset="3" Radius="10" Color="Orange" DrawShadow="false"/>
+      </data>
+      <data key="d0"><![CDATA[Modern Nodes]]></data>
+      <data key="d2">
+        <y:RectD X="0" Y="0" Width="30" Height="30" />
+      </data>
+    </node>
+    <node id="modern1">
+      <data key="d3">
+        <ywpf:BevelNodeStyle Inset="3" Radius="10" Color="Orange" DrawShadow="true"/>
+      </data>
+      <data key="d0"><![CDATA[Modern Nodes]]></data>
+      <data key="d2">
+        <y:RectD X="0" Y="0" Width="30" Height="30" />
+      </data>
+    </node>
+    <node id="modern2">
+      <data key="d3">
+        <ywpf:ShinyPlateNodeStyle Brush="Orange" DrawShadow="false"/>
+      </data>
+      <data key="d0"><![CDATA[Modern Nodes]]></data>
+      <data key="d2">
+        <y:RectD X="0" Y="0" Width="30" Height="30" />
+      </data>
+    </node>
+    <node id="modern3">
+      <data key="d3">
+        <ywpf:ShinyPlateNodeStyle Brush="Orange" DrawShadow="true"/>
+      </data>
+      <data key="d0"><![CDATA[Modern Nodes]]></data>
+      <data key="d2">
+        <y:RectD X="0" Y="0" Width="30" Height="30" />
+      </data>
+    </node>
+    <node id="modern4">
+      <data key="d3">
+        <ywpf:PanelNodeStyle Color="Orange" LabelInsetsColor="LightGray" Insets="5" />
+      </data>
+      <data key="d0"><![CDATA[Modern Nodes]]></data>
+      <data key="d2">
+        <y:RectD X="0" Y="0" Width="30" Height="30" />
+      </data>
+    </node>
+    <node id="n3">
+      <data key="d3">
+        <VectorNodeStyle TemplateKey="Computer" xmlns="http://www.yworks.com/yfiles-wpf/2.1/demos/GraphEditor/Styles" />
+      </data>
+      <data key="d0">Computers</data>
+      <data key="d2">
+        <y:RectD X="0" Y="0" Width="30" Height="30" />
+      </data>
+    </node>
+    <node id="n4">
+      <data key="d3">
+        <VectorNodeStyle TemplateKey="Network" xmlns="http://www.yworks.com/yfiles-wpf/2.1/demos/GraphEditor/Styles" />
+      </data>
+      <data key="d0">Computers</data>
+      <data key="d2">
+        <y:RectD X="0" Y="0" Width="30" Height="30" />
+      </data>
+    </node>
+    <node id="n5">
+      <data key="d3">
+        <VectorNodeStyle TemplateKey="Printer" xmlns="http://www.yworks.com/yfiles-wpf/2.1/demos/GraphEditor/Styles" />
+      </data>
+      <data key="d0">Computers</data>
+      <data key="d2">
+        <y:RectD X="0" Y="0" Width="30" Height="30" />
+      </data>
+    </node>
+    <node id="n5a">
+      <data key="d3">
+        <VectorNodeStyle TemplateKey="Scanner" xmlns="http://www.yworks.com/yfiles-wpf/2.1/demos/GraphEditor/Styles" />
+      </data>
+      <data key="d0">Computers</data>
+      <data key="d2">
+        <y:RectD X="0" Y="0" Width="30" Height="30" />
+      </data>
+    </node>
+    <node id="n6">
+      <data key="d3">
+        <VectorNodeStyle TemplateKey="UserIcon_Male_1" xmlns="http://www.yworks.com/yfiles-wpf/2.1/demos/GraphEditor/Styles" />
+      </data>
+      <data key="d0">People</data>
+      <data key="d2">
+        <y:RectD X="0" Y="0" Width="30" Height="30" />
+      </data>
+    </node>
+    <node id="n7">
+      <data key="d3">
+        <VectorNodeStyle TemplateKey="UserIcon_Male_2" xmlns="http://www.yworks.com/yfiles-wpf/2.1/demos/GraphEditor/Styles" />
+      </data>
+      <data key="d0">People</data>
+      <data key="d2">
+        <y:RectD X="0" Y="0" Width="30" Height="30" />
+      </data>
+    </node>
+    <node id="n8">
+      <data key="d3">
+        <VectorNodeStyle TemplateKey="UserIcon_Female_1" xmlns="http://www.yworks.com/yfiles-wpf/2.1/demos/GraphEditor/Styles" />
+      </data>
+      <data key="d0">People</data>
+      <data key="d2">
+        <y:RectD X="0" Y="0" Width="30" Height="30" />
+      </data>
+    </node>
+    <node id="n9">
+      <data key="d3">
+        <VectorNodeStyle TemplateKey="UserIcon_Female_2" xmlns="http://www.yworks.com/yfiles-wpf/2.1/demos/GraphEditor/Styles" />
+      </data>
+      <data key="d0">People</data>
+      <data key="d2">
+        <y:RectD X="0" Y="0" Width="30" Height="30" />
+      </data>
+    </node>
+    <node id="n10">
+      <data key="d3">
+        <VectorNodeStyle TemplateKey="UserIcon_Female_3" xmlns="http://www.yworks.com/yfiles-wpf/2.1/demos/GraphEditor/Styles" />
+      </data>
+      <data key="d0">People</data>
+      <data key="d2">
+        <y:RectD X="0" Y="0" Width="30" Height="30" />
+      </data>
+    </node>
+    <node id="n12">
+      <data key="d3">
+        <ywpf:GeneralPathNodeStyle Brush="Orange" Pen="Black">
+          <ywpf:GeneralPathNodeStyle.Path>
+            <y:GeneralPath>
+              <y:MoveTo Point="0,0" />
+              <y:LineTo Point="0.5,0.200000002980232" />
+              <y:LineTo Point="1,0" />
+              <y:LineTo Point="0.800000011920929,0.5" />
+              <y:LineTo Point="1,1" />
+              <y:LineTo Point="0.5,0.800000011920929" />
+              <y:LineTo Point="0,1" />
+              <y:LineTo Point="0.200000002980232,0.5" />
+              <y:Close />
+            </y:GeneralPath>
+          </ywpf:GeneralPathNodeStyle.Path>
+        </ywpf:GeneralPathNodeStyle>
+      </data>
+      <data key="d0"><![CDATA[Shape Nodes]]></data>
+      <data key="d2">
+        <y:RectD X="-923.7" Y="-149.45" Width="30" Height="30" />
+      </data>
+    </node>
+    <node id="n13">
+      <data key="d3">
+        <ywpf:ShapeNodeStyle Pen="Black" Brush="Orange" Shape="Diamond" />
+      </data>
+      <data key="d0"><![CDATA[Shape Nodes]]></data>
+      <data key="d2">
+        <y:RectD X="-865.575" Y="-86.325" Width="30" Height="30" />
+      </data>
+    </node>
+    <node id="n14">
+      <data key="d3">
+        <ywpf:ShapeNodeStyle Pen="Black" Brush="Orange" Shape="Ellipse" />
+      </data>
+      <data key="d0"><![CDATA[Shape Nodes]]></data>
+      <data key="d2">
+        <y:RectD X="-760.575" Y="-112.325" Width="30" Height="30" />
+      </data>
+    </node>
+    <node id="n15">
+      <data key="d3">
+        <ywpf:ShapeNodeStyle Pen="Black" Brush="Orange" Shape="FatArrow" />
+      </data>
+      <data key="d0"><![CDATA[Shape Nodes]]></data>
+      <data key="d2">
+        <y:RectD X="-656.575" Y="-86.325" Width="30" Height="30" />
+      </data>
+    </node>
+    <node id="n16">
+      <data key="d3">
+        <ywpf:ShapeNodeStyle Pen="Black" Brush="Orange" Shape="FatArrow2" />
+      </data>
+      <data key="d0"><![CDATA[Shape Nodes]]></data>
+      <data key="d2">
+        <y:RectD X="-914.575" Y="14.675" Width="30" Height="30" />
+      </data>
+    </node>
+    <node id="n17">
+      <data key="d3">
+        <ywpf:ShapeNodeStyle Pen="Black" Brush="Orange" Shape="Hexagon" />
+      </data>
+      <data key="d0"><![CDATA[Shape Nodes]]></data>
+      <data key="d2">
+        <y:RectD X="-781.575" Y="-11.325" Width="30" Height="30" />
+      </data>
+    </node>
+    <node id="n18">
+      <data key="d3">
+        <ywpf:ShapeNodeStyle Pen="Black" Brush="Orange" Shape="Octagon" />
+      </data>
+      <data key="d0"><![CDATA[Shape Nodes]]></data>
+      <data key="d2">
+        <y:RectD X="-709.575" Y="-23.325" Width="30" Height="30" />
+      </data>
+    </node>
+    <node id="n19">
+      <data key="d3">
+        <ywpf:ShapeNodeStyle Pen="Black" Brush="Orange" />
+      </data>
+      <data key="d0"><![CDATA[Shape Nodes]]></data>
+      <data key="d2">
+        <y:RectD X="-577.575" Y="-63.325" Width="30" Height="30" />
+      </data>
+    </node>
+    <node id="n20">
+      <data key="d3">
+        <ywpf:ShapeNodeStyle Pen="Black" Brush="Orange" Shape="RoundRectangle" />
+      </data>
+      <data key="d0"><![CDATA[Shape Nodes]]></data>
+      <data key="d2">
+        <y:RectD X="-939.575" Y="106.675" Width="30" Height="30" />
+      </data>
+    </node>
+    <node id="n21">
+      <data key="d3">
+        <ywpf:ShapeNodeStyle Pen="Black" Brush="Orange" Shape="ShearedRectangle" />
+      </data>
+      <data key="d0"><![CDATA[Shape Nodes]]></data>
+      <data key="d2">
+        <y:RectD X="-732.575" Y="94.675" Width="30" Height="30" />
+      </data>
+    </node>
+    <node id="n22">
+      <data key="d3">
+        <ywpf:ShapeNodeStyle Pen="Black" Brush="Orange" Shape="ShearedRectangle2" />
+      </data>
+      <data key="d0"><![CDATA[Shape Nodes]]></data>
+      <data key="d2">
+        <y:RectD X="-558.575" Y="62.675" Width="30" Height="30" />
+      </data>
+    </node>
+    <node id="n23">
+      <data key="d3">
+        <ywpf:ShapeNodeStyle Pen="Black" Brush="Orange" Shape="Star5" />
+      </data>
+      <data key="d0"><![CDATA[Shape Nodes]]></data>
+      <data key="d2">
+        <y:RectD X="-633.575" Y="31.675" Width="30" Height="30" />
+      </data>
+    </node>
+    <node id="n24">
+      <data key="d3">
+        <ywpf:ShapeNodeStyle Pen="Black" Brush="Orange" Shape="Star6" />
+      </data>
+      <data key="d0"><![CDATA[Shape Nodes]]></data>
+      <data key="d2">
+        <y:RectD X="-832.575" Y="72.3625" Width="30" Height="30" />
+      </data>
+    </node>
+    <node id="n25">
+      <data key="d3">
+        <ywpf:ShapeNodeStyle Pen="Black" Brush="Orange" Shape="Star8" />
+      </data>
+      <data key="d0"><![CDATA[Shape Nodes]]></data>
+      <data key="d2">
+        <y:RectD X="-812.575" Y="165.3625" Width="30" Height="30" />
+      </data>
+    </node>
+    <node id="n26">
+      <data key="d3">
+        <ywpf:ShapeNodeStyle Pen="Black" Brush="Orange" Shape="Trapez" />
+      </data>
+      <data key="d0"><![CDATA[Shape Nodes]]></data>
+      <data key="d2">
+        <y:RectD X="-684.575" Y="188.3625" Width="30" Height="30" />
+      </data>
+    </node>
+    <node id="n27">
+      <data key="d3">
+        <ywpf:ShapeNodeStyle Pen="Black" Brush="Orange" Shape="Trapez2" />
+      </data>
+      <data key="d0"><![CDATA[Shape Nodes]]></data>
+      <data key="d2">
+        <y:RectD X="-597.575" Y="150.3625" Width="30" Height="30" />
+      </data>
+    </node>
+    <node id="n28">
+      <data key="d3">
+        <ywpf:ShapeNodeStyle Pen="Black" Brush="Orange" Shape="Triangle" />
+      </data>
+      <data key="d0"><![CDATA[Shape Nodes]]></data>
+      <data key="d2">
+        <y:RectD X="-895.575" Y="181.3625" Width="30" Height="30" />
+      </data>
+    </node>
+    <node id="n29">
+      <data key="d3">
+        <ywpf:ShapeNodeStyle Pen="Black" Brush="Orange" Shape="Triangle2" />
+      </data>
+      <data key="d0"><![CDATA[Shape Nodes]]></data>
+      <data key="d2">
+        <y:RectD X="-749.575" Y="230.3625" Width="30" Height="30" />
+      </data>
+    </node>
+    <node id="n31">
+      <data key="d3">
+        <ywpf:BevelNodeStyle Inset="3" Radius="10" Color="Orange" />
+      </data>
+      <data key="d0"><![CDATA[Dummy]]></data>
+      <data key="d1">
+        <x:List>
+          <y:Label LayoutParameter="{x:Static y:InteriorLabelModel.Center}">
+            <y:Label.Text>1</y:Label.Text>
+            <y:Label.Style>
+              <LabelStyle xmlns="http://www.yworks.com/yfiles-wpf/2.1/demos/GraphEditor/Styles" />
+            </y:Label.Style>
+          </y:Label>
+          <y:Label LayoutParameter="{x:Static y:InteriorLabelModel.Center}">
+            <y:Label.Text>1</y:Label.Text>
+            <y:Label.Style>
+              <ywpf:NodeStyleLabelStyleAdapter LabelStyleInsets="5">
+                <ywpf:NodeStyleLabelStyleAdapter.NodeStyle>
+                  <ywpf:BevelNodeStyle Inset="3" Radius="10" Color="LightGray" />
+                </ywpf:NodeStyleLabelStyleAdapter.NodeStyle>
+                <ywpf:NodeStyleLabelStyleAdapter.LabelStyle>
+                   <LabelStyle xmlns="http://www.yworks.com/yfiles-wpf/2.1/demos/GraphEditor/Styles" />
+                </ywpf:NodeStyleLabelStyleAdapter.LabelStyle>
+              </ywpf:NodeStyleLabelStyleAdapter>
+            </y:Label.Style>
+          </y:Label>
+          <y:Label LayoutParameter="{x:Static y:InteriorLabelModel.Center}">
+            <y:Label.Text>1</y:Label.Text>
+            <y:Label.Style>
+              <ywpf:NodeStyleLabelStyleAdapter LabelStyleInsets="5">
+                <ywpf:NodeStyleLabelStyleAdapter.NodeStyle>
+                  <ywpf:ShinyPlateNodeStyle Brush="LightGray" />
+                </ywpf:NodeStyleLabelStyleAdapter.NodeStyle>
+                <ywpf:NodeStyleLabelStyleAdapter.LabelStyle>
+                   <LabelStyle xmlns="http://www.yworks.com/yfiles-wpf/2.1/demos/GraphEditor/Styles" />
+                </ywpf:NodeStyleLabelStyleAdapter.LabelStyle>
+              </ywpf:NodeStyleLabelStyleAdapter>
+            </y:Label.Style>
+          </y:Label>
+          <y:Label LayoutParameter="{x:Static y:InteriorLabelModel.Center}">
+            <y:Label.Text>1</y:Label.Text>
+            <y:Label.Style>
+              <ywpf:NodeStyleLabelStyleAdapter LabelStyleInsets="5">
+                <ywpf:NodeStyleLabelStyleAdapter.NodeStyle>
+                  <ywpf:ShapeNodeStyle Brush="LightGray" Pen="DarkGray" Shape="Ellipse"/>
+                </ywpf:NodeStyleLabelStyleAdapter.NodeStyle>
+                <ywpf:NodeStyleLabelStyleAdapter.LabelStyle>
+                   <LabelStyle xmlns="http://www.yworks.com/yfiles-wpf/2.1/demos/GraphEditor/Styles" />
+                </ywpf:NodeStyleLabelStyleAdapter.LabelStyle>
+              </ywpf:NodeStyleLabelStyleAdapter>
+            </y:Label.Style>
+          </y:Label>
+        </x:List>
+      </data>
+      <data key="d2">
+        <y:RectD X="-710.95" Y="-194.95" Width="30" Height="30" />
+      </data>
+    </node>
+    <node id="n32">
+      <data key="d3">
+        <GroupNodeStyle xmlns="http://www.yworks.com/yfiles-wpf/2.1/demos/GraphEditor/Styles" ButtonLocation="TopLeft">
+          <ywpf:PanelNodeStyle Color="#FFCFE2F8" LabelInsetsColor="#FFA6CAF0" />
+        </GroupNodeStyle>
+      </data>
+      <data key="d0"><![CDATA[Group Nodes]]></data>
+      <data key="d2">
+        <y:RectD X="-710.95" Y="-194.95" Width="100" Height="80" />
+      </data>
+      <data key="d0"><![CDATA[Group Nodes]]></data>
+      <data key="d2">
+        <y:RectD X="-710.95" Y="-194.95" Width="80" Height="30" />
+      </data>
+    </node>
+    <node id="n33">
+      <data key="d3">
+        <GroupNodeStyle xmlns="http://www.yworks.com/yfiles-wpf/2.1/demos/GraphEditor/Styles">
+          <ywpf:ShapeNodeStyle Brush="#FFCFE2F8" Pen="#FFA6CAF0" />
+        </GroupNodeStyle>
+      </data>
+      <data key="d0"><![CDATA[Group Nodes]]></data>
+      <data key="d2">
+        <y:RectD X="-710.95" Y="-194.95" Width="100" Height="80" />
+      </data>
+    </node>
+    <node id="n34">
+      <data key="d3">
+        <GroupNodeStyle xmlns="http://www.yworks.com/yfiles-wpf/2.1/demos/GraphEditor/Styles">
+          <ywpf:ShapeNodeStyle Brush="#FFCFE2F8" Pen="#FFA6CAF0" Shape="RoundRectangle"/>
+        </GroupNodeStyle>
+      </data>
+      <data key="d0"><![CDATA[Group Nodes]]></data>
+      <data key="d2">
+        <y:RectD X="-710.95" Y="-194.95" Width="100" Height="80" />
+      </data>
+    </node>
+    <node id="n35">
+      <data key="d3">
+        <GroupNodeStyle xmlns="http://www.yworks.com/yfiles-wpf/2.1/demos/GraphEditor/Styles">
+          <ywpf:BevelNodeStyle Radius="3" Color="#FFCFE2F8"/>
+        </GroupNodeStyle>
+      </data>
+      <data key="d0"><![CDATA[Group Nodes]]></data>
+      <data key="d2">
+        <y:RectD X="-710.95" Y="-194.95" Width="100" Height="80" />
+      </data>
+    </node>
+    <node id="n36">
+      <data key="d3">
+        <GroupNodeStyle xmlns="http://www.yworks.com/yfiles-wpf/2.1/demos/GraphEditor/Styles">
+          <ywpf:BevelNodeStyle Radius="3" Color="#FFCFE2F8" DrawShadow="true"/>
+        </GroupNodeStyle>
+      </data>
+      <data key="d0"><![CDATA[Group Nodes]]></data>
+      <data key="d2">
+        <y:RectD X="-710.95" Y="-194.95" Width="100" Height="80" />
+      </data>
+    </node>
+    <node id="n37">
+      <data key="d3">
+          <ywpf:PanelNodeStyle Color="#FFCFE2F8" LabelInsetsColor="#FFA6CAF0" />
+      </data>
+      <data key="d0"><![CDATA[Group Nodes]]></data>
+      <data key="d2">
+        <y:RectD X="-710.95" Y="-194.95" Width="100" Height="80" />
+      </data>
+      <data key="d0"><![CDATA[Group Nodes]]></data>
+      <data key="d2">
+        <y:RectD X="-710.95" Y="-194.95" Width="80" Height="30" />
+      </data>
+    </node>
+    <node id="n38">
+      <data key="d3">
+          <ywpf:ShapeNodeStyle Brush="#FFCFE2F8" Pen="#FFA6CAF0" />
+      </data>
+      <data key="d0"><![CDATA[Group Nodes]]></data>
+      <data key="d2">
+        <y:RectD X="-710.95" Y="-194.95" Width="100" Height="80" />
+      </data>
+    </node>
+    <node id="n39">
+      <data key="d3">
+          <ywpf:ShapeNodeStyle Brush="#FFCFE2F8" Pen="#FFA6CAF0" Shape="RoundRectangle"/>
+      </data>
+      <data key="d0"><![CDATA[Group Nodes]]></data>
+      <data key="d2">
+        <y:RectD X="-710.95" Y="-194.95" Width="100" Height="80" />
+      </data>
+    </node>
+    <node id="n40">
+      <data key="d3">
+          <ywpf:BevelNodeStyle Radius="3" Color="#FFCFE2F8"/>
+      </data>
+      <data key="d0"><![CDATA[Group Nodes]]></data>
+      <data key="d2">
+        <y:RectD X="-710.95" Y="-194.95" Width="100" Height="80" />
+      </data>
+    </node>
+    <node id="n41">
+      <data key="d3">
+          <ywpf:BevelNodeStyle Radius="3" Color="#FFCFE2F8" DrawShadow="true"/>
+      </data>
+      <data key="d0"><![CDATA[Group Nodes]]></data>
+      <data key="d2">
+        <y:RectD X="-710.95" Y="-194.95" Width="100" Height="80" />
+      </data>
+    </node>
+    <node id="n42">
+      <data key="d3">
+        <ywpf:BevelNodeStyle Inset="3" Radius="10" Color="Orange" />
+      </data>
+      <data key="d0"><![CDATA[Dummy]]></data>
+      <data key="d2">
+        <y:RectD X="-710.95" Y="-194.95" Width="30" Height="30" />
+      </data>
+      <port name="p0">
+        <data key="d0"><![CDATA[EventPortStyle]]></data>
+        <data key="d11">
+          <CirclePortStyle xmlns="http://www.yworks.com/yfiles-wpf/2.1/demos/GraphEditor/Styles" x:Key="4" Brush="Blue"/>
+        </data>
+      </port>
+    </node>
+    <node id="sourcedummy">
+      <data key="d0"><![CDATA[Dummy]]></data>
+      <port name="p0"/>
+    </node>
+    <node id="targetdummy">
+      <data key="d0"><![CDATA[Dummy]]></data>
+      <port name="p0"/>
+    </node>
+    <edge id="e0" source="sourcedummy" target="targetdummy" sourceport="p0" targetport="p0">
+      <data key="d8">
+        <PolylineEdgeStyle xmlns="http://www.yworks.com/yfiles-wpf/2.1/demos/GraphEditor/Styles" TargetArrowType="Default" SourceArrowType="None" SmoothBends="false"/>
+      </data>
+      <data key="d7">
+        <x:List>
+          <y:Bend Location="-746.610973637572,-149.406350797519" />
+        </x:List>
+      </data>
+    </edge>
+    <edge id="e01" source="sourcedummy" target="targetdummy" sourceport="p0" targetport="p0">
+      <data key="d8">
+        <PolylineEdgeStyle xmlns="http://www.yworks.com/yfiles-wpf/2.1/demos/GraphEditor/Styles" TargetArrowType="Simple" SourceArrowType="None" SmoothBends="false"/>
+      </data>
+      <data key="d7">
+        <x:List>
+          <y:Bend Location="-746.610973637572,-149.406350797519" />
+        </x:List>
+      </data>
+    </edge>
+    <edge id="e03" source="sourcedummy" target="targetdummy" sourceport="p0" targetport="p0">
+      <data key="d8">
+        <PolylineEdgeStyle xmlns="http://www.yworks.com/yfiles-wpf/2.1/demos/GraphEditor/Styles" TargetArrowType="Short" SourceArrowType="None" SmoothBends="false"/>
+      </data>
+      <data key="d7">
+        <x:List>
+          <y:Bend Location="-746.610973637572,-149.406350797519" />
+        </x:List>
+      </data>
+    </edge>
+    <edge id="e04" source="sourcedummy" target="targetdummy" sourceport="p0" targetport="p0">
+      <data key="d8">
+        <PolylineEdgeStyle xmlns="http://www.yworks.com/yfiles-wpf/2.1/demos/GraphEditor/Styles" TargetArrowType="Circle" SourceArrowType="None" SmoothBends="false"/>
+      </data>
+      <data key="d7">
+        <x:List>
+          <y:Bend Location="-746.610973637572,-149.406350797519" />
+        </x:List>
+      </data>
+    </edge>
+    <edge id="e05" source="sourcedummy" target="targetdummy" sourceport="p0" targetport="p0">
+      <data key="d8">
+        <PolylineEdgeStyle xmlns="http://www.yworks.com/yfiles-wpf/2.1/demos/GraphEditor/Styles" TargetArrowType="Cross" SourceArrowType="None" SmoothBends="false"/>
+      </data>
+      <data key="d7">
+        <x:List>
+          <y:Bend Location="-746.610973637572,-149.406350797519" />
+        </x:List>
+      </data>
+    </edge>
+    <edge id="e06" source="sourcedummy" target="targetdummy" sourceport="p0" targetport="p0">
+      <data key="d8">
+        <PolylineEdgeStyle xmlns="http://www.yworks.com/yfiles-wpf/2.1/demos/GraphEditor/Styles" TargetArrowType="Diamond" SourceArrowType="None" SmoothBends="false"/>
+      </data>
+      <data key="d7">
+        <x:List>
+          <y:Bend Location="-746.610973637572,-149.406350797519" />
+        </x:List>
+      </data>
+    </edge>
+    <edge id="e07" source="sourcedummy" target="targetdummy" sourceport="p0" targetport="p0">
+      <data key="d8">
+        <PolylineEdgeStyle xmlns="http://www.yworks.com/yfiles-wpf/2.1/demos/GraphEditor/Styles" TargetArrowType="None" SourceArrowType="None" SmoothBends="false"/>
+      </data>
+      <data key="d7">
+        <x:List>
+          <y:Bend Location="-746.610973637572,-149.406350797519" />
+        </x:List>
+      </data>
+    </edge>
+    <edge id="e08" source="sourcedummy" target="targetdummy" sourceport="p0" targetport="p0">
+      <data key="d8">
+        <PolylineEdgeStyle xmlns="http://www.yworks.com/yfiles-wpf/2.1/demos/GraphEditor/Styles" TargetArrowType="Default" SourceArrowType="None" SmoothBends="true"/>
+      </data>
+      <data key="d7">
+        <x:List>
+          <y:Bend Location="-746.610973637572,-149.406350797519" />
+        </x:List>
+      </data>
+    </edge>
+    <edge id="e02a" source="sourcedummy" target="targetdummy" sourceport="p0" targetport="p0">
+      <data key="d8">
+        <PolylineEdgeStyle xmlns="http://www.yworks.com/yfiles-wpf/2.1/demos/GraphEditor/Styles" TargetArrowType="Simple" SourceArrowType="None" SmoothBends="true"/>
+      </data>
+      <data key="d7">
+        <x:List>
+          <y:Bend Location="-746.610973637572,-149.406350797519" />
+        </x:List>
+      </data>
+    </edge>
+    <edge id="e03a" source="sourcedummy" target="targetdummy" sourceport="p0" targetport="p0">
+      <data key="d8">
+        <PolylineEdgeStyle xmlns="http://www.yworks.com/yfiles-wpf/2.1/demos/GraphEditor/Styles" TargetArrowType="Short" SourceArrowType="None" SmoothBends="true"/>
+      </data>
+      <data key="d7">
+        <x:List>
+          <y:Bend Location="-746.610973637572,-149.406350797519" />
+        </x:List>
+      </data>
+    </edge>
+    <edge id="e04a" source="sourcedummy" target="targetdummy" sourceport="p0" targetport="p0">
+      <data key="d8">
+        <PolylineEdgeStyle xmlns="http://www.yworks.com/yfiles-wpf/2.1/demos/GraphEditor/Styles" TargetArrowType="Cross" SourceArrowType="None" SmoothBends="true"/>
+      </data>
+      <data key="d7">
+        <x:List>
+          <y:Bend Location="-746.610973637572,-149.406350797519" />
+        </x:List>
+      </data>
+    </edge>
+    <edge id="e05a" source="sourcedummy" target="targetdummy" sourceport="p0" targetport="p0">
+      <data key="d8">
+        <PolylineEdgeStyle xmlns="http://www.yworks.com/yfiles-wpf/2.1/demos/GraphEditor/Styles" TargetArrowType="Circle" SourceArrowType="None" SmoothBends="true"/>
+      </data>
+      <data key="d7">
+        <x:List>
+          <y:Bend Location="-746.610973637572,-149.406350797519" />
+        </x:List>
+      </data>
+    </edge>
+    <edge id="e06a" source="sourcedummy" target="targetdummy" sourceport="p0" targetport="p0">
+      <data key="d8">
+        <PolylineEdgeStyle xmlns="http://www.yworks.com/yfiles-wpf/2.1/demos/GraphEditor/Styles" TargetArrowType="Diamond" SourceArrowType="None" SmoothBends="true"/>
+      </data>
+      <data key="d7">
+        <x:List>
+          <y:Bend Location="-746.610973637572,-149.406350797519" />
+        </x:List>
+      </data>
+    </edge>
+    <edge id="e07a" source="sourcedummy" target="targetdummy" sourceport="p0" targetport="p0">
+      <data key="d8">
+        <PolylineEdgeStyle xmlns="http://www.yworks.com/yfiles-wpf/2.1/demos/GraphEditor/Styles" TargetArrowType="None" SourceArrowType="None" SmoothBends="true"/>
+      </data>
+      <data key="d7">
+        <x:List>
+          <y:Bend Location="-746.610973637572,-149.406350797519" />
+        </x:List>
+      </data>
+    </edge>
+    <edge id="e08a" source="sourcedummy" target="targetdummy" sourceport="p0" targetport="p0">
+      <data key="d8">
+        <PolylineEdgeStyle xmlns="http://www.yworks.com/yfiles-wpf/2.1/demos/GraphEditor/Styles" TargetArrowType="Default" SourceArrowType="Default" SmoothBends="false"/>
+      </data>
+      <data key="d7">
+        <x:List>
+          <y:Bend Location="-746.610973637572,-149.406350797519" />
+        </x:List>
+      </data>
+    </edge>
+    <edge id="e4" source="sourcedummy" target="targetdummy" sourceport="p0" targetport="p0">
+      <data key="d8">
+        <ArcEdgeStyle xmlns="http://www.yworks.com/yfiles-wpf/2.1/demos/GraphEditor/Styles" Pen="Black" FixedHeight="False" TargetArrowType="Default" SourceArrowType="None" />
+      </data>
+    </edge>
+    <edge id="e40" source="sourcedummy" target="targetdummy" sourceport="p0" targetport="p0">
+      <data key="d8">
+        <ArcEdgeStyle xmlns="http://www.yworks.com/yfiles-wpf/2.1/demos/GraphEditor/Styles" Pen="Black" FixedHeight="False" TargetArrowType="Simple" SourceArrowType="None" />
+      </data>
+    </edge>
+    <edge id="e41" source="sourcedummy" target="targetdummy" sourceport="p0" targetport="p0">
+      <data key="d8">
+        <ArcEdgeStyle xmlns="http://www.yworks.com/yfiles-wpf/2.1/demos/GraphEditor/Styles" Pen="Black" FixedHeight="False" TargetArrowType="Short" SourceArrowType="None" />
+      </data>
+    </edge>
+    <edge id="e42" source="sourcedummy" target="targetdummy" sourceport="p0" targetport="p0">
+      <data key="d8">
+        <ArcEdgeStyle xmlns="http://www.yworks.com/yfiles-wpf/2.1/demos/GraphEditor/Styles" Pen="Black" FixedHeight="False" TargetArrowType="Cross" SourceArrowType="None" />
+      </data>
+    </edge>
+    <edge id="e43" source="sourcedummy" target="targetdummy" sourceport="p0" targetport="p0">
+      <data key="d8">
+        <ArcEdgeStyle xmlns="http://www.yworks.com/yfiles-wpf/2.1/demos/GraphEditor/Styles" Pen="Black" FixedHeight="False" TargetArrowType="Circle" SourceArrowType="None" />
+      </data>
+    </edge>
+    <edge id="e44" source="sourcedummy" target="targetdummy" sourceport="p0" targetport="p0">
+      <data key="d8">
+        <ArcEdgeStyle xmlns="http://www.yworks.com/yfiles-wpf/2.1/demos/GraphEditor/Styles" Pen="Black" FixedHeight="False" TargetArrowType="Diamond" SourceArrowType="None" />
+      </data>
+    </edge>
+    <edge id="e45" source="sourcedummy" target="targetdummy" sourceport="p0" targetport="p0">
+      <data key="d8">
+        <ArcEdgeStyle xmlns="http://www.yworks.com/yfiles-wpf/2.1/demos/GraphEditor/Styles" Pen="Black" FixedHeight="False" TargetArrowType="None" SourceArrowType="None" />
+      </data>
+    </edge>
+  </graph>
+</graphml>

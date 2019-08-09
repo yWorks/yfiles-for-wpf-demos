@@ -1,0 +1,105 @@
+<!-- ************************************************************************ -->
+<!-- This demo file is part of yFiles WPF 3.2.                           -->
+<!-- Copyright (c) 2000-2019 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
+<!-- 72070 Tuebingen, Germany. All rights reserved.                           -->
+<!--                                                                          -->
+<!-- yFiles demo files exhibit yFiles WPF functionalities. Any redistribution  -->
+<!-- of demo resource files, with or without modification, is not permitted.  -->
+<!--                                                                          -->
+<!-- Owners of a valid software license for a yFiles WPF version that this     -->
+<!-- demo is shipped with are allowed to use the resource file as basis for   -->
+<!-- their own yFiles WPF powered applications. Use of such programs is        -->
+<!-- governed by the rights and conditions as set out in the yFiles WPF        -->
+<!-- license agreement.                                                       -->
+<!--                                                                          -->
+<!-- THIS SOFTWARE IS PROVIDED ''AS IS'' AND ANY EXPRESS OR IMPLIED           -->
+<!-- WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF     -->
+<!-- MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN  -->
+<!-- NO EVENT SHALL yWorks BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,    -->
+<!-- SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED -->
+<!-- TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR   -->
+<!-- PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF   -->
+<!-- LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING     -->
+<!-- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS       -->
+<!-- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.             -->
+<!--                                                                          -->
+<!-- ************************************************************************ -->
+<Window x:Class="Demo.yFiles.Graph.Input.CustomSnapping.CustomSnappingWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/3.0/xaml" 
+        Title="Demo.yFiles.Input.CustomSnapping" Height="700" Width="1000" Loaded="OnLoaded" Style="{StaticResource DemoWindow}">
+    <Window.Resources>
+        <!-- Redefine default pen for all SnapLines -->
+        <Pen x:Key="{x:Static ywpf:SnapLine.SnapLinePenKey}" Brush="DarkBlue" DashStyle="{x:Static DashStyles.Dot}" DashCap="Round" Thickness="1"/>
+    </Window.Resources>
+    <HeaderedContentControl Style="{StaticResource DemoStyle}">
+        <HeaderedContentControl.Header>
+            <RichTextBox BorderThickness="0" IsReadOnly="True">
+                <FlowDocument>
+                    <Paragraph>
+                        This demo shows how the <Run FontWeight="Bold">snapping feature</Run> can be customized.
+                    </Paragraph>
+                    <Paragraph>
+                        In addition to the default snapping features, it adds extra snap lines to the bounds of 
+                        labels, lets the outline of the star shaped nodes snap to the grid points, and uses free 
+                        additional snap lines nodes can snap to.
+                    </Paragraph>
+                    <Paragraph Style="{StaticResource HtmlH2}">
+                        Things to Try
+                    </Paragraph>
+                    <List>
+                        <ListItem>
+                            <Paragraph>
+                                Move the topmost <Bold>black node</Bold> and one of the
+                                <Bold>star shaped nodes</Bold> around and compare 
+                                <Bold>their different grid snapping</Bold> behavior.
+                            </Paragraph>
+                            <Paragraph>
+                                While the black node only snaps to grid points with its center, the star shaped node
+                                snaps with all points of its outline, but then again only to the grid points, 
+                                not in between.
+                            </Paragraph>
+                        </ListItem>
+                        <ListItem>
+                            <Paragraph>
+                                Move the
+                                <Bold>unconnected black node</Bold>
+                                close to an orthogonal node or edge label to snap it to the label's bounds.
+                            </Paragraph>
+                        </ListItem>
+                        <ListItem>
+                            <Paragraph>
+                                Move an
+                                <Bold>edge label</Bold> to a non-orthogonal edge segment to disable node snapping for
+                                this label. Nodes cannot snap to non-orthogonal labels.
+                            </Paragraph>
+                        </ListItem>
+                        <ListItem>
+                            <Paragraph>
+                                Move
+                                <Bold>node and and edge labels</Bold>
+                                along their owner's border/path to snap them to other particular positions relative to
+                                the owner.
+                            </Paragraph>
+                        </ListItem>
+                        <ListItem>
+                            <Paragraph>
+                                Move a node close to the
+                                <Bold>red snap lines</Bold>
+                                to snap it to these non-graph elements.
+                            </Paragraph>
+                        </ListItem>
+                        <ListItem>
+                            <Paragraph>
+                                Change the
+                                <Bold>position of a red snap line</Bold> by dragging it around.
+                            </Paragraph>
+                        </ListItem>
+                    </List>
+                </FlowDocument>
+            </RichTextBox>
+        </HeaderedContentControl.Header>
+        <ywpf:GraphControl Name="graphControl" FileOperationsEnabled="True"/>
+    </HeaderedContentControl>
+</Window>

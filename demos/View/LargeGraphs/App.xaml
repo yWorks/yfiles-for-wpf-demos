@@ -1,0 +1,230 @@
+<!-- ************************************************************************ -->
+<!-- This demo file is part of yFiles WPF 3.2.                           -->
+<!-- Copyright (c) 2000-2019 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
+<!-- 72070 Tuebingen, Germany. All rights reserved.                           -->
+<!--                                                                          -->
+<!-- yFiles demo files exhibit yFiles WPF functionalities. Any redistribution  -->
+<!-- of demo resource files, with or without modification, is not permitted.  -->
+<!--                                                                          -->
+<!-- Owners of a valid software license for a yFiles WPF version that this     -->
+<!-- demo is shipped with are allowed to use the resource file as basis for   -->
+<!-- their own yFiles WPF powered applications. Use of such programs is        -->
+<!-- governed by the rights and conditions as set out in the yFiles WPF        -->
+<!-- license agreement.                                                       -->
+<!--                                                                          -->
+<!-- THIS SOFTWARE IS PROVIDED ''AS IS'' AND ANY EXPRESS OR IMPLIED           -->
+<!-- WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF     -->
+<!-- MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN  -->
+<!-- NO EVENT SHALL yWorks BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,    -->
+<!-- SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED -->
+<!-- TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR   -->
+<!-- PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF   -->
+<!-- LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING     -->
+<!-- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS       -->
+<!-- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.             -->
+<!--                                                                          -->
+<!-- ************************************************************************ -->
+<Application x:Class="Demo.yFiles.Graph.LargeGraphs.DemoApplication"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    StartupUri="LargeGraphsWindow.xaml"
+    >
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/DemoToolkit;component/StyleResources.xaml" />
+                <ResourceDictionary>
+                    <DataTemplate x:Key="RotateIcon">
+                        <Viewbox Stretch="Uniform">
+                            <Canvas Width="64" Height="64">
+                                <Path Fill="White" StrokeThickness="1.5" Stroke="{StaticResource PrimaryBrush}" Data="m 32 6.0042738 c -14.305631 0 -25.9812922 11.7045292 -25.9812922 26.0101602 0 14.305631 11.6756612 25.981292 25.9812922 25.981292 14.305631 0 25.981292 -11.675661 25.981292 -25.981292 l -8.314013 0 c 0 9.812405 -7.854874 17.667279 -17.667279 17.667279 -9.812405 0 -17.667279 -7.854874 -17.667279 -17.667279 0 -9.812405 7.854874 -17.696147 17.667279 -17.696147 3.862455 0 7.546507 1.28368 10.565725 3.550777 L 39.823256 19.976435 52.424945 22.901741 53.015979 9.8725995 49.34973 12.701674 C 44.620298 8.4439323 38.469554 6.0042738 32 6.0042738 z"/>
+                            </Canvas>
+                        </Viewbox>
+                    </DataTemplate>
+                    <DataTemplate x:Key="ZoomIcon">
+                        <Viewbox Stretch="Uniform">
+                            <Canvas Width="64" Height="64">
+                                <Path Fill="White" StrokeThickness="1.5" Stroke="{StaticResource PrimaryBrush}" Data="m 32.173292 2.4918554 c 0 0 -10.022672 5.90499 -10.022672 5.90499 0 0 4.994041 0.01147 4.994041 0.01147 0 0 -7.003383 36.0945106 -7.003383 36.0945106 0 0 -11.7811574 -0.06402 -11.7811574 -0.06402 0 0 23.3218474 17.069337 23.3218474 17.069337 0 0 23.957911 -16.818923 23.957911 -16.818923 0 0 -11.858798 -0.0644 -11.858798 -0.0644 0 0 -6.635341 -36.193535 -6.635341 -36.193535 0 0 5.004447 0.011501 5.004447 0.011501 0 0 -9.976895 -5.9509323 -9.976895 -5.9509323"/>
+                            </Canvas>
+                        </Viewbox>
+                    </DataTemplate>
+                    <DataTemplate x:Key="SpiralZoomIcon">
+                        <Viewbox Stretch="Uniform">
+                            <Canvas Width="64" Height="64">
+                                <Path Fill="White" StrokeThickness="1.5" Stroke="{StaticResource PrimaryBrush}" Data="m 20.027658 30.466513 c 1.673406 3.215045 6.162171 3.947451 9.416327 2.400931 4.899943 -2.328676 6.006917 -8.2175 3.546529 -12.452279 -3.56982 -6.144313 -12.342975 -7.44977 -18.648804 -4.178484 -8.8703711 4.6017 -10.7606702 15.47465 -5.9152371 23.22535 6.6396701 10.620744 22.0789981 12.759686 33.0838691 6.692996 6.513638 -3.590795 11.172082 -9.617345 13.069219 -16.360875 l 3.596923 0.284906 -9.754136 -12.920611 -11.389992 11.143488 3.581825 0.284824 c 0 0 -3.534659 6.885415 -7.046706 8.821511 -5.933641 3.271058 -14.25827 2.117776 -17.83827 -3.608751 -2.612576 -4.179048 -1.593359 -10.041562 3.189399 -12.522721 3.399996 -1.763823 8.130336 -1.059943 10.055123 2.252968 1.3266 2.283323 0.729738 5.458479 -1.912229 6.714061 -1.754587 0.833859 -4.174855 0.438957 -5.077126 -1.294541 -0.572703 -1.100311 -0.283037 -2.631743 1.01117 -3.167464 l 0.956491 1.057454 0.2615 -3.139272 -3.234255 -0.147273 0.959763 1.055608 c -2.387145 1.002667 -2.97355 3.817474 -1.911383 5.858174 z"/>
+                            </Canvas>
+                        </Viewbox>
+                    </DataTemplate>
+                    <DataTemplate x:Key="MoveNodesIcon">
+                        <Viewbox Stretch="Uniform">
+                            <Canvas Width="48" Height="48">
+                                <Path Fill="White" StrokeThickness="1.125" Stroke="{StaticResource PrimaryBrush}" Data="m 33.5625 14.959821 -2.53125 4.0625 c 4.266346 2.635565 5.573065 8.171154 2.9375 12.4375 -2.635565 4.266346 -8.171154 5.573065 -12.4375 2.9375 -0.486396 -0.300474 -0.927402 -0.647575 -1.34375 -1.03125 l 1.6875 -0.96875 -8.25 -4.84375 -0.09375 9.59375 2.34375 -1.34375 c 0.915764 1.043001 1.972441 1.956194 3.15625 2.6875 6.473304 3.998928 15.032322 1.973304 19.03125 -4.5 3.998928 -6.473304 1.973304 -15.032322 -4.5 -19.03125 z M 17.571428 13.5 l 4.714286 0 m -8.142857 0 1.714286 0 M 8.9999998 13.5 12 13.5 m -6.4285712 -5.9285717 20.1428562 0 0 11.8571427 -20.1428562 0 z"/>
+                            </Canvas>
+                        </Viewbox>
+                    </DataTemplate>
+                    <FlowDocument x:Key="Description">
+                        <Paragraph>This demo illustrates improvements in rendering performance for very large graphs
+                            in yFiles WPF. The default settings are adequate for graphs up to a few hundred elements.
+                            Scaling to several thousands of elements is possible with a bit of tweaking, though.</Paragraph>
+                        <Paragraph>The impact of each individual setting depends on the graph, its layout, and how you
+                            interact with it. This demo comes with settings tailored to each example graph. Your use
+                            cases might require different parameters or even other methods.</Paragraph>
+                        
+                        <Paragraph Style="{StaticResource HtmlH2}">Things To Try</Paragraph>
+                        
+                        <List>
+                            <ListItem>
+                                <Paragraph>Modify the different parameters on the right to see their effect on
+                                    performance</Paragraph>
+                            </ListItem>
+                            <ListItem>
+                                <Paragraph>Use the animations in the lower right to quickly test setting changes on
+                                    common interaction patterns like zooming or panning the viewport (the spiral zoom
+                                    tests both at the same time), or moving nodes.</Paragraph>
+                            </ListItem>
+                            <ListItem>
+                                <Paragraph>Watch the information counters in the lower right to see the impact of the
+                                    parameters on frame rate and visual tree size. Frame rate must be observed while
+                                    interacting or running an animation, though.</Paragraph>
+                            </ListItem>
+                            <ListItem>
+                                <Paragraph>Select nodes, edges and labels either by clicking them, using marquee
+                                    selection or by using the selection tools in the lower right. Observe the impact
+                                    on performance and visual tree size, especially with large selections.</Paragraph>
+                            </ListItem>
+                            <ListItem>
+                                <Paragraph>Read on below and in the source code for an explanation of each parameter
+                                    and technique. Also take a look at appendix C in the yFiles WPF Developer's Guide
+                                    for a more detailed explanation.</Paragraph>
+                            </ListItem>
+                        </List>
+                        
+                        <Paragraph Style="{StaticResource HtmlH2}">Overview</Paragraph>
+
+                        <Paragraph>Drawing the overview is costly since the number of visuals in the overview control
+                            is the same as in the normal graph control. Therefore, before investigating other aspects
+                            it is recommended to disable the overview.</Paragraph>
+
+                        <Paragraph Style="{StaticResource HtmlH2}">Faster Item Styles</Paragraph>
+
+                        <Paragraph>A large portion of rendering time is spent in creating and updating the visuals for
+                            graph items via their styles. In this case, features with large performance impact
+                            are:</Paragraph>
+                        <List>
+                            <ListItem>
+                                <Paragraph>Label text is rendered at zoom levels where definitely no text is readable
+                                    anymore.</Paragraph>
+                            </ListItem>
+                            <ListItem>
+                                <Paragraph>Label placement is costly, especially with edge labels, where most label
+                                    models will take the edge's path into account</Paragraph>
+                            </ListItem>
+                            <ListItem>
+                                <Paragraph>Edge paths are clipped at their end node shapes, which isn't visible at low
+                                    zoom levels.</Paragraph>
+                            </ListItem>
+                        </List>
+
+                        <Paragraph Style="{StaticResource HtmlH3}">Label Text Improvements</Paragraph>
+
+                        <List>
+                            <ListItem>
+                                <Paragraph>Label text is approximated by lines instead of drawing the actual text.
+                                    This helps to still see where labels are but text at those sizes wouldn't be
+                                    readable.</Paragraph>
+                            </ListItem>
+                            <ListItem>
+                                <Paragraph>Labels are hidden completely below a certain zoom level.</Paragraph>
+                            </ListItem>
+                        </List>
+
+                        <Paragraph Style="{StaticResource HtmlH3}">Edge Improvements</Paragraph>
+
+                        <List>
+                            <ListItem>
+                                <Paragraph>Omit clipping the edge at the node's shape and simply draw line segments
+                                    to the port locations.</Paragraph>
+                            </ListItem>
+                            <ListItem>
+                                <Paragraph>For lower zoom levels ignore bends and just draw a straight line between
+                                    the two ports. Note that in this case labels would be placed wrongly, so it's
+                                    advisable to only display edge labels above this threshold.</Paragraph>
+                            </ListItem>
+                            <ListItem>
+                                <Paragraph>For lower zoom levels, if the edge would be drawn at a very short length
+                                    on screen, omit them instead. This especially concerns edges between nodes that
+                                    are very close together, in which case the nodes provide enough visual aid to see
+                                    the graph structure.</Paragraph>
+                            </ListItem>
+                        </List>
+
+                        <Paragraph Style="{StaticResource HtmlH2}">Virtualization</Paragraph>
+
+                        <Paragraph>
+                            <Run Style="{StaticResource HtmlCode}">CanvasControl</Run> trims the WPF visual
+                            tree to the elements that are actually visible. This works well when only a hundred
+                            visuals need to removed or added at a time, but results in significant stutter if
+                            thousands of visuals are affected. The latter typically happens when panning or zooming a
+                            large graph at a low zoom level.
+                        </Paragraph>
+                        <Paragraph>To avoid this, virtualization should be disabled at very low zoom levels, but kept
+                            enabled at medium to high zoom levels, as this will lower memory usage (and improve
+                            performance when fewer elements are visible).</Paragraph>
+                        <Paragraph>These values are very sensitive to the displayed graph and its layout as the values
+                            depend mostly on how many items are visible at once. Turning off virtualization improves
+                            panning performance noticeably, at the expense of making zooming across the threshold
+                            slower. There is no special handling for labels here since those shouldn't be visible at
+                            such low zoom levels.</Paragraph>
+
+
+                        <Paragraph Style="{StaticResource HtmlH2}">Selection Performance</Paragraph>
+
+                        <Paragraph>Selections, especially drawing the selection decoration and the resize handles, can
+                            be slow, especially when several thousand elements are selected. Basically this adds at
+                            least as many elements to the visual tree as there are selected items, so a performance
+                            drop can be expected. By disabling handles and using dedicated decoration renderers we can
+                            keep the impact a bit lower.</Paragraph>
+
+                        <Paragraph Style="{StaticResource HtmlH2}">Label Model Baking</Paragraph>
+
+                        <Paragraph>As mentioned before, calculating label placement can be expensive. While hiding
+                            labels at low zoom levels is a good way to cope with this, there are more drastic measures
+                            that can be taken if the graph is known to not change. By replacing all label's models
+                            with a suitable
+                            <Run Style="{StaticResource HtmlCode}">FreeLabelModel</Run> parameter, the
+                            amount of work to determine label placement can be minimized. The drawback is that labels
+                            now no longer move with their nodes or edges.
+                        </Paragraph>
+
+                        <Paragraph Style="{StaticResource HtmlH2}">Dirty Handling</Paragraph>
+
+                        <Paragraph>Another (very low-level) optimization can be done when the graph is known to be
+                            unchanging. Every object in a
+                            <Run Style="{StaticResource HtmlCode}">CanvasControl</Run> is placed in a tree of
+                            <Run Style="{StaticResource HtmlCode}">CanvasObject</Run>s, each of which has a
+                            <Run Style="{StaticResource HtmlCode}">CanvasObjectDescriptor</Run> that handles
+                            hit-testing, visibility checks and creating/updating visuals. For the most part that
+                            descriptor looks very similar to a style, and by default in fact delegates to an item's
+                            style. A descriptor also has a
+                            <Run Style="{StaticResource HtmlEm}">dirty</Run> flag that
+                            is taken into account for visibility checks and updates while drawing.
+                        </Paragraph>
+
+                        <Paragraph>By writing a custom descriptor that mostly returns
+                            <Run Style="{StaticResource HtmlCode}">false</Run> for
+                            <Run Style="{StaticResource HtmlCode}">IsDirty</Run> we can side-step almost all
+                            visibility checks and calls to
+                            <Run Style="{StaticResource HtmlCode}">UpdateVisual</Run>.
+                            This greatly increases rendering speed as almost nothing needs to be done anymore. The
+                            caveat is that we have to manually update the
+                            <Run Style="{StaticResource HtmlEm}">dirty</Run> flag when something changed. In this demo 
+                            this is only done for the zoom level changes that are configured on the right, but more
+                            complex solutions are possible.
+                        </Paragraph>
+
+                    </FlowDocument>
+                </ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

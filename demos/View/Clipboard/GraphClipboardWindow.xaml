@@ -1,0 +1,154 @@
+<!-- ************************************************************************ -->
+<!-- This demo file is part of yFiles WPF 3.2.                           -->
+<!-- Copyright (c) 2000-2019 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
+<!-- 72070 Tuebingen, Germany. All rights reserved.                           -->
+<!--                                                                          -->
+<!-- yFiles demo files exhibit yFiles WPF functionalities. Any redistribution  -->
+<!-- of demo resource files, with or without modification, is not permitted.  -->
+<!--                                                                          -->
+<!-- Owners of a valid software license for a yFiles WPF version that this     -->
+<!-- demo is shipped with are allowed to use the resource file as basis for   -->
+<!-- their own yFiles WPF powered applications. Use of such programs is        -->
+<!-- governed by the rights and conditions as set out in the yFiles WPF        -->
+<!-- license agreement.                                                       -->
+<!--                                                                          -->
+<!-- THIS SOFTWARE IS PROVIDED ''AS IS'' AND ANY EXPRESS OR IMPLIED           -->
+<!-- WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF     -->
+<!-- MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN  -->
+<!-- NO EVENT SHALL yWorks BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,    -->
+<!-- SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED -->
+<!-- TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR   -->
+<!-- PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF   -->
+<!-- LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING     -->
+<!-- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS       -->
+<!-- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.             -->
+<!--                                                                          -->
+<!-- ************************************************************************ -->
+<Window x:Class="Demo.yFiles.Graph.Clipboard.GraphClipboardWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/3.0/xaml" 
+        xmlns:Clipboard="clr-namespace:Demo.yFiles.Graph.Clipboard" 
+        Title="Demo.yFiles.Graph.Clipboard" Height="431" Width="866" 
+        Loaded="OnLoaded" Style="{StaticResource DemoWindow}">
+    <HeaderedContentControl Style="{StaticResource DemoStyle}">
+        <HeaderedContentControl.Header>
+            <RichTextBox BorderThickness="0" IsReadOnly="True">
+                <FlowDocument>
+                    <Paragraph>
+                        Shows different ways of using the class
+                        <Run FontStyle="Italic" Text="GraphClipboard"/> for Copy &amp; Paste operations.
+                    </Paragraph>
+                    <Paragraph>
+                        A main goal of this demo is to show custom clipboard functionality.
+                        Regular clipboard operations like copying nodes, edges and labels are available out-of-the-box.
+                    </Paragraph>
+                    <Paragraph Style="{StaticResource HtmlH2}">
+                        Things to Try
+                    </Paragraph>
+                    <List>
+                        <ListItem>
+                            <Paragraph>Cut, copy and paste elements with the usual keyboard shortcuts.</Paragraph>
+                        </ListItem>
+                        <ListItem>
+                            <Paragraph>Cut and paste elements from one canvas to the other.</Paragraph>
+                        </ListItem>
+                        <ListItem>
+                            <Paragraph>Create new elements in the canvas with the usual gestures.
+                                Click to focus a canvas, then click it again to create a node.
+                            </Paragraph>
+                        </ListItem>
+                    </List>
+                    <Paragraph Style="{StaticResource HtmlH2}">
+                        Remarks
+                    </Paragraph>
+                    <List>
+                        <ListItem>
+                            <Paragraph>Note how both paste variants update the labels of the copied nodes.</Paragraph>
+                        </ListItem>
+                        <ListItem>
+                            <Paragraph>
+                                <Run FontWeight="Bold">Paste Special</Run> only pastes nodes and node labels,
+                                even when edges have been copied or cut.
+                            </Paragraph>
+                        </ListItem>
+                        <ListItem>
+                            <Paragraph>Editing the Name property of a node's business object changes the node's title, too,
+                                as it is bound to the name of the business object.</Paragraph>
+                        </ListItem>
+                        <ListItem>
+                            <Paragraph>Editing one of the nodes that share the same business object will also edit the other one. 
+                                The referential identity between them is kept across clipboard operations.</Paragraph>
+                        </ListItem>
+                    </List>
+                </FlowDocument>
+            </RichTextBox>
+        </HeaderedContentControl.Header>
+        <DockPanel>
+            <Menu Name="menu" DockPanel.Dock="Top">
+                <MenuItem Header="File">
+                    <MenuItem Command="Open" />
+                    <MenuItem Command="SaveAs" />
+                    <Separator/>
+                    <MenuItem Header="Exit" Click="ExitMenuItem_Click"/>
+                </MenuItem>
+                <MenuItem Header="Edit">
+                    <MenuItem Command="Cut" />
+                    <MenuItem Command="Copy"  />
+                    <MenuItem Command="Paste" />
+                    <MenuItem Command="Delete" />
+                    <Separator/>
+                    <MenuItem Command="Undo" />
+                    <MenuItem Command="Redo" />
+                </MenuItem>
+                <MenuItem Header="View">
+                    <MenuItem Command="IncreaseZoom" />
+                    <MenuItem Command="DecreaseZoom" />
+                    <MenuItem Command="{x:Static ywpf:GraphControl.FitGraphBoundsCommand}" />
+                </MenuItem>
+            </Menu>
+            <ToolBarTray Height="Auto" Name="toolBarTray" Width="Auto" DockPanel.Dock="Top">
+                <ToolBar Width="{Binding ActualWidth, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ToolBarTray}}}" Height="Auto" Name="toolBar">
+                    <Button Command="Open" />
+                    <Button Command="SaveAs" />
+                    <Separator/>
+                    <Button Command="Undo" />
+                    <Button Command="Redo" />
+                    <Separator/>
+                    <Button Name="zoomInButton" Command="IncreaseZoom" />
+                    <Button Name="zoomOutButton" Command="DecreaseZoom"  />
+                    <Button Name="fitContentButton" Command="{x:Static ywpf:GraphControl.FitGraphBoundsCommand}"  />
+                    <Separator/>
+                    <Button Name="cutButton" Command="Cut"/>
+                    <Button Name="copyButton" Command="Copy"/>
+                    <Button Name="pasteButton" Command="Paste"/>
+                    <Button Name="pasteSpecialButton" Style="{StaticResource BaseToolBarButtonStyle}" Command="{x:Static Clipboard:GraphClipboardWindow.PasteSpecialCommand}">
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="{StaticResource PasteIcon}" Margin="0,0,4,0"/>
+                            <TextBlock>Paste Special</TextBlock>
+                        </StackPanel>
+                    </Button>
+                    <Separator/>
+                </ToolBar>
+            </ToolBarTray>
+            <!-- The input mode for the graph control is set in the code behind. -->
+            <TabControl Name="tabControl">
+                <TabItem Header="Graph 1">
+                    <ywpf:GraphControl Name="graphControl" FileOperationsEnabled="True" Background="White">
+                        <ywpf:GraphControl.CommandBindings>
+                            <CommandBinding Command="{x:Static Clipboard:GraphClipboardWindow.PasteSpecialCommand}" Executed="OnPasteSpecialCommandExecuted"/>
+                        </ywpf:GraphControl.CommandBindings>
+                    </ywpf:GraphControl>
+                </TabItem>
+                <TabItem Header="Graph 2">
+                    <ywpf:GraphControl Name="graphControl2" FileOperationsEnabled="True" Background="White">
+                        <ywpf:GraphControl.CommandBindings>
+                            <CommandBinding Command="{x:Static Clipboard:GraphClipboardWindow.PasteSpecialCommand}" Executed="OnPasteSpecialCommandExecuted"/>
+                        </ywpf:GraphControl.CommandBindings>
+                    </ywpf:GraphControl>
+                </TabItem>
+            </TabControl>
+        </DockPanel>
+
+    </HeaderedContentControl>
+</Window>

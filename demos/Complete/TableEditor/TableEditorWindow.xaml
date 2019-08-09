@@ -1,0 +1,201 @@
+<!-- ************************************************************************ -->
+<!-- This demo file is part of yFiles WPF 3.2.                           -->
+<!-- Copyright (c) 2000-2019 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
+<!-- 72070 Tuebingen, Germany. All rights reserved.                           -->
+<!--                                                                          -->
+<!-- yFiles demo files exhibit yFiles WPF functionalities. Any redistribution  -->
+<!-- of demo resource files, with or without modification, is not permitted.  -->
+<!--                                                                          -->
+<!-- Owners of a valid software license for a yFiles WPF version that this     -->
+<!-- demo is shipped with are allowed to use the resource file as basis for   -->
+<!-- their own yFiles WPF powered applications. Use of such programs is        -->
+<!-- governed by the rights and conditions as set out in the yFiles WPF        -->
+<!-- license agreement.                                                       -->
+<!--                                                                          -->
+<!-- THIS SOFTWARE IS PROVIDED ''AS IS'' AND ANY EXPRESS OR IMPLIED           -->
+<!-- WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF     -->
+<!-- MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN  -->
+<!-- NO EVENT SHALL yWorks BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,    -->
+<!-- SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED -->
+<!-- TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR   -->
+<!-- PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF   -->
+<!-- LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING     -->
+<!-- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS       -->
+<!-- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.             -->
+<!--                                                                          -->
+<!-- ************************************************************************ -->
+<Window x:Class="Demo.yFiles.Graph.TableEditor.TableEditorWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/3.0/xaml"
+        xmlns:local="clr-namespace:Demo.yFiles.Graph.TableEditor" Title="Demo.yFiles.Graph.TableEditor" Height="650"
+        Width="825" Loaded="OnLoaded" WindowState="Maximized" Style="{StaticResource DemoWindow}">
+  <Window.Resources>
+    <DataTemplate x:Key="NodeListStyleTemplate">
+      <local:NodeStylePanel Item="{Binding}" />
+    </DataTemplate>
+  </Window.Resources>
+  <HeaderedContentControl Style="{StaticResource DemoStyle}">
+    <HeaderedContentControl.Header>
+      <RichTextBox BorderThickness="0" IsReadOnly="True">
+        <FlowDocument>
+          <Paragraph>
+            This demo demonstrates how a
+            <Run FontStyle="Italic">Table</Run>
+            can be modified interactively.
+          </Paragraph>
+          <Paragraph Style="{StaticResource HtmlH2}">
+            Usage
+          </Paragraph>
+          <List Padding="12,0,0,0">
+            <ListItem>
+              <Paragraph>
+                Select a row or column by clicking on its header. Multiple rows or columns can be selected by keeping
+                <Run FontWeight="Bold">CTRL</Run>
+                pressed. Note that selecting
+                a graph element will clear the table selection and vice versa.
+              </Paragraph>
+            </ListItem>
+            <ListItem>
+              <Paragraph>
+                Press <Run FontWeight="Bold">F2</Run> to edit the label of a selected stripe. Enter an empty text to remove the label.
+              </Paragraph>
+            </ListItem>
+            <ListItem>
+              <Paragraph>
+                Press the right mouse button on a stripe header to activate a context menu.
+              </Paragraph>
+            </ListItem>
+          </List>
+          <Paragraph Style="{StaticResource HtmlH2}">
+            Modifying the Table
+          </Paragraph>
+          <List Padding="12,0,0,0">
+            <ListItem>
+              <Paragraph>
+                A new row or column can be added by dragging the corresponding item from list and dropping it onto a table group node.
+              </Paragraph>
+            </ListItem>
+            <ListItem>
+              <Paragraph>
+                Selected items can be deleted using the
+                <Run FontWeight="Bold">DELETE</Run>
+                key or the corresponding menu entry. Children will be reparented to the deleted stripe's parent. The parent and/or the siblings are
+                resized to disturb the overall table layout as little as possible.
+              </Paragraph>
+            </ListItem>
+            <ListItem>
+              <Paragraph>
+                A stripe can be moved by dragging it on it's header to a different position in the table. The highlights indicate whether the stripe is added as a new child or as a sibling of the
+                drop target. Moving a stripe will move all its children as well as its contents.
+              </Paragraph>
+            </ListItem>
+          </List>
+          <Paragraph Style="{StaticResource HtmlH2}">
+            Resizing Stripes
+          </Paragraph>
+          <List Padding="12,0,0,0">
+            <ListItem>
+              <Paragraph>
+                Drag a stripe border to resize the stripe. By default, the neighbor stripes and their contents are moved.
+              </Paragraph>
+            </ListItem>
+            <ListItem>
+              <Paragraph>
+                Except for the topmost/leftmost borders, resizing always extends the stripe to the bottom/to the right.
+              </Paragraph>
+            </ListItem>
+            <ListItem>
+              <Paragraph>
+                Press
+                <Run FontWeight="Bold">SHIFT</Run>
+                at the beginning of the gesture to redistribute the sizes of the two attached stripes.
+              </Paragraph>
+            </ListItem>
+            <ListItem>
+              <Paragraph>
+                By default, stripe borders cannot be dragged over content nodes. Press
+                <Run FontWeight="Bold">CTRL</Run>
+                at the beginning of the resize gesture to resize the stripes freely.
+              </Paragraph>
+            </ListItem>
+            <ListItem>
+              <Paragraph>
+                Resizing the table node will resize the outmost stripe(s) accordingly.
+              </Paragraph>
+            </ListItem>
+          </List>
+          <Paragraph Style="{StaticResource HtmlH2}">
+            Automatic Layout
+          </Paragraph>
+          <List Padding="12,0,0,0">
+            <ListItem>
+              <Paragraph>
+                A node is associated to the row and column it's center coordinates lie in. Therefore it can be associated to another row or column by simply dragging in to a new position.
+              </Paragraph>
+            </ListItem>
+            <ListItem>
+              <Paragraph>
+                A new layout for the tables and their contents can be calculated by pressing the layout button in the tool bar.
+              </Paragraph>
+            </ListItem>
+          </List>
+        </FlowDocument>
+      </RichTextBox>
+    </HeaderedContentControl.Header>
+    <DockPanel>
+      <Menu Name="menu" DockPanel.Dock="Top">
+        <MenuItem Header="File">
+          <MenuItem Command="Open" CommandTarget="{Binding ElementName=graphControl}" />
+          <MenuItem Command="SaveAs" CommandTarget="{Binding ElementName=graphControl}" />
+          <MenuItem Header="Exit" Click="ExitMenuItem_Click" />
+        </MenuItem>
+        <MenuItem Header="Edit">
+          <MenuItem Command="Cut" CommandTarget="{Binding ElementName=graphControl}" />
+          <MenuItem Command="Copy" CommandTarget="{Binding ElementName=graphControl}" />
+          <MenuItem Command="Paste" CommandTarget="{Binding ElementName=graphControl}" />
+          <Separator />
+          <MenuItem Command="Delete" CommandTarget="{Binding ElementName=graphControl}" />
+          <Separator />
+          <MenuItem Command="Undo" CommandTarget="{Binding ElementName=graphControl}" />
+          <MenuItem Command="Redo" CommandTarget="{Binding ElementName=graphControl}" />
+        </MenuItem>
+        <MenuItem Header="View">
+          <MenuItem Command="IncreaseZoom" CommandTarget="{Binding ElementName=graphControl}" />
+          <MenuItem Command="DecreaseZoom" CommandTarget="{Binding ElementName=graphControl}" />
+          <MenuItem Header="Zoom 1:1" CommandParameter="1" Command="Zoom"
+                    CommandTarget="{Binding ElementName=graphControl}" />
+          <MenuItem Command="{x:Static ywpf:GraphControl.FitGraphBoundsCommand}"
+                    CommandTarget="{Binding ElementName=graphControl}" />
+        </MenuItem>
+      </Menu>
+            <ToolBarTray Height="Auto" Name="toolBarTray" Width="Auto" DockPanel.Dock="Top">
+                <ToolBar Width="{Binding ActualWidth, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ToolBarTray}}}" Height="Auto" Name="toolBar" DockPanel.Dock="Top">
+                    <Button Command="Open" CommandTarget="{Binding ElementName=graphControl}" />
+                    <Button Command="SaveAs" CommandTarget="{Binding ElementName=graphControl}" />
+                    <Separator/>
+                    <Button Command="Undo" CommandTarget="{Binding ElementName=graphControl}" />
+                    <Button Command="Redo" CommandTarget="{Binding ElementName=graphControl}" />
+                    <Separator/>
+                    <Button Command="Cut" CommandTarget="{Binding ElementName=graphControl}" />
+                    <Button Command="Copy" CommandTarget="{Binding ElementName=graphControl}" />
+                    <Button Command="Paste" CommandTarget="{Binding ElementName=graphControl}" />
+                    <Separator/>
+                    <Button Command="IncreaseZoom" CommandTarget="{Binding ElementName=graphControl}" />
+                    <Button Command="DecreaseZoom" CommandTarget="{Binding ElementName=graphControl}" />
+                    <Button Command="{x:Static ywpf:GraphControl.FitGraphBoundsCommand}" CommandTarget="{Binding ElementName=graphControl}" />
+                    <Separator />
+                    <Button Name="layoutButton" Click="LayoutButton_Click" Style="{StaticResource BaseToolBarButtonStyle}" >
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="{StaticResource LayoutIcon}" Margin="2,0,4,0"/>
+                            <TextBlock>Layout</TextBlock>
+                        </StackPanel>
+                    </Button>
+                </ToolBar>
+            </ToolBarTray>
+            <ScrollViewer DockPanel.Dock="Left" Width="Auto" VerticalScrollBarVisibility="Auto">
+        <ListView x:Name="styleListBox" ItemTemplate="{StaticResource NodeListStyleTemplate}" Width="170" />
+      </ScrollViewer>
+      <ywpf:GraphControl x:Name="graphControl" FileOperationsEnabled="True"></ywpf:GraphControl>
+    </DockPanel>
+  </HeaderedContentControl>
+</Window>
