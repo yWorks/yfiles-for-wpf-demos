@@ -166,6 +166,8 @@ namespace Demo.yFiles.Layout.Configurations
     [Label("Horizontal Distance")]
     [OptionGroup("TranslateGroup", 10)]
     [DefaultValue(0.0d)]
+    [MinMax(Min = -999d, Max = 999d, Step = 1)]
+    [ComponentType(ComponentTypes.Slider)]
     public double TranslateXItem { get; set; }
 
     public bool ShouldDisableTranslateXItem {
@@ -175,6 +177,8 @@ namespace Demo.yFiles.Layout.Configurations
     [Label("Vertical Distance")]
     [OptionGroup("TranslateGroup", 20)]
     [DefaultValue(0.0d)]
+    [MinMax(Min = -999d, Max = 999d, Step = 1)]
+    [ComponentType(ComponentTypes.Slider)]
     public double TranslateYItem { get; set; }
 
     public bool ShouldDisableTranslateYItem {

@@ -47,6 +47,14 @@ namespace Tutorial.GettingStarted
   /// This support is provided through the classes <see cref="GraphSnapContext"/> 
   /// and <see cref="GridVisualCreator"/>.
   /// </summary>
+  /// <remarks>
+  /// Note that visualization and functionality do not depend on each other:
+  /// it is possible to
+  /// <list type="bullet">
+  /// <item>display a grid but don't snap to it</item>
+  /// <item>snap to a grid but don't display it</item>
+  /// </list>
+  /// </remarks>
   public partial class SampleApplication
   {
       ///////////////// New in this Sample /////////////////
@@ -93,10 +101,8 @@ namespace Tutorial.GettingStarted
     {
       get { return gridVisible; }
       set { gridVisible = value;
-        // toggles visibility
+        // toggles the visibility of the grid
         if (grid != null) { grid.Visible = gridVisible; }
-        // ...and functionality
-        if (graphSnapContext != null) { graphSnapContext.GridSnapType = gridVisible ? GridSnapType : GridSnapTypes.None; }
         // triggers repaint
         graphControl.Invalidate();
       }

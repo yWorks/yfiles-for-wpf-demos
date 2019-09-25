@@ -88,7 +88,7 @@ namespace Demo.yFiles.Graph.Input.PositionHandler
       IGraph graph = graphControl.Graph;
 
       // Create a default editor input mode
-      GraphEditorInputMode graphEditorInputMode = new GraphEditorInputMode();
+      var graphEditorInputMode = new GraphEditorInputMode();
 
       // Just for user convenience: disable node and edge creation,
       graphEditorInputMode.AllowCreateEdge = false;
@@ -97,6 +97,8 @@ namespace Demo.yFiles.Graph.Input.PositionHandler
       graphEditorInputMode.DeletableItems = GraphItemTypes.None;
       // don't show resize handles,
       graphEditorInputMode.ShowHandleItems = GraphItemTypes.None;
+      // disable clipboard,
+      graphEditorInputMode.AllowClipboardOperations = false;
       // and enable the undo feature.
       graph.SetUndoEngineEnabled(true);
 
@@ -111,6 +113,8 @@ namespace Demo.yFiles.Graph.Input.PositionHandler
       RegisterPositionHandler(boundaryRectangle);
 
       CreateSampleGraph(graph);
+      // reset the Undo queue so the initial graph creation cannot be undone
+      graph.GetUndoEngine().Clear();
     }
 
     /// <summary>

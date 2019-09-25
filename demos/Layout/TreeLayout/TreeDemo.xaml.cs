@@ -30,6 +30,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -59,20 +60,20 @@ namespace Demo.yFiles.Layout.Tree
     public TreeDemo() {
       InitializeComponent();
       nodePlacerPanel.ReloadConfiguration += delegate { UpdatePlacerList(); };
-      nodePlacerPanel.ApplyConfiguration += delegate { ApplyConfigurations(); };
+      nodePlacerPanel.ApplyConfiguration += async delegate { await ApplyConfigurations(); };
     }
 
     ///<summary>
     /// Apply the current settings to the graph.
     ///</summary>
-    private void ApplyConfigurations() {
+    private async Task ApplyConfigurations() {
       IGraph graph = graphControl.Graph;
       // Get the root node of the tree.
       var graphAdapter = new YGraphAdapter(graph);
       INode root = graphAdapter.GetOriginalNode(Trees.GetRoot(graphAdapter.YGraph));
       // apply the current setting to all nodes of the same layer.
       ApplySettingsRecursively(graph, root, 0);
-      DoLayout();
+      await ApplyLayout();
     }
 
     ///<summary>
@@ -147,9 +148,9 @@ namespace Demo.yFiles.Layout.Tree
       geim.ContextMenuItems = GraphItemTypes.Node;
       geim.PopulateItemContextMenu += ContextMenuInputModePopulateContextMenu;
       geim.DeletingSelection += GeimDeletingSelection;
-      geim.DeletedSelection += delegate {
+      geim.DeletedSelection += async delegate {
         //And trigger new layout
-        DoLayout();
+        await ApplyLayout();
       };
       //Disallow multi selection
       geim.MarqueeSelectionInputMode.Enabled = false;
@@ -199,7 +200,7 @@ namespace Demo.yFiles.Layout.Tree
       createEdgeInputMode.EdgeCreated += InteractiveEdgeCreated;
     }
     
-    private void InteractiveEdgeCreated(object sender, EdgeEventArgs e) {
+    private async void InteractiveEdgeCreated(object sender, EdgeEventArgs e) {
       INode node = (INode) e.Item.TargetPort.Owner;
       int layer = GetLayer(node);
       IGraph graph = graphControl.Graph;
@@ -217,7 +218,7 @@ namespace Demo.yFiles.Layout.Tree
       }
       placers[node] = placer ?? new DefaultNodePlacer();
       // execute the layout
-      DoLayout();
+      await ApplyLayout();
       // set the placer panel to the node's layer
       nodePlacerPanel.Level = layer;
     }
@@ -278,7 +279,7 @@ namespace Demo.yFiles.Layout.Tree
       bool assistant = assistants[node];
 
       var menuItem = new MenuItem {Header = "Set as " + (assistant ? "normal" : "assistant")};
-      menuItem.Click += delegate {
+      menuItem.Click += async delegate {
                           //Toggle the value in the map and set the style to indicate an assistant node
                           assistants[node] = !assistant;
                           var shinyPlateNodeStyle = node.Style.Clone() as ShinyPlateNodeStyle;
@@ -288,7 +289,7 @@ namespace Demo.yFiles.Layout.Tree
                                                         : null;
                             graphControl.Graph.SetStyle(node, shinyPlateNodeStyle);
                           }
-                          DoLayout();
+                          await ApplyLayout();
                         };
       e.Menu.Items.Add(menuItem);
       e.ShowMenu = true;
@@ -305,7 +306,7 @@ namespace Demo.yFiles.Layout.Tree
       }
     }
 
-    private void SampleComboBoxSelectedValueChanged(object sender, SelectionChangedEventArgs e) {
+    private async void SampleComboBoxSelectedValueChanged(object sender, SelectionChangedEventArgs e) {
       switch ((string) sampleComboBox.SelectedItem) {
         case "Example Tree":
           CreateSampleGraph(graphControl.Graph);
@@ -319,7 +320,7 @@ namespace Demo.yFiles.Layout.Tree
       //Center the graph to prevent the initial layout fading in from the top left corner
       graphControl.FitGraphBounds();
       //And trigger new layout
-      DoLayout();
+      await ApplyLayout();
       //Clear the undo engine afterwards
       var undoEngine = graphControl.Graph.GetUndoEngine();
       if (undoEngine != null) {
@@ -370,7 +371,7 @@ namespace Demo.yFiles.Layout.Tree
     ///<summary>
     /// Execute the layout algorithm.
     /// </summary>
-    private void DoLayout() {
+    private async Task ApplyLayout() {
       var treeLayout = new TreeLayout();
       var executor = new LayoutExecutor(graphControl, treeLayout) {
         AnimateViewport = true,
@@ -390,7 +391,7 @@ namespace Demo.yFiles.Layout.Tree
       };
 
       try {
-        executor.Start();
+        await executor.Start();
       } catch (Exception e) {
         MessageBox.Show(this,
           "Layout did not complete successfully.\n" + e.Message);

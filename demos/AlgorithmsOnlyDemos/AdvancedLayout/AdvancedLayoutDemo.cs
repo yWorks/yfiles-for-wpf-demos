@@ -28,8 +28,7 @@
  ***************************************************************************/
 
 using System;
-using System.Windows.Forms;
-using Demo.yWorks.LayoutGraphViewer;
+using Demo.Layout.LayoutGraphViewer;
 using yWorks.Algorithms;
 using yWorks.Algorithms.Geometry;
 using yWorks.Layout;
@@ -155,7 +154,8 @@ namespace Demo.Layout.AdvancedLayout
 
       //display the result in a simple viewer
       gv.AddLayoutGraph(graph, "Layout with Integrated Labeling");
-      Application.Run(gv);
+      var application = new System.Windows.Application();
+      application.Run(gv);
     }
 
     private static IEdgeLabelLayout CreateEdgeLabelLayout(ILabelLayoutFactory labelFactory, Edge edge,

@@ -32,6 +32,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
@@ -58,10 +59,10 @@ namespace Demo.yFiles.DataBinding.DataSetBinding
 
     public static readonly RoutedCommand LayoutCommand = new RoutedCommand();
 
-    private static void OnLayoutCommandExecuted(object sender, ExecutedRoutedEventArgs e) {
+    private static async void OnLayoutCommandExecuted(object sender, ExecutedRoutedEventArgs e) {
       DataSetBindingWindow graphSourceDemoWindow = sender as DataSetBindingWindow;
       if (graphSourceDemoWindow != null) {
-        DoLayout(graphSourceDemoWindow.graphControl);
+        await DoLayout(graphSourceDemoWindow.graphControl);
         e.Handled = true;
       }
     }
@@ -73,8 +74,8 @@ namespace Demo.yFiles.DataBinding.DataSetBinding
       InitializeComponent();
     }
 
-    private void Window_Loaded(object sender, RoutedEventArgs e) {
-      DoLayout(graphControl);
+    private async void Window_Loaded(object sender, RoutedEventArgs e) {
+      await DoLayout(graphControl);
     }
 
     /// <summary>
@@ -82,7 +83,7 @@ namespace Demo.yFiles.DataBinding.DataSetBinding
     /// of the graph control.
     /// </summary>
     /// <param name="graphControl">the graph control</param>
-    public static async void DoLayout(GraphControl graphControl)
+    public static async Task DoLayout(GraphControl graphControl)
     {
       if (graphControl == null || graphControl.Graph == null)
       {

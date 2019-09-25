@@ -32,6 +32,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Markup;
 using System.Windows.Media;
@@ -72,22 +73,21 @@ namespace Demo.yFiles.Layout.BusRouterDemo
     /// </summary>
     /// <seealso cref="InitializeInputModes"/>
     /// <seealso cref="InitializeGraph"/>
-    protected void OnLoaded(object source, RoutedEventArgs e) {
+    protected async void OnLoaded(object source, RoutedEventArgs e) {
       // initialize the input mode
       InitializeInputModes();
 
       // initialize the graph
-      InitializeGraph();
-
+      await InitializeGraph();
     }
 
     /// <summary>
     /// Initializes the graph instance setting default styles
     /// and creating a small sample graph.
     /// </summary>
-    protected virtual void InitializeGraph() {
+    protected virtual async Task InitializeGraph() {
       graphControl.ImportFromGraphML(Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().CodeBase), "Resources\\default.graphml"));
-      DoLayout(Scope.RouteAllEdges);
+      await DoLayout(Scope.RouteAllEdges);
     }
 
     /// <summary>
@@ -141,14 +141,14 @@ namespace Demo.yFiles.Layout.BusRouterDemo
     /// <summary>
     /// Formats the current graph.
     /// </summary>
-    private void OnLayoutClick(object sender, EventArgs e) {
-      DoLayout(Scope.RouteAllEdges);
+    private async void OnLayoutClick(object sender, EventArgs e) {
+      await DoLayout(Scope.RouteAllEdges);
     }
 
     /// <summary>
     /// Creates the edges between all selected nodes, resulting in a complete subgraph.
     /// </summary>
-    private void OnConnectNodesClick(object sender, RoutedEventArgs e) {
+    private async void OnConnectNodesClick(object sender, RoutedEventArgs e) {
       var graph = graphControl.Graph;
 
       // find the first "Network" node, if any
@@ -172,7 +172,7 @@ namespace Demo.yFiles.Layout.BusRouterDemo
         }
       }
       graphControl.Invalidate();
-      DoLayout(Scope.RouteAffectedEdges);
+      await DoLayout(Scope.RouteAffectedEdges);
     }
 
     #endregion
@@ -185,7 +185,7 @@ namespace Demo.yFiles.Layout.BusRouterDemo
     /// <summary>
     /// Perform the layout operation
     /// </summary>
-    private async void DoLayout(Scope scope) {
+    private async Task DoLayout(Scope scope) {
       // layout starting, disable button
       layoutButton.IsEnabled = false;
 
@@ -208,8 +208,8 @@ namespace Demo.yFiles.Layout.BusRouterDemo
       layoutButton.IsEnabled = true;
     }
 
-    private void OnRefreshButtonClicked(object sender, RoutedEventArgs e) {
-      InitializeGraph();
+    private async void OnRefreshButtonClicked(object sender, RoutedEventArgs e) {
+      await InitializeGraph();
     }
   }
 

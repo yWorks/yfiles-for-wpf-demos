@@ -29,6 +29,7 @@
 
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Demo.Base.RandomGraphGenerator;
 using yWorks.Geometry;
 using yWorks.Graph;
@@ -46,7 +47,7 @@ namespace Demo.yFiles.GraphEditor.UI
     public const string AllowSelfloops = "AllowSelfloops";
     public const string AllowMultipleEdges = "AllowMultipleEdges";
 
-    protected override void RunModule() {
+    protected override Task RunModule() {
       RandomGraphGenerator rg = new RandomGraphGenerator
       {
         NodeCount = (int) Handler[NumberOfNodes].Value,
@@ -63,6 +64,7 @@ namespace Demo.yFiles.GraphEditor.UI
       }
       RandomizeGraph();
       GraphControl.Invalidate();
+      return Task.FromResult<object>(null);
     }
 
     private void RandomizeGraph() {

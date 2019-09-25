@@ -29,6 +29,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Demo.yFiles.Option.Constraint;
 using Demo.yFiles.Option.Editor;
 using Demo.yFiles.Option.Handler;
@@ -580,7 +581,7 @@ namespace Demo.yFiles.GraphEditor.Modules.Layout
 
     #region private helpers
 
-    protected override void StartWithIGraph(IGraph graph, ILookup newContext) {
+    protected override async Task StartWithIGraph(IGraph graph, ILookup newContext) {
       OptionGroup epGroup = (OptionGroup)Handler.GetGroupByName(LABELING).GetGroupByName(LABELING_EDGE_PROPERTIES);
       string edgeLabelModelName = (string)epGroup[EDGE_LABEL_MODEL].Value;
       string edgeLabelingName = (string)epGroup[EDGE_LABELING].Value;
@@ -629,7 +630,7 @@ namespace Demo.yFiles.GraphEditor.Modules.Layout
         graph.MapperRegistry.CreateDelegateMapper(HierarchicLayout.FolderNodesDpKey, node => foldingView.IsInFoldingState(node));
       }
       try {
-        base.StartWithIGraph(graph, newContext);
+        await base.StartWithIGraph(graph, newContext);
       } finally {
         if (useDirectedness) graph.MapperRegistry.RemoveMapper(HierarchicLayout.EdgeDirectednessDpKey);
         if (useThickness) graph.MapperRegistry.RemoveMapper(HierarchicLayout.EdgeThicknessDpKey);

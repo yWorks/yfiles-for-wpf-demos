@@ -60,7 +60,7 @@ namespace Demo.yFiles.Complete.RotatableNodes
     /// The <see cref="IDataProvider"/> key to register a data provider that provides the outline and oriented
     /// layout to this stage.
     /// </summary>
-    public static NodeDpKey<RotatedNodeShape> RotatedNodeLayoutDpKey = new NodeDpKey<RotatedNodeShape>(typeof(RotatedNodeLayoutStage), "RotatedNodeLayoutDpKey");
+    public static readonly NodeDpKey<RotatedNodeShape> RotatedNodeLayoutDpKey = new NodeDpKey<RotatedNodeShape>(typeof(RotatedNodeLayoutStage), "RotatedNodeLayoutDpKey");
 
     /// <summary>
     /// Gets or sets the mode to use to connect edges from the bounding box to the actual shape.
@@ -294,7 +294,7 @@ namespace Demo.yFiles.Complete.RotatableNodes
     /// for the oriented rectangles rotation.
     /// </summary>
     /// <remarks>
-    /// If the oriented rectangle is rotated 180° the port sides will be flipped, e.g.
+    /// If the oriented rectangle is rotated 180Â° the port sides will be flipped, e.g.
     /// The port constraints will be replaced.
     /// </remarks>
     /// <param name="portConstraints">The data provider for source or target constraints.</param>

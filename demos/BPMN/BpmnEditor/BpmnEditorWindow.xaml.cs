@@ -779,7 +779,7 @@ namespace Demo.yFiles.Graph.Bpmn.Editor
     /// <summary>
     /// Event callback to handle the automatic layout.
     /// </summary>
-    private void OnLayoutClick(object sender, RoutedEventArgs e) {
+    private async void OnLayoutClick(object sender, RoutedEventArgs e) {
       // Create a new BpmnLayout using a Left-To-Right layout orientation
       var bpmnLayout = new BpmnLayout { LayoutOrientation = yWorks.Layout.Bpmn.LayoutOrientation.LeftToRight };
 
@@ -800,7 +800,7 @@ namespace Demo.yFiles.Graph.Bpmn.Editor
           StartNodesFirst = true
         }
       };
-      layoutExecutor.Start();
+      await layoutExecutor.Start();
     }
 
     /// <summary>

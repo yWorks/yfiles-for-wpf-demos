@@ -491,6 +491,9 @@ namespace Demo.yFiles.Toolkit.OptionHandler
         var enumValues = new List<EnumValue>();
         foreach (var attribute in attributes) {
           var enumValue = ((EnumValueAttribute) attribute);
+          if (enumValue.Value.GetType() != obj.ValueType) {
+            throw new Exception("Type mismatch between optionValue(" + type + ") and enumValue(" + enumValue.Value.GetType() + " for Option " + obj.Name);
+          }
           enumValues.Add(new EnumValue(enumValue.Label, enumValue.Value));
         }
         obj.EnumValues = enumValues;

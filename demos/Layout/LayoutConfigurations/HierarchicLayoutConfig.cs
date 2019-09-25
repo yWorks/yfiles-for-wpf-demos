@@ -575,9 +575,9 @@ namespace Demo.yFiles.Layout.Configurations
     [Label("Alignment within Layer")]
     [OptionGroup("RankGroup", 20)]
     [DefaultValue(0.0d)]
-    [EnumValue("Top Border of Nodes", 0)] 
-    [EnumValue("Center of Nodes", 0.5)] 
-    [EnumValue("Bottom Border of Nodes", 1)]
+    [EnumValue("Top Border of Nodes", 0d)] 
+    [EnumValue("Center of Nodes", 0.5d)] 
+    [EnumValue("Bottom Border of Nodes", 1d)]
     public double LayerAlignmentItem { get; set; }
 
     [Label("Component Arrangement")]

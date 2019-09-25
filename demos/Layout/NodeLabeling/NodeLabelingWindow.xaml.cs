@@ -32,6 +32,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Reflection;
 using System.Resources;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Markup;
@@ -135,7 +136,7 @@ namespace Demo.yFiles.Layout.NodeLabeling
     /// This method initializes the graph and the input mode.
     /// </summary>
     /// <seealso cref="InitializeGraph"/>
-    protected virtual void OnLoad(object src, EventArgs e) {
+    protected virtual async void OnLoad(object src, EventArgs e) {
       // add background
       object userObject = new BackgroundVisualCreator();
       graphControl.BackgroundGroup.AddChild(userObject);
@@ -149,7 +150,7 @@ namespace Demo.yFiles.Layout.NodeLabeling
       SetupOptions();
 
       // do initial label placement
-      DoLabelPlacement();
+      await DoLabelPlacement();
       graphControl.FitGraphBounds();
     }
 
@@ -188,7 +189,7 @@ namespace Demo.yFiles.Layout.NodeLabeling
     /// Does the label placement using the generic labeling algorithm. Before this, the model and size of the labels is
     /// set according to the option handlers settings.
     /// </summary>
-    private async void DoLabelPlacement() {
+    private async Task DoLabelPlacement() {
       if (inLayout) {
         return;
       }
@@ -284,8 +285,8 @@ namespace Demo.yFiles.Layout.NodeLabeling
       Handler.I18nFactory = rmf;
     }
 
-    private void HandlerPropertyChanged(object sender, PropertyChangedEventArgs e) {
-      DoLabelPlacement();
+    private async void HandlerPropertyChanged(object sender, PropertyChangedEventArgs e) {
+      await DoLabelPlacement();
     }
 
     #endregion
@@ -320,12 +321,12 @@ namespace Demo.yFiles.Layout.NodeLabeling
 
     #endregion
 
-    private void PlaceLabelsButton_OnClick(object sender, RoutedEventArgs e) {
+    private async void PlaceLabelsButton_OnClick(object sender, RoutedEventArgs e) {
       //Remove focus from the editor control
       //This will force an update of all values (and also trigger a layout IF something really has changed)
       var scope = FocusManager.GetFocusScope(editorControl); // elem is the UIElement to unfocus
       FocusManager.SetFocusedElement(scope, null); // remove logical focus
-      DoLabelPlacement();
+      await DoLabelPlacement();
     }
   }
 }

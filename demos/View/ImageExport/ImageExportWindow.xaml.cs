@@ -200,8 +200,8 @@ namespace Demo.yFiles.ImageExport
 
 
       OptionItem sizeItem = currentGroup.AddList(SIZE, SizeModes, USE_ORIGINAL_SIZE);
-      IOptionItem widthItem = currentGroup.AddInt(WIDTH, DefaultWidth);
-      IOptionItem heightItem = currentGroup.AddInt(HEIGHT, DefaultHeight);
+      IOptionItem widthItem = currentGroup.AddInt(WIDTH, DefaultWidth, 1, int.MaxValue);
+      IOptionItem heightItem = currentGroup.AddInt(HEIGHT, DefaultHeight, 1, Int32.MaxValue);
 
       currentGroup.AddDouble(SCALE, DefaultScale);
 

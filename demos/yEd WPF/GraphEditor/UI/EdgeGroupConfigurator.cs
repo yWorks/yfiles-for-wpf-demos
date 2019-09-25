@@ -28,6 +28,7 @@
  ***************************************************************************/
 
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Demo.yFiles.Option.Constraint;
 using Demo.yFiles.Option.Editor;
 using Demo.yFiles.Option.Handler;
@@ -63,7 +64,7 @@ namespace Demo.yFiles.GraphEditor.UI
 
     public EdgeGroupConfigurator() : base(NAME) { }
 
-    protected override void RunModule() {
+    protected override Task RunModule() {
       IMapperRegistry registry = CurrentIGraph.MapperRegistry;
       OptionGroup toplevelGroup = Handler.GetGroupByName(TOP_LEVEL);
       if ((bool) toplevelGroup[ClearAllConstraints].Value) {
@@ -117,6 +118,7 @@ namespace Demo.yFiles.GraphEditor.UI
         registry.AddMapper(PortConstraintKeys.TargetGroupIdDpKey,
                            targetIDMapper);
       }
+      return Task.FromResult<object>(null);
     }
 
     protected override void SetupHandler() {

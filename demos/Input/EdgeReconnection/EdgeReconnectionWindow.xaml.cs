@@ -297,6 +297,8 @@ namespace Demo.yFiles.Graph.Input.EdgeReconnection
       graphEditorInputMode.AllowCreateNode = false;
       // disable deleting items
       graphEditorInputMode.DeletableItems = GraphItemTypes.None;
+      // disable the clipboard
+      graphEditorInputMode.AllowClipboardOperations = false;
       // and enable the undo feature.
       graph.SetUndoEngineEnabled(true);
 
@@ -352,6 +354,7 @@ namespace Demo.yFiles.Graph.Input.EdgeReconnection
           portCandidate.CreatePort(graphControl.InputModeContext);
         }
       }
+      graph.GetUndoEngine().Clear();
     }
 
     /// <summary>

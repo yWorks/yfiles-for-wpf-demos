@@ -27,6 +27,7 @@
  ** 
  ***************************************************************************/
 
+using System.Threading.Tasks;
 using Demo.Base.TreeGenerator;
 using Demo.yFiles.GraphEditor.Modules.Layout;
 using yWorks.Graph;
@@ -49,7 +50,7 @@ namespace Demo.yFiles.GraphEditor.UI
       Handler.AddInt(MaxChildCount, rg.MaxChildCount);
     }
 
-    protected override void RunModule() {
+    protected override async Task RunModule() {
       TreeGenerator rg = new TreeGenerator();
 
       rg.NodeCount = (int) Handler[NumberOfNodes].Value;
@@ -62,7 +63,7 @@ namespace Demo.yFiles.GraphEditor.UI
         CurrentIGraph.AddLabel(node, "" + ++i);
       }
       GraphControl.Invalidate();
-      new TreeLayoutModule{RunInBackground = false}.Start(Context);
+      await new TreeLayoutModule{RunInBackground = false}.Start(Context);
     }
   }
 }

@@ -74,9 +74,6 @@
     <Reference Include="yWorks.yFilesWPF.Viewer">
       <HintPath>..\..\..\..\lib\net40\\yWorks.yFilesWPF.Viewer.dll</HintPath>
     </Reference>
-    <Reference Include="yWorks.yFilesWPF.Algorithms">
-      <HintPath>..\..\..\..\lib\net40\\yWorks.yFilesWPF.Algorithms.dll</HintPath>
-    </Reference>
     <Reference Include="yWorks.yFilesWPF.Viewer.Automation">
       <HintPath>..\..\..\..\lib\net40\\yWorks.yFilesWPF.Viewer.Automation.dll</HintPath>
     </Reference>

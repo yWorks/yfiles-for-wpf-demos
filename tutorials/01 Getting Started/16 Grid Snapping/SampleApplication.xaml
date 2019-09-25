@@ -44,6 +44,9 @@
                         and
                         <Run FontStyle="Italic">GridVisualCreator</Run> .
                     </Paragraph>
+                    <Paragraph>Note that grid visualization and grid snapping functionality
+                        can be enabled independently from each other.
+                    </Paragraph>
                     <Paragraph>See the sources for details.
                     </Paragraph>
                 </FlowDocument>

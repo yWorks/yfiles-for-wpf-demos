@@ -28,8 +28,7 @@
  ***************************************************************************/
 
 using System;
-using System.Windows.Forms;
-using Demo.yWorks.LayoutGraphViewer;
+using Demo.Layout.LayoutGraphViewer;
 using yWorks.Algorithms;
 using yWorks.Layout;
 using yWorks.Layout.Hierarchic;
@@ -112,7 +111,10 @@ namespace Demo.Layout.SwimLaneLayout
       graph.RemoveDataProvider(HierarchicLayout.SwimlaneDescriptorDpKey);
 
       //display the graph in a simple viewer
-      Application.Run(new GraphViewer(graph, "Swimlane Demo"));
+      var viewer = new GraphViewer();
+      viewer.AddLayoutGraph(graph, "Swimlane Demo");
+      var application = new System.Windows.Application();
+      application.Run(viewer);
     }
   }
 }

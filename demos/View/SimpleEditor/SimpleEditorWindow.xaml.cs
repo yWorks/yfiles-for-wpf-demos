@@ -262,8 +262,11 @@ namespace Demo.yFiles.Graph.SimpleEditor
 
     private void ExportImage() {
       graphControl.UpdateContentRect(new InsetsD(5, 5, 5, 5));
-      SaveFileDialog dialog = new SaveFileDialog();
-      dialog.Filter = "JPEG Files|*.jpg;*.jpeg;*.jpe";
+      if (graphControl.ContentRect.IsEmpty) {
+        MessageBox.Show("Canvas is empty.", "Image Export");
+        return;
+      }
+      var dialog = new SaveFileDialog { Filter = "JPEG Files|*.jpg;*.jpeg;*.jpe" };
       if (dialog.ShowDialog(this) == true) {
         graphControl.ExportToBitmap(dialog.FileName, "image/jpeg");
       }

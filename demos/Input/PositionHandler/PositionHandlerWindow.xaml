@@ -83,10 +83,6 @@
                 </FlowDocument>
             </RichTextBox>
         </HeaderedContentControl.Header>
-        <ywpf:GraphControl Name="graphControl">
-            <ywpf:GraphControl.InputMode>
-                <ywpf:GraphEditorInputMode x:Name="graphEditorInputMode" ShowHandleItems="None"/>
-            </ywpf:GraphControl.InputMode>
-        </ywpf:GraphControl>
+        <ywpf:GraphControl Name="graphControl" />
     </HeaderedContentControl>
 </Window>

@@ -342,9 +342,9 @@ namespace yWorks.Layout.Bpmn
     /// Returns how much the <see cref="LaneAlignment"/> of the source and target node is consistent.
     /// </summary>
     /// <remarks>
-    /// The consistency is <code>2</code>, if both nodes have the same alignment. 
-    /// It is <code>1</code> if exactly one of the alignments is <see cref="LaneAlignment.None"/>
-    /// and <code>0</code> otherwise.
+    /// The consistency is <c>2</c>, if both nodes have the same alignment. 
+    /// It is <c>1</c> if exactly one of the alignments is <see cref="LaneAlignment.None"/>
+    /// and <c>0</c> otherwise.
     /// </remarks>
     private int GetAlignmentConsistency(Edge edge) {
       var sourceLA = GetLaneAlignment(edge.Source);

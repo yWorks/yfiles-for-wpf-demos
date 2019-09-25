@@ -129,6 +129,9 @@ namespace Demo.yFiles.Graph.Clipboard
       graph.AddLabel(node2, "Label 2");
       graph.AddLabel(graph.CreateEdge(node1, node2), "Shared Object");
 
+      // reset the Undo queue so the initial graph creation cannot be undone
+      graph.GetUndoEngine().Clear();
+
       // register specialized copiers that can deal with our business objects
       graphControl.Clipboard.FromClipboardCopier.NodeCopied += NodeCopiedOnPaste;
       graphControl.Clipboard.ToClipboardCopier.NodeCopied += NodeCopiedOnCopy;
@@ -343,9 +346,8 @@ namespace Demo.yFiles.Graph.Clipboard
           }
         };
       clipboard.Paste(control.Graph, filter, pasted);
-
-      // Set the different paste delta.
-      clipboard.PasteDelta = new PointD(clipboard.PasteDelta.X + 30, clipboard.PasteDelta.Y + 30);
+      // The next paste location should be shifted a little (just like the normal paste)
+      clipboard.PasteDelta += ((GraphEditorInputMode) graphControl.InputMode).PasteDelta;
     }
 
     #endregion

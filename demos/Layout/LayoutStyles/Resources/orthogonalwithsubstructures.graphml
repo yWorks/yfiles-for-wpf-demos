@@ -110,7 +110,7 @@
 		<node id="n2">
 			<data key="d0">
 				<x:List>
-					<y:Label LayoutParameter="{y:GraphMLReference 1}" PreferredSize="7.332568059905846,14">
+					<y:Label LayoutParameter="{y:GraphMLReference 1}">
 						<y:Label.Text>T</y:Label.Text>
 						<y:Label.Style>
 							<y:GraphMLReference ResourceKey="LabelStyle1" />
@@ -171,7 +171,7 @@
 		<node id="n4">
 			<data key="d0">
 				<x:List>
-					<y:Label LayoutParameter="{y:GraphMLReference 1}" PreferredSize="7.332568059905846,14">
+					<y:Label LayoutParameter="{y:GraphMLReference 1}">
 						<y:Label.Text>T</y:Label.Text>
 						<y:Label.Style>
 						  <y:GraphMLReference ResourceKey="LabelStyle1" />
@@ -194,7 +194,7 @@
 		<node id="n5">
 			<data key="d0">
 				<x:List>
-					<y:Label LayoutParameter="{y:GraphMLReference 1}" PreferredSize="7.332568059905846,14">
+					<y:Label LayoutParameter="{y:GraphMLReference 1}">
 						<y:Label.Text>T</y:Label.Text>
 						<y:Label.Style>
 						  <y:GraphMLReference ResourceKey="LabelStyle1" />
@@ -242,7 +242,7 @@
 		<node id="n6">
 			<data key="d0">
 				<x:List>
-					<y:Label LayoutParameter="{y:GraphMLReference 1}" PreferredSize="7.332568059905846,14">
+					<y:Label LayoutParameter="{y:GraphMLReference 1}">
 						<y:Label.Text>T</y:Label.Text>
 						<y:Label.Style>
 						  <y:GraphMLReference ResourceKey="LabelStyle1" />
@@ -265,7 +265,7 @@
 		<node id="n7">
 			<data key="d0">
 				<x:List>
-					<y:Label LayoutParameter="{y:GraphMLReference 1}" PreferredSize="7.332568059905846,14">
+					<y:Label LayoutParameter="{y:GraphMLReference 1}">
 						<y:Label.Text>T</y:Label.Text>
 						<y:Label.Style>
 						  <y:GraphMLReference ResourceKey="LabelStyle1" />
@@ -288,7 +288,7 @@
 		<node id="n8">
 			<data key="d0">
 				<x:List>
-					<y:Label LayoutParameter="{y:GraphMLReference 1}" PreferredSize="7.332568059905846,14">
+					<y:Label LayoutParameter="{y:GraphMLReference 1}">
 						<y:Label.Text>T</y:Label.Text>
 						<y:Label.Style>
 						  <y:GraphMLReference ResourceKey="LabelStyle1" />
@@ -311,7 +311,7 @@
 		<node id="n9">
 			<data key="d0">
 				<x:List>
-					<y:Label LayoutParameter="{y:GraphMLReference 1}" PreferredSize="7.332568059905846,14">
+					<y:Label LayoutParameter="{y:GraphMLReference 1}">
 						<y:Label.Text>T</y:Label.Text>
 						<y:Label.Style>
 						  <y:GraphMLReference ResourceKey="LabelStyle1" />
@@ -375,7 +375,7 @@
 		<node id="n12">
 			<data key="d0">
 				<x:List>
-					<y:Label LayoutParameter="{y:GraphMLReference 1}" PreferredSize="7.332568059905846,14">
+					<y:Label LayoutParameter="{y:GraphMLReference 1}">
 						<y:Label.Text>T</y:Label.Text>
 						<y:Label.Style>
 						  <y:GraphMLReference ResourceKey="LabelStyle1" />
@@ -398,7 +398,7 @@
 		<node id="n13">
 			<data key="d0">
 				<x:List>
-					<y:Label LayoutParameter="{y:GraphMLReference 1}" PreferredSize="7.332568059905846,14">
+					<y:Label LayoutParameter="{y:GraphMLReference 1}">
 						<y:Label.Text>T</y:Label.Text>
 						<y:Label.Style>
 						  <y:GraphMLReference ResourceKey="LabelStyle1" />
@@ -421,7 +421,7 @@
 		<node id="n14">
 			<data key="d0">
 				<x:List>
-					<y:Label LayoutParameter="{y:GraphMLReference 1}" PreferredSize="7.332568059905846,14">
+					<y:Label LayoutParameter="{y:GraphMLReference 1}">
 						<y:Label.Text>T</y:Label.Text>
 						<y:Label.Style>
 						  <y:GraphMLReference ResourceKey="LabelStyle1" />
@@ -444,7 +444,7 @@
 		<node id="n15">
 			<data key="d0">
 				<x:List>
-					<y:Label LayoutParameter="{y:GraphMLReference 1}" PreferredSize="14.670997485167332,14">
+					<y:Label LayoutParameter="{y:GraphMLReference 1}">
 						<y:Label.Text>Cy</y:Label.Text>
 						<y:Label.Style>
 						  <y:GraphMLReference ResourceKey="LabelStyle1" />
@@ -477,7 +477,7 @@
 		<node id="n16">
 			<data key="d0">
 				<x:List>
-					<y:Label LayoutParameter="{y:GraphMLReference 1}" PreferredSize="14.670997485167332,14">
+					<y:Label LayoutParameter="{y:GraphMLReference 1}">
 						<y:Label.Text>Cy</y:Label.Text>
 						<y:Label.Style>
 						  <y:GraphMLReference ResourceKey="LabelStyle1" />
@@ -505,7 +505,7 @@
 		<node id="n17">
 			<data key="d0">
 				<x:List>
-					<y:Label LayoutParameter="{y:GraphMLReference 1}" PreferredSize="14.670997485167332,14">
+					<y:Label LayoutParameter="{y:GraphMLReference 1}">
 						<y:Label.Text>Cy</y:Label.Text>
 						<y:Label.Style>
 						  <y:GraphMLReference ResourceKey="LabelStyle1" />
@@ -533,7 +533,7 @@
 		<node id="n18">
 			<data key="d0">
 				<x:List>
-					<y:Label LayoutParameter="{y:GraphMLReference 1}" PreferredSize="14.670997485167332,14">
+					<y:Label LayoutParameter="{y:GraphMLReference 1}">
 						<y:Label.Text>Cy</y:Label.Text>
 						<y:Label.Style>
 						  <y:GraphMLReference ResourceKey="LabelStyle1" />
@@ -561,7 +561,7 @@
 		<node id="n19">
 			<data key="d0">
 				<x:List>
-					<y:Label LayoutParameter="{y:GraphMLReference 1}" PreferredSize="14.670997485167332,14">
+					<y:Label LayoutParameter="{y:GraphMLReference 1}">
 						<y:Label.Text>Cy</y:Label.Text>
 						<y:Label.Style>
 						  <y:GraphMLReference ResourceKey="LabelStyle1" />
@@ -589,7 +589,7 @@
 		<node id="n20">
 			<data key="d0">
 				<x:List>
-					<y:Label LayoutParameter="{y:GraphMLReference 1}" PreferredSize="14.670997485167332,14">
+					<y:Label LayoutParameter="{y:GraphMLReference 1}">
 						<y:Label.Text>Cy</y:Label.Text>
 						<y:Label.Style>
 						  <y:GraphMLReference ResourceKey="LabelStyle1" />
@@ -617,7 +617,7 @@
 		<node id="n21">
 			<data key="d0">
 				<x:List>
-					<y:Label LayoutParameter="{y:GraphMLReference 1}" PreferredSize="14.670997485167332,14">
+					<y:Label LayoutParameter="{y:GraphMLReference 1}">
 						<y:Label.Text>Cy</y:Label.Text>
 						<y:Label.Style>
 						  <y:GraphMLReference ResourceKey="LabelStyle1" />
@@ -645,7 +645,7 @@
 		<node id="n22">
 			<data key="d0">
 				<x:List>
-					<y:Label LayoutParameter="{y:GraphMLReference 1}" PreferredSize="15.34505450106595,14">
+					<y:Label LayoutParameter="{y:GraphMLReference 1}">
 						<y:Label.Text>Ch</y:Label.Text>
 						<y:Label.Style>
 						  <y:GraphMLReference ResourceKey="LabelStyle1" />
@@ -673,7 +673,7 @@
 		<node id="n23">
 			<data key="d0">
 				<x:List>
-					<y:Label LayoutParameter="{y:GraphMLReference 1}" PreferredSize="15.34505450106595,14">
+					<y:Label LayoutParameter="{y:GraphMLReference 1}">
 						<y:Label.Text>Ch</y:Label.Text>
 						<y:Label.Style>
 						  <y:GraphMLReference ResourceKey="LabelStyle1" />
@@ -701,7 +701,7 @@
 		<node id="n24">
 			<data key="d0">
 				<x:List>
-					<y:Label LayoutParameter="{y:GraphMLReference 1}" PreferredSize="15.34505450106595,14">
+					<y:Label LayoutParameter="{y:GraphMLReference 1}">
 						<y:Label.Text>Ch</y:Label.Text>
 						<y:Label.Style>
 						  <y:GraphMLReference ResourceKey="LabelStyle1" />
@@ -729,7 +729,7 @@
 		<node id="n25">
 			<data key="d0">
 				<x:List>
-					<y:Label LayoutParameter="{y:GraphMLReference 1}" PreferredSize="15.34505450106595,14">
+					<y:Label LayoutParameter="{y:GraphMLReference 1}">
 						<y:Label.Text>Ch</y:Label.Text>
 						<y:Label.Style>
 						  <y:GraphMLReference ResourceKey="LabelStyle1" />
@@ -757,7 +757,7 @@
 		<node id="n26">
 			<data key="d0">
 				<x:List>
-					<y:Label LayoutParameter="{y:GraphMLReference 1}" PreferredSize="15.34505450106595,14">
+					<y:Label LayoutParameter="{y:GraphMLReference 1}">
 						<y:Label.Text>Ch</y:Label.Text>
 						<y:Label.Style>
 						  <y:GraphMLReference ResourceKey="LabelStyle1" />
@@ -785,7 +785,7 @@
 		<node id="n27">
 			<data key="d0">
 				<x:List>
-					<y:Label LayoutParameter="{y:GraphMLReference 1}" PreferredSize="15.34505450106595,14">
+					<y:Label LayoutParameter="{y:GraphMLReference 1}">
 						<y:Label.Text>Ch</y:Label.Text>
 						<y:Label.Style>
 						  <y:GraphMLReference ResourceKey="LabelStyle1" />
@@ -813,7 +813,7 @@
 		<node id="n28">
 			<data key="d0">
 				<x:List>
-					<y:Label LayoutParameter="{y:GraphMLReference 1}" PreferredSize="15.34505450106595,14">
+					<y:Label LayoutParameter="{y:GraphMLReference 1}">
 						<y:Label.Text>Ch</y:Label.Text>
 						<y:Label.Style>
 						  <y:GraphMLReference ResourceKey="LabelStyle1" />
@@ -841,7 +841,7 @@
 		<node id="n29">
 			<data key="d0">
 				<x:List>
-					<y:Label LayoutParameter="{y:GraphMLReference 1}" PreferredSize="15.34505450106595,14">
+					<y:Label LayoutParameter="{y:GraphMLReference 1}">
 						<y:Label.Text>Ch</y:Label.Text>
 						<y:Label.Style>
 						  <y:GraphMLReference ResourceKey="LabelStyle1" />
@@ -869,7 +869,7 @@
 		<node id="n30">
 			<data key="d0">
 				<x:List>
-					<y:Label LayoutParameter="{y:GraphMLReference 1}" PreferredSize="15.34505450106595,14">
+					<y:Label LayoutParameter="{y:GraphMLReference 1}">
 						<y:Label.Text>Ch</y:Label.Text>
 						<y:Label.Style>
 						  <y:GraphMLReference ResourceKey="LabelStyle1" />
@@ -892,7 +892,7 @@
 		<node id="n31">
 			<data key="d0">
 				<x:List>
-					<y:Label LayoutParameter="{y:GraphMLReference 1}" PreferredSize="14.670997485167332,14">
+					<y:Label LayoutParameter="{y:GraphMLReference 1}">
 						<y:Label.Text>Cy</y:Label.Text>
 						<y:Label.Style>
 						  <y:GraphMLReference ResourceKey="LabelStyle1" />

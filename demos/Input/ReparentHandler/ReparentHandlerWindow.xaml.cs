@@ -77,6 +77,8 @@ namespace Demo.yFiles.Graph.Input.ReparentHandler
       graphControl.InputMode = graphEditorInputMode;
 
       CreateSampleGraph(graph);
+      // reset the Undo queue so the initial graph creation cannot be undone
+      graph.GetUndoEngine().Clear();
     }
 
     #endregion

@@ -29,6 +29,7 @@
 
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using yWorks.Controls.Input;
@@ -131,9 +132,9 @@ namespace Demo.yFiles.Layout.MixedLayout
       graphControl.InputMode = graphEditorInputMode;
     }
 
-    private void NavigationInputModeGroupStateToggled(object source, ItemEventArgs<INode> evt) {
+    private async void NavigationInputModeGroupStateToggled(object source, ItemEventArgs<INode> evt) {
       // run a new layout after expanding/collapsing a group node
-      RunLayout();
+      await RunLayout();
     }
 
     private void ReadSampleGraph(string baseName) {
@@ -146,18 +147,18 @@ namespace Demo.yFiles.Layout.MixedLayout
       }
     }
 
-    private void ScenarioComboBoxSelectedValueChanged(object sender, EventArgs e) {
+    private async void ScenarioComboBoxSelectedValueChanged(object sender, EventArgs e) {
       ReadSampleGraph((string) scenarioComboBox.SelectedItem);
-      RunLayout();
+      await RunLayout();
     }
 
-    private void OnRunButtonClicked(object sender, EventArgs e) {
-      RunLayout();
+    private async void OnRunButtonClicked(object sender, EventArgs e) {
+      await RunLayout();
     }
 
-    private void OnRefreshButtonClicked(object sender, RoutedEventArgs e) {
+    private async void OnRefreshButtonClicked(object sender, RoutedEventArgs e) {
       ReadSampleGraph((string) scenarioComboBox.SelectedItem);
-      RunLayout();
+      await RunLayout();
     }
 
     #region Layout configuration
@@ -165,14 +166,14 @@ namespace Demo.yFiles.Layout.MixedLayout
     ///<summary>
     /// Runs either the table or the three tiers layout depending on the selected scenario.
     ///</summary>
-    private void RunLayout() {
+    private async Task RunLayout() {
       object selectedLayout = scenarioComboBox.SelectedItem;
       DisableButtons();
 
       if ((string) selectedLayout == TableSample) {
-        RunTableLayout();
+        await RunTableLayout();
       } else if ((string) selectedLayout == ThreeTierSample) {
-        RunThreeTierLayout();
+        await RunThreeTierLayout();
       }
     }
 
@@ -193,20 +194,20 @@ namespace Demo.yFiles.Layout.MixedLayout
     ///<summary>
     /// Run a new table layout.
     ///</summary>
-    private void RunTableLayout() {
-      RunLayout(new TableLayout(useSketchCheckBox.IsChecked.Value), TableLayout.LayoutData);
+    private async Task RunTableLayout() {
+      await RunLayout(new TableLayout(useSketchCheckBox.IsChecked.Value), TableLayout.LayoutData);
     }
 
     ///<summary>
     /// Run a new three tier layout.
     ///</summary>
-    private void RunThreeTierLayout() {
+    private async Task RunThreeTierLayout() {
       var threeTierLayout = new ThreeTierLayout(useSketchCheckBox.IsChecked.Value);
       var layoutData = new ThreeTierLayout.LayoutData(graphControl.Graph, useSketchCheckBox.IsChecked.Value);
-      RunLayout(threeTierLayout, layoutData);
+      await RunLayout(threeTierLayout, layoutData);
     }
 
-    private async void RunLayout(ILayoutAlgorithm layout, LayoutData layoutData) {
+    private async Task RunLayout(ILayoutAlgorithm layout, LayoutData layoutData) {
       var executor = new LayoutExecutor(graphControl, layout) {
         LayoutData = layoutData,
         Duration = TimeSpan.FromMilliseconds(500),

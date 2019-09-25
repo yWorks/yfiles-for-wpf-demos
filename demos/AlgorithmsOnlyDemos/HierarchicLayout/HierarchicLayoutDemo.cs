@@ -28,8 +28,7 @@
  ***************************************************************************/
 
 using System;
-using System.Windows.Forms;
-using Demo.yWorks.LayoutGraphViewer;
+using Demo.Layout.LayoutGraphViewer;
 using yWorks.Algorithms;
 using yWorks.Algorithms.Geometry;
 using yWorks.Algorithms.Util;
@@ -154,7 +153,8 @@ namespace Demo.Layout.HL
 
       //display the graph in a simple viewer
       gv.AddLayoutGraph(new CopiedLayoutGraph(graph), "After Addition");
-      Application.Run(gv);
+      var application = new System.Windows.Application();
+      application.Run(gv);
     }
   }
 }

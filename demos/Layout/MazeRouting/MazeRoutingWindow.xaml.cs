@@ -30,6 +30,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using yWorks.Controls;
@@ -88,26 +89,26 @@ namespace Demo.yFiles.Layout.MazeRouting
     /// <summary>
     /// Called when an edge has been created interactively.
     /// </summary>
-    private void EdgeCreatedListener(object sender, ItemEventArgs<IEdge> args) {
+    private async void EdgeCreatedListener(object sender, ItemEventArgs<IEdge> args) {
       var addedEdge = args.Item;
-      RouteAffectedEdges(new List<IEdge> { addedEdge });
+      await RouteAffectedEdges(new List<IEdge> { addedEdge });
     }
 
     /// <summary>
     /// Called when an drag gesture has been finished, re-route edges according to
     /// current selection
     /// </summary>
-    private void DragFinishedListenerMove(object sender, InputModeEventArgs e) {
+    private async void DragFinishedListenerMove(object sender, InputModeEventArgs e) {
       var graphSelection = graphControl.Selection;
       var selectedNodes = graphSelection.SelectedNodes.ToList();
       var selectedEdges = graphSelection.SelectedEdges.ToList();
 
       if (graphSelection.Count == graphSelection.SelectedNodes.Count) {
         // only nodes are selected
-        RouteAffectedEdges(GetAffectedEdges(selectedNodes));
+        await RouteAffectedEdges(GetAffectedEdges(selectedNodes));
       } else if (graphSelection.Count == graphSelection.SelectedEdges.Count) {
         // only edges are selected
-        RouteAffectedEdges(selectedEdges);
+        await RouteAffectedEdges(selectedEdges);
       } else {
         // both are selected
 
@@ -115,7 +116,7 @@ namespace Demo.yFiles.Layout.MazeRouting
         selectedEdges.AddRange(GetAffectedEdges(selectedNodes));
 
         // route the affected edges
-        RouteAffectedEdges(selectedEdges);
+        await RouteAffectedEdges(selectedEdges);
       }
     }
 
@@ -131,7 +132,7 @@ namespace Demo.yFiles.Layout.MazeRouting
     /// Routes the edges given in the list according to the current
     /// EdgeRouter settings stored in the PolylineEdgeRouterCustomConfig
     /// </summary>
-    private void RouteAffectedEdges(IEnumerable<IEdge> edges) {
+    private async Task RouteAffectedEdges(IEnumerable<IEdge> edges) {
       try {
         // route the affected edges
         edgeRouterConfig.ScopeItem = Scope.RouteAffectedEdges;
@@ -148,7 +149,7 @@ namespace Demo.yFiles.Layout.MazeRouting
           UpdateContentRect = true
         };
 
-        layoutExecutor.Start();
+        await layoutExecutor.Start();
       } catch (Exception e) {
         MessageBox.Show(this, "Layout did not complete successfully.\n" + e.Message);
       }
@@ -182,7 +183,7 @@ namespace Demo.yFiles.Layout.MazeRouting
     /// The listener for a finished drag gesture, will add all affected edges and bends into a list
     /// and route the affected edges.
     /// </summary>
-    private void DragFinishedListenerHandle(object sender, InputModeEventArgs e) {
+    private async void DragFinishedListenerHandle(object sender, InputModeEventArgs e) {
       var affectedEdges = new List<IEdge>();
 
       var graphSelection = graphControl.Selection;
@@ -199,7 +200,7 @@ namespace Demo.yFiles.Layout.MazeRouting
       }
 
       // route the affected edges
-      RouteAffectedEdges(affectedEdges);
+      await RouteAffectedEdges(affectedEdges);
     }
 
     /// <summary>
@@ -257,24 +258,24 @@ namespace Demo.yFiles.Layout.MazeRouting
     /// <summary>
     /// Routes all edges in the graph by calling RouteAffectedEdges with a list of all edges
     /// </summary>
-    private void RouteAllEdges() {
-      RouteAffectedEdges(Graph.Edges.ToList());
+    private async Task RouteAllEdges() {
+      await RouteAffectedEdges(Graph.Edges.ToList());
     }
 
     /// <summary>
     /// Apply the new graph settings by routing all edges
     /// </summary>
-    private void ApplyButtonClick(object sender, RoutedEventArgs e) {
-      RouteAllEdges();
+    private async void ApplyButtonClick(object sender, RoutedEventArgs e) {
+      await RouteAllEdges();
     }
 
     /// <summary>
     /// Reset the settings by creating a new PolylineEdgeRouterCustomConfig object and assigning it newly
     /// </summary>
-    private void ResetButtonClick(object sender, RoutedEventArgs e) {
+    private async void ResetButtonClick(object sender, RoutedEventArgs e) {
       edgeRouterConfig = new PolylineEdgeRouterCustomConfig();
       Editor.Configuration = edgeRouterConfig;
-      RouteAllEdges();
+      await RouteAllEdges();
     }
 
     /// <summary>

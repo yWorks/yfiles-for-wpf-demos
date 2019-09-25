@@ -29,6 +29,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using yWorks.Controls.Input;
@@ -101,14 +102,14 @@ namespace Demo.yFiles.Graph.Collapse
     /// <remarks>
     /// Toggles the visiblity of the node's children.
     /// </remarks>
-    public void ToggleChildrenExecuted(object sender, ExecutedRoutedEventArgs e) {
+    public async void ToggleChildrenExecuted(object sender, ExecutedRoutedEventArgs e) {
       var node = (e.Parameter ?? graphControl.CurrentItem) as INode;
       if (node != null) {
         bool canExpand = filteredGraph.OutDegree(node) != filteredGraph.WrappedGraph.OutDegree(node);
         if (canExpand) {
-          Expand(node);
+          await Expand(node);
         } else {
-          Collapse(node);
+          await Collapse(node);
         }
       }
     }
@@ -117,14 +118,14 @@ namespace Demo.yFiles.Graph.Collapse
     /// Show the children of a collapsed node.
     /// </summary>
     /// <param name="node">The node that should be expanded</param>
-    private void Expand(INode node) {
+    private async Task Expand(INode node) {
       if (collapsedNodes.Contains(node)) {
         toggledNode = node;
         SetCollapsedTag(node, false);
         AlignChildren(node);
         collapsedNodes.Remove(node);
         filteredGraph.NodePredicateChanged();
-        RunLayout(false);
+        await RunLayout(false);
       }
     }
 
@@ -132,13 +133,13 @@ namespace Demo.yFiles.Graph.Collapse
     /// Hide the children of a expanded node.
     /// </summary>
     /// <param name="node">The node that should be collapsed</param>
-    private void Collapse(INode node) {
+    private async Task Collapse(INode node) {
       if (!collapsedNodes.Contains(node)) {
         toggledNode = node;
         SetCollapsedTag(node, true);
         collapsedNodes.Add(node);
         filteredGraph.NodePredicateChanged();
-        RunLayout(false);
+        await RunLayout(false);
       }
     }
 
@@ -343,7 +344,7 @@ namespace Demo.yFiles.Graph.Collapse
 
     #endregion
     
-    private async void RunLayout(bool animateViewport) {
+    private async Task RunLayout(bool animateViewport) {
       if (currentLayout != null) {
         // provide additional data to configure the FixNodeLayoutStage
         FixNodeLayoutData fixNodeLayoutData = new FixNodeLayoutData();
@@ -363,9 +364,9 @@ namespace Demo.yFiles.Graph.Collapse
       }
     }
 
-    private void layoutComboBox_SelectedIndexChanged(object sender, EventArgs e) {
+    private async void layoutComboBox_SelectedIndexChanged(object sender, EventArgs e) {
       currentLayout = layoutMapper[layoutComboBox.SelectedItem as string];
-      RunLayout(true);
+      await RunLayout(true);
     }
 
   }

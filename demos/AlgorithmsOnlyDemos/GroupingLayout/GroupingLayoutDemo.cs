@@ -28,8 +28,7 @@
  ***************************************************************************/
 
 using System;
-using System.Windows.Forms;
-
+using Demo.Layout.LayoutGraphViewer;
 using yWorks.Algorithms;
 using yWorks.Layout;
 using yWorks.Layout.Grouping;
@@ -139,7 +138,10 @@ namespace Demo.Layout.GroupingLayout
       Console.WriteLine("e6 path = " + graph.GetPath(e4));
       
       //display the result in a simple viewer
-      Application.Run(new Demo.yWorks.LayoutGraphViewer.GraphViewer(graph, "Hierarchical Group Layout"));
+      var viewer = new GraphViewer();
+      viewer.AddLayoutGraph(graph, "Hierarchical Group Layout");
+      var application = new System.Windows.Application();
+      application.Run(viewer);
     }
   }
 }

@@ -28,8 +28,7 @@
  ***************************************************************************/
 
 using System;
-using System.Windows.Forms;
-using Demo.yWorks.LayoutGraphViewer;
+using Demo.Layout.LayoutGraphViewer;
 using yWorks.Algorithms;
 using yWorks.Layout;
 using yWorks.Layout.Circular;
@@ -128,7 +127,8 @@ namespace Demo.Layout.BasicLayout
       new BufferedLayout(hierarchic).ApplyLayout(graph);
       gv.AddLayoutGraph(graph, "Hierarchical Layout Style");
 
-      Application.Run(gv);
+      var application = new System.Windows.Application();
+      application.Run(gv);
     }
   }
 }

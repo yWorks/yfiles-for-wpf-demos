@@ -114,6 +114,9 @@ namespace Demo.yFiles.Graph.Input.SizeConstraintProvider
       RegisterSizeConstraintProvider(boundaryRectangle);
 
       CreateSampleGraph(graph);
+
+      // reset the Undo queue so the initial graph creation cannot be undone
+      graph.GetUndoEngine().Clear();
     }
 
     /// <summary>

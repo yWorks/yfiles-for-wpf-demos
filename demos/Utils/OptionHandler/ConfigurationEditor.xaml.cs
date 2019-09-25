@@ -29,7 +29,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
@@ -252,6 +251,41 @@ namespace Demo.yFiles.Toolkit.OptionHandler
 
                     sliderGrid.Children.Add(label);
                     return sliderGrid;
+
+                case ComponentTypes.Spinner:
+                    var spinnerGrid = new Grid { Margin = new Thickness(0, 0, 0, 5) };
+                    spinnerGrid.RowDefinitions.Add(new RowDefinition());
+                    spinnerGrid.ColumnDefinitions.Add(new ColumnDefinition { MinWidth = 50 });
+                    spinnerGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(45) });
+
+                    Label spinnerLabel = new Label
+                    {
+                        Content = option.Label
+                    };
+
+                    // there is no spinner control in standard WPF so use a Textbox instead
+                    TextBox tb = new TextBox(){IsEnabled = false, DataContext = option};
+                    // restrict input to something that is parseable into a Double
+                    var spinnerRule = new SpinnerRule();
+                    if (option.MinMax != null) {
+                      spinnerRule.Min = option.MinMax.Min;
+                      spinnerRule.Max = option.MinMax.Max;
+                    }
+                    var spinnerBinding = new Binding("Value") {Mode = BindingMode.TwoWay, Converter = new IntConverter(), ConverterParameter = option.ValueType, ValidationRules = {spinnerRule}};
+                    BindingOperations.SetBinding(tb, TextBox.TextProperty,  spinnerBinding);
+                    BindingOperations.SetBinding(tb, IsEnabledProperty, new Binding("IsEnabled"));
+
+                    _elementsToCheckList.Add(Tuple.Create((FrameworkElement) tb, IsEnabledProperty));
+
+                    Grid.SetRow(spinnerLabel, 0);
+                    Grid.SetColumn(spinnerLabel, 0);
+                    Grid.SetRow(tb, 0);
+                    Grid.SetColumn(tb, 1);
+
+                    spinnerGrid.Children.Add(spinnerLabel);
+                    spinnerGrid.Children.Add(tb);
+
+                    return spinnerGrid;
                 default:
                     return new Label {Content = option.Label};
             }
@@ -267,6 +301,46 @@ namespace Demo.yFiles.Toolkit.OptionHandler
 
                 element.GetBindingExpression(property).UpdateTarget();
             }
+        }
+
+        private class SpinnerRule : ValidationRule
+        {
+          private bool _rangeset = false;
+          private double _min = 0;
+          private double _max = 0;
+          public double Max {
+            get {
+              return _max;
+            }
+            set {
+              _max = value;
+              _rangeset = true;
+            }
+          }
+          public double Min {
+            get {
+              return _min;
+            }
+            set { _min = value;
+              _rangeset = true;
+            }
+          }
+          public override ValidationResult Validate(object value, CultureInfo cultureInfo) {
+            double result = 0;
+            try {
+              if (((string) value).Length > 0)
+                result = Double.Parse((String) value);
+            } catch (Exception e) {
+              return new ValidationResult(false, "Illegal characters or " + e.Message);
+            }
+
+            if (_rangeset & ((result < Min) || (result > Max))) {
+              return new ValidationResult(false,
+                  "Value out of range: " + Min + " - " + Max + ".");
+            } else {
+              return ValidationResult.ValidResult;
+            }
+          }
         }
 
         /// <summary>

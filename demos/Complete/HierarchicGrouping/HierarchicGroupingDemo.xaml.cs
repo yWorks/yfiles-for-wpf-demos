@@ -30,6 +30,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using yWorks.Algorithms;
 using yWorks.Algorithms.Geometry;
 using yWorks.Layout;
@@ -56,7 +57,7 @@ namespace Demo.yFiles.Graph.HierarchicGrouping
       InitializeComponent();
     }
 
-    private void ApplyLayout() {
+    private async Task ApplyLayout() {
       // create a pre-configured HierarchicLayout
       var hl = CreateHierarchicLayout();
       // rearrange only the incremental graph elements, the
@@ -86,7 +87,7 @@ namespace Demo.yFiles.Graph.HierarchicGrouping
         LayoutData = hlData
       };
       // compose layout data from HierarchicLayoutData and FixNodeLayoutData
-      executor.Start();
+      await executor.Start();
     }
 
 
@@ -156,7 +157,7 @@ namespace Demo.yFiles.Graph.HierarchicGrouping
     /// <remarks>This method performs an incremental layout on the newly collapsed group node.</remarks>
     /// <param name="source"></param>
     /// <param name="evt"></param>
-    private void NavigationInputMode_GroupCollapsed(object source, ItemEventArgs<INode> evt) {
+    private async void NavigationInputMode_GroupCollapsed(object source, ItemEventArgs<INode> evt) {
       incrementalNodes.Clear();
       incrementalEdges.Clear();
       // we mark the group node and its adjacent edges as incremental
@@ -177,7 +178,7 @@ namespace Demo.yFiles.Graph.HierarchicGrouping
         graphControl.Graph.ClearBends(edge);
       }
 
-      ApplyLayout();
+      await ApplyLayout();
     }
 
     /// <summary>
@@ -186,7 +187,7 @@ namespace Demo.yFiles.Graph.HierarchicGrouping
     /// <remarks>This method performs an incremental layout on the newly expanded group node and its descendants.</remarks>
     /// <param name="source"></param>
     /// <param name="evt"></param>
-    private void NavigationInputMode_GroupExpanded(object source, ItemEventArgs<INode> evt) {
+    private async void NavigationInputMode_GroupExpanded(object source, ItemEventArgs<INode> evt) {
       incrementalNodes.Clear();
       incrementalEdges.Clear();
       // we mark the group node and its descendants as incremental
@@ -218,7 +219,7 @@ namespace Demo.yFiles.Graph.HierarchicGrouping
         graphControl.Graph.ClearBends(edge);
       }
 
-      ApplyLayout();
+      await ApplyLayout();
     }
 
     /// <summary>

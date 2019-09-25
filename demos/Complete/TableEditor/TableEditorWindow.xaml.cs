@@ -248,6 +248,8 @@ namespace Demo.yFiles.Graph.TableEditor
         node => node.Lookup<ITable>() != null, node => new PoolNodeMarqueeTestable(node.Layout));
     }
 
+    // A special marquee testable which considers the node as selected
+    // if it lies _entirely_ inside the marquee box
     private class PoolNodeMarqueeTestable : IMarqueeTestable {
       private readonly IRectangle rectangle;
 
@@ -256,7 +258,7 @@ namespace Demo.yFiles.Graph.TableEditor
       }
 
       public bool IsInBox(IInputModeContext context, RectD rectangle) {
-        return rectangle.Contains(rectangle.GetTopLeft()) && rectangle.Contains(rectangle.GetBottomRight());
+        return rectangle.Contains(this.rectangle.GetTopLeft()) && rectangle.Contains(this.rectangle.GetBottomRight());
       }
     }
 
@@ -278,7 +280,7 @@ namespace Demo.yFiles.Graph.TableEditor
     /// can only grow.</item>
     /// </list>
     /// </remarks>
-    private void LayoutButton_Click(object sender, RoutedEventArgs e) {
+    private async void LayoutButton_Click(object sender, RoutedEventArgs e) {
         var hl = new HierarchicLayout()
                     {
                       ComponentLayoutEnabled = false,
@@ -300,7 +302,7 @@ namespace Demo.yFiles.Graph.TableEditor
                                  //Table cells may only grow by an automatic layout.
                                  TableLayoutConfigurator = {Compaction = false}
                                };
-        layoutExecutor.Start();
+        await layoutExecutor.Start();
     }
 
     /// <summary>

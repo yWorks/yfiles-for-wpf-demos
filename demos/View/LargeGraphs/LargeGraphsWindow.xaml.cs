@@ -395,7 +395,7 @@ namespace Demo.yFiles.Graph.LargeGraphs
     #region Event handlers
 
     /// <summary>
-    ///   Called when the »exit« menu item was selected.
+    ///   Called when the Â»exitÂ« menu item was selected.
     /// </summary>
     /// <param name="sender">The object that raised the event.</param>
     /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
@@ -404,7 +404,7 @@ namespace Demo.yFiles.Graph.LargeGraphs
     }
 
     /// <summary>
-    ///   Called when the »previous graph« button was clicked.
+    ///   Called when the Â»previous graphÂ« button was clicked.
     /// </summary>
     /// <param name="sender">The object that raised the event.</param>
     /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
@@ -413,7 +413,7 @@ namespace Demo.yFiles.Graph.LargeGraphs
     }
 
     /// <summary>
-    ///   Called when the »next graph« button was clicked.
+    ///   Called when the Â»next graphÂ« button was clicked.
     /// </summary>
     /// <param name="sender">The object that raised the event.</param>
     /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
@@ -426,13 +426,13 @@ namespace Demo.yFiles.Graph.LargeGraphs
     /// </summary>
     /// <param name="sender">The object that raised the event.</param>
     /// <param name="e">The <see cref="SelectionChangedEventArgs" /> instance containing the event data.</param>
-    private void OnGraphChooserSelectionChanged(object sender, SelectionChangedEventArgs e) {
+    private async void OnGraphChooserSelectionChanged(object sender, SelectionChangedEventArgs e) {
       var info = graphChooserBox.SelectedValue as SampleGraphInfo;
       if (info == null) {
         return;
       }
 
-      LoadGraphAsync(info);
+      await LoadGraphAsync(info);
     }
 
     /// <summary>
@@ -474,7 +474,7 @@ namespace Demo.yFiles.Graph.LargeGraphs
     }
 
     /// <summary>
-    ///   Called when The »Zoom animation« button was clicked.
+    ///   Called when The Â»Zoom animationÂ« button was clicked.
     /// </summary>
     /// <param name="sender">The object that raised the event.</param>
     /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
@@ -489,7 +489,7 @@ namespace Demo.yFiles.Graph.LargeGraphs
     }
 
     /// <summary>
-    ///   Called when the »Pan animation« button was clicked.
+    ///   Called when the Â»Pan animationÂ« button was clicked.
     /// </summary>
     /// <param name="sender">The object that raised the event.</param>
     /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
@@ -501,7 +501,7 @@ namespace Demo.yFiles.Graph.LargeGraphs
     }
 
     /// <summary>
-    ///   Called when the »Spiral zoom animation« button was clicked.
+    ///   Called when the Â»Spiral zoom animationÂ« button was clicked.
     /// </summary>
     /// <param name="sender">The object that raised the event.</param>
     /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
@@ -518,7 +518,7 @@ namespace Demo.yFiles.Graph.LargeGraphs
     }
 
     /// <summary>
-    /// Called when »Move nodes« button was clicked.
+    /// Called when Â»Move nodesÂ« button was clicked.
     /// </summary>
     /// <param name="sender">The object that raised the event.</param>
     /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
@@ -536,7 +536,7 @@ namespace Demo.yFiles.Graph.LargeGraphs
     }
 
     /// <summary>
-    ///   Called when the »Select nothing« button was clicked..
+    ///   Called when the Â»Select nothingÂ« button was clicked..
     /// </summary>
     /// <param name="sender">The object that raised the event.</param>
     /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
@@ -545,7 +545,7 @@ namespace Demo.yFiles.Graph.LargeGraphs
     }
 
     /// <summary>
-    ///   Called when the »Select 1000 random nodes« button was clicked.
+    ///   Called when the Â»Select 1000 random nodesÂ« button was clicked.
     /// </summary>
     /// <param name="sender">The object that raised the event.</param>
     /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
@@ -554,7 +554,7 @@ namespace Demo.yFiles.Graph.LargeGraphs
     }
 
     /// <summary>
-    ///   Called when the »Select 1000 random edges« button was clicked.
+    ///   Called when the Â»Select 1000 random edgesÂ« button was clicked.
     /// </summary>
     /// <param name="sender">The object that raised the event.</param>
     /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
@@ -563,7 +563,7 @@ namespace Demo.yFiles.Graph.LargeGraphs
     }
 
     /// <summary>
-    ///   Called when the »Select 1000 random labels« button was clicked.
+    ///   Called when the Â»Select 1000 random labelsÂ« button was clicked.
     /// </summary>
     /// <param name="sender">The object that raised the event.</param>
     /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
@@ -572,7 +572,7 @@ namespace Demo.yFiles.Graph.LargeGraphs
     }
 
     /// <summary>
-    ///   Called when the »Select all nodes« button was clicked.
+    ///   Called when the Â»Select all nodesÂ« button was clicked.
     /// </summary>
     /// <param name="sender">The object that raised the event.</param>
     /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
@@ -581,7 +581,7 @@ namespace Demo.yFiles.Graph.LargeGraphs
     }
 
     /// <summary>
-    ///   Called when the »Select all edges« button was clicked.
+    ///   Called when the Â»Select all edgesÂ« button was clicked.
     /// </summary>
     /// <param name="sender">The object that raised the event.</param>
     /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
@@ -590,7 +590,7 @@ namespace Demo.yFiles.Graph.LargeGraphs
     }
 
     /// <summary>
-    ///   Called when the »Select all labels« button was clicked.
+    ///   Called when the Â»Select all labelsÂ« button was clicked.
     /// </summary>
     /// <param name="sender">The object that raised the event.</param>
     /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
@@ -599,7 +599,7 @@ namespace Demo.yFiles.Graph.LargeGraphs
     }
 
     /// <summary>
-    ///   Called when the »Select everything« button was clicked.
+    ///   Called when the Â»Select everythingÂ« button was clicked.
     /// </summary>
     /// <param name="sender">The object that raised the event.</param>
     /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
@@ -676,7 +676,7 @@ namespace Demo.yFiles.Graph.LargeGraphs
     #region UI Helpers
 
     /// <summary>
-    ///   Disables the »Previous/Next graph« buttons in the UI according to whether there is a previous/next graph to switch
+    ///   Disables the Â»Previous/Next graphÂ« buttons in the UI according to whether there is a previous/next graph to switch
     ///   to.
     /// </summary>
     private void UpdateButtons() {
@@ -710,7 +710,7 @@ namespace Demo.yFiles.Graph.LargeGraphs
     /// </summary>
     /// <param name="info">The information.</param>
     /// <remarks>The loading indicator is shown prior to loading and hidden afterwards</remarks>
-    private async void LoadGraphAsync(SampleGraphInfo info) {
+    private async Task LoadGraphAsync(SampleGraphInfo info) {
       graphChooserBox.IsEnabled = false;
       nextButton.IsEnabled = false;
       previousButton.IsEnabled = false;
@@ -1108,7 +1108,7 @@ namespace Demo.yFiles.Graph.LargeGraphs
     /// <summary>
     ///   Gets or sets the type of the graph.
     /// </summary>
-    /// <remarks>This is either »Tree« or »Hierarchic«.</remarks>
+    /// <remarks>This is either Â»TreeÂ« or Â»HierarchicÂ«.</remarks>
     public string Type { get; set; }
 
     /// <summary>

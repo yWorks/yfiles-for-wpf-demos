@@ -33,6 +33,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -95,7 +96,7 @@ namespace Demo.yFiles.DataBinding.InteractiveEdgesGraphSource
       e.Handled = true;
     }
 
-    public void AddNodeExecuted(object sender, ExecutedRoutedEventArgs e) {
+    public async void AddNodeExecuted(object sender, ExecutedRoutedEventArgs e) {
       CreateNodeDialog createNodeDialog = new CreateNodeDialog();
       if (createNodeDialog.ShowDialog() == true) {
         EntityData data;
@@ -110,28 +111,28 @@ namespace Demo.yFiles.DataBinding.InteractiveEdgesGraphSource
             return;
         }
         ((ObservableCollection<EntityData>) graphSource.NodesSource).Add(data);
-        ApplyLayout(true, data);
+        await ApplyLayout(true, data);
       }
     }
 
-    public void RemoveNodeExecuted(object sender, ExecutedRoutedEventArgs e) {
+    public async void RemoveNodeExecuted(object sender, ExecutedRoutedEventArgs e) {
       foreach (var item in new ArrayList(nodesSourceListBox.SelectedItems)) {
         EntityData data = item as EntityData;
         if (data != null) {
           ((ObservableCollection<EntityData>)graphSource.NodesSource).Remove(data);
         }
       }
-      ApplyLayout(true);
+      await ApplyLayout(true);
     }
 
-    public void AddEventRegistrationExecuted(object sender, ExecutedRoutedEventArgs e) {
+    public async void AddEventRegistrationExecuted(object sender, ExecutedRoutedEventArgs e) {
       AddConnectionDialog addConnectionDialog = new AddConnectionDialog(graphSource, AddConnectionDialog.CreationMode.EventRegistration);
       if (addConnectionDialog.ShowDialog() == true) {
-        AddEventRegistration(addConnectionDialog.DataElement, addConnectionDialog.ConnectionName);
+        await AddEventRegistration(addConnectionDialog.DataElement, addConnectionDialog.ConnectionName);
       }
     }
 
-    public void RemoveEventRegistrationExecuted(object sender, ExecutedRoutedEventArgs e) {
+    public async void RemoveEventRegistrationExecuted(object sender, ExecutedRoutedEventArgs e) {
       var currentData = GetCurrentItemData();
       if (currentData != null) {
         foreach (var item in new ArrayList(eventsListBox.SelectedItems)) {
@@ -140,18 +141,18 @@ namespace Demo.yFiles.DataBinding.InteractiveEdgesGraphSource
             currentData.EventRegistrations.Remove(data);
           }
         }
-        ApplyLayout(true);
+        await ApplyLayout(true);
       }
     }
 
-    public void AddMethodCallExecuted(object sender, ExecutedRoutedEventArgs e) {
+    public async void AddMethodCallExecuted(object sender, ExecutedRoutedEventArgs e) {
       AddConnectionDialog addConnectionDialog = new AddConnectionDialog(graphSource, AddConnectionDialog.CreationMode.MethodCall);
       if (addConnectionDialog.ShowDialog() == true) {
-        AddMethodCall(addConnectionDialog.DataElement, addConnectionDialog.ConnectionName);
+        await AddMethodCall(addConnectionDialog.DataElement, addConnectionDialog.ConnectionName);
       }
     }
 
-    public void RemoveMethodCallExecuted(object sender, ExecutedRoutedEventArgs e) {
+    public async void RemoveMethodCallExecuted(object sender, ExecutedRoutedEventArgs e) {
       var currentData = GetCurrentItemData();
       if (currentData != null) {
         foreach (var item in new ArrayList(methodsListBox.SelectedItems)) {
@@ -160,13 +161,13 @@ namespace Demo.yFiles.DataBinding.InteractiveEdgesGraphSource
             currentData.MethodCalls.Remove(data);
           }
         }
-        ApplyLayout(true);
+        await ApplyLayout(true);
       }
     }
 
     #endregion
 
-    private void GraphSourceWindow_OnLoaded(object sender, RoutedEventArgs e) {
+    private async void GraphSourceWindow_OnLoaded(object sender, RoutedEventArgs e) {
       graphSource = ((AdjacentEdgesGraphSource)Application.Current.MainWindow.Resources["GraphSource"]);
 
       // always show focus indicator
@@ -181,7 +182,7 @@ namespace Demo.yFiles.DataBinding.InteractiveEdgesGraphSource
       // create inital business data
       CreateSampleData();
 
-      ApplyLayout(false);
+      await ApplyLayout(false);
     }
 
     private void CreateSampleData() {
@@ -227,11 +228,11 @@ namespace Demo.yFiles.DataBinding.InteractiveEdgesGraphSource
     /// </summary>
     /// <param name="source">The event source</param>
     /// <param name="name">The event name</param>
-    private void AddEventRegistration(EntityData source, string name) {
+    private async Task AddEventRegistration(EntityData source, string name) {
       var currentData = GetCurrentItemData();
       if (currentData != null) {
         currentData.EventRegistrations.Add(new EventRegistrationData(source, name));
-        ApplyLayout(true);
+        await ApplyLayout(true);
       }
     }
 
@@ -240,11 +241,11 @@ namespace Demo.yFiles.DataBinding.InteractiveEdgesGraphSource
     /// </summary>
     /// <param name="target">The method call target</param>
     /// <param name="name">The method name</param>
-    private void AddMethodCall(EntityData target, string name) {
+    private async Task AddMethodCall(EntityData target, string name) {
       var currentData = GetCurrentItemData();
       if (currentData != null) {
         currentData.MethodCalls.Add(new MethodCallData(target, name));
-        ApplyLayout(true);
+        await ApplyLayout(true);
       }
     }
 
@@ -266,7 +267,7 @@ namespace Demo.yFiles.DataBinding.InteractiveEdgesGraphSource
     /// </remarks>
     /// <param name="incremental">if set to <see langword="true"/> [incremental].</param>
     /// <param name="incrementalNodes">The incremental nodes.</param>
-    private async void ApplyLayout(bool incremental, params EntityData[] incrementalNodes) {
+    private async Task ApplyLayout(bool incremental, params EntityData[] incrementalNodes) {
       var layout = new HierarchicLayout {IntegratedEdgeLabeling = true, OrthogonalRouting = true};
       HierarchicLayoutData layoutData = null;
       if (!incremental) {
@@ -355,7 +356,7 @@ namespace Demo.yFiles.DataBinding.InteractiveEdgesGraphSource
     /// <summary>
     /// Called when a dragged item has been dropped over the NodesSource list.
     /// </summary>
-    private void NodesSourceListBox_OnDrop(object sender, DragEventArgs e) {
+    private async void NodesSourceListBox_OnDrop(object sender, DragEventArgs e) {
       object draggedData = e.Data.GetData(typeof(EntityData)) ??
                            e.Data.GetData(typeof(EventRegistrationData)) ??
                            e.Data.GetData(typeof(MethodCallData));
@@ -374,7 +375,7 @@ namespace Demo.yFiles.DataBinding.InteractiveEdgesGraphSource
           ObservableCollection<EntityData> collection = graphSource.NodesSource as ObservableCollection<EntityData>;
           if (collection != null && !collection.Contains(entityData)) {
             collection.Add(entityData);
-            ApplyLayout(true, entityData);
+            await ApplyLayout(true, entityData);
           }
         }
       }
@@ -383,20 +384,20 @@ namespace Demo.yFiles.DataBinding.InteractiveEdgesGraphSource
     /// <summary>
     /// Called when a dragged item has been dropped over the Events list.
     /// </summary>
-    private void EventsListBox_OnDrop(object sender, DragEventArgs e) {
+    private async void EventsListBox_OnDrop(object sender, DragEventArgs e) {
       // only items dragged from NodesSource can be dropped on Events
-      CreateConnection_OnDrop(e, AddConnectionDialog.CreationMode.EventRegistration, AddEventRegistration);
+      await CreateConnection_OnDrop(e, AddConnectionDialog.CreationMode.EventRegistration, AddEventRegistration);
     }
 
     /// <summary>
     /// Called when a dragged item has been dropped over the Methods list.
     /// </summary>
-    private void MethodsListBox_OnDrop(object sender, DragEventArgs e) {
+    private async void MethodsListBox_OnDrop(object sender, DragEventArgs e) {
       // only items dragged from NodesSource can be dropped on Methods
-      CreateConnection_OnDrop(e, AddConnectionDialog.CreationMode.MethodCall, AddMethodCall);
+      await CreateConnection_OnDrop(e, AddConnectionDialog.CreationMode.MethodCall, AddMethodCall);
     }
 
-    private void CreateConnection_OnDrop(DragEventArgs e, AddConnectionDialog.CreationMode creationMode,
+    private async Task CreateConnection_OnDrop(DragEventArgs e, AddConnectionDialog.CreationMode creationMode,
                                          CreateConnectionCommand createConnectionCommand) {
       EntityData draggedData = e.Data.GetData(typeof (EntityData)) as EntityData;
       EntityData currentData = GetCurrentItemData();
@@ -406,17 +407,17 @@ namespace Demo.yFiles.DataBinding.InteractiveEdgesGraphSource
         // select the dragged item
         addConnectionDialog.Preselect(draggedData);
         if (addConnectionDialog.ShowDialog() == true) {
-          createConnectionCommand(addConnectionDialog.DataElement, addConnectionDialog.ConnectionName);
+          await createConnectionCommand(addConnectionDialog.DataElement, addConnectionDialog.ConnectionName);
         }
       }
     }
 
-    private delegate void CreateConnectionCommand(EntityData data, string name);
+    private delegate Task CreateConnectionCommand(EntityData data, string name);
 
     /// <summary>
     /// Deletes the dragged data
     /// </summary>
-    private void Trashcan_OnDrop(object sender, DragEventArgs e) {
+    private async void Trashcan_OnDrop(object sender, DragEventArgs e) {
       object draggedData = e.Data.GetData(typeof (EntityData)) ??
                            e.Data.GetData(typeof (EventRegistrationData)) ??
                            e.Data.GetData(typeof (MethodCallData));
@@ -432,7 +433,7 @@ namespace Demo.yFiles.DataBinding.InteractiveEdgesGraphSource
           // method call has been dragged
           currentData.MethodCalls.Remove((MethodCallData) draggedData);
         }
-        ApplyLayout(true);
+        await ApplyLayout(true);
       }
     }
 

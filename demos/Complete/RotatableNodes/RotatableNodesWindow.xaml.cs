@@ -30,6 +30,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -253,20 +254,20 @@ namespace Demo.yFiles.Complete.RotatableNodes
 
     #region Layout
 
-    private void LayoutChooserBoxSelectedIndexChanged(object sender, SelectionChangedEventArgs e) {
+    private async void LayoutChooserBoxSelectedIndexChanged(object sender, SelectionChangedEventArgs e) {
       if (graphControl != null) {
-        ApplyLayout();
+        await ApplyLayout();
       }
     }
 
-    private void OnLayoutClick(object sender, RoutedEventArgs e) {
-      ApplyLayout();
+    private async void OnLayoutClick(object sender, RoutedEventArgs e) {
+      await ApplyLayout();
     }
 
     /// <summary>
     /// Runs a layout algorithm which is configured to consider node rotations.
     /// </summary>
-    public async void ApplyLayout() {
+    public async Task ApplyLayout() {
       var graph = graphControl.Graph;
 
       // provide the rotated outline and layout for the layout algorithm

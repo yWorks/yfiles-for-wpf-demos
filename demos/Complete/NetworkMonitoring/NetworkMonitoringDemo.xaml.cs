@@ -192,7 +192,7 @@ namespace Demo.yFiles.Graph.NetworkMonitoring
     }
 
     /// <summary>
-    /// Event handler for clicks on the ìEnable failuresî button.
+    /// Event handler for clicks on the ‚ÄúEnable failures‚Äù button.
     /// </summary>
     /// <param name="sender">The object that raised the event.</param>
     /// <param name="args">Event arguments.</param>
@@ -226,7 +226,7 @@ namespace Demo.yFiles.Graph.NetworkMonitoring
     /// </remarks>
     /// <param name="sender">The object that raised the event.</param>
     /// <param name="args">Event arguments.</param>
-    private void OnNetworkFailure(object sender, EventArgs args) {
+    private async void OnNetworkFailure(object sender, EventArgs args) {
       IRectangle rect = null;
 
       if (sender is ModelNode) {
@@ -251,7 +251,7 @@ namespace Demo.yFiles.Graph.NetworkMonitoring
       var rectD = rect.ToRectD().GetEnlarged(new InsetsD(200));
 
       // Animated the transition to the failed element
-      animator.Animate(new ViewportAnimation(GraphControl, rectD, TimeSpan.FromMilliseconds(1000)).CreateEasedAnimation());
+      await animator.Animate(new ViewportAnimation(GraphControl, rectD, TimeSpan.FromMilliseconds(1000)).CreateEasedAnimation());
     }
   }
 }

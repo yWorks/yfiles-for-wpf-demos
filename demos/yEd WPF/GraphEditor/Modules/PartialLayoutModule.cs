@@ -28,6 +28,7 @@
  ***************************************************************************/
 
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Demo.yFiles.Option.Editor;
 using Demo.yFiles.Option.Handler;
 using yWorks.Algorithms;
@@ -269,7 +270,7 @@ namespace Demo.yFiles.GraphEditor.Modules.Layout
       }
     }
 
-    protected override void StartWithIGraph(IGraph graph, ILookup newContext) {
+    protected override async Task StartWithIGraph(IGraph graph, ILookup newContext) {
       bool considerDirection = (bool) Handler.GetValue(GENERAL, CONSIDER_EDGE_DIRECTION);
       if (considerDirection) {
         graph.MapperRegistry.CreateDelegateMapper<IEdge,bool>(PartialLayout.DirectedEdgesDpKey, edge => {
@@ -282,7 +283,7 @@ namespace Demo.yFiles.GraphEditor.Modules.Layout
         });
       }
       try {
-        base.StartWithIGraph(graph, newContext);
+        await base.StartWithIGraph(graph, newContext);
       } finally {
         if (considerDirection) graph.MapperRegistry.RemoveMapper(PartialLayout.DirectedEdgesDpKey);
       }

@@ -29,6 +29,7 @@
 
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Demo.yFiles.Option.Constraint;
 using Demo.yFiles.Option.Handler;
 using yWorks.Controls;
@@ -141,7 +142,7 @@ namespace Demo.yFiles.GraphEditor.Modules.Layout
       router = new BusRouter();
     }
 
-    protected override void StartWithIGraph(IGraph graph, ILookup newContext) {
+    protected override async Task StartWithIGraph(IGraph graph, ILookup newContext) {
       OptionGroup layoutGroup = Handler.GetGroupByName(GROUP_LAYOUT);
       string busDetermination = (string)layoutGroup[BUSES].Value;
 
@@ -193,7 +194,7 @@ namespace Demo.yFiles.GraphEditor.Modules.Layout
       }
 
       try {
-        base.StartWithIGraph(graph, newContext);
+        await base.StartWithIGraph(graph, newContext);
       } finally {
         mapperRegistry.RemoveMapper(BusRouter.EdgeDescriptorDpKey);
         if (originalBusIds != null) {

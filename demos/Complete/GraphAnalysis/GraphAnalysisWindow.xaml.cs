@@ -226,15 +226,15 @@ namespace Demo.yFiles.Algorithms.GraphAnalysis
 
       // after deletion: update the graph information panel
       // and run a layout and the current algorithm
-      inputMode.DeletedSelection += (sender, e) => {
+      inputMode.DeletedSelection += async (sender, e) => {
         UpdateGraphInformation();
-        RunLayout(true, false, true);
+        await RunLayout(true, false, true);
       };
 
       // edge creation: update the graph information panel
       // and add the new edge to the elements to be updated;
       // run a new layout and a new algorithm
-      inputMode.CreateEdgeInputMode.EdgeCreated += (sender, e) => {
+      inputMode.CreateEdgeInputMode.EdgeCreated += async (sender, e) => {
         UpdateGraphInformation();
         var edge = e.Item;
         incrementalNodesMapper[edge.GetSourceNode()] = true;
@@ -245,7 +245,7 @@ namespace Demo.yFiles.Algorithms.GraphAnalysis
 
         CurrentConfig.IncrementalElements = incrementalElements;
 
-        RunLayout(true, false, true);
+        await RunLayout(true, false, true);
       };
 
       // same for new nodes
@@ -264,13 +264,6 @@ namespace Demo.yFiles.Algorithms.GraphAnalysis
         // permit a new layout to start and enable the UI's buttons
         ReleaseLocks();
         SetUiDisabled(false);
-      };
-
-      inputMode.MoveInputMode.DragFinished += (sender, e) => {
-        var count = ((MoveInputMode)sender).AffectedItems.OfType<INode>().Count();
-        if (count < e.Context.GetGraph().Nodes.Count) {
-          RunLayout(true, false, true);
-        }
       };
 
       inputMode.LabelTextChanged += (sender, e) => {
@@ -315,8 +308,8 @@ namespace Demo.yFiles.Algorithms.GraphAnalysis
     /// <remarks>
     /// Runs a layout without re-executing the algorithm.
     /// </remarks>
-    private void RunLayout(object sender, EventArgs e) {
-      RunLayout(false, false, false);
+    private async void RunLayout(object sender, EventArgs e) {
+      await RunLayout(false, false, false);
     }
 
     /// <summary>
@@ -369,7 +362,7 @@ namespace Demo.yFiles.Algorithms.GraphAnalysis
           EdgeLabelPreferredPlacement = {
               Delegate = label => {
                 var preferredPlacementDescriptor = new PreferredPlacementDescriptor();
-                if (label.Tag == "Centrality") {
+                if ("Centrality".Equals(label.Tag)) {
                   preferredPlacementDescriptor.SideOfEdge = LabelPlacements.OnEdge;
                 } else {
                   preferredPlacementDescriptor.SideOfEdge = LabelPlacements.RightOfEdge | LabelPlacements.LeftOfEdge;
@@ -415,7 +408,7 @@ namespace Demo.yFiles.Algorithms.GraphAnalysis
     /// <remarks>
     /// Load the sample and apply the corresponding analysis algorithm.
     /// </remarks>
-    private void OnSampleChanged(object sender, RoutedEventArgs e) {
+    private async void OnSampleChanged(object sender, RoutedEventArgs e) {
       if (inLayout || inLoadSample) {
         return;
       }
@@ -440,14 +433,14 @@ namespace Demo.yFiles.Algorithms.GraphAnalysis
       var fileName = string.Format("Resources/{0}.graphml", sample.FileName);
       // load the sample graph and start the layout algorithm in the done handler
       graphControl.ImportFromGraphML(fileName);
-      ApplyAlgorithmForKey(sampleSelectedIndex);
+      await ApplyAlgorithmForKey(sampleSelectedIndex);
     }
 
     /// <summary>
     /// Apply the algorithm which is appropriate for the selected graph.
     /// </summary>
     /// <param name="sampleSelectedIndex">The index to use.</param>
-    private void ApplyAlgorithmForKey(int sampleSelectedIndex) {
+    private async Task ApplyAlgorithmForKey(int sampleSelectedIndex) {
       ResetStyles();
 
       if (CurrentConfig != null && CurrentConfig.IncrementalElements != null &&
@@ -469,7 +462,7 @@ namespace Demo.yFiles.Algorithms.GraphAnalysis
 
       preventLayout = false;
       // run a layout from scratch (i.e. for a new graph), clear the undo queue and apply an analysis algorithm
-      RunLayout(false, true, true);
+      await RunLayout(false, true, true);
     }
 
     /// <summary>
@@ -678,16 +671,16 @@ namespace Demo.yFiles.Algorithms.GraphAnalysis
     /// <summary>
     /// Remove Edge Labels button has been pressed.
     /// </summary>
-    private void RemoveEdgeLabels(object sender, RoutedEventArgs e) {
+    private async void RemoveEdgeLabels(object sender, RoutedEventArgs e) {
       DeleteCustomEdgeLabels();
-      RunLayout(true, false, true);
+      await RunLayout(true, false, true);
     }
 
     /// <summary>
     /// Generate Edge Label button has been pressed.
     /// </summary>
-    private void GenerateEdgeLabels(object sender, RoutedEventArgs e) {
-      GenerateEdgeLabels();
+    private async void GenerateEdgeLabels(object sender, RoutedEventArgs e) {
+      await GenerateEdgeLabels();
     }
 
     /// <summary>

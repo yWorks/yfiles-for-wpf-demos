@@ -30,6 +30,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Markup;
@@ -90,9 +91,9 @@ namespace Demo.yFiles.Layout.LogicGate
     /// </summary>
     /// <seealso cref="InitializeInputModes"/>
     /// <seealso cref="InitializeGraph"/>
-    protected void OnLoaded(object source, RoutedEventArgs e) {
+    protected async void OnLoaded(object source, RoutedEventArgs e) {
       // initialize the graph
-      InitializeGraph();
+      await InitializeGraph();
 
       // initialize the input mode
       InitializeInputModes();
@@ -102,7 +103,7 @@ namespace Demo.yFiles.Layout.LogicGate
     /// Initializes the graph instance setting default styles
     /// and creating a small sample graph.
     /// </summary>
-    protected virtual void InitializeGraph() {
+    protected virtual async Task InitializeGraph() {
       IGraph graph = graphControl.Graph;
 
       // set the style as the default for all new nodes
@@ -136,7 +137,7 @@ namespace Demo.yFiles.Layout.LogicGate
       graphControl.FitGraphBounds();
 
       // do the layout
-      DoLayout(hl, hlData);
+      await DoLayout(hl, hlData);
     }
 
     /// <summary>
@@ -341,12 +342,12 @@ namespace Demo.yFiles.Layout.LogicGate
     /// <summary>
     /// Formats the current graph.
     /// </summary>
-    private void OnHLLayoutClick(object sender, EventArgs e) {
-      DoLayout(hl, hlData);
+    private async void OnHLLayoutClick(object sender, EventArgs e) {
+      await DoLayout(hl, hlData);
     }
 
-    private void OnOrthoEdgeRouterButtonClick(object sender, RoutedEventArgs e) {
-      DoLayout(orthogonalEdgeRouter, oerData);
+    private async void OnOrthoEdgeRouterButtonClick(object sender, RoutedEventArgs e) {
+      await DoLayout(orthogonalEdgeRouter, oerData);
     }
 
     /// <summary>
@@ -373,7 +374,7 @@ namespace Demo.yFiles.Layout.LogicGate
     /// <summary>
     /// Perform the layout operation
     /// </summary>
-    private async void DoLayout(ILayoutAlgorithm layout, LayoutData layoutData) {
+    private async Task DoLayout(ILayoutAlgorithm layout, LayoutData layoutData) {
       // layout starting, disable button
       hlLayoutButton.IsEnabled = false;
       orthoEdgeRouterButton.IsEnabled = false;

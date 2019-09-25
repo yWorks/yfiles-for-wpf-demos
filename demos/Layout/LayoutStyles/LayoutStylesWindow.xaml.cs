@@ -30,6 +30,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -207,7 +208,7 @@ namespace Demo.yFiles.Layout.LayoutStyles
     /// Actually applies the layout.
     /// </summary>
     /// <param name="clearUndo">A value determining whether to clear the Undo queue after layout.</param>
-    private async void ApplyLayout(bool clearUndo) {
+    private async Task ApplyLayout(bool clearUndo) {
       var data = (LayoutConfigurationData) LayoutComboBox.SelectedItem;
       var config = data.Configuration;
       SetUserInteractionState(false);
@@ -239,7 +240,7 @@ namespace Demo.yFiles.Layout.LayoutStyles
       }
     }
 
-    private void OnSampleChanged(object sender, SelectionChangedEventArgs e) {
+    private async void OnSampleChanged(object sender, SelectionChangedEventArgs e) {
       var data = SampleComboBox.SelectedItem as SampleData;
       if (data == null) {
         return;
@@ -250,7 +251,9 @@ namespace Demo.yFiles.Layout.LayoutStyles
       graphControl.GraphMLIOHandler.ClearGraphBeforeRead = true;
       graphControl.GraphMLIOHandler.Read(Graph, fileName);
       graphControl.FitGraphBounds();
-      ApplyLayout(true);
+      // Force re-evaluation of special samples and their layouts for sub-structure layouts.
+      OnLayoutChanged(sender, e);
+      await ApplyLayout(true);
     }
 
     /// <summary>
@@ -353,8 +356,8 @@ namespace Demo.yFiles.Layout.LayoutStyles
     /// <summary>
     /// Apply the layout and keep undo state
     /// </summary>
-    private void ApplyButtonClick(object sender, RoutedEventArgs e) {
-      ApplyLayout(false);
+    private async void ApplyButtonClick(object sender, RoutedEventArgs e) {
+      await ApplyLayout(false);
     }
 
     /// <summary>

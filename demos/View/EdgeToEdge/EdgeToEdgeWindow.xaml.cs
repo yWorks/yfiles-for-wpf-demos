@@ -116,7 +116,6 @@ namespace Demo.yFiles.Graph.EdgeToEdge
     protected virtual GraphEditorInputMode CreateEditorMode() {
       var mode = new GraphEditorInputMode
       {
-        AllowGroupingOperations = true,
         SnapContext = snapContext,
         OrthogonalEdgeEditingContext = new OrthogonalEdgeEditingContext { Enabled = false },
       };

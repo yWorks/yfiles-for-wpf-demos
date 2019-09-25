@@ -29,6 +29,7 @@
 
 using System;
 using System.Resources;
+using System.Threading.Tasks;
 using System.Windows;
 using Demo.yFiles.GraphEditor.Modules.Layout;
 using Demo.yFiles.Option.Editor;
@@ -108,7 +109,7 @@ namespace Demo.yFiles.GraphEditor.Modules
     /// Start execution of the module.
     /// </summary>
     /// <param name="newContext">The context in which the module should execute.</param>
-    public virtual void Start(ILookup newContext) {
+    public virtual Task Start(ILookup newContext) {
       CheckReentrant(newContext);
       try {
         OnModuleEvent(ModuleEventArgs.EventType.BEFORE_CONFIGURATION);
@@ -123,6 +124,7 @@ namespace Demo.yFiles.GraphEditor.Modules
       } finally {
         FreeReentrant();
       }
+      return Task.FromResult<object>(null);
     }
 
     protected void FreeReentrant() {
@@ -158,7 +160,7 @@ namespace Demo.yFiles.GraphEditor.Modules
     /// <summary>
     /// This method provides the core funtionality.
     /// </summary>
-    protected abstract void RunModule();
+    protected abstract Task RunModule();
 
     /// <summary>
     /// Raises a <see cref="ModuleEvent"/> event

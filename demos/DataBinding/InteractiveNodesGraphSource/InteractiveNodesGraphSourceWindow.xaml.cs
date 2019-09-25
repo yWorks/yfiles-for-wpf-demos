@@ -33,6 +33,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -62,7 +63,7 @@ namespace Demo.yFiles.DataBinding.InteractiveNodesGraphSource
       InitializeComponent();
     }
 
-    private void GraphSourceWindow_OnLoaded(object sender, RoutedEventArgs e) {
+    private async void GraphSourceWindow_OnLoaded(object sender, RoutedEventArgs e) {
       // create new input mode
       GraphViewerInputMode inputMode = new GraphViewerInputMode { SelectableItems = GraphItemTypes.None };
       // add a custom input mode that allows dragging nodes from the graph to the lists
@@ -74,7 +75,7 @@ namespace Demo.yFiles.DataBinding.InteractiveNodesGraphSource
       graphSource = ((AdjacentNodesGraphSource)Application.Current.MainWindow.Resources["GraphSource"]);
       graphSource.NodesSource = CreateInitialBusinessData();
 
-      ApplyLayout(false);
+      await ApplyLayout(false);
     }
 
     private static IEnumerable<BusinessData> CreateInitialBusinessData() {
@@ -136,7 +137,7 @@ namespace Demo.yFiles.DataBinding.InteractiveNodesGraphSource
     /// </remarks>
     /// <param name="incremental">if set to <see langword="true"/> [incremental].</param>
     /// <param name="incrementalNodes">The incremental nodes.</param>
-    private async void ApplyLayout(bool incremental, params BusinessData[] incrementalNodes) {
+    private async Task ApplyLayout(bool incremental, params BusinessData[] incrementalNodes) {
       var layout = new HierarchicLayout();
       HierarchicLayoutData layoutData = null;
       if (!incremental) {
@@ -193,18 +194,18 @@ namespace Demo.yFiles.DataBinding.InteractiveNodesGraphSource
       }
     }
 
-    private void RemoveSelectionExecuted(object sender, ExecutedRoutedEventArgs e) {
+    private async void RemoveSelectionExecuted(object sender, ExecutedRoutedEventArgs e) {
       var listBox = e.Parameter as ListBox;
       ICollection<BusinessData> collection;
       if (listBox != null && listBox.TryGetItemsSourceCollection(out collection)) {
-        RemoveItems(collection, new ArrayList(listBox.SelectedItems));
+        await RemoveItems(collection, new ArrayList(listBox.SelectedItems));
         if (listBox.Items.Count > 0) {
           listBox.SelectedIndex = 0;
         }
       }
     }
 
-    private void AddData(ICollection<BusinessData> collection, ExecutedRoutedEventArgs e) {
+    private async void AddData(ICollection<BusinessData> collection, ExecutedRoutedEventArgs e) {
       var command = e.Command as RoutedUICommand;
       var dialog = new StringInputDialog
                      {
@@ -214,16 +215,16 @@ namespace Demo.yFiles.DataBinding.InteractiveNodesGraphSource
       if (dialog.ShowDialog() == true) {
         var data = new BusinessData(dialog.Value);
         collection.Add(data);
-        ApplyLayout(true, data);
+        await ApplyLayout(true, data);
       }
     }
 
 
-    private void RemoveItems(ICollection<BusinessData> collection, IEnumerable itemsToRemove) {
+    private async Task RemoveItems(ICollection<BusinessData> collection, IEnumerable itemsToRemove) {
       foreach (var item in itemsToRemove) {
         collection.Remove(item as BusinessData);
       }
-      ApplyLayout(true);
+      await ApplyLayout(true);
     }
 
     #endregion
@@ -233,31 +234,31 @@ namespace Demo.yFiles.DataBinding.InteractiveNodesGraphSource
     /// <summary>
     /// Called when an item is dropped on the <see cref="ListView"/> of NodesSource.
     /// </summary>
-    private void NodesSourceListBox_OnDrop(object sender, DragEventArgs e) {
-      OnDropOnListBox(e, graphSource.NodesSource as ICollection<BusinessData>);
+    private async void NodesSourceListBox_OnDrop(object sender, DragEventArgs e) {
+      await OnDropOnListBox(e, graphSource.NodesSource as ICollection<BusinessData>);
     }
 
     /// <summary>
     /// Called when an item is dropped on the <see cref="ListView"/> of Predecessors.
     /// </summary>
-    private void PredecessorsListBox_OnDrop(object sender, DragEventArgs e) {
+    private async void PredecessorsListBox_OnDrop(object sender, DragEventArgs e) {
       BusinessData currentData = GetCurrentItemData();
       if (currentData != null) {
-        OnDropOnListBox(e, currentData.Predecessors);
+        await OnDropOnListBox(e, currentData.Predecessors);
       }
     }
 
     /// <summary>
     /// Called when an item is dropped  on the <see cref="ListView"/> of Successors.
     /// </summary>
-    private void SuccessorsListBox_OnDrop(object sender, DragEventArgs e) {
+    private async void SuccessorsListBox_OnDrop(object sender, DragEventArgs e) {
       BusinessData currentData = GetCurrentItemData();
       if (currentData != null) {
-        OnDropOnListBox(e, currentData.Successors);
+        await OnDropOnListBox(e, currentData.Successors);
       }
     }
 
-    private void OnDropOnListBox(DragEventArgs e, ICollection<BusinessData> collection) {
+    private async Task OnDropOnListBox(DragEventArgs e, ICollection<BusinessData> collection) {
       var draggedData = e.Data.GetData(typeof(BusinessData)) as BusinessData;
       if (draggedData == null) {
         var node = e.Data.GetData(typeof(INode)) as INode;
@@ -265,7 +266,7 @@ namespace Demo.yFiles.DataBinding.InteractiveNodesGraphSource
       }
       if (draggedData != null && !collection.Contains(draggedData)) {
         collection.Add(draggedData);
-        ApplyLayout(true, draggedData);
+        await ApplyLayout(true, draggedData);
       }
     }
 
@@ -329,35 +330,35 @@ namespace Demo.yFiles.DataBinding.InteractiveNodesGraphSource
     /// <summary>
     /// Called when an item is dropped over the trashcan visual.
     /// </summary>
-    private void Trashcan_OnDrop(object sender, DragEventArgs e) {
+    private async void Trashcan_OnDrop(object sender, DragEventArgs e) {
       object listTypeData = e.Data.GetData(typeof(ListType));
-      // nodes which are dragged from the GraphControl don't have a ListType
-      ListType type = listTypeData != null ? (ListType)listTypeData : ListType.NodesSource;
+      if (listTypeData != null) { 
+        // we have a ListType, so the node must be dragged from one of the lists
       var draggedData = e.Data.GetData(typeof(BusinessData)) as BusinessData;
       if (draggedData == null) {
-        var node = e.Data.GetData(typeof(INode)) as INode;
-        draggedData = graphSource.GetBusinessObject(node) as BusinessData;
+        // just to be sure
+        return;
       }
-      if (draggedData != null) {
+        var type = (ListType) listTypeData;
         var currentData = GetCurrentItemData();
         switch (type) {
           case ListType.NodesSource:
             // an item from NodesSource has been dragged
             ((ObservableCollection<BusinessData>)graphSource.NodesSource).Remove(draggedData);
-            ApplyLayout(true);
+            await ApplyLayout(true);
             break;
           case ListType.Predecessors:
             // an item from Predecessors has been dragged
             if (currentData != null) {
               currentData.Predecessors.Remove(draggedData);
-              ApplyLayout(true);
+              await ApplyLayout(true);
             }
             break;
           case ListType.Successors:
             // an item from Successors has been dragged
             if (currentData != null) {
               currentData.Successors.Remove(draggedData);
-              ApplyLayout(true);
+              await ApplyLayout(true);
             }
             break;
           case ListType.None:
@@ -366,6 +367,37 @@ namespace Demo.yFiles.DataBinding.InteractiveNodesGraphSource
           default:
             throw new ArgumentOutOfRangeException();
         }
+      } else {
+        // nodes which are dragged from the GraphControl don't have a ListType
+        var node = e.Data.GetData(typeof(INode)) as INode;
+        var draggedData = graphSource.GetBusinessObject(node) as BusinessData;
+        if (draggedData == null) {
+          return;
+        }
+        // after dragging a node from the graph to the trashcan we have to remove it entirely from the graph
+        // first remove it from all predecessors and successors
+        var successorsToRemove = new List<BusinessData>();
+        foreach (var edge in graphControl.Graph.InEdgesAt(node)) {
+          var otherData = graphSource.GetBusinessObject(edge.SourcePort.Owner) as BusinessData;
+          if (otherData != null) {
+            successorsToRemove.Add(otherData);
+          }
+        }
+        var predecessorsToRemove = new List<BusinessData>();
+        foreach (var edge in graphControl.Graph.OutEdgesAt(node)) {
+          var otherData = graphSource.GetBusinessObject(edge.TargetPort.Owner) as BusinessData;
+          if (otherData != null) {
+            predecessorsToRemove.Add(otherData);
+          }
+        }
+        foreach (var data in predecessorsToRemove) {
+          data.Predecessors.Remove(draggedData);
+        }
+        foreach (var data in successorsToRemove) {
+          data.Successors.Remove(draggedData);
+        }
+        // finally remove the node itself
+        ((ObservableCollection<BusinessData>) graphSource.NodesSource).Remove(draggedData);
       }
     }
 

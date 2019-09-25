@@ -66,13 +66,13 @@ namespace Demo.yFiles.Layout.Configurations
     /// <param name="doneHandler">A callback that is called after the configuration is applied. Can be <see langword="null"/></param>
     public virtual async Task Apply(GraphControl graphControl, Action doneHandler) {
       if (layoutRunning) {
-        graphControl.Dispatcher.BeginInvoke(DispatcherPriority.Background, doneHandler);
+        await graphControl.Dispatcher.BeginInvoke(DispatcherPriority.Background, doneHandler);
         return;
       }
 
       var layout = CreateConfiguredLayout(graphControl);
       if (layout == null) {
-        graphControl.Dispatcher.BeginInvoke(DispatcherPriority.Background, doneHandler);
+        await graphControl.Dispatcher.BeginInvoke(DispatcherPriority.Background, doneHandler);
         return;
       }
 

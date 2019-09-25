@@ -29,6 +29,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using yWorks.Layout;
@@ -61,22 +62,13 @@ namespace Demo.yFiles.Layout.BasicLayout
       get { return layouts; }
     }
 
-    private ILayoutAlgorithm currentLayout;
+    public ILayoutAlgorithm CurrentLayout { get; set; }
 
-    public ILayoutAlgorithm CurrentLayout {
-      get { return currentLayout; }
-      set {
-        currentLayout = value;
-        if (currentLayout != null) {
-          ApplyLayout();
-        }
-      }
-    }
 
-    private async void ApplyLayout() {
+    private async Task ApplyLayout() {
       // launch the layout in a separate thread and animate the result
       try {
-        await graphControl.MorphLayout(currentLayout, TimeSpan.FromSeconds(1));
+        await graphControl.MorphLayout(CurrentLayout, TimeSpan.FromSeconds(1));
       } catch (Exception e) {
         MessageBox.Show(this, "Layout did not complete successfully.\n" + e.Message);
       }
@@ -92,7 +84,7 @@ namespace Demo.yFiles.Layout.BasicLayout
       hierarchicLayout.EdgeLayoutDescriptor.RoutingStyle = new yWorks.Layout.Hierarchic.RoutingStyle(
         yWorks.Layout.Hierarchic.EdgeRoutingStyle.Orthogonal);
 
-      currentLayout = hierarchicLayout;
+      CurrentLayout = hierarchicLayout;
       layouts.Add("Hierarchic", hierarchicLayout);
 
       //using organic layout style
@@ -200,12 +192,13 @@ namespace Demo.yFiles.Layout.BasicLayout
       }
     }
 
-    private void layoutComboBox_SelectedValueChanged(object sender, EventArgs e) {
+    private async void layoutComboBox_SelectedValueChanged(object sender, EventArgs e) {
       CurrentLayout = layouts[(string)layoutComboBox.SelectedItem];
+      await ApplyLayout();
     }
 
-    private void OnRunButtonClicked(object sender, EventArgs e) {
-      CurrentLayout = layouts[(string)layoutComboBox.SelectedItem];
+    private async void OnRunButtonClicked(object sender, EventArgs e) {
+      await ApplyLayout();
     }
   }
 }

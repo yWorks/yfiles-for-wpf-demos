@@ -114,6 +114,9 @@ namespace Demo.yFiles.Graph.Undo
       // initialize the graph
       InitializeGraph();
 
+      // reset the Undo queue so the initial graph creation cannot be undone
+      graphControl.Graph.GetUndoEngine().Clear();
+
       // initialize the input mode
       InitializeInputModes();
     }

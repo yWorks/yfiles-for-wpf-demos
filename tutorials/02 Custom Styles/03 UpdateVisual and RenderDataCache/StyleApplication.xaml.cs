@@ -28,6 +28,7 @@
  ***************************************************************************/
 
 using System;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using yWorks.Controls.Input;
@@ -61,14 +62,14 @@ namespace Tutorial.CustomStyles
       }
     }
 
-    private void Button_Click(object sender, RoutedEventArgs e) {
-      StartAnimation();
+    private async void Button_Click(object sender, RoutedEventArgs e) {
+      await StartAnimation();
     }
 
-    private void StartAnimation() {
+    private async Task StartAnimation() {
       // animates the nodes in random fashion
       Random r = new Random(DateTime.Now.TimeOfDay.Milliseconds);
-      animator.Animate(Animations.CreateGraphAnimation(graphControl.Graph, Mappers.FromDelegate<INode, IRectangle>(node => new RectD(r.NextDouble() * 800, r.NextDouble() * 800, node.Layout.Width, node.Layout.Height)), null, null, null, TimeSpan.FromSeconds(5)));
+      await animator.Animate(Animations.CreateGraphAnimation(graphControl.Graph, Mappers.FromDelegate<INode, IRectangle>(node => new RectD(r.NextDouble() * 800, r.NextDouble() * 800, node.Layout.Width, node.Layout.Height)), null, null, null, TimeSpan.FromSeconds(5)));
     }
 
     #endregion

@@ -31,6 +31,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Markup;
@@ -80,9 +81,9 @@ namespace Demo.yFiles.Layout.SequenceConstraints
     /// </summary>
     /// <seealso cref="InitializeInputModes"/>
     /// <seealso cref="InitializeGraph"/>
-    protected void OnLoaded(object source, RoutedEventArgs e) {
+    protected async void OnLoaded(object source, RoutedEventArgs e) {
       // initialize the graph
-      InitializeGraph();
+      await InitializeGraph();
 
       // initialize the input mode
       InitializeInputModes();
@@ -92,7 +93,7 @@ namespace Demo.yFiles.Layout.SequenceConstraints
     /// Initializes the graph instance setting default styles
     /// and creating a small sample graph.
     /// </summary>
-    protected virtual void InitializeGraph() {
+    protected virtual async Task InitializeGraph() {
       IGraph graph = graphControl.Graph;
       // set the style as the default for all new nodes
       graph.NodeDefaults.Style = defaultStyle;
@@ -114,7 +115,7 @@ namespace Demo.yFiles.Layout.SequenceConstraints
 
       // create the graph and perform a layout operation
       CreateNewGraph();
-      DoLayout();
+      await DoLayout();
     }
 
     /// <summary>
@@ -168,16 +169,16 @@ namespace Demo.yFiles.Layout.SequenceConstraints
     /// <summary>
     /// Formats the current graph.
     /// </summary>
-    private void OnLayoutClick(object sender, EventArgs e) {
-      DoLayout();
+    private async void OnLayoutClick(object sender, EventArgs e) {
+      await DoLayout();
     }
 
     /// <summary>
     /// Creates a new graph and formats it.
     /// </summary>
-    private void OnNewGraphClick(object sender, RoutedEventArgs e) {
+    private async void OnNewGraphClick(object sender, RoutedEventArgs e) {
       CreateNewGraph();
-      DoLayout();
+      await DoLayout();
     }
 
     #endregion
@@ -210,7 +211,7 @@ namespace Demo.yFiles.Layout.SequenceConstraints
     /// <summary>
     /// Performs the layout operation after applying all required constraints
     /// </summary>
-    private async void DoLayout() {
+    private async Task DoLayout() {
       // layout starting, disable button
       layoutButton.IsEnabled = false;
 

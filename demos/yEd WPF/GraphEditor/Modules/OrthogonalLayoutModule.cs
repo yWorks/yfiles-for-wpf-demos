@@ -29,6 +29,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Demo.yFiles.Option.Constraint;
 using Demo.yFiles.Option.Handler;
 using yWorks.Algorithms;
@@ -376,7 +377,7 @@ namespace Demo.yFiles.GraphEditor.Modules.Layout
       }
     }
 
-    protected override void StartWithIGraph(IGraph graph, ILookup newContext) {
+    protected override async Task StartWithIGraph(IGraph graph, ILookup newContext) {
       string edgeLabelingName = (string) Handler.GetValue(LABELING, EDGE_LABELING);
       string edgeLabelModelName = (string) Handler.GetValue(LABELING, EDGE_LABEL_MODEL);
 
@@ -386,7 +387,7 @@ namespace Demo.yFiles.GraphEditor.Modules.Layout
         }
         SetupPreferredLabelPlacement(graph);
       }
-      base.StartWithIGraph(graph, newContext);
+      await base.StartWithIGraph(graph, newContext);
     }
 
     private static ILabelModelParameter CreateModelParameters(string edgeLabelingName, string edgeLabelModelName) {

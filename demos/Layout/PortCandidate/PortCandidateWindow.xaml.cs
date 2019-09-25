@@ -28,6 +28,7 @@
  ***************************************************************************/
 
 using System;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Markup;
 using System.Windows.Media;
@@ -64,7 +65,7 @@ namespace Demo.yFiles.Layout.PortCandidateDemo
     /// <summary>
     /// Perform the layout operation
     /// </summary>
-    private async void ApplyLayout() {
+    private async Task ApplyLayout() {
       // layout starting, disable button
       layoutButton.IsEnabled = false;
 
@@ -141,9 +142,9 @@ namespace Demo.yFiles.Layout.PortCandidateDemo
     /// </summary>
     /// <seealso cref="InitializeInputModes"/>
     /// <seealso cref="InitializeGraph"/>
-    protected void OnLoaded(object source, RoutedEventArgs e) {
+    protected async void OnLoaded(object source, RoutedEventArgs e) {
       // initialize the graph
-      InitializeGraph();
+      await InitializeGraph();
 
       // initialize the input mode
       InitializeInputModes();
@@ -153,7 +154,7 @@ namespace Demo.yFiles.Layout.PortCandidateDemo
     /// Initializes the graph instance setting default styles
     /// and creating a small sample graph.
     /// </summary>
-    protected virtual void InitializeGraph() {
+    protected virtual async Task InitializeGraph() {
       IGraph graph = graphControl.Graph;
       // set the style as the default for all new nodes
       graph.NodeDefaults.Style = defaultStyle;
@@ -186,7 +187,7 @@ namespace Demo.yFiles.Layout.PortCandidateDemo
       graphControl.FitGraphBounds();
 
       // do the layout
-      ApplyLayout();
+      await ApplyLayout();
     }
 
     /// <summary>
@@ -276,8 +277,8 @@ namespace Demo.yFiles.Layout.PortCandidateDemo
     /// <summary>
     /// Formats the current graph.
     /// </summary>
-    private void OnLayoutClick(object sender, EventArgs e) {
-      ApplyLayout();
+    private async void OnLayoutClick(object sender, EventArgs e) {
+      await ApplyLayout();
     }
 
     /// <summary>

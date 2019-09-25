@@ -30,6 +30,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using Demo.yFiles.Option.Constraint;
@@ -311,8 +312,8 @@ namespace Demo.yFiles.Layout.PartialLayout
       }
     }
 
-    private void OnRunButtonClicked(object sender, EventArgs e) {
-      RunLayout();
+    private async void OnRunButtonClicked(object sender, EventArgs e) {
+      await RunLayout();
     }
 
     private void OnRefreshButtonClicked(object sender, RoutedEventArgs e) {
@@ -424,7 +425,7 @@ namespace Demo.yFiles.Layout.PartialLayout
     ///<summary>
     /// Runs either the table or the three tiers layout depending on the selected scenario.
     ///</summary>
-    private async void RunLayout() {
+    private async Task RunLayout() {
       DisableButtons();
       var layoutData = new PartialLayoutData {
         AffectedEdges = {Mapper = partialEdgesMapper},

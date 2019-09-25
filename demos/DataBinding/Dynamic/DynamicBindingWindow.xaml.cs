@@ -32,6 +32,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using yWorks.Controls.Input;
 using yWorks.Graph;
 using yWorks.Layout.Hierarchic;
@@ -76,7 +77,7 @@ namespace Demo.yFiles.DataBinding.Dynamic
 
     #region Creating and Removing Customer Business Objects
 
-    private void CreateCustomer(object sender, EventArgs e) {
+    private async void CreateCustomer(object sender, EventArgs e) {
       // Remember whether the new customer is a root customer for triggering a layout.
       INode currentItem =  graphControl.Selection.SelectedNodes.FirstOrDefault();
       newRootNode = currentItem == null;
@@ -90,11 +91,11 @@ namespace Demo.yFiles.DataBinding.Dynamic
       // Create the new customer.
       CustomerRepository.CreateCustomer("Customer " + customerCounter++, parentCustomer);
 
-      DoLayout();
+      await DoLayout();
     }
 
 
-    private void RemoveCustomer(object sender, EventArgs e) {
+    private async void RemoveCustomer(object sender, EventArgs e) {
       INode currentItem = graphControl.Selection.SelectedNodes.FirstOrDefault();
       if (currentItem != null)
       {
@@ -105,7 +106,7 @@ namespace Demo.yFiles.DataBinding.Dynamic
         Customer customer = TreeSource.GetBusinessObject(currentItem) as Customer;
         if (customer != null) {
           CustomerRepository.RemoveCustomer(customer);
-          DoLayout();
+          await DoLayout();
         }
       }
     }
@@ -114,13 +115,13 @@ namespace Demo.yFiles.DataBinding.Dynamic
 
     #region Event Handling
 
-    private void Window_Loaded(object sender, RoutedEventArgs e) {
+    private async void Window_Loaded(object sender, RoutedEventArgs e) {
 
       // Perform an initial layout when the window is loaded.
-      DoLayout();
+      await DoLayout();
     }
 
-    private async void DoLayout() {
+    private async Task DoLayout() {
       await graphControl.MorphLayout(new HierarchicLayout(), TimeSpan.FromMilliseconds(500), null);
     }
 

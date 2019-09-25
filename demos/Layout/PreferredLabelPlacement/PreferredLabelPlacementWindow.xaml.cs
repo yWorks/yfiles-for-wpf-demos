@@ -32,6 +32,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Reflection;
 using System.Resources;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using Demo.yFiles.Option.Handler;
@@ -210,7 +211,7 @@ namespace Demo.yFiles.Layout.PreferredLabelPlacement
     /// Does the label placement using the generic labeling algorithm. Before this, the model of the labels is
     /// set according to the option handlers settings.
     /// </summary>
-    private void DoLayout(bool fitViewToContent) {
+    private async Task DoLayout(bool fitViewToContent) {
       // fix node layout stage is used to keep the bounding box of the graph in the view port
       var layoutExecutor = new LayoutExecutor(graphControl, new FixNodeLayoutStage(layoutAlgorithm)) {
           Duration = TimeSpan.FromMilliseconds(500),
@@ -221,7 +222,7 @@ namespace Demo.yFiles.Layout.PreferredLabelPlacement
                   new LabelingData {EdgeLabelPreferredPlacement = {Mapper = descriptorMapper}})
 
       };
-      layoutExecutor.Start();
+      await layoutExecutor.Start();
     }
 
     private void InitializeAlgorithms() {
@@ -315,13 +316,13 @@ namespace Demo.yFiles.Layout.PreferredLabelPlacement
       return handler;
     }
 
-    private void OptionHandlerPropertyChanged(object sender, PropertyChangedEventArgs e) {
+    private async void OptionHandlerPropertyChanged(object sender, PropertyChangedEventArgs e) {
       if (updatingOptionHandler) {
         return;
       }
 
       UpdateLabelValues(GetAffectedLabels());
-      DoLayout(false);
+      await DoLayout(false);
     }
 
     private IEnumerable<ILabel> GetAffectedLabels() {
@@ -482,17 +483,17 @@ namespace Demo.yFiles.Layout.PreferredLabelPlacement
 
     #region UI handlers
 
-    private void OnDoLayoutButtonClicked(object sender, RoutedEventArgs e) {
-      DoLayout(true);
+    private async void OnDoLayoutButtonClicked(object sender, RoutedEventArgs e) {
+      await DoLayout(true);
     }
 
     private void InitializeLayoutComboBox() {
       layoutComboBox.ItemsSource = layoutAlgorithms.Keys;
       layoutComboBox.SelectedIndex = 0;
       layoutAlgorithm = layoutAlgorithms[(string) layoutComboBox.SelectedValue];
-      layoutComboBox.SelectionChanged += (sender, e) => {
+      layoutComboBox.SelectionChanged += async (sender, e) => {
                                            layoutAlgorithm = layoutAlgorithms[(string) layoutComboBox.SelectedValue];
-                                           DoLayout(true);
+                                           await DoLayout(true);
                                          };
     }
 

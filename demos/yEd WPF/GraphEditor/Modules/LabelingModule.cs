@@ -28,6 +28,7 @@
  ***************************************************************************/
 
 using System;
+using System.Threading.Tasks;
 using Demo.yFiles.Option.Constraint;
 using Demo.yFiles.Option.Handler;
 using yWorks.Controls;
@@ -140,7 +141,7 @@ namespace Demo.yFiles.GraphEditor.Modules.Layout
       }
     }
 
-    protected override void StartWithIGraph(IGraph graph, ILookup newContext) {
+    protected override async Task StartWithIGraph(IGraph graph, ILookup newContext) {
       var graphSelection = newContext.Lookup<ISelectionModel<IModelItem>>();
       if (graphSelection != null) {
         var selectedLabels = graph.MapperRegistry.CreateDelegateMapper<ILabel, bool>(LabelSelectionDpKey, graphSelection.IsSelected);
@@ -154,7 +155,7 @@ namespace Demo.yFiles.GraphEditor.Modules.Layout
             return bools;
           });
       }
-      base.StartWithIGraph(graph, newContext);
+      await base.StartWithIGraph(graph, newContext);
     }
 
     ///<inheritdoc/>
