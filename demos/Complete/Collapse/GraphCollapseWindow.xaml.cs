@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.2.
- ** Copyright (c) 2000-2019 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.3.
+ ** Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -202,11 +202,6 @@ namespace Demo.yFiles.Graph.Collapse
       }
     }
 
-    private bool EdgePredicate(IEdge obj) {
-      // return true for any edge
-      return true;
-    }
-
     /// <summary>
     /// Predicate for the filtered graph wrapper that 
     /// indicates whether a node should be visible
@@ -262,7 +257,7 @@ namespace Demo.yFiles.Graph.Collapse
 
       // create a view of the graph that contains only non-collapsed subtrees.
       // use a predicate method to decide what nodes should be part of the graph.
-      filteredGraph = new FilteredGraphWrapper(fullGraph, NodePredicate, EdgePredicate);
+      filteredGraph = new FilteredGraphWrapper(fullGraph, NodePredicate);
 
       // display the filtered graph in our control.
       graphControl.Graph = filteredGraph;

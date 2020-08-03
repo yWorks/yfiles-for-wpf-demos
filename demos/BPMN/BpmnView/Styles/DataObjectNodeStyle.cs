@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.2.
- ** Copyright (c) 2000-2019 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.3.
+ ** Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -31,6 +31,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Reflection;
+using System.Windows.Media;
 using Demo.yFiles.Graph.Bpmn.Util;
 using yWorks.Controls;
 using yWorks.Geometry;
@@ -44,20 +45,8 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
   /// </summary>
   [Obfuscation(StripAfterObfuscation = false, Exclude = true, ApplyToMembers = false)]
   public class DataObjectNodeStyle : BpmnNodeStyle {
-
-    #region Static icons
-
-    private static readonly IIcon dataIcon;
-    private static readonly IIcon collectionIcon;
-
-    static DataObjectNodeStyle()  {
-      dataIcon = IconFactory.CreateDataObject();
-      collectionIcon = IconFactory.CreatePlacedIcon(IconFactory.CreateLoopCharacteristic(LoopCharacteristic.Parallel), BpmnConstants.Placements.DataObjectMarker, BpmnConstants.Sizes.Marker);
-    }
-
-    #endregion
-
-    #region Properties
+    private IIcon dataIcon;
+    private IIcon collectionIcon;
 
     private bool collection;
 
@@ -93,15 +82,65 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
         if (type != value) {
           ModCount++;
           type = value;
-          typeIcon = IconFactory.CreateDataObjectType(value);
-          if (typeIcon != null) {
-            typeIcon = IconFactory.CreatePlacedIcon(typeIcon, BpmnConstants.Placements.DataObjectType, BpmnConstants.Sizes.DataObjectType);
-          }
+          UpdateTypeIcon();
         }
       }
     }
 
-    #endregion
+    private Brush background = BpmnConstants.DataObjectDefaultBackground;
+
+    /// <summary>
+    /// Gets or sets the background color of the data object.
+    /// </summary>
+    [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
+    [DefaultValue(typeof(BpmnConstants), "DataObjectDefaultBackground")]
+    public Brush Background {
+      get { return background; }
+      set {
+        if (background != value) {
+          ModCount++;
+          background = value;
+          UpdateDataIcon();
+        }
+      }
+    }
+
+    private Brush outline = BpmnConstants.DataObjectDefaultOutline;
+
+    /// <summary>
+    /// Gets or sets the outline color of the data object.
+    /// </summary>
+    [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
+    [DefaultValue(typeof(BpmnConstants), "DataObjectDefaultOutline")]
+    public Brush Outline {
+      get { return outline; }
+      set {
+        if (outline != value) {
+          ModCount++;
+          outline = value;
+          UpdateDataIcon();
+        }
+      }
+    }
+
+    private Brush iconColor = BpmnConstants.DefaultIconColor;
+
+    /// <summary>
+    /// Gets or sets the color for the icon.
+    /// </summary>
+    [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
+    [DefaultValue(typeof(BpmnConstants), "DefaultIconColor")]
+    public Brush IconColor {
+      get { return iconColor; }
+      set {
+        if (iconColor != value) {
+          ModCount++;
+          iconColor = value;
+          UpdateTypeIcon();
+          UpdateCollectionIcon();
+        }
+      }
+    }
 
     private IIcon typeIcon;
 
@@ -113,8 +152,32 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
       Type = DataObjectType.None;
     }
 
+    private void UpdateCollectionIcon() {
+      collectionIcon = IconFactory.CreatePlacedIcon(
+          IconFactory.CreateLoopCharacteristic(LoopCharacteristic.Parallel, IconColor),
+          BpmnConstants.DataObjectMarkerPlacement, BpmnConstants.MarkerSize);
+    }
+
+    private void UpdateTypeIcon() {
+      typeIcon = IconFactory.CreateDataObjectType(Type, IconColor);
+      if (typeIcon != null) {
+        typeIcon = IconFactory.CreatePlacedIcon(typeIcon, BpmnConstants.DataObjectTypePlacement, BpmnConstants.DataObjectTypeSize);
+      }
+    }
+
+    private void UpdateDataIcon() {
+      dataIcon = IconFactory.CreateDataObject(Background, Outline);
+    }
+
     /// <inheritdoc/>
     internal override void UpdateIcon(INode node) {
+      if (dataIcon == null) {
+        UpdateDataIcon();
+      }
+      if (collectionIcon == null) {
+        UpdateCollectionIcon();
+      }
+
       var icons = new List<IIcon> {dataIcon};
 
       if (Collection) {

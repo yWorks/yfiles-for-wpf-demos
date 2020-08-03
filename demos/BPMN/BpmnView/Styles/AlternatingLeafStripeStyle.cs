@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.2.
- ** Copyright (c) 2000-2019 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.3.
+ ** Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -67,7 +67,7 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     protected override VisualGroup CreateVisual(IRenderContext context, IStripe stripe) {
       var layout = stripe.Layout.ToRectD();
-      var cc = new VisualGroup() { AllowDrop = true };
+      var cc = new VisualGroup { AllowDrop = true };
       Thickness stripeInsets;
 
       StripeDescriptor descriptor;
@@ -128,7 +128,7 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
           AllowDrop = true
         });
       }
-      cc.SetCanvasArrangeRect(layout.ToRectD().ToRect());
+      cc.SetCanvasArrangeRect(layout.ToRectD());
       var renderData = CreateRenderDataCache(context, descriptor, stripe, stripeInsets);
       cc.SetRenderDataCache(renderData);
       return cc;
@@ -173,7 +173,7 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
         }
       }
 
-      // get the data with wich the oldvisual was created
+      // get the data with which the old visual was created
       var oldCache = oldVisual.GetRenderDataCache<RenderDataCache>();
       // get the data for the new visual
       RenderDataCache newCache = CreateRenderDataCache(context, descriptor, stripe, stripeInsets);
@@ -193,7 +193,7 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
       stripeVisual.Width = layout.Width;
       stripeVisual.Height = layout.Height;
       stripeVisual.BorderThickness = actualBorderThickness;
-      oldVisual.SetCanvasArrangeRect(layout.ToRectD().ToRect());
+      oldVisual.SetCanvasArrangeRect(layout.ToRectD());
       return oldVisual;
     }
 
@@ -236,7 +236,7 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
         if (ReferenceEquals(null, obj)) {
           return false;
         }
-        if (obj.GetType() != typeof(RenderDataCache)) {
+        if (!(obj is RenderDataCache)) {
           return false;
         }
         return Equals((RenderDataCache)obj);

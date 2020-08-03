@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.2.
- ** Copyright (c) 2000-2019 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.3.
+ ** Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -28,6 +28,7 @@
  ***************************************************************************/
 
 using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Media;
 using Microsoft.Win32;
@@ -128,14 +129,6 @@ namespace Demo.yFiles.Graph.SimpleEditor
         LabelSnapContext = CreateLabelSnapContext(),
         OrthogonalEdgeEditingContext = new OrthogonalEdgeEditingContext { Enabled = false },
       };
-
-      // make bend creation more important than moving of selected edges
-      // this has the effect that dragging a selected edge (not its bends)
-      // will create a new bend instead of moving all bends
-      // This is especially nicer in conjunction with orthogonal
-      // edge editing because this creates additional bends every time
-      // the edge is moved otherwise
-      mode.CreateBendInputMode.Priority = mode.MoveInputMode.Priority - 1;
 
       return mode;
     }

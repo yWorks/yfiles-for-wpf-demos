@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.2.
- ** Copyright (c) 2000-2019 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.3.
+ ** Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -29,7 +29,8 @@
 
 using System.ComponentModel;
 using System.Reflection;
-     using Demo.yFiles.Graph.Bpmn.Util;
+using System.Windows.Media;
+using Demo.yFiles.Graph.Bpmn.Util;
      using yWorks.Controls;
      using yWorks.Controls.Input;
      using yWorks.Geometry;
@@ -42,62 +43,114 @@ using System.Reflection;
        /// An <see cref="ILabelStyle"/> implementation representing a Message according to the BPMN.
        /// </summary>
        [Obfuscation(StripAfterObfuscation = false, Exclude = true, ApplyToMembers = false)]
-       public class MessageLabelStyle : ILabelStyle {
-     
-         #region Initialize static fields
-     
-         private static readonly ILabelStyleRenderer initiatingRenderer;
-         private static readonly ILabelStyleRenderer responseRenderer;
-     
-         static MessageLabelStyle() {
-           
-           // Initiate the renderer for the initiating Message
-           var messageIcon = IconFactory.CreateMessage(BpmnConstants.Pens.Message, 
-                 BpmnConstants.Brushes.InitiatingMessage);
-           var bpmnNodeStyle = new BpmnNodeStyle { Icon = messageIcon, MinimumSize = BpmnConstants.Sizes.Message };
-           var labelStyle = new DefaultLabelStyle();
-           var adapter = new NodeStyleLabelStyleAdapter(bpmnNodeStyle, labelStyle);
-           initiatingRenderer = new MessageLabelStyleRenderer(adapter);
-           
-           // Initiate the renderer for the response Message
-           messageIcon = IconFactory.CreateMessage(BpmnConstants.Pens.Message, 
-                 BpmnConstants.Brushes.ReceivingMessage);
-           bpmnNodeStyle = new BpmnNodeStyle { Icon = messageIcon, MinimumSize = BpmnConstants.Sizes.Message };
-           labelStyle = new DefaultLabelStyle();
-           adapter = new NodeStyleLabelStyleAdapter(bpmnNodeStyle, labelStyle);
-           responseRenderer = new MessageLabelStyleRenderer(adapter);
-         }
-     
-         #endregion
-     
-         #region Properties
-    
+       public class MessageLabelStyle : ILabelStyle
+       {
+         private readonly MessageLabelStyleRenderer renderer = new MessageLabelStyleRenderer(
+             new NodeStyleLabelStyleAdapter(
+                 new BpmnNodeStyle {
+                     Icon = IconFactory.CreateMessage((Pen) new Pen(BpmnConstants.DefaultMessageOutline, 1).GetAsFrozen(), BpmnConstants.DefaultReceivingMessageColor),
+                     MinimumSize = BpmnConstants.MessageSize
+                 },
+                 new DefaultLabelStyle()));
+
          /// <summary>
          /// Gets or sets if this Message is initiating
          /// </summary>
-         [DefaultValue(false)]
-         public bool IsInitiating { get; set; }
+         [DefaultValue(true)]
+         public bool IsInitiating {
+           get { return isInitiating; }
+           set {
+             if (isInitiating != value) {
+               isInitiating = value;
+               UpdateIcon();
+             }
+           }
+         }
 
-         #endregion
-         
-         public static ILabelStyle InitiatingStyle() {
-           return new MessageLabelStyle() {IsInitiating = true};
+         private Brush outline;
+         internal Pen messagePen;
+
+         /// <summary>
+         /// Gets or sets the outline color of the message.
+         /// </summary>
+         [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
+         [DefaultValue(typeof(BpmnConstants), "DefaultMessageOutline")]
+         public Brush Outline {
+           get { return outline; }
+           set {
+             if (outline != value) {
+               outline = value;
+               messagePen = (Pen) new Pen(outline, 1).GetAsFrozen();
+               UpdateIcon();
+             }
+           }
          }
-         
-         public static ILabelStyle ResponseStyle() {
-           return new MessageLabelStyle() {IsInitiating = false};
+
+         private Brush initiatingColor = BpmnConstants.DefaultInitiatingMessageColor;
+
+         /// <summary>
+         /// Gets or sets the color for an initiating message.
+         /// </summary>
+         [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
+         [DefaultValue(typeof(BpmnConstants), "DefaultInitiatingMessageColor")]
+         public Brush InitiatingColor {
+           get { return initiatingColor; }
+           set {
+             if (initiatingColor != value) {
+               initiatingColor = value;
+               if (IsInitiating) {
+                 UpdateIcon();
+               }
+             }
+           }
          }
-     
+
+         private Brush responseColor = BpmnConstants.DefaultReceivingMessageColor;
+         private bool isInitiating = true;
+
+         /// <summary>
+         /// Gets or sets the color for a response message.
+         /// </summary>
+         [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
+         [DefaultValue(typeof(BpmnConstants), "DefaultReceivingMessageColor")]
+         public Brush ResponseColor {
+           get { return responseColor; }
+           set {
+             if (responseColor != value) {
+               responseColor = value;
+               if (!IsInitiating) {
+                 UpdateIcon();
+               }
+             }
+           }
+         }
+
+         public MessageLabelStyle() {
+           Outline = BpmnConstants.DefaultMessageOutline;
+         }
+
+         private void UpdateIcon() {
+           var adapter = renderer.adapter;
+           var nodeStyle = (BpmnNodeStyle) adapter.NodeStyle;
+           nodeStyle.Icon = IconFactory.CreateMessage(messagePen, IsInitiating ? InitiatingColor : ResponseColor);
+           nodeStyle.ModCount++;
+         }
+    
          /// <inheritdoc/>
          [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
          public object Clone() {
-           return this;
+           return new MessageLabelStyle {
+               IsInitiating = IsInitiating,
+               InitiatingColor = InitiatingColor,
+               ResponseColor = ResponseColor,
+               Outline = Outline
+           };
          }
      
          /// <inheritdoc/>
          [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
          public ILabelStyleRenderer Renderer {
-           get { return IsInitiating ? initiatingRenderer : responseRenderer; }
+           get { return renderer; }
          }
      
          /// <summary>
@@ -105,10 +158,9 @@ using System.Reflection;
          /// </summary>
          internal class MessageLabelStyleRenderer : ILabelStyleRenderer
          {
+           internal NodeStyleLabelStyleAdapter adapter;
      
-           private ILabelStyle adapter;
-     
-           public MessageLabelStyleRenderer(ILabelStyle adapter) {
+           public MessageLabelStyleRenderer(NodeStyleLabelStyleAdapter adapter) {
              this.adapter = adapter;
            }
            

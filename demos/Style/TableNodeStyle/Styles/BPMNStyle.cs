@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.2.
- ** Copyright (c) 2000-2019 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.3.
+ ** Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -70,14 +70,14 @@ namespace Demo.yFiles.Graph.TableNodeStyle.Style
 
       var cc = new VisualGroup();
       cc.Add(visual);
-      cc.SetCanvasArrangeRect(layout.ToRectD().ToRect());
+      cc.SetCanvasArrangeRect(layout.ToRectD());
       return cc;
     }
 
     protected override VisualGroup UpdateVisual(IRenderContext context, VisualGroup oldVisual, IStripe stripe) {
       IRectangle layout = stripe.Layout.ToRectD();
       var rect = CanvasControl.GetCanvasControlArrangeRect(oldVisual);
-      var arrangeRect = layout.ToRectD().ToRect();
+      var arrangeRect = layout.ToRectD();
       if (rect.Width != arrangeRect.Width || rect.Height != arrangeRect.Height) {
         GeneralPath outline = CreatePath(stripe, layout);
         var oldPath = (Path)oldVisual.Children[0];

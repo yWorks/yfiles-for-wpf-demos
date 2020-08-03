@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.2.
- ** Copyright (c) 2000-2019 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.3.
+ ** Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -300,14 +300,24 @@ namespace Demo.yFiles.Layout.Configurations
             node => node.Labels.Any() && node.Labels.First().Text == "OL";
       }
 
+      if (BusesItem) {
+        // Group edges ending at a node with the label "Bus" into a bus
+        layoutData.Buses.Add(new BusDescriptor()).Delegate =
+            edge => edge.GetTargetNode().Labels.Count > 0 && edge.GetTargetNode().Labels[0].Text == "Bus";
+      }
+
       return layoutData;
     }
 
     /// <summary>
-    /// Enables different layout styles for possible detected subcomponents.
+    /// Enables different layout styles for possible detected sub-components.
     /// </summary>
-    public void EnableSubstructures() {
+    public void EnableSubComponents() {
       SubComponentsItem = true;
+    }
+
+    public void EnableBuses() {
+      BusesItem = true;
     }
 
     // ReSharper disable UnusedMember.Global
@@ -479,6 +489,7 @@ namespace Demo.yFiles.Layout.Configurations
     [EnumValue("Octilinear", EdgeRoutingStyle.Octilinear)] 
     [EnumValue("Orthogonal", EdgeRoutingStyle.Orthogonal )] 
     [EnumValue("Polyline", EdgeRoutingStyle.Polyline )]
+    [EnumValue("Curved", EdgeRoutingStyle.Curved )]
     public EdgeRoutingStyle EdgeRoutingItem  { get; set; }
 
     [Label("Backloop Routing")]
@@ -561,6 +572,10 @@ namespace Demo.yFiles.Layout.Configurations
     [EnumValue("Directed", RecursiveEdgeStyle.Directed)]
     [EnumValue("Undirected", RecursiveEdgeStyle.Undirected)]
     public RecursiveEdgeStyle RecursiveEdgeStyleItem { get; set; }
+
+    [Label("Bus Routing")]
+    [OptionGroup("EdgeSettingsGroup", 150)]
+    public bool BusesItem { get; set; }
 
     [Label("Layer Assignment Policy")]
     [OptionGroup("RankGroup", 10)]

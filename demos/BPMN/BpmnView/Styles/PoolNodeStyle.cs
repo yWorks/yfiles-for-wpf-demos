@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.2.
- ** Copyright (c) 2000-2019 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.3.
+ ** Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -56,17 +56,7 @@ namespace Demo.yFiles.Graph.Bpmn.Styles
   [ContentProperty("TableNodeStyle")]
   [SingletonSerialization]
   public class PoolNodeStyle : NodeStyleBase<VisualGroup> {
-
-    #region Initialize static fields
-
-    private static readonly IIcon multipleInstanceIcon;
-
-    static PoolNodeStyle()  {
-      var multipleIcon = IconFactory.CreateLoopCharacteristic(LoopCharacteristic.Parallel);
-      multipleInstanceIcon = new PlacedIcon(multipleIcon, BpmnConstants.Placements.PoolNodeMarker,
-        BpmnConstants.Sizes.Marker);
-
-    }
+    private IIcon multipleInstanceIcon;
 
     private static TableNodeStyle CreateDefaultTableNodeStyle(bool vertical) {
       // create a new table
@@ -76,16 +66,16 @@ namespace Demo.yFiles.Graph.Bpmn.Styles
       // we'd like to use a special stripe style
       var alternatingLeafStripeStyle = new AlternatingLeafStripeStyle {
         EvenLeafDescriptor = new StripeDescriptor {
-          BackgroundBrush = BpmnConstants.Brushes.PoolNodeEvenLeafBackground,
-          InsetBrush = BpmnConstants.Brushes.PoolNodeEvenLeafInset
+          BackgroundBrush = BpmnConstants.DefaultPoolNodeEvenLeafBackground,
+          InsetBrush = BpmnConstants.DefaultPoolNodeEvenLeafInset
         },
         OddLeafDescriptor = new StripeDescriptor {
-          BackgroundBrush = BpmnConstants.Brushes.PoolNodeOddLeafBackground,
-          InsetBrush = BpmnConstants.Brushes.PoolNodeOddLeafInset
+          BackgroundBrush = BpmnConstants.DefaultPoolNodeOddLeafBackground,
+          InsetBrush = BpmnConstants.DefaultPoolNodeOddLeafInset
         },
         ParentDescriptor = new StripeDescriptor {
-          BackgroundBrush = BpmnConstants.Brushes.PoolNodeParentBackground,
-          InsetBrush = BpmnConstants.Brushes.PoolNodeParentInset
+          BackgroundBrush = BpmnConstants.DefaultPoolNodeParentBackground,
+          InsetBrush = BpmnConstants.DefaultPoolNodeParentInset
         }
       };
       if (vertical) {
@@ -117,15 +107,11 @@ namespace Demo.yFiles.Graph.Bpmn.Styles
       }
 
       tns.BackgroundStyle = new ShapeNodeStyle {
-        Brush = BpmnConstants.Brushes.PoolNodeBackground
+        Brush = BpmnConstants.DefaultPoolNodeBackground
       };
       tns.Table = table;
       return tns;
     }
-
-    #endregion
-
-    #region Properties
 
     /// <summary>
     /// Gets or sets if this pool represents a multiple instance participant.
@@ -136,6 +122,29 @@ namespace Demo.yFiles.Graph.Bpmn.Styles
 
     [DefaultValue(false)]
     private bool Vertical { get; set; }
+
+    private Brush iconColor = BpmnConstants.DefaultIconColor;
+
+    /// <summary>
+    /// Gets or sets the color for the icon.
+    /// </summary>
+    [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
+    [DefaultValue(typeof(BpmnConstants), "DefaultIconColor")]
+    public Brush IconColor {
+      get { return iconColor; }
+      set {
+        if (iconColor != value) {
+          iconColor = value;
+          UpdateIcon();
+        }
+      }
+    }
+
+    private void UpdateIcon() {
+      var multipleIcon = IconFactory.CreateLoopCharacteristic(LoopCharacteristic.Parallel, IconColor);
+      multipleInstanceIcon = new PlacedIcon(multipleIcon, BpmnConstants.PoolNodeMarkerPlacement,
+          BpmnConstants.MarkerSize);
+    }
 
     private TableNodeStyle tableNodeStyle;
 
@@ -151,8 +160,6 @@ namespace Demo.yFiles.Graph.Bpmn.Styles
       set { tableNodeStyle = value; }
     }
 
-    #endregion
-
     /// <summary>
     /// Creates a new instance for a horizontal pool.
     /// </summary>
@@ -164,12 +171,17 @@ namespace Demo.yFiles.Graph.Bpmn.Styles
     /// <param name="vertical">Whether the style represents a vertical pool.</param>
     public PoolNodeStyle(bool vertical) {
       Vertical = vertical;
+      UpdateIcon();
     }
 
     ///<inheritdoc/>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     public override object Clone() {
-      PoolNodeStyle clone = new PoolNodeStyle { MultipleInstance = MultipleInstance, TableNodeStyle = (TableNodeStyle)TableNodeStyle.Clone() };
+      PoolNodeStyle clone = new PoolNodeStyle {
+          MultipleInstance = MultipleInstance,
+          TableNodeStyle = (TableNodeStyle) TableNodeStyle.Clone(),
+          IconColor = IconColor
+      };
       return clone;
     }
 
@@ -224,7 +236,7 @@ namespace Demo.yFiles.Graph.Bpmn.Styles
     }
 
 
-    private class PoolNodeEditLabelHelper : EditLabelHelper
+    private sealed class PoolNodeEditLabelHelper : EditLabelHelper
     {
       private readonly PoolNodeStyle style;
 

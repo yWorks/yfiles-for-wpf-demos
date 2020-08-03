@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.2.
- ** Copyright (c) 2000-2019 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.3.
+ ** Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -29,85 +29,75 @@
 
 using System.Collections.Generic;
 using System.Xml.Linq;
-
 // Just for better readability in code
 using BpmnNM = Demo.yFiles.Graph.Bpmn.BpmnDi.BpmnNamespaceManager;
 
 namespace Demo.yFiles.Graph.Bpmn.BpmnDi
 {
-    
+  /// <summary>
+  /// Class for BPMNPlane objects
+  /// </summary>
+  internal class BpmnPlane
+  {
     /// <summary>
-    /// Class for BPMNPlane objects
+    /// The <see cref="BpmnElement"/> this plane refers to
     /// </summary>
-    internal class BpmnPlane
-    {
-        
-        /// <summary>
-        /// The <see cref="BpmnElement"/> this plane refers to
-        /// </summary>
-        public BpmnElement Element { get; set; }
+    public BpmnElement Element { get; set; }
 
-        /// <summary>
-        /// List of all <see cref="BpmnEdge"/>s in this plane
-        /// </summary>
-        public List<BpmnEdge> ListOfEdges { get; set; }
+    /// <summary>
+    /// List of all <see cref="BpmnEdge"/>s in this plane
+    /// </summary>
+    public List<BpmnEdge> ListOfEdges { get; set; }
 
-        /// <summary>
-        /// List of all <see cref="BpmnShape"/>s in this plane
-        /// </summary>
-        public List<BpmnShape> ListOfShapes { get; set; }
+    /// <summary>
+    /// List of all <see cref="BpmnShape"/>s in this plane
+    /// </summary>
+    public List<BpmnShape> ListOfShapes { get; set; }
 
 
-        /// <summary>
-        /// Constructs a new plane instance
-        /// </summary>
-        /// <param name="xNode">The XML element which represents this plane</param>
-        /// <param name="elements">Dictionary of all bpmn elements from this file parsing</param>
-        public BpmnPlane(XElement xNode, IDictionary<string, BpmnElement> elements)
-        {
-            ListOfEdges = new List<BpmnEdge>();
-            ListOfShapes = new List<BpmnShape>();
-                
-            // A BPMNPlane only has one bpmnElement and no further attributes
-            BpmnElement element;
-            Element = elements.TryGetValue(BpmnNM.GetAttributeValue(xNode, BpmnNM.BpmnDi, "bpmnElement"), out element) ? element : null;
-        }
+    /// <summary>
+    /// Constructs a new plane instance
+    /// </summary>
+    /// <param name="xNode">The XML element which represents this plane</param>
+    /// <param name="elements">Dictionary of all bpmn elements from this file parsing</param>
+    public BpmnPlane(XElement xNode, IDictionary<string, BpmnElement> elements) {
+      ListOfEdges = new List<BpmnEdge>();
+      ListOfShapes = new List<BpmnShape>();
 
-        /// <summary>
-        /// Adds a new <see cref="BpmnEdge"/> to this planes list of edges.
-        /// </summary>
-        /// <param name="edge">Edge to add</param>
-        public void AddEdge(BpmnEdge edge)
-        {
-            ListOfEdges.Add(edge);
-        }
-
-        /// <summary>
-        /// Adds a new <see cref="BpmnShape"/> to this planes list of shapes.
-        /// </summary>
-        /// <param name="shape">Shape to add</param>
-        public void AddShape(BpmnShape shape)
-        {
-            ListOfShapes.Add(shape);
-        }
-        
-        /// <summary>
-        /// Returns the <see cref="BpmnShape"/> with the given id.
-        /// </summary>
-        /// <param name="id">Id</param>
-        /// <returns><see cref="BpmnShape"/> with the given id, or null if no <see cref="BpmnShape"/>
-        /// with this id exists</returns>
-        public BpmnShape GetShape(string id)
-        {
-            foreach (var shape in ListOfShapes)
-            {
-                if (shape.Id == id)
-                {
-                    return shape;
-                }
-            }
-            return null;
-        }
-        
+      // A BPMNPlane only has one bpmnElement and no further attributes
+      BpmnElement element;
+      Element = elements.TryGetValue(BpmnNM.GetAttributeValue(xNode, BpmnNM.BpmnDi, BpmnDiConstants.BpmnElementAttribute), out element) ? element : null;
     }
+
+    /// <summary>
+    /// Adds a new <see cref="BpmnEdge"/> to this planes list of edges.
+    /// </summary>
+    /// <param name="edge">Edge to add</param>
+    public void AddEdge(BpmnEdge edge) {
+      ListOfEdges.Add(edge);
+    }
+
+    /// <summary>
+    /// Adds a new <see cref="BpmnShape"/> to this planes list of shapes.
+    /// </summary>
+    /// <param name="shape">Shape to add</param>
+    public void AddShape(BpmnShape shape) {
+      ListOfShapes.Add(shape);
+    }
+
+    /// <summary>
+    /// Returns the <see cref="BpmnShape"/> with the given id.
+    /// </summary>
+    /// <param name="id">Id</param>
+    /// <returns><see cref="BpmnShape"/> with the given id, or null if no <see cref="BpmnShape"/>
+    /// with this id exists</returns>
+    public BpmnShape GetShape(string id) {
+      foreach (var shape in ListOfShapes) {
+        if (shape.Id == id) {
+          return shape;
+        }
+      }
+      return null;
+    }
+  }
 }

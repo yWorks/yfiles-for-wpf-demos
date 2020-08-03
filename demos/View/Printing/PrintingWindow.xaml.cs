@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.2.
- ** Copyright (c) 2000-2019 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.3.
+ ** Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -234,7 +234,7 @@ namespace Demo.yFiles.Printing
       PreparePrinting();
 
       // show new PrintPreviewDialog
-      printDocument.Print(printDialog, true, true, InsetsD.Empty, PrintDialogTitle);
+      printDocument.Print(printDialog, true, true, new InsetsD(50), PrintDialogTitle);
     }
 
     private void PreparePrinting() {
@@ -247,7 +247,7 @@ namespace Demo.yFiles.Printing
       bool hide = (bool)handler.GetValue(OUTPUT, HIDE_DECORATIONS);
       if (hide) {
         // if so, create a new graph control with the same graph
-        control = new GraphControl { Graph = graphControl.Graph, FlowDirection = graphControl.FlowDirection };
+        control = new GraphControl { Graph = graphControl.Graph, FlowDirection = graphControl.FlowDirection, Projection = graphControl.Projection };
       }
 
       // read CanvasPrintDocument options
@@ -267,7 +267,7 @@ namespace Demo.yFiles.Printing
       var showDialog = printDialog.ShowDialog();
       if (showDialog.HasValue && showDialog.Value) {
         PreparePrinting();
-        printDocument.Print(printDialog, true, false, InsetsD.Empty, PrintDialogTitle);
+        printDocument.Print(printDialog, true, false, new InsetsD(50), PrintDialogTitle);
       }
     }
 

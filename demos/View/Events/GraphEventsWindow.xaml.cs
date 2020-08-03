@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.2.
- ** Copyright (c) 2000-2019 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.3.
+ ** Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -224,12 +224,14 @@ namespace Demo.yFiles.Graph.Events
       graphControl.Clipboard.ElementsCut += ClipboardOnCut;
       graphControl.Clipboard.ElementsCopied += ClipboardOnCopy;
       graphControl.Clipboard.ElementsPasted += ClipboardOnPaste;
+      graphControl.Clipboard.ElementsDuplicated += ClipboardOnDuplicate;
     }
 
     private void DeregisterClipboardEvents(object sender, RoutedEventArgs routedEventArgs) {
       graphControl.Clipboard.ElementsCut -= ClipboardOnCut;
       graphControl.Clipboard.ElementsCopied -= ClipboardOnCopy;
       graphControl.Clipboard.ElementsPasted -= ClipboardOnPaste;
+      graphControl.Clipboard.ElementsDuplicated -= ClipboardOnDuplicate;
     }
 
     private void RegisterUndoEvents(object sender, RoutedEventArgs routedEventArgs) {
@@ -457,6 +459,7 @@ namespace Demo.yFiles.Graph.Events
       editorMode.ElementsCopied += GeimOnElementsCopied;
       editorMode.ElementsCut += GeimOnElementsCut;
       editorMode.ElementsPasted += GeimOnElementsPasted;
+      editorMode.ElementsDuplicated += GeimOnElementsDuplicated;
       viewerMode.CanvasClicked += GvimOnCanvasClicked;
       viewerMode.CanvasTapped += GvimOnCanvasTapped;
       viewerMode.ItemClicked += GvimOnItemClicked;
@@ -502,6 +505,10 @@ namespace Demo.yFiles.Graph.Events
       editorMode.PopulateItemContextMenu -= GeimOnPopulateItemContextMenu;
       editorMode.QueryItemToolTip -= GeimOnQueryItemToolTip;
       editorMode.ValidateLabelText -= GeimOnValidateLabelText;
+      editorMode.ElementsCopied -= GeimOnElementsCopied;
+      editorMode.ElementsCut -= GeimOnElementsCut;
+      editorMode.ElementsPasted -= GeimOnElementsPasted;
+      editorMode.ElementsDuplicated -= GeimOnElementsDuplicated;
       viewerMode.CanvasClicked -= GvimOnCanvasClicked;
       viewerMode.CanvasTapped -= GvimOnCanvasTapped;
       viewerMode.ItemClicked -= GvimOnItemClicked;
@@ -1037,6 +1044,10 @@ namespace Demo.yFiles.Graph.Events
     private void ClipboardOnPaste(object sender, EventArgs args) {
       Log("Clipboard operation: Paste");
     }
+
+    private void ClipboardOnDuplicate(object sender, EventArgs args) {
+      Log("Clipboard operation: Duplicate");
+    }
     
     #endregion
     
@@ -1326,6 +1337,10 @@ namespace Demo.yFiles.Graph.Events
 
     private void GeimOnElementsPasted(object sender, EventArgs e) {
       Log("GraphEditorInputMode ElementsPasted");
+    }
+
+    private void GeimOnElementsDuplicated(object sender, EventArgs e) {
+      Log("GraphEditorInputMode ElementsDuplicated");
     }
 
     #endregion

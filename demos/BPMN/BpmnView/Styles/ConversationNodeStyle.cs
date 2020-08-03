@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.2.
- ** Copyright (c) 2000-2019 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.3.
+ ** Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -31,6 +31,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Reflection;
+using System.Windows.Media;
 using Demo.yFiles.Graph.Bpmn.Util;
 using yWorks.Geometry;
 using yWorks.Graph;
@@ -43,9 +44,6 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
   /// </summary>
   [Obfuscation(StripAfterObfuscation = false, Exclude = true, ApplyToMembers = false)]
   public class ConversationNodeStyle : BpmnNodeStyle {
-
-    #region Properties
-
     private ConversationType type;
 
     /// <summary>
@@ -59,35 +57,92 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
         if (type != value || Icon == null) {
           ModCount++;
           type = value;
-
-          var typeIcon = IconFactory.CreateConversation(type);
-          var markerIcon = IconFactory.CreateConversationMarker(type);
-
-          if (markerIcon != null) {
-            markerIcon = IconFactory.CreatePlacedIcon(markerIcon, BpmnConstants.Placements.ConversationMarker, BpmnConstants.Sizes.Marker);
-            typeIcon = IconFactory.CreateCombinedIcon(new List<IIcon>(new[] { typeIcon, markerIcon }));
-          }
-
-          Icon = IconFactory.CreatePlacedIcon(typeIcon, BpmnConstants.Placements.Conversation, BpmnConstants.Sizes.Conversation);
+          UpdateIcon();
         }
       }
     }
 
-    #endregion
+    private Brush background = BpmnConstants.ConversationDefaultBackground;
+
+    /// <summary>
+    /// Gets or sets the background color of the conversation.
+    /// </summary>
+    [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
+    [DefaultValue(typeof(BpmnConstants), "ConversationDefaultBackground")]
+    public Brush Background {
+      get { return background; }
+      set {
+        if (background != value) {
+          ModCount++;
+          background = value;
+          UpdateIcon();
+        }
+      }
+    }
+
+    private Brush outline = BpmnConstants.ConversationDefaultOutline;
+
+    /// <summary>
+    /// Gets or sets the outline color of the conversation.
+    /// </summary>
+    [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
+    [DefaultValue(typeof(BpmnConstants), "ConversationDefaultOutline")]
+    public Brush Outline {
+      get { return outline; }
+      set {
+        if (outline != value) {
+          ModCount++;
+          outline = value;
+          UpdateIcon();
+        }
+      }
+    }
+
+    private Brush iconColor = BpmnConstants.DefaultIconColor;
+
+    /// <summary>
+    /// Gets or sets the primary color for icons and markers.
+    /// </summary>
+    [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
+    [DefaultValue(typeof(BpmnConstants), "DefaultIconColor")]
+    public Brush IconColor {
+      get { return iconColor; }
+      set {
+        if (iconColor != value) {
+          ModCount++;
+          iconColor = value;
+          UpdateIcon();
+        }
+      }
+    }
 
     /// <summary>
     /// Creates a new instance.
     /// </summary>
     public ConversationNodeStyle() {
       Type = ConversationType.Conversation;
-      MinimumSize = BpmnConstants.Sizes.Conversation;
+      MinimumSize = BpmnConstants.ConversationSize;
+    }
+
+    private void UpdateIcon() {
+      var typeIcon = IconFactory.CreateConversation(type, Background, Outline);
+      var markerIcon = IconFactory.CreateConversationMarker(type, IconColor);
+
+      if (markerIcon != null) {
+        markerIcon = IconFactory.CreatePlacedIcon(markerIcon, BpmnConstants.ConversationMarkerPlacement,
+            BpmnConstants.MarkerSize);
+        typeIcon = IconFactory.CreateCombinedIcon(new List<IIcon>(new[] { typeIcon, markerIcon }));
+      }
+
+      Icon = IconFactory.CreatePlacedIcon(typeIcon, BpmnConstants.ConversationPlacement,
+          BpmnConstants.ConversationSize);
     }
 
     /// <inheritdoc/>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     protected override GeneralPath GetOutline(INode node) {
-      double width = Math.Min(node.Layout.Width, node.Layout.Height / BpmnConstants.Sizes.ConversationWidthHeightRatio);
-      double height = width * BpmnConstants.Sizes.ConversationWidthHeightRatio;
+      double width = Math.Min(node.Layout.Width, node.Layout.Height / BpmnConstants.ConversationWidthHeightRatio);
+      double height = width * BpmnConstants.ConversationWidthHeightRatio;
       RectD bounds = new RectD(node.Layout.GetCenter().X - width/2, node.Layout.GetCenter().Y - height/2, width, height);
       
       var path = new GeneralPath();

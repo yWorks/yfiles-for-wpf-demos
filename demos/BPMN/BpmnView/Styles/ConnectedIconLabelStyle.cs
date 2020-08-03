@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.2.
- ** Copyright (c) 2000-2019 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.3.
+ ** Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -177,36 +177,37 @@ namespace Demo.yFiles.Graph.Bpmn.Styles
       dummyTextLabel.LayoutParameter = TextPlacement;
       dummyTextLabel.Text = item.Text;
       dummyTextLabel.PreferredSize = dummyTextLabel.Style.Renderer.GetPreferredSize(dummyTextLabel, dummyTextLabel.Style);
-      TextBounds = TextPlacement.Model.GetGeometry(dummyTextLabel, TextPlacement);
+      textBounds = TextPlacement.Model.GetGeometry(dummyTextLabel, TextPlacement);
 
-      BoundingBox = item.GetLayout().GetBounds() + TextBounds.GetBounds();
+      boundingBox = item.GetLayout().GetBounds() + textBounds.GetBounds();
 
       // Set source port to the port of the node using a dummy node that is located at the origin.
       ((SimplePort) dummyEdge.SourcePort).LocationParameter = LabelConnectorLocation;
       ((SimplePort) dummyEdge.TargetPort).LocationParameter = NodeConnectorLocation;
+      dummyEdge.Style = ConnectorStyle;
     }
 
-    private IOrientedRectangle TextBounds;
+    private IOrientedRectangle textBounds;
 
-    private RectD BoundingBox;
+    private RectD boundingBox;
 
     /// <inheritdoc/>
     protected override bool IsHit(IInputModeContext context, PointD location, ILabel label) {
       Configure(label);
       return label.GetLayout().Contains(location, context.HitTestRadius)
-             || TextBounds.Contains(location, context.HitTestRadius)
+             || textBounds.Contains(location, context.HitTestRadius)
              || dummyEdge.Style.Renderer.GetHitTestable(dummyEdge, dummyEdge.Style).IsHit(context, location);
     }
 
     /// <inheritdoc/>
     protected override bool IsInBox(IInputModeContext context, RectD rectangle, ILabel label) {
       Configure(label);
-      return rectangle.Intersects(BoundingBox.GetEnlarged(context.HitTestRadius));
+      return rectangle.Intersects(boundingBox.GetEnlarged(context.HitTestRadius));
     }
 
     /// <inheritdoc/>
     protected override RectD GetBounds(ICanvasContext context, ILabel label) {
-      return BoundingBox +
+      return boundingBox +
              dummyEdge.Style.Renderer.GetBoundsProvider(dummyEdge, dummyEdge.Style).GetBounds(context);
     }
 
@@ -216,9 +217,9 @@ namespace Demo.yFiles.Graph.Bpmn.Styles
       // The visibility test does not call Configure, which means we don't have the dummy edge set up yet.
       var ownerNode = label.Owner as INode;
       if (ownerNode != null) {
-        return rectangle.Intersects(BoundingBox + ownerNode.Layout.ToRectD());
+        return rectangle.Intersects(boundingBox + ownerNode.Layout.ToRectD());
       }
-      return rectangle.Intersects(BoundingBox);
+      return rectangle.Intersects(boundingBox);
     }
 
   }

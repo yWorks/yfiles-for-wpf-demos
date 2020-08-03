@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.2.
- ** Copyright (c) 2000-2019 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.3.
+ ** Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -82,7 +82,7 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
         container.Add(visual);
       }
       container.SetCanvasArrangeRect(new Rect(bounds.TopLeft, bounds.BottomRight));
-      container.SetRenderDataCache(new IconData() {ModCount = ModCount, Bounds = bounds});
+      container.SetRenderDataCache(new IconData {ModCount = ModCount, Bounds = bounds});
 
       return container;
     }

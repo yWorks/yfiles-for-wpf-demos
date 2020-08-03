@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.2.
- ** Copyright (c) 2000-2019 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.3.
+ ** Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -236,8 +236,7 @@ namespace Demo.yFiles.Layout.MazeRouting
       var filteredGraph = new FilteredGraphWrapper(
         Graph,
         // if the node has a tag, its a maze and needs to be removed
-        node => node.Tag == null,
-        edge => true
+        node => node.Tag == null
       );
 
       // set the filtered graph without mazes

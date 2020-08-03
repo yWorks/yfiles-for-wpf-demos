@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.2.
- ** Copyright (c) 2000-2019 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.3.
+ ** Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -74,7 +74,6 @@ namespace Demo.yFiles.Graph.Input.SnapLines
     private const string EdgeToEdge = "Edge to Edge";
 
     private const string GridGroup = "Grid";
-    private const string GridShow = "Show Grid";
     private const string GridHorizontalWidth = "Horizontal Grid Width";
     private const string GridVerticalWidth = "Vertical Grid Width";
     private const string GridSnapDistance = "Grid Snap Distance";
@@ -123,7 +122,6 @@ namespace Demo.yFiles.Graph.Input.SnapLines
 
       // initialize current values
       OnSnappingChanged(this, null);
-      OnShowGridChanged(this, null);
       OnGridHorizontalWidthChanged(this, null);
       OnGridVerticalWidthChanged(this, null);
 
@@ -139,6 +137,32 @@ namespace Demo.yFiles.Graph.Input.SnapLines
     }
 
     private void UpdateGrid() {
+      // Adjust grid visualization to the snap type
+      switch (snapContext.GridSnapType) {
+        case GridSnapTypes.None:
+          grid.Visible = false;
+          break;
+        case GridSnapTypes.HorizontalLines:
+          grid.Visible = true;
+          grid.GridStyle = GridStyle.HorizontalLines;
+          break;
+        case GridSnapTypes.VerticalLines:
+          grid.Visible = true;
+          grid.GridStyle = GridStyle.VerticalLines;
+          break;
+        case GridSnapTypes.Lines:
+          grid.Visible = true;
+          grid.GridStyle = GridStyle.Lines;
+          break;
+        case GridSnapTypes.GridPoints:
+          grid.Visible = true;
+          grid.GridStyle = GridStyle.Dots;
+          break;
+        case GridSnapTypes.All:
+          grid.Visible = true;
+          grid.GridStyle = GridStyle.Crosses;
+          break;
+      }
       GraphControl.Invalidate();
     }
 
@@ -191,7 +215,6 @@ namespace Demo.yFiles.Graph.Input.SnapLines
               new List<GridSnapTypes> { GridSnapTypes.All, GridSnapTypes.GridPoints, GridSnapTypes.Lines, GridSnapTypes.VerticalLines, GridSnapTypes.HorizontalLines, GridSnapTypes.None },
               GridSnapTypes.None
           )).PropertyChanged += OnSnappingChanged;
-      currentGroup.AddBool(GridShow, false).PropertyChanged += OnShowGridChanged;
       currentGroup.AddInt(GridHorizontalWidth, 50).PropertyChanged += OnGridHorizontalWidthChanged;
       currentGroup.AddInt(GridVerticalWidth, 50).PropertyChanged += OnGridVerticalWidthChanged;
       currentGroup.AddInt(GridSnapDistance, 10).PropertyChanged += OnGridSnapDistanceChanged;
@@ -227,11 +250,6 @@ namespace Demo.yFiles.Graph.Input.SnapLines
           (bool)Handler.GetValue(OrthogonalSnappingGroup, OrthogonalEdgeCreation)
               ? OrthogonalEdgeEditingPolicy.Always
               : OrthogonalEdgeEditingPolicy.Never;
-    }
-
-
-    private void OnShowGridChanged(object sender, PropertyChangedEventArgs e) {
-      grid.Visible = (bool)Handler.GetValue(GridGroup, GridShow);
       UpdateGrid();
     }
 
@@ -244,7 +262,7 @@ namespace Demo.yFiles.Graph.Input.SnapLines
     }
 
     private void OnGridVerticalWidthChanged(object sender, PropertyChangedEventArgs e) {
-      int width = (int)Handler.GetValue(GridGroup, GridHorizontalWidth);
+      int width = (int)Handler.GetValue(GridGroup, GridVerticalWidth);
       if (gridInfo != null) {
         gridInfo.VerticalSpacing = width;
       }

@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.2.
- ** Copyright (c) 2000-2019 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.3.
+ ** Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -35,6 +35,7 @@ using Demo.yFiles.IO.GraphML.Compat;
 using Demo.yFiles.IO.GraphML.Compat.Xaml;
 using yWorks.Graph;
 using yWorks.Graph.LabelModels;
+using yWorks.Graph.PortLocationModels;
 using yWorks.Graph.Styles;
 using yWorks.GraphML;
 using yWorks.Markup.Common;
@@ -75,6 +76,8 @@ namespace Demo.yFiles.IO.GraphML.Compat
       var mappings = new Dictionary<XName, Type> {
         // General graph stuff
         { XName.Get("Bend", YfilesCommonNS20), typeof(BendExtension) },
+        { XName.Get("NodeViewState", YfilesCommonNS20), typeof(FolderNodeStateExtension) },
+        { XName.Get("EdgeViewState", YfilesCommonNS20), typeof(FoldingEdgeStateExtension) },
         { XName.Get("GraphSettings", YfilesCommonNS20), typeof(GraphSettings) },
         { XName.Get("NodeDefaults", YfilesCommonNS20), typeof(NodeDefaults) },
         { XName.Get("EdgeDefaults", YfilesCommonNS20), typeof(EdgeDefaults) },
@@ -92,6 +95,7 @@ namespace Demo.yFiles.IO.GraphML.Compat
         { XName.Get("ImageNodeStyle", YfilesWpfXamlNS20), typeof(ImageNodeStyle) },
         { XName.Get("MemoryImageNodeStyle", YfilesWpfXamlNS20), typeof(MemoryImageNodeStyle) },
         { XName.Get("MemoryImage", YfilesWpfXamlNS20), typeof(MemoryImageExtension) },
+        { XName.Get("ImageSource", YfilesWpfXamlNS20), typeof(ImageSourceExtension) },
         { XName.Get("GeneralPathNodeStyle", YfilesWpfXamlNS20), typeof(GeneralPathNodeStyle) },
         { XName.Get("GeneralPathMarkup", YfilesWpfXamlNS20), typeof(GeneralPathExtension) },
         { XName.Get("MoveTo", YfilesWpfXamlNS20), typeof(MoveTo) },
@@ -102,7 +106,7 @@ namespace Demo.yFiles.IO.GraphML.Compat
         { XName.Get("PanelNodeStyle", YfilesWpfXamlNS20), typeof(PanelNodeStyle) },
         { XName.Get("ShinyPlateNodeStyle", YfilesWpfXamlNS20), typeof(ShinyPlateNodeStyle) },
         { XName.Get("ShadowNodeStyleDecorator", YfilesWpfXamlNS20), typeof(ShadowNodeStyleDecorator) },
-        { XName.Get("CollapsibleNodeStyleDecorator", YfilesWpfXamlNS20), typeof(CollapsibleNodeStyleDecorator) },
+        { XName.Get("CollapsibleNodeStyleDecorator", YfilesWpfXamlNS20), typeof(CollapsibleNodeStyleDecoratorExtension) },
         { XName.Get("TableNodeStyle", YfilesWpfXamlNS20), typeof(TableNodeStyle) },
 
         // Port styles
@@ -151,8 +155,17 @@ namespace Demo.yFiles.IO.GraphML.Compat
         { XName.Get("FreeEdgeLabelModelParameter", YfilesWpfXamlNS20), typeof(FreeEdgeLabelModelParameterExtension) },
         { XName.Get("SmartEdgeLabelModel", YfilesWpfXamlNS20), typeof(SmartEdgeLabelModel) },
         { XName.Get("SmartEdgeLabelModelParameter", YfilesWpfXamlNS20), typeof(SmartEdgeLabelModelParameterExtension) },
-        
+
+        { XName.Get("BendAnchoredPortLocationModel", YfilesWpfXamlNS20), typeof(BendAnchoredPortLocationModel) },
+        { XName.Get("BendAnchoredParameter", YfilesWpfXamlNS20), typeof(BendAnchoredParameterExtension) },
+        { XName.Get("GenericPortLocationModel", YfilesWpfXamlNS20), typeof(Xaml.GenericPortLocationModelExtension) },
+        { XName.Get("GenericPortLocationParameter", YfilesWpfXamlNS20), typeof(GenericPortLocationParameterExtension) },
+        { XName.Get("SegmentRatioPortLocationModel", YfilesWpfXamlNS20), typeof(SegmentRatioPortLocationModel) },
+        { XName.Get("SegmentRatioParameterParameter", YfilesWpfXamlNS20), typeof(SegmentRatioParameterExtension) },
+
+        { XName.Get("StripeLabelModel", YfilesWpfXamlNS20), typeof(StripeLabelModel) },
         { XName.Get("StripeLabelModelParameter", YfilesWpfXamlNS20), typeof(StripeLabelModelParameterExtension) },
+        { XName.Get("StretchStripeLabelModel", YfilesWpfXamlNS20), typeof(StretchStripeLabelModel) },
         { XName.Get("StretchStripeLabelModelParameter", YfilesWpfXamlNS20), typeof(StretchStripeLabelModelParameterExtension) }
       };
       handler.QueryType += (sender, args) => {

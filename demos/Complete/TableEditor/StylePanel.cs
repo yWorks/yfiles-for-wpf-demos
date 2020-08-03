@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.2.
- ** Copyright (c) 2000-2019 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.3.
+ ** Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -88,8 +88,8 @@ namespace Demo.yFiles.Graph.TableEditor
         configurator.WorldBounds = bounds;
       }
 
-      IRenderContext vc = configurator.Setup(canvas);
-      Transform transform = configurator.CreateTransform();
+      IRenderContext vc = configurator.CreateRenderContext(canvas);
+      Transform transform = configurator.CreateWorldToIntermediateTransform();
       Visual visual = canvas.ExportContent(vc);
       return new VisualGroup {Children = {visual}, Clip = Clip, Transform = transform};
     }

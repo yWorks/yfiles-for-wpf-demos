@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.2.
- ** Copyright (c) 2000-2019 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.3.
+ ** Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -28,11 +28,10 @@
  ***************************************************************************/
 
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Reflection;
+using System.Windows.Media;
 using Demo.yFiles.Graph.Bpmn.Util;
-using yWorks.Controls;
 using yWorks.Controls.Input;
 using yWorks.Geometry;
 using yWorks.Graph;
@@ -45,18 +44,7 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
   /// </summary>
   [Obfuscation(StripAfterObfuscation = false, Exclude = true, ApplyToMembers = false)]
   public class GatewayNodeStyle : BpmnNodeStyle {
-
-    #region Initialize static fields
-
-    private static readonly IIcon gatewayIcon;
-
-    static GatewayNodeStyle() {
-      gatewayIcon = IconFactory.CreatePlacedIcon(IconFactory.CreateGateway(), BpmnConstants.Placements.Gateway, SizeD.Empty);
-    }
-
-    #endregion
-
-    #region Properties
+    private IIcon gatewayIcon;
 
     private GatewayType type;
 
@@ -71,15 +59,64 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
         if (type != value) {
           ModCount++;
           type = value;
-          typeIcon = IconFactory.CreateGatewayType(type);
-          if (typeIcon != null) {
-            typeIcon = IconFactory.CreatePlacedIcon(typeIcon, BpmnConstants.Placements.GatewayType, SizeD.Empty);
-          }
+          UpdateTypeIcon();
         }
       }
     }
 
-    #endregion
+    private Brush background = BpmnConstants.GatewayDefaultBackground;
+
+    /// <summary>
+    /// Gets or sets the background color of the gateway.
+    /// </summary>
+    [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
+    [DefaultValue(typeof(BpmnConstants), "GatewayDefaultBackground")]
+    public Brush Background {
+      get { return background; }
+      set {
+        if (background != value) {
+          ModCount++;
+          background = value;
+          UpdateGatewayIcon();
+        }
+      }
+    }
+
+    private Brush outline = BpmnConstants.GatewayDefaultOutline;
+
+    /// <summary>
+    /// Gets or sets the outline color of the gateway.
+    /// </summary>
+    [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
+    [DefaultValue(typeof(BpmnConstants), "GatewayDefaultOutline")]
+    public Brush Outline {
+      get { return outline; }
+      set {
+        if (outline != value) {
+          ModCount++;
+          outline = value;
+          UpdateGatewayIcon();
+        }
+      }
+    }
+
+    private Brush iconColor = BpmnConstants.DefaultIconColor;
+
+    /// <summary>
+    /// Gets or sets the color for the icon.
+    /// </summary>
+    [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
+    [DefaultValue(typeof(BpmnConstants), "DefaultIconColor")]
+    public Brush IconColor {
+      get { return iconColor; }
+      set {
+        if (iconColor != value) {
+          ModCount++;
+          iconColor = value;
+          UpdateTypeIcon();
+        }
+      }
+    }
 
     private IIcon typeIcon;
 
@@ -91,10 +128,24 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
       Type = GatewayType.ExclusiveWithoutMarker;
     }
 
+    private void UpdateGatewayIcon() {
+      gatewayIcon = IconFactory.CreatePlacedIcon(IconFactory.CreateGateway(Background, Outline), BpmnConstants.GatewayPlacement, SizeD.Empty);
+    }
+
+    private void UpdateTypeIcon() {
+      typeIcon = IconFactory.CreateGatewayType(type, IconColor);
+      if (typeIcon != null) {
+        typeIcon = IconFactory.CreatePlacedIcon(typeIcon, BpmnConstants.GatewayTypePlacement, SizeD.Empty);
+      }
+    }
+
     /// <inheritdoc/>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     internal override void UpdateIcon(INode node) {
-      Icon = typeIcon != null ? IconFactory.CreateCombinedIcon(new List<IIcon>(new[] {gatewayIcon, typeIcon})) : gatewayIcon;
+      if (gatewayIcon == null) {
+        UpdateGatewayIcon();
+      }
+      Icon = typeIcon != null ? IconFactory.CreateCombinedIcon(new[] { gatewayIcon, typeIcon }) : gatewayIcon;
     }
 
     /// <inheritdoc/>

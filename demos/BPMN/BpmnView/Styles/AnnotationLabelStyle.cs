@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.2.
- ** Copyright (c) 2000-2019 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.3.
+ ** Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -30,6 +30,7 @@
 using System.ComponentModel;
 using System.Reflection;
 using System.Windows.Media;
+using Demo.yFiles.Graph.Bpmn.Util;
 using yWorks.Controls;
 using yWorks.Controls.Input;
 using yWorks.Geometry;
@@ -49,21 +50,10 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
     #region Initialize static fields
 
     private static readonly AnnotationLabelStyleRenderer renderer = new AnnotationLabelStyleRenderer();
-    private static readonly BpmnEdgeStyle connectorStyle;
-    private static readonly DefaultLabelStyle textStyle;
-    private static readonly AnnotationNodeStyle leftAnnotationStyle;
-    private static readonly AnnotationNodeStyle rightAnnotationStyle;
-
-    internal static AnnotationNodeStyle LeftAnnotationStyle { get { return leftAnnotationStyle; } }
-
-    internal static AnnotationNodeStyle RightAnnotationStyle { get { return rightAnnotationStyle; } }
-
-    static AnnotationLabelStyle() {
-      leftAnnotationStyle = new AnnotationNodeStyle {Left = true};
-      rightAnnotationStyle = new AnnotationNodeStyle {Left = false};
-      connectorStyle = new BpmnEdgeStyle { Type = EdgeType.Association };
-      textStyle = new DefaultLabelStyle();
-    }
+    private readonly BpmnEdgeStyle connectorStyle = new BpmnEdgeStyle { Type = EdgeType.Association };
+    private static readonly DefaultLabelStyle textStyle = new DefaultLabelStyle();
+    private readonly AnnotationNodeStyle leftAnnotationStyle = new AnnotationNodeStyle { Left = true };
+    private readonly AnnotationNodeStyle rightAnnotationStyle = new AnnotationNodeStyle { Left = false };
 
     #endregion
 
@@ -86,15 +76,48 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
       get { return delegateStyle; }
     }
 
+    /// <summary>
+    /// Gets or sets the background color of the annotation.
+    /// </summary>
+    [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
+    [DefaultValue(typeof(BpmnConstants), "AnnotationDefaultBackground")]
+    public Brush Background {
+      get { return leftAnnotationStyle.Background; }
+      set {
+        if (leftAnnotationStyle.Background != value) {
+          leftAnnotationStyle.Background = value;
+          rightAnnotationStyle.Background = value;
+        }
+      }
+    }
+
+    /// <summary>
+    /// Gets or sets the outline color of the annotation.
+    /// </summary>
+    /// <remarks>
+    /// This also influences the color of the line to the annotated element.
+    /// </remarks>
+    [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
+    [DefaultValue(typeof(BpmnConstants), "AnnotationDefaultOutline")]
+    public Brush Outline {
+      get { return leftAnnotationStyle.Outline; }
+      set {
+        if (leftAnnotationStyle.Outline != value) {
+          leftAnnotationStyle.Outline = value;
+          rightAnnotationStyle.Outline = value;
+          connectorStyle.Color = value;
+        }
+      }
+    }
+
     #endregion
 
     /// <summary>
     /// Creates a new instance.
     /// </summary>
     public AnnotationLabelStyle() {
-
       delegateStyle = new ConnectedIconLabelStyle {
-        IconStyle = LeftAnnotationStyle,
+        IconStyle = leftAnnotationStyle,
         TextStyle = textStyle,
         TextPlacement = InteriorLabelModel.Center,
         ConnectorStyle = connectorStyle,
@@ -106,7 +129,11 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
     /// <inheritdoc/>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     public object Clone() {
-      return MemberwiseClone();
+      return new AnnotationLabelStyle {
+          Insets = Insets,
+          Background = Background,
+          Outline = Outline,
+      };
     }
 
     /// <inheritdoc/>
@@ -118,7 +145,7 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
     /// <summary>
     /// An <see cref="ILabelStyleRenderer"/> implementation used by <see cref="AnnotationLabelStyle"/>.
     /// </summary>
-    private class AnnotationLabelStyleRenderer : ILabelStyleRenderer, IVisualCreator {
+    private sealed class AnnotationLabelStyleRenderer : ILabelStyleRenderer, IVisualCreator {
 
       private ILabel label;
       private ILabelStyle labelStyle;
@@ -136,7 +163,7 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
         insets = annotationLabelStyle.Insets;
 
         var delegateStyle = annotationLabelStyle.DelegateStyle;
-        delegateStyle.IconStyle = left ? LeftAnnotationStyle : RightAnnotationStyle;
+        delegateStyle.IconStyle = left ? annotationLabelStyle.leftAnnotationStyle : annotationLabelStyle.rightAnnotationStyle;
         delegateStyle.LabelConnectorLocation = left ? FreeNodePortLocationModel.NodeLeftAnchored : FreeNodePortLocationModel.NodeRightAnchored;
         return delegateStyle;
       }
@@ -198,14 +225,14 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
       /// <inheritdoc/>
       public Visual UpdateVisual(IRenderContext context, Visual oldVisual) {
         var container = oldVisual as VisualGroup;
-        RenderData cache = container != null ? oldVisual.GetRenderDataCache<RenderData>() : null;
-        ILabelStyle delegateStyle = GetCurrentStyle(label, labelStyle);
-        RenderData newCache = CreateRenderData();
+        var cache = container != null ? oldVisual.GetRenderDataCache<RenderData>() : null;
+        var delegateStyle = GetCurrentStyle(label, labelStyle);
+        var newCache = CreateRenderData();
         if (cache == null || !cache.Equals(newCache) || container.Children.Count != 1) {
           return CreateVisual(context);
         }
-        Visual oldDelegateVisual = container.Children[0];
-        Visual newDelegateVisual = delegateStyle.Renderer.GetVisualCreator(label, delegateStyle).UpdateVisual(context, oldDelegateVisual);
+        var oldDelegateVisual = container.Children[0];
+        var newDelegateVisual = delegateStyle.Renderer.GetVisualCreator(label, delegateStyle).UpdateVisual(context, oldDelegateVisual);
         if (oldDelegateVisual != newDelegateVisual) {
           container.Children[0] = newDelegateVisual;
         }
@@ -213,14 +240,14 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
       }
 
       private RenderData CreateRenderData() {
-        return new RenderData() {
+        return new RenderData {
           Left = left,
           Insets = insets
         };
       }
 
 #pragma warning disable 659 // we never yield this class and we are the only ones to call Equals, so we don't need GetHashCode()
-      class RenderData
+      sealed class RenderData
       {
         public bool Left { private get; set; }
         public double Insets { private get; set; }

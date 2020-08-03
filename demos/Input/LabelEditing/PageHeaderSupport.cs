@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.2.
- ** Copyright (c) 2000-2019 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.3.
+ ** Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -57,7 +57,7 @@ namespace Demo.yFiles.Graph.Input.LabelEditing
         BackgroundBrush = Brushes.Green
       };
       var headerLabel = new SimpleLabel(null, "Page Header", FreeLabelModel.Instance.CreateAnchored(
-          new DynamicViewPoint(graphControl, 5, 30), 0))
+          new DynamicViewPoint(graphControl, 5, 30)))
       {
         Style = new ZoomInvariantLabelStyle(innerLabelStyle)
       };
@@ -106,8 +106,7 @@ namespace Demo.yFiles.Graph.Input.LabelEditing
         var oldVisual = labelCanvasObject.Visible;
 
         // We know that this label helper is only used once this demo is properly set up.
-        var graphControl = ((GraphControl) context.CanvasControl);
-        var graphEditorInputMode = (GraphEditorInputMode) graphControl.InputMode;
+        var graphEditorInputMode = (GraphEditorInputMode) context.CanvasControl.InputMode;
         var textEditorInputMode = ((LabelEditingDemo.DemoTextEditorInputMode) graphEditorInputMode.TextEditorInputMode);
 
         mode.TextBox.Background = Brushes.White;
@@ -115,10 +114,10 @@ namespace Demo.yFiles.Graph.Input.LabelEditing
 
         // Make sure that the text box location matches the one of the zoom invariant page header label
         textEditorInputMode.ShowInViewCoordinatesProperty = true;
-        mode.Location = new DynamicViewPoint(graphControl, 5, 30);
-        mode.Anchor = new PointD(1, 0);
+        mode.Location = new DynamicViewPoint((GraphControl) context.CanvasControl, 5, 30);
+        mode.Anchor = new PointD(0, 1);
 
-        // Hide this label during editing if the cooresponding setting is enabled.
+        // Hide this label during editing if the corresponding setting is enabled.
         // This is only necessary since this label is not part of the graph.
         if (graphEditorInputMode.HideLabelDuringEditing) {
           labelCanvasObject.Visible = false;

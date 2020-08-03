@@ -1,0 +1,190 @@
+<!-- ************************************************************************ -->
+<!-- This demo file is part of yFiles WPF 3.3.                           -->
+<!-- Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
+<!-- 72070 Tuebingen, Germany. All rights reserved.                           -->
+<!--                                                                          -->
+<!-- yFiles demo files exhibit yFiles WPF functionalities. Any redistribution  -->
+<!-- of demo resource files, with or without modification, is not permitted.  -->
+<!--                                                                          -->
+<!-- Owners of a valid software license for a yFiles WPF version that this     -->
+<!-- demo is shipped with are allowed to use the resource file as basis for   -->
+<!-- their own yFiles WPF powered applications. Use of such programs is        -->
+<!-- governed by the rights and conditions as set out in the yFiles WPF        -->
+<!-- license agreement.                                                       -->
+<!--                                                                          -->
+<!-- THIS SOFTWARE IS PROVIDED ''AS IS'' AND ANY EXPRESS OR IMPLIED           -->
+<!-- WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF     -->
+<!-- MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN  -->
+<!-- NO EVENT SHALL yWorks BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,    -->
+<!-- SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED -->
+<!-- TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR   -->
+<!-- PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF   -->
+<!-- LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING     -->
+<!-- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS       -->
+<!-- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.             -->
+<!--                                                                          -->
+<!-- ************************************************************************ -->
+<Window x:Class="Demo.yFiles.Graph.ZOrder.ZOrderWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/3.0/xaml"
+    xmlns:zOrder="clr-namespace:Demo.yFiles.Graph.ZOrder"
+    Title="Demo.yFiles.Graph.ZOrder" Height="473" Width="800" 
+        Loaded="OnLoaded" Style="{StaticResource DemoWindow}" 
+    >
+    <Window.CommandBindings>
+        <CommandBinding Command="New" Executed="newButton_Click"/>
+    </Window.CommandBindings>
+    <DockPanel>
+        <Menu Name="menu" DockPanel.Dock="Top">
+            <MenuItem Header="File">
+                <MenuItem Command="New" />
+                <MenuItem Command="Open" CommandTarget="{Binding ElementName=graphControl}"/>
+                <MenuItem Command="SaveAs" CommandTarget="{Binding ElementName=graphControl}"/>
+                <Separator/>
+                <MenuItem Header="Exit" Click="exitToolStripMenuItem_Click"/>
+            </MenuItem>
+            <MenuItem Header="Edit">
+                <MenuItem Command="Cut" CommandTarget="{Binding ElementName=graphControl}"/>
+                <MenuItem Command="Copy" CommandTarget="{Binding ElementName=graphControl}"/>
+                <MenuItem Command="Paste" CommandTarget="{Binding ElementName=graphControl}"/>
+                <Separator/>
+                <MenuItem Command="Delete" CommandTarget="{Binding ElementName=graphControl}"/>
+                <Separator/>
+                <MenuItem Command="Undo" CommandTarget="{Binding ElementName=graphControl}"/>
+                <MenuItem Command="Redo" CommandTarget="{Binding ElementName=graphControl}"/>
+            </MenuItem>
+            <MenuItem Header="View">
+                <MenuItem Command="IncreaseZoom" CommandTarget="{Binding ElementName=graphControl}"/>
+                <MenuItem Command="DecreaseZoom" CommandTarget="{Binding ElementName=graphControl}"/>
+                <MenuItem Header="Zoom 1:1" CommandParameter="1" Command="Zoom" CommandTarget="{Binding ElementName=graphControl}"/>
+                <MenuItem Command="{x:Static ywpf:GraphControl.FitGraphBoundsCommand}" CommandTarget="{Binding ElementName=graphControl}" />
+            </MenuItem>
+            <MenuItem Header="Grouping">
+                <MenuItem Command="{x:Static ywpf:GraphCommands.GroupSelection}" CommandTarget="{Binding ElementName=graphControl}"/>
+                <MenuItem Command="{x:Static ywpf:GraphCommands.UngroupSelection}" CommandTarget="{Binding ElementName=graphControl}"/>
+                <Separator />
+                <MenuItem Command="{x:Static ywpf:GraphCommands.ExpandGroup}" CommandTarget="{Binding ElementName=graphControl}"/>
+                <MenuItem Command="{x:Static ywpf:GraphCommands.CollapseGroup}" CommandTarget="{Binding ElementName=graphControl}"/>
+                <Separator />
+                <MenuItem Command="{x:Static ywpf:GraphCommands.EnterGroup}" CommandTarget="{Binding ElementName=graphControl}"/>
+                <MenuItem Command="{x:Static ywpf:GraphCommands.ExitGroup}" CommandTarget="{Binding ElementName=graphControl}"/>
+            </MenuItem>
+        </Menu>
+        <ToolBarTray Height="Auto" Name="toolBarTray" Width="Auto" DockPanel.Dock="Top">
+            <ToolBar Width="{Binding ActualWidth, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ToolBarTray}}}" Height="Auto" Name="toolBar">
+                <Button Command="New" CommandTarget="{Binding ElementName=graphControl}"/>
+                <Button Command="Open" CommandTarget="{Binding ElementName=graphControl}" />
+                <Button Command="SaveAs" CommandTarget="{Binding ElementName=graphControl}"/>
+                <Separator />
+                <Button Command="Undo" CommandTarget="{Binding ElementName=graphControl}"/>
+                <Button Command="Redo" CommandTarget="{Binding ElementName=graphControl}"/>
+                <Separator />
+                <Button Command="Cut" CommandTarget="{Binding ElementName=graphControl}"/>
+                <Button Command="Copy" CommandTarget="{Binding ElementName=graphControl}"/>
+                <Button Command="Paste" CommandTarget="{Binding ElementName=graphControl}"/>
+                <Button Command="Delete" CommandTarget="{Binding ElementName=graphControl}"/>
+                <Separator />
+                <Button Command="IncreaseZoom" CommandTarget="{Binding ElementName=graphControl}"/>
+                <Button Command="DecreaseZoom" CommandTarget="{Binding ElementName=graphControl}"/>
+                <Button Command="{x:Static ywpf:GraphControl.FitGraphBoundsCommand}" CommandTarget="{Binding ElementName=graphControl}"/>
+                <Separator />
+                <Button Command="{x:Static ywpf:GraphCommands.GroupSelection}" CommandTarget="{Binding ElementName=graphControl}"/>
+                <Button Command="{x:Static ywpf:GraphCommands.UngroupSelection}" CommandTarget="{Binding ElementName=graphControl}"/>
+                <Separator />
+                <Button Content="{StaticResource RaiseIcon}" ContentTemplate="{StaticResource ImageButtonContentTemplate}" Margin="0" 
+                        Command="{x:Static zOrder:ZOrderGraphEditorInputMode.Raise}" CommandTarget="{Binding ElementName=graphControl}" />
+                <Button Content="{StaticResource LowerIcon}" ContentTemplate="{StaticResource ImageButtonContentTemplate}" Margin="0" 
+                        Command="{x:Static zOrder:ZOrderGraphEditorInputMode.Lower}" CommandTarget="{Binding ElementName=graphControl}" />
+                <Button Content="{StaticResource ToFrontIcon}" ContentTemplate="{StaticResource ImageButtonContentTemplate}" Margin="0" 
+                        Command="{x:Static zOrder:ZOrderGraphEditorInputMode.ToFront}" CommandTarget="{Binding ElementName=graphControl}" />
+                <Button Content="{StaticResource ToBackIcon}" ContentTemplate="{StaticResource ImageButtonContentTemplate}" Margin="0" 
+                        Command="{x:Static zOrder:ZOrderGraphEditorInputMode.ToBack}" CommandTarget="{Binding ElementName=graphControl}" />
+            </ToolBar>
+        </ToolBarTray>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="250" />
+                <ColumnDefinition Width="5" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid Grid.Column="0">
+                <!-- The left pane -->
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="180" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <!-- The Overview -->
+                <HeaderedContentControl Grid.Row="0" Header="Overview" Style="{StaticResource HeaderedContentStyle}" BorderThickness="0,0,1,0">
+                    <ywpf:GraphOverviewControl Grid.Row="0" GraphControl="{Binding ElementName=graphControl}"/>
+                </HeaderedContentControl>
+                <HeaderedContentControl Grid.Row="1" Header="Description" Style="{StaticResource HeaderedContentStyle}" BorderThickness="0,0,1,0">
+                    <ScrollViewer DockPanel.Dock="Left" Width="Auto" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" Padding="5">
+                        <RichTextBox IsReadOnly="True" BorderThickness="0">
+                            <FlowDocument>
+                                <Paragraph>
+                                    This demo customizes editing gestures to keep the z-order of nodes consistent.
+                                    It also demonstrates how to persist the z-Order when saving and loading a graph as GraphML.
+                                </Paragraph>
+                                <Paragraph Style="{StaticResource HtmlH2}">
+                                    Usage
+                                </Paragraph>
+                                <List Padding="12,0,0,0">
+                                    <ListItem>
+                                        <Paragraph>
+                                            Select nodes and use the Raise/Lower/ToFront/ToBack buttons to change their
+                                            z-orders.
+                                        </Paragraph>
+                                    </ListItem>
+                                    <ListItem>
+                                        <Paragraph>
+                                            Group/Ungroup select nodes and see how their relative z-order keeps stable.
+                                        </Paragraph>
+                                    </ListItem>
+                                    <ListItem>
+                                        <Paragraph>
+                                            Collapse/Expand group nodes and see how the z-order of their children keep stable.
+                                        </Paragraph>
+                                    </ListItem>
+                                    <ListItem>
+                                        <Paragraph>
+                                            Enter/Exit group or folder nodes and see how the z-order of nodes 
+                                            outside the group keep stable.
+                                        </Paragraph>
+                                    </ListItem>
+                                    <ListItem>
+                                        <Paragraph>
+                                            Cut/Copy/Paste selected nodes and see how the relative z-order 
+                                            of cut/copied nodes keeps stable when pasting.
+                                        </Paragraph>
+                                    </ListItem>
+                                    <ListItem>
+                                        <Paragraph>
+                                            Store the graph to GraphML and load it again to see how the z-order of the
+                                            nodes keeps stable.
+                                        </Paragraph>
+                                    </ListItem>
+                                    <ListItem>
+                                        <Paragraph>
+                                            Undo/Redo any of these operations and see how the z-order is restored.
+                                        </Paragraph>
+                                    </ListItem>
+                                    <ListItem>
+                                        <Paragraph>
+                                            A z-order is valid in the graph or in a group, i.e. there is a z-order for all "first level" elements in
+                                            the graph, as well as group specific z-orders for all elements in the specific groups.
+                                        </Paragraph>
+                                    </ListItem>
+                                </List>
+                            </FlowDocument>
+                        </RichTextBox>
+                    </ScrollViewer>
+                </HeaderedContentControl>
+            </Grid>
+            <GridSplitter Width="5" Grid.Column="1" ResizeBehavior="PreviousAndNext" />
+                <ywpf:GraphControl Grid.Column="2" Width="Auto" x:Name="graphControl" FileOperationsEnabled="True"/>
+        </Grid>
+    </DockPanel>
+</Window>

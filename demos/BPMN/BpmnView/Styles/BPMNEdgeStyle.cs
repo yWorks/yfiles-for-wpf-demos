@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.2.
- ** Copyright (c) 2000-2019 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.3.
+ ** Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -27,6 +27,7 @@
  ** 
  ***************************************************************************/
 
+using System;
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
@@ -46,67 +47,9 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
   [Obfuscation(StripAfterObfuscation = false, Exclude = true, ApplyToMembers = false)]
   public class BpmnEdgeStyle : IEdgeStyle, IArrowOwner
   {
-
-    #region Initialize static fields
-
-    private static readonly IconArrow defaultTargetArrow;
-    private static readonly IconArrow defaultSourceArrow;
-    private static readonly IconArrow associationArrow;
-    private static readonly IconArrow conditionalSourceArrow;
-    private static readonly IconArrow messageTargetArrow;
-    private static readonly IconArrow messageSourceArrow;
-
-    static BpmnEdgeStyle() {
-      defaultTargetArrow = new IconArrow(IconFactory.CreateArrowIcon(ArrowType.DefaultTarget))
-      {
-        Bounds = new SizeD(8, 6),
-        CropLength = 0,
-        Length = 8
-      };
-      defaultSourceArrow = new IconArrow(IconFactory.CreateArrowIcon(ArrowType.DefaultSource))
-      {
-        Bounds = new SizeD(8, 6),
-        CropLength = 0,
-        Length = 0
-      };
-      associationArrow = new IconArrow(IconFactory.CreateArrowIcon(ArrowType.Association))
-      {
-        Bounds = new SizeD(8, 6),
-        CropLength = 0,
-        Length = 0
-      };
-      conditionalSourceArrow = new IconArrow(IconFactory.CreateArrowIcon(ArrowType.ConditionalSource))
-      {
-        Bounds = new SizeD(16, 8),
-        CropLength = 0,
-        Length = 16
-      };
-      messageTargetArrow = new IconArrow(IconFactory.CreateArrowIcon(ArrowType.MessageTarget))
-      {
-        Bounds = new SizeD(8, 6),
-        CropLength = 0,
-        Length = 8
-      };
-      messageSourceArrow = new IconArrow(IconFactory.CreateArrowIcon(ArrowType.MessageSource))
-      {
-        Bounds = new SizeD(6, 6),
-        CropLength = 0,
-        Length = 6
-      };
-    }
-
-    #endregion
-
-    #region Properties
-
-    private PolylineEdgeStyle delegateStyle;
+    private readonly PolylineEdgeStyle delegateStyle;
     private EdgeType type;
-    private double smoothingLength = 20;
-    private readonly IEdgeStyleRenderer renderer;
-    private IArrow sourceArrow;
-    private IArrow targetArrow;
-    private Pen pen;
-    private readonly Pen doubleLineCenterPen;
+    private readonly IEdgeStyleRenderer renderer = new BpmnEdgeStyleRenderer();
 
     /// <summary>
     /// Gets or sets the edge type of this style. 
@@ -117,73 +60,62 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
       get { return type; }
       set {
         type = value;
-        switch (value) {
-          case EdgeType.ConditionalFlow:
-            pen = BpmnConstants.Pens.BpmnEdgeStyle;
-            sourceArrow = conditionalSourceArrow;
-            targetArrow = defaultTargetArrow;
-            break;
-          case EdgeType.Association:
-            pen = BpmnConstants.Pens.AssociationEdgeStyle;
-            sourceArrow = Arrows.None;
-            targetArrow = Arrows.None;
-            break;
-          case EdgeType.DirectedAssociation:
-            pen = BpmnConstants.Pens.AssociationEdgeStyle;
-            sourceArrow = Arrows.None;
-            targetArrow = associationArrow;
-            break;
-          case EdgeType.BidirectedAssociation:
-            pen = BpmnConstants.Pens.AssociationEdgeStyle;
-            sourceArrow = associationArrow;
-            targetArrow = associationArrow;
-            break;
-          case EdgeType.MessageFlow:
-            pen = BpmnConstants.Pens.MessageEdgeStyle;
-            sourceArrow = messageSourceArrow;
-            targetArrow = messageTargetArrow;
-            break;
-          case EdgeType.DefaultFlow:
-            pen = BpmnConstants.Pens.BpmnEdgeStyle;
-            sourceArrow = defaultSourceArrow;
-            targetArrow = defaultTargetArrow;
-            break;
-          case EdgeType.Conversation:
-            pen = BpmnConstants.Pens.ConversationDoubleLine;
-            sourceArrow = Arrows.None;
-            targetArrow = Arrows.None;
-            break;
-          case EdgeType.SequenceFlow:
-          default:
-            pen = BpmnConstants.Pens.BpmnEdgeStyle;
-            sourceArrow = Arrows.None;
-            targetArrow = defaultTargetArrow;
-            break;
-        }
-        UpdateDelegate();
+        UpdatePen(Color);
+        UpdateArrow(value);
       }
     }
 
-    #endregion
+    /// <summary>
+    /// Gets or sets the stroke color of the edge.
+    /// </summary>
+    [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
+    [DefaultValue(typeof(BpmnConstants), "EdgeDefaultColor")]
+    public Brush Color {
+      get { return delegateStyle.Pen.Brush; }
+      set {
+        if (!Equals(delegateStyle.Pen.Brush, value)) {
+          UpdatePen(value);
+          UpdateArrow(Type);
+        }
+      }
+    }
+
+    private Pen innerPen;
+
+    /// <summary>
+    /// Gets or sets the inner stroke color of the edge when <see cref="Type"/> is <see cref="EdgeType.Conversation"/>.
+    /// </summary>
+    [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
+    [DefaultValue(typeof(BpmnConstants), "EdgeDefaultInnerColor")]
+    public Brush InnerColor {
+      get { return innerPen.Brush; }
+      set {
+        if (innerPen == null || !Equals(innerPen.Brush, value)) {
+          innerPen = (Pen) new Pen(value, 1) { LineJoin = PenLineJoin.Round }.GetAsFrozen();
+        }
+      }
+    }
 
     /// <summary>
     /// Creates a new instance using <see cref="EdgeType.SequenceFlow"/>
     /// </summary>
     public BpmnEdgeStyle() {
-      renderer = new BpmnEdgeStyleRenderer();
-      doubleLineCenterPen = BpmnConstants.Pens.ConversationCenterLine;
-      delegateStyle = new PolylineEdgeStyle();
+      delegateStyle = new PolylineEdgeStyle { SmoothingLength = 20 };
+      // Setting the type also initializes the pen and arrows correctly
       Type = EdgeType.SequenceFlow;
+      Color = BpmnConstants.EdgeDefaultColor;
+      InnerColor = BpmnConstants.EdgeDefaultInnerColor;
     }
 
     // clone constructor
     private BpmnEdgeStyle(BpmnEdgeStyle other) {
       renderer = other.renderer;
-      doubleLineCenterPen = other.doubleLineCenterPen;
-      delegateStyle = new PolylineEdgeStyle();
-      smoothingLength = other.smoothingLength;
+      innerPen = other.innerPen;
+      // We need to clone the wrapped style since our properties just delegate there
+      delegateStyle = (PolylineEdgeStyle) other.delegateStyle.Clone();
       // setting the type updates all read-only properties
       Type = other.Type;
+      innerPen = other.innerPen;
     }
 
     /// <inheritdoc/>
@@ -201,27 +133,13 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
     /// <inheritdoc/>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     public IArrow SourceArrow {
-      get { return sourceArrow; }
+      get { return delegateStyle.SourceArrow; }
     }
 
     /// <inheritdoc/>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     public IArrow TargetArrow {
-      get { return targetArrow; }
-    }
-
-    /// <inheritdoc/>
-    [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
-    public Pen Pen {
-      get { return pen; }
-    }
-
-    /// <summary>
-    /// Gets or sets the <see cref="Pen"/> for the center line of a <see cref="EdgeType.Conversation"/>.
-    /// </summary>
-    [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
-    internal Pen DoubleLineCenterPen {
-      get { return doubleLineCenterPen; }
+      get { return delegateStyle.TargetArrow; }
     }
 
     /// <summary>
@@ -233,19 +151,91 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     [DefaultValue(20.0)]
     public double SmoothingLength {
-      get { return smoothingLength; }
+      get { return delegateStyle.SmoothingLength; }
       set {
-        smoothingLength = value;
-        UpdateDelegate();
+        delegateStyle.SmoothingLength = value;
       }
     }
 
-    private void UpdateDelegate() {
-      if (delegateStyle != null) {
-        delegateStyle.Pen = Pen;
-        delegateStyle.SourceArrow = SourceArrow;
-        delegateStyle.TargetArrow = TargetArrow;
-        delegateStyle.SmoothingLength = SmoothingLength;
+    private void UpdatePen(Brush brush) {
+      Pen result;
+      switch (Type) {
+        case EdgeType.ConditionalFlow:
+        case EdgeType.DefaultFlow:
+        case EdgeType.SequenceFlow:
+        default:
+          result = new Pen(brush, 1);
+          break;
+        case EdgeType.Association:
+        case EdgeType.DirectedAssociation:
+        case EdgeType.BidirectedAssociation:
+          result = new Pen { Brush = brush, DashStyle = DashStyles.Dot, DashCap = PenLineCap.Round };
+          break;
+        case EdgeType.MessageFlow:
+          result = new Pen { Brush = brush, DashStyle = DashStyles.Dash };
+          break;
+        case EdgeType.Conversation:
+          result = new Pen { Brush = brush, Thickness = 3, LineJoin = PenLineJoin.Round };
+          break;
+      }
+      delegateStyle.Pen = (Pen) result.GetAsFrozen();
+    }
+
+    private void UpdateArrow(EdgeType type) {
+      switch (type) {
+        case EdgeType.ConditionalFlow:
+          delegateStyle.SourceArrow = new IconArrow(IconFactory.CreateArrowIcon(ArrowType.ConditionalSource, Color)) {
+              Bounds = new SizeD(16, 8), CropLength = 0, Length = 16
+          };
+          delegateStyle.TargetArrow = new IconArrow(IconFactory.CreateArrowIcon(ArrowType.DefaultTarget, Color)) {
+              Bounds = new SizeD(8, 6), CropLength = 0, Length = 8
+          };
+          break;
+        case EdgeType.Association:
+          delegateStyle.SourceArrow = Arrows.None;
+          delegateStyle.TargetArrow = Arrows.None;
+          break;
+        case EdgeType.DirectedAssociation:
+          delegateStyle.SourceArrow = Arrows.None;
+          delegateStyle.TargetArrow = new IconArrow(IconFactory.CreateArrowIcon(ArrowType.Association, Color)) {
+              Bounds = new SizeD(8, 6), CropLength = 0, Length = 0
+          };
+          break;
+        case EdgeType.BidirectedAssociation:
+          delegateStyle.SourceArrow = new IconArrow(IconFactory.CreateArrowIcon(ArrowType.Association, Color)) {
+              Bounds = new SizeD(8, 6), CropLength = 0, Length = 0
+          };
+          delegateStyle.TargetArrow = new IconArrow(IconFactory.CreateArrowIcon(ArrowType.Association, Color)) {
+              Bounds = new SizeD(8, 6), CropLength = 0, Length = 0
+          };
+          break;
+        case EdgeType.MessageFlow:
+          delegateStyle.SourceArrow = new IconArrow(IconFactory.CreateArrowIcon(ArrowType.MessageSource, Color)) {
+              Bounds = new SizeD(6, 6), CropLength = 0, Length = 6
+          };
+          delegateStyle.TargetArrow = new IconArrow(IconFactory.CreateArrowIcon(ArrowType.MessageTarget, Color)) {
+              Bounds = new SizeD(8, 6), CropLength = 0, Length = 8
+          };
+          break;
+        case EdgeType.DefaultFlow:
+          delegateStyle.SourceArrow = new IconArrow(IconFactory.CreateArrowIcon(ArrowType.DefaultSource, Color)) {
+              Bounds = new SizeD(8, 6), CropLength = 0, Length = 0
+          };
+          delegateStyle.TargetArrow = new IconArrow(IconFactory.CreateArrowIcon(ArrowType.DefaultTarget, Color)) {
+              Bounds = new SizeD(8, 6), CropLength = 0, Length = 8
+          };
+          break;
+        case EdgeType.Conversation:
+          delegateStyle.SourceArrow = Arrows.None;
+          delegateStyle.TargetArrow = Arrows.None;
+          break;
+        case EdgeType.SequenceFlow:
+        default:
+          delegateStyle.SourceArrow = Arrows.None;
+          delegateStyle.TargetArrow = new IconArrow(IconFactory.CreateArrowIcon(ArrowType.DefaultTarget, Color)) {
+              Bounds = new SizeD(8, 6), CropLength = 0, Length = 8
+          };
+          break;
       }
     }
 
@@ -304,11 +294,12 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
           container.Add(delegateRenderer.GetVisualCreator(this.edge, this.style.delegateStyle).CreateVisual(context));
         } else {
           container.Add(delegateRenderer.GetVisualCreator(this.edge, this.style.delegateStyle).CreateVisual(context));
-          style.delegateStyle.Pen = style.DoubleLineCenterPen;
+          var oldPen = style.delegateStyle.Pen;
+          style.delegateStyle.Pen = style.innerPen;
           container.Add(delegateRenderer.GetVisualCreator(this.edge, this.style.delegateStyle).CreateVisual(context));
-          style.delegateStyle.Pen = style.Pen;
+          style.delegateStyle.Pen = oldPen;
         }
-        container.SetRenderDataCache<EdgeType>(style.Type);
+        container.SetRenderDataCache(style.Type);
         return container;
       }
 
@@ -323,34 +314,31 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
           return CreateVisual(context);
         }
         if (style.Type != EdgeType.Conversation) {
-          Visual firstChild = container.Children[0];
-          Visual newFirstChild = delegateRenderer.GetVisualCreator(this.edge, this.style.delegateStyle).UpdateVisual(context, firstChild);
+          var firstChild = container.Children[0];
+          var newFirstChild = delegateRenderer.GetVisualCreator(this.edge, this.style.delegateStyle).UpdateVisual(context, firstChild);
           if (firstChild != newFirstChild) {
-            container.Children.Remove(firstChild);
-            container.Children.Insert(0, newFirstChild);
+            container.Children[0] = firstChild;
           }
         } else {
-          Visual firstPath = container.Children[0];
-          Visual newFirstPath = delegateRenderer.GetVisualCreator(this.edge, this.style.delegateStyle).UpdateVisual(context, firstPath);
+          var firstPath = container.Children[0];
+          var newFirstPath = delegateRenderer.GetVisualCreator(this.edge, this.style.delegateStyle).UpdateVisual(context, firstPath);
           if (firstPath != newFirstPath) {
-            container.Children.Remove(firstPath);
-            container.Children.Insert(0, newFirstPath);
+            container.Children[0] = firstPath;
           }
 
-          style.delegateStyle.Pen = style.DoubleLineCenterPen;
-          Visual secondPath = container.Children[1];
-          Visual newSecondPath = delegateRenderer.GetVisualCreator(this.edge, this.style.delegateStyle).UpdateVisual(context, secondPath);
+          var oldPen = style.delegateStyle.Pen;
+          style.delegateStyle.Pen = style.innerPen;
+          var secondPath = container.Children[1];
+          var newSecondPath = delegateRenderer.GetVisualCreator(this.edge, this.style.delegateStyle).UpdateVisual(context, secondPath);
           if (secondPath != newSecondPath) {
-            container.Children.Remove(secondPath);
-            container.Children.Insert(1, newSecondPath);
+            container.Children[1] = secondPath;
           }
-          style.delegateStyle.Pen = style.Pen;
+          style.delegateStyle.Pen = oldPen;
         }
         return container;
       }
     }
 
     #endregion
-
   }
 }

@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.2.
- ** Copyright (c) 2000-2019 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.3.
+ ** Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -31,6 +31,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Reflection;
+using System.Windows.Media;
 using Demo.yFiles.Graph.Bpmn.Util;
 using yWorks.Controls;
 using yWorks.Controls.Input;
@@ -45,9 +46,6 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
   /// </summary>
   [Obfuscation(StripAfterObfuscation = false, Exclude = true, ApplyToMembers = false)]
   public class EventNodeStyle  : BpmnNodeStyle {
-
-    #region Properties
-
     private EventType type;
 
     /// <summary>
@@ -84,7 +82,63 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
       }
     }
 
-    #endregion
+    private Brush background = BpmnConstants.DefaultEventBackground;
+
+    /// <summary>
+    /// Gets or sets the background color of the event.
+    /// </summary>
+    [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
+    [DefaultValue(typeof(BpmnConstants), "DefaultEventBackground")]
+    public Brush Background {
+      get { return background; }
+      set {
+        if (background != value) {
+          ModCount++;
+          background = value;
+          CreateEventIcon();
+        }
+      }
+    }
+
+    // null is the default value which chooses a default color for the outline depending on the characteristic
+    private Brush outline = BpmnConstants.DefaultEventOutline;
+
+    /// <summary>
+    /// Gets or sets the outline color of the event icon.
+    /// </summary>
+    /// <remarks>
+    /// If this is set to <see langword="null"/>, the outline color is automatic, based on the <see cref="Characteristic"/>.
+    /// </remarks>
+    [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
+    [DefaultValue(typeof(BpmnConstants), "DefaultEventOutline")]
+    public Brush Outline {
+      get { return outline; }
+      set {
+        if (outline != value) {
+          ModCount++;
+          outline = value;
+          CreateEventIcon();
+        }
+      }
+    }
+
+    private Brush iconColor = BpmnConstants.DefaultIconColor;
+
+    /// <summary>
+    /// Gets or sets the primary color for icons and markers.
+    /// </summary>
+    [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
+    [DefaultValue(typeof(BpmnConstants), "DefaultIconColor")]
+    public Brush IconColor {
+      get { return iconColor; }
+      set {
+        if (iconColor != value) {
+          ModCount++;
+          iconColor = value;
+          CreateTypeIcon();
+        }
+      }
+    }
 
     private IIcon eventIcon;
     private IIcon typeIcon;
@@ -100,15 +154,15 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
     }
 
     private void CreateTypeIcon() {
-      typeIcon = IconFactory.CreateEventType(type, fillTypeIcon);
+      typeIcon = IconFactory.CreateEventType(type, fillTypeIcon, IconColor, Background);
       if (typeIcon != null) {
-        typeIcon = IconFactory.CreatePlacedIcon(typeIcon, BpmnConstants.Placements.EventType, SizeD.Empty);
+        typeIcon = IconFactory.CreatePlacedIcon(typeIcon, BpmnConstants.EventTypePlacement, SizeD.Empty);
       }
     }
 
     private void CreateEventIcon() {
-      eventIcon = IconFactory.CreateEvent(Characteristic);
-      eventIcon = IconFactory.CreatePlacedIcon(eventIcon, BpmnConstants.Placements.Event, MinimumSize);
+      eventIcon = IconFactory.CreateEvent(Characteristic, Background, Outline);
+      eventIcon = IconFactory.CreatePlacedIcon(eventIcon, BpmnConstants.EventPlacement, MinimumSize);
       bool isFilled = Characteristic == EventCharacteristic.Throwing || Characteristic == EventCharacteristic.End;
       if (isFilled != fillTypeIcon) {
         fillTypeIcon = isFilled;
@@ -118,6 +172,9 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
 
     /// <inheritdoc/>
     internal override void UpdateIcon(INode node) {
+      if (eventIcon == null) {
+        CreateEventIcon();
+      }
       if (typeIcon != null) {
         Icon = IconFactory.CreateCombinedIcon(new List<IIcon>(new[] {eventIcon, typeIcon}));
       } else {

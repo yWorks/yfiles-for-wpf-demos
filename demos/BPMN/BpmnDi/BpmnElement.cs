@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.2.
- ** Copyright (c) 2000-2019 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.3.
+ ** Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -30,24 +30,27 @@
 using System.Collections.Generic;
 using System.Xml.Linq;
 using yWorks.Graph;
-
 // Just for better readability in code
 using BpmnNM = Demo.yFiles.Graph.Bpmn.BpmnDi.BpmnNamespaceManager;
 
 namespace Demo.yFiles.Graph.Bpmn.BpmnDi
 {
-  
   /// <summary>
   /// Class for Bpmn Element objects
   /// </summary>
   internal class BpmnElement
   {
-    
     /// <summary>
     /// List of all children of this element
     /// </summary>
-    private List<BpmnElement> Children { get; set; }
+    public List<BpmnElement> Children { get; set; }
     
+    /// <summary>
+    /// List of all <see cref="XNode"/> that were children of this element but have a different namespace then
+    /// <see cref="BpmnNamespaceManager.Bpmn"/> or <see cref="BpmnNamespaceManager.BpmnDi"/>.
+    /// </summary>
+    public List<XNode> ForeignChildren { get; set; }
+
     /// <summary>
     /// Id of this element
     /// </summary>
@@ -62,37 +65,27 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
     /// Number of TopParticipants, if this is a choreography Node
     /// </summary>
     public int TopParticipants { get; set; }
-    
+
     /// <summary>
     /// Number of BottomParticipants, if this is a choreography Node
     /// </summary>
     public int BottomParticipants { get; set; }
-    
+
     /// <summary>
     /// The parent BpmnElement
     /// </summary>
-    public BpmnElement Parent  { get; set; }
-    
-    /// <summary>
-    /// The corresponding tableRow, if this element is a vertical lane 
-    /// </summary>
-    public IRow TableRow  { get; set; }
-    
-    /// <summary>
-    /// The corresponding tableColumn, if this element is a horizontal lane 
-    /// </summary>
-    public IColumn TableColumn  { get; set; }
-    
+    public BpmnElement Parent { get; set; }
+
     /// <summary>
     /// The corresponding INode, if this element is a BpmnShape
     /// </summary>
     public INode Node { get; set; }
-    
+
     /// <summary>
     /// The corresponding table, if this element is part of a pool
     /// </summary>
     public ITable Table { get; set; }
-    
+
     /// <summary>
     /// The label text of this element
     /// </summary>
@@ -132,7 +125,7 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
     /// The corresponding IPort if this element is a BoundaryEvent
     /// </summary>
     public IPort Port { get; set; }
-    
+
     /// <summary>
     /// The corresponding IEdge, if this element is an Edge
     /// </summary>
@@ -144,8 +137,9 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
     /// <param name="xNode">The XML Node to turn into a BpmnElement</param>
     public BpmnElement(XElement xNode) {
       Children = new List<BpmnElement>();
+      ForeignChildren = new List<XNode>();
       Attributes = new Dictionary<string, string>();
-      
+
       //Initialize blank Label
       Label = "";
 
@@ -153,23 +147,23 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
       foreach (var attribute in BpmnNM.AttributesInNamespace(xNode.Attributes(), BpmnNM.Bpmn)) {
         var localName = attribute.Name.LocalName;
         switch (localName) {
-          case "id":
+          case BpmnDiConstants.IdAttribute:
             Id = attribute.Value;
             break;
-          case "name":
+          case BpmnDiConstants.NameAttribute:
             Label = attribute.Value;
             break;
-          case "sourceRef":
+          case BpmnDiConstants.SourceRefAttribute:
             Source = attribute.Value;
             break;
-          case "targetRef":
+          case BpmnDiConstants.TargetRefAttribute:
             Target = attribute.Value;
             break;
-          case "processRef":
+          case BpmnDiConstants.ProcessRefAttribute:
             Process = attribute.Value;
             break;
-          case "calledElement":
-          case "calledChoreographyRef":
+          case BpmnDiConstants.CalledElementAttribute:
+          case BpmnDiConstants.CalledChoreographyRefAttribute:
             CalledElement = attribute.Value;
             break;
           default:
@@ -181,11 +175,11 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
       Value = xNode.Value;
       Name = xNode.Name.LocalName;
       switch (Name) {
-        case "group":
-          Label = BpmnNM.GetAttributeValue(xNode, BpmnNM.Bpmn, "categoryValueRef");
+        case BpmnDiConstants.GroupElement:
+          Label = BpmnNM.GetAttributeValue(xNode, BpmnNM.Bpmn, BpmnDiConstants.CategoryValueRefAttribute);
           break;
-        case "textAnnotation":
-          var element = BpmnNM.GetElement(xNode, BpmnNM.Bpmn, "text");
+        case BpmnDiConstants.TextAnnotationElement:
+          var element = BpmnNM.GetElement(xNode, BpmnNM.Bpmn, BpmnDiConstants.TextElement);
           if (element != null) {
             Label = element.Value;
           }
@@ -230,7 +224,7 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
       }
       return value;
     }
-    
+
     /// <summary>
     /// Returns the first child with the given name
     /// </summary>
@@ -244,7 +238,7 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
       }
       return null;
     }
-    
+
     /// <summary>
     /// Returns all children with the given name
     /// </summary>
@@ -267,7 +261,7 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
     public string LoadSourceFromChild() {
       var ret = "";
       foreach (var child in Children) {
-        if (child.Name == "sourceRef") {
+        if (child.Name == BpmnDiConstants.SourceRefElement) {
           ret = child.Value;
         }
       }
@@ -281,7 +275,7 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
     public string LoadTargetFromChild() {
       var ret = "";
       foreach (var child in Children) {
-        if (child.Name == "targetRef") {
+        if (child.Name == BpmnDiConstants.TargetRefElement) {
           ret = child.Value;
         }
       }
@@ -293,45 +287,42 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
     /// </summary>
     /// <param name="node">The node</param>
     public void SetINodeInputOutput(INode node) {
-   
       foreach (var child in Children) {
         var name = child.Name;
-        if (name == "ioSpecification") {
+        if (name == BpmnDiConstants.IoSpecificationElement) {
           foreach (var childChild in child.Children) {
             var childName = childChild.Name;
-            if (childName == "dataOutput" || childName == "dataInput") {
+            if (childName == BpmnDiConstants.DataOutputElement || childName == BpmnDiConstants.DataInputElement) {
               childChild.Node = node;
             }
           }
         }
-        if (name == "dataInput") {
+        if (name == BpmnDiConstants.DataInputElement) {
           child.Node = node;
         }
-        if (name == "dataOutput") {
+        if (name == BpmnDiConstants.DataOutputElement) {
           child.Node = node;
         }
-        if (name == "property") {
+        if (name == BpmnDiConstants.PropertyElement) {
           child.Node = node;
         }
       }
     }
-    
+
     /// <summary>
     /// Returns the Loop Characteristics of this Element
     /// </summary>
     /// <returns></returns>
-    public LoopCharacteristic GetLoopCharacteristics()
-    {
-      if (HasChild("multiInstanceLoopCharacteristics"))
-      {
-        if (GetChildAttribute("multiInstanceLoopCharacteristics", "isSequential") == "true") {
+    public LoopCharacteristic GetLoopCharacteristics() {
+      if (HasChild(BpmnDiConstants.MultiInstanceLoopCharacteristicsElement)) {
+        if (GetChildAttribute(BpmnDiConstants.MultiInstanceLoopCharacteristicsElement, BpmnDiConstants.IsSequentialAttribute) == "true") {
           return LoopCharacteristic.Sequential;
         }
-        
+
         return LoopCharacteristic.Parallel;
       }
 
-      if (HasChild("standardLoopCharacteristics")) {
+      if (HasChild(BpmnDiConstants.StandardLoopCharacteristicsElement)) {
         return LoopCharacteristic.Loop;
       }
 
@@ -342,7 +333,7 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
     /// Returns the value of the given attribute, or null
     /// </summary>
     /// <param name="attribute">The attribute</param>
-    /// <returns>The calue, or null</returns>
+    /// <returns>The value, or null</returns>
     public string GetValue(string attribute) {
       string value;
       Attributes.TryGetValue(attribute, out value);
@@ -357,7 +348,7 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
     public BpmnDiagram GetNearestAncestor(Dictionary<BpmnElement, BpmnDiagram> planeElements) {
       var parent = Parent;
       while (parent != null) {
-        if(planeElements.ContainsKey(parent)) {
+        if (planeElements.ContainsKey(parent)) {
           return planeElements[parent];
         }
         parent = parent.Parent;

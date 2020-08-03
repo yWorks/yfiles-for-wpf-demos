@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.2.
- ** Copyright (c) 2000-2019 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.3.
+ ** Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -71,7 +71,7 @@ namespace Tutorial.CustomStyles
       }
       // nothing changed, return the old visual
       // arrange because the layout might have changed
-      ArrangeByLayout(oldVisual, labelLayout, true);
+      ArrangeByLayout(context, oldVisual, labelLayout, true);
       return oldVisual;
     }
 
@@ -202,7 +202,7 @@ namespace Tutorial.CustomStyles
       // move container to correct location
       // We delegate to LabelStyleBase's ArrangeByLayout method to position the container.
       // This method sets the layout properly and applies auto flipping to the text if necessary.
-      ArrangeByLayout(container, labelLayout, true);
+      ArrangeByLayout(context, container, labelLayout, true);
       return container;
     }
 

@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.2.
- ** Copyright (c) 2000-2019 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.3.
+ ** Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -27,16 +27,22 @@
  ** 
  ***************************************************************************/
 
+using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
+using System.Windows.Media;
 using Demo.yFiles.Toolkit.OptionHandler;
 using yWorks.Algorithms.Geometry;
 using yWorks.Controls;
+using yWorks.Graph;
+using yWorks.Graph.Styles;
 using yWorks.Layout;
 using yWorks.Layout.Labeling;
 using yWorks.Layout.Router;
 using yWorks.Layout.Router.Polyline;
+using BusDescriptor = yWorks.Layout.Router.Polyline.BusDescriptor;
 
 namespace Demo.yFiles.Layout.Configurations
 {
@@ -70,12 +76,13 @@ namespace Demo.yFiles.Layout.Configurations
       GridEnabledItem = grid != null;
       GridSpacingItem = grid != null ? grid.Spacing : 10;
 
-      EnablePolylineRoutingItem = true;
-      PreferredPolylineSegmentLengthItem = router.PreferredPolylineSegmentLength;
+      EdgeRoutingStyleItem = EdgeRoutingStyle.Orthogonal;
+      PreferredOctilinearSegmentLengthItem = router.DefaultEdgeLayoutDescriptor.PreferredOctilinearSegmentLength;
+      MaximumOctilinearSegmentRatioItem = router.DefaultEdgeLayoutDescriptor.MaximumOctilinearSegmentRatio;
 
       ConsiderNodeLabelsItem = router.ConsiderNodeLabels;
       ConsiderEdgeLabelsItem = router.ConsiderEdgeLabels; 
-      EdgeLabelingItem = false;
+      EdgeLabelingItem = EnumEdgeLabeling.None;
       LabelPlacementAlongEdgeItem = EnumLabelPlacementAlongEdge.Centered;
       LabelPlacementSideOfEdgeItem = EnumLabelPlacementSideOfEdge.OnEdge;
       LabelPlacementOrientationItem = EnumLabelPlacementOrientation.Horizontal;
@@ -99,14 +106,24 @@ namespace Demo.yFiles.Layout.Configurations
       router.ConsiderEdgeLabels = ConsiderEdgeLabelsItem;
       router.Rerouting = EnableReroutingItem;
 
-      router.PolylineRouting = EnablePolylineRoutingItem;
-      router.PreferredPolylineSegmentLength = PreferredPolylineSegmentLengthItem;
+      // Note that CreateConfiguredLayoutData replaces the settings on the DefaultEdgeLayoutDescriptor
+      // by providing a custom one for each edge.
+      router.DefaultEdgeLayoutDescriptor.RoutingStyle = EdgeRoutingStyleItem;
+      router.DefaultEdgeLayoutDescriptor.PreferredOctilinearSegmentLength = PreferredOctilinearSegmentLengthItem;
+      router.DefaultEdgeLayoutDescriptor.MaximumOctilinearSegmentRatio = MaximumOctilinearSegmentRatioItem;
+      router.DefaultEdgeLayoutDescriptor.SourceCurveConnectionStyle = SourceConnectionStyleItem;
+      router.DefaultEdgeLayoutDescriptor.TargetCurveConnectionStyle = TargetConnectionStyleItem;
+
       router.MaximumDuration = MaximumDurationItem * 1000;
 
       var layout = new SequentialLayout();
       layout.AppendLayout(router);
 
-      if (EdgeLabelingItem) {
+      if (EdgeLabelingItem == EnumEdgeLabeling.None) {
+        router.IntegratedEdgeLabeling = false;
+      } else if (EdgeLabelingItem == EnumEdgeLabeling.Integrated) {
+        router.IntegratedEdgeLabeling = true;
+      } else if (EdgeLabelingItem == EnumEdgeLabeling.Generic) {
         var genericLabeling = new GenericLabeling();
         genericLabeling.PlaceEdgeLabels = true;
         genericLabeling.PlaceNodeLabels = false;
@@ -123,7 +140,13 @@ namespace Demo.yFiles.Layout.Configurations
       var layoutData = new PolylineEdgeRouterData();
 
       layoutData.EdgeLayoutDescriptors.Delegate = edge => {
-        var descriptor = new EdgeLayoutDescriptor();
+        var descriptor = new EdgeLayoutDescriptor {
+            RoutingStyle = EdgeRoutingStyleItem,
+            PreferredOctilinearSegmentLength = PreferredOctilinearSegmentLengthItem, 
+            MaximumOctilinearSegmentRatio = MaximumOctilinearSegmentRatioItem,
+            SourceCurveConnectionStyle = SourceConnectionStyleItem,
+            TargetCurveConnectionStyle = TargetConnectionStyleItem
+        };
         if (OptimizationStrategyItem == EnumStrategies.Balanced) {
           descriptor.PenaltySettings = PenaltySettings.OptimizationBalanced;
         } else if (OptimizationStrategyItem == EnumStrategies.MinimizeBends) {
@@ -170,6 +193,50 @@ namespace Demo.yFiles.Layout.Configurations
         layoutData.AffectedNodes.Delegate = node => true;
       }
 
+      switch (BusRoutingItem) {
+        case EnumBusRouting.SingleBus:
+          // All edges in a single bus
+          layoutData.Buses.Add(new BusDescriptor()).Delegate = edge => true;
+          break;
+        case EnumBusRouting.ByLabel:
+          var byLabel = new Dictionary<string, List<IEdge>>();
+          foreach (var edge in graphControl.Graph.Edges) {
+            if (edge.Labels.Count > 0) {
+              var label = edge.Labels[0].Text;
+              List<IEdge> list;
+              if (!byLabel.TryGetValue(label, out list)) {
+                list = new List<IEdge>();
+                byLabel[label] = list;
+              }
+              list.Add(edge);
+            }
+          }
+          foreach (var edges in byLabel.Values) {
+            // Add a bus per label. Unlabeled edges don't get grouped into a bus
+            layoutData.Buses.Add(new BusDescriptor()).Source = edges;
+          }
+          break;
+        case EnumBusRouting.ByColor:
+          var comparer = new ColorComparer();
+          var byColor = new Dictionary<Brush, List<IEdge>>(comparer);
+          foreach (var edge in graphControl.Graph.Edges) {
+            var brush = ((PolylineEdgeStyle) edge.Style).Pen.Brush;
+            if (!comparer.Equals(brush, Brushes.Black)) {
+              List<IEdge> list;
+              if (!byColor.TryGetValue(brush, out list)) {
+                list = new List<IEdge>();
+                byColor[brush] = list;
+              }
+              list.Add(edge);
+            }
+          }
+          foreach (var edges in byColor.Values) {
+            // Add a bus per color. Black edges don't get grouped into a bus
+            layoutData.Buses.Add(new BusDescriptor()).Source = edges;
+          }
+          break;
+      }
+
       return layoutData;
     }
 
@@ -195,10 +262,10 @@ namespace Demo.yFiles.Layout.Configurations
     [ComponentType(ComponentTypes.OptionGroup)]
     public object GridGroup;
 
-    [Label("Octilinear Routing")]
+    [Label("Routing Style")]
     [OptionGroup("RootGroup", 40)]
     [ComponentType(ComponentTypes.OptionGroup)]
-    public object PolylineGroup;
+    public object RoutingStyleGroup;
 
     [Label("Labeling")]
     [OptionGroup("RootGroup", 50)]
@@ -242,6 +309,11 @@ namespace Demo.yFiles.Layout.Configurations
     public enum EnumMonotonyFlags
     {
       None,Horizontal,Vertical,Both
+    }
+
+    public enum EnumBusRouting
+    {
+      None, SingleBus, ByLabel, ByColor
     }
 
     [Label("Scope")]
@@ -314,12 +386,20 @@ namespace Demo.yFiles.Layout.Configurations
     [ComponentType(ComponentTypes.Slider)]
     public double MinimumFirstSegmentLengthItem { get; set; }
 
+    public bool ShouldDisableMinimumFirstSegmentLengthItem {
+      get { return EdgeRoutingStyleItem == EdgeRoutingStyle.Curved && SourceConnectionStyleItem == CurveConnectionStyle.Organic; }
+    }
+
     [Label("Last Segment Length")]
     [OptionGroup("DistancesGroup", 50)]
     [DefaultValue(10.0d)]
     [MinMax(Min = 0, Max = 100)]
     [ComponentType(ComponentTypes.Slider)]
     public double MinimumLastSegmentLengthItem { get; set; }
+
+    public bool ShouldDisableMinimumLastSegmentLengthItem {
+      get { return EdgeRoutingStyleItem == EdgeRoutingStyle.Curved && TargetConnectionStyleItem == CurveConnectionStyle.Organic; }
+    }
 
     [Label("Route on Grid")]
     [OptionGroup("GridGroup", 10)]
@@ -337,21 +417,65 @@ namespace Demo.yFiles.Layout.Configurations
       get { return GridEnabledItem == false; }
     }
 
-    [Label("Octilinear Routing")]
-    [OptionGroup("PolylineGroup", 10)]
-    [DefaultValue(true)]
-    public bool EnablePolylineRoutingItem { get; set; }
+    [Label("Routing Style")]
+    [OptionGroup("RoutingStyleGroup", 10)]
+    [DefaultValue(EdgeRoutingStyle.Orthogonal)]
+    [EnumValue("Orthogonal", EdgeRoutingStyle.Orthogonal)]
+    [EnumValue("Octilinear", EdgeRoutingStyle.Octilinear)]
+    [EnumValue("Curved", EdgeRoutingStyle.Curved)]
+    public EdgeRoutingStyle EdgeRoutingStyleItem { get; set; }
 
-    [Label("Preferred Polyline Segment Length")]
-    [OptionGroup("PolylineGroup", 20)]
+    [Label("Preferred Octilinear Corner Length")]
+    [OptionGroup("RoutingStyleGroup", 20)]
     [DefaultValue(30.0d)]
     [MinMax(Min = 5, Max = 500)]
     [ComponentType(ComponentTypes.Slider)]
-    public double PreferredPolylineSegmentLengthItem { get; set; }
+    public double PreferredOctilinearSegmentLengthItem { get; set; }
 
-    public bool ShouldDisablePreferredPolylineSegmentLengthItem {
-      get { return !EnablePolylineRoutingItem; }
+    public bool ShouldDisablePreferredOctilinearSegmentLengthItem {
+      get { return EdgeRoutingStyleItem != EdgeRoutingStyle.Octilinear; }
     }
+
+    [Label("Maximum Octilinear Segment Length Ratio")]
+    [OptionGroup("RoutingStyleGroup", 25)]
+    [DefaultValue(0.3d)]
+    [MinMax(Min = 0, Max = 0.5, Step = 0.05)]
+    [ComponentType(ComponentTypes.Slider)]
+    public double MaximumOctilinearSegmentRatioItem { get; set; }
+
+    public bool ShouldDisableMaximumOctilinearSegmentRatioItem {
+      get { return EdgeRoutingStyleItem != EdgeRoutingStyle.Octilinear; }
+    }
+
+    [Label("Curved connection at source")]
+    [OptionGroup("RoutingStyleGroup", 30)]
+    [DefaultValue(CurveConnectionStyle.KeepPort)]
+    [EnumValue("Straight", CurveConnectionStyle.KeepPort)]
+    [EnumValue("Organic", CurveConnectionStyle.Organic)]
+    public CurveConnectionStyle SourceConnectionStyleItem { get; set; }
+
+    public bool ShouldDisableSourceConnectionStyleItem {
+      get { return EdgeRoutingStyleItem != EdgeRoutingStyle.Curved; }
+    }
+
+    [Label("Curved connection at target")]
+    [OptionGroup("RoutingStyleGroup", 40)]
+    [DefaultValue(CurveConnectionStyle.KeepPort)]
+    [EnumValue("Straight", CurveConnectionStyle.KeepPort)]
+    [EnumValue("Organic", CurveConnectionStyle.Organic)]
+    public CurveConnectionStyle TargetConnectionStyleItem { get; set; }
+
+    public bool ShouldDisableTargetConnectionStyleItem {
+      get { return EdgeRoutingStyleItem != EdgeRoutingStyle.Curved; }
+    }
+
+    [Label("Bus routing")]
+    [OptionGroup("RoutingStyleGroup", 50)]
+    [EnumValue("No Buses", EnumBusRouting.None)]
+    [EnumValue("Single Bus", EnumBusRouting.SingleBus)]
+    [EnumValue("By Edge Color", EnumBusRouting.ByColor)]
+    [EnumValue("By Edge Label", EnumBusRouting.ByLabel)]
+    public EnumBusRouting BusRoutingItem { get; set; }
 
     [Label("Consider Node Labels")]
     [OptionGroup("NodePropertiesGroup", 10)]
@@ -363,10 +487,17 @@ namespace Demo.yFiles.Layout.Configurations
     [DefaultValue(false)]
     public bool ConsiderEdgeLabelsItem { get; set; }
 
+    public enum EnumEdgeLabeling {
+      None, Integrated, Generic
+    }
+
     [Label("Edge Labeling")]
-    [OptionGroup("EdgePropertiesGroup", 20)]
-    [DefaultValue(false)]
-    public bool EdgeLabelingItem { get; set; }
+    [OptionGroup("EdgePropertiesGroup", 10)]
+    [DefaultValue(EnumEdgeLabeling.None)]
+    [EnumValue("None", EnumEdgeLabeling.None)] 
+    [EnumValue("Integrated", EnumEdgeLabeling.Integrated)]
+    [EnumValue("Generic", EnumEdgeLabeling.Generic)]
+    public EnumEdgeLabeling EdgeLabelingItem { get; set; }    
 
     [Label("Orientation")]
     [OptionGroup("PreferredPlacementGroup", 10)]
@@ -378,7 +509,7 @@ namespace Demo.yFiles.Layout.Configurations
     public EnumLabelPlacementOrientation LabelPlacementOrientationItem { get; set; }
 
     public bool ShouldDisableLabelPlacementOrientationItem {
-      get { return !EdgeLabelingItem; }
+      get { return EdgeLabelingItem == EnumEdgeLabeling.None; }
     }
 
     [Label("Reduce Ambiguity")]
@@ -386,7 +517,7 @@ namespace Demo.yFiles.Layout.Configurations
     public bool ReduceAmbiguityItem { get; set; }
 
     public bool ShouldDisableReduceAmbiguityItem {
-      get { return !EdgeLabelingItem; }
+      get { return EdgeLabelingItem != EnumEdgeLabeling.Generic; }
     }
 
     [Label("Along Edge")]
@@ -399,7 +530,7 @@ namespace Demo.yFiles.Layout.Configurations
     public EnumLabelPlacementAlongEdge LabelPlacementAlongEdgeItem { get; set; }
 
     public bool ShouldDisableLabelPlacementAlongEdgeItem {
-      get { return !EdgeLabelingItem; }
+      get { return EdgeLabelingItem == EnumEdgeLabeling.None; }
     }
 
     [Label("Side of Edge")]
@@ -413,7 +544,7 @@ namespace Demo.yFiles.Layout.Configurations
     public EnumLabelPlacementSideOfEdge LabelPlacementSideOfEdgeItem { get; set; }
 
     public bool ShouldDisableLabelPlacementSideOfEdgeItem {
-      get { return !EdgeLabelingItem; }
+      get { return EdgeLabelingItem == EnumEdgeLabeling.None; }
     }
 
     [Label("Distance")]
@@ -424,10 +555,24 @@ namespace Demo.yFiles.Layout.Configurations
     public double LabelPlacementDistanceItem { get; set; }
 
     public bool ShouldDisableLabelPlacementDistanceItem {
-      get { return !EdgeLabelingItem || LabelPlacementSideOfEdgeItem == EnumLabelPlacementSideOfEdge.OnEdge; }
+      get { return EdgeLabelingItem == EnumEdgeLabeling.None || LabelPlacementSideOfEdgeItem == EnumLabelPlacementSideOfEdge.OnEdge; }
     }
 
+    private class ColorComparer : IEqualityComparer<Brush>
+    {
+      public bool Equals(Brush x, Brush y) {
+        if (x is SolidColorBrush && y is SolidColorBrush) {
+          return EqualityComparer<Color>.Default.Equals(((SolidColorBrush) x).Color, ((SolidColorBrush) y).Color);
+        }
+        return object.Equals(x, y);
+      }
+
+      public int GetHashCode(Brush obj) {
+        if (obj is SolidColorBrush) {
+          return ((SolidColorBrush) obj).Color.GetHashCode();
+        }
+        return obj.GetHashCode();
+      }
+    }
   }
-
-
 }

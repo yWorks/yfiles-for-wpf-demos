@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.2.
- ** Copyright (c) 2000-2019 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.3.
+ ** Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -28,6 +28,7 @@
  ***************************************************************************/
 
 using System;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Media;
@@ -167,18 +168,22 @@ namespace Demo.yFiles.Graph.Input.LabelEditing
     /// Event handler that implements "instant typing"
     /// </summary>
     private void HandleInstantTyping(object sender, System.Windows.Input.TextCompositionEventArgs e) {
+      if (!instantTypingEnabled) {
+        return;
+      }
+
+
       // if nothing is selected, we try using the "current item" of the GraphControl, instead
       var parameter = GraphControl.Selection.Count == 0 ? GraphControl.CurrentItem : null;
 
-      if (!instantTypingEnabled || !GraphCommands.EditLabel.CanExecute(parameter, GraphControl)) {
+
+      if (!GraphCommands.EditLabel.CanExecute(parameter, GraphControl) && !GraphCommands.AddLabel.CanExecute(parameter, GraphControl)) {
         return;
       }
 
       // If the command could be executed and instant typing is enabled
       bool oldSelectionState = textEditorInputMode.SelectText;
       EventHandler<TextEventArgs> editingStarted = delegate {
-        // Initialize with text that has been typed so far...
-        textEditorInputMode.TextBox.Text = e.Text;
         // Disable automatic text selection temporarily
         textEditorInputMode.SelectText = false;
         // Deregister the handler during the event processing
@@ -204,7 +209,30 @@ namespace Demo.yFiles.Graph.Input.LabelEditing
       textEditorInputMode.TextEdited += editingCanceled;
 
       // Now just raise the command
-      GraphCommands.EditLabel.Execute(parameter, GraphControl);
+      if (HasLabel()) {
+        GraphCommands.EditLabel.Execute(parameter, GraphControl);
+      } else {
+        GraphCommands.AddLabel.Execute(parameter, GraphControl);
+      }
+    }
+    /// <summary>
+    /// Determines whether a label needs to be edited or added, for the purpose of demonstrating
+    /// instant typing.
+    /// </summary>
+    /// <returns>Whether the current Item or selection contains a label</returns>
+    private bool HasLabel() {
+      if (GraphControl.Selection.Any(item => {
+        if (item is ILabelOwner labeledItem) {
+          return labeledItem.Labels.Any();
+        }
+        return false;
+      })) {
+        return true;
+      }
+      if (GraphControl.CurrentItem is ILabelOwner current) {
+        return current.Labels.Any();
+      }
+      return false;
     }
 
     /// <summary>

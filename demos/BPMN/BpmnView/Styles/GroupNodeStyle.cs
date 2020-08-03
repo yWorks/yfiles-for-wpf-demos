@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.2.
- ** Copyright (c) 2000-2019 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.3.
+ ** Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -30,6 +30,7 @@
 using System;
 using System.ComponentModel;
 using System.Reflection;
+using System.Windows.Media;
 using Demo.yFiles.Graph.Bpmn.Util;
 using yWorks.Controls;
 using yWorks.Controls.Input;
@@ -44,24 +45,7 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
   /// </summary>
   [Obfuscation(StripAfterObfuscation = false, Exclude = true, ApplyToMembers = false)]
   public class GroupNodeStyle : INodeStyle {
-
-    #region Initialize static fields
-
-    private static readonly INodeStyle shapeNodeStyle;
-    private static readonly INodeStyleRenderer renderer;
-
-    static GroupNodeStyle() {
-      shapeNodeStyle = new ShapeNodeStyle
-      {
-        Shape = ShapeNodeShape.RoundRectangle,
-        Brush = BpmnConstants.Brushes.GroupNode,
-        Pen = BpmnConstants.Pens.GroupNode
-      };
-      ((ShapeNodeStyleRenderer)shapeNodeStyle.Renderer).RoundRectArcRadius = BpmnConstants.GroupNodeCornerRadius;
-      renderer = new GroupNodeStyleRenderer();
-    }
-
-    #endregion
+    private readonly GroupNodeStyleRenderer renderer = new GroupNodeStyleRenderer();
 
     private InsetsD insets = new InsetsD(15);
 
@@ -83,7 +67,11 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
     /// <inheritdoc/>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     public object Clone() {
-      return MemberwiseClone();
+      return new GroupNodeStyle {
+          Insets = Insets,
+          Background = Background,
+          Outline = Outline,
+      };
     }
 
     /// <inheritdoc/>
@@ -93,10 +81,48 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
     }
 
     /// <summary>
+    /// Gets or sets the background color of the group.
+    /// </summary>
+    [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
+    [DefaultValue(typeof(BpmnConstants), "GroupDefaultBackground")]
+    public Brush Background {
+      get { return renderer.shapeNodeStyle.Brush; }
+      set {
+        if (renderer.shapeNodeStyle.Brush != value) {
+          renderer.shapeNodeStyle.Brush = value;
+        }
+      }
+    }
+
+    /// <summary>
+    /// Gets or sets the outline color of the group.
+    /// </summary>
+    [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
+    [DefaultValue(typeof(BpmnConstants), "GroupDefaultOutline")]
+    public Brush Outline {
+      get { return renderer.shapeNodeStyle.Pen.Brush; }
+      set {
+        if (renderer.shapeNodeStyle.Pen.Brush != value) {
+          renderer.shapeNodeStyle.Pen = GetPen(value);
+        }
+      }
+    }
+
+    private static Pen GetPen(Brush outline) {
+      return (Pen) new Pen { DashStyle = DashStyles.DashDot, DashCap = PenLineCap.Round, Brush = outline }.GetAsFrozen();
+    }
+
+    /// <summary>
     /// An <see cref="INodeStyleRenderer"/> implementation used by <see cref="GroupNodeStyle"/>.
     /// </summary>
     internal class GroupNodeStyleRenderer : INodeStyleRenderer, ILookup
     {
+      internal readonly ShapeNodeStyle shapeNodeStyle =
+          new ShapeNodeStyle(new ShapeNodeStyleRenderer { RoundRectArcRadius = BpmnConstants.GroupNodeCornerRadius }) {
+              Shape = ShapeNodeShape.RoundRectangle,
+              Brush = BpmnConstants.GroupDefaultBackground,
+              Pen = GetPen(BpmnConstants.GroupDefaultOutline)
+          };
 
       private INode lastNode;
       private GroupNodeStyle lastStyle;
@@ -154,7 +180,7 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
       /// <summary>
       /// Uses the style insets extended by the size of the participant bands.
       /// </summary>
-      private class GroupInsetsProvider : INodeInsetsProvider {
+      private sealed class GroupInsetsProvider : INodeInsetsProvider {
         private readonly GroupNodeStyle style;
 
         internal GroupInsetsProvider(GroupNodeStyle style) {

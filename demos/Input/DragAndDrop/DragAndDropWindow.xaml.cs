@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.2.
- ** Copyright (c) 2000-2019 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.3.
+ ** Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -308,8 +308,8 @@ namespace Demo.yFiles.Input.DragAndDrop
       ContextConfigurator cc = new ContextConfigurator(graphControl.ContentRect);
       cc.Scale = Math.Min(cc.CalculateScaleForWidth(size.Width), cc.CalculateScaleForHeight(size.Height));
 
-      var renderContext = cc.Setup(graphControl);
-      Transform transform = cc.CreateTransform();
+      var renderContext = cc.CreateRenderContext(graphControl);
+      Transform transform = cc.CreateWorldToIntermediateTransform();
       System.Windows.Media.Geometry clip = cc.CreateClip();
 
       var visualContent = graphControl.ExportContent(renderContext);

@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.2.
- ** Copyright (c) 2000-2019 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.3.
+ ** Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -139,7 +139,7 @@ namespace Tutorial.CustomStyles
       // Render the node
       Render(context, node, visual, cache);
       // set the location
-      visual.SetCanvasArrangeRect(node.Layout.ToRectD().ToRect());
+      visual.SetCanvasArrangeRect(node.Layout.ToRectD());
       return visual;
     }
 
@@ -159,7 +159,7 @@ namespace Tutorial.CustomStyles
         Render(context, node, oldVisual, newCache);
       }
       // make sure that the location is up to date
-      oldVisual.SetCanvasArrangeRect(node.Layout.ToRectD().ToRect());
+      oldVisual.SetCanvasArrangeRect(node.Layout.ToRectD());
       return oldVisual;
     }
 

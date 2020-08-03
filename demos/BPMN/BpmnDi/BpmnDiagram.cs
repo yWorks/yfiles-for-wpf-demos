@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.2.
- ** Copyright (c) 2000-2019 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.3.
+ ** Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -35,122 +35,120 @@ using BpmnNM = Demo.yFiles.Graph.Bpmn.BpmnDi.BpmnNamespaceManager;
 
 namespace Demo.yFiles.Graph.Bpmn.BpmnDi
 {
+  /// <summary>
+  /// Class for BPMNDiagram Objects
+  /// </summary>
+  internal class BpmnDiagram
+  {
     /// <summary>
-    /// Class for BPMNDiagram Objects
+    /// Id of this diagram
     /// </summary>
-    internal class BpmnDiagram
-    {
-        /// <summary>
-        /// Id of this diagram
-        /// </summary>
-        public string Id { get; private set; }
-        
-        /// <summary>
-        /// BPMNPlane of this diagram
-        /// </summary>
-        public BpmnPlane Plane { get; set; }
+    public string Id { get; private set; }
 
-        /// <summary>
-        /// List of all child diagrams this diagram contains
-        /// </summary>
-        public Dictionary<BpmnDiagram, BpmnElement> Children { get; private set; }
-        
-        /// <summary>
-        /// All BPMNLabelStyle instances of this diagram
-        /// </summary>
-        private Dictionary<string, BpmnLabelStyle> Styles { get; set; }
-        
-        /// <summary>
-        /// The name of this diagram
-        /// </summary>
-        public string Name { get; private set; }
-        
-        // These parameters are currently unused. They are part of the BPMN Syntax and might be used in the future.
-        private string Documentation { get; set; }
-        private string Resolution { get; set; }
+    /// <summary>
+    /// BPMNPlane of this diagram
+    /// </summary>
+    public BpmnPlane Plane { get; set; }
+
+    /// <summary>
+    /// List of all child diagrams this diagram contains
+    /// </summary>
+    public Dictionary<BpmnDiagram, BpmnElement> Children { get; private set; }
+
+    /// <summary>
+    /// All BPMNLabelStyle instances of this diagram
+    /// </summary>
+    private Dictionary<string, BpmnLabelStyle> Styles { get; set; }
+
+    /// <summary>
+    /// The name of this diagram
+    /// </summary>
+    public string Name { get; private set; }
+
+    // These parameters are currently unused. They are part of the BPMN Syntax and might be used in the future.
+    private string Documentation { get; set; }
+
+    private string Resolution { get; set; }
 
 
-        /// <summary>
-        /// Constructs a new diagram instance
-        /// </summary>
-        /// <param name="xNode">The XML node which is the root for this diagram instance</param>
-        public BpmnDiagram(XElement xNode) {
-            Plane = null;
-            Children = new Dictionary<BpmnDiagram, BpmnElement>();
-            Styles  = new Dictionary<string, BpmnLabelStyle>();
-            Id = "";
-            Documentation = "";
-            Resolution = "";
+    /// <summary>
+    /// Constructs a new diagram instance
+    /// </summary>
+    /// <param name="xNode">The XML node which is the root for this diagram instance</param>
+    public BpmnDiagram(XElement xNode) {
+      Plane = null;
+      Children = new Dictionary<BpmnDiagram, BpmnElement>();
+      Styles = new Dictionary<string, BpmnLabelStyle>();
+      Id = "";
+      Documentation = "";
+      Resolution = "";
 
-            // Get name, if it exists
-            Name = BpmnNM.GetAttributeValue(xNode, BpmnNM.Bpmn, "name");
+      // Get name, if it exists
+      Name = BpmnNM.GetAttributeValue(xNode, BpmnNM.Bpmn, BpmnDiConstants.NameAttribute);
 
-            // Name Diagram "Unnamed", if it has no name (for choosing, if file contains multiple diagrams)
-            if (string.IsNullOrEmpty(Name)) {
-                Name = "Unnamed Diagram";
-            }
+      // Name Diagram "Unnamed", if it has no name (for choosing, if file contains multiple diagrams)
+      if (string.IsNullOrEmpty(Name)) {
+        Name = "Unnamed Diagram";
+      }
 
-            // Get id, if it exists
-            Id = BpmnNM.GetAttributeValue(xNode, BpmnNM.Bpmn, "id");
+      // Get id, if it exists
+      Id = BpmnNM.GetAttributeValue(xNode, BpmnNM.Bpmn, BpmnDiConstants.IdAttribute);
 
-            // Get documentation, if it exists
-            Documentation = BpmnNM.GetAttributeValue(xNode, BpmnNM.Bpmn, "documentation");
+      // Get documentation, if it exists
+      Documentation = BpmnNM.GetAttributeValue(xNode, BpmnNM.Bpmn, BpmnDiConstants.DocumentationAttribute);
 
-            // Get resolution, if it exists
-            Resolution = BpmnNM.GetAttributeValue(xNode, BpmnNM.Bpmn, "resolution");
-        }
-
-        /// <summary>
-        /// The default label style for this diagram instance
-        /// </summary>
-        public DefaultLabelStyle DefaultStyle { get; set; }
-
-        /// <summary>
-        /// Adds a plane to this diagram. Only happens once, but is caught elsewhere
-        /// </summary>
-        /// <param name="plane"></param>
-        public void AddPlane(BpmnPlane plane)
-        {
-            Plane = plane;
-        }
-
-        /// <summary>
-        /// Adds a LabelStyle to the collection of styles in this diagram
-        /// </summary>
-        /// <param name="style">The <see cref="BpmnLabelStyle"/> to add</param>
-        public void AddStyle(BpmnLabelStyle style)
-        {
-            Styles.Add(style.Id, style);
-        }
-
-        /// <summary>
-        /// Returns the given Style, or the default style, in case it does nor exist
-        /// </summary>
-        /// <param name="style">The id (name) of the style to get</param>
-        public DefaultLabelStyle GetStyle(string style) {
-
-            if (style == null) {
-                return (DefaultLabelStyle) DefaultStyle.Clone();
-            }
-            BpmnLabelStyle retStyle;
-            if (Styles.TryGetValue(style, out retStyle)) {
-                return (DefaultLabelStyle) retStyle.GetStyle().Clone();
-            }
-            return (DefaultLabelStyle) DefaultStyle.Clone();
-        }
-
-        /// <summary>
-        /// Adds a child diagramm to this diagram
-        /// </summary>
-        /// <param name="diagram">The child diagram</param>
-        /// <param name="localRoot">The local root element</param>
-        public void AddChild(BpmnDiagram diagram, BpmnElement localRoot) {
-            Children.Add(diagram, localRoot);
-        }
-
-        /// <returns>The name of the Diagram</returns>
-        public override string ToString() {
-            return Name;
-        }
+      // Get resolution, if it exists
+      Resolution = BpmnNM.GetAttributeValue(xNode, BpmnNM.Bpmn, BpmnDiConstants.ResolutionAttribute);
     }
+
+    /// <summary>
+    /// The default label style for this diagram instance
+    /// </summary>
+    public DefaultLabelStyle DefaultStyle { get; set; }
+
+    /// <summary>
+    /// Adds a plane to this diagram. Only happens once, but is caught elsewhere
+    /// </summary>
+    /// <param name="plane"></param>
+    public void AddPlane(BpmnPlane plane) {
+      Plane = plane;
+    }
+
+    /// <summary>
+    /// Adds a LabelStyle to the collection of styles in this diagram
+    /// </summary>
+    /// <param name="style">The <see cref="BpmnLabelStyle"/> to add</param>
+    public void AddStyle(BpmnLabelStyle style) {
+      Styles.Add(style.Id, style);
+    }
+
+    /// <summary>
+    /// Returns the given Style, or the default style, in case it does nor exist
+    /// </summary>
+    /// <param name="style">The id (name) of the style to get</param>
+    public DefaultLabelStyle GetStyle(string style) {
+      if (style == null) {
+        return (DefaultLabelStyle) DefaultStyle.Clone();
+      }
+      BpmnLabelStyle retStyle;
+      if (Styles.TryGetValue(style, out retStyle)) {
+        return (DefaultLabelStyle) retStyle.GetStyle().Clone();
+      }
+      return (DefaultLabelStyle) DefaultStyle.Clone();
+    }
+
+    /// <summary>
+    /// Adds a child diagramm to this diagram
+    /// </summary>
+    /// <param name="diagram">The child diagram</param>
+    /// <param name="localRoot">The local root element</param>
+    public void AddChild(BpmnDiagram diagram, BpmnElement localRoot) {
+      Children.Add(diagram, localRoot);
+    }
+
+    /// <returns>The name of the Diagram</returns>
+    public override string ToString() {
+      return Name;
+    }
+  }
 }

@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.2.
- ** Copyright (c) 2000-2019 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.3.
+ ** Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -78,7 +78,7 @@ namespace Demo.yFiles.Graph.TableNodeStyle.Style
         Width = layout.Width,
         Height = layout.Height
       });
-      cc.SetCanvasArrangeRect(layout.ToRectD().ToRect());
+      cc.SetCanvasArrangeRect(layout.ToRectD());
       return cc;
     }
 
@@ -113,7 +113,7 @@ namespace Demo.yFiles.Graph.TableNodeStyle.Style
         border2.BorderThickness = descriptor.BorderThickness;
         border2.Width = layout.Width;
         border2.Height = layout.Height;
-        oldVisual.SetCanvasArrangeRect(layout.ToRectD().ToRect());
+        oldVisual.SetCanvasArrangeRect(layout.ToRectD());
         return oldVisual;
       } else {
         return CreateVisual(context, stripe);

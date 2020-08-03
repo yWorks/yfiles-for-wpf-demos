@@ -1,6 +1,6 @@
 <!-- ************************************************************************ -->
-<!-- This demo file is part of yFiles WPF 3.2.                           -->
-<!-- Copyright (c) 2000-2019 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
+<!-- This demo file is part of yFiles WPF 3.3.                           -->
+<!-- Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
 <!-- 72070 Tuebingen, Germany. All rights reserved.                           -->
 <!--                                                                          -->
 <!-- yFiles demo files exhibit yFiles WPF functionalities. Any redistribution  -->
@@ -33,17 +33,19 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type bpmn:VisualToggleButton}">
-                    <Border Background="Transparent" x:Name="Border">
+                    <Grid>
+                        <Rectangle x:Name="HighlightRectangle" Opacity="0" Fill="{TemplateBinding Background}"/>
                         <ywpf:VisualGroup x:Name="visualGroup"/>
-                    </Border>
+                    </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="true" >
-                            <Setter TargetName="Border" Property="Background" Value="SkyBlue"/>
+                            <Setter TargetName="HighlightRectangle" Property="Opacity" Value="0.3"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+        <Setter Property="Cursor" Value="Hand"/>
     </Style>
 
 </ResourceDictionary>

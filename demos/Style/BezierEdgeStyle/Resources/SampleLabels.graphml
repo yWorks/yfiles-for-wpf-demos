@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--Created by @PRODUCT@ @ASSEMBLY_VERSION@-->
+<graphml xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/3.0" xmlns:y="http://www.yworks.com/xml/yfiles-common/3.0" xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/3.0/xaml" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml.wpf/3.0/ygraphml.xsd " xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://graphml.graphdrawing.org/xmlns">
+  <key id="d0" attr.name="UserTags" for="all" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/UserTags" />
+  <key id="d1" attr.name="NodeStyle" for="node" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeStyle" />
+  <key id="d2" attr.name="NodeLabels" for="node" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeLabels" />
+  <key id="d3" attr.name="NodeGeometry" for="node" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeGeometry" />
+  <key id="d4" attr.name="EdgeStyle" for="edge" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/EdgeStyle" />
+  <key id="d5" attr.name="EdgeLabels" for="edge" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/EdgeLabels" />
+  <key id="d6" attr.name="EdgeGeometry" for="edge" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/EdgeGeometry" />
+  <key id="d7" attr.name="PortStyle" for="port" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/PortStyle">
+    <default>
+      <x:Static Member="y:VoidPortStyle.Instance" />
+    </default>
+  </key>
+  <key id="d8" attr.name="PortLabels" for="port" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/PortLabels" />
+  <key id="d9" attr.name="PortLocationParameter" for="port" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/PortLocationParameter">
+    <default>
+      <x:Static Member="y:FreeNodePortLocationModel.NodeCenterAnchored" />
+    </default>
+  </key>
+  <key id="d10" attr.name="SharedData" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/SharedData" />
+  <data key="d10">
+    <y:SharedData>
+      <ywpf:ShapeNodeStyle x:Key="1" Pen="{x:Null}" Brush="#FFD3D3D3" Shape="Ellipse" />
+      <ywpf:DefaultLabelStyle x:Key="3" BackgroundBrush="#FFFFFFFF" TextAlignment="Center" Typeface="Arial,Normal,Normal,Normal" Insets="3">
+        <ywpf:DefaultLabelStyle.BackgroundPen>
+          <Pen Brush="#FFFFA500" Thickness="1" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" />
+        </ywpf:DefaultLabelStyle.BackgroundPen>
+      </ywpf:DefaultLabelStyle>
+      <ywpf:BezierEdgeStyle x:Key="4">
+        <ywpf:BezierEdgeStyle.Pen>
+          <Pen Brush="#FF4169E1" Thickness="3" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" p11:Freeze="true" xmlns:p11="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options" />
+        </ywpf:BezierEdgeStyle.Pen>
+        <ywpf:BezierEdgeStyle.TargetArrow>
+          <ywpf:Arrow Type="Triangle" Brush="#FF4169E1">
+            <ywpf:Arrow.Pen>
+              <Pen Brush="#FF4169E1" Thickness="1" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" p13:Freeze="true" xmlns:p13="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options" />
+            </ywpf:Arrow.Pen>
+          </ywpf:Arrow>
+        </ywpf:BezierEdgeStyle.TargetArrow>
+      </ywpf:BezierEdgeStyle>
+    </y:SharedData>
+  </data>
+  <graph id="G">
+    <node id="n0">
+      <data key="d1">
+        <y:GraphMLReference ResourceKey="1" />
+      </data>
+      <data key="d3">
+        <y:RectD X="-15" Y="-15" Width="30" Height="30" />
+      </data>
+      <port name="p0" />
+    </node>
+    <node id="n1">
+      <data key="d1">
+        <y:GraphMLReference ResourceKey="1" />
+      </data>
+      <data key="d3">
+        <y:RectD X="585" Y="-15" Width="30" Height="30" />
+      </data>
+      <port name="p0" />
+    </node>
+    <node id="n2">
+      <data key="d1">
+        <y:GraphMLReference ResourceKey="1" />
+      </data>
+      <data key="d3">
+        <y:RectD X="-15" Y="285" Width="30" Height="30" />
+      </data>
+      <port name="p0" />
+    </node>
+    <node id="n3">
+      <data key="d1">
+        <y:GraphMLReference ResourceKey="1" />
+      </data>
+      <data key="d3">
+        <y:RectD X="585" Y="285" Width="30" Height="30" />
+      </data>
+      <port name="p0" />
+    </node>
+    <edge id="e0" source="n0" target="n1" sourceport="p0" targetport="p0">
+      <data key="d4">
+        <y:GraphMLReference ResourceKey="4" />
+      </data>
+      <data key="d5">
+        <x:List>
+          <y:Label Style="{y:GraphMLReference 3}" PreferredSize="99,34">
+            <y:Label.Text><![CDATA[First from Source
+Right of Edge]]></y:Label.Text>
+            <y:Label.LayoutParameter>
+              <y:BezierEdgeSegmentLabelModelParameter Model="{y:GraphMLReference bezierSegmentLabelModel}" SegmentRatio="0.2" Distance="20" />
+            </y:Label.LayoutParameter>
+          </y:Label>
+          <y:Label Style="{y:GraphMLReference 3}" PreferredSize="116,34">
+            <y:Label.Text><![CDATA[Second from Source
+On Edge]]></y:Label.Text>
+            <y:Label.LayoutParameter>
+              <y:BezierEdgeSegmentLabelModelParameter Model="{y:GraphMLReference bezierSegmentLabelModel}" SegmentIndex="1" SegmentRatio="0.2" Distance="0" />
+            </y:Label.LayoutParameter>
+          </y:Label>
+          <y:Label Style="{y:GraphMLReference 3}" PreferredSize="94,34">
+            <y:Label.Text><![CDATA[First from Target
+Left of Edge]]></y:Label.Text>
+            <y:Label.LayoutParameter>
+              <y:BezierEdgeSegmentLabelModelParameter Model="{y:GraphMLReference bezierSegmentLabelModel}" SegmentRatio="0.19999999999999996" Distance="-20" PlaceAlongEdge="AtTarget" />
+            </y:Label.LayoutParameter>
+          </y:Label>
+          <y:Label Style="{y:GraphMLReference 3}" PreferredSize="111,34">
+            <y:Label.Text><![CDATA[Second from Target
+On Edge]]></y:Label.Text>
+            <y:Label.LayoutParameter>
+              <y:BezierEdgeSegmentLabelModelParameter Model="{y:GraphMLReference bezierSegmentLabelModel}" SegmentIndex="1" SegmentRatio="0.19999999999999996" Distance="0" PlaceAlongEdge="AtTarget" />
+            </y:Label.LayoutParameter>
+          </y:Label>
+        </x:List>
+      </data>
+      <data key="d6">
+        <x:List>
+          <y:Bend Location="100,100" />
+          <y:Bend Location="200,100" />
+          <y:Bend Location="300,0" />
+          <y:Bend Location="400,-100" />
+          <y:Bend Location="500,-100" />
+        </x:List>
+      </data>
+    </edge>
+    <edge id="e1" source="n2" target="n3" sourceport="p0" targetport="p0">
+      <data key="d4">
+        <y:GraphMLReference ResourceKey="4" />
+      </data>
+      <data key="d5">
+        <x:List>
+          <y:Label Style="{y:GraphMLReference 3}" PreferredSize="92,20">
+            <y:Label.Text><![CDATA[Bezier Ratio 0.5]]></y:Label.Text>
+            <y:Label.LayoutParameter>
+              <y:BezierEdgePathLabelModelParameter Model="{y:GraphMLReference bezierPathLabelModel}" Distance="20" />
+            </y:Label.LayoutParameter>
+          </y:Label>
+          <y:Label Style="{y:GraphMLReference 3}" PreferredSize="92,20">
+            <y:Label.Text><![CDATA[Bezier Ratio 0.9]]></y:Label.Text>
+            <y:Label.LayoutParameter>
+              <y:BezierEdgePathLabelModelParameter Model="{y:GraphMLReference bezierPathLabelModel}" Ratio="0.9" Distance="0" />
+            </y:Label.LayoutParameter>
+          </y:Label>
+          <y:Label Style="{y:GraphMLReference 3}" PreferredSize="92,20">
+            <y:Label.Text><![CDATA[Bezier Ratio 0.1]]></y:Label.Text>
+            <y:Label.LayoutParameter>
+              <y:BezierEdgePathLabelModelParameter Model="{y:GraphMLReference bezierPathLabelModel}" Ratio="0.1" Distance="0" />
+            </y:Label.LayoutParameter>
+          </y:Label>
+        </x:List>
+      </data>
+      <data key="d6">
+        <x:List>
+          <y:Bend Location="100,400" />
+          <y:Bend Location="200,400" />
+          <y:Bend Location="300,300" />
+          <y:Bend Location="400,200" />
+          <y:Bend Location="500,200" />
+        </x:List>
+      </data>
+    </edge>
+  </graph>
+</graphml>

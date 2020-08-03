@@ -1,0 +1,102 @@
+<!-- ************************************************************************ -->
+<!-- This demo file is part of yFiles WPF 3.3.                           -->
+<!-- Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
+<!-- 72070 Tuebingen, Germany. All rights reserved.                           -->
+<!--                                                                          -->
+<!-- yFiles demo files exhibit yFiles WPF functionalities. Any redistribution  -->
+<!-- of demo resource files, with or without modification, is not permitted.  -->
+<!--                                                                          -->
+<!-- Owners of a valid software license for a yFiles WPF version that this     -->
+<!-- demo is shipped with are allowed to use the resource file as basis for   -->
+<!-- their own yFiles WPF powered applications. Use of such programs is        -->
+<!-- governed by the rights and conditions as set out in the yFiles WPF        -->
+<!-- license agreement.                                                       -->
+<!--                                                                          -->
+<!-- THIS SOFTWARE IS PROVIDED ''AS IS'' AND ANY EXPRESS OR IMPLIED           -->
+<!-- WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF     -->
+<!-- MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN  -->
+<!-- NO EVENT SHALL yWorks BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,    -->
+<!-- SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED -->
+<!-- TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR   -->
+<!-- PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF   -->
+<!-- LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING     -->
+<!-- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS       -->
+<!-- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.             -->
+<!--                                                                          -->
+<!-- ************************************************************************ -->
+<Window x:Class="Demo.yFiles.Complete.IsometricDrawing.IsometricDrawingWindow" 
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+        xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/3.0/xaml" 
+        Height="Auto" Width="Auto" Loaded="OnLoad" x:Name="LayoutRoot" Style="{StaticResource DemoWindow}" Title="Demo.yFiles.Complete.IsometricDrawing">
+    <HeaderedContentControl Style="{StaticResource DemoStyle}" >
+        <HeaderedContentControl.Header>
+            <RichTextBox BorderThickness="0" IsReadOnly="True">
+                <FlowDocument>
+                    <Paragraph>
+                        This demo displays graphs isometrically.  
+                    </Paragraph>
+                    <Paragraph>
+                        <Run FontWeight="Bold">Interaction</Run>
+                        <LineBreak/>
+                        This demo features the full range of interactions using GraphEditorInputMode.
+                        Also, each node has an additional handle at the "top" which, when dragged, will change the height of the node.
+                    </Paragraph>
+                    <List>
+                        <ListItem><Paragraph>Select a node and drag the handle at the "top" to change the height of that node.</Paragraph></ListItem>
+                        <ListItem><Paragraph>Drag the "Rotation" slider in the toolbar to change the rotation of the scene.</Paragraph></ListItem>
+                        <ListItem><Paragraph>Click on an empty space in the canvas to create a new node with a random color and height.</Paragraph></ListItem>
+                        <ListItem><Paragraph>Click on "Print" to print the content of the canvas isometrically.</Paragraph></ListItem>
+                    </List>
+                    <Paragraph>
+                        <Run FontWeight="Bold">Layout</Run>
+                        <LineBreak/>            
+                        There are two suitable layout algorithms to apply to the graph:
+                    </Paragraph>
+                    <List>
+                        <ListItem><Paragraph>Hierarchic layout</Paragraph></ListItem>
+                        <ListItem><Paragraph>Orthogonal layout</Paragraph></ListItem>
+                        <ListItem><Paragraph>Opening/closing groups either applies incremental hierarchic or orthogonal layout to the current diagram
+                            according to the last layout setting.</Paragraph></ListItem>
+                    </List>
+                    <Paragraph>
+                        <Run FontWeight="Bold">Loading Graphs</Run>
+                        <LineBreak/>            
+                        Load your own graph and display it isometrically.
+                    </Paragraph>
+                </FlowDocument>
+            </RichTextBox>
+        </HeaderedContentControl.Header>
+        <DockPanel Grid.Column="2">
+            <ToolBarTray DockPanel.Dock="Top">
+                <ToolBar Width="{Binding ActualWidth, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ToolBarTray}}}" Height="Auto" Name="toolBar">
+                    <Button x:Name="openBtn" Command="Open" CommandTarget="{Binding ElementName=graphControl}"/>
+                    <Separator />
+                    <Button x:Name="printBtn" Command="Print" CommandTarget="{Binding ElementName=graphControl}"/>
+                    <Separator />
+                    <Button Command="IncreaseZoom" CommandTarget="{Binding ElementName=graphControl}"/>
+                    <Button Command="DecreaseZoom" CommandTarget="{Binding ElementName=graphControl}"/>
+                    <Button Command="{x:Static ywpf:GraphControl.FitGraphBoundsCommand}" CommandTarget="{Binding ElementName=graphControl}"/>
+                    <Separator />
+                    <Button x:Name="hlLayoutButton" Click="OnHLLayoutClick" Style="{StaticResource BaseToolBarButtonStyle}" >
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="{StaticResource LayoutHierarchicIcon}" Margin="0,0,4,0"/>
+                            <TextBlock>Hierarchic Layout</TextBlock>
+                        </StackPanel>
+                    </Button>
+                    <Button x:Name="otLayoutButton" Click="OnOTLayoutClick" Style="{StaticResource BaseToolBarButtonStyle}" >
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="{StaticResource LayoutOrthogonalIcon}" Margin="0,0,4,0"/>
+                            <TextBlock>Orthogonal Layout</TextBlock>
+                        </StackPanel>
+                    </Button>
+                    <Separator />
+                    <Label Content="Rotation: "/>
+                    <Slider x:Name="rotationSld" Minimum="-180" Maximum="180" Orientation="Horizontal" Width="200" ValueChanged="OnRotationSldChanged" />
+
+                </ToolBar>
+            </ToolBarTray>
+            <ywpf:GraphControl Width="Auto" x:Name="graphControl" FileOperationsEnabled="True" MinWidth="200" MinHeight="200" MinimumZoom="0.05" MaximumZoom="4"/>
+        </DockPanel>
+    </HeaderedContentControl>
+</Window>

@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.2.
- ** Copyright (c) 2000-2019 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.3.
+ ** Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -88,7 +88,7 @@ namespace Tutorial.CustomStyles
       // create label edges as decorators for wrapped style
       var labelEdgesContainer = new VisualGroup();
       RenderLabelEdges(context, node, labelEdgesContainer, renderDataCache);
-      labelEdgesContainer.SetCanvasArrangeRect(node.Layout.ToRectD().ToRect());
+      labelEdgesContainer.SetCanvasArrangeRect(node.Layout.ToRectD());
 
       // add both visuals to outer container
       container.Add(wrappedVisual);
@@ -118,7 +118,7 @@ namespace Tutorial.CustomStyles
         RenderLabelEdges(context, node, labelEdgesContainer, newCache);
         oldVisual.SetRenderDataCache(newCache);
       }
-      labelEdgesContainer.SetCanvasArrangeRect(node.Layout.ToRectD().ToRect());
+      labelEdgesContainer.SetCanvasArrangeRect(node.Layout.ToRectD());
       return oldVisual;
     }
 

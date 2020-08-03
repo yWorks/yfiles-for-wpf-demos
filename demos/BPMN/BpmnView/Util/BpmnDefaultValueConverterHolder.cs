@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.2.
- ** Copyright (c) 2000-2019 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.3.
+ ** Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -43,7 +43,7 @@ namespace Demo.yFiles.Graph.Bpmn.Util {
 
     static BpmnDefaultValueConverter() {
       defaultsMap = new Dictionary<string, object>();
-      defaultsMap["Demo.yFiles.Graph.Bpmn.Styles.ChoreographyMessageLabelStyle.DefaultTextPlacement"] = ChoreographyMessageLabelStyle.DefaultTextPlacement;
+      defaultsMap["Demo.yFiles.Graph.Bpmn.Styles.ChoreographyMessageLabelStyle.DefaultTextPlacement"] = ChoreographyMessageLabelStyle.defaultTextPlacement;
     }
 
     public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType) {

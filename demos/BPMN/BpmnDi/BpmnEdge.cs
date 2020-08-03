@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.2.
- ** Copyright (c) 2000-2019 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.3.
+ ** Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -32,28 +32,31 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Xml.Linq;
 using yWorks.Geometry;
-
+using yWorks.Graph;
+using yWorks.Graph.LabelModels;
+using yWorks.Graph.Styles;
 // Just for better readability in code
 using BpmnNM = Demo.yFiles.Graph.Bpmn.BpmnDi.BpmnNamespaceManager;
 
 namespace Demo.yFiles.Graph.Bpmn.BpmnDi
 {
-    
+  /// <summary>
+  /// Class for BPMNEdge objects
+  /// </summary>
+  internal class BpmnEdge
+  {
+    private static readonly SimpleLabel calculateSizeLabel = new SimpleLabel(new SimpleNode(), "", FreeNodeLabelModel.Instance.CreateDefaultParameter());
+    private static readonly DefaultLabelStyle calculateSizeLabelStyle = new DefaultLabelStyle();
+
     /// <summary>
-    /// Class for BPMNEdge objects
+    /// Calculate the preferred size for <paramref name="text"/> using a <see cref="DefaultLabelStyle"/>.
     /// </summary>
-    internal class BpmnEdge
-    {
-        /// <summary>
-        /// Visibility of a message envelope on an edge
-        /// </summary>
-        [DefaultValue(Unspecified)]
-        public enum MessageVisibleKind
-        {
-            Unspecified,
-            Initiating,
-            NonInitiating
-        }
+    /// <param name="text">The text to measure.</param>
+    /// <returns>The preferred Size of the given text.</returns>
+    private static SizeD CalculatePreferredSize(string text) {
+      calculateSizeLabel.Text = text;
+      return calculateSizeLabelStyle.Renderer.GetPreferredSize(calculateSizeLabel, calculateSizeLabelStyle);
+    }
 
         /// <summary>
         /// The <see cref="BpmnElement"/> this edge references to
@@ -95,31 +98,30 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
         /// </summary>
         public string Id { get; private set; }
 
-        /// <summary>
-        /// The custom style of this label
-        /// </summary>
-        public string LabelStyle { get; set; }
-        
-        /// <summary>
-        /// Constructs a new edge instance
-        /// </summary>
-        /// <param name="xEdge">The XML element which represents this edge</param>
-        /// <param name="elements">Dictionary of all bpmn elements from this file parsing</param>
-        public BpmnEdge(XElement xEdge, IDictionary<string, BpmnElement> elements)
-        {
-            Waypoints = new List<PointD>();
-            HasLabel = false;
-            LabelBounds = new RectD(0,0,0,0);
-            Source = null;
-            Target = null;
-            MessageVisibleK = MessageVisibleKind.Unspecified;
+    /// <summary>
+    /// The custom style of this label
+    /// </summary>
+    public string LabelStyle { get; set; }
+
+    /// <summary>
+    /// Constructs a new edge instance
+    /// </summary>
+    /// <param name="xEdge">The XML element which represents this edge</param>
+    /// <param name="elements">Dictionary of all bpmn elements from this file parsing</param>
+    public BpmnEdge(XElement xEdge, IDictionary<string, BpmnElement> elements) {
+      Waypoints = new List<PointD>();
+      HasLabel = false;
+      LabelBounds = new RectD(0, 0, 0, 0);
+      Source = null;
+      Target = null;
+      MessageVisibleK = MessageVisibleKind.Unspecified;
 
             // Get id
-            Id = BpmnNM.GetAttributeValue(xEdge, BpmnNM.BpmnDi, "Id");
+            Id = BpmnNM.GetAttributeValue(xEdge, BpmnNM.BpmnDi, BpmnDiConstants.IdAttribute);
             // Get and link element   
-            if (BpmnNM.GetAttributeValue(xEdge, BpmnNM.BpmnDi, "bpmnElement") != null) {
+            if (BpmnNM.GetAttributeValue(xEdge, BpmnNM.BpmnDi, BpmnDiConstants.BpmnElementAttribute) != null) {
                 BpmnElement element;
-                Element = elements.TryGetValue(BpmnNM.GetAttributeValue(xEdge, BpmnNM.BpmnDi, "bpmnElement"), out element) ? element : null;
+                Element = elements.TryGetValue(BpmnNM.GetAttributeValue(xEdge, BpmnNM.BpmnDi, BpmnDiConstants.BpmnElementAttribute), out element) ? element : null;
             }
             
             // If there is no element, skip
@@ -161,7 +163,7 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
                 Target = target;
             }
             
-            switch (BpmnNM.GetAttributeValue(xEdge, BpmnNM.BpmnDi, "messageVisibleKind")) {
+            switch (BpmnNM.GetAttributeValue(xEdge, BpmnNM.BpmnDi, BpmnDiConstants.MessageVisibleKindAttribute)) {
                 case "non_initiating":
                     MessageVisibleK = MessageVisibleKind.NonInitiating;
                     break;
@@ -189,38 +191,39 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
             double labelWidth = 100;
             double labelHeight = 20;
 
-            var attr = BpmnNM.GetAttributeValue(xBounds, BpmnNM.Dc, "x");
+            var attr = BpmnNM.GetAttributeValue(xBounds, BpmnNM.Dc, BpmnDiConstants.XAttribute);
             if (attr != null) {
                 labelX = double.Parse(attr, CultureInfo.InvariantCulture);
             }
             
-            attr = BpmnNM.GetAttributeValue(xBounds, BpmnNM.Dc, "y");
+            attr = BpmnNM.GetAttributeValue(xBounds, BpmnNM.Dc, BpmnDiConstants.YAttribute);
             if (attr != null) {
                 labelY = double.Parse(attr, CultureInfo.InvariantCulture);
             }
             
-            attr = BpmnNM.GetAttributeValue(xBounds, BpmnNM.Dc, "height");
+            attr = BpmnNM.GetAttributeValue(xBounds, BpmnNM.Dc, BpmnDiConstants.HeightAttribute);
             if (attr != null) {
                 labelHeight = double.Parse(attr,
                         CultureInfo.InvariantCulture);
             }
             
-            attr = BpmnNM.GetAttributeValue(xBounds, BpmnNM.Dc, "width");
+            attr = BpmnNM.GetAttributeValue(xBounds, BpmnNM.Dc, BpmnDiConstants.WidthAttribute);
             if (attr != null) {
                 labelWidth = double.Parse(attr,
                         CultureInfo.InvariantCulture);
             }
 
-            // In case, the label sizes were set to 0
-            if (labelWidth < 1) {
-                labelWidth = 100;
-            }
-            if (labelHeight < 1) {
-                labelHeight = 20;
-            }
- 
-            LabelBounds = new RectD(labelX, labelY, labelWidth, labelHeight);
-        }
+      // In case, the label sizes were set to 0
+      if (labelWidth < 1 || labelHeight < 1) {
+        var text = Element.Label;
+        var preferredSize = CalculatePreferredSize(text);
+
+        labelWidth = preferredSize.Width;
+        labelHeight = preferredSize.Height;
+      }
+
+      LabelBounds = new RectD(labelX, labelY, labelWidth, labelHeight);
+    }
 
         /// <summary>
         /// Adds a waypoint to the edge
@@ -231,11 +234,11 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
             double x = 0;
             double y = 0;
 
-            var attr = BpmnNM.GetAttributeValue(xWaypoint, BpmnNM.Di, "x");
+            var attr = BpmnNM.GetAttributeValue(xWaypoint, BpmnNM.Di, BpmnDiConstants.XAttribute);
             if (attr != null) {
                 x = double.Parse(attr, CultureInfo.InvariantCulture);
             }
-            attr = BpmnNM.GetAttributeValue(xWaypoint, BpmnNM.Di, "y");
+            attr = BpmnNM.GetAttributeValue(xWaypoint, BpmnNM.Di, BpmnDiConstants.YAttribute);
             if (attr != null) {
                 y = double.Parse(attr, CultureInfo.InvariantCulture);
             }
@@ -252,21 +255,32 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
             return LabelBounds.Width > 0 && LabelBounds.Height > 0;
         }
 
-        /// <summary>
-        /// Returns true, if the top left point of the bounds is not 0/0 (standard case) 
-        /// </summary>
-        /// <returns>True, if the label has a given position, false if it is 0/0</returns>
-        public bool HasLabelPosition() {
-            return LabelBounds.X > 0 && LabelBounds.Y > 0;
-        }
-        
-        /// <summary>
-        /// Returns the value of the given attribute of the linked BpmnElement, or null
-        /// </summary>
-        /// <param name="attribute">Id (name) of the attribute to get</param>
-        /// <returns>value of the attribute or null</returns>
-        public string GetAttribute(string attribute) {
-            return Element.GetValue(attribute);
-        }
+    /// <summary>
+    /// Returns true, if the top left point of the bounds is not 0/0 (standard case) 
+    /// </summary>
+    /// <returns>True, if the label has a given position, false if it is 0/0</returns>
+    public bool HasLabelPosition() {
+      return LabelBounds.X > 0 && LabelBounds.Y > 0;
     }
+
+    /// <summary>
+    /// Returns the value of the given attribute of the linked BpmnElement, or null
+    /// </summary>
+    /// <param name="attribute">Id (name) of the attribute to get</param>
+    /// <returns>value of the attribute or null</returns>
+    public string GetAttribute(string attribute) {
+      return Element.GetValue(attribute);
+    }
+  }
+
+  /// <summary>
+  /// Visibility of a message envelope on an edge
+  /// </summary>
+  [DefaultValue(Unspecified)]
+  internal enum MessageVisibleKind
+  {
+    Unspecified,
+    Initiating,
+    NonInitiating
+  }
 }

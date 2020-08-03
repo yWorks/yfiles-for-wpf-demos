@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.2.
- ** Copyright (c) 2000-2019 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.3.
+ ** Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -62,8 +62,14 @@ namespace Demo.yFiles.Layout.Configurations
       ChooseRadiusAutomaticallyItem = true;
       FixedRadiusItem = 200;
 
+      EdgeRoutingPolicyItem = EdgeRoutingPolicy.Interior;
+      CircleDistanceItem = 20;
+      EdgeToEdgeDistanceItem = 10;
+      PreferredCurveLengthItem = 20;
+      PreferredAngleItem = 10;
+      SmoothnessItem = 0.7;
       EdgeBundlingItem = false;
-      EdgeBundlingStrengthItem = 1;
+      EdgeBundlingStrengthItem = 0.95;
 
       PreferredChildWedgeItem = treeLayout.PreferredChildWedge;
       MinimumEdgeLengthItem = treeLayout.MinimumEdgeLength;
@@ -86,6 +92,12 @@ namespace Demo.yFiles.Layout.Configurations
       var balloonLayout = layout.BalloonLayout;
 
       layout.LayoutStyle = LayoutStyleItem;
+      layout.EdgeRoutingPolicy = EdgeRoutingPolicyItem;
+      layout.ExteriorEdgeLayoutDescriptor.CircleDistance = CircleDistanceItem;
+      layout.ExteriorEdgeLayoutDescriptor.EdgeToEdgeDistance = EdgeToEdgeDistanceItem;
+      layout.ExteriorEdgeLayoutDescriptor.PreferredAngle = PreferredAngleItem;
+      layout.ExteriorEdgeLayoutDescriptor.PreferredCurveLength = PreferredCurveLengthItem;
+      layout.ExteriorEdgeLayoutDescriptor.Smoothness = SmoothnessItem;
       layout.SubgraphLayoutEnabled = ActOnSelectionOnlyItem;
       layout.MaximumDeviationAngle = MaximumDeviationAngleItem;
       layout.FromSketchMode = FromSketchItem;
@@ -132,6 +144,10 @@ namespace Demo.yFiles.Layout.Configurations
         layoutData.CustomGroups.Delegate = node => graph.GetParent(node);
       }
 
+      if (EdgeRoutingPolicyItem == EdgeRoutingPolicy.MarkedExterior) {
+        layoutData.ExteriorEdges.Source = graphControl.Selection.SelectedEdges;
+      }
+
       return layoutData;
     }
 
@@ -152,10 +168,15 @@ namespace Demo.yFiles.Layout.Configurations
     [ComponentType(ComponentTypes.OptionGroup)]
     public object CycleGroup;
 
-    [Label("Edge Bundling")]
+    [Label("Edges")]
     [OptionGroup("RootGroup", 25)]
     [ComponentType(ComponentTypes.OptionGroup)]
-    public object EdgeBundlingGroup;
+    public object EdgesGroup;
+
+    [Label("Exterior edges")]
+    [OptionGroup("EdgesGroup", 20)]
+    [ComponentType(ComponentTypes.OptionGroup)]
+    public object ExteriorEdgesGroup;
 
     [Label("Tree")]
     [OptionGroup("RootGroup", 30)]
@@ -255,8 +276,72 @@ namespace Demo.yFiles.Layout.Configurations
       get { return ChooseRadiusAutomaticallyItem; }
     }
 
+    [Label("Edge Routing")]
+    [OptionGroup("EdgesGroup", 10)]
+    [DefaultValue(EdgeRoutingPolicy.Interior)]
+    [EnumValue("Inside", EdgeRoutingPolicy.Interior)]
+    [EnumValue("Outside", EdgeRoutingPolicy.Exterior)]
+    [EnumValue("Automatic", EdgeRoutingPolicy.Automatic)]
+    [EnumValue("Selected edges outside", EdgeRoutingPolicy.MarkedExterior)]
+    public EdgeRoutingPolicy EdgeRoutingPolicyItem { get; set; }
+
+    [Label("Distance from circle")]
+    [OptionGroup("ExteriorEdgesGroup", 10)]
+    [DefaultValue(20d)]
+    [MinMax(Min = 10.0d, Max = 100.0d)]
+    [ComponentType(ComponentTypes.Slider)]
+    public double CircleDistanceItem { get; set; }
+
+    public bool ShouldDisableCircleDistanceItem {
+      get { return EdgeRoutingPolicyItem == EdgeRoutingPolicy.Interior; }
+    }
+
+    [Label("Edge to edge distance")]
+    [OptionGroup("ExteriorEdgesGroup", 20)]
+    [DefaultValue(10d)]
+    [MinMax(Min = 5.0d, Max = 50.0d)]
+    [ComponentType(ComponentTypes.Slider)]
+    public double EdgeToEdgeDistanceItem { get; set; }
+
+    public bool ShouldDisableEdgeToEdgeDistanceItem {
+      get { return EdgeRoutingPolicyItem == EdgeRoutingPolicy.Interior; }
+    }
+
+    [Label("Corner radius")]
+    [OptionGroup("ExteriorEdgesGroup", 30)]
+    [DefaultValue(20d)]
+    [MinMax(Min = 0.0d, Max = 100.0d)]
+    [ComponentType(ComponentTypes.Slider)]
+    public double PreferredCurveLengthItem { get; set; }
+
+    public bool ShouldDisablePreferredCurveLengthItem {
+      get { return EdgeRoutingPolicyItem == EdgeRoutingPolicy.Interior; }
+    }
+
+    [Label("Angle")]
+    [OptionGroup("ExteriorEdgesGroup", 40)]
+    [DefaultValue(10d)]
+    [MinMax(Min = 0.0d, Max = 45.0d)]
+    [ComponentType(ComponentTypes.Slider)]
+    public double PreferredAngleItem { get; set; }
+
+    public bool ShouldDisablePreferredAngleItem {
+      get { return EdgeRoutingPolicyItem == EdgeRoutingPolicy.Interior; }
+    }
+
+    [Label("Smoothness")]
+    [OptionGroup("ExteriorEdgesGroup", 50)]
+    [DefaultValue(0.7d)]
+    [MinMax(Min = 0.0d, Max = 1.0d, Step = 0.1d)]
+    [ComponentType(ComponentTypes.Slider)]
+    public double SmoothnessItem { get; set; }
+
+    public bool ShouldDisableSmoothnessItem {
+      get { return EdgeRoutingPolicyItem == EdgeRoutingPolicy.Interior; }
+    }
+
     [Label("Enable Edge Bundling")]
-    [OptionGroup("EdgeBundlingGroup", 40)]
+    [OptionGroup("EdgesGroup", 40)]
     [DefaultValue(false)]
     public bool EdgeBundlingItem { get; set; }
 
@@ -265,7 +350,7 @@ namespace Demo.yFiles.Layout.Configurations
     }
 
     [Label("Bundling Strength")]
-    [OptionGroup("EdgeBundlingGroup", 50)]
+    [OptionGroup("EdgesGroup", 50)]
     [DefaultValue(0.95d)]
     [MinMax(Min = 0.0d, Max = 1.0d, Step = 0.01d)]
     [ComponentType(ComponentTypes.Slider)]

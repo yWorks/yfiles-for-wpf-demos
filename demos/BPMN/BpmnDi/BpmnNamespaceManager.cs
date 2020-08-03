@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.2.
- ** Copyright (c) 2000-2019 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.3.
+ ** Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -34,7 +34,6 @@ using System.Xml.Linq;
 
 namespace Demo.yFiles.Graph.Bpmn.BpmnDi
 {
-
   /// <summary>
   /// Provides convenience methods to search for specific XElements and XAttributes and test results for the
   /// relevant BPMN Namespaces
@@ -44,24 +43,27 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
     private static XmlNamespaceManager NamespaceManager { get; set; }
 
     internal static XNamespace Xsi { get; private set; }
+
     internal static XNamespace Bpmn { get; private set; }
+
     internal static XNamespace BpmnDi { get; private set; }
+
     internal static XNamespace Di { get; private set; }
+
     internal static XNamespace Dc { get; private set; }
 
     static BpmnNamespaceManager() {
-      
       Xsi = "http://www.w3.org/2001/XMLSchema-instance";
       Di = "http://www.omg.org/spec/DD/20100524/DI";
       Dc = "http://www.omg.org/spec/DD/20100524/DC";
       Bpmn = "http://www.omg.org/spec/BPMN/20100524/MODEL";
       BpmnDi = "http://www.omg.org/spec/BPMN/20100524/DI";
-      
+
       NamespaceManager = new XmlNamespaceManager(new NameTable());
-      NamespaceManager.AddNamespace("xmlns:xsi=","http://www.w3.org/2001/XMLSchema-instance");
+      NamespaceManager.AddNamespace("xmlns:xsi=", "http://www.w3.org/2001/XMLSchema-instance");
       NamespaceManager.AddNamespace("xmlns:di", "http://www.omg.org/spec/BPMN/20100524/DI");
-      NamespaceManager.AddNamespace("xmlns:dc","http://www.omg.org/spec/DD/20100524/DC" );
-      NamespaceManager.AddNamespace("xmlns:bpmn","http://www.omg.org/spec/BPMN/20100524/MODEL");
+      NamespaceManager.AddNamespace("xmlns:dc", "http://www.omg.org/spec/DD/20100524/DC");
+      NamespaceManager.AddNamespace("xmlns:bpmn", "http://www.omg.org/spec/BPMN/20100524/MODEL");
     }
 
 
@@ -72,7 +74,6 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
     /// <param name="nameSpace">The namespace</param>
     /// <returns>The list with all items left in the namespaces.</returns>
     internal static IEnumerable<XAttribute> AttributesInNamespace(IEnumerable<XAttribute> list, XNamespace nameSpace) {
-
       // Some Attributes do not have a namespace declared explicitly. Since we test the parent for the correct namespace this is ok.
       return list.Where(el => el.Name.Namespace.Equals(nameSpace) || el.Name.Namespace == "");
     }
@@ -85,7 +86,6 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
     /// <param name="attributeName">The local name of the attribute</param>
     /// <returns></returns>
     internal static string GetAttributeValue(XElement xElement, XNamespace nameSpace, string attributeName) {
-      
       // Some Attributes do not have a namespace declared explicitly. Since we test the parent for the correct namespace this is ok.
       var attrList = xElement.Attributes(attributeName).Where(el => el.Name.NamespaceName == nameSpace || el.Name.Namespace == "");
       if (attrList.Any()) {
@@ -93,7 +93,7 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
       }
       return null;
     }
-    
+
     /// <summary>
     /// Returns the child XML element with the given namespace and local name
     /// </summary>
@@ -102,10 +102,9 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
     /// <param name="localName">The local name</param>
     /// <returns></returns>
     internal static XElement GetElement(XElement xElement, XNamespace nameSpace, string localName) {
-                    
       return xElement.Element(nameSpace + localName);
     }
-    
+
     /// <summary>
     /// Returns the child XML element with the given namespace and local name
     /// </summary>
@@ -114,9 +113,7 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
     /// <param name="localName">The local name</param>
     /// <returns></returns>
     internal static IEnumerable<XElement> GetElements(XElement xElement, XNamespace nameSpace, string localName) {
-                    
       return xElement.Elements(nameSpace + localName);
     }
-    
   }
 }

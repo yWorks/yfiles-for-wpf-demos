@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.2.
- ** Copyright (c) 2000-2019 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.3.
+ ** Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -58,7 +58,7 @@ namespace Demo.yFiles.Layout.LogicGate
     public EdgeDirection EdgeDirection { get; set; }
 
     /// <summary>
-    /// Creates an enumerable of all edges belonging to the type of the node as specified by its
+    /// Creates an enumerable of <see cref="PortDescriptor"/>s belonging to the type of the node as specified by its
     /// <see cref="LogicGateType"/> set as its tag or an empty list if there is no
     /// <see cref="LogicGateType"/>.
     /// </summary>
@@ -186,7 +186,7 @@ namespace Demo.yFiles.Layout.LogicGate
   }
 
   /// <summary>
-  /// Describes the direction of a port (to allow incoming and outgoing edges)
+  /// Describes the direction of a port (to allow incoming and outgoing edges).
   /// </summary>
   public enum EdgeDirection
   {

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--Created by @PRODUCT@ @ASSEMBLY_VERSION@-->
+<graphml xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/3.0" xmlns:y="http://www.yworks.com/xml/yfiles-common/3.0" xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/3.0/xaml" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml.wpf/3.0/ygraphml.xsd " xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://graphml.graphdrawing.org/xmlns">
+  <key id="d0" attr.name="NodeLabels" for="node" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeLabels" />
+  <key id="d1" attr.name="NodeGeometry" for="node" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeGeometry" />
+  <key id="d2" attr.name="UserTags" for="all" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/UserTags" />
+  <key id="d3" attr.name="NodeStyle" for="node" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeStyle" />
+  <key id="d4" attr.name="EdgeLabels" for="edge" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/EdgeLabels" />
+  <key id="d5" attr.name="EdgeGeometry" for="edge" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/EdgeGeometry" />
+  <key id="d6" attr.name="EdgeStyle" for="edge" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/EdgeStyle" />
+  <key id="d7" attr.name="PortLabels" for="port" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/PortLabels" />
+  <key id="d8" attr.name="PortLocationParameter" for="port" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/PortLocationParameter">
+    <default>
+      <x:Static Member="y:FreeNodePortLocationModel.NodeCenterAnchored" />
+    </default>
+  </key>
+  <key id="d9" attr.name="PortStyle" for="port" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/PortStyle">
+    <default>
+      <x:Static Member="y:VoidPortStyle.Instance" />
+    </default>
+  </key>
+  <key id="d10" attr.name="SharedData" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/SharedData" />
+  <data key="d10">
+    <y:SharedData>
+      <ywpf:ShapeNodeStyle x:Key="1" Pen="{x:Null}" Brush="#FF9932CC" Shape="Ellipse" />
+      <ywpf:PolylineEdgeStyle x:Key="2">
+        <ywpf:PolylineEdgeStyle.Pen>
+          <Pen Brush="#FF9932CC" Thickness="5" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" />
+        </ywpf:PolylineEdgeStyle.Pen>
+      </ywpf:PolylineEdgeStyle>
+    </y:SharedData>
+  </data>
+  <graph id="G">
+    <node id="n0">
+      <data key="d1">
+        <y:RectD X="35" Y="-15" Width="30" Height="30" />
+      </data>
+      <data key="d3">
+        <y:GraphMLReference ResourceKey="1" />
+      </data>
+      <port name="p0" />
+      <port name="p1" />
+    </node>
+    <node id="n1">
+      <data key="d1">
+        <y:RectD X="-15" Y="71.6" Width="30" Height="30" />
+      </data>
+      <data key="d3">
+        <y:GraphMLReference ResourceKey="1" />
+      </data>
+      <port name="p0" />
+      <port name="p1" />
+    </node>
+    <node id="n2">
+      <data key="d1">
+        <y:RectD X="85" Y="71.6" Width="30" Height="30" />
+      </data>
+      <data key="d3">
+        <y:GraphMLReference ResourceKey="1" />
+      </data>
+      <port name="p0" />
+      <port name="p1" />
+    </node>
+    <edge id="e0" source="n0" target="n1" sourceport="p0" targetport="p0">
+      <data key="d6">
+        <y:GraphMLReference ResourceKey="2" />
+      </data>
+    </edge>
+    <edge id="e1" source="n0" target="n2" sourceport="p1" targetport="p0">
+      <data key="d6">
+        <y:GraphMLReference ResourceKey="2" />
+      </data>
+    </edge>
+    <edge id="e2" source="n1" target="n2" sourceport="p1" targetport="p1">
+      <data key="d6">
+        <y:GraphMLReference ResourceKey="2" />
+      </data>
+    </edge>
+  </graph>
+</graphml>

@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.2.
- ** Copyright (c) 2000-2019 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.3.
+ ** Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -47,7 +47,6 @@ namespace Tutorial.CustomStyles
   /// </remarks>
   public class ZoomInvariantLabelStyle : LabelStyleBase<VisualGroup>
   {
-
     private readonly SimpleLabel dummyLabel;
     private readonly OrientedRectangle rectangle;
     
@@ -57,7 +56,7 @@ namespace Tutorial.CustomStyles
     public ZoomInvariantLabelStyle(ILabelStyle innerLabelStyle) {
       InnerLabelStyle = innerLabelStyle;
       rectangle = new OrientedRectangle();
-      dummyLabel = new SimpleLabel(null, String.Empty, new FreeLabelModel().CreateDynamic(rectangle));
+      dummyLabel = new SimpleLabel(null, string.Empty, new FreeLabelModel().CreateDynamic(rectangle));
     }
 
     /// <summary>
@@ -87,8 +86,8 @@ namespace Tutorial.CustomStyles
       // creates the container for the visual and sets a transform for view coordinates
       var container = new VisualGroup();
       // ReSharper disable once PossibleUnintendedReferenceComparison
-      if (container.Transform != context.ViewTransform) {
-        container.Transform = context.ViewTransform;
+      if (container.Transform != context.IntermediateTransform) {
+        container.Transform = context.IntermediateTransform;
       }
 
       RenderDataCache cache = CreateRenderDataCache(context, label);
@@ -98,7 +97,7 @@ namespace Tutorial.CustomStyles
 
       // create a new IRenderContext with a zoom of 1
       var cc = new ContextConfigurator(context.CanvasControl.ContentRect);
-      var innerContext = cc.Setup(context.CanvasControl);
+      var innerContext = cc.CreateRenderContext(context.CanvasControl);
 
       //The wrapped style should always think it's rendering with zoom level 1
       var visual = creator.CreateVisual(innerContext);
@@ -168,11 +167,11 @@ namespace Tutorial.CustomStyles
 
       // create a new IRenderContext with a zoom of 1
       var cc = new ContextConfigurator(context.CanvasControl.ContentRect);
-      var innerContext = cc.Setup(context.CanvasControl);
+      var innerContext = cc.CreateRenderContext(context.CanvasControl);
 
       // ReSharper disable once PossibleUnintendedReferenceComparison
-      if (oldVisual.Transform != context.ViewTransform) {
-        oldVisual.Transform = context.ViewTransform;
+      if (oldVisual.Transform != context.IntermediateTransform) {
+        oldVisual.Transform = context.IntermediateTransform;
       }
 
       // update the visual created by the inner style renderer
@@ -209,12 +208,12 @@ namespace Tutorial.CustomStyles
       if (container != null && container.Children.Count == 1) {
         var visual = container.Children[0] as FrameworkElement;
         if (visual != null) {
-          Transform transform = context.ViewTransform;
+          Transform transform = context.IntermediateTransform;
           container.Transform = transform;
           var anchor = layout.GetAnchorLocation();
           var anchorAndUp = anchor + layout.GetUp();
-          anchor = context.ToViewCoordinates(anchor);
-          anchorAndUp = context.ToViewCoordinates(anchorAndUp);
+          anchor = context.WorldToIntermediateCoordinates(anchor);
+          anchorAndUp = context.WorldToIntermediateCoordinates(anchorAndUp);
 
           var or = new OrientedRectangle();
           or.SetUpVector((anchorAndUp - anchor).Normalized);
@@ -224,7 +223,7 @@ namespace Tutorial.CustomStyles
           visual.Width = or.Width;
           visual.Height = or.Height;
           visual.SetCanvasArrangeRect(new Rect(0, 0, or.Width, or.Height));
-          ArrangeByLayout(visual, or, false);
+          ArrangeByLayout(context, visual, or, false);
 
           if (!container.IsMeasureValid) {
             container.Arrange(new Rect(0, 0, or.Width, or.Height));
@@ -253,13 +252,13 @@ namespace Tutorial.CustomStyles
       dummyLabel.PreferredSize = rectangle.ToSizeD();
       rectangle.Reshape(original.LayoutParameter.Model.GetGeometry(dummyLabel, original.LayoutParameter));
       dummyLabel.PreferredSize = location.ToSizeD();
-      ToViewCoordinates(context, rectangle);
+      WorldToIntermediateCoordinates(context, rectangle);
     }
 
     /// <inheritdoc/>
     protected override RectD GetBounds(ICanvasContext context, ILabel label) {
       UpdateDummyLabel(context, label);
-      return ToWorldCoordinates(context,
+      return IntermediateToWorldCoordinates(context,
                                 InnerLabelStyle.Renderer.GetBoundsProvider(dummyLabel, InnerLabelStyle).GetBounds(
                                   context));
     }
@@ -340,19 +339,19 @@ namespace Tutorial.CustomStyles
     /// <summary>
     /// Converts the given <see cref="OrientedRectangle"/> from the world into the view coordinate space. 
     /// </summary>
-    internal static void ToViewCoordinates(ICanvasContext context, OrientedRectangle rect) {
+    internal static void WorldToIntermediateCoordinates(ICanvasContext context, OrientedRectangle rect) {
       var anchor = new PointD(rect.Anchor);
       var anchorAndUp = anchor + rect.GetUp();
 
       var renderContext = context as IRenderContext ?? context.Lookup(typeof (IRenderContext)) as IRenderContext;
       if (renderContext != null) {
-        anchor = renderContext.ToViewCoordinates(anchor);
-        anchorAndUp = renderContext.ToViewCoordinates(anchorAndUp);
+        anchor = renderContext.WorldToIntermediateCoordinates(anchor);
+        anchorAndUp = renderContext.WorldToIntermediateCoordinates(anchorAndUp);
       } else {
         var cc = context.Lookup(typeof (CanvasControl)) as CanvasControl;
         if (cc != null) {
-          anchor = cc.ToViewCoordinates(anchor);
-          anchorAndUp = cc.ToViewCoordinates(anchorAndUp);
+          anchor = cc.WorldToIntermediateCoordinates(anchor);
+          anchorAndUp = cc.WorldToIntermediateCoordinates(anchorAndUp);
         } else {
           // too bad - infer trivial scale matrix
           anchor *= context.Zoom;
@@ -362,21 +361,21 @@ namespace Tutorial.CustomStyles
 
       rect.SetUpVector((anchorAndUp - anchor).Normalized);
       rect.SetAnchor(anchor);
-      rect.Width = rect.Width*context.Zoom;
-      rect.Height = rect.Height*context.Zoom;
+      rect.Width *= context.Zoom;
+      rect.Height *= context.Zoom;
     }
 
     /// <summary>
     /// Converts the given rectangle from the view into the world coordinate space. 
     /// </summary>
-    internal static RectD ToWorldCoordinates(ICanvasContext context, RectD rect) {
+    internal static RectD IntermediateToWorldCoordinates(ICanvasContext context, RectD rect) {
       var renderContext = context as IRenderContext ?? context.Lookup(typeof (IRenderContext)) as IRenderContext;
       if (renderContext != null) {
-        return ToWorldCoordinates(renderContext.CanvasControl, rect);
+        return IntermediateToWorldCoordinates(renderContext.CanvasControl, rect);
       }
       var cc = context.Lookup(typeof (CanvasControl)) as CanvasControl;
       if (cc != null) {
-        return ToWorldCoordinates(cc, rect);
+        return IntermediateToWorldCoordinates(cc, rect);
       }
       // too bad - infer trivial scale matrix
       return new RectD(rect.X, rect.Y, rect.Width / context.Zoom, rect.Height / context.Zoom);
@@ -385,9 +384,9 @@ namespace Tutorial.CustomStyles
     /// <summary>
     /// Converts the given rectangle from the view into the world coordinate space. 
     /// </summary>
-    internal static RectD ToWorldCoordinates(CanvasControl canvas, RectD rect) {
-      var p1 = GetRounded(canvas.ToWorldCoordinates(rect.GetTopLeft()));
-      var p2 = GetRounded(canvas.ToWorldCoordinates(rect.GetBottomRight()));
+    internal static RectD IntermediateToWorldCoordinates(CanvasControl canvas, RectD rect) {
+      var p1 = GetRounded(canvas.IntermediateToWorldCoordinates(rect.GetTopLeft()));
+      var p2 = GetRounded(canvas.IntermediateToWorldCoordinates(rect.GetBottomRight()));
       return new RectD(p1.X, p1.Y, (int) Math.Max(0, p2.X - p1.X), (int) Math.Max(0, p2.Y - p1.Y));
     }
 

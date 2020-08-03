@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.2.
- ** Copyright (c) 2000-2019 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.3.
+ ** Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -253,7 +253,7 @@ namespace Demo.yFiles.ImageExport
     [CanBeNull]
     private ImageSource ImageExport() {
       GraphControl control = graphControl;
-      // check if the reclangular region or the whole viewport should be exported
+      // check if the rectangular region or the whole viewport should be exported
       bool useRect = (bool) handler.GetValue(OUTPUT, EXPORT_RECTANGLE);
       RectD bounds = useRect ? exportRect.ToRectD() : control.Viewport;
 
@@ -264,7 +264,12 @@ namespace Demo.yFiles.ImageExport
       bool hide = (bool) handler.GetValue(OUTPUT, HIDE_DECORATIONS);
       if (hide) {
         // if so, create a new graph control with the same graph
-        control = new GraphControl {Graph = graphControl.Graph, FlowDirection = graphControl.FlowDirection};
+        control = new GraphControl {
+            Graph = graphControl.Graph,
+            FlowDirection = graphControl.FlowDirection,
+            Background = graphControl.Background,
+            Projection = graphControl.Projection
+        };
       }
       IImageExporter exporter;
       ContextConfigurator config = GetConfig(bounds, !useRect);
@@ -387,7 +392,7 @@ namespace Demo.yFiles.ImageExport
     /// Gets the export configuration
     /// </summary>
     private ContextConfigurator GetConfig(RectD worldBounds, bool useViewport) {
-      ContextConfigurator config = new ContextConfigurator(worldBounds);
+      ContextConfigurator config = new ContextConfigurator(worldBounds) { Projection = graphControl.Projection };
       SetScale(config, useViewport);
       // get the margins
       int leftMargin = (int) Handler.GetValue(MARGINS, LEFT_MARGIN);

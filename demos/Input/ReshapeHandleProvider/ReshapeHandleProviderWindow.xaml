@@ -1,6 +1,6 @@
 <!-- ************************************************************************ -->
-<!-- This demo file is part of yFiles WPF 3.2.                           -->
-<!-- Copyright (c) 2000-2019 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
+<!-- This demo file is part of yFiles WPF 3.3.                           -->
+<!-- Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
 <!-- 72070 Tuebingen, Germany. All rights reserved.                           -->
 <!--                                                                          -->
 <!-- yFiles demo files exhibit yFiles WPF functionalities. Any redistribution  -->
@@ -35,46 +35,36 @@
             <RichTextBox BorderThickness="0" IsReadOnly="True">
                 <FlowDocument>
                     <Paragraph>
-                        <Run>
-                            This demo shows how resizing of nodes can be customized.
-                        </Run>
+                        This demo shows how to implement a custom <Run FontStyle="Italic" Text="IReshapeHandleProvider"/>.
                     </Paragraph>
-                    <Paragraph>This is done with custom implementations of the interface
-                        <Run FontStyle="Italic" Text="IReshapeHandleProvider"/> that are
-                        added to the lookup of the nodes.
+                    <Paragraph>
+                        This <Run FontStyle="Italic" Text="IReshapeHandleProvider"/> is provided for ports to reshape their
+                        port visualization.
                     </Paragraph>
                     <Paragraph Style="{StaticResource HtmlH2}">
                         Things to Try
                     </Paragraph>
                     <List>
                         <ListItem>
-                            <Paragraph>Select and resize the nodes.</Paragraph>
-                        </ListItem>
-                    </List>
-                    <Paragraph Style="{StaticResource HtmlH2}">
-                        Node Types
-                    </Paragraph>
-                	<List>
-                		<ListItem>
-                			<Paragraph>
-                                <Run FontWeight="Bold" Foreground="{StaticResource DemoRed}">Red nodes</Run> cannot be resized. They don't display resize handles.
-                            </Paragraph>
-                		</ListItem>
-                        <ListItem>
                             <Paragraph>
-                                <Run FontWeight="Bold" Foreground="{StaticResource DemoGreen}">Green nodes</Run> show only four handles at the corners. During resizing,
-                                    these handles maintain the aspect ratio of the node.
+                                Select a <Run FontWeight="Bold" Foreground="{StaticResource DemoGreen}">green</Run>
+                                or <Run FontWeight="Bold" Foreground="{StaticResource DemoBlue}">blue</Run> port 
+                                and see its reshape handles at its corners. Also note that there
+                                is a different handle at the center that was provided by the 
+                                <Run FontStyle="Italic" Text="IHandleProvider"/> to change the port location. 
                             </Paragraph>
                         </ListItem>
                         <ListItem>
                             <Paragraph>
-                                <Run FontWeight="Bold" Foreground="{StaticResource DemoOrange}">Orange nodes</Run> cannot extend beyond the black rectangle. Note that
-                                    yellow nodes can only be resized so that the new bounding box stays withing the enclosing black rectangle.
+                                Drag one of the reshape handles to change the size of the port visualization. Note that
+                                the size can't be decreased below a specific minimum size.
                             </Paragraph>
                         </ListItem>
                         <ListItem>
                             <Paragraph>
-                                <Run FontWeight="Bold" Foreground="{StaticResource DemoBlue}">Blue nodes</Run> combine the behavior of the yellow and green nodes.
+                                Press and hold <Run FontWeight="Bold">Ctrl</Run> and see that further reshape handles
+                                appear on the left, right, top and bottom side of selected ports. These handles reshape the
+                                port either horizontally or vertically.
                             </Paragraph>
                         </ListItem>
                     </List>
@@ -83,7 +73,7 @@
         </HeaderedContentControl.Header>
         <ywpf:GraphControl Name="graphControl">
             <ywpf:GraphControl.InputMode>
-                <ywpf:GraphEditorInputMode MovableItems="None"/>
+                <ywpf:GraphEditorInputMode/>
             </ywpf:GraphControl.InputMode>
         </ywpf:GraphControl>
     </HeaderedContentControl>

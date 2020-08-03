@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.2.
- ** Copyright (c) 2000-2019 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.3.
+ ** Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -127,18 +127,18 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
     /// </summary>
     /// <returns></returns>
     public static bool GetEqualParameters(ILabelModelParameter parameter1, ILabelModelParameter parameter2) {
-      if (parameter1.GetType() == typeof(ParticipantParameter) && parameter2.GetType() == typeof(ParticipantParameter)) {
+      if (parameter1 is ParticipantParameter && parameter2 is ParticipantParameter) {
         if (((ParticipantParameter) parameter1).index == ((ParticipantParameter) parameter2).index && 
             ((ParticipantParameter) parameter1).top == ((ParticipantParameter) parameter2).top) {
           return true;
         }
       }
 
-      if (parameter1.GetType() == typeof(TaskNameBandParameter) && parameter2.GetType() == typeof(TaskNameBandParameter)) {
+      if (parameter1 is TaskNameBandParameter && parameter2 is TaskNameBandParameter) {
         return true;
       }
 
-      if (parameter1.GetType() == typeof(MessageParameter) && parameter2.GetType() == typeof(MessageParameter)) {
+      if (parameter1 is MessageParameter && parameter2 is MessageParameter) {
         if (((MessageParameter) parameter1).North == ((MessageParameter) parameter2).North) {
           return true;
         }
@@ -175,11 +175,11 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
       var node = label.Owner as INode;
       if (node != null && node.Style is ChoreographyNodeStyle) {
         var nodeStyle = (ChoreographyNodeStyle) node.Style;
-        for (int i = 0; i < nodeStyle.TopParticipants.Count; i++) {
+        for (var i = 0; i < nodeStyle.TopParticipants.Count; i++) {
           parameters.Add(CreateParticipantParameter(true, i));
         }
         parameters.Add(TaskNameBand);
-        for (int i = 0; i < nodeStyle.BottomParticipants.Count; i++) {
+        for (var i = 0; i < nodeStyle.BottomParticipants.Count; i++) {
           parameters.Add(CreateParticipantParameter(false, i));
         }
         parameters.Add(NorthMessage);
@@ -194,18 +194,18 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
     public ILabelModelParameter FindNextParameter([NotNull] INode node) {
       var nodeStyle = node.Style as ChoreographyNodeStyle;
       if (nodeStyle != null) {
-        int taskNameBandCount = 1;
-        int topParticipantCount = nodeStyle.TopParticipants.Count;
-        int bottomParticipantCount = nodeStyle.BottomParticipants.Count;
-        int messageCount = 2;
+        var taskNameBandCount = 1;
+        var topParticipantCount = nodeStyle.TopParticipants.Count;
+        var bottomParticipantCount = nodeStyle.BottomParticipants.Count;
+        var messageCount = 2;
 
-        bool[] parameterTaken = new bool[taskNameBandCount + topParticipantCount + bottomParticipantCount + messageCount];
+        var parameterTaken = new bool[taskNameBandCount + topParticipantCount + bottomParticipantCount + messageCount];
 
         // check which label positions are already taken
         foreach (var label in node.Labels) {
           var parameter = label.LayoutParameter as ChoreographyParameter;
           if (parameter != null) {
-            int index = 0;
+            var index = 0;
             if (!(parameter is TaskNameBandParameter)) {
               index++;
 
@@ -227,7 +227,7 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
         }
 
         // get first label position that isn't taken already
-        for (int i = 0; i < parameterTaken.Length; i++) {
+        for (var i = 0; i < parameterTaken.Length; i++) {
           if (!parameterTaken[i]) {
             if (i < taskNameBandCount) {
               return TaskNameBand;
@@ -264,9 +264,9 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
     }
 
     [TypeConverter(typeof(ParticipantParameterConverter))]
-    private class ParticipantParameter : ChoreographyParameter
+    private sealed class ParticipantParameter : ChoreographyParameter
     {
-      private static readonly InteriorLabelModel ilm = new InteriorLabelModel() {Insets = new InsetsD(3)};
+      private static readonly InteriorLabelModel ilm = new InteriorLabelModel { Insets = new InsetsD(3) };
       private static readonly ILabelModelParameter placement = ilm.CreateParameter(InteriorLabelModel.Position.North);
 
       internal readonly int index;
@@ -281,11 +281,11 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
         if (!(label.Owner is INode)) {
           return OrientedRectangle.Empty;
         }
-        INode node = (INode) label.Owner;
+        var node = (INode) label.Owner;
         if (!(node.Style is ChoreographyNodeStyle)) {
           return OrientedRectangle.Empty;
         }
-        ChoreographyNodeStyle style = (ChoreographyNodeStyle) node.Style;
+        var style = (ChoreographyNodeStyle) node.Style;
         dummyNode.Layout = style.GetParticipantBandBounds(node, index, top);
         dummyLabel.PreferredSize = label.PreferredSize;
         return ilm.GetGeometry(dummyLabel, placement);
@@ -322,17 +322,17 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
     }
 
     [SingletonSerialization(ContainerTypes = new[] { typeof(ChoreographyLabelModel) })]
-    private class TaskNameBandParameter : ChoreographyParameter
+    private sealed class TaskNameBandParameter : ChoreographyParameter
     {
       public override IOrientedRectangle GetGeometry(ILabel label) {
         if (!(label.Owner is INode)) {
           return OrientedRectangle.Empty;
         }
-        INode node = (INode)label.Owner;
+        var node = (INode)label.Owner;
         if (!(node.Style is ChoreographyNodeStyle)) {
           return OrientedRectangle.Empty;
         }
-        ChoreographyNodeStyle style = (ChoreographyNodeStyle)node.Style;
+        var style = (ChoreographyNodeStyle)node.Style;
         var bandBounds = style.GetTaskNameBandBounds(node);
         dummyNode.Layout = bandBounds;
         dummyLabel.PreferredSize = label.PreferredSize;
@@ -345,13 +345,13 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
     }    
     
     [SingletonSerialization(ContainerTypes = new[] { typeof(ChoreographyLabelModel) })]
-    private class MessageParameter : ChoreographyParameter
+    private sealed class MessageParameter : ChoreographyParameter
     {
       private static readonly ILabelModelParameter northParameter;
       private static readonly ILabelModelParameter southParameter;
 
       static MessageParameter() {
-        SandwichLabelModel slm = new SandwichLabelModel() { YOffset = 32 };
+        var slm = new SandwichLabelModel { YOffset = 32 };
         northParameter = slm.CreateNorthParameter();
         southParameter = slm.CreateSouthParameter();
       }

@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.2.
- ** Copyright (c) 2000-2019 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.3.
+ ** Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -86,7 +86,7 @@ namespace Demo.yFiles.Graph.SimpleCustomStyle
       var labelLayout = label.GetLayout();
       Render(context, label, container, labelLayout, cache);
       // move container to correct location
-      ArrangeByLayout(container, labelLayout, true);
+      ArrangeByLayout(context, container, labelLayout, true);
       return container;
     }
 
@@ -106,7 +106,7 @@ namespace Demo.yFiles.Graph.SimpleCustomStyle
       }
       // nothing changed, return the old visual
       // arrange because the layout might have changed
-      ArrangeByLayout(oldVisual, labelLayout, true);
+      ArrangeByLayout(context, oldVisual, labelLayout, true);
       return oldVisual;
     }
 

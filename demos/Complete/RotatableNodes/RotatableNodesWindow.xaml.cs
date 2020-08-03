@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.2.
- ** Copyright (c) 2000-2019 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.3.
+ ** Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -272,8 +272,13 @@ namespace Demo.yFiles.Complete.RotatableNodes
 
       // provide the rotated outline and layout for the layout algorithm
       graph.MapperRegistry.CreateDelegateMapper(RotatedNodeLayoutStage.RotatedNodeLayoutDpKey, node => {
-          var style = node.Style;
-        return new RotatedNodeLayoutStage.RotatedNodeShape(style.Renderer.GetShapeGeometry(node, style).GetOutline(),
+        var style = node.Style;
+        var outline = style.Renderer.GetShapeGeometry(node, style).GetOutline();
+        if (outline == null) {
+          outline = new GeneralPath(4);
+          outline.AppendRectangle(node.Layout.ToRectD(), false);
+        }
+        return new RotatedNodeLayoutStage.RotatedNodeShape(outline,
             style is RotatableNodeStyleDecorator
                 ? ((RotatableNodeStyleDecorator) style).GetRotatedLayout(node)
                 : (IOrientedRectangle) new OrientedRectangle(node.Layout));

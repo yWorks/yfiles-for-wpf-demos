@@ -1,6 +1,6 @@
 <!-- ************************************************************************ -->
-<!-- This demo file is part of yFiles WPF 3.2.                           -->
-<!-- Copyright (c) 2000-2019 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
+<!-- This demo file is part of yFiles WPF 3.3.                           -->
+<!-- Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
 <!-- 72070 Tuebingen, Germany. All rights reserved.                           -->
 <!--                                                                          -->
 <!-- yFiles demo files exhibit yFiles WPF functionalities. Any redistribution  -->
@@ -44,18 +44,45 @@
             <RichTextBox BorderThickness="0" IsReadOnly="True">
                 <FlowDocument>
                     <Paragraph>
-                        Shows how to use <Run FontStyle="Italic">PortConstraints</Run> with a layout algorithm.
+                        This demo shows how ports can be used to implement a digital system comprising logic gates and similar components.
+                        <Run Style="{StaticResource HtmlEm}">Port Constraints</Run> are used to ensure that layout algorithms respect
+                        which side of a node an edge connects to.
                     </Paragraph>
                     <Paragraph Style="{StaticResource HtmlH2}">
                         Things to Try
                     </Paragraph>
                     <List>
                         <ListItem>
-                            <Paragraph>Drag some nodes from the palette and connect them with edges. Note that edges will ony
-                            start and end at certain ports.</Paragraph>
+                            <Paragraph>Drag nodes from the palette. Notice that the new nodes already have green and blue ports.</Paragraph>
                         </ListItem>
                         <ListItem>
-                            <Paragraph>Apply a layout. The edges will stay at the ports they are connected to.</Paragraph>
+                            <Paragraph>Hover over a node to see which ports are valid (highlighted with green color) and
+                                invalid (highlighted with red color) to start an edge creation.</Paragraph>
+                        </ListItem>
+                        <ListItem>
+                            <Paragraph>Create a new edge by dragging from a valid port. While creating the connection, the valid and invalid end ports are
+                                indicated with green and red color again.</Paragraph>
+                            <Paragraph>The edge will be created in the direction that has been selected from the <Run Style="{StaticResource HtmlEm}">Edge Direction Policy</Run></Paragraph>
+                            <List>
+                                <ListItem>
+                                    <Paragraph><Run Style="{StaticResource HtmlEm}">Start at source</Run>: Edges can only be created from source (blue) to target (green) ports.</Paragraph>
+                                </ListItem>
+                                <ListItem>
+                                    <Paragraph><Run Style="{StaticResource HtmlEm}">Start at target</Run>: Edges can only be created from target (green) to source (blue) port.</Paragraph>
+                                </ListItem>
+                                <ListItem>
+                                    <Paragraph><Run Style="{StaticResource HtmlEm}">Keep direction</Run>: Edges will be created in the same direction as last time.</Paragraph>
+                                </ListItem>
+                                <ListItem>
+                                    <Paragraph><Run Style="{StaticResource HtmlEm}">Determine from port candidates</Run>: Edges will be created in the direction depending on whether the creation started at a source or target port.</Paragraph>
+                                </ListItem>
+                            </List>
+                        </ListItem>
+                        <ListItem>
+                            <Paragraph>Re-assign a connection by selecting the edge and dragging one of its endpoints.</Paragraph>
+                        </ListItem>
+                        <ListItem>
+                            <Paragraph>Apply a new <Run Style="{StaticResource HtmlEm}">HierarchicLayout</Run> or <Run Style="{StaticResource HtmlEm}">Route Edges</Run> and notice that the ports remain unchanged.</Paragraph>
                         </ListItem>
                     </List>
                 </FlowDocument>
@@ -100,7 +127,7 @@
                     <Button x:Name="orthoEdgeRouterButton" Click="OnOrthoEdgeRouterButtonClick" Style="{StaticResource BaseToolBarButtonStyle}" Margin="3,0,0,0">
                         <StackPanel Orientation="Horizontal">
                             <Image Source="{StaticResource RouterIcon}" Margin="0,0,4,0"/>
-                            <TextBlock>Orthogonal Edge Router</TextBlock>
+                            <TextBlock>Route Edges</TextBlock>
                         </StackPanel>
                     </Button>
                 </ToolBar>

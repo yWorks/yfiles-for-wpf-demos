@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.2.
- ** Copyright (c) 2000-2019 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.3.
+ ** Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -74,7 +74,7 @@ namespace Demo.yFiles.Graph.StyleDecorators {
       innerContainer.Add(decorator1);
       innerContainer.Add(decorator2);
       // arrange inner container - this is a ready-to-use utility method to apply the correct tranformation
-      ArrangeByLayout(innerContainer, labelLayout, false);
+      ArrangeByLayout(context, innerContainer, labelLayout, false);
       // add visuals to container
       container.Add(wrappedVisual);
       container.Add(innerContainer);
@@ -100,7 +100,7 @@ namespace Demo.yFiles.Graph.StyleDecorators {
       decorator2.X2 = labelLayout.Width;
       decorator2.Y2 = labelLayout.Height;
       // arrange inner container
-      ArrangeByLayout(innerContainer, labelLayout, false);
+      ArrangeByLayout(context, innerContainer, labelLayout, false);
 
       return container;
     }

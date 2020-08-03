@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.2.
- ** Copyright (c) 2000-2019 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.3.
+ ** Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -43,10 +43,7 @@ namespace Demo.yFiles.Complete.RotatableNodes
     /// Checks whether or not the given location is inside the nodes rotated shape.
     /// </summary>
     protected override bool IsInside(PointD location, INode node, IShapeGeometry nodeShapeGeometry, IEdge edge) {
-      if (nodeShapeGeometry != null) {
-        return getScaledOutline(node, nodeShapeGeometry).AreaContains(location);
-      }
-      return base.IsInside(location, node, nodeShapeGeometry, edge);
+      return GetScaledOutline(node, nodeShapeGeometry).AreaContains(location);
     }
 
     /// <summary>
@@ -56,22 +53,23 @@ namespace Demo.yFiles.Complete.RotatableNodes
     /// If there is no intersection point, the result is null.
     /// </remarks>
     protected override PointD? GetIntersection(INode node, IShapeGeometry nodeShapeGeometry, IEdge edge, PointD inner, PointD outer) {
-      if (nodeShapeGeometry != null) {
-        var a = getScaledOutline(node, nodeShapeGeometry).FindLineIntersection(inner, outer);
-        if (a < Double.PositiveInfinity) {
-          return inner + (outer - inner) * a;
-        }
-        return null;
+      var a = GetScaledOutline(node, nodeShapeGeometry).FindLineIntersection(inner, outer);
+      if (a < Double.PositiveInfinity) {
+        return inner + (outer - inner) * a;
       }
-      return base.GetIntersection(node, nodeShapeGeometry, edge, inner, outer);
+      return null;
     }
 
     /// <summary>
     /// Returns a slightly enlarged outline of the shape to ensure that ports that lie exactly on the shape's outline
     /// are always considered inside.
     /// </summary>
-    private GeneralPath getScaledOutline(INode node, IShapeGeometry nodeShapeGeometry) {
+    private GeneralPath GetScaledOutline(INode node, IShapeGeometry nodeShapeGeometry) {
       var outline = nodeShapeGeometry.GetOutline();
+      if (outline == null) {
+        outline = new GeneralPath(4);
+        outline.AppendRectangle(node.Layout.ToRectD(), false);
+      }
       const double factor = 1.001;
       var center = node.Layout.GetCenter();
       var matrix = new Matrix2D();

@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.2.
- ** Copyright (c) 2000-2019 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.3.
+ ** Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -229,35 +229,6 @@ namespace Demo.yFiles.Graph.Undo
     }
 
     /// <summary>
-    /// Undo unit that saves the current state of a BevelNodeStyle
-    /// </summary>
-    /// <remarks>This allows to undo single property changes on an instance level. Note that only
-    /// the Color state is saved here for simplicity.</remarks>
-    private class MyUndoStyleModifyUnit : UndoUnitBase
-    {
-      private readonly NodeControlNodeStyle style;
-      private readonly Color oldColor;
-      private Color newColor;
-
-      public MyUndoStyleModifyUnit(NodeControlNodeStyle style, Color oldColor)
-        :
-        base("Change Color", "Change Color") {
-        this.style = style;
-        this.oldColor = oldColor;
-      }
-
-      public override void Undo() {
-        //save current style for later redo
-        newColor = (Color) style.StyleTag;
-        style.StyleTag = oldColor;
-      }
-
-      public override void Redo() {
-        style.StyleTag = newColor;
-      }
-    }
-
-    /// <summary>
     /// Exits the demo.
     /// </summary>
     private void ExitMenuItem_Click(object sender, EventArgs e) {
@@ -272,17 +243,18 @@ namespace Demo.yFiles.Graph.Undo
     /// </summary>
     /// <remarks>The modification is remembered in the undo engine</remarks>
     private void ModifyColorButton_Click(object sender, EventArgs e) {
-      // Build new undo unit to remember old color in the undo engine
-      MyUndoStyleModifyUnit unit = new MyUndoStyleModifyUnit(defaultStyle, (Color) defaultStyle.StyleTag);
-      // Retrieve undo engine
-      UndoEngine engine = graphControl.Graph.GetUndoEngine();
-      // Add unit to engine
-      engine.AddUnit(unit);
+      var oldColor = (Color) defaultStyle.StyleTag;
 
       // Generate random color
-      Color c = Color.FromArgb(255, (byte) rnd.Next(0, 255), (byte) rnd.Next(0, 255), (byte) rnd.Next(0, 255));
+      Color newColor = Color.FromArgb(255, (byte) rnd.Next(0, 255), (byte) rnd.Next(0, 255), (byte) rnd.Next(0, 255));
       // Set the style's color to new value
-      defaultStyle.StyleTag = c;
+      defaultStyle.StyleTag = newColor;
+
+      // Add new undo unit to remember old color in the undo engine
+      // As only the tag value change has to be undone, the AddUndoUnit extension method on IGraph is used  
+      graphControl.Graph.AddUndoUnit("Change Color", "Change Color",
+          () => defaultStyle.StyleTag = oldColor,
+          () => defaultStyle.StyleTag = newColor);
       
       // redraw nodes
       graphControl.Invalidate();

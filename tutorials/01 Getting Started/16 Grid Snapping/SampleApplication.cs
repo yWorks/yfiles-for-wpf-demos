@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.2.
- ** Copyright (c) 2000-2019 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.3.
+ ** Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -70,9 +70,9 @@ namespace Tutorial.GettingStarted
     private void InitializeGrid() {
       // Initializes gridInfo which holds the basic information about the grid
       // Sets horizontal and vertical space between grid lines
-      gridInfo = new GridInfo { HorizontalSpacing = 50, VerticalSpacing = 50 };
+      gridInfo = new GridInfo { HorizontalSpacing = 50, VerticalSpacing = 50, Origin = new PointD(12.5, 37) };
       // Creates grid visualization and adds it to GraphControl
-      grid = new GridVisualCreator(gridInfo);
+      grid = new GridVisualCreator(gridInfo) {GridStyle = GridStyle.Lines, Pen = Pens.Red };
       graphControl.BackgroundGroup.AddChild(grid);
 
       // Sets constraint provider to make nodes and bends snap to grid

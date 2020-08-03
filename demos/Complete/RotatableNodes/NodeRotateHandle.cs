@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.2.
- ** Copyright (c) 2000-2019 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.3.
+ ** Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -348,11 +348,10 @@ namespace Demo.yFiles.Complete.RotatableNodes
     private void SetAngle(IInputModeContext context, double angle) {
       var wrapper = node.Style as RotatableNodeStyleDecorator;
       if (wrapper != null) {
-        var undoEngine = context.Lookup<UndoEngine>();
-        if (undoEngine != null) {
-          var undoUnit = new AngleChangeUndoUnit(wrapper);
-          undoEngine.AddUnit(undoUnit);
-        }
+        var oldAngle = wrapper.Angle;
+        context.GetGraph().AddUndoUnit("Change Angle", "Change Angle",
+            () => wrapper.Angle = oldAngle,
+            () => wrapper.Angle = angle);
         wrapper.Angle = angle;
       }
     }
@@ -407,37 +406,6 @@ namespace Demo.yFiles.Complete.RotatableNodes
       var location = anchor + up*(size.Height + offset) +
                      new PointD(-up.Y, up.X)*(size.Width*0.5);
       return location;
-    }
-
-    #endregion
-
-    #region Undo unit
-
-    /// <summary>
-    /// An undo unit to provide undo-/redo-functionality for angle changes.
-    /// </summary>
-    private sealed class AngleChangeUndoUnit : UndoUnitBase
-    {
-      private readonly RotatableNodeStyleDecorator nodeStyleDecorator;
-      private readonly double oldAngle;
-      private double newAngle;
-
-      /// <summary>
-      /// Creates a new instance.
-      /// </summary>
-      public AngleChangeUndoUnit(RotatableNodeStyleDecorator nodeStyleDecorator) : base("Change Angle") {
-        this.nodeStyleDecorator = nodeStyleDecorator;
-        oldAngle = nodeStyleDecorator.Angle;
-      }
-
-      public override void Undo() {
-        newAngle = nodeStyleDecorator.Angle;
-        nodeStyleDecorator.Angle = oldAngle;
-      }
-
-      public override void Redo() {
-        nodeStyleDecorator.Angle = newAngle;
-      }
     }
 
     #endregion

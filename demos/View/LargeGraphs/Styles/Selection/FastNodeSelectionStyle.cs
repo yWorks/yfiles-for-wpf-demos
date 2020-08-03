@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.2.
- ** Copyright (c) 2000-2019 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.3.
+ ** Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -42,7 +42,7 @@ namespace Demo.yFiles.Graph.LargeGraphs.Styles.Selection
   /// </summary>
   /// <remarks>
   ///   <para>
-  ///     This style essentially displays a rectangle and scales its stroke thickness and brush by 1 / zoom level.
+  ///     This style essentially displays a rectangle and scales its stroke thickness and brush by 1Â /Â zoom level.
   ///     This means that positioning and size considerations can still be done in world coordinates and the rectangle
   ///     doesn't require a series of transformations to end up where it should be. The brush is scaled because the default
   ///     selection decoration uses a pixel checkerboard pattern which would otherwise be scaled with the zoom level.
@@ -65,7 +65,7 @@ namespace Demo.yFiles.Graph.LargeGraphs.Styles.Selection
     /// <summary>
     ///   The scale at which the cached stroke brush was scaled.
     /// </summary>
-    /// <remarks>Scale is 1 / zoom level.</remarks>
+    /// <remarks>Scale is 1Â /Â zoom level.</remarks>
     private double scaledBrushScale;
 
     /// <summary>
@@ -111,13 +111,13 @@ namespace Demo.yFiles.Graph.LargeGraphs.Styles.Selection
         // If the size changed we need to update the rectangle size.
         oldVisual.Width = layout.Width;
         oldVisual.Height = layout.Height;
-        CanvasControl.SetCanvasControlArrangeRect(oldVisual, layout.ToRect());
+        CanvasControl.SetCanvasControlArrangeRect(oldVisual, layout);
         oldVisual.SetRenderDataCache(layout);
         // ReSharper disable CompareOfFloatsByEqualityOperator
       } else if (layout.X != oldLayout.X || layout.Y != oldLayout.Y) {
         // ReSharper restore CompareOfFloatsByEqualityOperator
         // But if only the position changed, we can get away with just arranging the rectangle in the canvas again.
-        CanvasControl.SetCanvasControlArrangeRect(oldVisual, layout.ToRect());
+        CanvasControl.SetCanvasControlArrangeRect(oldVisual, layout);
         oldVisual.SetRenderDataCache(layout);
       }
 
@@ -146,10 +146,10 @@ namespace Demo.yFiles.Graph.LargeGraphs.Styles.Selection
 
       // Disable everything remotely related to anti-aliasing and pretty scaling.
       RenderOptions.SetEdgeMode(rect, EdgeMode.Aliased);
-      // The bitmap scaling mode is necessary for the scaled stroke brush not to show moiré.
+      // The bitmap scaling mode is necessary for the scaled stroke brush not to show moirÃ©.
       RenderOptions.SetBitmapScalingMode(rect, BitmapScalingMode.NearestNeighbor);
 
-      CanvasControl.SetCanvasControlArrangeRect(rect, layout.ToRect());
+      CanvasControl.SetCanvasControlArrangeRect(rect, layout);
 
       return rect;
     }
@@ -158,7 +158,7 @@ namespace Demo.yFiles.Graph.LargeGraphs.Styles.Selection
     ///   Returns the size and position of the selection rectangle around a node.
     /// </summary>
     /// <param name="node">The node.</param>
-    /// <param name="scale">The scale. This is 1 / zoom level.</param>
+    /// <param name="scale">The scale. This is 1Â /Â zoom level.</param>
     /// <returns>The selection rectangle layout, enlarged by the scaled stroke thickness.</returns>
     private RectD GetSelectionBounds(INode node, double scale) {
       var layout = node.Layout.ToRectD().GetEnlarged(Stroke.Thickness * scale);
@@ -169,7 +169,7 @@ namespace Demo.yFiles.Graph.LargeGraphs.Styles.Selection
     ///   Re-creates the scaled stroke brush if necessary and sets it on the rectangle.
     /// </summary>
     /// <param name="shape">The shape whose stroke brush will be updated.</param>
-    /// <param name="scale">The scale. This is 1 / zoom level.</param>
+    /// <param name="scale">The scale. This is 1Â /Â zoom level.</param>
     private void UpdateStroke(Shape shape, double scale) {
       shape.StrokeThickness = Stroke.Thickness * scale;
       // ReSharper disable once CompareOfFloatsByEqualityOperator

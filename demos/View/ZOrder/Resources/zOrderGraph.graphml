@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--Created by yFiles WPF-->
+<graphml xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/3.0" xmlns:y="http://www.yworks.com/xml/yfiles-common/3.0" xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/3.0/xaml" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml.wpf/3.0/ygraphml.xsd " xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://graphml.graphdrawing.org/xmlns">
+  <key id="d0" attr.type="int" attr.name="zOrder" for="node" y:attr.uri="http://www.yworks.com/xml/yfiles-z-order/1.0/zOrder" />
+  <key id="d1" attr.type="boolean" attr.name="Expanded" for="node" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/folding/Expanded">
+    <default>true</default>
+  </key>
+  <key id="d2" attr.name="NodeLabels" for="node" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeLabels" />
+  <key id="d3" attr.name="NodeGeometry" for="node" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeGeometry" />
+  <key id="d4" attr.name="UserTags" for="all" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/UserTags" />
+  <key id="d5" attr.name="NodeStyle" for="node" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeStyle" />
+  <key id="d6" attr.name="NodeViewState" for="node" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/folding/1.1/NodeViewState" />
+  <key id="d7" attr.name="EdgeLabels" for="edge" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/EdgeLabels" />
+  <key id="d8" attr.name="EdgeGeometry" for="edge" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/EdgeGeometry" />
+  <key id="d9" attr.name="EdgeStyle" for="edge" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/EdgeStyle" />
+  <key id="d10" attr.name="EdgeViewState" for="edge" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/folding/1.1/EdgeViewState" />
+  <key id="d11" attr.name="PortLabels" for="port" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/PortLabels" />
+  <key id="d12" attr.name="PortLocationParameter" for="port" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/PortLocationParameter">
+    <default>
+      <x:Static Member="y:FreeNodePortLocationModel.NodeCenterAnchored" />
+    </default>
+  </key>
+  <key id="d13" attr.name="PortStyle" for="port" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/PortStyle">
+    <default>
+      <x:Static Member="y:VoidPortStyle.Instance" />
+    </default>
+  </key>
+  <key id="d14" attr.name="PortViewState" for="port" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/folding/1.1/PortViewState" />
+  <key id="d15" attr.name="SharedData" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/SharedData" />
+  <data key="d15">
+    <y:SharedData>
+      <ywpf:ShinyPlateNodeStyle x:Key="1" Brush="#FFFFA500" />
+      <ywpf:CollapsibleNodeStyleDecorator x:Key="2">
+        <ywpf:PanelNodeStyle Color="#FFD6E5F8" LabelInsetsColor="#FFD6E5F8" Insets="5,20,5,5" />
+      </ywpf:CollapsibleNodeStyleDecorator>
+    </y:SharedData>
+  </data>
+  <graph id="G">
+    <node id="n0">
+      <data key="d0">0</data>
+            <data key="d3">
+        <y:RectD X="350" Y="300" Width="250" Height="150"/>
+      </data>
+      <data key="d5">
+        <y:GraphMLReference ResourceKey="2"/>
+      </data>
+      <graph id="n0:" edgedefault="directed">
+        <node id="n0::n0">
+          <data key="d0">0</data>
+          <data key="d3">
+            <y:RectD X="365" Y="380" Width="70" Height="40"/>
+          </data>
+          <data key="d5">
+            <y:GraphMLReference ResourceKey="1"/>
+          </data>
+        </node>
+        <node id="n0::n1">
+          <data key="d0">1</data>
+          <data key="d3">
+            <y:RectD X="425" Y="360" Width="70" Height="40"/>
+          </data>
+          <data key="d5">
+            <y:GraphMLReference ResourceKey="1"/>
+          </data>
+        </node>
+        <node id="n0::n2">
+          <data key="d0">2</data>
+          <data key="d3">
+            <y:RectD X="485" Y="340" Width="70" Height="40"/>
+          </data>
+          <data key="d5">
+            <y:GraphMLReference ResourceKey="1"/>
+          </data>
+        </node>
+      </graph>
+    </node>
+    <node id="n1">
+      <data key="d0">1</data>
+      <data key="d3">
+        <y:RectD X="500" Y="150" Width="250" Height="200"/>
+      </data>
+      <data key="d5">
+        <y:GraphMLReference ResourceKey="2"/>
+      </data>
+      <graph id="n1:" edgedefault="directed">
+        <node id="n1::n0">
+          <data key="d0">0</data>
+          <data key="d3">
+            <y:RectD X="525" Y="180" Width="70" Height="40"/>
+          </data>
+          <data key="d5">
+            <y:GraphMLReference ResourceKey="1"/>
+          </data>
+        </node>
+        <node id="n1::n1">
+          <data key="d0">1</data>
+          <data key="d3">
+            <y:RectD X="555" Y="210" Width="70" Height="40"/>
+          </data>
+          <data key="d5">
+            <y:GraphMLReference ResourceKey="1"/>
+          </data>
+        </node>
+        <node id="n1::n2">
+          <data key="d0">2</data>
+          <data key="d3">
+            <y:RectD X="585" Y="240" Width="70" Height="40"/>
+          </data>
+          <data key="d5">
+            <y:GraphMLReference ResourceKey="1"/>
+          </data>
+        </node>
+      </graph>
+    </node>
+    <node id="n2">
+      <data key="d0">2</data>
+      <data key="d3">
+        <y:RectD X="650" Y="225" Width="350" Height="300"/>
+      </data>
+      <data key="d5">
+        <y:GraphMLReference ResourceKey="2"/>
+      </data>
+      <graph id="n2:" edgedefault="directed">
+        <node id="n2::n0">
+          <data key="d0">0</data>
+          <data key="d3">
+            <y:RectD X="665" Y="260" Width="70" Height="40"/>
+          </data>
+          <data key="d5">
+            <y:GraphMLReference ResourceKey="1"/>
+          </data>
+        </node>
+        <node id="n2::n1">
+          <data key="d0">1</data>
+          <data key="d3">
+            <y:RectD X="725" Y="280" Width="70" Height="40"/>
+          </data>
+          <data key="d5">
+            <y:GraphMLReference ResourceKey="1"/>
+          </data>
+        </node>
+        <node id="n2::n2">
+          <data key="d0">2</data>
+          <data key="d3">
+            <y:RectD X="775" Y="310" Width="170" Height="190"/>
+          </data>
+          <data key="d5">
+            <y:GraphMLReference ResourceKey="2"/>
+          </data>
+          <graph id="n2::n2:" edgedefault="directed">
+            <node id="n2::n2::n0">
+              <data key="d0">0</data>
+              <data key="d3">
+                <y:RectD X="795" Y="355" Width="70" Height="40"/>
+              </data>
+              <data key="d5">
+                <y:GraphMLReference ResourceKey="1"/>
+              </data>
+            </node>
+            <node id="n2::n2::n1">
+              <data key="d0">1</data>
+              <data key="d3">
+                <y:RectD X="845" Y="385" Width="70" Height="40"/>
+              </data>
+              <data key="d5">
+                <y:GraphMLReference ResourceKey="1"/>
+              </data>
+            </node>
+            <node id="n2::n2::n2">
+              <data key="d0">2</data>
+              <data key="d3">
+                <y:RectD X="805" Y="420" Width="70" Height="40"/>
+              </data>
+              <data key="d5">
+                <y:GraphMLReference ResourceKey="1"/>
+              </data>
+            </node>
+          </graph>
+        </node>
+      </graph>
+    </node>
+  </graph>
+</graphml>

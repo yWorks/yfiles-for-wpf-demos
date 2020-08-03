@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.2.
- ** Copyright (c) 2000-2019 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.3.
+ ** Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -50,12 +50,12 @@ namespace Demo.yFiles.GraphEditor.Styles
         Height = 6,
         Fill = Brush,
       };
-      visual.SetCanvasArrangeRect(GetBounds(context, port).ToRect());
+      visual.SetCanvasArrangeRect(GetBounds(context, port));
       return visual;
     }
 
     protected override Ellipse UpdateVisual(IRenderContext context, Ellipse oldVisual, IPort port) {
-      oldVisual.SetCanvasArrangeRect(GetBounds(context, port).ToRect());
+      oldVisual.SetCanvasArrangeRect(GetBounds(context, port));
       if (oldVisual.Fill != Brush) {
         oldVisual.Fill = Brush;
       }

@@ -12,8 +12,7 @@
     <FileUpgradeFlags></FileUpgradeFlags>
     <OldToolsVersion>3.5</OldToolsVersion>
     <UpgradeBackupLocation></UpgradeBackupLocation>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <DebugType>pdbonly</DebugType>
@@ -76,6 +75,7 @@
     <Compile Include="Common\PortDefaultsExtension.cs" />
     <Compile Include="Common\LabelDefaultsExtension.cs" />
     <Compile Include="Common\LabelExtension.cs" />
+    <Compile Include="Common\PortExtension.cs" />
     <Compile Include="Common\RowExtension.cs" />
     <Compile Include="GraphMLCompatibility.cs" />
     <Compile Include="GraphMLCompatibilityWindow.xaml.cs">
@@ -83,8 +83,10 @@
     </Compile>
     <Compile Include="Xaml\AnchoredPortLocationModel.cs" />
     <Compile Include="Xaml\CenterAnchoredLabelModelParameterExtension.cs" />
+    <Compile Include="Xaml\CollapsibleNodeStyleDecoratorExtension.cs" />
     <Compile Include="Xaml\DynamicTableNodeStyleExtension.cs" />
     <Compile Include="Xaml\EdgeSegmentControlEdgeStyleExtension.cs" />
+    <Compile Include="Xaml\GenericPortLocationModelExtension.cs" />
     <Compile Include="Xaml\IconLabelStyleExtension.cs" />
     <Compile Include="Xaml\LabelControlLabelStyleExtension.cs" />
     <Compile Include="Xaml\LayoutAnchoredLabelModelParameterExtension.cs" />

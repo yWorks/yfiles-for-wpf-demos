@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.2.
- ** Copyright (c) 2000-2019 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.3.
+ ** Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -29,8 +29,10 @@
 
 using System.ComponentModel;
 using System.Reflection;
+using System.Windows.Media;
 using Demo.yFiles.Graph.Bpmn.Util;
 using yWorks.Geometry;
+using yWorks.Graph;
 using yWorks.Graph.Styles;
 
 namespace Demo.yFiles.Graph.Bpmn.Styles {
@@ -40,13 +42,10 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
   /// </summary>
   [Obfuscation(StripAfterObfuscation = false, Exclude = true, ApplyToMembers = false)]
   public class AnnotationNodeStyle : BpmnNodeStyle {
-
-    #region Properties
-
     private bool left;
 
     /// <summary>
-    /// Gets or sets if the bracket of the open rectangle shall be on the left side.
+    /// Gets or sets a value indicating whether the bracket of the open rectangle is shown on the left side.
     /// </summary>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     [DefaultValue(true)]
@@ -56,12 +55,47 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
         if (value != left) {
           ModCount++;
           left = value;
-          Icon = IconFactory.CreateAnnotation(value);
         }
       }
     }
 
-    #endregion
+    private Brush background = BpmnConstants.AnnotationDefaultBackground;
+
+    /// <summary>
+    /// Gets or sets the background color of the annotation.
+    /// </summary>
+    [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
+    [DefaultValue(typeof(BpmnConstants), "AnnotationDefaultBackground")]
+    public Brush Background {
+      get { return background; }
+      set {
+        if (background != value) {
+          ModCount++;
+          background = value;
+        }
+      }
+    }
+
+    private Brush outline = BpmnConstants.AnnotationDefaultOutline;
+
+    /// <summary>
+    /// Gets or sets the outline color of the annotation.
+    /// </summary>
+    [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
+    [DefaultValue(typeof(BpmnConstants), "AnnotationDefaultOutline")]
+    public Brush Outline {
+      get { return outline; }
+      set {
+        if (outline != value) {
+          ModCount++;
+          outline = value;
+        }
+      }
+    }
+
+    internal override void UpdateIcon(INode node) {
+      Icon = IconFactory.CreateAnnotation(Left, Background, Outline);
+    }
 
     /// <summary>
     /// Creates a new instance.

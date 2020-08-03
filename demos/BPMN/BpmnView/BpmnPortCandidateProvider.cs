@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.2.
- ** Copyright (c) 2000-2019 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.3.
+ ** Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -77,8 +77,8 @@ namespace Demo.yFiles.Graph.Bpmn {
         portCandidates.Add(new DefaultPortCandidate(node, model.CreateParameter(new PointD(0.5, 0.5), new PointD(0, dmax))));
         portCandidates.Add(new DefaultPortCandidate(node, model.CreateParameter(new PointD(0.5, 0.5), new PointD(-dmax, 0))));
       } else if (node.Style is ConversationNodeStyle) {
-        double dx = 0.5 * Math.Min(node.Layout.Width, node.Layout.Height / BpmnConstants.Sizes.ConversationWidthHeightRatio);
-        double dy = dx * BpmnConstants.Sizes.ConversationWidthHeightRatio;
+        double dx = 0.5 * Math.Min(node.Layout.Width, node.Layout.Height / BpmnConstants.ConversationWidthHeightRatio);
+        double dy = dx * BpmnConstants.ConversationWidthHeightRatio;
         var model = FreeNodePortLocationModel.Instance;
         portCandidates.Add(new DefaultPortCandidate(node, model.CreateParameter(new PointD(0.5, 0.5), new PointD(0, -dy))));
         portCandidates.Add(new DefaultPortCandidate(node, model.CreateParameter(new PointD(0.5, 0.5), new PointD(dx, 0))));
@@ -93,7 +93,6 @@ namespace Demo.yFiles.Graph.Bpmn {
         portCandidates.Add(new DefaultPortCandidate(node, new FreeNodePortLocationModel()));
       }
       return portCandidates;
-
     }
   }
 }
