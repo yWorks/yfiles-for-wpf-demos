@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.3.
- ** Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.4.
+ ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -173,7 +173,7 @@ namespace Demo.yFiles.Layout.PartialLayout
     /// </summary>
     private void InitializeInputModes() {
       var graphEditorInputMode = new GraphEditorInputMode();
-      graphEditorInputMode.ClickInputMode.DoubleClicked += ClickInputModeDoubleClicked;
+      graphEditorInputMode.ItemDoubleClicked += ItemDoubleClicked;
       // add a label to newly created nodes and mark the node as non-fixed
       graphEditorInputMode.NodeCreated +=
           delegate(object sender, ItemEventArgs<INode> args) {
@@ -194,16 +194,18 @@ namespace Demo.yFiles.Layout.PartialLayout
     /// <summary>
     /// If an <c>INode</c> or <c>IEdge</c> was double clicked, its fixed/partial state gets toggled.
     /// </summary>
-    private void ClickInputModeDoubleClicked(object sender, ClickEventArgs e) {
+    private void ItemDoubleClicked(object sender, ClickEventArgs e) {
       var geim = e.Context.Lookup<GraphEditorInputMode>();
       if (geim != null) {
         IModelItem modelItem = geim.FindItems(e.Location, new[] { GraphItemTypes.Node | GraphItemTypes.Edge }, null).FirstOrDefault();
         if (modelItem is INode) {
           var node = (INode) modelItem;
           SetFixed(node, !IsFixed(node));
+          e.Handled = true;
         } else if (modelItem is IEdge) {
           var edge = (IEdge) modelItem;
           SetFixed(edge, !IsFixed(edge));
+          e.Handled = true;
         }
       }
     }

@@ -1,6 +1,6 @@
 <!-- ************************************************************************ -->
-<!-- This demo file is part of yFiles WPF 3.3.                           -->
-<!-- Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
+<!-- This demo file is part of yFiles WPF 3.4.                           -->
+<!-- Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
 <!-- 72070 Tuebingen, Germany. All rights reserved.                           -->
 <!--                                                                          -->
 <!-- yFiles demo files exhibit yFiles WPF functionalities. Any redistribution  -->
@@ -52,8 +52,8 @@
                             <Paragraph Style="{StaticResource HtmlDt}">Show/Hide Node Control Panel</Paragraph>
                             <Paragraph Style="{StaticResource HtmlDi}">
                                 Every node has an control panel that shows its name, IP address and traffic load. You
-                                can show and hide this panel by clicking on the node. Note that these panels are only
-                                visible at detailed zoom levels.
+                                can show and hide this panel by clicking on the node. <Bold>Note that these panels are only
+                                visible at detailed zoom levels</Bold>.
                             </Paragraph>
                         </ListItem>
                         <ListItem>

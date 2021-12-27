@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.3.
- ** Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.4.
+ ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -51,6 +51,7 @@ namespace Demo.yFiles.Layout.Configurations
       MinimumDistanceItem = 10;
       ActivateGridRoutingItem = true;
       GridSpacingItem = 20;
+      RoutingPolicyItem = RoutingPolicy.Always;
 
       BendCostItem = 1;
       EdgeCrossingCostItem = 5;
@@ -84,6 +85,7 @@ namespace Demo.yFiles.Layout.Configurations
       segmentDistributionStage.GridSpacing = GridSpacingItem;
 
       router.EdgeDistributionStrategy = segmentDistributionStage;
+      router.RoutingPolicy = RoutingPolicyItem;
 
       return router;
     }
@@ -162,6 +164,13 @@ namespace Demo.yFiles.Layout.Configurations
     public bool ShouldDisableGridSpacingItem {
       get { return !ActivateGridRoutingItem; }
     }
+
+    [Label("Routing Policy")]
+    [OptionGroup("LayoutGroup", 60)]
+    [DefaultValue(RoutingPolicy.Always)]
+    [EnumValue("Always", RoutingPolicy.Always)]
+    [EnumValue("Path As Needed", RoutingPolicy.PathAsNeeded)]
+    public RoutingPolicy RoutingPolicyItem { get; set; }
 
     [Label("Bend Cost")]
     [OptionGroup("CostsGroup", 10)]

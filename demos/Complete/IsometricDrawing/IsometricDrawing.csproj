@@ -7,7 +7,7 @@
     <OutputType>WinExe</OutputType>
     <RootNamespace>IsometricDrawing</RootNamespace>
     <AssemblyName>IsometricDrawing</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
@@ -64,13 +64,13 @@
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="yWorks.yFilesWPF.Adapter">
-      <HintPath>..\..\..\..\lib\net40\\yWorks.yFilesWPF.Adapter.dll</HintPath>
+      <HintPath>..\..\..\..\lib\net40\yWorks.yFilesWPF.Adapter.dll</HintPath>
     </Reference>
     <Reference Include="yWorks.yFilesWPF.Algorithms">
-      <HintPath>..\..\..\..\lib\net40\\yWorks.yFilesWPF.Algorithms.dll</HintPath>
+      <HintPath>..\..\..\..\lib\net40\yWorks.yFilesWPF.Algorithms.dll</HintPath>
     </Reference>
     <Reference Include="yWorks.yFilesWPF.Viewer">
-      <HintPath>..\..\..\..\lib\net40\\yWorks.yFilesWPF.Viewer.dll</HintPath>
+      <HintPath>..\..\..\..\lib\net40\yWorks.yFilesWPF.Viewer.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

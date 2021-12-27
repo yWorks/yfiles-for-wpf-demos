@@ -1,0 +1,104 @@
+<!-- ************************************************************************ -->
+<!-- This demo file is part of yFiles WPF 3.4.                           -->
+<!-- Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
+<!-- 72070 Tuebingen, Germany. All rights reserved.                           -->
+<!--                                                                          -->
+<!-- yFiles demo files exhibit yFiles WPF functionalities. Any redistribution  -->
+<!-- of demo resource files, with or without modification, is not permitted.  -->
+<!--                                                                          -->
+<!-- Owners of a valid software license for a yFiles WPF version that this     -->
+<!-- demo is shipped with are allowed to use the resource file as basis for   -->
+<!-- their own yFiles WPF powered applications. Use of such programs is        -->
+<!-- governed by the rights and conditions as set out in the yFiles WPF        -->
+<!-- license agreement.                                                       -->
+<!--                                                                          -->
+<!-- THIS SOFTWARE IS PROVIDED ''AS IS'' AND ANY EXPRESS OR IMPLIED           -->
+<!-- WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF     -->
+<!-- MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN  -->
+<!-- NO EVENT SHALL yWorks BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,    -->
+<!-- SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED -->
+<!-- TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR   -->
+<!-- PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF   -->
+<!-- LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING     -->
+<!-- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS       -->
+<!-- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.             -->
+<!--                                                                          -->
+<!-- ************************************************************************ -->
+<Window x:Class="Demo.yFiles.Graph.NodeTypes.NodeTypesDemo"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/3.0/xaml"
+        Height="Auto" Width="Auto" Loaded="OnLoad" x:Name="LayoutRoot" Style="{StaticResource DemoWindow}"
+        Title="Demo.yFiles.Graph.NodeTypes">
+    <HeaderedContentControl Style="{StaticResource DemoStyle}">
+        <HeaderedContentControl.Header>
+            <RichTextBox BorderThickness="0" IsReadOnly="True">
+                <FlowDocument>
+                    <Paragraph>
+                        <Run
+                            Text="This demo shows how different layout algorithms handle nodes that are associated with specific types. In this example application, nodes with the same color are considered to be of the same type." />
+                    </Paragraph>
+                    <Paragraph>
+                        <Run
+                            Text="The type is generally treated as a secondary, subordinate optimization criterion. Thus, nodes of the same type are usually not simply clustered together. The type is only considered when some free choice is available after considering other constraints relevant to the specific layout algorithm (like minimizing the number of crossings or considering the hierarchical grouping structure)." />
+                    </Paragraph>
+                    <Paragraph Style="{StaticResource HtmlH2}">
+                        Things to Try
+                    </Paragraph>
+                    <List>
+                        <ListItem>
+                            <Paragraph>
+                                <Run
+                                    Text="Use the combo box to choose a specific layout algorithm. This automatically loads a suitable example graph." />
+                            </Paragraph>
+                        </ListItem>
+                        <ListItem>
+                            <Paragraph>
+                                <Run Text="Compare the results with and without considering node types. Use the" />
+                                <Run FontStyle="Italic" Text="Consider Types" />
+                                <Run Text="checkbox to change the setting." />
+                            </Paragraph>
+                        </ListItem>
+                        <ListItem>
+                            <Paragraph>
+                                <Run
+                                    Text="Modify the graph by adding new elements or changing the type of existing nodes via the context menu and observe the effect on the layout. The context menu can be accessed by right clicking on a node." />
+                            </Paragraph>
+                        </ListItem>
+                    </List>
+                </FlowDocument>
+            </RichTextBox>
+        </HeaderedContentControl.Header>
+        <DockPanel Grid.Column="2">
+            <ToolBarTray DockPanel.Dock="Top">
+                <ToolBar
+                    Width="{Binding ActualWidth, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ToolBarTray}}}"
+                    Height="Auto">
+                    <Button Command="IncreaseZoom" CommandTarget="{Binding ElementName=graphControl}" />
+                    <Button Command="DecreaseZoom" CommandTarget="{Binding ElementName=graphControl}" />
+                    <Button Command="{x:Static ywpf:GraphControl.FitGraphBoundsCommand}"
+                            CommandTarget="{Binding ElementName=graphControl}" />
+                    <Separator />
+                    <Label>Sample Graph:</Label>
+                    <Button x:Name="PreviousSampleButton" 
+                            Click="LoadPreviousSampleGraph"
+                            ContentTemplate="{StaticResource ImageButtonContentTemplate}"
+                            Content="{StaticResource ArrowLeftIcon}" />
+                    <ComboBox x:Name="SampleGraphComboBox" SelectionChanged="OnSampleChanged" MinWidth="140" />
+                    <Button x:Name="NextSampleButton" 
+                            Click="LoadNextSampleGraph"
+                            ContentTemplate="{StaticResource ImageButtonContentTemplate}"
+                            Content="{StaticResource ArrowRightIcon}" />
+                    <Separator />
+                    <Button x:Name="LayoutButton" Click="OnLayoutClicked"
+                            Style="{StaticResource BaseToolBarButtonStyle}">
+                        Layout
+                    </Button>
+                    <Separator />
+                    <CheckBox x:Name="ConsiderTypes" Click="OnConsiderTypesClicked" IsChecked="True">Consider Types</CheckBox>
+                </ToolBar>
+            </ToolBarTray>
+            <ywpf:GraphControl Width="Auto" x:Name="graphControl" MinWidth="200" MinHeight="200" />
+        </DockPanel>
+    </HeaderedContentControl>
+</Window>

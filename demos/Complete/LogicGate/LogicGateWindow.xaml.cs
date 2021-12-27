@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.3.
- ** Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.4.
+ ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -263,7 +263,7 @@ namespace Demo.yFiles.Layout.LogicGate
 
       MapperDelegate<IEdge, PortConstraint> sourceDelegate = edge => ((PortDescriptor) edge.SourcePort.Tag).X == 0 ? west : east;
       MapperDelegate<IEdge, PortConstraint> targetDelegate = edge => ((PortDescriptor) edge.TargetPort.Tag).X == 0 ? west : east;
-      oerData = new PolylineEdgeRouterData {
+      oerData = new EdgeRouterData {
         SourcePortConstraints = { Delegate = sourceDelegate},
         TargetPortConstraints = { Delegate = targetDelegate }
       };

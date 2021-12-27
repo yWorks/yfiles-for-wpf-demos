@@ -1,6 +1,6 @@
 <!-- ************************************************************************ -->
-<!-- This demo file is part of yFiles WPF 3.3.                           -->
-<!-- Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
+<!-- This demo file is part of yFiles WPF 3.4.                           -->
+<!-- Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
 <!-- 72070 Tuebingen, Germany. All rights reserved.                           -->
 <!--                                                                          -->
 <!-- yFiles demo files exhibit yFiles WPF functionalities. Any redistribution  -->
@@ -176,7 +176,7 @@
                                     Single object: click these items with the left mouse button. If the Ctrl key is 
                   pressed, clicked items are added to the current selection.
                                     <LineBreak />
-                                    Multiple objects: drag the mouse over the canvas. All elements inside the resulting retangle will be selected.
+                                    Multiple objects: drag the mouse over the canvas. All elements inside the resulting rectangle will be selected.
                                     <LineBreak />
                                     All objects are selected by pressing Ctrl+A.
                                     <LineBreak />
@@ -189,7 +189,7 @@
                                     <LineBreak />
                                     Selected elements: drag the mouse, starting over a selected item.
                                     <LineBreak />
-                                    Move selected labels: drag to the indicate positions.
+                                    Move selected labels: drag to the indicated positions.
                                     <LineBreak />
                                     Note that items have to be selected before they can be moved.
                                 </Paragraph>
@@ -224,7 +224,7 @@
                                 <Paragraph>
                                     <Run FontWeight="Bold">Grouping</Run>
                                     <LineBreak />
-                                    Selected nodes can be grouped into a group node by pressing Ctrl+G. The group node's site will 
+                                    Selected nodes can be grouped into a group node by pressing Ctrl+G. The group node's size will 
                   be adjusted to its contents. 
                   A node can be added to a group node or removed from a group node by dragging it with the Shift 
                   key held down. The group which will be the node's parent is indicated by highlighted corners.
@@ -234,7 +234,7 @@
                                 <Paragraph>
                                     <Run FontWeight="Bold">Collapsing and Expanding Groups</Run>
                                     <LineBreak />
-                                    Collapse a seleted and expanded group node by pressing Ctrl+Minus. Collapse 
+                                    Collapse a selected and expanded group node by pressing Ctrl+Minus. Collapse 
                   is also available in the 'Grouping' menu. Collapse an unselected and expanded 
                   group node by clicking on the Minus button in the top left corner of the node.
                                     <LineBreak />

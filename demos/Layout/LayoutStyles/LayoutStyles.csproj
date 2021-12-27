@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Demo.yFiles.Layout.LayoutStyles</RootNamespace>
     <AssemblyName>LayoutStyles</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <FileUpgradeFlags></FileUpgradeFlags>
     <OldToolsVersion>3.5</OldToolsVersion>
@@ -65,13 +65,13 @@
     <Reference Include="WindowsBase" />
     <Reference Include="System.Core" />
     <Reference Include="yWorks.yFilesWPF.Adapter">
-      <HintPath>..\..\..\..\lib\net40\\yWorks.yFilesWPF.Adapter.dll</HintPath>
+      <HintPath>..\..\..\..\lib\net40\yWorks.yFilesWPF.Adapter.dll</HintPath>
     </Reference>
     <Reference Include="yWorks.yFilesWPF.Algorithms">
-      <HintPath>..\..\..\..\lib\net40\\yWorks.yFilesWPF.Algorithms.dll</HintPath>
+      <HintPath>..\..\..\..\lib\net40\yWorks.yFilesWPF.Algorithms.dll</HintPath>
     </Reference>
     <Reference Include="yWorks.yFilesWPF.Viewer">
-      <HintPath>..\..\..\..\lib\net40\\yWorks.yFilesWPF.Viewer.dll</HintPath>
+      <HintPath>..\..\..\..\lib\net40\yWorks.yFilesWPF.Viewer.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -82,15 +82,15 @@
   <ItemGroup>
     <ProjectReference Include="..\LayoutConfigurations\LayoutConfigurations.csproj">
       <Project>{d67fdf4c-0162-4f19-9091-160d5068594a}</Project>
-      <Name>Demo.yFiles.Layout.Configurations</Name>
+      <Name>LayoutConfigurations</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Utils\OptionHandler\OptionHandler.csproj">
       <Project>{8cf93f4c-00a0-4ccd-9fc5-fcde57522435}</Project>
-      <Name>Demo.yFiles.Toolkit.OptionHandler</Name>
+      <Name>OptionHandler</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Utils\DemoToolkit\DemoToolkit.csproj">
       <Project>{aaa67dcc-aa93-4eb4-8b93-f09d77292c09}</Project>
-      <Name>Demo.yFiles.Toolkit</Name>
+      <Name>DemoToolkit</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -150,10 +150,10 @@
     <None Include="Resources\orthogonalwithsubstructures.graphml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Resources\polylinerouter.graphml">
+    <None Include="Resources\edgerouter.graphml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Resources\polylinerouterwithbuses.graphml">
+    <None Include="Resources\edgerouterwithbuses.graphml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Resources\radial.graphml">
@@ -169,8 +169,15 @@
     <None Include="Resources\tree.graphml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Resources\labelplacement.graphml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="Resources\classictree.graphml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!--The following target ensures that the project will build even when the ZIP file has been-->
   <!--extracted with Explorer or another tool that retains the origin zone marker for the files.-->

@@ -11,7 +11,7 @@
     <OutputType>WinExe</OutputType>
     <RootNamespace>Demo.yFiles.Layout.HierarchicLayout</RootNamespace>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileUpgradeFlags></FileUpgradeFlags>
     <OldToolsVersion>3.5</OldToolsVersion>
     <UpgradeBackupLocation />
@@ -71,13 +71,13 @@
     </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="yWorks.yFilesWPF.Viewer">
-      <HintPath>..\..\..\..\lib\net40\\yWorks.yFilesWPF.Viewer.dll</HintPath>
+      <HintPath>..\..\..\..\lib\net40\yWorks.yFilesWPF.Viewer.dll</HintPath>
     </Reference>
     <Reference Include="yWorks.yFilesWPF.Adapter">
-      <HintPath>..\..\..\..\lib\net40\\yWorks.yFilesWPF.Adapter.dll</HintPath>
+      <HintPath>..\..\..\..\lib\net40\yWorks.yFilesWPF.Adapter.dll</HintPath>
     </Reference>
     <Reference Include="yWorks.yFilesWPF.Algorithms">
-      <HintPath>..\..\..\..\lib\net40\\yWorks.yFilesWPF.Algorithms.dll</HintPath>
+      <HintPath>..\..\..\..\lib\net40\yWorks.yFilesWPF.Algorithms.dll</HintPath>
     </Reference>
     <Reference Include="System.Core" />
   </ItemGroup>
@@ -94,7 +94,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Utils\DemoToolkit\DemoToolkit.csproj">
       <Project>{AAA67DCC-AA93-4EB4-8B93-F09D77292C09}</Project>
-      <Name>Demo.yFiles.Toolkit</Name>
+      <Name>DemoToolkit</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

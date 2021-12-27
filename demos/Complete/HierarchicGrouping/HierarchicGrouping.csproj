@@ -10,7 +10,7 @@
     <RootNamespace>Demo.yFiles.Graph.HierarchicGrouping</RootNamespace>
     <AssemblyName>HierarchicGrouping</AssemblyName>
     <StartupObject>Demo.yFiles.Graph.HierarchicGrouping.DemoApplication</StartupObject>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <FileUpgradeFlags></FileUpgradeFlags>
     <OldToolsVersion>3.5</OldToolsVersion>
@@ -65,13 +65,13 @@
     <Reference Include="System.Xml" />
     <Reference Include="WindowsBase" />
     <Reference Include="yWorks.yFilesWPF.Viewer">
-      <HintPath>..\..\..\..\lib\net40\\yWorks.yFilesWPF.Viewer.dll</HintPath>
+      <HintPath>..\..\..\..\lib\net40\yWorks.yFilesWPF.Viewer.dll</HintPath>
     </Reference>
     <Reference Include="yWorks.yFilesWPF.Adapter">
-      <HintPath>..\..\..\..\lib\net40\\yWorks.yFilesWPF.Adapter.dll</HintPath>
+      <HintPath>..\..\..\..\lib\net40\yWorks.yFilesWPF.Adapter.dll</HintPath>
     </Reference>
     <Reference Include="yWorks.yFilesWPF.Algorithms">
-      <HintPath>..\..\..\..\lib\net40\\yWorks.yFilesWPF.Algorithms.dll</HintPath>
+      <HintPath>..\..\..\..\lib\net40\yWorks.yFilesWPF.Algorithms.dll</HintPath>
     </Reference>
     <Reference Include="System.Core" />
   </ItemGroup>
@@ -85,7 +85,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Utils\DemoToolkit\DemoToolkit.csproj">
       <Project>{AAA67DCC-AA93-4EB4-8B93-F09D77292C09}</Project>
-      <Name>Demo.yFiles.Toolkit</Name>
+      <Name>DemoToolkit</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

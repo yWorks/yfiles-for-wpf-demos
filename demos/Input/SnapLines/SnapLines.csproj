@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Demo.yFiles.Graph.Input.SnapLines</RootNamespace>
     <AssemblyName>SnapLinesDemo</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -80,17 +80,17 @@
     <Reference Include="System.Xml" />
     <Reference Include="WindowsBase" />
     <Reference Include="yWorks.yFilesWPF.Viewer">
-      <HintPath>..\..\..\..\lib\net40\\yWorks.yFilesWPF.Viewer.dll</HintPath>
+      <HintPath>..\..\..\..\lib\net40\yWorks.yFilesWPF.Viewer.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Utils\Option\Option.csproj">
       <Project>{5AD8C0FF-B1B6-4528-A777-BD9507E3A829}</Project>
-      <Name>Demo.yFiles.Option</Name>
+      <Name>Option</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Utils\DemoToolkit\DemoToolkit.csproj">
       <Project>{AAA67DCC-AA93-4EB4-8B93-F09D77292C09}</Project>
-      <Name>Demo.yFiles.Toolkit</Name>
+      <Name>DemoToolkit</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

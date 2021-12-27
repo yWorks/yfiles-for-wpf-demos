@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.3.
- ** Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.4.
+ ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -28,11 +28,13 @@
  ***************************************************************************/
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using Demo.yFiles.Toolkit.OptionHandler;
 using yWorks.Algorithms.Geometry;
+using yWorks.Analysis;
 using yWorks.Controls;
 using yWorks.Graph;
 using yWorks.Graph.Styles;
@@ -92,6 +94,8 @@ namespace Demo.yFiles.Layout.Configurations
       GridSpacingItem = 5;
       GridPortAssignmentItem = PortAssignmentMode.Default;
       OrientationItem = LayoutOrientation.TopToBottom;
+      SubComponentsItem = false;
+      HighlightCriticalPath = false;
     }
 
     /// <inheritdoc />
@@ -129,6 +133,8 @@ namespace Demo.yFiles.Layout.Configurations
       layout.AutomaticEdgeGrouping = AutomaticEdgeGroupingEnabledItem;
 
       eld.RoutingStyle = new RoutingStyle(EdgeRoutingItem);
+      eld.RoutingStyle.CurveShortcuts = CurveShortcutsItem;
+      eld.RoutingStyle.CurveUTurnSymmetry = CurveUTurnSymmetryItem;
       eld.MinimumFirstSegmentLength = MinimumFirstSegmentLengthItem;
       eld.MinimumLastSegmentLength = MinimumLastSegmentLengthItem;
 
@@ -159,6 +165,8 @@ namespace Demo.yFiles.Layout.Configurations
 
       if (EdgeLabelingItem != EnumEdgeLabeling.None) {
         if (EdgeLabelingItem == EnumEdgeLabeling.Generic) {
+          layout.IntegratedEdgeLabeling = false;
+          
           var labeling = new GenericLabeling {
               PlaceNodeLabels = false,
               PlaceEdgeLabels = true,
@@ -217,9 +225,6 @@ namespace Demo.yFiles.Layout.Configurations
       layout.BackLoopRouting = BackloopRoutingItem;
       layout.BackLoopRoutingForSelfLoops = BackloopRoutingForSelfLoopsItem;
       layout.MaximumDuration = MaximumDurationItem * 1000;
-
-      AddPreferredPlacementDescriptor(graphControl.Graph, LabelPlacementAlongEdgeItem, LabelPlacementSideOfEdgeItem, LabelPlacementOrientationItem, LabelPlacementDistanceItem);
-
 
       if (GridEnabledItem) {
         layout.GridSpacing = GridSpacingItem;
@@ -289,26 +294,155 @@ namespace Demo.yFiles.Layout.Configurations
       }
 
       if (SubComponentsItem) {
+        // layout all siblings with label 'TL' separately with tree layout
         var treeLayout = new TreeLayout { DefaultNodePlacer = new LeftRightNodePlacer() };
-        layoutData.SubComponents.Add(treeLayout).Delegate =
-            node => node.Labels.Any() && node.Labels.First().Text == "TL";
+        foreach (var listOfNodes in FindSubComponents(graphControl.Graph, "TL")) {
+          layoutData.SubComponents.Add(treeLayout).Items = listOfNodes;
+        }
+        // layout all siblings with label 'HL' separately with hierarchical layout
         var hierarchicLayout = new HierarchicLayout { LayoutOrientation = LayoutOrientation.LeftToRight };
-        layoutData.SubComponents.Add(hierarchicLayout).Delegate =
-            node => node.Labels.Any() && node.Labels.First().Text == "HL";
+        foreach (var listOfNodes in FindSubComponents(graphControl.Graph, "HL")) {
+          layoutData.SubComponents.Add(hierarchicLayout).Items = listOfNodes;
+        }
+        // layout all siblings with label 'OL' separately with organic layout
         var organicLayout = new OrganicLayout { PreferredEdgeLength = 100, Deterministic = true };
-        layoutData.SubComponents.Add(organicLayout).Delegate =
-            node => node.Labels.Any() && node.Labels.First().Text == "OL";
+        foreach (var listOfNodes in FindSubComponents(graphControl.Graph, "OL")) {
+          layoutData.SubComponents.Add(organicLayout).Items = listOfNodes;
+        }
       }
 
-      if (BusesItem) {
-        // Group edges ending at a node with the label "Bus" into a bus
-        layoutData.Buses.Add(new BusDescriptor()).Delegate =
-            edge => edge.GetTargetNode().Labels.Count > 0 && edge.GetTargetNode().Labels[0].Text == "Bus";
+      if (HighlightCriticalPath) {
+        // highlight the longest path in the graph as critical path
+        // since the longest path algorithm only works for acyclic graphs,
+        // feedback edges and self loops have to be excluded here
+        var feedbackEdgeSetResult = new FeedbackEdgeSet().Run(graphControl.Graph);
+        var longestPath = new LongestPath {
+            SubgraphEdges = {
+                Excludes = {
+                    Delegate = edge => feedbackEdgeSetResult.FeedbackEdgeSet.Contains(edge) || edge.IsSelfloop()
+                }
+            }
+        }.Run(graphControl.Graph);
+        if (longestPath.Edges.Any()) {
+          layoutData.CriticalEdgePriorities.Delegate = edge => {
+            if (longestPath.Edges.Contains(edge)) {
+              return 10;
+            }
+            return 1;
+          };
+        }
       }
 
-      return layoutData;
+      if (AutomaticBusRouting) {
+        var allBusNodes = new HashSet<INode>();
+        foreach (var node in graphControl.Graph.Nodes) {
+          if (!graphControl.Graph.IsGroupNode(node) && !allBusNodes.Contains(node)) {
+            // search for good opportunities for bus structures rooted at this node
+            if (graphControl.Graph.InDegree(node) >= 4) {
+              var busDescriptor = new BusDescriptor();
+              var busEdges = GetBusEdges(graphControl.Graph, node, allBusNodes,
+                  graphControl.Graph.InEdgesAt(node));
+              if (busEdges.Any()) {
+                layoutData.Buses.Add(busDescriptor).Items = busEdges;
+              }
+            }
+            if (graphControl.Graph.OutDegree(node) >= 4) {
+              var busDescriptor = new BusDescriptor();
+              var busEdges = GetBusEdges(graphControl.Graph, node, allBusNodes, graphControl.Graph.OutEdgesAt(node));
+              if (busEdges.Any()) {
+                layoutData.Buses.Add(busDescriptor).Items = busEdges;
+              }
+            }
+          }
+        }
+      }
+      
+      return layoutData.CombineWith(
+          CreateLabelingLayoutData(
+              graphControl.Graph,
+              LabelPlacementAlongEdgeItem,
+              LabelPlacementSideOfEdgeItem,
+              LabelPlacementOrientationItem,
+              LabelPlacementDistanceItem
+          )
+      );
+    }
+    
+    private ICollection<IEdge> GetBusEdges(IGraph graph, INode node, HashSet<INode> allBusNodes, IEnumerable<IEdge> edges) {
+      if (graph.IsGroupNode(node)) {
+        // exclude groups for bus structures
+        return new List<IEdge>();
+      }
+
+      var busNodes = new HashSet<INode>();
+      // count the edges that are not bus edges but connect to the bus nodes
+      // -> if there are many, then the bus structure may not look that great
+      var interEdgeCount = 0;
+      var busEdges = new List<IEdge>();
+      var busNodesWithOtherEdges = new Stack<INode>();
+      var node2BusEdge = new Dictionary<INode, IEdge>();
+      foreach (var edge in edges) {
+        var other = (INode)edge.Opposite(node);
+        if (!busNodes.Contains(other)) {
+          busNodes.Add(other);
+          busEdges.Add(edge);
+          node2BusEdge.Add(other, edge);
+          var otherEdgesCount = graph.Degree(other) - 1;
+          if (otherEdgesCount > 0) {
+            busNodesWithOtherEdges.Push(other);
+            interEdgeCount += otherEdgesCount;
+          }
+        }
+      }
+
+      var finalBusEdges = new List<IEdge>();
+      var removedBusEdges = new HashSet<IEdge>();
+      var busSize = busNodes.Count;
+      while (busSize >= 4) {
+        if (interEdgeCount <= busSize * 0.25) {
+          // okay accept this as a bus
+          foreach (var edge in busEdges) {
+            if (!removedBusEdges.Contains(edge)) {
+              finalBusEdges.Add(edge);
+              allBusNodes.Add((INode) edge.Opposite(node));
+            }
+          }
+          break;
+        } else {
+          // this bus has too many other edges remove some if possible
+          if (busNodesWithOtherEdges.Any()) {
+            var nodeToRemove = busNodesWithOtherEdges.Pop();
+            removedBusEdges.Add(node2BusEdge[nodeToRemove]);
+            busSize--;
+            interEdgeCount -= graph.Degree(nodeToRemove) - 1;
+          }
+        }
+      }
+
+      return finalBusEdges;
     }
 
+    /// <summary>
+    /// Determines sub-components by label text and group membership.
+    /// This is necessary because {@link HierarchicLayout} does not support sub-components with nodes
+    /// that belong to different parent groups.
+    /// </summary>
+    private ICollection<ICollection<INode>> FindSubComponents(IGraph graph, string labelText) {
+      var nodeToComponent = new Dictionary<INode, ICollection<INode>>();
+      foreach (var node in graph.Nodes) {
+        if (node.Labels.Any() && node.Labels.First().Text == labelText) {
+          var parent = graph.GetParent(node) ?? root;
+          if (!nodeToComponent.ContainsKey(parent)) {
+            nodeToComponent.Add(parent, new List<INode>());
+          }
+          nodeToComponent[parent].Add(node);
+        }
+      }
+      return nodeToComponent.Values;
+    }
+
+    private readonly INode root = new SimpleNode();
+    
     /// <summary>
     /// Enables different layout styles for possible detected sub-components.
     /// </summary>
@@ -316,8 +450,12 @@ namespace Demo.yFiles.Layout.Configurations
       SubComponentsItem = true;
     }
 
-    public void EnableBuses() {
-      BusesItem = true;
+    public void EnableAutomaticBusRouting() {
+      AutomaticBusRouting = true;
+    }
+
+    public void EnableCurvedRouting() {
+      EdgeRoutingItem = EdgeRoutingStyle.Curved;
     }
 
     // ReSharper disable UnusedMember.Global
@@ -333,10 +471,10 @@ namespace Demo.yFiles.Layout.Configurations
     [ComponentType(ComponentTypes.OptionGroup)]
     public object GeneralGroup;
 
-    [Label("Interactive Settings")]
-    [OptionGroup("GeneralGroup", 10)]
+    [Label("Incremental Layout")]
+    [OptionGroup("GeneralGroup", 70)]
     [ComponentType(ComponentTypes.OptionGroup)]
-    public object InteractionGroup;
+    public object IncrementalGroup;
 
     [OptionGroup("GeneralGroup", 60)]
     [Label("Minimum Distances")]
@@ -416,12 +554,12 @@ namespace Demo.yFiles.Layout.Configurations
     }
 
     [Label("Selected Elements Incrementally")]
-    [OptionGroup("InteractionGroup", 10)]
+    [OptionGroup("IncrementalGroup", 10)]
     [DefaultValue(false)]
     public bool SelectedElementsIncrementallyItem { get; set; }
 
     [Label("Use Drawing as Sketch")]
-    [OptionGroup("InteractionGroup", 20)]
+    [OptionGroup("IncrementalGroup", 20)]
     [DefaultValue(false)]
     public bool UseDrawingAsSketchItem { get; set; }
 
@@ -502,34 +640,47 @@ namespace Demo.yFiles.Layout.Configurations
     [DefaultValue(false)]
     public bool BackloopRoutingForSelfLoopsItem { get; set; }
 
+    public bool ShouldDisableBackloopRoutingForSelfLoopsItem {
+      get { return !BackloopRoutingItem; }
+    }
+
     [Label("Automatic Edge Grouping")]
     [OptionGroup("EdgeSettingsGroup", 40)]
     [DefaultValue(false)]
     public bool AutomaticEdgeGroupingEnabledItem { get; set; }
 
-    [Label("Minimum First Segment Length")]
+    [Label("Automatic Bus Routing")]
+    [OptionGroup("EdgeSettingsGroup", 45)]
+    public bool AutomaticBusRouting { get; set; }
+    
+    [Label("Highlight Critical Path")]
     [OptionGroup("EdgeSettingsGroup", 50)]
+    [DefaultValue(false)]
+    public bool HighlightCriticalPath { get; set; }
+
+    [Label("Minimum First Segment Length")]
+    [OptionGroup("EdgeSettingsGroup", 60)]
     [DefaultValue(10.0d)]
     [MinMax(Min = 0, Max = 100)]
     [ComponentType(ComponentTypes.Slider)]
     public double MinimumFirstSegmentLengthItem { get; set; }
 
     [Label("Minimum Last Segment Length")]
-    [OptionGroup("EdgeSettingsGroup", 60)]
+    [OptionGroup("EdgeSettingsGroup", 70)]
     [DefaultValue(15.0d)]
     [MinMax(Min = 0, Max = 100)]
     [ComponentType(ComponentTypes.Slider)]
     public double MinimumLastSegmentLengthItem { get; set; }
 
     [Label("Minimum Edge Length")]
-    [OptionGroup("EdgeSettingsGroup", 70)]
+    [OptionGroup("EdgeSettingsGroup", 80)]
     [DefaultValue(20.0d)]
     [MinMax(Min = 0, Max = 100)]
     [ComponentType(ComponentTypes.Slider)]
     public double MinimumEdgeLengthItem { get; set; }
 
     [Label("Minimum Edge Distance")]
-    [OptionGroup("EdgeSettingsGroup", 80)]
+    [OptionGroup("EdgeSettingsGroup", 90)]
     [DefaultValue(15.0d)]
     [MinMax(Min = 0, Max = 100)]
     [ComponentType(ComponentTypes.Slider)]
@@ -538,28 +689,30 @@ namespace Demo.yFiles.Layout.Configurations
     [MinMax(Min = 0.0d, Max = 5.0d, Step = 0.01d)]
     [Label("Minimum Slope")]
     [DefaultValue(0.25d)]
-    [OptionGroup("EdgeSettingsGroup", 90)]
+    [OptionGroup("EdgeSettingsGroup", 100)]
     [ComponentType(ComponentTypes.Slider)]
     public double MinimumSlopeItem { get; set; }
 
     public bool ShouldDisableMinimumSlopeItem {
-      get { return EdgeRoutingItem != EdgeRoutingStyle.Polyline; }
+      get {
+        return EdgeRoutingItem != EdgeRoutingStyle.Polyline && EdgeRoutingItem != EdgeRoutingStyle.Curved;
+      }
     }
 
     [Label("Arrows Define Edge Direction")]
-    [OptionGroup("EdgeSettingsGroup", 100)]
+    [OptionGroup("EdgeSettingsGroup", 110)]
     public bool EdgeDirectednessItem { get; set; }
 
     [Label("Consider Edge Thickness")]
-    [OptionGroup("EdgeSettingsGroup", 110)]
+    [OptionGroup("EdgeSettingsGroup", 120)]
     public bool EdgeThicknessItem { get; set; }
 
     [Label("Port Constraint Optimization")]
-    [OptionGroup("EdgeSettingsGroup", 120)]
+    [OptionGroup("EdgeSettingsGroup", 130)]
     public bool PcOptimizationEnabledItem { get; set; }
 
     [Label("Straighten Edges")]
-    [OptionGroup("EdgeSettingsGroup", 130)]
+    [OptionGroup("EdgeSettingsGroup", 140)]
     public bool StraightenEdgesItem { get; set; }
 
     public bool ShouldDisableStraightenEdgesItem {
@@ -567,15 +720,31 @@ namespace Demo.yFiles.Layout.Configurations
     }
 
     [Label("Recursive Edge Routing Style")]
-    [OptionGroup("EdgeSettingsGroup", 140)]
+    [OptionGroup("EdgeSettingsGroup", 150)]
     [EnumValue("Off", RecursiveEdgeStyle.Off)]
     [EnumValue("Directed", RecursiveEdgeStyle.Directed)]
     [EnumValue("Undirected", RecursiveEdgeStyle.Undirected)]
     public RecursiveEdgeStyle RecursiveEdgeStyleItem { get; set; }
+    
+    [Label("U-turn Symmetry")]
+    [OptionGroup("EdgeSettingsGroup", 160)]
+    [DefaultValue(0)]
+    [MinMax(Min = 0.0d, Max = 1.0d, Step = 0.1d)]
+    [ComponentType(ComponentTypes.Slider)]
+    public double CurveUTurnSymmetryItem { get; set; }
 
-    [Label("Bus Routing")]
-    [OptionGroup("EdgeSettingsGroup", 150)]
-    public bool BusesItem { get; set; }
+    public bool ShouldDisableCurveUTurnSymmetryItem {
+      get { return EdgeRoutingItem != EdgeRoutingStyle.Curved; }
+    }
+
+    [Label("Allow Shortcuts")]
+    [OptionGroup("EdgeSettingsGroup", 170)]
+    [DefaultValue(false)]
+    public bool CurveShortcutsItem { get; set; }
+
+    public bool ShouldDisableCurveShortcutsItem {
+      get { return EdgeRoutingItem != EdgeRoutingStyle.Curved; }
+    }
 
     [Label("Layer Assignment Policy")]
     [OptionGroup("RankGroup", 10)]
@@ -707,10 +876,10 @@ namespace Demo.yFiles.Layout.Configurations
     [OptionGroup("PreferredPlacementGroup", 20)]
     [DefaultValue(EnumLabelPlacementAlongEdge.Centered)]
     [EnumValue("Anywhere", EnumLabelPlacementAlongEdge.Anywhere)]
-    [EnumValue("At Source Port", EnumLabelPlacementAlongEdge.AtSourcePort)]
-    [EnumValue("At Target Port", EnumLabelPlacementAlongEdge.AtTargetPort)]
     [EnumValue("At Source",EnumLabelPlacementAlongEdge.AtSource)]
+    [EnumValue("At Source Port", EnumLabelPlacementAlongEdge.AtSourcePort)]
     [EnumValue("At Target",EnumLabelPlacementAlongEdge.AtTarget)]
+    [EnumValue("At Target Port", EnumLabelPlacementAlongEdge.AtTargetPort)]
     [EnumValue("Centered",EnumLabelPlacementAlongEdge.Centered)]
     public EnumLabelPlacementAlongEdge LabelPlacementAlongEdgeItem { get; set; }
 
@@ -811,10 +980,6 @@ namespace Demo.yFiles.Layout.Configurations
       get { return !TreatRootGroupAsSwimlanesItem; }
     }
 
-    public bool ShouldHideSwimlineSpacingItem {
-      get { return !TreatRootGroupAsSwimlanesItem; }
-    }
-
     [OptionGroup("GridGroup", 10)]
     [Label("Grid")]
     [DefaultValue(false)]
@@ -827,6 +992,10 @@ namespace Demo.yFiles.Layout.Configurations
     [ComponentType(ComponentTypes.Slider)]
     public double GridSpacingItem { get; set; }
 
+    public bool ShouldDisableGridSpacingItem {
+      get { return !GridEnabledItem; }
+    }
+    
     [OptionGroup("GridGroup", 30)]
     [Label("Grid Port Style")]
     [DefaultValue(PortAssignmentMode.Default)]
@@ -835,6 +1004,8 @@ namespace Demo.yFiles.Layout.Configurations
     [EnumValue("On Subgrid",PortAssignmentMode.OnSubgrid)]
     public PortAssignmentMode GridPortAssignmentItem { get; set; }
 
-
+    public bool ShouldDisableGridPortAssignmentItem {
+      get { return !GridEnabledItem; }
+    }
   }
 }

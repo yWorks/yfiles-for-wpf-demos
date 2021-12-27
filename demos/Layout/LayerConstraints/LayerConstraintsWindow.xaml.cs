@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.3.
- ** Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.4.
+ ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -298,10 +298,8 @@ namespace Demo.yFiles.Layout.LayerConstraints
         return null;
       };
 
-      INode[] layerRep = new INode[8];
-
       // additionally enforce all nodes with a LayerConstraintInfo.Value of 0 or 7 to be placed at top/bottom
-      // and all nodes with the same Value in the same layer
+      // and register the value in the NodeComparables Mapper for all other constrained nodes
       foreach (var node in graphControl.Graph.Nodes) {
         var data = node.Tag as LayerConstraintsInfo;
         if (data != null && data.Constraints) {
@@ -311,13 +309,10 @@ namespace Demo.yFiles.Layout.LayerConstraints
           } else if (data.Value == 7) {
             // add constraint to put this node at the bottom
             layerConstraintData.PlaceAtBottom(node);
-          }
-          if (layerRep[data.Value] == null) {
-            // this is the first node found having this data.Value so we store it as representative
-            layerRep[data.Value] = node;
           } else {
-            // add constraint to put this node in the same layer as its representative
-            layerConstraintData.PlaceInSameLayer(layerRep[data.Value], node);
+            // for every node in between we record it's value with the mapper, assuring that there
+            // will be no layer with different values and monotonically growing values per layer
+            layerConstraintData.NodeComparables.Mapper[node] = data.Value;
           }
         }
       }

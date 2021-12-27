@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.3.
- ** Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.4.
+ ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -127,8 +127,6 @@ namespace Demo.yFiles.Layout.Configurations
       layout.TreeSize = TreeSubstructureSizeItem;
       layout.TreeOrientation = TreeSubstructureOrientationItem;
 
-      AddPreferredPlacementDescriptor(graphControl.Graph, LabelPlacementAlongEdgeItem, LabelPlacementSideOfEdgeItem, LabelPlacementOrientationItem, LabelPlacementDistanceItem);
-
       return layout;
     }
 
@@ -139,7 +137,16 @@ namespace Demo.yFiles.Layout.Configurations
       } else {
         layoutData.DirectedEdges.Delegate = edge => false;
       }
-      return layoutData;
+
+      return layoutData.CombineWith(
+          CreateLabelingLayoutData(
+              graphControl.Graph,
+              LabelPlacementAlongEdgeItem,
+              LabelPlacementSideOfEdgeItem,
+              LabelPlacementOrientationItem,
+              LabelPlacementDistanceItem
+          )
+      );
     }
 
     // ReSharper disable UnusedMember.Global

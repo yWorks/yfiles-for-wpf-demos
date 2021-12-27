@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.3.
- ** Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.4.
+ ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -33,7 +33,6 @@ using Demo.yFiles.Toolkit.OptionHandler;
 using yWorks.Algorithms.Geometry;
 using yWorks.Controls;
 using yWorks.Geometry;
-using yWorks.Graph;
 using yWorks.Graph.Styles;
 using yWorks.Layout;
 using yWorks.Layout.Grouping;
@@ -61,8 +60,8 @@ namespace Demo.yFiles.Layout.Configurations
       MinimumNodeDistanceItem = 10;
       AvoidNodeEdgeOverlapsItem = layout.NodeEdgeOverlapAvoided;
       CompactnessItem = layout.CompactnessFactor;
-      UseAutoClusteringItem = layout.ClusterNodes;
-      AutoClusteringQualityItem = layout.ClusteringQuality;
+      ClusteringPolicyItem = layout.ClusteringPolicy;
+      ClusteringQualityItem = layout.ClusteringQuality;
 
       RestrictOutputItem = EnumOutputRestrictions.None;
       RectCageUseViewItem = true;
@@ -80,9 +79,13 @@ namespace Demo.yFiles.Layout.Configurations
       ActivateDeterministicModeItem = layout.Deterministic;
 
       CycleSubstructureStyleItem = CycleSubstructureStyle.None;
+      CycleSubstructureSizeItem = layout.CycleSubstructureSize;
       ChainSubstructureStyleItem = ChainSubstructureStyle.None;
+      ChainSubstructureSizeItem = layout.ChainSubstructureSize;
       StarSubstructureStyleItem = StarSubstructureStyle.None;
+      StarSubstructureSizeItem = layout.StarSubstructureSize;
       ParallelSubstructureStyleItem = ParallelSubstructureStyle.None;
+      ParallelSubstructureSizeItem = layout.ParallelSubstructureSize;
 
       ConsiderNodeLabelsItem = layout.ConsiderNodeLabels;
       EdgeLabelingItem = false;
@@ -102,8 +105,8 @@ namespace Demo.yFiles.Layout.Configurations
       layout.Scope = ScopeItem;
       layout.CompactnessFactor = CompactnessItem;
       layout.ConsiderNodeSizes = true;
-      layout.ClusterNodes = UseAutoClusteringItem;
-      layout.ClusteringQuality = AutoClusteringQualityItem;
+      layout.ClusteringPolicy = ClusteringPolicyItem;
+      layout.ClusteringQuality = ClusteringQualityItem;
       layout.NodeEdgeOverlapAvoided = AvoidNodeEdgeOverlapsItem;
       layout.Deterministic = ActivateDeterministicModeItem;
       layout.MaximumDuration = 1000 * MaximumDurationItem;
@@ -123,17 +126,14 @@ namespace Demo.yFiles.Layout.Configurations
       ConfigureOutputRestrictions(graphControl, layout);
 
       layout.ChainSubstructureStyle = ChainSubstructureStyleItem;
+      layout.CycleSubstructureSize = CycleSubstructureSizeItem;
       layout.CycleSubstructureStyle = CycleSubstructureStyleItem;
+      layout.ChainSubstructureSize = ChainSubstructureSizeItem;
       layout.StarSubstructureStyle = StarSubstructureStyleItem;
+      layout.StarSubstructureSize = StarSubstructureSizeItem;
       layout.ParallelSubstructureStyle = ParallelSubstructureStyleItem;
-
-      if (UseEdgeGroupingItem) {
-        graphControl.Graph.MapperRegistry.CreateConstantMapper<IEdge, object>(PortConstraintKeys.SourceGroupIdDpKey, "Group");
-        graphControl.Graph.MapperRegistry.CreateConstantMapper<IEdge, object>(PortConstraintKeys.TargetGroupIdDpKey, "Group");
-      }
-
-      AddPreferredPlacementDescriptor(graphControl.Graph, LabelPlacementAlongEdgeItem, LabelPlacementSideOfEdgeItem, LabelPlacementOrientationItem, LabelPlacementDistanceItem);
-
+      layout.ParallelSubstructureSize = ParallelSubstructureSizeItem;
+      
       return layout;
     }
 
@@ -176,19 +176,21 @@ namespace Demo.yFiles.Layout.Configurations
           return 0;
         };
       }
-
-      return layoutData;
-    }
-
-    /// <summary>
-    /// Called after the layout animation is done.
-    /// </summary>
-    protected override void PostProcess(GraphControl graphControl) {
+      
       if (UseEdgeGroupingItem) {
-        var mapperRegistry = graphControl.Graph.MapperRegistry;
-        mapperRegistry.RemoveMapper(PortConstraintKeys.SourceGroupIdDpKey);
-        mapperRegistry.RemoveMapper(PortConstraintKeys.TargetGroupIdDpKey);
+        layoutData.SourceGroupIds.Constant = "Group";
+        layoutData.TargetGroupIds.Constant = "Group";
       }
+
+      return layoutData.CombineWith(
+          CreateLabelingLayoutData(
+              graphControl.Graph,
+              LabelPlacementAlongEdgeItem,
+              LabelPlacementSideOfEdgeItem,
+              LabelPlacementOrientationItem,
+              LabelPlacementDistanceItem
+          )
+      );
     }
 
     public void EnableSubstructures() {
@@ -363,7 +365,8 @@ namespace Demo.yFiles.Layout.Configurations
     [OptionGroup("VisualGroup", 10)]
     [DefaultValue(Scope.All)]
     [EnumValue("All", Scope.All)]
-    [EnumValue("Mainly Selection",Scope.MainlySubset)]
+    [EnumValue("Selection and Connected Nodes",Scope.MainlySubset)]
+    [EnumValue("Selection and Nearby Nodes",Scope.MainlySubsetGeometric)]
     [EnumValue("Selection",Scope.Subset)]
     public Scope ScopeItem { get; set; }
 
@@ -405,21 +408,25 @@ namespace Demo.yFiles.Layout.Configurations
     [MinMax(Min = 0.0d, Max = 1.0d, Step = 0.1d)]
     [ComponentType(ComponentTypes.Slider)]
     public double CompactnessItem { get; set; }
-
-    [Label("Use Natural Clustering")]
+    
+    [Label("Clustering")]
     [OptionGroup("VisualGroup", 80)]
-    [DefaultValue(false)]
-    public bool UseAutoClusteringItem { get; set; }
+    [DefaultValue(ClusteringPolicy.None)]
+    [EnumValue("None", ClusteringPolicy.None)]
+    [EnumValue("Edge Betweenness",ClusteringPolicy.EdgeBetweenness)]
+    [EnumValue("Label Propagation",ClusteringPolicy.LabelPropagation)]
+    [EnumValue("Louvain Modularity",ClusteringPolicy.LouvainModularity)]
+    public ClusteringPolicy ClusteringPolicyItem { get; set; }
 
-    [Label("Natural Clustering Quality")]
+    [Label("Edge Betweenness Clustering Quality")]
     [OptionGroup("VisualGroup", 90)]
     [DefaultValue(1.0d)]
     [MinMax(Min = 0.0d, Max = 1.0d, Step = 0.01d)]
     [ComponentType(ComponentTypes.Slider)]
-    public double AutoClusteringQualityItem { get; set; }
+    public double ClusteringQualityItem { get; set; }
 
-    public bool ShouldDisableAutoClusteringQualityItem {
-      get { return UseAutoClusteringItem == false; } 
+    public bool ShouldDisableClusteringQualityItem {
+      get { return ClusteringPolicyItem != ClusteringPolicy.EdgeBetweenness; } 
     }
 
     [Label("Output Area")]
@@ -466,7 +473,7 @@ namespace Demo.yFiles.Layout.Configurations
     [Label("Width")]
     [OptionGroup("CageGroup", 40)]
     [DefaultValue(1000.0d)]
-    [MinMax(Min = 1)]
+    [MinMax(Min = 1, Max = 100000)]
     [ComponentType(ComponentTypes.Spinner)]
     public double CageWidthItem { get; set; }
 
@@ -477,7 +484,7 @@ namespace Demo.yFiles.Layout.Configurations
     [Label("Height")]
     [OptionGroup("CageGroup", 50)]
     [DefaultValue(1000.0d)]
-    [MinMax(Min = 1)]
+    [MinMax(Min = 1, Max = 100000)]
     [ComponentType(ComponentTypes.Spinner)]
     public double CageHeightItem { get; set; }
 
@@ -539,24 +546,62 @@ namespace Demo.yFiles.Layout.Configurations
     [DefaultValue(CycleSubstructureStyle.None)]
     [EnumValue("Ignore", CycleSubstructureStyle.None)]
     [EnumValue("Circular", CycleSubstructureStyle.Circular)]
+    [EnumValue("Circular, also within other structures", CycleSubstructureStyle.CircularNested)]
     public CycleSubstructureStyle CycleSubstructureStyleItem { get; set; }
 
+    [Label("Minimum Cycle Size")]
+    [OptionGroup("SubstructureLayoutGroup", 15)]
+    [DefaultValue(4)]
+    [MinMax(Min = 4, Max = 20)]
+    [ComponentType(ComponentTypes.Spinner)]
+    public int CycleSubstructureSizeItem { get; set; }
+    
+    public bool ShouldDisableCycleSubstructureSizeItem {
+      get { return CycleSubstructureStyleItem == CycleSubstructureStyle.None; }
+    }
+    
     [Label("Chains")]
     [OptionGroup("SubstructureLayoutGroup", 20)]
     [DefaultValue(ChainSubstructureStyle.None)]
     [EnumValue("Ignore", ChainSubstructureStyle.None)]
-    [EnumValue("Straight-Line", ChainSubstructureStyle.StraightLine)]
     [EnumValue("Rectangular", ChainSubstructureStyle.Rectangular)]
+    [EnumValue("Rectangular, also within other structures", ChainSubstructureStyle.RectangularNested)]
+    [EnumValue("Straight-Line", ChainSubstructureStyle.StraightLine)]
+    [EnumValue("Straight-Line, also within other structures", ChainSubstructureStyle.StraightLineNested)]
     public ChainSubstructureStyle ChainSubstructureStyleItem { get; set; }
+
+    [Label("Minimum Chain Size")]
+    [OptionGroup("SubstructureLayoutGroup", 25)]
+    [DefaultValue(4)]
+    [MinMax(Min = 4, Max = 20)]
+    [ComponentType(ComponentTypes.Spinner)]
+    public int ChainSubstructureSizeItem { get; set; }
+    
+    public bool ShouldDisableChainSubstructureSizeItem {
+      get { return ChainSubstructureStyleItem == ChainSubstructureStyle.None; }
+    }
 
     [Label("Stars")]
     [OptionGroup("SubstructureLayoutGroup", 30)]
     [DefaultValue(StarSubstructureStyle.None)]
     [EnumValue("Ignore", StarSubstructureStyle.None)]
     [EnumValue("Circular", StarSubstructureStyle.Circular)]
+    [EnumValue("Circular, also within other structures", StarSubstructureStyle.CircularNested)]
     [EnumValue("Radial", StarSubstructureStyle.Radial)]
+    [EnumValue("Radial, also within other structures", StarSubstructureStyle.RadialNested)]
     [EnumValue("Separated Radial", StarSubstructureStyle.SeparatedRadial)]
     public StarSubstructureStyle StarSubstructureStyleItem { get; set; }
+
+    [Label("Minimum Star Size")]
+    [OptionGroup("SubstructureLayoutGroup", 35)]
+    [DefaultValue(4)]
+    [MinMax(Min = 4, Max = 20)]
+    [ComponentType(ComponentTypes.Spinner)]
+    public int StarSubstructureSizeItem { get; set; }
+    
+    public bool ShouldDisableStarSubstructureSizeItem {
+      get { return StarSubstructureStyleItem == StarSubstructureStyle.None; }
+    }
 
     [Label("Parallel Structures")]
     [OptionGroup("SubstructureLayoutGroup", 40)]
@@ -566,6 +611,17 @@ namespace Demo.yFiles.Layout.Configurations
     [EnumValue("Radial", ParallelSubstructureStyle.Radial)]
     [EnumValue("Straight-Line", ParallelSubstructureStyle.StraightLine)]
     public ParallelSubstructureStyle ParallelSubstructureStyleItem { get; set; }
+
+    [Label("Minimum size for parallel structures")]
+    [OptionGroup("SubstructureLayoutGroup", 45)]
+    [DefaultValue(3)]
+    [MinMax(Min = 3, Max = 20)]
+    [ComponentType(ComponentTypes.Spinner)]
+    public int ParallelSubstructureSizeItem { get; set; }
+    
+    public bool ShouldDisableParallelSubstructureSizeItem {
+      get { return ParallelSubstructureStyleItem == ParallelSubstructureStyle.None; }
+    }
 
     [Label("Arrows Define Edge Direction")]
     [OptionGroup("SubstructureLayoutGroup", 50)]

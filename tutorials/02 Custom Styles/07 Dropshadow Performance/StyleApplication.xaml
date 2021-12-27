@@ -1,6 +1,6 @@
 <!-- ************************************************************************ -->
-<!-- This demo file is part of yFiles WPF 3.3.                           -->
-<!-- Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
+<!-- This demo file is part of yFiles WPF 3.4.                           -->
+<!-- Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
 <!-- 72070 Tuebingen, Germany. All rights reserved.                           -->
 <!--                                                                          -->
 <!-- yFiles demo files exhibit yFiles WPF functionalities. Any redistribution  -->
@@ -38,14 +38,14 @@
                         <Run FontWeight="Bold">Description</Run>
                     </Paragraph>
                     <Paragraph>
-                        This step shows two ways on how to create a drop shadow of nodes. 
+                        This step shows two ways on how to create a drop shadow for nodes. 
                         The default behavior makes use of the built-in WPF functionality. 
                         The Ellipse which represents the main node shape gets an DropShadowEffect.
                         This solution is easy to implement as it comes out-of-the-box. However the 
                         performance is pretty bad as you can see when you hit "Animate Nodes" 
                         (if it performs too poor or well on your computer to see the effect, 
                         just change the number of nodes created in CreateSampleGraph()). 
-                        In order to improve the rendering performance the dropshadow can be pre-rendered 
+                        In order to improve the rendering performance the drop shadow can be pre-rendered 
                         into an image. This improves the performance dramatically as you can see when you
                         turn on "High-Performance Shadow" and hit "Animate Nodes" again.
                     </Paragraph>
@@ -54,12 +54,12 @@
                     </Paragraph>
                     <List>
                         <ListItem>
-                            <Paragraph>Click "Animate Nodes" to see how the built-in dropshadow performs.
+                            <Paragraph>Click "Animate Nodes" to see how the built-in drop shadow performs.
                             </Paragraph>
                         </ListItem>
                         <ListItem>
                             <Paragraph>Turn on "High-Performance Shadow" and click "Animate Nodes" to see the 
-                                high-performance pre-rendered dropshadow.
+                                high-performance pre-rendered drop shadow.
                             </Paragraph>
                         </ListItem>
                         <ListItem>
@@ -106,7 +106,7 @@
         </Menu>
             <ToolBarTray DockPanel.Dock="Top">
                 <ToolBar>
-                    <CheckBox Content="High-Performance Dropshadow" Checked="CheckBox_Click" Unchecked="CheckBox_Click" IsThreeState="False" />
+                    <CheckBox Content="High-Performance Drop Shadow" Checked="CheckBox_Click" Unchecked="CheckBox_Click" IsThreeState="False" />
                     <Separator/>
                     <Button Content="Animate Nodes" Click="Button_Click" />
                 </ToolBar>

@@ -1,6 +1,6 @@
 <!-- ************************************************************************ -->
-<!-- This demo file is part of yFiles WPF 3.3.                           -->
-<!-- Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
+<!-- This demo file is part of yFiles WPF 3.4.                           -->
+<!-- Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
 <!-- 72070 Tuebingen, Germany. All rights reserved.                           -->
 <!--                                                                          -->
 <!-- yFiles demo files exhibit yFiles WPF functionalities. Any redistribution  -->
@@ -140,18 +140,18 @@
                                     </ListItem>
                                     <ListItem>
                                         <Paragraph>
-                                            Group/Ungroup select nodes and see how their relative z-order keeps stable.
+                                            Group/Ungroup selected nodes and see how their relative z-order keeps stable.
                                         </Paragraph>
                                     </ListItem>
                                     <ListItem>
                                         <Paragraph>
-                                            Collapse/Expand group nodes and see how the z-order of their children keep stable.
+                                            Collapse/Expand group nodes and see how the z-order of their children keeps stable.
                                         </Paragraph>
                                     </ListItem>
                                     <ListItem>
                                         <Paragraph>
                                             Enter/Exit group or folder nodes and see how the z-order of nodes 
-                                            outside the group keep stable.
+                                            outside the group keeps stable.
                                         </Paragraph>
                                     </ListItem>
                                     <ListItem>

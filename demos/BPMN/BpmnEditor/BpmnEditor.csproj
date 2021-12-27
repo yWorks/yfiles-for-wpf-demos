@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Demo.yFiles.Graph.Bpmn.Editor</RootNamespace>
     <AssemblyName>BpmnEditor</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
@@ -69,13 +69,13 @@
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="yWorks.yFilesWPF.Viewer">
-      <HintPath>..\..\..\..\lib\net40\\yWorks.yFilesWPF.Viewer.dll</HintPath>
+      <HintPath>..\..\..\..\lib\net40\yWorks.yFilesWPF.Viewer.dll</HintPath>
     </Reference>
     <Reference Include="yWorks.yFilesWPF.Adapter">
-      <HintPath>..\..\..\..\lib\net40\\yWorks.yFilesWPF.Adapter.dll</HintPath>
+      <HintPath>..\..\..\..\lib\net40\yWorks.yFilesWPF.Adapter.dll</HintPath>
     </Reference>
     <Reference Include="yWorks.yFilesWPF.Algorithms">
-      <HintPath>..\..\..\..\lib\net40\\yWorks.yFilesWPF.Algorithms.dll</HintPath>
+      <HintPath>..\..\..\..\lib\net40\yWorks.yFilesWPF.Algorithms.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -100,19 +100,19 @@
   <ItemGroup>
     <ProjectReference Include="..\BpmnDi\BpmnDi.csproj">
       <Project>{e8969091-a279-4002-9865-0469f7fb5b12}</Project>
-      <Name>Demo.yFiles.Graph.Bpmn.BpmnDi</Name>
+      <Name>BpmnDi</Name>
     </ProjectReference>
     <ProjectReference Include="..\BpmnLayout\BpmnLayout.csproj">
       <Project>{424242de-cd89-4b65-83fc-82dfd02cd2f1}</Project>
-      <Name>Demo.yFiles.Graph.Bpmn.Layout</Name>
+      <Name>BpmnLayout</Name>
     </ProjectReference>
     <ProjectReference Include="..\BpmnView\BpmnView.csproj">
       <Project>{e8969091-a279-4002-9865-0469f7fb5b11}</Project>
-      <Name>Demo.yFiles.Graph.Bpmn.View</Name>
+      <Name>BpmnView</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Utils\DemoToolkit\DemoToolkit.csproj">
       <Project>{AAA67DCC-AA93-4EB4-8B93-F09D77292C09}</Project>
-      <Name>Demo.yFiles.Toolkit</Name>
+      <Name>DemoToolkit</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

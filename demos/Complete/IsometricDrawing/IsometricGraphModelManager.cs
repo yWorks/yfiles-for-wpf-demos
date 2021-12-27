@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.3.
- ** Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.4.
+ ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -46,8 +46,8 @@ namespace Demo.yFiles.Complete.IsometricDrawing
   {
     private readonly IsometricComparer comparer;
 
-    public IsometricGraphModelManager(CanvasControl canvas) : base(canvas, canvas.ContentGroup) {
-      comparer = new IsometricComparer(canvas);
+    public IsometricGraphModelManager(CanvasControl canvasControl) : base(canvasControl, canvasControl.ContentGroup) {
+      comparer = new IsometricComparer(canvasControl);
       // The comparer needs the user object (=node) to be set on the main canvas object
       ProvideUserObjectOnMainCanvasObject = true;
     }

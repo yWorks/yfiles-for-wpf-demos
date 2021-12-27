@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.3.
- ** Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.4.
+ ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -80,8 +80,10 @@ namespace Demo.yFiles.Layout.Configurations
 
       // configure the LayoutExecutor
       var layoutExecutor = new LayoutExecutor(graphControl, new MinimumNodeSizeStage(layout)) {
-          Duration = TimeSpan.FromSeconds(1),
-          AnimateViewport = true
+          Duration = TimeSpan.FromSeconds(0.75),
+          AnimateViewport = true,
+          EasedAnimation = true,
+          PortAdjustmentPolicy = PortAdjustmentPolicy.Lengthen
       };
 
       // set the cancel duration for the layout computation to 20s
@@ -104,6 +106,10 @@ namespace Demo.yFiles.Layout.Configurations
             "Running the layout has encountered an error: " + e.Message);
       } finally {
         PostProcess(graphControl);
+        // clean up mapperRegistry
+        graphControl.Graph.MapperRegistry.RemoveMapper(
+            LayoutGraphAdapter.EdgeLabelLayoutPreferredPlacementDescriptorDpKey
+        );
         doneHandler();
       }
     }
@@ -139,28 +145,36 @@ namespace Demo.yFiles.Layout.Configurations
     /// registry of the given graph. In addition, sets the label model of all edge labels to free since that model
     /// can realizes any label placement calculated by a layout algorithm.
     /// </summary>
-    public static void AddPreferredPlacementDescriptor(
+    public LayoutData CreateLabelingLayoutData(
         IGraph graph, EnumLabelPlacementAlongEdge placeAlongEdge, EnumLabelPlacementSideOfEdge sideOfEdge,
         EnumLabelPlacementOrientation orientation, double distanceToEdge) {
+      var descriptor = CreatePreferredPlacementDescriptor(
+          placeAlongEdge,
+          sideOfEdge,
+          orientation,
+          distanceToEdge
+      );
 
+      // change to a free edge label model to support integrated edge labeling
       var model = new FreeEdgeLabelModel();
-      var descriptor = CreatePreferredPlacementDescriptor(placeAlongEdge, sideOfEdge, orientation, distanceToEdge);
 
-      graph.MapperRegistry.CreateConstantMapper<ILabel, PreferredPlacementDescriptor>(
-        LayoutGraphAdapter.EdgeLabelLayoutPreferredPlacementDescriptorDpKey,
-        descriptor);
-
-      foreach (ILabel label in graph.GetEdgeLabels()) {
-        graph.SetLabelLayoutParameter(
-          label,
-          model.FindBestParameter(label, model, label.GetLayout()));
+      foreach (var label in graph.GetEdgeLabels()) {
+        if (!(label.LayoutParameter.Model  is FreeEdgeLabelModel)) {
+          graph.SetLabelLayoutParameter(label, model.FindBestParameter(label, model, label.GetLayout()));
+        }
       }
+
+      var layoutData = new GenericLayoutData();
+      layoutData.AddItemMapping(LayoutGraphAdapter.EdgeLabelLayoutPreferredPlacementDescriptorDpKey,
+          new ItemMapping<ILabel, PreferredPlacementDescriptor>(label => descriptor));
+
+      return layoutData;
     }
 
     /// <summary>
     /// Creates a new <see cref="PreferredPlacementDescriptor"/> that matches the given settings.
     /// </summary>
-    public static PreferredPlacementDescriptor CreatePreferredPlacementDescriptor(
+    public PreferredPlacementDescriptor CreatePreferredPlacementDescriptor(
         EnumLabelPlacementAlongEdge placeAlongEdge, EnumLabelPlacementSideOfEdge sideOfEdge,
         EnumLabelPlacementOrientation orientation, double distanceToEdge) {
       var descriptor = new PreferredPlacementDescriptor();
@@ -218,13 +232,20 @@ namespace Demo.yFiles.Layout.Configurations
           descriptor.AngleReference = LabelAngleReferences.Absolute;
           break;
         case EnumLabelPlacementOrientation.Vertical:
-          descriptor.Angle = 90.0d;
+          descriptor.Angle = Math.PI/2;
           descriptor.AngleReference = LabelAngleReferences.Absolute;
           break;
       }
 
       descriptor.DistanceToEdge = distanceToEdge;
       return descriptor;
+    }
+    
+    public enum EdgeLabeling
+    {
+      None,
+      Integrated,
+      Generic
     }
 
     /// <summary>

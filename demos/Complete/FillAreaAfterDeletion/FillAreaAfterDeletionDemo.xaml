@@ -1,6 +1,6 @@
 <!-- ************************************************************************ -->
-<!-- This demo file is part of yFiles WPF 3.3.                           -->
-<!-- Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
+<!-- This demo file is part of yFiles WPF 3.4.                           -->
+<!-- Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
 <!-- 72070 Tuebingen, Germany. All rights reserved.                           -->
 <!--                                                                          -->
 <!-- yFiles demo files exhibit yFiles WPF functionalities. Any redistribution  -->
@@ -41,23 +41,6 @@
                         <Run FontStyle="Italic" Text="FillAreaLayout"/>
                         <Run Text="algorithm tries to fill free space with graph elements by moving nearby elements towards it, with the goal to make the existing layout more compact and not changing it too much."/>
                     </Paragraph>
-                    <Paragraph>
-                        <Run Text="You can choose between different strategies for filling the area:"/>
-                    </Paragraph>
-                    <List>
-                        <ListItem>
-                            <Paragraph>
-                                <Run FontStyle="Italic" Text="Local:"/>
-                                <Run Text="Tries to change the layout rather locally." />
-                            </Paragraph>
-                        </ListItem>
-                        <ListItem>
-                            <Paragraph>
-                                <Run FontStyle="Italic" Text="PreserveShapes:"/>
-                                <Run Text="Tries to preserve the shape of the existing edge paths." />
-                            </Paragraph>
-                        </ListItem>
-                    </List>
                     <Paragraph>
                         <Run Text="You can choose between different strategies for assigning nodes to components whose elements should preferably not be separated:"/>
                     </Paragraph>

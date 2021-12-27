@@ -1,6 +1,6 @@
 <!-- ************************************************************************ -->
-<!-- This demo file is part of yFiles WPF 3.3.                           -->
-<!-- Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
+<!-- This demo file is part of yFiles WPF 3.4.                           -->
+<!-- Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
 <!-- 72070 Tuebingen, Germany. All rights reserved.                           -->
 <!--                                                                          -->
 <!-- yFiles demo files exhibit yFiles WPF functionalities. Any redistribution  -->
@@ -38,7 +38,7 @@
                         Rendering Order
                     </Paragraph>
                     <Paragraph>
-                        Sometimes it is necessary to change the render order of graph, e.g. when labels should be rendered in front of their owner but behind 
+                        Sometimes it is necessary to change the render order of graph items, e.g. when labels should be rendered in front of their owner but behind 
                         another item. This demo shows how to use
                         <Run FontStyle="Italic">yWorks.Controls.GraphModelManager</Run> to configure the rendering order for grouped graphs as well as 
                         layer policies for labels and ports.

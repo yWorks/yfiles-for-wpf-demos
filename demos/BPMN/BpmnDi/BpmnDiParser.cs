@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.3.
- ** Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.4.
+ ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -251,7 +251,7 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
     #region Building Backbone
 
     /// <summary>
-    /// Builds the first diagram via drawing the individual nodes & edges
+    /// Builds the first diagram via drawing the individual nodes and edges
     /// </summary>
     /// <param name="diagram">The diagram to draw</param>
     /// <param name="localRoot">The local root node </param>

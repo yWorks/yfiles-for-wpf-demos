@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.3.
- ** Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.4.
+ ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -92,13 +92,13 @@ namespace Demo.yFiles.Layout.Configurations
       }
       switch (VerticalAlignmentItem) {
         case EnumVerticalAlignments.Center:
-          nodeLayoutDescriptor.HorizontalAlignment = 0.5;
+          nodeLayoutDescriptor.VerticalAlignment = 0.5;
           break;
         case EnumVerticalAlignments.Top:
-          nodeLayoutDescriptor.HorizontalAlignment = 0;
+          nodeLayoutDescriptor.VerticalAlignment = 0;
           break;
         case EnumVerticalAlignments.Bottom:
-          nodeLayoutDescriptor.HorizontalAlignment = 1;
+          nodeLayoutDescriptor.VerticalAlignment = 1;
           break;
       }
 
@@ -141,7 +141,7 @@ namespace Demo.yFiles.Layout.Configurations
       }
 
       layoutData.NodeLayoutDescriptors.Constant = nodeLayoutDescriptor;
-      layoutData.PartitionGridData.Grid = partitionGrid;
+      layoutData.PartitionGridData = new PartitionGridData {Grid = partitionGrid};
 
       return layoutData;
     }
@@ -152,7 +152,7 @@ namespace Demo.yFiles.Layout.Configurations
     public object DescriptionGroup;
 
     [Label("General")]
-    [OptionGroup("GeneralGroup", 10)]
+    [OptionGroup("RootGroup", 10)]
     [ComponentType(ComponentTypes.OptionGroup)]
     public object GeneralGroup;
 

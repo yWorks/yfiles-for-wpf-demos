@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.3.
- ** Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.4.
+ ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -70,6 +70,7 @@ namespace Demo.yFiles.Layout.Configurations
       layout.ComponentAssignmentStrategy = ComponentAssignmentStrategyItem;
       layout.LayoutOrientation = OrientationItem;
       layout.EdgeRoutingStrategy = RoutingToSubgraphItem;
+      layout.AllowMovingFixedElements = MoveFixedElementsItem;
 
       ILayoutAlgorithm subgraphLayout = null;
       if (ComponentAssignmentStrategyItem != ComponentAssignmentStrategy.Single) {
@@ -197,6 +198,11 @@ namespace Demo.yFiles.Layout.Configurations
     [OptionGroup("LayoutGroup", 70)]
     [DefaultValue(true)]
     public bool AlignNodesItem { get; set; }
+
+    [Label("Allow Moving Fixed Elements")]
+    [OptionGroup("LayoutGroup", 80)]
+    [DefaultValue(false)]
+    public bool MoveFixedElementsItem { get; set; }
 
   }
 }

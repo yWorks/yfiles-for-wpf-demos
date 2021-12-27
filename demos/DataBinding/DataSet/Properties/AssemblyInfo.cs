@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.3.
- ** Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.4.
+ ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -79,6 +79,6 @@ using System.Windows;
 //
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
-// [assembly: AssemblyVersion("3.3.0.0")]
-[assembly: AssemblyVersion("3.3.0.0")]
-[assembly: AssemblyFileVersion("3.3.0.0")]
+// [assembly: AssemblyVersion("3.4.0.0")]
+[assembly: AssemblyVersion("3.4.0.0")]
+[assembly: AssemblyFileVersion("3.4.0.0")]

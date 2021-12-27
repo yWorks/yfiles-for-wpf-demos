@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.3.
- ** Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.4.
+ ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -248,12 +248,12 @@ namespace Demo.yFiles.Input.DragAndDrop
       if (o != null) {
         var node = o.DataContext as INode;
         if (node != null) {
-          if (node.Tag == "Node Label Container") {
+          if ("Node Label Container".Equals(node.Tag)) {
             DataObject dao = new DataObject();
             dao.SetData(typeof(ILabel), node.Labels.First());
             DragDrop.DoDragDrop(o, dao, DragDropEffects.Link | DragDropEffects.Copy | DragDropEffects.Move);
           }
-          else if (node.Tag == "Edge Label Container") {
+          else if ("Edge Label Container".Equals(node.Tag)) {
             var labelTemplate = node.Labels.First();
             //Not all label models return a valid geometry when the path is empty
             var p1 = new SimplePort(new SimpleNode() {Layout = new RectD(PointD.Origin, new Size(1,1))}, FreeNodePortLocationModel.NodeCenterAnchored);
@@ -310,7 +310,7 @@ namespace Demo.yFiles.Input.DragAndDrop
 
       var renderContext = cc.CreateRenderContext(graphControl);
       Transform transform = cc.CreateWorldToIntermediateTransform();
-      System.Windows.Media.Geometry clip = cc.CreateClip();
+      Geometry clip = cc.CreateClip();
 
       var visualContent = graphControl.ExportContent(renderContext);
       VisualGroup container = new VisualGroup

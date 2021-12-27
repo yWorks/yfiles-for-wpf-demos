@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.3.
- ** Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.4.
+ ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -158,9 +158,6 @@ namespace Demo.yFiles.Layout.Configurations
         }
       }
 
-      AddPreferredPlacementDescriptor(graphControl.Graph, LabelPlacementAlongEdgeItem, LabelPlacementSideOfEdgeItem, LabelPlacementOrientationItem,
-                                      LabelPlacementDistanceItem);
-
       return layout;
     }
 
@@ -172,12 +169,19 @@ namespace Demo.yFiles.Layout.Configurations
         var selection = graphControl.Selection.SelectedNodes;
 
         if (selection.Any()) {
-          var root = selection.First();
-          layoutData.TreeRoot.Delegate = node => node == root;
+          layoutData.TreeRoot.Item = selection.First();
         }
       }
 
-      return layoutData;
+      return layoutData.CombineWith(
+          CreateLabelingLayoutData(
+              graphControl.Graph,
+              LabelPlacementAlongEdgeItem,
+              LabelPlacementSideOfEdgeItem,
+              LabelPlacementOrientationItem,
+              LabelPlacementDistanceItem
+          )
+      );
     }
 
     public enum EnumRoute {
@@ -260,6 +264,7 @@ namespace Demo.yFiles.Layout.Configurations
 
     [Label("Bundling Strength")]
     [OptionGroup("GeneralGroup", 40)]
+    [DefaultValue(1.0)]
     [MinMax(Min = 0, Max = 1.0, Step = 0.01)]
     [ComponentType(ComponentTypes.Slider)]
     public double EdgeBundlingStrengthItem { get; set; }

@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.3.
- ** Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.4.
+ ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -31,6 +31,7 @@ using System;
 using System.Collections.Generic;
 using Demo.yFiles.Graph.Bpmn.Styles;
 using yWorks.Annotations;
+using yWorks.Controls;
 using yWorks.Geometry;
 using yWorks.Graph;
 using yWorks.Layout;
@@ -46,7 +47,7 @@ namespace Demo.yFiles.Graph.Bpmn.Layout
   /// <remarks>
   /// Prepares BPMN layout information provided by the styles for assignment of layout information calculated by <see cref="BpmnLayout"/>.
   /// </remarks>
-  public class BpmnLayoutData : HierarchicLayoutData
+  public class BpmnLayoutData
   {
     private const double MinLabelToLabelDistance = 5;
 
@@ -82,48 +83,52 @@ namespace Demo.yFiles.Graph.Bpmn.Layout
       MinimumEdgeLength = 20;
     }
 
-    protected override void Apply(LayoutGraphAdapter adapter, ILayoutAlgorithm layout, CopiedLayoutGraph layoutGraph) {
-      var graph = adapter.AdaptedGraph;
+    public LayoutData Create(IGraph graph, ISelectionModel<IModelItem> selection, Scope layoutScope) {
+      var data = new GenericLayoutData();
+      var hierarchicLayoutData = new HierarchicLayoutData();
 
       // check if only selected elements should be laid out
-      var layoutOnlySelection = layout is BpmnLayout && ((BpmnLayout) layout).Scope == Scope.SelectedElements;
+      var layoutOnlySelection = layoutScope == Scope.SelectedElements;
 
       // mark 'flow' edges, i.e. sequence flows, default flows and conditional flows
-      adapter.AddDataProvider(BpmnLayout.SequenceFlowEdgesDpKey, Mappers.FromDelegate<IEdge, bool>(IsSequenceFlow));
-
+      data.AddItemCollection(BpmnLayout.SequenceFlowEdgesDpKey).Delegate = IsSequenceFlow;
+      
       // mark boundary interrupting edges for the BalancingPortOptimizer
-      adapter.AddDataProvider(BpmnLayout.BoundaryInterruptingEdgesDpKey, Mappers.FromDelegate((IEdge edge) => edge.SourcePort.Style is EventPortStyle));
+      data.AddItemCollection(BpmnLayout.BoundaryInterruptingEdgesDpKey).Delegate = edge => edge.SourcePort.Style is EventPortStyle;
+      
+      
 
       // mark conversations, events and gateways so their port locations are adjusted
-      adapter.AddDataProvider(PortLocationAdjuster.AffectedNodesDpKey,
-        Mappers.FromDelegate((INode node) => (node.Style is ConversationNodeStyle || node.Style is EventNodeStyle || node.Style is GatewayNodeStyle)));
+      data.AddItemCollection(PortLocationAdjuster.AffectedNodesDpKey).Delegate = (INode node) =>
+          (node.Style is ConversationNodeStyle || node.Style is EventNodeStyle || node.Style is GatewayNodeStyle);
 
       // add NodeHalos around nodes with event ports or specific exterior labels so the layout keeps space for the event ports and labels as well
-      AddNodeHalos(adapter, graph, layoutOnlySelection);
+      AddNodeHalos(data, graph, selection, layoutOnlySelection);
 
       // add PreferredPlacementDescriptors for labels on sequence, default or conditional flows to place them at source side
-      AddEdgeLabelPlacementDescriptors(adapter);
+      AddEdgeLabelPlacementDescriptors(data);
 
       // mark nodes, edges and labels as either fixed or affected by the layout and configure port constraints and incremental hints
-      MarkFixedAndAffectedItems(adapter, layoutOnlySelection);
+      MarkFixedAndAffectedItems(data, hierarchicLayoutData, selection, layoutOnlySelection);
 
       // mark associations and message flows as undirected so they have less impact on layering
-      EdgeDirectedness.Delegate = edge => (IsMessageFlow(edge) || IsAssociation(edge)) ? 0 : 1;
+      hierarchicLayoutData.EdgeDirectedness.Delegate = edge => (IsMessageFlow(edge) || IsAssociation(edge)) ? 0 : 1;
 
       // add layer constraints for start events, sub processes and message flows
-      AddLayerConstraints(graph);
+      AddLayerConstraints(graph, hierarchicLayoutData);
 
       // add EdgeLayoutDescriptor to specify minimum edge length for edges
-      AddMinimumEdgeLength(MinimumEdgeLength);
+      AddMinimumEdgeLength(MinimumEdgeLength, hierarchicLayoutData);
 
-      base.Apply(adapter, layout, layoutGraph);
+      
+      return data.CombineWith(hierarchicLayoutData);
     }
 
     #region Add layer constraints
 
-    private void AddLayerConstraints(IGraph graph) {
+    private void AddLayerConstraints(IGraph graph, HierarchicLayoutData hierarchicLayoutData) {
       // use layer constraints via HierarchicLayoutData
-      var layerConstraintData = LayerConstraints;
+      var layerConstraintData = hierarchicLayoutData.LayerConstraints;
 
       foreach (var edge in graph.Edges) {
         if (IsMessageFlow(edge) && !CompactMessageFlowLayering) {
@@ -184,10 +189,10 @@ namespace Demo.yFiles.Graph.Bpmn.Layout
 
     #region Add minimum edge length
 
-    private void AddMinimumEdgeLength(double minimumEdgeLength) {
+    private void AddMinimumEdgeLength(double minimumEdgeLength, HierarchicLayoutData hierarchicLayoutData) {
       // each edge should have a minimum length so that all its labels can be placed on it one
       // after another with a minimum label-to-label distance
-      EdgeLayoutDescriptors.Delegate = edge => {
+      hierarchicLayoutData.EdgeLayoutDescriptors.Delegate = edge => {
         var descriptor = new EdgeLayoutDescriptor {
           RoutingStyle = new RoutingStyle(EdgeRoutingStyle.Orthogonal)
         };
@@ -242,7 +247,7 @@ namespace Demo.yFiles.Graph.Bpmn.Layout
 
     #region Add Node Halos for Event Ports and exterior node labels
 
-    private static void AddNodeHalos(LayoutGraphAdapter adapter, IGraph graph, bool layoutOnlySelection) {
+    private static void AddNodeHalos(GenericLayoutData data, IGraph graph, ISelectionModel<IModelItem> selection, bool layoutOnlySelection) {
       var nodeHalos = new DictionaryMapper<INode, NodeHalo>();
       foreach (var node in graph.Nodes) {
         var top = 0.0;
@@ -266,7 +271,7 @@ namespace Demo.yFiles.Graph.Bpmn.Layout
         // for each node without incoming or outgoing edges reserve space for laid out exterior labels
         if (graph.InDegree(node) == 0 || graph.OutDegree(node) == 0) {
           foreach (var label in node.Labels) {
-            if (IsNodeLabelAffected(label, adapter, layoutOnlySelection)) {
+            if (IsNodeLabelAffected(graph, selection, label, layoutOnlySelection)) {
               var labelBounds = label.GetLayout().GetBounds();
               if (graph.InDegree(node) == 0) {
                 left = Math.Max(left, labelBounds.Width);
@@ -282,17 +287,17 @@ namespace Demo.yFiles.Graph.Bpmn.Layout
 
         nodeHalos[node] = NodeHalo.Create(top, left, bottom, right);
       }
-      adapter.AddDataProvider(NodeHalo.NodeHaloDpKey, nodeHalos);
+      data.AddItemMapping(NodeHalo.NodeHaloDpKey).Mapper = nodeHalos;
     }
 
-    private static bool IsNodeLabelAffected(ILabel label, LayoutGraphAdapter adapter, bool layoutOnlySelection) {
+    private static bool IsNodeLabelAffected(IGraph graph, ISelectionModel<IModelItem> selection, ILabel label, bool layoutOnlySelection) {
       var node = label.Owner as INode;
       if (node != null) {
         var isInnerLabel = node.Layout.Contains(label.GetLayout().GetCenter());
         bool isPool = node.Style is PoolNodeStyle;
         bool isChoreography = node.Style is ChoreographyNodeStyle;
-        var isGroupNode = adapter.AdaptedGraph.IsGroupNode(node);
-        return !isInnerLabel && !isPool && !isChoreography && !isGroupNode && (!layoutOnlySelection || adapter.SelectionModel.IsSelected(node));
+        var isGroupNode = graph.IsGroupNode(node);
+        return !isInnerLabel && !isPool && !isChoreography && !isGroupNode && (!layoutOnlySelection || selection.IsSelected(node));
       }
       return false;
     }
@@ -301,53 +306,54 @@ namespace Demo.yFiles.Graph.Bpmn.Layout
 
     #region Add PreferredPlacementDescriptors for edge labels
 
-    private static void AddEdgeLabelPlacementDescriptors(LayoutGraphAdapter adapter) {
+    private static void AddEdgeLabelPlacementDescriptors(GenericLayoutData data) {
       var atSourceDescriptor = new PreferredPlacementDescriptor {
         PlaceAlongEdge = LabelPlacements.AtSourcePort,
         SideOfEdge = LabelPlacements.LeftOfEdge | LabelPlacements.RightOfEdge,
       };
-      adapter.AddDataProvider(LayoutGraphAdapter.EdgeLabelLayoutPreferredPlacementDescriptorDpKey,
-        Mappers.FromDelegate((ILabel label) => {
+      data.AddItemMapping(LayoutGraphAdapter.EdgeLabelLayoutPreferredPlacementDescriptorDpKey).Delegate = 
+        label => {
           var edgeType = ((BpmnEdgeStyle)((IEdge)label.Owner).Style).Type;
           if (edgeType == EdgeType.SequenceFlow || edgeType == EdgeType.DefaultFlow || edgeType == EdgeType.ConditionalFlow) {
             // labels on sequence, default and conditional flow edges should be placed at the source side.
             return atSourceDescriptor;
           }
           return null;
-        }));
+        };
     }
 
     #endregion
 
     #region Mark nodes, edges and labels as fixed or affected
 
-    private void MarkFixedAndAffectedItems(LayoutGraphAdapter adapter, bool layoutOnlySelection) {
+    private static void MarkFixedAndAffectedItems(GenericLayoutData data, HierarchicLayoutData hierarchicLayoutData, ISelectionModel<IModelItem> graphSelection,
+        bool layoutOnlySelection) {
       if (layoutOnlySelection) {
         var affectedEdges = Mappers.FromDelegate((IEdge edge) =>
-          adapter.SelectionModel.IsSelected(edge)
-          || adapter.SelectionModel.IsSelected(edge.GetSourceNode()) ||
-          adapter.SelectionModel.IsSelected(edge.GetTargetNode()));
-        adapter.AddDataProvider(LayoutKeys.AffectedEdgesDpKey, affectedEdges);
+          graphSelection.IsSelected(edge)
+          || graphSelection.IsSelected(edge.GetSourceNode()) ||
+          graphSelection.IsSelected(edge.GetTargetNode()));
+        data.AddItemCollection(LayoutKeys.AffectedEdgesDpKey).Mapper = affectedEdges;
 
         // fix ports of unselected edges and edges at event ports
-        adapter.AddDataProvider(PortConstraintKeys.SourcePortConstraintDpKey, Mappers.FromDelegate<IEdge, PortConstraint>(
+        data.AddItemMapping(PortConstraintKeys.SourcePortConstraintDpKey).Delegate = 
           edge =>
             (!affectedEdges[edge] || edge.SourcePort.Style is EventPortStyle)
               ? PortConstraint.Create(GetSide(edge, true))
-              : null));
-        adapter.AddDataProvider(PortConstraintKeys.TargetPortConstraintDpKey, Mappers.FromDelegate<IEdge, PortConstraint>(
-          edge => !affectedEdges[edge] ? PortConstraint.Create(GetSide(edge, false)) : null));
+              : null;
+        data.AddItemMapping(PortConstraintKeys.TargetPortConstraintDpKey).Delegate =
+          edge => !affectedEdges[edge] ? PortConstraint.Create(GetSide(edge, false)) : null;
 
         // give core layout hints that selected nodes and edges should be incremental
-        IncrementalHints.ContextDelegate = (item, factory) => {
-          if (item is INode && adapter.SelectionModel.IsSelected(item)) {
+        hierarchicLayoutData.IncrementalHints.ContextDelegate = (item, factory) => {
+          if (item is INode && graphSelection.IsSelected(item)) {
             return factory.CreateLayerIncrementallyHint(item);
           } else if (item is IEdge && affectedEdges[(IEdge)item]) {
             return factory.CreateSequenceIncrementallyHint(item);
           }
           return null;
         };
-        adapter.AddDataProvider(BpmnLayout.AffectedLabelsDpKey, Mappers.FromDelegate<ILabel, bool>(label => {
+        data.AddItemCollection(BpmnLayout.AffectedLabelsDpKey).Delegate = label => {
           var edge = label.Owner as IEdge;
           if (edge != null) {
             return affectedEdges[edge];
@@ -357,16 +363,16 @@ namespace Demo.yFiles.Graph.Bpmn.Layout
             var isInnerLabel = node.Layout.Contains(label.GetLayout().GetCenter());
             bool isPool = node.Style is PoolNodeStyle;
             bool isChoreography = node.Style is ChoreographyNodeStyle;
-            return !isInnerLabel && !isPool && !isChoreography && adapter.SelectionModel.IsSelected(node);
+            return !isInnerLabel && !isPool && !isChoreography && graphSelection.IsSelected(node);
           }
           return false;
-        }));
+        };
       } else {
         // fix source port of edges at event ports
-        adapter.AddDataProvider(PortConstraintKeys.SourcePortConstraintDpKey, Mappers.FromDelegate<IEdge, PortConstraint>(
-          edge => edge.SourcePort.Style is EventPortStyle ? PortConstraint.Create(GetSide(edge, true)) : null));
+        data.AddItemMapping(PortConstraintKeys.SourcePortConstraintDpKey).Delegate =
+          edge => edge.SourcePort.Style is EventPortStyle ? PortConstraint.Create(GetSide(edge, true)) : null;
 
-        adapter.AddDataProvider(BpmnLayout.AffectedLabelsDpKey, Mappers.FromDelegate<ILabel, bool>(label => {
+        data.AddItemCollection(BpmnLayout.AffectedLabelsDpKey).Delegate = label => {
           if (label.Owner is IEdge) {
             return true;
           }
@@ -378,7 +384,7 @@ namespace Demo.yFiles.Graph.Bpmn.Layout
             return !isInnerLabel && !isPool && !isChoreography;
           }
           return false;
-        }));
+        };
       }
     }
 

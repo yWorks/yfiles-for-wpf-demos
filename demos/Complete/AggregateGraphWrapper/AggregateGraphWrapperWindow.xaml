@@ -1,6 +1,6 @@
 <!-- ************************************************************************ -->
-<!-- This demo file is part of yFiles WPF 3.3.                           -->
-<!-- Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
+<!-- This demo file is part of yFiles WPF 3.4.                           -->
+<!-- Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
 <!-- 72070 Tuebingen, Germany. All rights reserved.                           -->
 <!--                                                                          -->
 <!-- yFiles demo files exhibit yFiles WPF functionalities. Any redistribution  -->
@@ -41,7 +41,7 @@
                     <Paragraph>
                         Via the context menu, groups of nodes of the same color or shape can be aggregated giving different insights about
                         the graph. For example, aggregating all nodes by <Run FontWeight="Bold">color</Run> shows
-                        that there no connections between purple and green nodes, while blue nodes are connected to both other colors.
+                        that there are no connections between purple and green nodes, while blue nodes are connected to both other colors.
                         Aggregating by <Run FontWeight="Bold">shape and color</Run> shows that there are no connections
                         between rectangle shaped nodes of different color and no connections between green nodes of
                         different shape.

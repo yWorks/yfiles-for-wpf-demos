@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.3.
- ** Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.4.
+ ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -33,7 +33,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
 using Demo.yFiles.Layout.Configurations;
@@ -43,7 +42,6 @@ using yWorks.Controls.Input;
 using yWorks.Geometry;
 using yWorks.Graph;
 using yWorks.Graph.Styles;
-using yWorks.Layout.Hierarchic;
 using Random = System.Random;
 
 namespace Demo.yFiles.Layout.LayoutStyles
@@ -95,19 +93,20 @@ namespace Demo.yFiles.Layout.LayoutStyles
       new LayoutConfigurationData("Orthogonal", new OrthogonalLayoutConfig()),
       new LayoutConfigurationData("Circular", new CircularLayoutConfig()),
       new LayoutConfigurationData("Tree", new TreeLayoutConfig()),
+      new LayoutConfigurationData("Classic Tree", new ClassicTreeLayoutConfig()),
       new LayoutConfigurationData("Balloon", new BalloonLayoutConfig()),
       new LayoutConfigurationData("Radial", new RadialLayoutConfig()),
       new LayoutConfigurationData("Series-Parallel", new SeriesParallelLayoutConfig()),
+      new LayoutConfigurationData("Components", new ComponentLayoutConfig()),
+      new LayoutConfigurationData("Tabular", new TabularLayoutConfig()),
       new Separator(),
-      new LayoutConfigurationData("Polyline Router", new PolylineEdgeRouterConfig()),
+      new LayoutConfigurationData("Edge Router", new PolylineEdgeRouterConfig()),
       new LayoutConfigurationData("Channel Router", new ChannelEdgeRouterConfig()),
       new LayoutConfigurationData("Bus Router", new BusEdgeRouterConfig()),
       new LayoutConfigurationData("Organic Router", new OrganicEdgeRouterConfig()),
       new LayoutConfigurationData("Parallel Router", new ParallelEdgeRouterConfig()),
       new Separator(),
       new LayoutConfigurationData("Labeling", new LabelingConfig()),
-      new LayoutConfigurationData("Components", new ComponentLayoutConfig()),
-      new LayoutConfigurationData("Tabular", new TabularLayoutConfig()),
       new LayoutConfigurationData("Partial", new PartialLayoutConfig()),
       new LayoutConfigurationData("Graph Transform", new GraphTransformerConfig()),
     };
@@ -125,11 +124,13 @@ namespace Demo.yFiles.Layout.LayoutStyles
         new SampleData("Orthogonal", lcd["Orthogonal"]),
         new SampleData("Circular", lcd["Circular"]),
         new SampleData("Tree", lcd["Tree"]),
+        new SampleData("Classic Tree", lcd["Classic Tree"]),
         new SampleData("Balloon", lcd["Balloon"]),
         new SampleData("Radial", lcd["Radial"]),
         new SampleData("Series-Parallel", lcd["Series-Parallel"]),
-        new SampleData("Polyline Router", lcd["Polyline Router"]),
+        new SampleData("Edge Router", lcd["Edge Router"]),
         new SampleData("Bus Router", lcd["Bus Router"]),
+        new SampleData("Label Placement", lcd["Labeling"]),
         new SampleData("Components", lcd["Components"]),
         new SampleData("Tabular", lcd["Tabular"]),
         new Separator(),
@@ -137,7 +138,7 @@ namespace Demo.yFiles.Layout.LayoutStyles
         new SampleData("Hierarchic with Sub-components", lcd["Hierarchic"]),
         new SampleData("Orthogonal with Sub-structures", lcd["Orthogonal"]),
         new SampleData("Hierarchic with Buses", lcd["Hierarchic"]),
-        new SampleData("Polyline Router with Buses", lcd["Polyline Router"]),
+        new SampleData("Edge Router with Buses", lcd["Edge Router"]),
       };
       SampleComboBox.ItemsSource = samples;
       SampleComboBox.SelectedIndex = 0;
@@ -180,9 +181,9 @@ namespace Demo.yFiles.Layout.LayoutStyles
         ((OrthogonalLayoutConfig) config).EnableSubstructures();
       }
       if (sampleGraphKey == "Hierarchic with Buses" && data.Name == "Hierarchic") {
-        ((HierarchicLayoutConfig) config).EnableBuses();
+        ((HierarchicLayoutConfig) config).EnableAutomaticBusRouting();
       }
-      if (sampleGraphKey == "Polyline Router with Buses" && data.Name == "Polyline Router") {
+      if (sampleGraphKey == "Edge Router with Buses" && data.Name == "Edge Router") {
         ((PolylineEdgeRouterConfig) config).BusRoutingItem = PolylineEdgeRouterConfig.EnumBusRouting.ByColor;
       }
     }
@@ -474,6 +475,9 @@ namespace Demo.yFiles.Layout.LayoutStyles
         var style = (PolylineEdgeStyle) oldStyle.Clone();
         style.Pen = style.Pen.Clone();
         style.Pen.Thickness = thickness;
+        if (style.Pen.CanFreeze) {
+          style.Pen.Freeze();
+        }
         Graph.SetStyle(edge, style);
       }
     }
@@ -491,6 +495,9 @@ namespace Demo.yFiles.Layout.LayoutStyles
         var newStyle = (PolylineEdgeStyle) polyStyle.Clone();
         newStyle.Pen = newStyle.Pen.Clone();
         newStyle.Pen.Thickness = 1;
+        if (newStyle.Pen.CanFreeze) {
+          newStyle.Pen.Freeze();
+        }
         Graph.SetStyle(edge, newStyle);
       }
     }

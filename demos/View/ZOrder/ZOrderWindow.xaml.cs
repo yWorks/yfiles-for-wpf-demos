@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.3.
- ** Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.4.
+ ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -199,13 +199,13 @@ namespace Demo.yFiles.Graph.ZOrder
       // clear undo-queue
       graphControl.Graph.GetUndoEngine().Clear();
     }
+  }
 
-    /// <summary>
-    /// Class used as flagging tag for node labels that display their owners z-order. 
-    /// </summary>
-    public class ShowZOrderFlag {
-      public static readonly ShowZOrderFlag Instance = new ShowZOrderFlag();
-    }
+  /// <summary>
+  /// Class used as flagging tag for node labels that display their owners z-order. 
+  /// </summary>
+  public class ShowZOrderFlag {
+    public static readonly ShowZOrderFlag Instance = new ShowZOrderFlag();
   }
 }
 

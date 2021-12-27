@@ -1,6 +1,6 @@
 <!-- ************************************************************************ -->
-<!-- This demo file is part of yFiles WPF 3.3.                           -->
-<!-- Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
+<!-- This demo file is part of yFiles WPF 3.4.                           -->
+<!-- Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
 <!-- 72070 Tuebingen, Germany. All rights reserved.                           -->
 <!--                                                                          -->
 <!-- yFiles demo files exhibit yFiles WPF functionalities. Any redistribution  -->
@@ -59,7 +59,7 @@
                             </Paragraph>
                         </ListItem>
                         <ListItem>
-                            <Paragraph>Select an incoming edge and drag it's port outside the node. See how the behaviour 
+                            <Paragraph>Select an incoming edge and drag its port outside the node. See how the behaviour 
                                 of the edge changes when the port enters the node. That is an effect of the implementation of 
                                 IsInside().
                             </Paragraph>
@@ -74,7 +74,7 @@
                             <Paragraph>Please note that IsInside() as well as GetIntersection(), which isn't demonstrated here,
                                 are just used to improve performance. If not implemented, GetOutline() will be used to calculate
                                 exactly the same thing, with the difference that GetOutline() needs to build a GeneralPath first 
-                                which is more expensive than an effective implementation as shown in IsInside().
+                                which is more expensive than an efficient implementation as shown in IsInside().
                             </Paragraph>
                         </ListItem>
                     </List>
@@ -86,7 +86,7 @@
                         	<Paragraph>
                         		Implement HitTest, so a node won't get selected when clicking 
                         		in the bounding box but not in the node itself (this works already 
-                                in this step, but can be implemented explicitely for performance reasons).
+                                in this step, but can be implemented explicitly for performance reasons).
                         	</Paragraph>
                         </ListItem>
                         <ListItem>

@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.3.
- ** Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.4.
+ ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -28,11 +28,9 @@
  ***************************************************************************/
 
 using System.ComponentModel;
-using System.Linq;
 using System.Reflection;
 using Demo.yFiles.Toolkit.OptionHandler;
 using yWorks.Algorithms;
-using yWorks.Algorithms.Util;
 using yWorks.Controls;
 using yWorks.Graph;
 using yWorks.Graph.LabelModels;
@@ -48,6 +46,9 @@ namespace Demo.yFiles.Layout.Configurations
   [Label("Labeling")]
   public class LabelingConfig : LayoutConfiguration
   {
+    private static readonly ILabelLayoutDpKey<bool> SelectedLabelsKey =
+        new ILabelLayoutDpKey<bool>(null, "SelectedLabels");
+
     /// <summary>
     /// Setup default values for various configuration parameters.
     /// </summary>
@@ -86,17 +87,12 @@ namespace Demo.yFiles.Layout.Configurations
 
       var selectionOnly = ConsiderSelectedFeaturesOnlyItem;
       labeling.AffectedLabelsDpKey = null;
-      ILayoutAlgorithm layout = labeling;
 
       if (graphControl.Selection != null && selectionOnly) {
-        labeling.AffectedLabelsDpKey = SelectedLabelsStage.ProviderKey;
-        layout = new SelectedLabelsStage(labeling);
+        labeling.AffectedLabelsDpKey = SelectedLabelsKey;
       }
-
-      AddPreferredPlacementDescriptor(graphControl.Graph, LabelPlacementAlongEdgeItem, LabelPlacementSideOfEdgeItem, LabelPlacementOrientationItem, LabelPlacementDistanceItem);
-      SetupEdgeLabelModels(graphControl);
-
-      return layout;
+      
+      return labeling;
     }
 
     protected override LayoutData CreateConfiguredLayoutData(GraphControl graphControl, ILayoutAlgorithm layout) {
@@ -104,21 +100,21 @@ namespace Demo.yFiles.Layout.Configurations
 
       var selection = graphControl.Selection;
       if (selection != null) {
-        layoutData.AffectedLabels.Source = selection.SelectedLabels;
+        layoutData.AffectedLabels.DpKey = SelectedLabelsKey;
+        layoutData.AffectedLabels.Delegate = label => selection.IsSelected(label) || selection.IsSelected(label.Owner);
+      }
 
-        return new CompositeLayoutData {
-            Items = {
-                layoutData,
-                new SelectedLabelsLayoutData {
-                    SelectedLabelsAtItem = {
-                        Delegate =
-                            item => item.Labels
-                                        .Select(label => selection.IsSelected(label) || selection.IsSelected(item))
-                                        .ToArray()
-                    }
-                }
-            }
-        };
+      if (PlaceEdgeLabelsItem) {
+        SetupEdgeLabelModels(graphControl);
+        return layoutData.CombineWith(
+            CreateLabelingLayoutData(
+                graphControl.Graph,
+                LabelPlacementAlongEdgeItem,
+                LabelPlacementSideOfEdgeItem,
+                LabelPlacementOrientationItem,
+                LabelPlacementDistanceItem
+            )
+        );
       }
 
       return layoutData;
@@ -149,82 +145,6 @@ namespace Demo.yFiles.Layout.Configurations
               label,
               parameterFinder.FindBestParameter(label, model, label.GetLayout()));
         }
-      }
-    }
-
-    /// <summary>
-    /// A layout stage that takes care to convert the selected labels mapper into the respective data provider.
-    /// Unfortunately, mappers for labels are not converted into working data providers for labels automatically.
-    /// </summary>
-    public sealed class SelectedLabelsStage : LayoutStageBase {
-      public static readonly string ProviderKey = "YetAnotherKey";
-      public static readonly string SelectedLabelsAtItemKey = "SelectedLabelsAtItem";
-
-      public SelectedLabelsStage(ILayoutAlgorithm layout) : base(layout) { }
-
-      public override void ApplyLayout(LayoutGraph graph) {
-        var dataProvider = graph.GetDataProvider(SelectedLabelsAtItemKey);
-        graph.AddDataProvider(ProviderKey, new MyDataProviderAdapter(dataProvider, graph));
-        ApplyLayoutCore(graph);
-        graph.RemoveDataProvider(ProviderKey);
-      }
-    }
-
-    public class MyDataProviderAdapter : DataProviderAdapter
-    {
-      private readonly IDataProvider selectedLabelsAtItemProvider;
-      private readonly LayoutGraph layoutGraph;
-
-      public MyDataProviderAdapter(IDataProvider selectedLabelsAtItemProvider, LayoutGraph layoutGraph) {
-        this.selectedLabelsAtItemProvider = selectedLabelsAtItemProvider;
-        this.layoutGraph = layoutGraph;
-      }
-
-      public override bool GetBool(object dataHolder) {
-        if (dataHolder is INodeLabelLayout) {
-          var node = layoutGraph.GetOwner((INodeLabelLayout) dataHolder);
-          if (layoutGraph is CopiedLayoutGraph) {
-            var selectedLabels = (bool[]) selectedLabelsAtItemProvider.Get(node);
-            if (selectedLabels != null) {
-              var nodeLabelLayouts = layoutGraph.GetLabelLayout(node);
-              for (int i = 0; i < nodeLabelLayouts.Length; i++) {
-                var nodeLabelLayout = nodeLabelLayouts[i];
-                if (nodeLabelLayout == dataHolder && selectedLabels.Length > i) {
-                  return selectedLabels[i];
-                }
-              }
-            }
-          }
-        } else if (dataHolder is IEdgeLabelLayout) {
-          var edge = layoutGraph.GetOwner((IEdgeLabelLayout) dataHolder);
-          if (layoutGraph is CopiedLayoutGraph) {
-            var selectedLabels = (bool[]) selectedLabelsAtItemProvider.Get(edge);
-            if (selectedLabels != null) {
-              var edgeLabelLayouts = layoutGraph.GetLabelLayout(edge);
-              for (int i = 0; i < edgeLabelLayouts.Length; i++) {
-                var edgeLabelLayout = edgeLabelLayouts[i];
-                if (edgeLabelLayout == dataHolder && selectedLabels.Length > i) {
-                  return selectedLabels[i];
-                }
-              }
-            }
-          }
-        }
-        return false;
-      }
-    }
-
-    public class SelectedLabelsLayoutData : LayoutData
-    {
-      private ItemMapping<ILabelOwner, bool[]> selectedLabelsAtItem;
-
-      public ItemMapping<ILabelOwner, bool[]> SelectedLabelsAtItem {
-        get { return selectedLabelsAtItem ?? (selectedLabelsAtItem = new ItemMapping<ILabelOwner, bool[]>()); }
-        set { selectedLabelsAtItem = value; }
-      }
-
-      protected override void Apply(LayoutGraphAdapter layoutGraphAdapter, ILayoutAlgorithm layout, CopiedLayoutGraph layoutGraph) {
-        layoutGraphAdapter.AddDataProvider(SelectedLabelsStage.SelectedLabelsAtItemKey, SelectedLabelsAtItem.ProvideMapper(layoutGraphAdapter, layout));
       }
     }
 
@@ -316,7 +236,9 @@ namespace Demo.yFiles.Layout.Configurations
     [DefaultValue(EnumLabelPlacementAlongEdge.Centered)]
     [EnumValue("Anywhere", EnumLabelPlacementAlongEdge.Anywhere)]
     [EnumValue("At Source",EnumLabelPlacementAlongEdge.AtSource)]
+    [EnumValue("At Source Port",EnumLabelPlacementAlongEdge.AtSourcePort)]
     [EnumValue("At Target",EnumLabelPlacementAlongEdge.AtTarget)]
+    [EnumValue("At Target Port",EnumLabelPlacementAlongEdge.AtTargetPort)]
     [EnumValue("Centered",EnumLabelPlacementAlongEdge.Centered)]
     public EnumLabelPlacementAlongEdge LabelPlacementAlongEdgeItem { get; set; }
 

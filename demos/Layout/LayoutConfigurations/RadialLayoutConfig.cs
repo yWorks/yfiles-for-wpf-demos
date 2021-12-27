@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.3.
- ** Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.4.
+ ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -97,14 +97,13 @@ namespace Demo.yFiles.Layout.Configurations
       if (EdgeLabelingItem) {
         var labeling = new GenericLabeling {
             PlaceEdgeLabels = true,
-            PlaceNodeLabels = false
+            PlaceNodeLabels = false,
+            ReduceAmbiguity = ReduceAmbiguityItem
         };
         layout.LabelingEnabled = true;
         layout.Labeling = labeling;
       }
-
-      AddPreferredPlacementDescriptor(graphControl.Graph, LabelPlacementAlongEdgeItem, LabelPlacementSideOfEdgeItem, LabelPlacementOrientationItem, LabelPlacementDistanceItem);
-
+      
       return layout;
     }
 
@@ -115,7 +114,15 @@ namespace Demo.yFiles.Layout.Configurations
         layoutData.CenterNodes.Source = graphControl.Selection.SelectedNodes;
       }
 
-      return layoutData;
+      return layoutData.CombineWith(
+          CreateLabelingLayoutData(
+              graphControl.Graph,
+              LabelPlacementAlongEdgeItem,
+              LabelPlacementSideOfEdgeItem,
+              LabelPlacementOrientationItem,
+              LabelPlacementDistanceItem
+          )
+      );
     }
 
     // ReSharper disable UnusedMember.Global
@@ -239,6 +246,15 @@ namespace Demo.yFiles.Layout.Configurations
     [DefaultValue(false)]
     public bool EdgeLabelingItem { get; set; }
 
+    [Label("Reduce Ambiguity")]
+    [OptionGroup("EdgePropertiesGroup", 20)]
+    [DefaultValue(false)]
+    public bool ReduceAmbiguityItem { get; set; }
+
+    public bool ShouldDisableReduceAmbiguityItem {
+      get { return !EdgeLabelingItem; }
+    }
+
     [Label("Orientation")]
     [OptionGroup("PreferredPlacementGroup", 10)]
     [DefaultValue(EnumLabelPlacementOrientation.Horizontal)]
@@ -257,7 +273,9 @@ namespace Demo.yFiles.Layout.Configurations
     [DefaultValue(EnumLabelPlacementAlongEdge.Centered)]
     [EnumValue("Anywhere", EnumLabelPlacementAlongEdge.Anywhere)]
     [EnumValue("At Source",EnumLabelPlacementAlongEdge.AtSource)]
+    [EnumValue("At Source Port",EnumLabelPlacementAlongEdge.AtSourcePort)]
     [EnumValue("At Target",EnumLabelPlacementAlongEdge.AtTarget)]
+    [EnumValue("At Target Port",EnumLabelPlacementAlongEdge.AtTargetPort)]
     [EnumValue("Centered",EnumLabelPlacementAlongEdge.Centered)]
     public EnumLabelPlacementAlongEdge LabelPlacementAlongEdgeItem { get; set; }
 

@@ -11,7 +11,7 @@
     <AssemblyName>yEd WPF</AssemblyName>
     <ApplicationIcon>yFiles.ico</ApplicationIcon>
     <OldToolsVersion>3.5</OldToolsVersion>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <ProductName>Demo.yFiles.GraphEditor</ProductName>
     <PublisherName>yWorks GmbH</PublisherName>
   </PropertyGroup>
@@ -68,13 +68,13 @@
     <Reference Include="UIAutomationProvider"></Reference>
     <Reference Include="WindowsBase"></Reference>
     <Reference Include="yWorks.yFilesWPF.Viewer">
-      <HintPath>..\..\..\..\lib\net40\\yWorks.yFilesWPF.Viewer.dll</HintPath>
+      <HintPath>..\..\..\..\lib\net40\yWorks.yFilesWPF.Viewer.dll</HintPath>
     </Reference>
     <Reference Include="yWorks.yFilesWPF.Adapter">
-      <HintPath>..\..\..\..\lib\net40\\yWorks.yFilesWPF.Adapter.dll</HintPath>
+      <HintPath>..\..\..\..\lib\net40\yWorks.yFilesWPF.Adapter.dll</HintPath>
     </Reference>
     <Reference Include="yWorks.yFilesWPF.Algorithms">
-      <HintPath>..\..\..\..\lib\net40\\yWorks.yFilesWPF.Algorithms.dll</HintPath>
+      <HintPath>..\..\..\..\lib\net40\yWorks.yFilesWPF.Algorithms.dll</HintPath>
     </Reference>
     <Reference Include="System.Core" />
   </ItemGroup>
@@ -302,19 +302,19 @@
   <ItemGroup>
     <ProjectReference Include="..\..\View\ImageExport\ImageExport.csproj">
       <Project>{5965F57D-A8A3-498B-BA90-E0CF31C92373}</Project>
-      <Name>Demo.yFiles.ImageExport</Name>
+      <Name>ImageExport</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Utils\Option\Option.csproj">
       <Project>{5AD8C0FF-B1B6-4528-A777-BD9507E3A829}</Project>
-      <Name>Demo.yFiles.Option</Name>
+      <Name>Option</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\View\Printing\Printing.csproj">
       <Project>{D552E90B-F012-438E-9953-A96A6BD61CED}</Project>
-      <Name>Demo.yFiles.Printing</Name>
+      <Name>Printing</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Utils\DemoToolkit\DemoToolkit.csproj">
       <Project>{AAA67DCC-AA93-4EB4-8B93-F09D77292C09}</Project>
-      <Name>Demo.yFiles.Toolkit</Name>
+      <Name>DemoToolkit</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

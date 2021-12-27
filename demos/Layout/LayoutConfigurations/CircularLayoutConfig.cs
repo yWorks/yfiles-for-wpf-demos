@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.3.
- ** Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.4.
+ ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -68,6 +68,7 @@ namespace Demo.yFiles.Layout.Configurations
       PreferredCurveLengthItem = 20;
       PreferredAngleItem = 10;
       SmoothnessItem = 0.7;
+      
       EdgeBundlingItem = false;
       EdgeBundlingStrengthItem = 0.95;
 
@@ -131,8 +132,6 @@ namespace Demo.yFiles.Layout.Configurations
       ebc.BundlingStrength = EdgeBundlingStrengthItem;
       ebc.DefaultBundleDescriptor = bundlingDescriptor;
 
-      AddPreferredPlacementDescriptor(graphControl.Graph, LabelPlacementAlongEdgeItem, LabelPlacementSideOfEdgeItem, LabelPlacementOrientationItem, LabelPlacementDistanceItem);
-
       return layout;
     }
 
@@ -148,7 +147,15 @@ namespace Demo.yFiles.Layout.Configurations
         layoutData.ExteriorEdges.Source = graphControl.Selection.SelectedEdges;
       }
 
-      return layoutData;
+      return layoutData.CombineWith(
+          CreateLabelingLayoutData(
+              graphControl.Graph,
+              LabelPlacementAlongEdgeItem,
+              LabelPlacementSideOfEdgeItem,
+              LabelPlacementOrientationItem,
+              LabelPlacementDistanceItem
+          )
+      );
     }
 
     // ReSharper disable UnusedMember.Global
@@ -445,7 +452,9 @@ namespace Demo.yFiles.Layout.Configurations
     [DefaultValue(EnumLabelPlacementAlongEdge.Centered)]
     [EnumValue("Anywhere", EnumLabelPlacementAlongEdge.Anywhere)]
     [EnumValue("At Source",EnumLabelPlacementAlongEdge.AtSource)]
+    [EnumValue("At Source Port",EnumLabelPlacementAlongEdge.AtSourcePort)]
     [EnumValue("At Target",EnumLabelPlacementAlongEdge.AtTarget)]
+    [EnumValue("At Target Port",EnumLabelPlacementAlongEdge.AtTargetPort)]
     [EnumValue("Centered",EnumLabelPlacementAlongEdge.Centered)]
     public EnumLabelPlacementAlongEdge LabelPlacementAlongEdgeItem { get; set; }
 

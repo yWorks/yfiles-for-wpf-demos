@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.3.
- ** Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.4.
+ ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -142,7 +142,7 @@ namespace Demo.yFiles.Layout.MazeRouting
 
         // create a layout executor with 0.5 seconds execution time and the affected edges
         var layoutExecutor = new LayoutExecutor(graphControl, fullGraph, layoutAlgorithm) {
-          LayoutData = new PolylineEdgeRouterData { AffectedEdges = { Source = edges } },
+          LayoutData = new EdgeRouterData { AffectedEdges = { Source = edges } },
           Duration = TimeSpan.FromSeconds(0.5),
           AnimateViewport = true,
           EasedAnimation = true,

@@ -1,6 +1,6 @@
 <!-- ************************************************************************ -->
-<!-- This demo file is part of yFiles WPF 3.3.                           -->
-<!-- Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
+<!-- This demo file is part of yFiles WPF 3.4.                           -->
+<!-- Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
 <!-- 72070 Tuebingen, Germany. All rights reserved.                           -->
 <!--                                                                          -->
 <!-- yFiles demo files exhibit yFiles WPF functionalities. Any redistribution  -->
@@ -122,7 +122,7 @@
 							<Paragraph>
 								<Run FontWeight="Bold">Subgraph Layout:</Run>
 								Specifies the layout algorithm that is applied to the subgraph components. Available layout
-								include hierarchic, orthogonal, organic and circular layout styles.
+								algorithms include hierarchic, orthogonal, organic and circular layout styles.
 								Furthermore it can be specified that the layout of the components shall not change by selecting "Unchanged".
 							</Paragraph>
 						</ListItem>

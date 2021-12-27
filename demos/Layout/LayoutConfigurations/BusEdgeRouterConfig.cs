@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.3.
- ** Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.4.
+ ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -117,7 +117,8 @@ namespace Demo.yFiles.Layout.Configurations
                       !graphSelection.IsSelected(edge.GetSourceNode()) &&
                       !graphSelection.IsSelected(edge.GetTargetNode());
         var id = GetBusId(edge, BusesItem);
-        busIds[edge] = new BusDescriptor(id, isFixed);
+        var descriptor = new BusDescriptor(id, isFixed) { RoutingPolicy = RoutingPolicyItem };
+        busIds[edge] = descriptor;
       }
 
       HashSet<object> selectedIds;
@@ -139,14 +140,12 @@ namespace Demo.yFiles.Layout.Configurations
                                             .Select(edge => busIds[edge].BusId));
 
           layoutData.AffectedEdges.Delegate = edge => selectedIds.Contains(busIds[edge].BusId);
-          return new CompositeLayoutData {
-              Items = {
-                  layoutData,
-                  new HideNonOrthogonalEdgesLayoutData {
-                      SelectedNodes = { Source = graphSelection.SelectedNodes }
-                  }
-              }
-          };
+
+          var hideNonOrthogonalEdgesLayoutData = new GenericLayoutData();
+          hideNonOrthogonalEdgesLayoutData.AddItemCollection(HideNonOrthogonalEdgesStage.SelectedNodesDpKey).Source =
+              graphSelection.SelectedNodes;
+
+          return layoutData.CombineWith(hideNonOrthogonalEdgesLayoutData);
       }
 
       return layoutData;
@@ -270,6 +269,13 @@ namespace Demo.yFiles.Layout.Configurations
     [ComponentType(ComponentTypes.Slider)]
     public double MinimumBackboneSegmentLengthItem { get; set; }
 
+    [Label("Routing Policy")]
+    [OptionGroup("RoutingGroup", 5)]
+    [DefaultValue(RoutingPolicy.Always)]
+    [EnumValue("Always", RoutingPolicy.Always)]
+    [EnumValue("Path As Needed", RoutingPolicy.PathAsNeeded)]
+    public RoutingPolicy RoutingPolicyItem { get; set; }
+    
     [Label("Crossing Cost")]
     [OptionGroup("RoutingGroup", 10)]
     [DefaultValue(1.0d)]
@@ -323,20 +329,6 @@ namespace Demo.yFiles.Layout.Configurations
         ApplyLayoutCore(graph);
 
         hider.UnhideEdges();
-      }
-    }
-
-    private class HideNonOrthogonalEdgesLayoutData : LayoutData
-    {
-      private DpKeyItemCollection<INode> selectedNodes;
-
-      public DpKeyItemCollection<INode> SelectedNodes {
-        get { return selectedNodes ?? (selectedNodes = new DpKeyItemCollection<INode> { DpKey = HideNonOrthogonalEdgesStage.SelectedNodesDpKey }); }
-        set { selectedNodes = value; }
-      }
-
-      protected override void Apply(LayoutGraphAdapter layoutGraphAdapter, ILayoutAlgorithm layout, CopiedLayoutGraph layoutGraph) {
-        layoutGraphAdapter.AddDataProvider(SelectedNodes.DpKey, SelectedNodes.ProvideMapper(layoutGraphAdapter, layout));
       }
     }
   }

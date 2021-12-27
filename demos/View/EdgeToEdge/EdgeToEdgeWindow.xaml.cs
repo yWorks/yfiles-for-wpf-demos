@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.3.
- ** Copyright (c) 2000-2020 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.4.
+ ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -172,6 +172,9 @@ namespace Demo.yFiles.Graph.EdgeToEdge
       // set IEdgeReconnectionPortCandidateProvider to allow re-connecting edges to other edges 
       Graph.GetDecorator().EdgeDecorator.EdgeReconnectionPortCandidateProviderDecorator.SetImplementation(
         EdgeReconnectionPortCandidateProviders.AllNodeAndEdgeCandidates);
+      Graph.GetDecorator().EdgeDecorator.HandleProviderDecorator.SetFactory(edge => new PortRelocationHandleProvider(null, edge) {
+          Visualization = Visualization.Live
+      });
 
       // load a sample graph
       graphControl.ImportFromGraphML("Resources/sample.graphml");
@@ -243,18 +246,12 @@ namespace Demo.yFiles.Graph.EdgeToEdge
 
     protected override IEnumerable<IPortCandidate> GetPortCandidates(IInputModeContext context) {
       List<IPortCandidate> candidates = new List<IPortCandidate>();
-      // add a port candidate at each bend
-      for (int i = edge.Bends.Count - 1; i >= 0; i--) {
-        candidates.Add(new DefaultPortCandidate(edge, BendAnchoredPortLocationModel.Instance.CreateFromSource(i)));
+      // add equally distributed port candidates along the edge
+      for (int i = 1; i < 10; ++i) {
+        candidates.Add(new DefaultPortCandidate(edge, EdgePathPortLocationModel.Instance.CreateRatioParameter(0.1 * i)));
       }
-      // add port candidates along the path of each segment
-      for (int i = edge.Bends.Count; i >= 0; i--) {
-        candidates.Add(new DefaultPortCandidate(edge, SegmentRatioPortLocationModel.Instance.CreateFromSource(0.25, i)));
-        candidates.Add(new DefaultPortCandidate(edge, SegmentRatioPortLocationModel.Instance.CreateFromSource(0.5, i)));
-        candidates.Add(new DefaultPortCandidate(edge, SegmentRatioPortLocationModel.Instance.CreateFromSource(0.75, i)));
-        // add a dynamic candidate that can be used if shift is pressed to assign the exact location.
-        candidates.Add(new DefaultPortCandidate(edge, SegmentRatioPortLocationModel.Instance));
-      }
+      // add a dynamic candidate that can be used if shift is pressed to assign the exact location.
+      candidates.Add(new DefaultPortCandidate(edge, EdgePathPortLocationModel.Instance));
       return candidates;
     }
   }
