@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.4.
- ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.5.
+ ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -33,12 +33,12 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using Demo.yFiles.Toolkit;
 using yWorks.Controls.Input;
 using yWorks.Controls;
 using yWorks.Geometry;
 using yWorks.Graph;
 using yWorks.Graph.Styles;
-using yWorks.GraphML;
 using yWorks.Utils;
 using yWorks.Layout;
 using yWorks.Layout.Hierarchic;
@@ -291,15 +291,8 @@ namespace Demo.yFiles.Layout.IncrementalHierarchicLayout
       IGraph graph = graphControl.Graph;
 
       // set some nice defaults
-      graph.NodeDefaults.Style = new ShinyPlateNodeStyle { Brush = Brushes.Orange };
+      DemoStyles.InitDemoStyles(graph, Themes.Palette21, null, Themes.Palette21, null, Themes.Palette21);
       graph.NodeDefaults.Size = new SizeD(60, 30);
-
-      graph.GroupNodeDefaults.Style = new ShapeNodeStyle
-      {
-        Shape = ShapeNodeShape.RoundRectangle,
-        Pen = new Pen(Brushes.DarkBlue, 2),
-        Brush = null
-      };
 
       // register a custom PositionHandler for the nodes.
       // this enables interactive layer reassignment with layer preview

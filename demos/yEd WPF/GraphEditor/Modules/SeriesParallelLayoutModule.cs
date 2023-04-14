@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.4.
- ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.5.
+ ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -221,7 +221,7 @@ namespace Demo.yFiles.GraphEditor.Modules.Layout
       series.MinimumNodeToEdgeDistance = (double) Handler.GetValue(GENERAL, NODE_TO_EDGE_DISTANCE);
       series.MinimumEdgeToEdgeDistance = (double) Handler.GetValue(GENERAL, EDGE_TO_EDGE_DISTANCE);
 
-      Object portStyle = Handler.GetValue(EDGE_SETTINGS, PORT_STYLE);
+      string portStyle = (string)Handler.GetValue(EDGE_SETTINGS, PORT_STYLE);
       if (CENTER_PORTS == portStyle) {
         ((DefaultPortAssignment) series.DefaultPortAssignment).Mode = PortAssignmentMode.Center;
       } else {

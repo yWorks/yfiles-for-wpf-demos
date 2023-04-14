@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.4.
- ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.5.
+ ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -149,12 +149,15 @@ namespace Demo.yFiles.Algorithms.GraphAnalysis
       // add a gradient to indicate the distance of the nodes to the source
       var maxDistance = result.Distances.Values.Where(dist => !double.IsPositiveInfinity(dist)).Max();
 
-      foreach (var node in graph.Nodes) {
-        var v = result.Distances[node] / maxDistance;
-        node.Tag = new Tag {GradientValue = v};
-        var edgeToNode = result.Predecessors[node];
-        if (edgeToNode != null) {
-          edgeToNode.Tag = new Tag {GradientValue = v};
+      if (maxDistance > 0) {
+        foreach (var node in graph.Nodes) {
+          var relativeDistance = result.Distances[node] / maxDistance;
+          double? gradientValue = double.IsInfinity(relativeDistance) ? (double?) null : relativeDistance;
+          node.Tag = new Tag {GradientValue = gradientValue};
+          var edgeToNode = result.Predecessors[node];
+          if (edgeToNode != null) {
+            edgeToNode.Tag = new Tag {GradientValue = gradientValue, Directed = Directed};
+          }
         }
       }
 
@@ -190,7 +193,8 @@ namespace Demo.yFiles.Algorithms.GraphAnalysis
       foreach (var pair in item2ColorGroups) {
         pair.Key.Tag = new Tag {
             ColorGroups = pair.Value,
-            CurrentColor = pair.Value.First().Color
+            CurrentColor = pair.Value.First().Color,
+            Directed = Directed
         };
       }
       MarkSourceAndTargetNodes(sources, targets);

@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.4.
- ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.5.
+ ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -31,6 +31,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Windows.Threading;
+using Demo.yFiles.Toolkit;
 using yWorks.Controls.Input;
 using yWorks.Controls;
 using yWorks.Geometry;
@@ -283,12 +284,12 @@ namespace Demo.yFiles.Layout.InteractiveOrganic
     {
       IGraph graph = Graph;
 
+      // initialize default styles
+      DemoStyles.InitDemoStyles(graph);
+      graph.EdgeDefaults.Style = DemoStyles.CreateDemoEdgeStyle(showTargetArrow : false);
+
       // load a sample graph
       new GraphMLIOHandler().Read(graph, "Resources/sample.graphml");
-
-      // set some defaults
-      graph.NodeDefaults.Style = graph.Nodes.First().Style;
-      graph.NodeDefaults.ShareStyleInstance = true;
 
       // we start with a simple run of OrganicLayout to get a good starting result
       // the algorithm is optimized to "unfold" graphs quicker than
@@ -318,16 +319,16 @@ namespace Demo.yFiles.Layout.InteractiveOrganic
 
       // register a listener so that structure updates are handled automatically
       graph.NodeCreated += delegate(object source, ItemEventArgs<INode> args) {
-                             if (layout != null) {
-                               var center = args.Item.Layout.GetCenter();
-                               layout.SyncStructure(true);
-                               //we nail down all newly created nodes
-                               var copiedNode = copiedLayoutGraph.GetCopiedNode(args.Item);
-                               layout.SetCenter(copiedNode, center.X, center.Y);
-                               layout.SetInertia(copiedNode, 1);
-                               layout.SetStress(copiedNode, 0);
-                             }
-                           };
+        if (layout != null) {
+          var center = args.Item.Layout.GetCenter();
+          layout.SyncStructure(true);
+          //we nail down all newly created nodes
+          var copiedNode = copiedLayoutGraph.GetCopiedNode(args.Item);
+          layout.SetCenter(copiedNode, center.X, center.Y);
+          layout.SetInertia(copiedNode, 1);
+          layout.SetStress(copiedNode, 0);
+        }
+      };
       graph.NodeRemoved += OnStructureChanged;
       graph.EdgeCreated += OnStructureChanged;
       graph.EdgeRemoved += OnStructureChanged;

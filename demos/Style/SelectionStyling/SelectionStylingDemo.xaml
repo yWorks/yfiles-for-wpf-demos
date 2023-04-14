@@ -1,6 +1,6 @@
 <!-- ************************************************************************ -->
-<!-- This demo file is part of yFiles WPF 3.4.                           -->
-<!-- Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
+<!-- This demo file is part of yFiles WPF 3.5.                           -->
+<!-- Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
 <!-- 72070 Tuebingen, Germany. All rights reserved.                           -->
 <!--                                                                          -->
 <!-- yFiles demo files exhibit yFiles WPF functionalities. Any redistribution  -->
@@ -70,7 +70,7 @@
           </Paragraph>
           <Paragraph Style="{StaticResource HtmlDt}">ViewCoordinates</Paragraph>
           <Paragraph Style="{StaticResource HtmlDi}">
-            The visual is rendered in the view coordinate space and doesn't scale with the zoom level,
+            The visual is rendered in the view coordinate space and does not scale with the zoom level,
             similar to the default node resize handles, for example.
           </Paragraph>
           <Paragraph Style="{StaticResource HtmlDt}">Mixed</Paragraph>

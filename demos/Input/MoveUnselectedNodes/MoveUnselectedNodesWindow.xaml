@@ -1,6 +1,6 @@
 <!-- ************************************************************************ -->
-<!-- This demo file is part of yFiles WPF 3.4.                           -->
-<!-- Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
+<!-- This demo file is part of yFiles WPF 3.5.                           -->
+<!-- Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
 <!-- 72070 Tuebingen, Germany. All rights reserved.                           -->
 <!--                                                                          -->
 <!-- yFiles demo files exhibit yFiles WPF functionalities. Any redistribution  -->
@@ -90,7 +90,7 @@
                         Nodes cannot be moved if the Shift key is held down while dragging. Instead, this 
                                     gesture starts edge creation.
                     </Paragraph>
-                    <Paragraph Style="{StaticResource HtmlDt}">Top of Node</Paragraph>
+                    <Paragraph Style="{StaticResource HtmlDt}">Drag at Top</Paragraph>
                     <Paragraph Style="{StaticResource HtmlDi}">
                         Nodes can only be moved when dragged at their top. Note how the cursor changes 
                                     when you hover over different areas of the node.

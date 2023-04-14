@@ -2,7 +2,6 @@
 <!--Created by yFiles WPF 3.4-->
 <graphml xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/3.0" xmlns:y="http://www.yworks.com/xml/yfiles-common/3.0" xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/3.0/xaml" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml.wpf/3.0/ygraphml.xsd " xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://graphml.graphdrawing.org/xmlns">
   <key id="d0" attr.name="UserTags" for="all" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/UserTags" />
-  <key id="d1" attr.name="NodeStyle" for="node" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeStyle" />
   <key id="d2" attr.name="NodeLabels" for="node" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeLabels" />
   <key id="d3" attr.name="NodeGeometry" for="node" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeGeometry" />
   <key id="d4" attr.type="string" attr.name="EdgeReference" for="node" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/EdgeReference" />
@@ -23,7 +22,6 @@
   <key id="d11" attr.name="SharedData" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/SharedData" />
   <data key="d11">
     <y:SharedData>
-      <ywpf:ShinyPlateNodeStyle x:Key="1" Brush="#FFFFA500" />
       <ywpf:NodeStylePortStyleAdapter x:Key="2" RenderSize="3,3">
         <ywpf:ShapeNodeStyle Pen="{x:Null}" Brush="#FF000000" Shape="Ellipse" />
       </ywpf:NodeStylePortStyleAdapter>
@@ -31,9 +29,6 @@
   </data>
   <graph id="G">
     <node id="n0">
-      <data key="d1">
-        <y:GraphMLReference ResourceKey="1" />
-      </data>
       <data key="d3">
         <y:RectD X="-367.45000000000005" Y="-290.93" Width="30" Height="30" />
       </data>
@@ -41,27 +36,18 @@
       <port name="p1" />
     </node>
     <node id="n1">
-      <data key="d1">
-        <y:GraphMLReference ResourceKey="1" />
-      </data>
       <data key="d3">
         <y:RectD X="-367.45000000000005" Y="-469.93000000000006" Width="30" Height="30" />
       </data>
       <port name="p0" />
     </node>
     <node id="n2">
-      <data key="d1">
-        <y:GraphMLReference ResourceKey="1" />
-      </data>
       <data key="d3">
         <y:RectD X="-51.450000000000045" Y="-469.93000000000006" Width="30" Height="30" />
       </data>
       <port name="p0" />
     </node>
     <node id="n3">
-      <data key="d1">
-        <y:GraphMLReference ResourceKey="1" />
-      </data>
       <data key="d3">
         <y:RectD X="-51.450000000000045" Y="-290.93" Width="30" Height="30" />
       </data>
@@ -134,31 +120,10 @@
       </port>
     </node>
     <edge id="e0" source="n0" target="n1" sourceport="p0" targetport="p0">
-      <data key="d5">
-        <ywpf:PolylineEdgeStyle>
-          <ywpf:PolylineEdgeStyle.Pen>
-            <Pen Brush="#FF10C49C" Thickness="2" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" />
-          </ywpf:PolylineEdgeStyle.Pen>
-        </ywpf:PolylineEdgeStyle>
-      </data>
     </edge>
     <edge id="e1" source="n2" target="n3" sourceport="p0" targetport="p0">
-      <data key="d5">
-        <ywpf:PolylineEdgeStyle>
-          <ywpf:PolylineEdgeStyle.Pen>
-            <Pen Brush="#FF739DD4" Thickness="2" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" />
-          </ywpf:PolylineEdgeStyle.Pen>
-        </ywpf:PolylineEdgeStyle>
-      </data>
     </edge>
     <edge id="e2" source="n0" target="n3" sourceport="p1" targetport="p1">
-      <data key="d5">
-        <ywpf:PolylineEdgeStyle>
-          <ywpf:PolylineEdgeStyle.Pen>
-            <Pen Brush="#FF2E6657" Thickness="2" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" />
-          </ywpf:PolylineEdgeStyle.Pen>
-        </ywpf:PolylineEdgeStyle>
-      </data>
       <data key="d7">
         <x:List>
           <y:Bend Location="-250,-275.93" />
@@ -169,22 +134,8 @@
       </data>
     </edge>
     <edge id="e3" source="d:e0" target="d:e1" sourceport="p0" targetport="p0">
-      <data key="d5">
-        <ywpf:PolylineEdgeStyle>
-          <ywpf:PolylineEdgeStyle.Pen>
-            <Pen Brush="#FFF5E3C4" Thickness="2" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" />
-          </ywpf:PolylineEdgeStyle.Pen>
-        </ywpf:PolylineEdgeStyle>
-      </data>
     </edge>
     <edge id="e4" source="d:e3" target="d:e2" sourceport="p0" targetport="p0">
-      <data key="d5">
-        <ywpf:PolylineEdgeStyle>
-          <ywpf:PolylineEdgeStyle.Pen>
-            <Pen Brush="#FF084503" Thickness="2" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" />
-          </ywpf:PolylineEdgeStyle.Pen>
-        </ywpf:PolylineEdgeStyle>
-      </data>
       <data key="d7">
         <x:List>
           <y:Bend Location="-162.85,-226.73" />
@@ -192,13 +143,6 @@
       </data>
     </edge>
     <edge id="e5" source="d:e4" target="d:e4" sourceport="p1" targetport="p0">
-      <data key="d5">
-        <ywpf:PolylineEdgeStyle>
-          <ywpf:PolylineEdgeStyle.Pen>
-            <Pen Brush="#FFC6E824" Thickness="2" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" />
-          </ywpf:PolylineEdgeStyle.Pen>
-        </ywpf:PolylineEdgeStyle>
-      </data>
       <data key="d7">
         <x:List>
           <y:Bend Location="-134.65,-314.03" />

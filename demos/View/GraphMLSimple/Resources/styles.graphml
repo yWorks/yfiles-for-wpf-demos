@@ -1,19 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--Created by yFiles WPF 2.1-->
-<graphml xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/3.0" xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/3.0/xaml" xmlns:y="http://www.yworks.com/xml/yfiles-common/3.0" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml.wpf/2.0/ygraphml.xsd " xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:av="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
-  <key id="d0" for="all" attr.name="UserTags" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/UserTags" />
-  <key id="d1" for="node" attr.name="NodeLabels" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeLabels" />
-  <key id="d2" for="node" attr.name="NodeGeometry" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeGeometry" />
-  <key id="d3" for="node" attr.name="NodeStyle" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeStyle" />
-  <key id="d4" for="edge" attr.name="EdgeLabels" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/EdgeLabels" />
-  <key id="d5" for="edge" attr.name="EdgeGeometry" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/EdgeGeometry" />
-  <key id="d6" for="edge" attr.name="EdgeStyle" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/EdgeStyle" />
-  <key id="d8" for="port" attr.name="PortLocationParameter" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/PortLocationParameter">
+<!--Created by yFiles WPF 3.5-->
+<graphml xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/3.0" xmlns:y="http://www.yworks.com/xml/yfiles-common/3.0" xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/3.0/xaml" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml.wpf/3.0/ygraphml.xsd " xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://graphml.graphdrawing.org/xmlns">
+  <key id="d0" attr.name="NodeLabels" for="node" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeLabels" />
+  <key id="d1" attr.name="NodeGeometry" for="node" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeGeometry" />
+  <key id="d2" attr.name="UserTags" for="all" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/UserTags" />
+  <key id="d3" attr.name="NodeStyle" for="node" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeStyle" />
+  <key id="d4" attr.name="EdgeLabels" for="edge" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/EdgeLabels" />
+  <key id="d5" attr.name="EdgeGeometry" for="edge" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/EdgeGeometry" />
+  <key id="d6" attr.name="EdgeStyle" for="edge" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/EdgeStyle" />
+  <key id="d7" attr.name="PortLabels" for="port" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/PortLabels" />
+  <key id="d8" attr.name="PortLocationParameter" for="port" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/PortLocationParameter">
     <default>
       <x:Static Member="y:FreeNodePortLocationModel.NodeCenterAnchored" />
     </default>
   </key>
-  <key id="d9" for="port" attr.name="PortStyle" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/PortStyle">
+  <key id="d9" attr.name="PortStyle" for="port" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/PortStyle">
     <default>
       <x:Static Member="y:VoidPortStyle.Instance" />
     </default>
@@ -21,34 +22,18 @@
   <key id="d10" attr.name="SharedData" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/SharedData" />
   <data key="d10">
     <y:SharedData>
-      <y:InteriorLabelModelParameter x:Key="1" Position="Center">
-        <y:InteriorLabelModelParameter.Model>
-          <y:InteriorLabelModel />
-        </y:InteriorLabelModelParameter.Model>
-      </y:InteriorLabelModelParameter>
-      <ywpf:DefaultLabelStyle TextSize="8.25" x:Key="2" Typeface="Microsoft Sans Serif,Normal,Normal,Normal"/>
-      <y:InteriorLabelModel x:Key="3" />
-      <ywpf:DefaultLabelStyle TextSize="12" x:Key="4" ClipText="False" Typeface="Courier New,Normal,Normal,Normal" TextBrush="{y:GraphMLReference 7}" />
-      <y:InteriorLabelModel x:Key="5" />
-      <y:InteriorLabelModel x:Key="6" />
-      <av:SolidColorBrush x:Key="7" Color="Black" />
-      <ywpf:Arrow x:Key="8" Pen="Black" Brush="Black" Type="None" />
-      <ywpf:Arrow x:Key="9" Pen="Black" Brush="#FF000000" Type="Default" />
-      <ywpf:Arrow x:Key="10" Pen="Black" Brush="Black" Type="None" />
+      <ywpf:Typeface x:Key="1" />
+      <y:InteriorLabelModel x:Key="2" />
+      <ywpf:Arrow x:Key="3" Type="Triangle" Brush="#FF662B00" />
+      <ywpf:Arrow x:Key="4" Type="Triangle" Brush="#FF27401B" />
     </y:SharedData>
   </data>
-  <graph id="G" edgedefault="directed">
-     <node id="n0">
-      <data key="d2">
-        <y:RectD X="330" Y="487" Width="60" Height="50" />
-      </data>
-      <data key="d3">
-        <ywpf:BevelNodeStyle Inset="3" Radius="10" />
-      </data>
-      <data key="d1">
+  <graph id="G">
+    <node id="n0">
+      <data key="d0">
         <x:List>
           <y:Label>
-            <y:Label.Text>BevelNodeStyle</y:Label.Text>
+            <y:Label.Text>RectangleNodeStyle</y:Label.Text>
             <y:Label.LayoutParameter>
               <y:SandwichParameter Position="South">
                 <y:SandwichParameter.Model>
@@ -57,70 +42,25 @@
               </y:SandwichParameter>
             </y:Label.LayoutParameter>
             <y:Label.Style>
-              <ywpf:DefaultLabelStyle TextSize="12" Typeface="Microsoft Sans Serif,Normal,Normal,Normal" TextBrush="#FF000000" />
+              <ywpf:DefaultLabelStyle BackgroundBrush="#FFDACAE1" VerticalTextAlignment="Center" TextAlignment="Center" Shape="RoundRectangle" Typeface="{y:GraphMLReference 1}" TextBrush="#FF413148" Insets="4,2,4,1" />
             </y:Label.Style>
           </y:Label>
         </x:List>
       </data>
+      <data key="d1">
+        <y:RectD X="330" Y="487" Width="60" Height="50" />
+      </data>
+      <data key="d3">
+        <ywpf:RectangleNodeStyle CornerSize="3.5" Brush="#FFA37AB3">
+          <ywpf:RectangleNodeStyle.Pen>
+            <Pen Brush="#FF413148" Thickness="1.5" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" p11:Freeze="true" xmlns:p11="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options" />
+          </ywpf:RectangleNodeStyle.Pen>
+        </ywpf:RectangleNodeStyle>
+      </data>
       <port name="p0" />
     </node>
     <node id="n1">
-      <data key="d2">
-        <y:RectD X="320" Y="290" Width="133" Height="70" />
-      </data>
-      <data key="d3">
-        <ywpf:MemoryImageNodeStyle>
-          <ywpf:MemoryImage><![CDATA[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
-gAPrFwIAOw==]]></ywpf:MemoryImage>
-        </ywpf:MemoryImageNodeStyle>
-      </data>
-      <data key="d1">
+      <data key="d0">
         <x:List>
           <y:Label>
             <y:Label.Text>ImageNodeStyle</y:Label.Text>
@@ -132,101 +72,150 @@ gAPrFwIAOw==]]></ywpf:MemoryImage>
               </y:ExteriorLabelModelParameter>
             </y:Label.LayoutParameter>
             <y:Label.Style>
-              <ywpf:DefaultLabelStyle TextSize="12" Typeface="Microsoft Sans Serif,Normal,Normal,Normal" TextBrush="#FF000000" />
+              <ywpf:DefaultLabelStyle Typeface="Microsoft Sans Serif,Normal,Normal,Normal" TextBrush="#FF000000" />
             </y:Label.Style>
           </y:Label>
         </x:List>
+      </data>
+      <data key="d1">
+        <y:RectD X="320" Y="290" Width="133" Height="70" />
+      </data>
+      <data key="d3">
+        <ywpf:MemoryImageNodeStyle>
+          <ywpf:MemoryImage><![CDATA[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]]></ywpf:MemoryImage>
+        </ywpf:MemoryImageNodeStyle>
       </data>
       <port name="p0" />
       <port name="p1" />
     </node>
     <node id="n2">
-      <data key="d2">
+      <data key="d0">
+        <x:List>
+          <y:Label>
+            <y:Label.Text>Trapezoid</y:Label.Text>
+            <y:Label.LayoutParameter>
+              <y:InteriorLabelModelParameter Position="Center" Model="{y:GraphMLReference 2}" />
+            </y:Label.LayoutParameter>
+            <y:Label.Style>
+              <ywpf:DefaultLabelStyle BackgroundBrush="#FFC0D9B4" VerticalTextAlignment="Center" TextAlignment="Center" Shape="RoundRectangle" Typeface="{y:GraphMLReference 1}" TextBrush="#FF27401B" Insets="4,2,4,1" />
+            </y:Label.Style>
+          </y:Label>
+        </x:List>
+      </data>
+      <data key="d1">
         <y:RectD X="500" Y="30" Width="60" Height="60" />
       </data>
       <data key="d3">
-        <ywpf:ShapeNodeStyle Pen="Black" Shape="Trapez">
-          <ywpf:ShapeNodeStyle.Brush>
-		    <av:LinearGradientBrush>
-				<av:GradientStop Color="Green" Offset="0.0" />
-				<av:GradientStop Color="Yellow" Offset="1.0" />
-			</av:LinearGradientBrush>
-          </ywpf:ShapeNodeStyle.Brush>
+        <ywpf:ShapeNodeStyle Brush="#FF61A044" Shape="Trapez">
+          <ywpf:ShapeNodeStyle.Pen>
+            <Pen Brush="#FF27401B" Thickness="1.5" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" p11:Freeze="true" xmlns:p11="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options" />
+          </ywpf:ShapeNodeStyle.Pen>
         </ywpf:ShapeNodeStyle>
-      </data>
-      <data key="d1">
-        <x:List>
-          <y:Label Style="{y:GraphMLReference 4}">
-            <y:Label.Text>Trapezoid</y:Label.Text>
-            <y:Label.LayoutParameter>
-              <y:InteriorLabelModelParameter Position="Center" Model="{y:GraphMLReference 3}" />
-            </y:Label.LayoutParameter>
-          </y:Label>
-        </x:List>
       </data>
       <port name="p0" />
     </node>
     <node id="n3">
-      <data key="d2">
+      <data key="d0">
+        <x:List>
+          <y:Label>
+            <y:Label.Text>Star6</y:Label.Text>
+            <y:Label.LayoutParameter>
+              <y:InteriorLabelModelParameter Position="Center" Model="{y:GraphMLReference 2}" />
+            </y:Label.LayoutParameter>
+            <y:Label.Style>
+              <ywpf:DefaultLabelStyle BackgroundBrush="#FFC0D9B4" VerticalTextAlignment="Center" TextAlignment="Center" Shape="RoundRectangle" Typeface="{y:GraphMLReference 1}" TextBrush="#FF27401B" Insets="4,2,4,1" />
+            </y:Label.Style>
+          </y:Label>
+        </x:List>
+      </data>
+      <data key="d1">
         <y:RectD X="640" Y="30" Width="60" Height="60" />
       </data>
       <data key="d3">
         <ywpf:ShadowNodeStyleDecorator>
-          <ywpf:ShapeNodeStyle Pen="Black" Brush="#FF80FFFF" Shape="Star6" />
+          <ywpf:ShapeNodeStyle Brush="#FF61A044" Shape="Star6">
+            <ywpf:ShapeNodeStyle.Pen>
+              <Pen Brush="#FF27401B" Thickness="1.5" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" p12:Freeze="true" xmlns:p12="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options" />
+            </ywpf:ShapeNodeStyle.Pen>
+          </ywpf:ShapeNodeStyle>
         </ywpf:ShadowNodeStyleDecorator>
-      </data>
-      <data key="d1">
-        <x:List>
-          <y:Label Style="{y:GraphMLReference 4}">
-            <y:Label.Text>Star6</y:Label.Text>
-            <y:Label.LayoutParameter>
-              <y:InteriorLabelModelParameter Position="Center" Model="{y:GraphMLReference 3}" />
-            </y:Label.LayoutParameter>
-          </y:Label>
-        </x:List>
       </data>
     </node>
     <node id="n4">
-      <data key="d2">
+      <data key="d0">
+        <x:List>
+          <y:Label>
+            <y:Label.Text>Thing</y:Label.Text>
+            <y:Label.LayoutParameter>
+              <y:InteriorLabelModelParameter Position="Center" Model="{y:GraphMLReference 2}" />
+            </y:Label.LayoutParameter>
+            <y:Label.Style>
+              <ywpf:DefaultLabelStyle BackgroundBrush="#FFC0D9B4" VerticalTextAlignment="Center" TextAlignment="Center" Shape="RoundRectangle" Typeface="{y:GraphMLReference 1}" TextBrush="#FF27401B" Insets="4,2,4,1" />
+            </y:Label.Style>
+          </y:Label>
+        </x:List>
+      </data>
+      <data key="d1">
         <y:RectD X="338.37225901331766" Y="30.153005561771238" Width="60" Height="60" />
       </data>
       <data key="d3">
-        <ywpf:ShapeNodeStyle Shape="RoundRectangle" Brush="Green">
+        <ywpf:ShapeNodeStyle Brush="#FF61A044" Shape="RoundRectangle">
           <ywpf:ShapeNodeStyle.Pen>
-            <av:Pen Brush="#FFBC8F8F" Thickness="1" />
+            <Pen Brush="#FF27401B" Thickness="1.5" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" p11:Freeze="true" xmlns:p11="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options" />
           </ywpf:ShapeNodeStyle.Pen>
         </ywpf:ShapeNodeStyle>
-      </data>
-      <data key="d1">
-        <x:List>
-          <y:Label Style="{y:GraphMLReference 4}">
-            <y:Label.Text>Thing</y:Label.Text>
-            <y:Label.LayoutParameter>
-              <y:InteriorLabelModelParameter Position="Center" Model="{y:GraphMLReference 3}" />
-            </y:Label.LayoutParameter>
-          </y:Label>
-        </x:List>
       </data>
       <port name="p0" />
     </node>
     <node id="n5">
-      <data key="d2">
-        <y:RectD X="538" Y="159" Width="60" Height="60" />
-      </data>
-      <data key="d3">
-        <ywpf:GeneralPathNodeStyle Brush="#FFFFFACD">
-          <ywpf:GeneralPathNodeStyle.Path>
-            <y:GeneralPath>
-              <y:MoveTo Point="0,0.200000002980232" />
-              <y:QuadTo Point="1,0.200000002980232" ControlPoint="0.5,-0.200000002980232" />
-              <y:QuadTo Point="1,1" ControlPoint="1,1" />
-              <y:QuadTo Point="0,0.800000011920929" ControlPoint="0.5,1.20000004768372" />
-              <y:Close />
-            </y:GeneralPath>
-          </ywpf:GeneralPathNodeStyle.Path>
-        </ywpf:GeneralPathNodeStyle>
-      </data>
-      <data key="d1">
+      <data key="d0">
         <x:List>
           <y:Label>
             <y:Label.Text><![CDATA[First label]]></y:Label.Text>
@@ -238,34 +227,25 @@ gAPrFwIAOw==]]></ywpf:MemoryImage>
               </y:SandwichParameter>
             </y:Label.LayoutParameter>
             <y:Label.Style>
-              <ywpf:DefaultLabelStyle TextDecorations="Underline" TextSize="12" Typeface="Comic Sans MS,Normal,Normal,Normal" TextBrush="#FF000000"/>
+              <ywpf:DefaultLabelStyle BackgroundBrush="#FFB5DCEE" VerticalTextAlignment="Center" TextAlignment="Center" Shape="RoundRectangle" Typeface="{y:GraphMLReference 1}" TextBrush="#FF1C4355" Insets="4,2,4,1" />
             </y:Label.Style>
           </y:Label>
           <y:Label>
             <y:Label.Text><![CDATA[Second label]]></y:Label.Text>
             <y:Label.LayoutParameter>
-              <y:InteriorLabelModelParameter Position="Center" Model="{y:GraphMLReference 5}" />
+              <y:InteriorLabelModelParameter Position="Center" Model="{y:GraphMLReference 2}" />
             </y:Label.LayoutParameter>
             <y:Label.Style>
-              <ywpf:DefaultLabelStyle TextSize="10" Typeface="Microsoft Sans Serif,Normal,Normal,Normal" TextBrush="#FF000000">	
-                <ywpf:DefaultLabelStyle.BackgroundBrush>
-				  <av:LinearGradientBrush>
-					<av:GradientStop Color="Red" Offset="0.0" />
-					<av:GradientStop Color="#00000000" Offset="1.0" />
-				   </av:LinearGradientBrush>
-                </ywpf:DefaultLabelStyle.BackgroundBrush>
-              </ywpf:DefaultLabelStyle>
+              <ywpf:DefaultLabelStyle BackgroundBrush="#FFB5DCEE" VerticalTextAlignment="Center" TextAlignment="Center" Shape="RoundRectangle" Typeface="{y:GraphMLReference 1}" TextBrush="#FF1C4355" Insets="4,2,4,1" />
             </y:Label.Style>
           </y:Label>
         </x:List>
       </data>
-    </node>
-    <node id="n6">
-      <data key="d2">
-        <y:RectD X="330" Y="159" Width="60" Height="60" />
+      <data key="d1">
+        <y:RectD X="538" Y="159" Width="60" Height="60" />
       </data>
       <data key="d3">
-        <ywpf:GeneralPathNodeStyle Brush="#80FF0000">
+        <ywpf:GeneralPathNodeStyle Brush="#FF46A8D5">
           <ywpf:GeneralPathNodeStyle.Path>
             <y:GeneralPath>
               <y:MoveTo Point="0,0.200000002980232" />
@@ -275,9 +255,14 @@ gAPrFwIAOw==]]></ywpf:MemoryImage>
               <y:Close />
             </y:GeneralPath>
           </ywpf:GeneralPathNodeStyle.Path>
+          <ywpf:GeneralPathNodeStyle.Pen>
+            <Pen Brush="#FF1C4355" Thickness="1.5" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" p11:Freeze="true" xmlns:p11="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options" />
+          </ywpf:GeneralPathNodeStyle.Pen>
         </ywpf:GeneralPathNodeStyle>
       </data>
-      <data key="d1">
+    </node>
+    <node id="n6">
+      <data key="d0">
         <x:List>
           <y:Label>
             <y:Label.Text>GeneralPathNodeStyle</y:Label.Text>
@@ -289,179 +274,210 @@ gAPrFwIAOw==]]></ywpf:MemoryImage>
               </y:ExteriorLabelModelParameter>
             </y:Label.LayoutParameter>
             <y:Label.Style>
-			  <ywpf:DefaultLabelStyle TextSize="10" TextDecorations="Underline" Typeface="Courier New,Normal,Normal,Normal" TextBrush="#FF000000"/>
-            </y:Label.Style>
-          </y:Label>
-          <y:Label>
-            <y:Label.Text><![CDATA[I'm transparently filled]]></y:Label.Text>
-            <y:Label.LayoutParameter>
-              <y:InteriorLabelModelParameter Position="Center">
-                <y:InteriorLabelModelParameter.Model>
-                  <y:InteriorLabelModel />
-                </y:InteriorLabelModelParameter.Model>
-              </y:InteriorLabelModelParameter>
-            </y:Label.LayoutParameter>
-            <y:Label.Style>
-              <ywpf:DefaultLabelStyle TextSize="10" ClipText="False" Typeface="Microsoft Sans Serif,Normal,Normal,Normal" TextBrush="#FF000000"/>
+              <ywpf:DefaultLabelStyle BackgroundBrush="#FFB5DCEE" VerticalTextAlignment="Center" TextAlignment="Center" Shape="RoundRectangle" Typeface="{y:GraphMLReference 1}" TextBrush="#FF1C4355" Insets="4,2,4,1" />
             </y:Label.Style>
           </y:Label>
         </x:List>
       </data>
-    </node>
-    <node id="n7">
-      <data key="d2">
-        <y:RectD X="80" Y="20" Width="170" Height="190" />
+      <data key="d1">
+        <y:RectD X="330" Y="159" Width="60" Height="60" />
       </data>
       <data key="d3">
-        <ywpf:PanelNodeStyle Color="#FFFFFFE1" LabelInsetsColor="PaleTurquoise" />
+        <ywpf:GeneralPathNodeStyle Brush="#FF46A8D5">
+          <ywpf:GeneralPathNodeStyle.Path>
+            <y:GeneralPath>
+              <y:MoveTo Point="0,0.200000002980232" />
+              <y:QuadTo Point="1,0.200000002980232" ControlPoint="0.5,-0.200000002980232" />
+              <y:QuadTo Point="1,1" ControlPoint="1,1" />
+              <y:QuadTo Point="0,0.800000011920929" ControlPoint="0.5,1.20000004768372" />
+              <y:Close />
+            </y:GeneralPath>
+          </ywpf:GeneralPathNodeStyle.Path>
+          <ywpf:GeneralPathNodeStyle.Pen>
+            <Pen Brush="#FF1C4355" Thickness="1.5" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" p11:Freeze="true" xmlns:p11="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options" />
+          </ywpf:GeneralPathNodeStyle.Pen>
+        </ywpf:GeneralPathNodeStyle>
       </data>
-      <data key="d1">
+    </node>
+    <node id="n7">
+      <data key="d0">
         <x:List>
           <y:Label>
             <y:Label.Text><![CDATA[Group Node]]></y:Label.Text>
             <y:Label.LayoutParameter>
-              <y:InteriorStretchLabelModelParameter>
-                <y:InteriorStretchLabelModelParameter.Model>
-                  <y:InteriorStretchLabelModel />
-                </y:InteriorStretchLabelModelParameter.Model>
-              </y:InteriorStretchLabelModelParameter>
+              <y:GroupNodeLabelModelParameter PlaceOnTab="False">
+                <y:GroupNodeLabelModelParameter.Model>
+                  <y:GroupNodeLabelModel />
+                </y:GroupNodeLabelModelParameter.Model>
+              </y:GroupNodeLabelModelParameter>
             </y:Label.LayoutParameter>
             <y:Label.Style>
-			  <ywpf:DefaultLabelStyle TextSize="8.25" ClipText="False" Typeface="Microsoft Sans Serif,Normal,Normal,Normal" TextBrush="#FF000000"/>
+              <ywpf:DefaultLabelStyle VerticalTextAlignment="Center" ClipText="False" Typeface="{y:GraphMLReference 1}" TextBrush="#FFB5DCEE" />
             </y:Label.Style>
           </y:Label>
         </x:List>
       </data>
-      <graph id="n7:" edgedefault="directed">
-        <node id="n7::n1">
-          <data key="d2">
-            <y:RectD X="200" Y="50" Width="30" Height="30" />
-          </data>
-          <data key="d3">
-            <ywpf:ShadowNodeStyleDecorator>
-              <ywpf:ShapeNodeStyle Pen="Black" Brush="#80FF0000" />
-            </ywpf:ShadowNodeStyleDecorator>
-          </data>
-          <data key="d1">
+      <data key="d1">
+        <y:RectD X="80" Y="20" Width="170" Height="190" />
+      </data>
+      <data key="d3">
+        <ywpf:GroupNodeStyle TabWidth="30" TabHeight="20" TabInset="3" IconForegroundBrush="#FF46A8D5" IconOffset="2" HitTransparentContentArea="True" TabBrush="#FF46A8D5">
+          <ywpf:GroupNodeStyle.Pen>
+            <Pen Brush="#FF46A8D5" Thickness="2" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" p11:Freeze="true" xmlns:p11="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options" />
+          </ywpf:GroupNodeStyle.Pen>
+        </ywpf:GroupNodeStyle>
+      </data>
+      <graph id="n7:">
+        <node id="n7::n0">
+          <data key="d0">
             <x:List>
               <y:Label>
                 <y:Label.Text>14</y:Label.Text>
                 <y:Label.LayoutParameter>
-                  <y:InteriorLabelModelParameter Position="Center" Model="{y:GraphMLReference 5}" />
+                  <y:InteriorLabelModelParameter Position="Center" Model="{y:GraphMLReference 2}" />
                 </y:Label.LayoutParameter>
                 <y:Label.Style>
-                  <ywpf:DefaultLabelStyle TextSize="8.25" Typeface="Microsoft Sans Serif,Normal,Normal,Normal" TextBrush="#FF000000"/>
+                  <ywpf:DefaultLabelStyle BackgroundBrush="#FFC0D9B4" VerticalTextAlignment="Center" TextAlignment="Center" Shape="RoundRectangle" Typeface="{y:GraphMLReference 1}" TextBrush="#FF27401B" Insets="4,2,4,1" />
                 </y:Label.Style>
               </y:Label>
             </x:List>
           </data>
+          <data key="d1">
+            <y:RectD X="200" Y="50" Width="30" Height="30" />
+          </data>
+          <data key="d3">
+            <ywpf:ShadowNodeStyleDecorator>
+              <ywpf:ShapeNodeStyle Brush="#FF61A044">
+                <ywpf:ShapeNodeStyle.Pen>
+                  <Pen Brush="#FF27401B" Thickness="1.5" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" p14:Freeze="true" xmlns:p14="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options" />
+                </ywpf:ShapeNodeStyle.Pen>
+              </ywpf:ShapeNodeStyle>
+            </ywpf:ShadowNodeStyleDecorator>
+          </data>
           <port name="p0" />
         </node>
-        <edge id="n7::e0" source="n7::n1" target="n7::n1" sourceport="p0" targetport="p0">
+        <edge id="n7::e0" source="n7::n0" target="n7::n0" sourceport="p0" targetport="p0">
           <data key="d6">
-            <ywpf:PolylineEdgeStyle Pen="Red">
-              <ywpf:PolylineEdgeStyle.TargetArrow>
-                <ywpf:Arrow Pen="Black" Brush="#FFFF0000" Type="Default" />
-              </ywpf:PolylineEdgeStyle.TargetArrow>
-              <ywpf:PolylineEdgeStyle.SourceArrow>
-                <ywpf:Arrow Pen="Red" Brush="#FFFF0000" Type="Circle" />
-              </ywpf:PolylineEdgeStyle.SourceArrow>
+            <ywpf:PolylineEdgeStyle TargetArrow="{y:GraphMLReference 4}">
+              <ywpf:PolylineEdgeStyle.Pen>
+                <Pen Brush="#FF27401B" Thickness="1.5" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" p13:Freeze="true" xmlns:p13="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options" />
+              </ywpf:PolylineEdgeStyle.Pen>
             </ywpf:PolylineEdgeStyle>
           </data>
         </edge>
       </graph>
     </node>
     <node id="n8">
-      <data key="d1">
+      <data key="d0">
         <x:List>
           <y:Label LayoutParameter="{x:Static y:ExteriorLabelModel.North}">
-            <y:Label.Text><![CDATA[ShinyPlateNodeStyle]]></y:Label.Text>
+            <y:Label.Text>RectangleNodeStyle</y:Label.Text>
             <y:Label.Style>
-              <ywpf:DefaultLabelStyle TextSize="8.25" Typeface="Microsoft Sans Serif,Normal,Normal,Normal" TextBrush="#FF000000"/>
+              <ywpf:DefaultLabelStyle BackgroundBrush="#FFFFC499" VerticalTextAlignment="Center" TextAlignment="Center" Shape="RoundRectangle" Typeface="{y:GraphMLReference 1}" TextBrush="#FF662B00" Insets="4,2,4,1" />
             </y:Label.Style>
           </y:Label>
         </x:List>
       </data>
-      <data key="d2">
+      <data key="d1">
         <y:RectD X="548.5" Y="345.5" Width="80" Height="50" />
       </data>
       <data key="d3">
-        <ywpf:ShinyPlateNodeStyle Brush="#FFFF8C00" />
+        <ywpf:RectangleNodeStyle CornerSize="3.5" Brush="#FFFF6C00">
+          <ywpf:RectangleNodeStyle.Pen>
+            <Pen Brush="#FF662B00" Thickness="1.5" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" p11:Freeze="true" xmlns:p11="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options" />
+          </ywpf:RectangleNodeStyle.Pen>
+        </ywpf:RectangleNodeStyle>
       </data>
       <port name="p0">
         <data key="d9">
           <ywpf:NodeStylePortStyleAdapter RenderSize="10,10">
-            <ywpf:ShapeNodeStyle Brush="Red" Shape="Star6"/>
+            <ywpf:ShapeNodeStyle Brush="#FFA37AB3" Shape="Star6">
+              <ywpf:ShapeNodeStyle.Pen>
+                <Pen Brush="#FF413148" Thickness="1.5" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" p13:Freeze="true" xmlns:p13="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options" />
+              </ywpf:ShapeNodeStyle.Pen>
+            </ywpf:ShapeNodeStyle>
           </ywpf:NodeStylePortStyleAdapter>
         </data>
       </port>
     </node>
     <node id="n9">
-      <data key="d2">
-        <y:RectD X="46" Y="365.74218940734863" Width="179" Height="112.75781059265137" />
-      </data>
-      <data key="d3">
-        <ywpf:PanelNodeStyle Color="#FFCFE2F8" LabelInsetsColor="#FFB9D1EA" />
-      </data>
-      <data key="d1">
+      <data key="d0">
         <x:List>
           <y:Label>
-            <y:Label.Text><![CDATA[Default styles in yEd.NET]]></y:Label.Text>
+            <y:Label.Text><![CDATA[Demo Styles]]></y:Label.Text>
             <y:Label.LayoutParameter>
-              <y:InteriorStretchLabelModelParameter>
-                <y:InteriorStretchLabelModelParameter.Model>
-                  <y:InteriorStretchLabelModel />
-                </y:InteriorStretchLabelModelParameter.Model>
-              </y:InteriorStretchLabelModelParameter>
+              <y:GroupNodeLabelModelParameter PlaceOnTab="False">
+                <y:GroupNodeLabelModelParameter.Model>
+                  <y:GroupNodeLabelModel />
+                </y:GroupNodeLabelModelParameter.Model>
+              </y:GroupNodeLabelModelParameter>
             </y:Label.LayoutParameter>
             <y:Label.Style>
-              <ywpf:DefaultLabelStyle TextSize="10" Typeface="Microsoft Sans Serif,Normal,Normal,Normal" TextBrush="#FF000000"/>
+              <ywpf:DefaultLabelStyle VerticalTextAlignment="Center" ClipText="False" Typeface="{y:GraphMLReference 1}" TextBrush="#FF9DC6D0" />
             </y:Label.Style>
           </y:Label>
         </x:List>
       </data>
-      <graph id="n9:" edgedefault="directed">
+      <data key="d1">
+        <y:RectD X="46" Y="360.5" Width="179" Height="118" />
+      </data>
+      <data key="d3">
+        <ywpf:GroupNodeStyle TabWidth="30" TabHeight="20" TabInset="3" IconForegroundBrush="#FF0B7189" IconOffset="2" HitTransparentContentArea="True" TabBrush="#FF0B7189">
+          <ywpf:GroupNodeStyle.Pen>
+            <Pen Brush="#FF0B7189" Thickness="2" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" p11:Freeze="true" xmlns:p11="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options" />
+          </ywpf:GroupNodeStyle.Pen>
+        </ywpf:GroupNodeStyle>
+      </data>
+      <graph id="n9:">
         <node id="n9::n0">
-          <data key="d2">
-            <y:RectD X="58.6734738901352" Y="439.40135960622183" Width="50" Height="30" />
-          </data>
-          <data key="d3">
-            <ywpf:BevelNodeStyle Inset="2" Radius="5" Color="DarkOrange" />
-          </data>
-          <data key="d1">
+          <data key="d0">
             <x:List>
               <y:Label>
-                <y:Label.Text>12</y:Label.Text>
+                <y:Label.Text>1</y:Label.Text>
                 <y:Label.LayoutParameter>
-                  <y:InteriorLabelModelParameter Position="Center" Model="{y:GraphMLReference 6}" />
+                  <y:InteriorLabelModelParameter Position="Center" Model="{y:GraphMLReference 2}" />
                 </y:Label.LayoutParameter>
                 <y:Label.Style>
-                  <ywpf:DefaultLabelStyle TextSize="10" Typeface="Microsoft Sans Serif,Normal,Normal,Normal" TextBrush="#FF000000"/>
+                  <ywpf:DefaultLabelStyle BackgroundBrush="#FFFFC499" VerticalTextAlignment="Center" TextAlignment="Center" Shape="RoundRectangle" Typeface="{y:GraphMLReference 1}" TextBrush="#FF662B00" Insets="4,2,4,1" />
                 </y:Label.Style>
               </y:Label>
             </x:List>
+          </data>
+          <data key="d1">
+            <y:RectD X="58.6734738901352" Y="439.40135960622183" Width="50" Height="30" />
+          </data>
+          <data key="d3">
+            <ywpf:ShapeNodeStyle Brush="#FFFF6C00">
+              <ywpf:ShapeNodeStyle.Pen>
+                <Pen Brush="#FF662B00" Thickness="1.5" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" p13:Freeze="true" xmlns:p13="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options" />
+              </ywpf:ShapeNodeStyle.Pen>
+            </ywpf:ShapeNodeStyle>
           </data>
           <port name="p0" />
         </node>
         <node id="n9::n1">
-          <data key="d2">
-            <y:RectD X="170" Y="387.5" Width="50" Height="30" />
-          </data>
-          <data key="d3">
-            <ywpf:BevelNodeStyle Inset="2" Radius="5" Color="DarkOrange" />
-          </data>
-          <data key="d1">
+          <data key="d0">
             <x:List>
               <y:Label>
-                <y:Label.Text>13</y:Label.Text>
+                <y:Label.Text>2</y:Label.Text>
                 <y:Label.LayoutParameter>
-                  <y:InteriorLabelModelParameter Position="Center" Model="{y:GraphMLReference 6}" />
+                  <y:InteriorLabelModelParameter Position="Center" Model="{y:GraphMLReference 2}" />
                 </y:Label.LayoutParameter>
                 <y:Label.Style>
-                  <ywpf:DefaultLabelStyle TextSize="10" Typeface="Microsoft Sans Serif,Normal,Normal,Normal" TextBrush="#FF000000"/>
+                  <ywpf:DefaultLabelStyle BackgroundBrush="#FFFFC499" VerticalTextAlignment="Center" TextAlignment="Center" Shape="RoundRectangle" Typeface="{y:GraphMLReference 1}" TextBrush="#FF662B00" Insets="4,2,4,1" />
                 </y:Label.Style>
               </y:Label>
             </x:List>
+          </data>
+          <data key="d1">
+            <y:RectD X="170" Y="387.5" Width="50" Height="30" />
+          </data>
+          <data key="d3">
+            <ywpf:ShapeNodeStyle Brush="#FFFF6C00">
+              <ywpf:ShapeNodeStyle.Pen>
+                <Pen Brush="#FF662B00" Thickness="1.5" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" p13:Freeze="true" xmlns:p13="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options" />
+              </ywpf:ShapeNodeStyle.Pen>
+            </ywpf:ShapeNodeStyle>
           </data>
           <port name="p0" />
         </node>
@@ -472,28 +488,16 @@ gAPrFwIAOw==]]></ywpf:MemoryImage>
             </x:List>
           </data>
           <data key="d6">
-            <ywpf:PolylineEdgeStyle Pen="Black" TargetArrow="{y:GraphMLReference 9}" SourceArrow="{y:GraphMLReference 10}" />
+            <ywpf:PolylineEdgeStyle TargetArrow="{y:GraphMLReference 3}">
+              <ywpf:PolylineEdgeStyle.Pen>
+                <Pen Brush="#FF662B00" Thickness="1.5" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" p13:Freeze="true" xmlns:p13="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options" />
+              </ywpf:PolylineEdgeStyle.Pen>
+            </ywpf:PolylineEdgeStyle>
           </data>
         </edge>
       </graph>
     </node>
     <edge id="e0" source="n0" target="n1" sourceport="p0" targetport="p0">
-      <data key="d5">
-        <x:List>
-          <y:Bend Location="262,428" />
-          <y:Bend Location="397,441" />
-        </x:List>
-      </data>
-      <data key="d6">
-        <ywpf:PolylineEdgeStyle SourceArrow="{y:GraphMLReference 8}">
-          <ywpf:PolylineEdgeStyle.Pen>
-            <av:Pen Brush="#FF000000" Thickness="2" />
-          </ywpf:PolylineEdgeStyle.Pen>
-          <ywpf:PolylineEdgeStyle.TargetArrow>
-            <ywpf:Arrow Pen="Black" Brush="{y:GraphMLReference 7}" Type="Default" />
-          </ywpf:PolylineEdgeStyle.TargetArrow>
-        </ywpf:PolylineEdgeStyle>
-      </data>
       <data key="d4">
         <x:List>
           <y:Label>
@@ -501,28 +505,31 @@ gAPrFwIAOw==]]></ywpf:MemoryImage>
             <y:Label.LayoutParameter>
               <y:NinePositionsEdgeLabelModelParameter Position="CenterAbove">
                 <y:NinePositionsEdgeLabelModelParameter.Model>
-                  <y:NinePositionsEdgeLabelModel/>
+                  <y:NinePositionsEdgeLabelModel />
                 </y:NinePositionsEdgeLabelModelParameter.Model>
               </y:NinePositionsEdgeLabelModelParameter>
             </y:Label.LayoutParameter>
             <y:Label.Style>
-			        <ywpf:DefaultLabelStyle TextSize="12" Typeface="Times New Roman,Normal,Italic,Normal" TextBrush="#FF000000"/>
+              <ywpf:DefaultLabelStyle BackgroundBrush="#FFE0D5CC" VerticalTextAlignment="Center" TextAlignment="Center" Shape="RoundRectangle" Typeface="{y:GraphMLReference 1}" TextBrush="#FF662B00" Insets="4,2,4,1" />
             </y:Label.Style>
           </y:Label>
         </x:List>
       </data>
+      <data key="d5">
+        <x:List>
+          <y:Bend Location="262,428" />
+          <y:Bend Location="397,441" />
+        </x:List>
+      </data>
+      <data key="d6">
+        <ywpf:PolylineEdgeStyle TargetArrow="{y:GraphMLReference 3}">
+          <ywpf:PolylineEdgeStyle.Pen>
+            <Pen Brush="#FF662B00" Thickness="1.5" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" p11:Freeze="true" xmlns:p11="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options" />
+          </ywpf:PolylineEdgeStyle.Pen>
+        </ywpf:PolylineEdgeStyle>
+      </data>
     </edge>
     <edge id="e1" source="n4" target="n2" sourceport="p0" targetport="p0">
-      <data key="d6">
-        <ywpf:ArcEdgeStyle Height="63.307429980480158" SourceArrow="{y:GraphMLReference 8}">
-          <ywpf:ArcEdgeStyle.Pen>
-            <av:Pen Brush="#FF0000FF" Thickness="3" />
-          </ywpf:ArcEdgeStyle.Pen>
-          <ywpf:ArcEdgeStyle.TargetArrow>
-            <ywpf:Arrow Pen="Black" Brush="#FF0000FF" Type="Diamond" />
-          </ywpf:ArcEdgeStyle.TargetArrow>
-        </ywpf:ArcEdgeStyle>
-      </data>
       <data key="d4">
         <x:List>
           <y:Label>
@@ -530,35 +537,35 @@ gAPrFwIAOw==]]></ywpf:MemoryImage>
             <y:Label.LayoutParameter>
               <y:NinePositionsEdgeLabelModelParameter Position="CenterAbove">
                 <y:NinePositionsEdgeLabelModelParameter.Model>
-                  <y:NinePositionsEdgeLabelModel/>
+                  <y:NinePositionsEdgeLabelModel />
                 </y:NinePositionsEdgeLabelModelParameter.Model>
               </y:NinePositionsEdgeLabelModelParameter>
             </y:Label.LayoutParameter>
             <y:Label.Style>
-			       <ywpf:DefaultLabelStyle TextSize="8.25" Typeface="Microsoft Sans Serif,Normal,Normal,Normal" TextBrush="#FF000000"/>
+              <ywpf:DefaultLabelStyle BackgroundBrush="#FFD4D9D1" VerticalTextAlignment="Center" TextAlignment="Center" Shape="RoundRectangle" Typeface="{y:GraphMLReference 1}" TextBrush="#FF27401B" Insets="4,2,4,1" />
             </y:Label.Style>
           </y:Label>
         </x:List>
       </data>
+      <data key="d6">
+        <ywpf:ArcEdgeStyle Height="63.30742998048016" TargetArrow="{y:GraphMLReference 4}">
+          <ywpf:ArcEdgeStyle.Pen>
+            <Pen Brush="#FF27401B" Thickness="1.5" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" p11:Freeze="true" xmlns:p11="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options" />
+          </ywpf:ArcEdgeStyle.Pen>
+          <ywpf:ArcEdgeStyle.SourceArrow>
+            <ywpf:Arrow Type="None" Pen="Black" Brush="#FF000000" />
+          </ywpf:ArcEdgeStyle.SourceArrow>
+        </ywpf:ArcEdgeStyle>
+      </data>
     </edge>
     <edge id="e2" source="n1" target="n8" sourceport="p1" targetport="p0">
-      <data key="d5">
-        <x:List>
-          <y:Bend Location="532.5,447.5" />
-        </x:List>
-      </data>
-      <data key="d6">
-        <ywpf:PolylineEdgeStyle Pen="Black" TargetArrow="{y:GraphMLReference 9}" SourceArrow="{y:GraphMLReference 10}" />
-      </data>
       <data key="d4">
         <x:List>
           <y:Label>
-            <y:Label.Text>
-              <![CDATA[Hello! I'm
-truly a  label!]]>
-            </y:Label.Text>
+            <y:Label.Text><![CDATA[Hello! I'm
+truly a  label!]]></y:Label.Text>
             <y:Label.LayoutParameter>
-              <y:NinePositionsEdgeLabelModelParameter Position="CenterCentered">
+              <y:NinePositionsEdgeLabelModelParameter>
                 <y:NinePositionsEdgeLabelModelParameter.Model>
                   <y:NinePositionsEdgeLabelModel Distance="20" />
                 </y:NinePositionsEdgeLabelModelParameter.Model>
@@ -567,15 +574,31 @@ truly a  label!]]>
             <y:Label.Style>
               <ywpf:NodeStyleLabelStyleAdapter>
                 <ywpf:NodeStyleLabelStyleAdapter.NodeStyle>
-                  <ywpf:BevelNodeStyle Inset="3" Radius="3" Color="OrangeRed" />
+                  <ywpf:RectangleNodeStyle CornerSize="3.5" Corners="TopLeft, BottomRight" Brush="#FFE0D5CC">
+                    <ywpf:RectangleNodeStyle.Pen>
+                      <Pen Brush="#00000000" Thickness="1.5" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" p16:Freeze="true" xmlns:p16="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options" />
+                    </ywpf:RectangleNodeStyle.Pen>
+                  </ywpf:RectangleNodeStyle>
                 </ywpf:NodeStyleLabelStyleAdapter.NodeStyle>
                 <ywpf:NodeStyleLabelStyleAdapter.LabelStyle>
-                  <ywpf:DefaultLabelStyle TextSize="8.25" Typeface="Microsoft Sans Serif,Normal,Normal,Normal" TextBrush="#FF000000"/>
+                  <ywpf:DefaultLabelStyle VerticalTextAlignment="Center" TextAlignment="Center" Shape="RoundRectangle" Typeface="{y:GraphMLReference 1}" TextBrush="#FF662B00" Insets="4,2,4,1" />
                 </ywpf:NodeStyleLabelStyleAdapter.LabelStyle>
               </ywpf:NodeStyleLabelStyleAdapter>
             </y:Label.Style>
           </y:Label>
         </x:List>
+      </data>
+      <data key="d5">
+        <x:List>
+          <y:Bend Location="532.5,447.5" />
+        </x:List>
+      </data>
+      <data key="d6">
+        <ywpf:PolylineEdgeStyle TargetArrow="{y:GraphMLReference 3}">
+          <ywpf:PolylineEdgeStyle.Pen>
+            <Pen Brush="#FF662B00" Thickness="1.5" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" p11:Freeze="true" xmlns:p11="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options" />
+          </ywpf:PolylineEdgeStyle.Pen>
+        </ywpf:PolylineEdgeStyle>
       </data>
     </edge>
   </graph>

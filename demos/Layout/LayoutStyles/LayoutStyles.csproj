@@ -178,6 +178,11 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\compactdisk.graphml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!--The following target ensures that the project will build even when the ZIP file has been-->
   <!--extracted with Explorer or another tool that retains the origin zone marker for the files.-->

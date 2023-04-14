@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.4.
- ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.5.
+ ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -86,6 +86,11 @@ namespace Demo.yFiles.Layout.Configurations
       StarSubstructureSizeItem = layout.StarSubstructureSize;
       ParallelSubstructureStyleItem = ParallelSubstructureStyle.None;
       ParallelSubstructureSizeItem = layout.ParallelSubstructureSize;
+      TreeSubstructureItem = TreeSubstructureStyle.None;
+      TreeSubstructureSizeItem = layout.TreeSubstructureSize;
+      GroupSubstructureScopeItem = GroupSubstructureScope.NoGroups;
+      GroupSubstructureSizeItem = layout.GroupSubstructureSize;
+      ClusterAsGroupSubstructureItem = false;
 
       ConsiderNodeLabelsItem = layout.ConsiderNodeLabels;
       EdgeLabelingItem = false;
@@ -126,13 +131,18 @@ namespace Demo.yFiles.Layout.Configurations
       ConfigureOutputRestrictions(graphControl, layout);
 
       layout.ChainSubstructureStyle = ChainSubstructureStyleItem;
+      layout.ChainSubstructureSize = ChainSubstructureSizeItem;
       layout.CycleSubstructureSize = CycleSubstructureSizeItem;
       layout.CycleSubstructureStyle = CycleSubstructureStyleItem;
-      layout.ChainSubstructureSize = ChainSubstructureSizeItem;
       layout.StarSubstructureStyle = StarSubstructureStyleItem;
       layout.StarSubstructureSize = StarSubstructureSizeItem;
       layout.ParallelSubstructureStyle = ParallelSubstructureStyleItem;
       layout.ParallelSubstructureSize = ParallelSubstructureSizeItem;
+      layout.TreeSubstructureStyle = TreeSubstructureItem;
+      layout.TreeSubstructureSize = TreeSubstructureSizeItem;
+      layout.GroupSubstructureScope = GroupSubstructureScopeItem;
+      layout.GroupSubstructureSize = GroupSubstructureSizeItem;
+      layout.ClusterAsGroupSubstructureAllowed = ClusterAsGroupSubstructureItem;
       
       return layout;
     }
@@ -568,6 +578,8 @@ namespace Demo.yFiles.Layout.Configurations
     [EnumValue("Rectangular, also within other structures", ChainSubstructureStyle.RectangularNested)]
     [EnumValue("Straight-Line", ChainSubstructureStyle.StraightLine)]
     [EnumValue("Straight-Line, also within other structures", ChainSubstructureStyle.StraightLineNested)]
+    [EnumValue("Disk", ChainSubstructureStyle.Disk)]
+    [EnumValue("Disk, also within other structures", ChainSubstructureStyle.DiskNested)]
     public ChainSubstructureStyle ChainSubstructureStyleItem { get; set; }
 
     [Label("Minimum Chain Size")]
@@ -623,12 +635,68 @@ namespace Demo.yFiles.Layout.Configurations
       get { return ParallelSubstructureStyleItem == ParallelSubstructureStyle.None; }
     }
 
-    [Label("Arrows Define Edge Direction")]
+    [Label("Tree")]
     [OptionGroup("SubstructureLayoutGroup", 50)]
+    [DefaultValue(TreeSubstructureStyle.None)]
+    [EnumValue("Ignore", TreeSubstructureStyle.None)]
+    [EnumValue("Radial", TreeSubstructureStyle.Radial)]
+    [EnumValue("Balloon", TreeSubstructureStyle.Balloon)]
+    [EnumValue("Oriented", TreeSubstructureStyle.Oriented)]
+    public TreeSubstructureStyle TreeSubstructureItem { get; set; }
+
+    
+    [Label("Minimum size for tree structures")]
+    [OptionGroup("SubstructureLayoutGroup", 55)]
+    [DefaultValue(4)]
+    [MinMax(Min = 3, Max = 20)]
+    [ComponentType(ComponentTypes.Spinner)]
+    public int TreeSubstructureSizeItem { get; set; }
+    
+    public bool ShouldDisableTreeSubstructureSizeItem {
+      get { return TreeSubstructureItem == TreeSubstructureStyle.None; }
+    }
+    
+    
+    [Label("Group Substructures")]
+    [OptionGroup("SubstructureLayoutGroup", 60)]
+    [DefaultValue(GroupSubstructureScope.NoGroups)]
+    [EnumValue("Ignore", GroupSubstructureScope.NoGroups)]
+    [EnumValue("All Groups", GroupSubstructureScope.AllGroups)]
+    [EnumValue("Groups Without Intra-Edges", GroupSubstructureScope.GroupsWithoutEdges)]
+    [EnumValue("Groups Without Inter-Edges", GroupSubstructureScope.GroupsWithoutInterEdges)]
+    public GroupSubstructureScope GroupSubstructureScopeItem { get; set; }
+
+    
+    [Label("Minimum size for group structures")]
+    [OptionGroup("SubstructureLayoutGroup", 65)]
+    [DefaultValue(4)]
+    [MinMax(Min = 2, Max = 20)]
+    [ComponentType(ComponentTypes.Spinner)]
+    public int GroupSubstructureSizeItem { get; set; }
+    
+    public bool ShouldDisableGroupSubstructureSizeItem {
+      get { return GroupSubstructureScopeItem == GroupSubstructureScope.NoGroups; }
+    }
+        
+    [Label("Clusters With Group Substructures")]
+    [OptionGroup("SubstructureLayoutGroup", 70)]
+    [DefaultValue(false)]
+    public bool ClusterAsGroupSubstructureItem { get; set; }
+
+    public bool ShouldDisableClusterAsGroupSubstructureItem {
+      get {
+        return GroupSubstructureScopeItem != GroupSubstructureScope.AllGroups &&
+                                             GroupSubstructureScopeItem !=
+            GroupSubstructureScope.GroupsWithoutInterEdges;
+      }
+    }
+    
+    [Label("Arrows Define Edge Direction")]
+    [OptionGroup("SubstructureLayoutGroup", 80)]
     public bool EdgeDirectednessItem { get; set; }
 
     [Label("Use Edge Grouping")]
-    [OptionGroup("SubstructureLayoutGroup", 60)]
+    [OptionGroup("SubstructureLayoutGroup", 90)]
     public bool UseEdgeGroupingItem { get; set; }
 
     [Label("Edge Labeling")]

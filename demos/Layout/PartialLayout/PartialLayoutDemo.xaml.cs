@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.4.
- ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.5.
+ ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -35,6 +35,7 @@ using System.Windows;
 using System.Windows.Media;
 using Demo.yFiles.Option.Constraint;
 using Demo.yFiles.Option.Handler;
+using Demo.yFiles.Toolkit;
 using yWorks.Controls.Input;
 using yWorks.Geometry;
 using yWorks.Graph;
@@ -68,43 +69,22 @@ namespace Demo.yFiles.Layout.PartialLayout
     private const string OrganicScenario = "Organic";
     private const string CircularScenario = "Circular";
 
-    // define colors for fixed/partial nodes/edges
-    private static readonly Color ColorFixedNode = Colors.Gray;
-    private static readonly Color ColorPartialNode = Color.FromRgb(255, 151, 0);
-    private static readonly Color ColorFixedEdge = Colors.Black;
-    private static readonly Color ColorPartialEdge = ColorPartialNode;
+    private static readonly INodeStyle PartialGroupNodeStyle =
+      DemoStyles.CreateDemoGroupStyle(Themes.Palette12, true);
 
-    private static readonly CollapsibleNodeStyleDecorator PartialGroupNodeStyle =
-      new CollapsibleNodeStyleDecorator(new PanelNodeStyle
-                                          {
-                                            Color = Color.FromArgb(255, 202, 220, 255),
-                                            LabelInsetsColor = ColorPartialNode,
-                                            Insets = new InsetsD(5, 21, 5, 5)
-                                          });
+    private static readonly INodeStyle FixedGroupNodeStyle =
+      DemoStyles.CreateDemoGroupStyle(Themes.Palette58, true);
 
-    private static readonly CollapsibleNodeStyleDecorator FixedGroupNodeStyle =
-      new CollapsibleNodeStyleDecorator(new PanelNodeStyle
-                                          {
-                                            Color = Color.FromArgb(255, 202, 220, 255),
-                                            LabelInsetsColor = ColorFixedNode,
-                                            Insets = new InsetsD(5, 21, 5, 5)
-                                          });
+    private static readonly INodeStyle PartialNodeStyle =
+      DemoStyles.CreateDemoNodeStyle(Themes.PaletteOrange);
+    private static readonly INodeStyle FixedNodeStyle =
+      DemoStyles.CreateDemoNodeStyle(Themes.Palette58);
 
-    private static readonly ShinyPlateNodeStyle PartialNodeStyle = new ShinyPlateNodeStyle { Brush = new SolidColorBrush(ColorPartialNode) };
-    private static readonly ShinyPlateNodeStyle FixedNodeStyle = new ShinyPlateNodeStyle { Brush = new SolidColorBrush(ColorFixedNode) };
+    private static readonly PolylineEdgeStyle PartialEdgeStyle =
+      DemoStyles.CreateDemoEdgeStyle(new Palette("#ff6c00", "#ff6c00", "#ff6c00", "#ff6c00", "#ff6c00"));
 
-    private static readonly PolylineEdgeStyle PartialEdgeStyle = new PolylineEdgeStyle
-                                                                   {
-                                                                     TargetArrow = Arrows.Default,
-                                                                     Pen =
-                                                                       new Pen(new SolidColorBrush(ColorPartialEdge), 1)
-                                                                   };
-
-    private static readonly PolylineEdgeStyle FixedEdgeStyle = new PolylineEdgeStyle
-                                                                 {
-                                                                   TargetArrow = Arrows.Default,
-                                                                   Pen = new Pen(new SolidColorBrush(ColorFixedEdge), 1)
-                                                                 };
+    private static readonly PolylineEdgeStyle FixedEdgeStyle =
+      DemoStyles.CreateDemoEdgeStyle(Themes.Palette58);
 
     // the mapper storing if a node/edge is fixed or shall be moved by the partial layout
 
@@ -154,11 +134,10 @@ namespace Demo.yFiles.Layout.PartialLayout
       // set the style as the default for all new edges
       graph.EdgeDefaults.Style = PartialEdgeStyle;
 
-      CollapsibleNodeStyleDecorator groupNodeStyle = PartialGroupNodeStyle;
       var groupNodeDefaults = graph.GroupNodeDefaults;
-      groupNodeDefaults.Labels.LayoutParameter = InteriorStretchLabelModel.North;
-      groupNodeDefaults.Labels.Style = new DefaultLabelStyle { TextAlignment = TextAlignment.Right };
-      groupNodeDefaults.Style = groupNodeStyle;
+      groupNodeDefaults.Labels.LayoutParameter = new GroupNodeLabelModel().CreateTabBackgroundParameter();
+      groupNodeDefaults.Labels.Style = new DefaultLabelStyle { TextAlignment = TextAlignment.Left, TextBrush = Brushes.White };
+      groupNodeDefaults.Style = PartialGroupNodeStyle;
 
       //Create and register mappers that specifiy partial graph elements
       partialNodesMapper = new MasterViewConversionMapper<INode, bool>(graph) { DefaultValue = true };

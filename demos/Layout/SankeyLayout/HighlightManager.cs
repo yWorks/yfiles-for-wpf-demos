@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.4.
- ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.5.
+ ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -39,13 +39,18 @@ namespace SankeyLayout
 {
   public class HighlightManager : HighlightIndicatorManager<IModelItem>
   {
-    private readonly ICanvasObjectGroup edgeHighlightGroup;
+    private ICanvasObjectGroup edgeHighlightGroup;
 
-    public HighlightManager(GraphControl canvas,
-      [CanBeNull] ISelectionModel<IModelItem> selectionModel = null) : base(canvas, selectionModel) {
-      var graphModelManager = canvas.GraphModelManager;
+    public override void Install(CanvasControl canvas) {
+      base.Install(canvas);
+      var graphModelManager = ((GraphControl) canvas).GraphModelManager;
       edgeHighlightGroup = graphModelManager.ContentGroup.AddGroup();
       edgeHighlightGroup.Below(graphModelManager.EdgeLabelGroup);
+    }
+
+    public override void Uninstall(CanvasControl canvas) {
+      edgeHighlightGroup.Remove();
+      base.Uninstall(canvas);
     }
 
     protected override ICanvasObjectGroup GetCanvasObjectGroup(IModelItem item) {

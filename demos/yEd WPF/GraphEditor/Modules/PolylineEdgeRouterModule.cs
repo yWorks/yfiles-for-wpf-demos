@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.4.
- ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.5.
+ ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -162,7 +162,7 @@ namespace Demo.yFiles.GraphEditor.Modules.Layout
       var polylineGroup = Handler.AddGroup(POLYLINE_ROUTING);
       var polyLineItem = polylineGroup.AddBool(ENABLE_POLYLINE_ROUTING, true);
       var polyLineSegmentLengthItem = polylineGroup.AddDouble(PREFERRED_POLYLINE_SEGMENT_LENGTH,
-                                                              router.PreferredPolylineSegmentLength);
+                                                              descriptor.PreferredOctilinearSegmentLength);
 
       // some constraints to enable/disable values that depends on other values
       ConstraintManager cm = new ConstraintManager(Handler);
@@ -224,8 +224,10 @@ namespace Demo.yFiles.GraphEditor.Modules.Layout
       router.ConsiderEdgeLabels = (bool) layoutGroup[CONSIDER_EDGE_LABELS].Value;
       router.Rerouting = (bool) layoutGroup[ENABLE_REROUTING].Value;
 
-      router.PolylineRouting = (bool) polylineGroup[ENABLE_POLYLINE_ROUTING].Value;
-      router.PreferredPolylineSegmentLength = (double) polylineGroup[PREFERRED_POLYLINE_SEGMENT_LENGTH].Value;
+      descriptor.RoutingStyle = (bool) polylineGroup[ENABLE_POLYLINE_ROUTING].Value
+          ? EdgeRoutingStyle.Octilinear
+          : EdgeRoutingStyle.Orthogonal;
+      descriptor.PreferredOctilinearSegmentLength = (double) polylineGroup[PREFERRED_POLYLINE_SEGMENT_LENGTH].Value;
       router.MaximumDuration =  (int) layoutGroup[MAXIMUM_DURATION].Value*1000;
       LayoutAlgorithm = router;
     }

@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.4.
- ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.5.
+ ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -39,7 +39,7 @@ using System.Windows.Media;
 using Demo.yFiles.Layout.Tree.Configuration;
 using Demo.yFiles.Option.DataBinding;
 using Demo.yFiles.Option.Handler;
-using yWorks.Controls;
+using Demo.yFiles.Toolkit;
 using yWorks.Geometry;
 using yWorks.Graph;
 using yWorks.Graph.Styles;
@@ -249,27 +249,9 @@ namespace Demo.yFiles.Layout.Tree
       DictionaryMapper<INode, bool> assistantMap =
         graph.MapperRegistry.CreateMapper<INode, bool>(AssistantNodePlacer.AssistantNodeDpKey);
       graph.NodeDefaults.Size = new SizeD(40, 30);
-      graph.NodeDefaults.Style = new ShinyPlateNodeStyle
-      {
-        Brush = Brushes.LightGray,
-        Insets = new InsetsD(5),
-        DrawShadow = false,
-        Pen = Pens.Black
-      };
-      var rootStyle = new ShinyPlateNodeStyle
-      {
-        Brush = Brushes.Red,
-        Insets = new InsetsD(5),
-        Pen = Pens.Black,
-        DrawShadow = false
-      };
-      var assistantStyle = new ShinyPlateNodeStyle
-      {
-        Brush = Brushes.LightGray,
-        Insets = new InsetsD(5),
-        Pen = new Pen(Brushes.Black, 1) {DashStyle = DashStyles.Dash},
-        DrawShadow = false
-      };
+      DemoStyles.InitDemoStyles(graph, Themes.Palette58);
+      var rootStyle = DemoStyles.CreateDemoNodeStyle(Themes.PaletteRed);
+      var assistantStyle = NewAssistantStyle(Themes.Palette58);
       INode root = graph.CreateNode();
       graph.SetStyle(root, rootStyle);
       INode n1 = graph.CreateNode();
@@ -287,13 +269,21 @@ namespace Demo.yFiles.Layout.Tree
       previewLayout = new TreeLayout();
     }
 
+    internal static INodeStyle NewAssistantStyle(Palette palette) {
+      var style = DemoStyles.CreateDemoNodeStyle(palette);
+      var pen = style.Pen.Clone();
+      pen.DashStyle = DashStyles.Dash;
+      style.Pen = (Pen) pen.GetAsFrozen();
+      return style;
+    }
+
     ///<summary>
     /// Update the preview canvas: Apply a new layout with the current placer.
     ///</summary>
     public void UpdatePreview() {
       INodePlacer placer = CurrentDescriptor.Configuration != null
-                             ? CurrentDescriptor.Configuration.CreateNodePlacer()
-                             : null;
+        ? CurrentDescriptor.Configuration.CreateNodePlacer()
+        : null;
       previewLayout.DefaultNodePlacer = placer ?? new DefaultNodePlacer();
       try {
         previewControl.Graph.ApplyLayout(previewLayout);
@@ -336,20 +326,19 @@ namespace Demo.yFiles.Layout.Tree
 
     private Brush CurrentBrush {
       get {
-        Brush layerBrush = LayerBrushes[Level%LayerBrushes.Length];
-        return layerBrush;
+        return LayerPalettes[Level%LayerPalettes.Length].Fill;
       }
     }
 
 
-    public static readonly Brush[] LayerBrushes = {
-                                                    Brushes.Red,
-                                                    new SolidColorBrush(Color.FromRgb(255, 128, 0)),
-                                                    new SolidColorBrush(Color.FromRgb(224, 224, 0)),
-                                                    new SolidColorBrush(Color.FromRgb(64, 208, 64)),
-                                                    new SolidColorBrush(Color.FromRgb(0, 255, 255)),
-                                                    Brushes.Blue
-                                                  };
+    public static readonly Palette[] LayerPalettes = {
+      Themes.PaletteRed,
+      Themes.PaletteOrange,
+      Themes.Palette22,
+      Themes.PaletteGreen,
+      Themes.Palette21,
+      Themes.PaletteLightblue
+    };
 
     #region Rotation Buttons
 

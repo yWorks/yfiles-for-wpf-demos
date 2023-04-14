@@ -1,6 +1,6 @@
 <!-- ************************************************************************ -->
-<!-- This demo file is part of yFiles WPF 3.4.                           -->
-<!-- Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
+<!-- This demo file is part of yFiles WPF 3.5.                           -->
+<!-- Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
 <!-- 72070 Tuebingen, Germany. All rights reserved.                           -->
 <!--                                                                          -->
 <!-- yFiles demo files exhibit yFiles WPF functionalities. Any redistribution  -->
@@ -36,7 +36,8 @@
                     <Paragraph>
                         This demo shows how to use the
                         <Run FontStyle="Italic">Control</Run>-based styles to create visualizations for nodes, labels, ports, and edges through
-                        <Run FontStyle="Italic">XAML</Run>.
+                        <Run FontStyle="Italic">XAML</Run>.                        
+                        .NET's <Run FontStyle="Italic">VisualStateManager</Run> is used to apply transitions for highlight and selection visualizations.
                     </Paragraph>
                     <Paragraph Style="{StaticResource HtmlH2}">
                         Things to Try

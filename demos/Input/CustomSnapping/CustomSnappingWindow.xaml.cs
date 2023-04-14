@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.4.
- ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.5.
+ ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -31,6 +31,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Demo.yFiles.Graph.Input.CustomSnapping.UI;
+using Demo.yFiles.Toolkit;
 using yWorks.Controls.Input;
 using yWorks.Controls;
 using yWorks.Geometry;
@@ -146,16 +147,12 @@ namespace Demo.yFiles.Graph.Input.CustomSnapping
 
     protected virtual void InitializeGraphDefaults() {
       var graph = GraphControl.Graph;
-      graph.NodeDefaults.Style = new BevelNodeStyle();
+      DemoStyles.InitDemoStyles(graph);
       graph.NodeDefaults.Size = new SizeD(50, 50);
-
-      var labelStyle = new DefaultLabelStyle { BackgroundPen = Pens.Black };
-
-      graph.NodeDefaults.Labels.Style = labelStyle;
+      
       graph.NodeDefaults.Labels.LayoutParameter = FreeNodeLabelModel.Instance.CreateParameter(
           new PointD(0.5, 0.0), new PointD(0, -10), new PointD(0.5, 1.0), PointD.Origin, 0.0);
 
-      graph.EdgeDefaults.Labels.Style = labelStyle;
       graph.EdgeDefaults.Labels.LayoutParameter = new SmartEdgeLabelModel().CreateParameterFromSource(0, 0, 0.5);
     }
 

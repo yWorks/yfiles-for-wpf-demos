@@ -68,7 +68,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DemoStyles.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Themes.cs" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="Resources\Icons.xaml">

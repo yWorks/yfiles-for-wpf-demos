@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.4.
- ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.5.
+ ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -410,7 +410,7 @@ namespace Demo.yFiles.GraphEditor.Modules.Layout
       eld.TargetPortOptimization = (bool)currentGroup[PC_OPTIMIZATION_ENABLED].Value;
       
       var isIncrementalModeEnabled = (fromSketch || (incrementalLayout && selectedElements));
-      var recursiveRoutingMode = Handler.GetValue(EDGE_SETTINGS, RECURSIVE_EDGE_ROUTING);
+      var recursiveRoutingMode = (string)Handler.GetValue(EDGE_SETTINGS, RECURSIVE_EDGE_ROUTING);
       if (!isIncrementalModeEnabled && recursiveRoutingMode == RECURSIVE_EDGE_ROUTING_DIRECTED) {
         eld.RecursiveEdgeStyle = RecursiveEdgeStyle.Directed;
       } else if (!isIncrementalModeEnabled && recursiveRoutingMode == RECURSIVE_EDGE_ROUTING_UNDIRECTED) {
@@ -625,7 +625,7 @@ namespace Demo.yFiles.GraphEditor.Modules.Layout
       }
       var foldingView = graph.GetFoldingView();
       bool recursiveRouting = foldingView != null &&
-                              Handler.GetValue(EDGE_SETTINGS, RECURSIVE_EDGE_ROUTING) != RECURSIVE_EDGE_ROUTING_OFF;
+                              (string)Handler.GetValue(EDGE_SETTINGS, RECURSIVE_EDGE_ROUTING) != RECURSIVE_EDGE_ROUTING_OFF;
       if (recursiveRouting) {
         graph.MapperRegistry.CreateDelegateMapper(HierarchicLayout.FolderNodesDpKey, node => foldingView.IsInFoldingState(node));
       }

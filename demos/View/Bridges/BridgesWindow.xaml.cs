@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.4.
- ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.5.
+ ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -38,6 +38,8 @@ using yWorks.Geometry;
 using yWorks.Graph;
 using yWorks.Graph.Styles;
 using yWorks.Graph.LabelModels;
+using Demo.yFiles.Toolkit;
+using System.Collections.Generic;
 
 namespace Demo.yFiles.Graph.Bridges
 {
@@ -66,22 +68,21 @@ namespace Demo.yFiles.Graph.Bridges
     /// This method initializes the graph and the input mode.
     /// </summary>
     /// <seealso cref="ConfigureBridges"/>
-    /// <seealso cref="InitializeGraph"/>
+    /// <seealso cref="CreateSampleGraph"/>
     protected virtual void OnLoad(object src, EventArgs e) {
-
-      graphControl.Graph.NodeDefaults.Style = new BevelNodeStyle { Color = Colors.Orange };
-      PanelNodeStyle style = new PanelNodeStyle {Color = Colors.LightBlue, Insets = new InsetsD(20, 40, 20, 20)};
-      graphControl.Graph.GroupNodeDefaults.Style = style;
-
-      //Draw edges in front, so that group nodes don't hide the bridges...
+      // Draw edges in front, so that group nodes don't hide the bridges...
       graphControl.GraphModelManager.EdgeGroup.ToFront();
       graphControl.GraphModelManager.HierarchicNestingPolicy = HierarchicNestingPolicy.Nodes;
 
-      InitializeGraph(graphControl.Graph);
+      DemoStyles.InitDemoStyles(graphControl.Graph);
+
+      graphControl.InputMode = new GraphEditorInputMode { AllowGroupingOperations = true };
 
       ConfigureBridges();
 
-      graphControl.InputMode = new GraphEditorInputMode{AllowGroupingOperations = true};
+      CreateSampleGraph();
+
+      graphControl.FitGraphBounds();
     }
 
     /// <summary>
@@ -258,18 +259,19 @@ namespace Demo.yFiles.Graph.Bridges
     /// Create a sample graph with edge/edge intersections and edge/group node intersections
     /// </summary>
     /// <param name="graph"></param>
-    private void InitializeGraph(IGraph graph) {
-      INode[] nodes = new INode[16];
-      int count = 0;
+    private void CreateSampleGraph() {
+      var graph = graphControl.Graph;
+
+      var nodes = new List<INode>(16);
       for (int i = 1; i < 5; i++) {
-        nodes[count++] = graph.CreateNode(new PointD(50 + 40*i, 260));
-        nodes[count++] = graph.CreateNode(new PointD(50 + 40*i, 40));
-        nodes[count++] = graph.CreateNode(new PointD(40, 50 + 40*i));
-        nodes[count++] = graph.CreateNode(new PointD(260, 50 + 40*i));
+        nodes.Add(graph.CreateNode(new PointD(50 + 40 * i, 260)));
+        nodes.Add(graph.CreateNode(new PointD(50 + 40 * i, 40)));
+        nodes.Add(graph.CreateNode(new PointD(40, 50 + 40 * i)));
+        nodes.Add(graph.CreateNode(new PointD(260, 50 + 40 * i)));
       }
 
-      for (int i = 0; i < nodes.Length; i++) {
-        graph.AddLabel(nodes[i], "" + i);
+      for (int i = 0; i < nodes.Count; i++) {
+        graph.AddLabel(nodes[i], i.ToString());
       }
 
       graph.CreateEdge(nodes[0], nodes[1]);
@@ -299,11 +301,10 @@ namespace Demo.yFiles.Graph.Bridges
 
       graph.CreateEdge(n1, n3);
       INode groupNode = graph.CreateGroupNode();
-      graph.AddLabel(groupNode, "Group Node", InteriorStretchLabelModel.North);
+      graph.AddLabel(groupNode, "Group Node");
       graph.SetParent(n2, groupNode);
       graph.AdjustGroupNodeLayout(groupNode);
-
-      graphControl.UpdateContentRect();
+      graph.SetNodeLayout(groupNode, groupNode.Layout.ToRectD().GetEnlarged(new InsetsD(15, 0, 15, 0)));
     }
 
     /// <summary>

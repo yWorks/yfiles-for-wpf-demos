@@ -9,25 +9,25 @@ If you are new to the yFiles WPF diagramming library, it is recommended to start
 You will find the following programming samples in this package: 
 
 
-| Name | Description 
-|:---|:---
-|**01 Creating the View** | Introduces class `GraphControl`, which is the central UI element for working with graphs in yFiles WPF. 
-|**02 Creating Graph Elements** | Shows how to create the basic graph elements in yFiles WPF. 
-|**03 Managing the Viewport** | Shows how to work with the Viewport. It introduces basic viewport handling such as zooming and "fit to content". 
-|**04 Customizing Styles** | Shows how to configure the visual appearance of graph elements (using so called styles). 
-|**05 Placing Labels** | Shows how to control label placement with the help of so called label model parameters. 
-|**06 Basic Interaction** | Shows the default interaction possibilities that are provided by class `GraphEditorInputMode`. 
-|**07 Undo and Clipboard Support** | Shows how to use undo and clipboard functionality present in yFiles WPF. 
-|**08 Input and Output** | Shows how to use GraphML I/O functionality. 
-|**09 Customizing Behavior** | Presents the `ILookup` interface. <br />`ILookup` is a central concept in yFiles WPF which is used to customize many aspects of interaction and appearance. Please refer to the additional bundled sample demos as well as the yFiles WPF Developer's Guide for many more examples of how to use the `ILookup` pattern. 
-|**10 Grouped Graphs** | Shows how to enable support for grouped (or hierarchically organized) graphs and  presents the default grouping interaction capabilities available in yFiles WPF. 
-|**11 Folding** | Shows how to enable collapse/expand functionality for grouped graphs. 
-|**12 Binding Data to Graph Elements** | Shows how to bind data to graph elements. 
-|**13 GraphML IO for Custom Data** | Shows how to read and write data that is bound to graph elements to/from a graphml file. 
-|**14 Automatic Graph Layout** | Shows how to use the layout algorithms in yFiles WPF to automatically place the graph elements. 
-|**15 Snapping** | Shows how to enable snapping for interactively modified items to snap lines. 
-|**16 Grid Snapping** | Shows how to enable use an interactive magnetic grid when elements are moved. 
-|**17 Orthogonal Edge Creation** | Shows how to create and edit edges in an orthogonal fashion. 
+| Name | Description |
+|:---|:---|
+|**01 Creating the View** | Introduces class `GraphControl`, which is the central UI element for working with graphs in yFiles WPF. |
+|**02 Creating Graph Elements** | Shows how to create the basic graph elements in yFiles WPF. |
+|**03 Managing the Viewport** | Shows how to work with the Viewport. It introduces basic viewport handling such as zooming and "fit to content". |
+|**04 Customizing Styles** | Shows how to configure the visual appearance of graph elements (using so called styles). |
+|**05 Placing Labels** | Shows how to control label placement with the help of so called label model parameters. |
+|**06 Basic Interaction** | Shows the default interaction possibilities that are provided by class `GraphEditorInputMode`. |
+|**07 Undo and Clipboard Support** | Shows how to use undo and clipboard functionality present in yFiles WPF. |
+|**08 Input and Output** | Shows how to use GraphML I/O functionality. |
+|**09 Customizing Behavior** | Presents the `ILookup` interface. <br />`ILookup` is a central concept in yFiles WPF which is used to customize many aspects of interaction and appearance. Please refer to the additional bundled sample demos as well as the yFiles WPF Developer's Guide for many more examples of how to use the `ILookup` pattern. |
+|**10 Grouped Graphs** | Shows how to enable support for grouped (or hierarchically organized) graphs and  presents the default grouping interaction capabilities available in yFiles WPF. |
+|**11 Folding** | Shows how to enable collapse/expand functionality for grouped graphs. |
+|**12 Binding Data to Graph Elements** | Shows how to bind data to graph elements. |
+|**13 GraphML IO for Custom Data** | Shows how to read and write data that is bound to graph elements to/from a graphml file. |
+|**14 Automatic Graph Layout** | Shows how to use the layout algorithms in yFiles WPF to automatically place the graph elements. |
+|**15 Snapping** | Shows how to enable snapping for interactively modified items to snap lines. |
+|**16 Grid Snapping** | Shows how to enable use an interactive magnetic grid when elements are moved. |
+|**17 Orthogonal Edge Creation** | Shows how to create and edit edges in an orthogonal fashion. |
 
 ## Running the Demos
 

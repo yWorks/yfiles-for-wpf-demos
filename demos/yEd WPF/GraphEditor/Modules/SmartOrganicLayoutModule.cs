@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.4.
- ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.5.
+ ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -147,7 +147,7 @@ namespace Demo.yFiles.GraphEditor.Modules.Layout
       cm.SetEnabledOnValueEquals(considerNodeLabelsItem, false, allowNodeOverlapsItem);
 
       visualGroup.AddDouble(COMPACTNESS, organic.CompactnessFactor, 0, 1);
-      visualGroup.AddBool(USE_AUTO_CLUSTERING, organic.ClusterNodes);
+      visualGroup.AddBool(USE_AUTO_CLUSTERING, organic.ClusteringPolicy != ClusteringPolicy.None);
       visualGroup.AddDouble(AUTO_CLUSTERING_QUALITY, organic.ClusteringQuality, 0, 1);
       cm.SetEnabledOnValueEquals(visualGroup[USE_AUTO_CLUSTERING], true, visualGroup[AUTO_CLUSTERING_QUALITY]);
 
@@ -207,7 +207,7 @@ namespace Demo.yFiles.GraphEditor.Modules.Layout
       //Doesn't really make sense to ignore node sizes (for certain configurations, this setting
       //doesn't have an effect anyway)
       organic.ConsiderNodeSizes = true;
-      organic.ClusterNodes = (bool) visualGroup[USE_AUTO_CLUSTERING].Value;
+      organic.ClusteringPolicy = (bool) visualGroup[USE_AUTO_CLUSTERING].Value?ClusteringPolicy.EdgeBetweenness : ClusteringPolicy.None;
       organic.ClusteringQuality = (double) visualGroup[AUTO_CLUSTERING_QUALITY].Value;
 
       organic.NodeEdgeOverlapAvoided = (bool) visualGroup[AVOID_NODE_EDGE_OVERLAPS].Value;

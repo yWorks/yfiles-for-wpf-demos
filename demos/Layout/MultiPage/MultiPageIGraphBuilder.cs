@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.4.
- ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.5.
+ ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -441,14 +441,15 @@ namespace Demo.yFiles.Layout.MultiPage
         IPort viewSourcePort = GetViewPort(modelSourcePort);
         IPort viewTargetPort = GetViewPort(modelTargetPort);
         IEdgeStyle style = (IEdgeStyle) (edgeDefaults.Style != NullEdgeStyle ? 
-                                edgeDefaults.GetStyleInstance() : 
-                                modelEdge.Style.Clone());
+          edgeDefaults.GetStyleInstance() : 
+          modelEdge.Style.Clone());
         viewEdge = pageView.CreateEdge(viewSourcePort, viewTargetPort, style, modelEdge.Tag);
       } else {
         // otherwise create it between the copies of its source and target nodes
         INode viewSource = GetViewNode(layoutEdge.Source);
         INode viewTarget = GetViewNode(layoutEdge.Target);
-        viewEdge = pageView.CreateEdge(viewSource, viewTarget);
+        IEdgeStyle style = edgeDefaults.GetStyleInstance();
+        viewEdge = pageView.CreateEdge(viewSource, viewTarget, style);
       }
 
       // adjust the port location
@@ -748,16 +749,18 @@ namespace Demo.yFiles.Layout.MultiPage
     /// <returns>The created node</returns>
     /// <seealso cref="CreateNodeCore"/>
     protected INode CreateProxyReferenceNode(LayoutGraph pageLayoutGraph, Node layoutNode, IGraph pageView) {
+      INodeDefaults nodeDefaults = ProxyReferenceNodeDefaults;
+      ILabelDefaults labelDefaults = nodeDefaults.Labels;
       INode representedNode = GetRepresentedNode(layoutNode);
-      INode viewNode = CreateNodeCore(pageLayoutGraph, pageView, layoutNode, representedNode, true, ProxyReferenceNodeDefaults);
+      INode viewNode = CreateNodeCore(pageLayoutGraph, pageView, layoutNode, representedNode, true, nodeDefaults);
       INodeInfo nodeInfo = result.GetNodeInfo(layoutNode);
       Node referencingNode = nodeInfo.ReferencingNode;
       int targetPage = result.GetNodeInfo(referencingNode).PageNo;
-      ILabelStyle style = ProxyNodeDefaults.Labels.Style != NullLabelStyle
-                            ? ProxyNodeDefaults.Labels.GetStyleInstance(viewNode)
+      ILabelStyle style = labelDefaults.Style != NullLabelStyle
+                            ? labelDefaults.GetStyleInstance(viewNode)
                             : pageView.NodeDefaults.Labels.GetStyleInstance(viewNode);
-      ILabelModelParameter parameter = ProxyNodeDefaults.Labels.LayoutParameter != NullLabelModelParameter
-                            ? ProxyNodeDefaults.Labels.GetLayoutParameterInstance(viewNode)
+      ILabelModelParameter parameter = labelDefaults.LayoutParameter != NullLabelModelParameter
+                            ? labelDefaults.GetLayoutParameterInstance(viewNode)
                             : pageView.NodeDefaults.Labels.GetLayoutParameterInstance(viewNode);
       pageView.AddLabel(viewNode, "p" + targetPage, parameter, style);
       return viewNode;

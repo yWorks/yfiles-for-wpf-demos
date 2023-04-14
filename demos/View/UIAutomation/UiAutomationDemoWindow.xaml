@@ -1,6 +1,6 @@
 <!-- ************************************************************************ -->
-<!-- This demo file is part of yFiles WPF 3.4.                           -->
-<!-- Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
+<!-- This demo file is part of yFiles WPF 3.5.                           -->
+<!-- Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
 <!-- 72070 Tuebingen, Germany. All rights reserved.                           -->
 <!--                                                                          -->
 <!-- yFiles demo files exhibit yFiles WPF functionalities. Any redistribution  -->
@@ -28,7 +28,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/3.0/xaml"
-        Title="Demo.yFiles.Graph.UIAutomation" Height="757.147" Width="1123" Loaded="OnWindowLoaded">
+        Title="Demo.yFiles.Graph.UIAutomation" Height="757.147" Width="1123" Loaded="OnWindowLoaded" Style="{StaticResource DemoWindow}">
     <Window.Resources>
         <Style TargetType="GroupBox">
             <Setter Property="Margin" Value="2"/>
@@ -41,10 +41,6 @@
         </Style>
     </Window.Resources>
     <Grid>
-        <Canvas x:Name="overlayContainer" Panel.ZIndex="1000" IsHitTestVisible="False" Visibility="Collapsed">
-            <Rectangle x:Name="overlay" Fill="#7EFF0000" Stroke="Blue" StrokeThickness="3"/>
-        </Canvas>
-
         <HeaderedContentControl Style="{StaticResource DemoStyle}">
             <HeaderedContentControl.Header>
                 <RichTextBox BorderThickness="0" IsReadOnly="True">
@@ -126,7 +122,12 @@
                                 <Button Command="{x:Static ywpf:GraphCommands.UngroupSelection}" CommandTarget="{Binding ElementName=graphControl}"/>
                             </ToolBar>
                         </ToolBarTray>
-                        <ywpf:GraphControl x:Name="graphControl" Background="White" AutomationProperties.AutomationId="DemoGraphControl"/>
+                        <Grid>
+                            <ywpf:GraphControl x:Name="graphControl" Background="White" AutomationProperties.AutomationId="DemoGraphControl" ViewportChanged="OnGraphControlViewportChanged"/>
+                            <Canvas x:Name="overlayContainer" Panel.ZIndex="1000" IsHitTestVisible="False" Visibility="Collapsed" ClipToBounds="True">
+                                <Rectangle x:Name="overlay" Fill="#7EFF0000" Stroke="Blue" StrokeThickness="3"/>
+                            </Canvas>
+                        </Grid>
                     </DockPanel>
                     <GridSplitter Grid.Column="1" ResizeDirection="Columns" Width="5" Height="Auto" ResizeBehavior="PreviousAndNext"/>
                     <Grid Grid.Column="2">

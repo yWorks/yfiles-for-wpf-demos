@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.4.
- ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.5.
+ ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -46,7 +46,7 @@ namespace Demo.yFiles.Graph.ZOrder
     private readonly INode node;
     private INode initialParent;
     private INode currentParent;
-    private ZOrderSupport ZOrderSupport;
+    private ZOrderSupport zOrderSupport;
     private bool dragging = false;
 
     public ZOrderNodePositionHandler(INode node, IPositionHandler wrappedHandler = null) : base(node, wrappedHandler) {
@@ -55,7 +55,7 @@ namespace Demo.yFiles.Graph.ZOrder
 
     public override void InitializeDrag(IInputModeContext context) {
       var graph = context.GetGraph();
-      ZOrderSupport = graph.Lookup<ZOrderSupport>();
+      zOrderSupport = graph.Lookup<ZOrderSupport>();
  
       // store initial parent of the node...
       this.initialParent = graph.GetParent(node);
@@ -83,17 +83,17 @@ namespace Demo.yFiles.Graph.ZOrder
       }
       if (parent != initialParent) {
         // node is temporarily at a new parent
-        var moveInputMode = context.ParentInputMode as ZOrderMoveInputMode;
-        if (moveInputMode != null) {
+        var zOrderSupport = context.GetGraph().Lookup<ZOrderSupport>();
+        if (zOrderSupport != null) {
           // the ZOrderMoveInputMode knows all moved nodes and therefore can provide the new z-order for this node
-          var tempZOrder = moveInputMode.GetZOrderForNewParent(node, parent);
+          var tempZOrder = zOrderSupport.GetZOrderForNewParent(node, parent);
           // 'parent' is only a temporary new parent so the old z-order should be kept but a new temporary one is set
-          ZOrderSupport.SetTempZOrder(node, parent, tempZOrder);
+          this.zOrderSupport.SetTempZOrder(node, parent, tempZOrder);
         }
         base.SetCurrentParent(context, node, parent);
       } else if (parent != currentParent) {
         // node is reset to its initial parent: reset its temporary z-order so the original one is used again
-        ZOrderSupport.RemoveTempZOrder(node);
+        zOrderSupport.RemoveTempZOrder(node);
         
         base.SetCurrentParent(context, node, parent);
       }

@@ -1,6 +1,6 @@
 <!-- ************************************************************************ -->
-<!-- This demo file is part of yFiles WPF 3.4.                           -->
-<!-- Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
+<!-- This demo file is part of yFiles WPF 3.5.                           -->
+<!-- Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
 <!-- 72070 Tuebingen, Germany. All rights reserved.                           -->
 <!--                                                                          -->
 <!-- yFiles demo files exhibit yFiles WPF functionalities. Any redistribution  -->
@@ -74,17 +74,39 @@
                         <RichTextBox IsReadOnly="True" BorderThickness="0">
                             <FlowDocument>
                                 <Paragraph>
-                                    This demo shows how to use the smart <Italic>NodeAggregation</Italic> algorithm
-                                    for drill down exploration of a large graph.
+                                    This demo shows how to use the smart 
+                                    <Run Style="{StaticResource HtmlCode}">NodeAggregation</Run> algorithm for drill down 
+                                    exploration of a large graph.
+                                </Paragraph>
+                                <Paragraph>
+                                    The <Run Style="{StaticResource HtmlCode}">NodeAggregation</Run> algorithm consolidates 
+                                    nodes of a graph and thus creates clusters of node based on user-specified constraints.
+                                </Paragraph>
+                                <Paragraph>
+                                    The demo shows aggregated nodes in a gray style, while original nodes of the data are 
+                                    represented as colored nodes.
                                 </Paragraph>
                                 <Paragraph>
                                     The configuration panel provides access to the most important settings of the
                                     aggregation algorithm.
                                 </Paragraph>
+                                <Paragraph>
+                                    The <Run Style="{StaticResource HtmlEm}">Aggregation Mode</Run> determines if nodes 
+                                    are combined into clusters based on the structure of the graph or based on their 
+                                    geometric locations.
+                                </Paragraph>
                                 <Paragraph Style="{StaticResource HtmlH2}">
                                     Things to try
                                 </Paragraph>
                                 <List>
+                                    <ListItem>
+                                        <Paragraph>
+                                            Switch between the
+                                            <Bold>two layout styles</Bold> offered for visualizing the aggregated graph (i.e.
+                                            <Run Style="{StaticResource HtmlCode}">BalloonLayout</Run> and
+                                            <Run Style="{StaticResource HtmlCode}">CactusGroupLayout</Run>). This re-runs the aggregation as well.
+                                        </Paragraph>
+                                    </ListItem>
                                     <ListItem>
                                         <Paragraph>
                                             Click on an aggregated node to <Bold>show</Bold> its children in the aggregation hierarchy.
@@ -128,63 +150,72 @@
 
             <GridSplitter Width="5" Grid.Column="3" ResizeBehavior="PreviousAndNext" />
 
-            <HeaderedContentControl Grid.Column="4" Header="Aggregation Properties"
+            <StackPanel Grid.Column="4" Grid.RowSpan="2">
+                <HeaderedContentControl Header="Layout Properties" Style="{StaticResource HeaderedContentStyle}" BorderThickness="0,0,1,0" Margin="0,0,0,10">
+                    <StackPanel>
+                        <Label>Layout Style</Label>
+                        <ComboBox x:Name="layoutStyleComboBox" HorizontalAlignment="Left" Margin="20,0,0,0"/>
+
+                    </StackPanel>
+                </HeaderedContentControl>
+                <HeaderedContentControl Header="Aggregation Properties"
                                     Style="{StaticResource HeaderedContentStyle}"
-                                    BorderThickness="0,0,1,0" Grid.RowSpan="2">
-                <StackPanel>
-                    <ProgressBar IsIndeterminate="False" x:Name="graphLoadingBar" Height="5" Visibility="Hidden" />
+                                    BorderThickness="0,0,1,0">
+                    <StackPanel>
+                        <ProgressBar IsIndeterminate="False" x:Name="graphLoadingBar" Height="5" Visibility="Hidden" />
 
-                    <GroupBox Header="Settings">
-                        <StackPanel x:Name="SidePanel">
-                            <ScrollViewer Margin="10" VerticalScrollBarVisibility="Auto">
-                                <optionHandler:ConfigurationEditor x:Name="Editor" />
-                            </ScrollViewer>
-                            <Button Click="RunButtonClick" Margin="10">Run</Button>
-                        </StackPanel>
-                    </GroupBox>
+                        <GroupBox Header="Settings">
+                            <StackPanel x:Name="SidePanel">
+                                <ScrollViewer Margin="10" VerticalScrollBarVisibility="Auto">
+                                    <optionHandler:ConfigurationEditor x:Name="Editor" />
+                                </ScrollViewer>
+                                <Button Click="RunAggregation" Margin="10">Run</Button>
+                            </StackPanel>
+                        </GroupBox>
 
-                    <GroupBox Header="Graph Info">
-                        <StackPanel>
-                            <StackPanel Orientation="Horizontal">
-                                <Label>Original Nodes: </Label>
-                                <Label
+                        <GroupBox Header="Graph Info">
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <Label>Original Nodes:</Label>
+                                    <Label
                                     Content="{Binding Path=VisibleNodes, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" />
-                                <Label>/</Label>
-                                <Label
+                                    <Label>/</Label>
+                                    <Label
                                     Content="{Binding Path=OriginalGraph.Nodes.Count, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" />
-                            </StackPanel>
-                            <StackPanel Orientation="Horizontal">
-                                <Label>Original Edges: </Label>
-                                <Label
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <Label>Original Edges:</Label>
+                                    <Label
                                     Content="{Binding Path=VisibleEdges, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" />
-                                <Label>/</Label>
-                                <Label
+                                    <Label>/</Label>
+                                    <Label
                                     Content="{Binding Path=OriginalGraph.Edges.Count, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" />
+                                </StackPanel>
                             </StackPanel>
-                        </StackPanel>
-                    </GroupBox>
+                        </GroupBox>
 
-                    <GroupBox Header="Current Node">
-                        <StackPanel>
-                            <Label
+                        <GroupBox Header="Current Node">
+                            <StackPanel>
+                                <Label
                                 Content="{Binding Path=CurrentItemLabel, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" />
-                            <StackPanel Orientation="Horizontal">
-                                <Label>Descendant Count:</Label>
-                                <Label
+                                <StackPanel Orientation="Horizontal">
+                                    <Label>Descendant Count:</Label>
+                                    <Label
                                     Content="{Binding Path=CurrentItemAggregate.DescendantCount, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" />
-                            </StackPanel>
-                            <StackPanel Orientation="Horizontal">
-                                <Label>Descendant Weight Sum:</Label>
-                                <Label
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <Label>Descendant Weight Sum:</Label>
+                                    <Label
                                     Content="{Binding Path=CurrentItemAggregate.DescendantWeightSum, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" />
+                                </StackPanel>
                             </StackPanel>
-                        </StackPanel>
-                    </GroupBox>
-                    <Button x:Name="SwitchViewButton" Click="SwitchViewButtonClick" Margin="0,10,0,10" Height="30">
-                        Switch to Filtered View
-                    </Button>
-                </StackPanel>
-            </HeaderedContentControl>
+                        </GroupBox>
+                        <Button x:Name="SwitchViewButton" Click="SwitchViewButtonClick" Margin="0,10,0,10" Height="30">
+                            Switch to Filtered View
+                        </Button>
+                    </StackPanel>
+                </HeaderedContentControl>
+            </StackPanel>
         </Grid>
     </DockPanel>
 

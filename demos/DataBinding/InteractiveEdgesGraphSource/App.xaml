@@ -1,6 +1,6 @@
 <!-- ************************************************************************ -->
-<!-- This demo file is part of yFiles WPF 3.4.                           -->
-<!-- Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
+<!-- This demo file is part of yFiles WPF 3.5.                           -->
+<!-- Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
 <!-- 72070 Tuebingen, Germany. All rights reserved.                           -->
 <!--                                                                          -->
 <!-- yFiles demo files exhibit yFiles WPF functionalities. Any redistribution  -->
@@ -43,41 +43,25 @@
                     </DataTemplate>
                     <!-- template for ClassData items -->
                     <DataTemplate DataType="{x:Type InteractiveEdgesGraphSource:ClassData}">
-                        <Border BorderBrush="DarkOrange" Padding="3" BorderThickness="1" CornerRadius="5">
-                            <Border.Background>
-                                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                                    <LinearGradientBrush.GradientStops>
-                                        <GradientStop Color="#FFFFEDCC" Offset="0" />
-                                        <GradientStop Color="#FFFFFFFF" Offset="1" />
-                                    </LinearGradientBrush.GradientStops>
-                                </LinearGradientBrush>
-                            </Border.Background>
+                        <Border BorderBrush="#662b00" Background="#ff6c00" Padding="3" BorderThickness="1" CornerRadius="5">
                             <StackPanel Orientation="Vertical">
-                                <TextBlock Text="{Binding Path=Name}" FontWeight="Bold"/>
-                                <Separator/>
-                                <ItemsControl ItemsSource="{Binding Methods}"/>
-                                <Separator/>
-                                <ItemsControl ItemsSource="{Binding Events}"/>
+                                <TextBlock Text="{Binding Path=Name}" FontWeight="Bold" Foreground="#662b00" Background="#ffc499"/>
+                                <Separator Background="#662b00"/>
+                                <ItemsControl ItemsSource="{Binding Methods}" Foreground="#662b00" Background="#ffc499"/>
+                                <Separator Background="#662b00"/>
+                                <ItemsControl ItemsSource="{Binding Events}" Foreground="#662b00" Background="#ffc499"/>
                             </StackPanel>
                         </Border>
                     </DataTemplate>
                     <!-- template for InterfaceData items -->
                     <DataTemplate DataType="{x:Type InteractiveEdgesGraphSource:InterfaceData}">
-                        <Border BorderBrush="DeepSkyBlue" Padding="3" BorderThickness="1" CornerRadius="5">
-                            <Border.Background>
-                                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                                    <LinearGradientBrush.GradientStops>
-                                        <GradientStop Color="#FFCCF2FF" Offset="0" />
-                                        <GradientStop Color="#FFFFFFFF" Offset="1" />
-                                    </LinearGradientBrush.GradientStops>
-                                </LinearGradientBrush>
-                            </Border.Background>
+                        <Border BorderBrush="#0e0e28" Background="#242265" Padding="3" BorderThickness="1" CornerRadius="5">
                             <StackPanel Orientation="Vertical">
-                                <TextBlock Text="{Binding Path=Name}" FontWeight="Bold"/>
-                                <Separator/>
-                                <ItemsControl ItemsSource="{Binding Methods}"/>
-                                <Separator/>
-                                <ItemsControl ItemsSource="{Binding Events}"/>
+                                <TextBlock Text="{Binding Path=Name}" FontWeight="Bold" Foreground="#0e0e28" Background="#a7a7c1"/>
+                                <Separator Background="#0e0e28"/>
+                                <ItemsControl ItemsSource="{Binding Methods}" Foreground="#0e0e28" Background="#a7a7c1"/>
+                                <Separator Background="#0e0e28"/>
+                                <ItemsControl ItemsSource="{Binding Events}" Foreground="#0e0e28" Background="#a7a7c1"/>
                             </StackPanel>
                         </Border>
                     </DataTemplate>

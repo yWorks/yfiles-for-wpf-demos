@@ -1,6 +1,6 @@
 <!-- ************************************************************************ -->
-<!-- This demo file is part of yFiles WPF 3.4.                           -->
-<!-- Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
+<!-- This demo file is part of yFiles WPF 3.5.                           -->
+<!-- Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
 <!-- 72070 Tuebingen, Germany. All rights reserved.                           -->
 <!--                                                                          -->
 <!-- yFiles demo files exhibit yFiles WPF functionalities. Any redistribution  -->
@@ -51,7 +51,8 @@
 					<BlockUIContainer>
                         <Grid>
 						    <y:NodeControl Style="{StaticResource ConnectorNodeTemplate}" Height="40" />
-                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center"><Underline>Connector</Underline></TextBlock>
+                            <Rectangle Fill="#FFFFC499" Width="90" Height="20" RadiusX="5" RadiusY="5"/>
+                            <TextBlock Foreground="#FF662B00" VerticalAlignment="Center" HorizontalAlignment="Center">Connector</TextBlock>
                         </Grid>
                     </BlockUIContainer>
 					<Paragraph>
@@ -64,7 +65,8 @@
 					<BlockUIContainer>
                         <Grid>
 						    <y:NodeControl Style="{StaticResource ProxyNodeTemplate}" Height="40" />
-                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center"><Underline>Proxy</Underline></TextBlock>
+                            <Rectangle Fill="#FFC8DFB3" Width="60" Height="20" RadiusX="5" RadiusY="5"/>
+                            <TextBlock Foreground="#FF2F461A" VerticalAlignment="Center" HorizontalAlignment="Center">Proxy</TextBlock>
                         </Grid>
 					</BlockUIContainer>
 					<Paragraph>
@@ -75,7 +77,8 @@
 					<BlockUIContainer>
                         <Grid>
 						    <y:NodeControl Style="{StaticResource ProxyReferenceNodeTemplate}" Height="40" />
-                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center"><Underline>Proxy Reference</Underline></TextBlock>
+                            <Rectangle Fill="#FFDDA7B5" Width="110" Height="20" RadiusX="5" RadiusY="5"/>
+                            <TextBlock Foreground="#FF440E1C" VerticalAlignment="Center" HorizontalAlignment="Center">Proxy Reference</TextBlock>
                         </Grid>
 					</BlockUIContainer>
 					<Paragraph>

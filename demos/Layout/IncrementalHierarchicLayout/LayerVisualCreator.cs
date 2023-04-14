@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.4.
- ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.5.
+ ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -50,9 +50,9 @@ namespace Demo.yFiles.Layout.IncrementalHierarchicLayout
     // the list of the dividers (one less than the number of layers)
     private readonly List<float> dividers = new List<float>();
     // the dark brush used for drawing the layers
-    private static readonly Brush darkBrush = new SolidColorBrush(Color.FromArgb(0x80, 0x96, 0xc8, 0xff));
+    private static readonly Brush darkBrush = new SolidColorBrush(Color.FromArgb(0x80, 0xFF, 0xC9, 0x14));
     // the light brush used for drawing the layers
-    private static readonly Brush lightBrush = new SolidColorBrush(Color.FromArgb(0x80, 0xdc, 0xf0, 0xf0));
+    private static readonly Brush lightBrush = new SolidColorBrush(Color.FromArgb(0x80, 0xFF, 0xE8, 0xA0));
 
     // updates the layer drawing from the information passed in
     public void UpdateLayers(IGraph graph, IMapper<INode, int> layerMapper) {

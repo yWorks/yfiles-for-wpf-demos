@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.4.
- ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.5.
+ ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -49,6 +49,9 @@ using Scope = yWorks.Layout.Organic.Scope;
 using yWorks.Layout.Labeling;
 using yWorks.Controls;
 using System.Collections;
+using System.Diagnostics;
+using System.Windows.Navigation;
+using Demo.yFiles.Toolkit;
 
 namespace Neo4JIntegration
 {
@@ -340,9 +343,12 @@ namespace Neo4JIntegration
       var nodeStyle = new NodeControlNodeStyle("NodeStyle");
       nodesSource.NodeCreator.Defaults.Style = nodeStyle;
       var edgesSource = builder.CreateEdgesSource(edges, e => e.StartNodeId, e => e.EndNodeId, e => e.Id);
-      edgesSource.EdgeCreator.Defaults.Style = new BezierEdgeStyle { TargetArrow = Arrows.Default };
+      var style58 = Themes.Palette58;
+      var demoEdgeStyle = DemoStyles.CreateDemoEdgeStyle(style58);
+      edgesSource.EdgeCreator.Defaults.Style = new BezierEdgeStyle { TargetArrow = demoEdgeStyle.TargetArrow, Pen = demoEdgeStyle.Pen };
       var labelBinding = edgesSource.EdgeCreator.CreateLabelBinding(item => item.Type);
       labelBinding.Defaults.LayoutParameter = new EdgeSegmentLabelModel().CreateParameterFromSource(0, 0, EdgeSides.AboveEdge);
+      labelBinding.Defaults.Style = DemoStyles.CreateDemoEdgeLabelStyle(style58);
 
       var context = graphControl.CreateRenderContext();
       builder.NodeCreated +=
@@ -427,6 +433,12 @@ namespace Neo4JIntegration
     private void OnUnloaded(object sender, RoutedEventArgs e) {
       //Close the session
       Session?.CloseAsync();
+    }
+
+    private void OnLinkClicked(object sender, RequestNavigateEventArgs e) {
+      var startInfo = new ProcessStartInfo { FileName = e.Uri.AbsoluteUri, UseShellExecute = true };
+      Process.Start(startInfo);
+      e.Handled = true;
     }
   }
 

@@ -1,944 +1,893 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!--Created by yFiles for HTML 2.1.0.1-->
 <graphml xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml.html/2.0/ygraphml.xsd " xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:y="http://www.yworks.com/xml/yfiles-common/3.0" xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/3.0" xmlns:x0="http://www.yworks.com/yFilesWPF/demos/RotatableNodes/1.0" xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/3.0/xaml" xmlns:sys="http://www.yworks.com/xml/yfiles-common/markup/primitives/2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<key id="d0" for="node" attr.type="boolean" attr.name="Expanded" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/folding/Expanded">
-		<default>true</default>
-	</key>
-	<key id="d1" for="node" attr.name="NodeLabels" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeLabels"/>
-	<key id="d2" for="node" attr.name="NodeGeometry" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeGeometry"/>
-	<key id="d3" for="all" attr.name="UserTags" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/UserTags"/>
-	<key id="d4" for="node" attr.name="NodeStyle" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeStyle"/>
-	<key id="d5" for="node" attr.name="NodeViewState" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/folding/1.1/NodeViewState"/>
-	<key id="d6" for="edge" attr.name="EdgeLabels" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/EdgeLabels"/>
-	<key id="d7" for="edge" attr.name="EdgeGeometry" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/EdgeGeometry"/>
-	<key id="d8" for="edge" attr.name="EdgeStyle" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/EdgeStyle"/>
-	<key id="d9" for="edge" attr.name="EdgeViewState" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/folding/1.1/EdgeViewState"/>
-	<key id="d10" for="port" attr.name="PortLabels" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/PortLabels"/>
-	<key id="d11" for="port" attr.name="PortLocationParameter" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/PortLocationParameter">
-		<default>
-			<x0:RotatablePortLocationModelDecoratorParameter Model="{y:GraphMLReference 4}" Wrapped="{x:Static y:FreeNodePortLocationModel.NodeTopAnchored}"/>
-		</default>
-	</key>
-	<key id="d12" for="port" attr.name="PortStyle" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/PortStyle">
-		<default>
-			<ywpf:NodeStylePortStyleAdapter>
-				<ywpf:ShapeNodeStyle Pen="#FFFF0000" Brush="#FFFF0000" Shape="Ellipse"/>
-			</ywpf:NodeStylePortStyleAdapter>
-		</default>
-	</key>
-	<key id="d13" for="port" attr.name="PortViewState" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/folding/1.1/PortViewState"/>
-	<key id="d14" attr.name="SharedData" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/SharedData"/>
-	<data key="d14">
-		<y:SharedData>
-			<x0:RotatableNodeLabelModelDecoratorParameter x:Key="1" Wrapped="{x:Static y:InteriorLabelModel.Center}">
-				<x0:RotatableNodeLabelModelDecoratorParameter.Model>
-					<x0:RotatableNodeLabelModelDecorator>
-						<y:InteriorLabelModel/>
-					</x0:RotatableNodeLabelModelDecorator>
-				</x0:RotatableNodeLabelModelDecoratorParameter.Model>
-			</x0:RotatableNodeLabelModelDecoratorParameter>
-			<ywpf:DefaultLabelStyle x:Key="2"/>
-      <ywpf:ShinyPlateNodeStyle Brush="Orange" DrawShadow="false" x:Key="3"/>
-			<x0:RotatablePortLocationModelDecorator x:Key="4">
-				<y:FreeNodePortLocationModel/>
-			</x0:RotatablePortLocationModelDecorator>
-			<ywpf:PolylineEdgeStyle x:Key="5"/>
-		</y:SharedData>
-	</data>
-	<graph id="G" edgedefault="directed">
-		<node id="n0">
-			<data key="d1">
-				<x:List>
-					<y:Label LayoutParameter="{y:GraphMLReference 1}" Style="{y:GraphMLReference 2}" PreferredSize="18.152648506417588,14">
-						<y:Label.Text>90°</y:Label.Text>
-					</y:Label>
-				</x:List>
-			</data>
-			<data key="d2">
-				<y:RectD X="-25" Y="525" Width="100" Height="50"/>
-			</data>
-			<data key="d4">
-				<x0:RotatableNodeStyleDecorator Angle="90" Wrapped="{y:GraphMLReference 3}"/>
-			</data>
-		</node>
-		<node id="n1">
-			<data key="d1">
-				<x:List>
-					<y:Label LayoutParameter="{y:GraphMLReference 1}" Style="{y:GraphMLReference 2}" PreferredSize="24.828743646491738,14">
-						<y:Label.Text>100°</y:Label.Text>
-					</y:Label>
-				</x:List>
-			</data>
-			<data key="d2">
-				<y:RectD X="61.82408883346517" Y="517.403876506104" Width="100" Height="50"/>
-			</data>
-			<data key="d4">
-				<x0:RotatableNodeStyleDecorator Angle="100" Wrapped="{y:GraphMLReference 3}"/>
-			</data>
-			<port name="p0">
-				<data key="d11">
-					<x0:RotatablePortLocationModelDecoratorParameter Model="{y:GraphMLReference 4}">
-						<y:FreeNodePortLocationModelParameter Ratio="1,0.9180249429335504" Offset="5.684341886080802e-14,0"/>
-					</x0:RotatablePortLocationModelDecoratorParameter>
-				</data>
-			</port>
-		</node>
-		<node id="n2">
-			<data key="d1">
-				<x:List>
-					<y:Label LayoutParameter="{y:GraphMLReference 1}" Style="{y:GraphMLReference 2}" PreferredSize="23.93781611243443,14">
-						<y:Label.Text>110°</y:Label.Text>
-					</y:Label>
-				</x:List>
-			</data>
-			<data key="d2">
-				<y:RectD X="146.01007166283435" Y="494.84631039295414" Width="100" Height="50"/>
-			</data>
-			<data key="d4">
-				<x0:RotatableNodeStyleDecorator Angle="110" Wrapped="{y:GraphMLReference 3}"/>
-			</data>
-			<port name="p0">
-				<data key="d11">
-					<x0:RotatablePortLocationModelDecoratorParameter Model="{y:GraphMLReference 4}">
-						<y:FreeNodePortLocationModelParameter Ratio="0.03612963717015276,2.2737367544323206e-15"/>
-					</x0:RotatablePortLocationModelDecoratorParameter>
-				</data>
-			</port>
-		</node>
-		<node id="n3">
-			<data key="d1">
-				<x:List>
-					<y:Label LayoutParameter="{y:GraphMLReference 1}" Style="{y:GraphMLReference 2}" PreferredSize="24.828743646491738,14">
-						<y:Label.Text>120°</y:Label.Text>
-					</y:Label>
-				</x:List>
-			</data>
-			<data key="d2">
-				<y:RectD X="225" Y="458.01270189221935" Width="100" Height="50"/>
-			</data>
-			<data key="d4">
-				<x0:RotatableNodeStyleDecorator Angle="120" Wrapped="{y:GraphMLReference 3}"/>
-			</data>
-		</node>
-		<node id="n4">
-			<data key="d1">
-				<x:List>
-					<y:Label LayoutParameter="{y:GraphMLReference 1}" Style="{y:GraphMLReference 2}" PreferredSize="24.828743646491738,14">
-						<y:Label.Text>130°</y:Label.Text>
-					</y:Label>
-				</x:List>
-			</data>
-			<data key="d2">
-				<y:RectD X="296.3938048432696" Y="408.022221559489" Width="100" Height="50"/>
-			</data>
-			<data key="d4">
-				<x0:RotatableNodeStyleDecorator Angle="130" Wrapped="{y:GraphMLReference 3}"/>
-			</data>
-		</node>
-		<node id="n5">
-			<data key="d1">
-				<x:List>
-					<y:Label LayoutParameter="{y:GraphMLReference 1}" Style="{y:GraphMLReference 2}" PreferredSize="24.828743646491738,14">
-						<y:Label.Text>140°</y:Label.Text>
-					</y:Label>
-				</x:List>
-			</data>
-			<data key="d2">
-				<y:RectD X="358.022221559489" Y="346.39380484326966" Width="100" Height="50"/>
-			</data>
-			<data key="d4">
-				<x0:RotatableNodeStyleDecorator Angle="140" Wrapped="{y:GraphMLReference 3}"/>
-			</data>
-			<port name="p0">
-				<data key="d11">
-					<x0:RotatablePortLocationModelDecoratorParameter Model="{y:GraphMLReference 4}">
-						<y:FreeNodePortLocationModelParameter Ratio="1,0.6465762860906465"/>
-					</x0:RotatablePortLocationModelDecoratorParameter>
-				</data>
-			</port>
-			<port name="p1">
-				<data key="d11">
-					<x0:RotatablePortLocationModelDecoratorParameter Model="{y:GraphMLReference 4}">
-						<y:FreeNodePortLocationModelParameter Ratio="1,0.7234842945418234"/>
-					</x0:RotatablePortLocationModelDecoratorParameter>
-				</data>
-			</port>
-			<port name="p2">
-				<data key="d11">
-					<x0:RotatablePortLocationModelDecoratorParameter Model="{y:GraphMLReference 4}">
-						<y:FreeNodePortLocationModelParameter Ratio="0.9587171920490891,0"/>
-					</x0:RotatablePortLocationModelDecoratorParameter>
-				</data>
-			</port>
-			<port name="p3">
-				<data key="d11">
-					<x0:RotatablePortLocationModelDecoratorParameter Model="{y:GraphMLReference 4}">
-						<y:FreeNodePortLocationModelParameter Ratio="1,0.32710175834533856" Offset="1.1368683772161603e-13,0"/>
-					</x0:RotatablePortLocationModelDecoratorParameter>
-				</data>
-			</port>
-		</node>
-		<node id="n6">
-			<data key="d1">
-				<x:List>
-					<y:Label LayoutParameter="{y:GraphMLReference 1}" Style="{y:GraphMLReference 2}" PreferredSize="24.828743646491738,14">
-						<y:Label.Text>150°</y:Label.Text>
-					</y:Label>
-				</x:List>
-			</data>
-			<data key="d2">
-				<y:RectD X="408.0127018922193" Y="275.00000000000006" Width="100" Height="50"/>
-			</data>
-			<data key="d4">
-				<x0:RotatableNodeStyleDecorator Angle="150" Wrapped="{y:GraphMLReference 3}"/>
-			</data>
-			<port name="p0">
-				<data key="d11">
-					<x0:RotatablePortLocationModelDecoratorParameter Model="{y:GraphMLReference 4}">
-						<y:FreeNodePortLocationModelParameter Ratio="1,0.6019948813503947"/>
-					</x0:RotatablePortLocationModelDecoratorParameter>
-				</data>
-			</port>
-		</node>
-		<node id="n7">
-			<data key="d1">
-				<x:List>
-					<y:Label LayoutParameter="{y:GraphMLReference 1}" Style="{y:GraphMLReference 2}" PreferredSize="24.828743646491738,14">
-						<y:Label.Text>160°</y:Label.Text>
-					</y:Label>
-				</x:List>
-			</data>
-			<data key="d2">
-				<y:RectD X="444.84631039295414" Y="196.0100716628344" Width="100" Height="50"/>
-			</data>
-			<data key="d4">
-				<x0:RotatableNodeStyleDecorator Angle="160" Wrapped="{y:GraphMLReference 3}"/>
-			</data>
-		</node>
-		<node id="n8">
-			<data key="d1">
-				<x:List>
-					<y:Label LayoutParameter="{y:GraphMLReference 1}" Style="{y:GraphMLReference 2}" PreferredSize="24.828743646491738,14">
-						<y:Label.Text>170°</y:Label.Text>
-					</y:Label>
-				</x:List>
-			</data>
-			<data key="d2">
-				<y:RectD X="467.403876506104" Y="111.82408883346523" Width="100" Height="50"/>
-			</data>
-			<data key="d4">
-				<x0:RotatableNodeStyleDecorator Angle="170" Wrapped="{y:GraphMLReference 3}"/>
-			</data>
-			<port name="p0">
-				<data key="d11">
-					<x0:RotatablePortLocationModelDecoratorParameter Model="{y:GraphMLReference 4}">
-						<y:FreeNodePortLocationModelParameter Ratio="1,0.6313737112891948" Offset="1.1368683772161603e-13,0"/>
-					</x0:RotatablePortLocationModelDecoratorParameter>
-				</data>
-			</port>
-			<port name="p1">
-				<data key="d11">
-					<x0:RotatablePortLocationModelDecoratorParameter Model="{y:GraphMLReference 4}">
-						<y:FreeNodePortLocationModelParameter Ratio="1,0.015972327293874572" Offset="1.1368683772161603e-13,0"/>
-					</x0:RotatablePortLocationModelDecoratorParameter>
-				</data>
-			</port>
-		</node>
-		<node id="n9">
-			<data key="d1">
-				<x:List>
-					<y:Label LayoutParameter="{y:GraphMLReference 1}" Style="{y:GraphMLReference 2}" PreferredSize="24.828743646491738,14">
-						<y:Label.Text>180°</y:Label.Text>
-					</y:Label>
-				</x:List>
-			</data>
-			<data key="d2">
-				<y:RectD X="475" Y="25.00000000000003" Width="100" Height="50"/>
-			</data>
-			<data key="d4">
-				<x0:RotatableNodeStyleDecorator Angle="180" Wrapped="{y:GraphMLReference 3}"/>
-			</data>
-		</node>
-		<node id="n10">
-			<data key="d1">
-				<x:List>
-					<y:Label LayoutParameter="{y:GraphMLReference 1}" Style="{y:GraphMLReference 2}" PreferredSize="24.828743646491738,14">
-						<y:Label.Text>190°</y:Label.Text>
-					</y:Label>
-				</x:List>
-			</data>
-			<data key="d2">
-				<y:RectD X="467.403876506104" Y="-61.824088833465154" Width="100" Height="50"/>
-			</data>
-			<data key="d4">
-				<x0:RotatableNodeStyleDecorator Angle="190" Wrapped="{y:GraphMLReference 3}"/>
-			</data>
-		</node>
-		<node id="n11">
-			<data key="d1">
-				<x:List>
-					<y:Label LayoutParameter="{y:GraphMLReference 1}" Style="{y:GraphMLReference 2}" PreferredSize="24.828743646491738,14">
-						<y:Label.Text>200°</y:Label.Text>
-					</y:Label>
-				</x:List>
-			</data>
-			<data key="d2">
-				<y:RectD X="444.8463103929542" Y="-146.01007166283435" Width="100" Height="50"/>
-			</data>
-			<data key="d4">
-				<x0:RotatableNodeStyleDecorator Angle="200" Wrapped="{y:GraphMLReference 3}"/>
-			</data>
-		</node>
-		<node id="n12">
-			<data key="d1">
-				<x:List>
-					<y:Label LayoutParameter="{y:GraphMLReference 1}" Style="{y:GraphMLReference 2}" PreferredSize="24.828743646491738,14">
-						<y:Label.Text>210°</y:Label.Text>
-					</y:Label>
-				</x:List>
-			</data>
-			<data key="d2">
-				<y:RectD X="408.01270189221935" Y="-224.9999999999999" Width="100" Height="50"/>
-			</data>
-			<data key="d4">
-				<x0:RotatableNodeStyleDecorator Angle="210" Wrapped="{y:GraphMLReference 3}"/>
-			</data>
-			<port name="p0">
-				<data key="d11">
-					<x0:RotatablePortLocationModelDecoratorParameter Model="{y:GraphMLReference 4}">
-						<y:FreeNodePortLocationModelParameter Ratio="0.9997161781507498,1" Offset="0,1.1368683772161603e-13"/>
-					</x0:RotatablePortLocationModelDecoratorParameter>
-				</data>
-			</port>
-			<port name="p1">
-				<data key="d11">
-					<x0:RotatablePortLocationModelDecoratorParameter Model="{y:GraphMLReference 4}">
-						<y:FreeNodePortLocationModelParameter Ratio="1,0.3796305979492166" Offset="5.684341886080802e-14,0"/>
-					</x0:RotatablePortLocationModelDecoratorParameter>
-				</data>
-			</port>
-		</node>
-		<node id="n13">
-			<data key="d1">
-				<x:List>
-					<y:Label LayoutParameter="{y:GraphMLReference 1}" Style="{y:GraphMLReference 2}" PreferredSize="24.828743646491738,14">
-						<y:Label.Text>220°</y:Label.Text>
-					</y:Label>
-				</x:List>
-			</data>
-			<data key="d2">
-				<y:RectD X="358.022221559489" Y="-296.39380484326966" Width="100" Height="50"/>
-			</data>
-			<data key="d4">
-				<x0:RotatableNodeStyleDecorator Angle="220" Wrapped="{y:GraphMLReference 3}"/>
-			</data>
-			<port name="p0">
-				<data key="d11">
-					<x0:RotatablePortLocationModelDecoratorParameter Model="{y:GraphMLReference 4}">
-						<y:FreeNodePortLocationModelParameter Ratio="1,0.3756113395072998" Offset="1.1368683772161603e-13,0"/>
-					</x0:RotatablePortLocationModelDecoratorParameter>
-				</data>
-			</port>
-			<port name="p1">
-				<data key="d11">
-					<x0:RotatablePortLocationModelDecoratorParameter Model="{y:GraphMLReference 4}">
-						<y:FreeNodePortLocationModelParameter Ratio="1,0.9701851438020219" Offset="1.1368683772161603e-13,0"/>
-					</x0:RotatablePortLocationModelDecoratorParameter>
-				</data>
-			</port>
-		</node>
-		<node id="n14">
-			<data key="d1">
-				<x:List>
-					<y:Label LayoutParameter="{y:GraphMLReference 1}" Style="{y:GraphMLReference 2}" PreferredSize="24.828743646491738,14">
-						<y:Label.Text>230°</y:Label.Text>
-					</y:Label>
-				</x:List>
-			</data>
-			<data key="d2">
-				<y:RectD X="296.3938048432697" Y="-358.02222155948897" Width="100" Height="50"/>
-			</data>
-			<data key="d4">
-				<x0:RotatableNodeStyleDecorator Angle="230" Wrapped="{y:GraphMLReference 3}"/>
-			</data>
-		</node>
-		<node id="n15">
-			<data key="d1">
-				<x:List>
-					<y:Label LayoutParameter="{y:GraphMLReference 1}" Style="{y:GraphMLReference 2}" PreferredSize="24.828743646491738,14">
-						<y:Label.Text>240°</y:Label.Text>
-					</y:Label>
-				</x:List>
-			</data>
-			<data key="d2">
-				<y:RectD X="225" Y="-408.01270189221935" Width="100" Height="50"/>
-			</data>
-			<data key="d4">
-				<x0:RotatableNodeStyleDecorator Angle="240" Wrapped="{y:GraphMLReference 3}"/>
-			</data>
-		</node>
-		<node id="n16">
-			<data key="d1">
-				<x:List>
-					<y:Label LayoutParameter="{y:GraphMLReference 1}" Style="{y:GraphMLReference 2}" PreferredSize="24.828743646491738,14">
-						<y:Label.Text>250°</y:Label.Text>
-					</y:Label>
-				</x:List>
-			</data>
-			<data key="d2">
-				<y:RectD X="146.01007166283443" Y="-444.84631039295414" Width="100" Height="50"/>
-			</data>
-			<data key="d4">
-				<x0:RotatableNodeStyleDecorator Angle="250" Wrapped="{y:GraphMLReference 3}"/>
-			</data>
-			<port name="p0">
-				<data key="d11">
-					<x0:RotatablePortLocationModelDecoratorParameter Model="{y:GraphMLReference 4}">
-						<y:FreeNodePortLocationModelParameter Ratio="0.9999999999999994,0.8755917717593706"/>
-					</x0:RotatablePortLocationModelDecoratorParameter>
-				</data>
-			</port>
-		</node>
-		<node id="n17">
-			<data key="d1">
-				<x:List>
-					<y:Label LayoutParameter="{y:GraphMLReference 1}" Style="{y:GraphMLReference 2}" PreferredSize="24.828743646491738,14">
-						<y:Label.Text>260°</y:Label.Text>
-					</y:Label>
-				</x:List>
-			</data>
-			<data key="d2">
-				<y:RectD X="61.82408883346514" Y="-467.403876506104" Width="100" Height="50"/>
-			</data>
-			<data key="d4">
-				<x0:RotatableNodeStyleDecorator Angle="260" Wrapped="{y:GraphMLReference 3}"/>
-			</data>
-		</node>
-		<node id="n18">
-			<data key="d1">
-				<x:List>
-					<y:Label LayoutParameter="{y:GraphMLReference 1}" Style="{y:GraphMLReference 2}" PreferredSize="24.828743646491738,14">
-						<y:Label.Text>270°</y:Label.Text>
-					</y:Label>
-				</x:List>
-			</data>
-			<data key="d2">
-				<y:RectD X="-24.99999999999994" Y="-475" Width="100" Height="50"/>
-			</data>
-			<data key="d4">
-				<x0:RotatableNodeStyleDecorator Angle="270" Wrapped="{y:GraphMLReference 3}"/>
-			</data>
-			<port name="p0">
-				<data key="d11">
-					<x0:RotatablePortLocationModelDecoratorParameter Model="{y:GraphMLReference 4}">
-						<y:FreeNodePortLocationModelParameter Ratio="1,0.28"/>
-					</x0:RotatablePortLocationModelDecoratorParameter>
-				</data>
-			</port>
-			<port name="p1">
-				<data key="d11">
-					<x0:RotatablePortLocationModelDecoratorParameter Model="{y:GraphMLReference 4}">
-						<y:FreeNodePortLocationModelParameter Ratio="1,0.72"/>
-					</x0:RotatablePortLocationModelDecoratorParameter>
-				</data>
-			</port>
-		</node>
-		<node id="n19">
-			<data key="d1">
-				<x:List>
-					<y:Label LayoutParameter="{y:GraphMLReference 1}" Style="{y:GraphMLReference 2}" PreferredSize="24.828743646491738,14">
-						<y:Label.Text>280°</y:Label.Text>
-					</y:Label>
-				</x:List>
-			</data>
-			<data key="d2">
-				<y:RectD X="-111.82408883346524" Y="-467.403876506104" Width="100" Height="50"/>
-			</data>
-			<data key="d4">
-				<x0:RotatableNodeStyleDecorator Angle="280" Wrapped="{y:GraphMLReference 3}"/>
-			</data>
-			<port name="p0">
-				<data key="d11">
-					<x0:RotatablePortLocationModelDecoratorParameter Model="{y:GraphMLReference 4}">
-						<y:FreeNodePortLocationModelParameter Ratio="1,0.6763269807084658" Offset="7.105427357601002e-14,0"/>
-					</x0:RotatablePortLocationModelDecoratorParameter>
-				</data>
-			</port>
-		</node>
-		<node id="n20">
-			<data key="d1">
-				<x:List>
-					<y:Label LayoutParameter="{y:GraphMLReference 1}" Style="{y:GraphMLReference 2}" PreferredSize="24.828743646491738,14">
-						<y:Label.Text>290°</y:Label.Text>
-					</y:Label>
-				</x:List>
-			</data>
-			<data key="d2">
-				<y:RectD X="-196.01007166283432" Y="-444.8463103929542" Width="100" Height="50"/>
-			</data>
-			<data key="d4">
-				<x0:RotatableNodeStyleDecorator Angle="290" Wrapped="{y:GraphMLReference 3}"/>
-			</data>
-		</node>
-		<node id="n21">
-			<data key="d1">
-				<x:List>
-					<y:Label LayoutParameter="{y:GraphMLReference 1}" Style="{y:GraphMLReference 2}" PreferredSize="24.828743646491738,14">
-						<y:Label.Text>300°</y:Label.Text>
-					</y:Label>
-				</x:List>
-			</data>
-			<data key="d2">
-				<y:RectD X="-275.00000000000006" Y="-408.0127018922193" Width="100" Height="50"/>
-			</data>
-			<data key="d4">
-				<x0:RotatableNodeStyleDecorator Angle="300" Wrapped="{y:GraphMLReference 3}"/>
-			</data>
-		</node>
-		<node id="n22">
-			<data key="d1">
-				<x:List>
-					<y:Label LayoutParameter="{y:GraphMLReference 1}" Style="{y:GraphMLReference 2}" PreferredSize="24.828743646491738,14">
-						<y:Label.Text>310°</y:Label.Text>
-					</y:Label>
-				</x:List>
-			</data>
-			<data key="d2">
-				<y:RectD X="-346.3938048432696" Y="-358.0222215594891" Width="100" Height="50"/>
-			</data>
-			<data key="d4">
-				<x0:RotatableNodeStyleDecorator Angle="310" Wrapped="{y:GraphMLReference 3}"/>
-			</data>
-		</node>
-		<node id="n23">
-			<data key="d1">
-				<x:List>
-					<y:Label LayoutParameter="{y:GraphMLReference 1}" Style="{y:GraphMLReference 2}" PreferredSize="24.828743646491738,14">
-						<y:Label.Text>320°</y:Label.Text>
-					</y:Label>
-				</x:List>
-			</data>
-			<data key="d2">
-				<y:RectD X="-408.02222155948897" Y="-296.3938048432697" Width="100" Height="50"/>
-			</data>
-			<data key="d4">
-				<x0:RotatableNodeStyleDecorator Angle="320" Wrapped="{y:GraphMLReference 3}"/>
-			</data>
-			<port name="p0">
-				<data key="d11">
-					<x0:RotatablePortLocationModelDecoratorParameter Model="{y:GraphMLReference 4}">
-						<y:FreeNodePortLocationModelParameter Ratio="1,0.27775438177130013"/>
-					</x0:RotatablePortLocationModelDecoratorParameter>
-				</data>
-			</port>
-			<port name="p1">
-				<data key="d11">
-					<x0:RotatablePortLocationModelDecoratorParameter Model="{y:GraphMLReference 4}">
-						<y:FreeNodePortLocationModelParameter Ratio="1,0.6465762860906478" Offset="1.1368683772161603e-13,0"/>
-					</x0:RotatablePortLocationModelDecoratorParameter>
-				</data>
-			</port>
-			<port name="p2">
-				<data key="d11">
-					<x0:RotatablePortLocationModelDecoratorParameter Model="{y:GraphMLReference 4}">
-						<y:FreeNodePortLocationModelParameter Ratio="0.9935396920530877,1"/>
-					</x0:RotatablePortLocationModelDecoratorParameter>
-				</data>
-			</port>
-		</node>
-		<node id="n24">
-			<data key="d1">
-				<x:List>
-					<y:Label LayoutParameter="{y:GraphMLReference 1}" Style="{y:GraphMLReference 2}" PreferredSize="24.828743646491738,14">
-						<y:Label.Text>330°</y:Label.Text>
-					</y:Label>
-				</x:List>
-			</data>
-			<data key="d2">
-				<y:RectD X="-458.01270189221924" Y="-225.00000000000023" Width="100" Height="50"/>
-			</data>
-			<data key="d4">
-				<x0:RotatableNodeStyleDecorator Angle="330" Wrapped="{y:GraphMLReference 3}"/>
-			</data>
-		</node>
-		<node id="n25">
-			<data key="d1">
-				<x:List>
-					<y:Label LayoutParameter="{y:GraphMLReference 1}" Style="{y:GraphMLReference 2}" PreferredSize="24.828743646491738,14">
-						<y:Label.Text>340°</y:Label.Text>
-					</y:Label>
-				</x:List>
-			</data>
-			<data key="d2">
-				<y:RectD X="-494.8463103929541" Y="-146.0100716628347" Width="100" Height="50"/>
-			</data>
-			<data key="d4">
-				<x0:RotatableNodeStyleDecorator Angle="340" Wrapped="{y:GraphMLReference 3}"/>
-			</data>
-		</node>
-		<node id="n26">
-			<data key="d1">
-				<x:List>
-					<y:Label LayoutParameter="{y:GraphMLReference 1}" Style="{y:GraphMLReference 2}" PreferredSize="24.828743646491738,14">
-						<y:Label.Text>350°</y:Label.Text>
-					</y:Label>
-				</x:List>
-			</data>
-			<data key="d2">
-				<y:RectD X="-517.403876506104" Y="-61.82408883346517" Width="100" Height="50"/>
-			</data>
-			<data key="d4">
-				<x0:RotatableNodeStyleDecorator Angle="350" Wrapped="{y:GraphMLReference 3}"/>
-			</data>
-		</node>
-		<node id="n27">
-			<data key="d1">
-				<x:List>
-					<y:Label LayoutParameter="{y:GraphMLReference 1}" Style="{y:GraphMLReference 2}" PreferredSize="11.476553366343442,14">
-						<y:Label.Text>0°</y:Label.Text>
-					</y:Label>
-				</x:List>
-			</data>
-			<data key="d2">
-				<y:RectD X="-525" Y="24.999999999999908" Width="100" Height="50"/>
-			</data>
-			<data key="d4">
-				<x0:RotatableNodeStyleDecorator Wrapped="{y:GraphMLReference 3}"/>
-			</data>
-			<port name="p0">
-				<data key="d11">
-					<x0:RotatablePortLocationModelDecoratorParameter Model="{y:GraphMLReference 4}">
-						<y:FreeNodePortLocationModelParameter Ratio="1,0.20666666666666672"/>
-					</x0:RotatablePortLocationModelDecoratorParameter>
-				</data>
-			</port>
-			<port name="p1">
-				<data key="d11">
-					<x0:RotatablePortLocationModelDecoratorParameter Model="{y:GraphMLReference 4}">
-						<y:FreeNodePortLocationModelParameter Ratio="1,0.7933333333333333"/>
-					</x0:RotatablePortLocationModelDecoratorParameter>
-				</data>
-			</port>
-			<port name="p2">
-				<data key="d11">
-					<x0:RotatablePortLocationModelDecoratorParameter Model="{y:GraphMLReference 4}">
-						<y:FreeNodePortLocationModelParameter Ratio="1,0.5"/>
-					</x0:RotatablePortLocationModelDecoratorParameter>
-				</data>
-			</port>
-		</node>
-		<node id="n28">
-			<data key="d1">
-				<x:List>
-					<y:Label LayoutParameter="{y:GraphMLReference 1}" Style="{y:GraphMLReference 2}" PreferredSize="18.152648506417588,14">
-						<y:Label.Text>10°</y:Label.Text>
-					</y:Label>
-				</x:List>
-			</data>
-			<data key="d2">
-				<y:RectD X="-517.4038765061041" Y="111.824088833465" Width="100" Height="50"/>
-			</data>
-			<data key="d4">
-				<x0:RotatableNodeStyleDecorator Angle="10" Wrapped="{y:GraphMLReference 3}"/>
-			</data>
-		</node>
-		<node id="n29">
-			<data key="d1">
-				<x:List>
-					<y:Label LayoutParameter="{y:GraphMLReference 1}" Style="{y:GraphMLReference 2}" PreferredSize="18.152648506417588,14">
-						<y:Label.Text>20°</y:Label.Text>
-					</y:Label>
-				</x:List>
-			</data>
-			<data key="d2">
-				<y:RectD X="-494.84631039295425" Y="196.01007166283406" Width="100" Height="50"/>
-			</data>
-			<data key="d4">
-				<x0:RotatableNodeStyleDecorator Angle="20" Wrapped="{y:GraphMLReference 3}"/>
-			</data>
-			<port name="p0">
-				<data key="d11">
-					<x0:RotatablePortLocationModelDecoratorParameter Model="{y:GraphMLReference 4}">
-						<y:FreeNodePortLocationModelParameter Ratio="0,0.8644950746598653" Offset="-5.684341886080802e-14,0"/>
-					</x0:RotatablePortLocationModelDecoratorParameter>
-				</data>
-			</port>
-			<port name="p1">
-				<data key="d11">
-					<x0:RotatablePortLocationModelDecoratorParameter Model="{y:GraphMLReference 4}">
-						<y:FreeNodePortLocationModelParameter Ratio="0.9999999999999994,0.8929532137981152"/>
-					</x0:RotatablePortLocationModelDecoratorParameter>
-				</data>
-			</port>
-		</node>
-		<node id="n30">
-			<data key="d1">
-				<x:List>
-					<y:Label LayoutParameter="{y:GraphMLReference 1}" Style="{y:GraphMLReference 2}" PreferredSize="18.152648506417588,14">
-						<y:Label.Text>30°</y:Label.Text>
-					</y:Label>
-				</x:List>
-			</data>
-			<data key="d2">
-				<y:RectD X="-458.0127018922193" Y="275.00000000000006" Width="100" Height="50"/>
-			</data>
-			<data key="d4">
-				<x0:RotatableNodeStyleDecorator Angle="30" Wrapped="{y:GraphMLReference 3}"/>
-			</data>
-			<port name="p0">
-				<data key="d11">
-					<x0:RotatablePortLocationModelDecoratorParameter Model="{y:GraphMLReference 4}">
-						<y:FreeNodePortLocationModelParameter Ratio="1,0.39800511864960186"/>
-					</x0:RotatablePortLocationModelDecoratorParameter>
-				</data>
-			</port>
-		</node>
-		<node id="n31">
-			<data key="d1">
-				<x:List>
-					<y:Label LayoutParameter="{y:GraphMLReference 1}" Style="{y:GraphMLReference 2}" PreferredSize="18.152648506417588,14">
-						<y:Label.Text>40°</y:Label.Text>
-					</y:Label>
-				</x:List>
-			</data>
-			<data key="d2">
-				<y:RectD X="-408.0222215594891" Y="346.3938048432696" Width="100" Height="50"/>
-			</data>
-			<data key="d4">
-				<x0:RotatableNodeStyleDecorator Angle="40" Wrapped="{y:GraphMLReference 3}"/>
-			</data>
-			<port name="p0">
-				<data key="d11">
-					<x0:RotatablePortLocationModelDecoratorParameter Model="{y:GraphMLReference 4}">
-						<y:FreeNodePortLocationModelParameter Ratio="0.9999999999999978,0.2765157054581755"/>
-					</x0:RotatablePortLocationModelDecoratorParameter>
-				</data>
-			</port>
-			<port name="p1">
-				<data key="d11">
-					<x0:RotatablePortLocationModelDecoratorParameter Model="{y:GraphMLReference 4}">
-						<y:FreeNodePortLocationModelParameter Ratio="0.9999999999999994,0.3534237139093591"/>
-					</x0:RotatablePortLocationModelDecoratorParameter>
-				</data>
-			</port>
-		</node>
-		<node id="n32">
-			<data key="d1">
-				<x:List>
-					<y:Label LayoutParameter="{y:GraphMLReference 1}" Style="{y:GraphMLReference 2}" PreferredSize="18.152648506417588,14">
-						<y:Label.Text>50°</y:Label.Text>
-					</y:Label>
-				</x:List>
-			</data>
-			<data key="d2">
-				<y:RectD X="-346.3938048432698" Y="408.0222215594889" Width="100" Height="50"/>
-			</data>
-			<data key="d4">
-				<x0:RotatableNodeStyleDecorator Angle="50" Wrapped="{y:GraphMLReference 3}"/>
-			</data>
-		</node>
-		<node id="n33">
-			<data key="d1">
-				<x:List>
-					<y:Label LayoutParameter="{y:GraphMLReference 1}" Style="{y:GraphMLReference 2}" PreferredSize="18.152648506417588,14">
-						<y:Label.Text>60°</y:Label.Text>
-					</y:Label>
-				</x:List>
-			</data>
-			<data key="d2">
-				<y:RectD X="-275.0000000000002" Y="458.0127018922192" Width="100" Height="50"/>
-			</data>
-			<data key="d4">
-				<x0:RotatableNodeStyleDecorator Angle="60" Wrapped="{y:GraphMLReference 3}"/>
-			</data>
-			<port name="p0">
-				<data key="d11">
-					<x0:RotatablePortLocationModelDecoratorParameter Model="{y:GraphMLReference 4}">
-						<y:FreeNodePortLocationModelParameter Ratio="0.9999999999999989,0.3100208364043283"/>
-					</x0:RotatablePortLocationModelDecoratorParameter>
-				</data>
-			</port>
-		</node>
-		<node id="n34">
-			<data key="d1">
-				<x:List>
-					<y:Label LayoutParameter="{y:GraphMLReference 1}" Style="{y:GraphMLReference 2}" PreferredSize="18.152648506417588,14">
-						<y:Label.Text>70°</y:Label.Text>
-					</y:Label>
-				</x:List>
-			</data>
-			<data key="d2">
-				<y:RectD X="-196.0100716628343" Y="494.84631039295414" Width="100" Height="50"/>
-			</data>
-			<data key="d4">
-				<x0:RotatableNodeStyleDecorator Angle="70" Wrapped="{y:GraphMLReference 3}"/>
-			</data>
-			<port name="p0">
-				<data key="d11">
-					<x0:RotatablePortLocationModelDecoratorParameter Model="{y:GraphMLReference 4}">
-						<y:FreeNodePortLocationModelParameter Ratio="1,0.5119905650302417" Offset="2.842170943040401e-14,0"/>
-					</x0:RotatablePortLocationModelDecoratorParameter>
-				</data>
-			</port>
-		</node>
-		<node id="n35">
-			<data key="d1">
-				<x:List>
-					<y:Label LayoutParameter="{y:GraphMLReference 1}" Style="{y:GraphMLReference 2}" PreferredSize="18.152648506417588,14">
-						<y:Label.Text>80°</y:Label.Text>
-					</y:Label>
-				</x:List>
-			</data>
-			<data key="d2">
-				<y:RectD X="-111.82408883346564" Y="517.4038765061039" Width="100" Height="50"/>
-			</data>
-			<data key="d4">
-				<x0:RotatableNodeStyleDecorator Angle="80" Wrapped="{y:GraphMLReference 3}"/>
-			</data>
-		</node>
-		<edge id="e0" source="n23" target="n5" sourceport="p0" targetport="p0">
-			<data key="d7">
-				<x:List>
-					<y:Bend Location="-312.5771629183134,180.41674897690325"/>
-					<y:Bend Location="374.43087043218696,180.41674897690325"/>
-				</x:List>
-			</data>
-			<data key="d8">
-				<y:GraphMLReference ResourceKey="5"/>
-			</data>
-		</edge>
-		<edge id="e1" source="n5" target="n31" sourceport="p1" targetport="p0">
-			<data key="d8">
-				<y:GraphMLReference ResourceKey="5"/>
-			</data>
-		</edge>
-		<edge id="e2" source="n23" target="n31" sourceport="p1" targetport="p1">
-			<data key="d8">
-				<y:GraphMLReference ResourceKey="5"/>
-			</data>
-		</edge>
-		<edge id="e3" source="n12" target="n18" sourceport="p0" targetport="p0">
-			<data key="d7">
-				<x:List>
-					<y:Bend Location="36.00000000000007,-196.66482618707343"/>
-				</x:List>
-			</data>
-			<data key="d8">
-				<y:GraphMLReference ResourceKey="5"/>
-			</data>
-		</edge>
-		<edge id="e4" source="n1" target="n5" sourceport="p0" targetport="p2">
-			<data key="d7">
-				<x:List>
-					<y:Bend Location="123.72539018779102,361.05914318130857"/>
-				</x:List>
-			</data>
-			<data key="d8">
-				<y:GraphMLReference ResourceKey="5"/>
-			</data>
-		</edge>
-		<edge id="e5" source="n29" target="n2" sourceport="p0" targetport="p0">
-			<data key="d7">
-				<x:List>
-					<y:Bend Location="-485.59770854841634,610"/>
-					<y:Bend Location="188.3830569411461,610"/>
-				</x:List>
-			</data>
-			<data key="d8">
-				<y:GraphMLReference ResourceKey="5"/>
-			</data>
-		</edge>
-		<edge id="e6" source="n23" target="n27" sourceport="p2" targetport="p0">
-			<data key="d7">
-				<x:List>
-					<y:Bend Location="-336.2845779460605,35.33333333333325"/>
-				</x:List>
-			</data>
-			<data key="d8">
-				<y:GraphMLReference ResourceKey="5"/>
-			</data>
-		</edge>
-		<edge id="e7" source="n13" target="n33" sourceport="p0" targetport="p0">
-			<data key="d7">
-				<x:List>
-					<y:Bend Location="-208.22633909317878,-234.49006225107033"/>
-				</x:List>
-			</data>
-			<data key="d8">
-				<y:GraphMLReference ResourceKey="5"/>
-			</data>
-		</edge>
-		<edge id="e8" source="n16" target="n8" sourceport="p0" targetport="p0">
-			<data key="d7">
-				<x:List>
-					<y:Bend Location="161.26202367904176,121.67278747913937"/>
-				</x:List>
-			</data>
-			<data key="d8">
-				<y:GraphMLReference ResourceKey="5"/>
-			</data>
-		</edge>
-		<edge id="e9" source="n12" target="n18" sourceport="p1" targetport="p1">
-			<data key="d7">
-				<x:List>
-					<y:Bend Location="14.000000000000057,-169.78785199928376"/>
-				</x:List>
-			</data>
-			<data key="d8">
-				<y:GraphMLReference ResourceKey="5"/>
-			</data>
-		</edge>
-		<edge id="e10" source="n13" target="n19" sourceport="p1" targetport="p0">
-			<data key="d7">
-				<x:List>
-					<y:Bend Location="-61.82408883346524,-257.26356019127445"/>
-				</x:List>
-			</data>
-			<data key="d8">
-				<y:GraphMLReference ResourceKey="5"/>
-			</data>
-		</edge>
-		<edge id="e11" source="n30" target="n27" sourceport="p0" targetport="p1">
-			<data key="d7">
-				<x:List>
-					<y:Bend Location="-367.26130373675727,64.66666666666659"/>
-				</x:List>
-			</data>
-			<data key="d8">
-				<y:GraphMLReference ResourceKey="5"/>
-			</data>
-		</edge>
-		<edge id="e12" source="n29" target="n6" sourceport="p1" targetport="p0">
-			<data key="d7">
-				<x:List>
-					<y:Bend Location="417.2613037367571,222.37182626256046"/>
-				</x:List>
-			</data>
-			<data key="d8">
-				<y:GraphMLReference ResourceKey="5"/>
-			</data>
-		</edge>
-		<edge id="e13" source="n34" target="n5" sourceport="p0" targetport="p3">
-			<data key="d7">
-				<x:List>
-					<y:Bend Location="86.9227874791393,473.06673009216865"/>
-					<y:Bend Location="86.9227874791393,345.87681122117243"/>
-				</x:List>
-			</data>
-			<data key="d8">
-				<y:GraphMLReference ResourceKey="5"/>
-			</data>
-		</edge>
-		<edge id="e14" source="n27" target="n8" sourceport="p2" targetport="p1">
-			<data key="d7">
-				<x:List>
-					<y:Bend Location="47.087341226347256,49.999999999999915"/>
-					<y:Bend Location="47.087341226347256,151.9753901877911"/>
-				</x:List>
-			</data>
-			<data key="d8">
-				<y:GraphMLReference ResourceKey="5"/>
-			</data>
-		</edge>
-	</graph>
+  <key id="d0" for="node" attr.type="boolean" attr.name="Expanded" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/folding/Expanded">
+    <default>true</default>
+  </key>
+  <key id="d1" for="node" attr.name="NodeLabels" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeLabels"/>
+  <key id="d2" for="node" attr.name="NodeGeometry" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeGeometry"/>
+  <key id="d3" for="all" attr.name="UserTags" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/UserTags"/>
+  <key id="d4" for="node" attr.name="NodeStyle" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeStyle"/>
+  <key id="d5" for="node" attr.name="NodeViewState" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/folding/1.1/NodeViewState"/>
+  <key id="d6" for="edge" attr.name="EdgeLabels" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/EdgeLabels"/>
+  <key id="d7" for="edge" attr.name="EdgeGeometry" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/EdgeGeometry"/>
+  <key id="d9" for="edge" attr.name="EdgeViewState" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/folding/1.1/EdgeViewState"/>
+  <key id="d10" for="port" attr.name="PortLabels" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/PortLabels"/>
+  <key id="d11" for="port" attr.name="PortLocationParameter" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/PortLocationParameter">
+    <default>
+      <x0:RotatablePortLocationModelDecoratorParameter Model="{y:GraphMLReference 4}" Wrapped="{x:Static y:FreeNodePortLocationModel.NodeTopAnchored}"/>
+    </default>
+  </key>
+  <key id="d13" for="port" attr.name="PortViewState" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/folding/1.1/PortViewState"/>
+  <key id="d14" attr.name="SharedData" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/SharedData"/>
+  <data key="d14">
+    <y:SharedData>
+      <x0:RotatableNodeLabelModelDecoratorParameter x:Key="1" Wrapped="{x:Static y:InteriorLabelModel.Center}">
+        <x0:RotatableNodeLabelModelDecoratorParameter.Model>
+          <x0:RotatableNodeLabelModelDecorator>
+            <y:InteriorLabelModel/>
+          </x0:RotatableNodeLabelModelDecorator>
+        </x0:RotatableNodeLabelModelDecoratorParameter.Model>
+      </x0:RotatableNodeLabelModelDecoratorParameter>
+      <ywpf:RectangleNodeStyle x:Key="3" CornerSize="3.5" Brush="#FFFF6C00">
+        <ywpf:RectangleNodeStyle.Pen>
+          <Pen Brush="#FF662B00" Thickness="1.5" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" />
+        </ywpf:RectangleNodeStyle.Pen>
+      </ywpf:RectangleNodeStyle>
+      <x0:RotatablePortLocationModelDecorator x:Key="4">
+        <y:FreeNodePortLocationModel/>
+      </x0:RotatablePortLocationModelDecorator>
+    </y:SharedData>
+  </data>
+  <graph id="G" edgedefault="directed">
+    <node id="n0">
+      <data key="d1">
+        <x:List>
+          <y:Label LayoutParameter="{y:GraphMLReference 1}">
+            <y:Label.Text>90°</y:Label.Text>
+          </y:Label>
+        </x:List>
+      </data>
+      <data key="d2">
+        <y:RectD X="-25" Y="525" Width="100" Height="50"/>
+      </data>
+      <data key="d4">
+        <x0:RotatableNodeStyleDecorator Angle="90" Wrapped="{y:GraphMLReference 3}"/>
+      </data>
+    </node>
+    <node id="n1">
+      <data key="d1">
+        <x:List>
+          <y:Label LayoutParameter="{y:GraphMLReference 1}">
+            <y:Label.Text>100°</y:Label.Text>
+          </y:Label>
+        </x:List>
+      </data>
+      <data key="d2">
+        <y:RectD X="61.82408883346517" Y="517.403876506104" Width="100" Height="50"/>
+      </data>
+      <data key="d4">
+        <x0:RotatableNodeStyleDecorator Angle="100" Wrapped="{y:GraphMLReference 3}"/>
+      </data>
+      <port name="p0">
+        <data key="d11">
+          <x0:RotatablePortLocationModelDecoratorParameter Model="{y:GraphMLReference 4}">
+            <y:FreeNodePortLocationModelParameter Ratio="1,0.9180249429335504" Offset="5.684341886080802e-14,0"/>
+          </x0:RotatablePortLocationModelDecoratorParameter>
+        </data>
+      </port>
+    </node>
+    <node id="n2">
+      <data key="d1">
+        <x:List>
+          <y:Label LayoutParameter="{y:GraphMLReference 1}">
+            <y:Label.Text>110°</y:Label.Text>
+          </y:Label>
+        </x:List>
+      </data>
+      <data key="d2">
+        <y:RectD X="146.01007166283435" Y="494.84631039295414" Width="100" Height="50"/>
+      </data>
+      <data key="d4">
+        <x0:RotatableNodeStyleDecorator Angle="110" Wrapped="{y:GraphMLReference 3}"/>
+      </data>
+      <port name="p0">
+        <data key="d11">
+          <x0:RotatablePortLocationModelDecoratorParameter Model="{y:GraphMLReference 4}">
+            <y:FreeNodePortLocationModelParameter Ratio="0.03612963717015276,2.2737367544323206e-15"/>
+          </x0:RotatablePortLocationModelDecoratorParameter>
+        </data>
+      </port>
+    </node>
+    <node id="n3">
+      <data key="d1">
+        <x:List>
+          <y:Label LayoutParameter="{y:GraphMLReference 1}">
+            <y:Label.Text>120°</y:Label.Text>
+          </y:Label>
+        </x:List>
+      </data>
+      <data key="d2">
+        <y:RectD X="225" Y="458.01270189221935" Width="100" Height="50"/>
+      </data>
+      <data key="d4">
+        <x0:RotatableNodeStyleDecorator Angle="120" Wrapped="{y:GraphMLReference 3}"/>
+      </data>
+    </node>
+    <node id="n4">
+      <data key="d1">
+        <x:List>
+          <y:Label LayoutParameter="{y:GraphMLReference 1}">
+            <y:Label.Text>130°</y:Label.Text>
+          </y:Label>
+        </x:List>
+      </data>
+      <data key="d2">
+        <y:RectD X="296.3938048432696" Y="408.022221559489" Width="100" Height="50"/>
+      </data>
+      <data key="d4">
+        <x0:RotatableNodeStyleDecorator Angle="130" Wrapped="{y:GraphMLReference 3}"/>
+      </data>
+    </node>
+    <node id="n5">
+      <data key="d1">
+        <x:List>
+          <y:Label LayoutParameter="{y:GraphMLReference 1}">
+            <y:Label.Text>140°</y:Label.Text>
+          </y:Label>
+        </x:List>
+      </data>
+      <data key="d2">
+        <y:RectD X="358.022221559489" Y="346.39380484326966" Width="100" Height="50"/>
+      </data>
+      <data key="d4">
+        <x0:RotatableNodeStyleDecorator Angle="140" Wrapped="{y:GraphMLReference 3}"/>
+      </data>
+      <port name="p0">
+        <data key="d11">
+          <x0:RotatablePortLocationModelDecoratorParameter Model="{y:GraphMLReference 4}">
+            <y:FreeNodePortLocationModelParameter Ratio="1,0.6465762860906465"/>
+          </x0:RotatablePortLocationModelDecoratorParameter>
+        </data>
+      </port>
+      <port name="p1">
+        <data key="d11">
+          <x0:RotatablePortLocationModelDecoratorParameter Model="{y:GraphMLReference 4}">
+            <y:FreeNodePortLocationModelParameter Ratio="1,0.7234842945418234"/>
+          </x0:RotatablePortLocationModelDecoratorParameter>
+        </data>
+      </port>
+      <port name="p2">
+        <data key="d11">
+          <x0:RotatablePortLocationModelDecoratorParameter Model="{y:GraphMLReference 4}">
+            <y:FreeNodePortLocationModelParameter Ratio="0.9587171920490891,0"/>
+          </x0:RotatablePortLocationModelDecoratorParameter>
+        </data>
+      </port>
+      <port name="p3">
+        <data key="d11">
+          <x0:RotatablePortLocationModelDecoratorParameter Model="{y:GraphMLReference 4}">
+            <y:FreeNodePortLocationModelParameter Ratio="1,0.32710175834533856" Offset="1.1368683772161603e-13,0"/>
+          </x0:RotatablePortLocationModelDecoratorParameter>
+        </data>
+      </port>
+    </node>
+    <node id="n6">
+      <data key="d1">
+        <x:List>
+          <y:Label LayoutParameter="{y:GraphMLReference 1}">
+            <y:Label.Text>150°</y:Label.Text>
+          </y:Label>
+        </x:List>
+      </data>
+      <data key="d2">
+        <y:RectD X="408.0127018922193" Y="275.00000000000006" Width="100" Height="50"/>
+      </data>
+      <data key="d4">
+        <x0:RotatableNodeStyleDecorator Angle="150" Wrapped="{y:GraphMLReference 3}"/>
+      </data>
+      <port name="p0">
+        <data key="d11">
+          <x0:RotatablePortLocationModelDecoratorParameter Model="{y:GraphMLReference 4}">
+            <y:FreeNodePortLocationModelParameter Ratio="1,0.6019948813503947"/>
+          </x0:RotatablePortLocationModelDecoratorParameter>
+        </data>
+      </port>
+    </node>
+    <node id="n7">
+      <data key="d1">
+        <x:List>
+          <y:Label LayoutParameter="{y:GraphMLReference 1}">
+            <y:Label.Text>160°</y:Label.Text>
+          </y:Label>
+        </x:List>
+      </data>
+      <data key="d2">
+        <y:RectD X="444.84631039295414" Y="196.0100716628344" Width="100" Height="50"/>
+      </data>
+      <data key="d4">
+        <x0:RotatableNodeStyleDecorator Angle="160" Wrapped="{y:GraphMLReference 3}"/>
+      </data>
+    </node>
+    <node id="n8">
+      <data key="d1">
+        <x:List>
+          <y:Label LayoutParameter="{y:GraphMLReference 1}">
+            <y:Label.Text>170°</y:Label.Text>
+          </y:Label>
+        </x:List>
+      </data>
+      <data key="d2">
+        <y:RectD X="467.403876506104" Y="111.82408883346523" Width="100" Height="50"/>
+      </data>
+      <data key="d4">
+        <x0:RotatableNodeStyleDecorator Angle="170" Wrapped="{y:GraphMLReference 3}"/>
+      </data>
+      <port name="p0">
+        <data key="d11">
+          <x0:RotatablePortLocationModelDecoratorParameter Model="{y:GraphMLReference 4}">
+            <y:FreeNodePortLocationModelParameter Ratio="1,0.6313737112891948" Offset="1.1368683772161603e-13,0"/>
+          </x0:RotatablePortLocationModelDecoratorParameter>
+        </data>
+      </port>
+      <port name="p1">
+        <data key="d11">
+          <x0:RotatablePortLocationModelDecoratorParameter Model="{y:GraphMLReference 4}">
+            <y:FreeNodePortLocationModelParameter Ratio="1,0.015972327293874572" Offset="1.1368683772161603e-13,0"/>
+          </x0:RotatablePortLocationModelDecoratorParameter>
+        </data>
+      </port>
+    </node>
+    <node id="n9">
+      <data key="d1">
+        <x:List>
+          <y:Label LayoutParameter="{y:GraphMLReference 1}">
+            <y:Label.Text>180°</y:Label.Text>
+          </y:Label>
+        </x:List>
+      </data>
+      <data key="d2">
+        <y:RectD X="475" Y="25.00000000000003" Width="100" Height="50"/>
+      </data>
+      <data key="d4">
+        <x0:RotatableNodeStyleDecorator Angle="180" Wrapped="{y:GraphMLReference 3}"/>
+      </data>
+    </node>
+    <node id="n10">
+      <data key="d1">
+        <x:List>
+          <y:Label LayoutParameter="{y:GraphMLReference 1}">
+            <y:Label.Text>190°</y:Label.Text>
+          </y:Label>
+        </x:List>
+      </data>
+      <data key="d2">
+        <y:RectD X="467.403876506104" Y="-61.824088833465154" Width="100" Height="50"/>
+      </data>
+      <data key="d4">
+        <x0:RotatableNodeStyleDecorator Angle="190" Wrapped="{y:GraphMLReference 3}"/>
+      </data>
+    </node>
+    <node id="n11">
+      <data key="d1">
+        <x:List>
+          <y:Label LayoutParameter="{y:GraphMLReference 1}">
+            <y:Label.Text>200°</y:Label.Text>
+          </y:Label>
+        </x:List>
+      </data>
+      <data key="d2">
+        <y:RectD X="444.8463103929542" Y="-146.01007166283435" Width="100" Height="50"/>
+      </data>
+      <data key="d4">
+        <x0:RotatableNodeStyleDecorator Angle="200" Wrapped="{y:GraphMLReference 3}"/>
+      </data>
+    </node>
+    <node id="n12">
+      <data key="d1">
+        <x:List>
+          <y:Label LayoutParameter="{y:GraphMLReference 1}">
+            <y:Label.Text>210°</y:Label.Text>
+          </y:Label>
+        </x:List>
+      </data>
+      <data key="d2">
+        <y:RectD X="408.01270189221935" Y="-224.9999999999999" Width="100" Height="50"/>
+      </data>
+      <data key="d4">
+        <x0:RotatableNodeStyleDecorator Angle="210" Wrapped="{y:GraphMLReference 3}"/>
+      </data>
+      <port name="p0">
+        <data key="d11">
+          <x0:RotatablePortLocationModelDecoratorParameter Model="{y:GraphMLReference 4}">
+            <y:FreeNodePortLocationModelParameter Ratio="0.9997161781507498,1" Offset="0,1.1368683772161603e-13"/>
+          </x0:RotatablePortLocationModelDecoratorParameter>
+        </data>
+      </port>
+      <port name="p1">
+        <data key="d11">
+          <x0:RotatablePortLocationModelDecoratorParameter Model="{y:GraphMLReference 4}">
+            <y:FreeNodePortLocationModelParameter Ratio="1,0.3796305979492166" Offset="5.684341886080802e-14,0"/>
+          </x0:RotatablePortLocationModelDecoratorParameter>
+        </data>
+      </port>
+    </node>
+    <node id="n13">
+      <data key="d1">
+        <x:List>
+          <y:Label LayoutParameter="{y:GraphMLReference 1}">
+            <y:Label.Text>220°</y:Label.Text>
+          </y:Label>
+        </x:List>
+      </data>
+      <data key="d2">
+        <y:RectD X="358.022221559489" Y="-296.39380484326966" Width="100" Height="50"/>
+      </data>
+      <data key="d4">
+        <x0:RotatableNodeStyleDecorator Angle="220" Wrapped="{y:GraphMLReference 3}"/>
+      </data>
+      <port name="p0">
+        <data key="d11">
+          <x0:RotatablePortLocationModelDecoratorParameter Model="{y:GraphMLReference 4}">
+            <y:FreeNodePortLocationModelParameter Ratio="1,0.3756113395072998" Offset="1.1368683772161603e-13,0"/>
+          </x0:RotatablePortLocationModelDecoratorParameter>
+        </data>
+      </port>
+      <port name="p1">
+        <data key="d11">
+          <x0:RotatablePortLocationModelDecoratorParameter Model="{y:GraphMLReference 4}">
+            <y:FreeNodePortLocationModelParameter Ratio="1,0.9701851438020219" Offset="1.1368683772161603e-13,0"/>
+          </x0:RotatablePortLocationModelDecoratorParameter>
+        </data>
+      </port>
+    </node>
+    <node id="n14">
+      <data key="d1">
+        <x:List>
+          <y:Label LayoutParameter="{y:GraphMLReference 1}">
+            <y:Label.Text>230°</y:Label.Text>
+          </y:Label>
+        </x:List>
+      </data>
+      <data key="d2">
+        <y:RectD X="296.3938048432697" Y="-358.02222155948897" Width="100" Height="50"/>
+      </data>
+      <data key="d4">
+        <x0:RotatableNodeStyleDecorator Angle="230" Wrapped="{y:GraphMLReference 3}"/>
+      </data>
+    </node>
+    <node id="n15">
+      <data key="d1">
+        <x:List>
+          <y:Label LayoutParameter="{y:GraphMLReference 1}">
+            <y:Label.Text>240°</y:Label.Text>
+          </y:Label>
+        </x:List>
+      </data>
+      <data key="d2">
+        <y:RectD X="225" Y="-408.01270189221935" Width="100" Height="50"/>
+      </data>
+      <data key="d4">
+        <x0:RotatableNodeStyleDecorator Angle="240" Wrapped="{y:GraphMLReference 3}"/>
+      </data>
+    </node>
+    <node id="n16">
+      <data key="d1">
+        <x:List>
+          <y:Label LayoutParameter="{y:GraphMLReference 1}">
+            <y:Label.Text>250°</y:Label.Text>
+          </y:Label>
+        </x:List>
+      </data>
+      <data key="d2">
+        <y:RectD X="146.01007166283443" Y="-444.84631039295414" Width="100" Height="50"/>
+      </data>
+      <data key="d4">
+        <x0:RotatableNodeStyleDecorator Angle="250" Wrapped="{y:GraphMLReference 3}"/>
+      </data>
+      <port name="p0">
+        <data key="d11">
+          <x0:RotatablePortLocationModelDecoratorParameter Model="{y:GraphMLReference 4}">
+            <y:FreeNodePortLocationModelParameter Ratio="0.9999999999999994,0.8755917717593706"/>
+          </x0:RotatablePortLocationModelDecoratorParameter>
+        </data>
+      </port>
+    </node>
+    <node id="n17">
+      <data key="d1">
+        <x:List>
+          <y:Label LayoutParameter="{y:GraphMLReference 1}">
+            <y:Label.Text>260°</y:Label.Text>
+          </y:Label>
+        </x:List>
+      </data>
+      <data key="d2">
+        <y:RectD X="61.82408883346514" Y="-467.403876506104" Width="100" Height="50"/>
+      </data>
+      <data key="d4">
+        <x0:RotatableNodeStyleDecorator Angle="260" Wrapped="{y:GraphMLReference 3}"/>
+      </data>
+    </node>
+    <node id="n18">
+      <data key="d1">
+        <x:List>
+          <y:Label LayoutParameter="{y:GraphMLReference 1}">
+            <y:Label.Text>270°</y:Label.Text>
+          </y:Label>
+        </x:List>
+      </data>
+      <data key="d2">
+        <y:RectD X="-24.99999999999994" Y="-475" Width="100" Height="50"/>
+      </data>
+      <data key="d4">
+        <x0:RotatableNodeStyleDecorator Angle="270" Wrapped="{y:GraphMLReference 3}"/>
+      </data>
+      <port name="p0">
+        <data key="d11">
+          <x0:RotatablePortLocationModelDecoratorParameter Model="{y:GraphMLReference 4}">
+            <y:FreeNodePortLocationModelParameter Ratio="1,0.28"/>
+          </x0:RotatablePortLocationModelDecoratorParameter>
+        </data>
+      </port>
+      <port name="p1">
+        <data key="d11">
+          <x0:RotatablePortLocationModelDecoratorParameter Model="{y:GraphMLReference 4}">
+            <y:FreeNodePortLocationModelParameter Ratio="1,0.72"/>
+          </x0:RotatablePortLocationModelDecoratorParameter>
+        </data>
+      </port>
+    </node>
+    <node id="n19">
+      <data key="d1">
+        <x:List>
+          <y:Label LayoutParameter="{y:GraphMLReference 1}">
+            <y:Label.Text>280°</y:Label.Text>
+          </y:Label>
+        </x:List>
+      </data>
+      <data key="d2">
+        <y:RectD X="-111.82408883346524" Y="-467.403876506104" Width="100" Height="50"/>
+      </data>
+      <data key="d4">
+        <x0:RotatableNodeStyleDecorator Angle="280" Wrapped="{y:GraphMLReference 3}"/>
+      </data>
+      <port name="p0">
+        <data key="d11">
+          <x0:RotatablePortLocationModelDecoratorParameter Model="{y:GraphMLReference 4}">
+            <y:FreeNodePortLocationModelParameter Ratio="1,0.6763269807084658" Offset="7.105427357601002e-14,0"/>
+          </x0:RotatablePortLocationModelDecoratorParameter>
+        </data>
+      </port>
+    </node>
+    <node id="n20">
+      <data key="d1">
+        <x:List>
+          <y:Label LayoutParameter="{y:GraphMLReference 1}">
+            <y:Label.Text>290°</y:Label.Text>
+          </y:Label>
+        </x:List>
+      </data>
+      <data key="d2">
+        <y:RectD X="-196.01007166283432" Y="-444.8463103929542" Width="100" Height="50"/>
+      </data>
+      <data key="d4">
+        <x0:RotatableNodeStyleDecorator Angle="290" Wrapped="{y:GraphMLReference 3}"/>
+      </data>
+    </node>
+    <node id="n21">
+      <data key="d1">
+        <x:List>
+          <y:Label LayoutParameter="{y:GraphMLReference 1}">
+            <y:Label.Text>300°</y:Label.Text>
+          </y:Label>
+        </x:List>
+      </data>
+      <data key="d2">
+        <y:RectD X="-275.00000000000006" Y="-408.0127018922193" Width="100" Height="50"/>
+      </data>
+      <data key="d4">
+        <x0:RotatableNodeStyleDecorator Angle="300" Wrapped="{y:GraphMLReference 3}"/>
+      </data>
+    </node>
+    <node id="n22">
+      <data key="d1">
+        <x:List>
+          <y:Label LayoutParameter="{y:GraphMLReference 1}">
+            <y:Label.Text>310°</y:Label.Text>
+          </y:Label>
+        </x:List>
+      </data>
+      <data key="d2">
+        <y:RectD X="-346.3938048432696" Y="-358.0222215594891" Width="100" Height="50"/>
+      </data>
+      <data key="d4">
+        <x0:RotatableNodeStyleDecorator Angle="310" Wrapped="{y:GraphMLReference 3}"/>
+      </data>
+    </node>
+    <node id="n23">
+      <data key="d1">
+        <x:List>
+          <y:Label LayoutParameter="{y:GraphMLReference 1}">
+            <y:Label.Text>320°</y:Label.Text>
+          </y:Label>
+        </x:List>
+      </data>
+      <data key="d2">
+        <y:RectD X="-408.02222155948897" Y="-296.3938048432697" Width="100" Height="50"/>
+      </data>
+      <data key="d4">
+        <x0:RotatableNodeStyleDecorator Angle="320" Wrapped="{y:GraphMLReference 3}"/>
+      </data>
+      <port name="p0">
+        <data key="d11">
+          <x0:RotatablePortLocationModelDecoratorParameter Model="{y:GraphMLReference 4}">
+            <y:FreeNodePortLocationModelParameter Ratio="1,0.27775438177130013"/>
+          </x0:RotatablePortLocationModelDecoratorParameter>
+        </data>
+      </port>
+      <port name="p1">
+        <data key="d11">
+          <x0:RotatablePortLocationModelDecoratorParameter Model="{y:GraphMLReference 4}">
+            <y:FreeNodePortLocationModelParameter Ratio="1,0.6465762860906478" Offset="1.1368683772161603e-13,0"/>
+          </x0:RotatablePortLocationModelDecoratorParameter>
+        </data>
+      </port>
+      <port name="p2">
+        <data key="d11">
+          <x0:RotatablePortLocationModelDecoratorParameter Model="{y:GraphMLReference 4}">
+            <y:FreeNodePortLocationModelParameter Ratio="0.9935396920530877,1"/>
+          </x0:RotatablePortLocationModelDecoratorParameter>
+        </data>
+      </port>
+    </node>
+    <node id="n24">
+      <data key="d1">
+        <x:List>
+          <y:Label LayoutParameter="{y:GraphMLReference 1}">
+            <y:Label.Text>330°</y:Label.Text>
+          </y:Label>
+        </x:List>
+      </data>
+      <data key="d2">
+        <y:RectD X="-458.01270189221924" Y="-225.00000000000023" Width="100" Height="50"/>
+      </data>
+      <data key="d4">
+        <x0:RotatableNodeStyleDecorator Angle="330" Wrapped="{y:GraphMLReference 3}"/>
+      </data>
+    </node>
+    <node id="n25">
+      <data key="d1">
+        <x:List>
+          <y:Label LayoutParameter="{y:GraphMLReference 1}">
+            <y:Label.Text>340°</y:Label.Text>
+          </y:Label>
+        </x:List>
+      </data>
+      <data key="d2">
+        <y:RectD X="-494.8463103929541" Y="-146.0100716628347" Width="100" Height="50"/>
+      </data>
+      <data key="d4">
+        <x0:RotatableNodeStyleDecorator Angle="340" Wrapped="{y:GraphMLReference 3}"/>
+      </data>
+    </node>
+    <node id="n26">
+      <data key="d1">
+        <x:List>
+          <y:Label LayoutParameter="{y:GraphMLReference 1}">
+            <y:Label.Text>350°</y:Label.Text>
+          </y:Label>
+        </x:List>
+      </data>
+      <data key="d2">
+        <y:RectD X="-517.403876506104" Y="-61.82408883346517" Width="100" Height="50"/>
+      </data>
+      <data key="d4">
+        <x0:RotatableNodeStyleDecorator Angle="350" Wrapped="{y:GraphMLReference 3}"/>
+      </data>
+    </node>
+    <node id="n27">
+      <data key="d1">
+        <x:List>
+          <y:Label LayoutParameter="{y:GraphMLReference 1}">
+            <y:Label.Text>0°</y:Label.Text>
+          </y:Label>
+        </x:List>
+      </data>
+      <data key="d2">
+        <y:RectD X="-525" Y="24.999999999999908" Width="100" Height="50"/>
+      </data>
+      <data key="d4">
+        <x0:RotatableNodeStyleDecorator Wrapped="{y:GraphMLReference 3}"/>
+      </data>
+      <port name="p0">
+        <data key="d11">
+          <x0:RotatablePortLocationModelDecoratorParameter Model="{y:GraphMLReference 4}">
+            <y:FreeNodePortLocationModelParameter Ratio="1,0.20666666666666672"/>
+          </x0:RotatablePortLocationModelDecoratorParameter>
+        </data>
+      </port>
+      <port name="p1">
+        <data key="d11">
+          <x0:RotatablePortLocationModelDecoratorParameter Model="{y:GraphMLReference 4}">
+            <y:FreeNodePortLocationModelParameter Ratio="1,0.7933333333333333"/>
+          </x0:RotatablePortLocationModelDecoratorParameter>
+        </data>
+      </port>
+      <port name="p2">
+        <data key="d11">
+          <x0:RotatablePortLocationModelDecoratorParameter Model="{y:GraphMLReference 4}">
+            <y:FreeNodePortLocationModelParameter Ratio="1,0.5"/>
+          </x0:RotatablePortLocationModelDecoratorParameter>
+        </data>
+      </port>
+    </node>
+    <node id="n28">
+      <data key="d1">
+        <x:List>
+          <y:Label LayoutParameter="{y:GraphMLReference 1}">
+            <y:Label.Text>10°</y:Label.Text>
+          </y:Label>
+        </x:List>
+      </data>
+      <data key="d2">
+        <y:RectD X="-517.4038765061041" Y="111.824088833465" Width="100" Height="50"/>
+      </data>
+      <data key="d4">
+        <x0:RotatableNodeStyleDecorator Angle="10" Wrapped="{y:GraphMLReference 3}"/>
+      </data>
+    </node>
+    <node id="n29">
+      <data key="d1">
+        <x:List>
+          <y:Label LayoutParameter="{y:GraphMLReference 1}">
+            <y:Label.Text>20°</y:Label.Text>
+          </y:Label>
+        </x:List>
+      </data>
+      <data key="d2">
+        <y:RectD X="-494.84631039295425" Y="196.01007166283406" Width="100" Height="50"/>
+      </data>
+      <data key="d4">
+        <x0:RotatableNodeStyleDecorator Angle="20" Wrapped="{y:GraphMLReference 3}"/>
+      </data>
+      <port name="p0">
+        <data key="d11">
+          <x0:RotatablePortLocationModelDecoratorParameter Model="{y:GraphMLReference 4}">
+            <y:FreeNodePortLocationModelParameter Ratio="0,0.8644950746598653" Offset="-5.684341886080802e-14,0"/>
+          </x0:RotatablePortLocationModelDecoratorParameter>
+        </data>
+      </port>
+      <port name="p1">
+        <data key="d11">
+          <x0:RotatablePortLocationModelDecoratorParameter Model="{y:GraphMLReference 4}">
+            <y:FreeNodePortLocationModelParameter Ratio="0.9999999999999994,0.8929532137981152"/>
+          </x0:RotatablePortLocationModelDecoratorParameter>
+        </data>
+      </port>
+    </node>
+    <node id="n30">
+      <data key="d1">
+        <x:List>
+          <y:Label LayoutParameter="{y:GraphMLReference 1}">
+            <y:Label.Text>30°</y:Label.Text>
+          </y:Label>
+        </x:List>
+      </data>
+      <data key="d2">
+        <y:RectD X="-458.0127018922193" Y="275.00000000000006" Width="100" Height="50"/>
+      </data>
+      <data key="d4">
+        <x0:RotatableNodeStyleDecorator Angle="30" Wrapped="{y:GraphMLReference 3}"/>
+      </data>
+      <port name="p0">
+        <data key="d11">
+          <x0:RotatablePortLocationModelDecoratorParameter Model="{y:GraphMLReference 4}">
+            <y:FreeNodePortLocationModelParameter Ratio="1,0.39800511864960186"/>
+          </x0:RotatablePortLocationModelDecoratorParameter>
+        </data>
+      </port>
+    </node>
+    <node id="n31">
+      <data key="d1">
+        <x:List>
+          <y:Label LayoutParameter="{y:GraphMLReference 1}">
+            <y:Label.Text>40°</y:Label.Text>
+          </y:Label>
+        </x:List>
+      </data>
+      <data key="d2">
+        <y:RectD X="-408.0222215594891" Y="346.3938048432696" Width="100" Height="50"/>
+      </data>
+      <data key="d4">
+        <x0:RotatableNodeStyleDecorator Angle="40" Wrapped="{y:GraphMLReference 3}"/>
+      </data>
+      <port name="p0">
+        <data key="d11">
+          <x0:RotatablePortLocationModelDecoratorParameter Model="{y:GraphMLReference 4}">
+            <y:FreeNodePortLocationModelParameter Ratio="0.9999999999999978,0.2765157054581755"/>
+          </x0:RotatablePortLocationModelDecoratorParameter>
+        </data>
+      </port>
+      <port name="p1">
+        <data key="d11">
+          <x0:RotatablePortLocationModelDecoratorParameter Model="{y:GraphMLReference 4}">
+            <y:FreeNodePortLocationModelParameter Ratio="0.9999999999999994,0.3534237139093591"/>
+          </x0:RotatablePortLocationModelDecoratorParameter>
+        </data>
+      </port>
+    </node>
+    <node id="n32">
+      <data key="d1">
+        <x:List>
+          <y:Label LayoutParameter="{y:GraphMLReference 1}">
+            <y:Label.Text>50°</y:Label.Text>
+          </y:Label>
+        </x:List>
+      </data>
+      <data key="d2">
+        <y:RectD X="-346.3938048432698" Y="408.0222215594889" Width="100" Height="50"/>
+      </data>
+      <data key="d4">
+        <x0:RotatableNodeStyleDecorator Angle="50" Wrapped="{y:GraphMLReference 3}"/>
+      </data>
+    </node>
+    <node id="n33">
+      <data key="d1">
+        <x:List>
+          <y:Label LayoutParameter="{y:GraphMLReference 1}">
+            <y:Label.Text>60°</y:Label.Text>
+          </y:Label>
+        </x:List>
+      </data>
+      <data key="d2">
+        <y:RectD X="-275.0000000000002" Y="458.0127018922192" Width="100" Height="50"/>
+      </data>
+      <data key="d4">
+        <x0:RotatableNodeStyleDecorator Angle="60" Wrapped="{y:GraphMLReference 3}"/>
+      </data>
+      <port name="p0">
+        <data key="d11">
+          <x0:RotatablePortLocationModelDecoratorParameter Model="{y:GraphMLReference 4}">
+            <y:FreeNodePortLocationModelParameter Ratio="0.9999999999999989,0.3100208364043283"/>
+          </x0:RotatablePortLocationModelDecoratorParameter>
+        </data>
+      </port>
+    </node>
+    <node id="n34">
+      <data key="d1">
+        <x:List>
+          <y:Label LayoutParameter="{y:GraphMLReference 1}">
+            <y:Label.Text>70°</y:Label.Text>
+          </y:Label>
+        </x:List>
+      </data>
+      <data key="d2">
+        <y:RectD X="-196.0100716628343" Y="494.84631039295414" Width="100" Height="50"/>
+      </data>
+      <data key="d4">
+        <x0:RotatableNodeStyleDecorator Angle="70" Wrapped="{y:GraphMLReference 3}"/>
+      </data>
+      <port name="p0">
+        <data key="d11">
+          <x0:RotatablePortLocationModelDecoratorParameter Model="{y:GraphMLReference 4}">
+            <y:FreeNodePortLocationModelParameter Ratio="1,0.5119905650302417" Offset="2.842170943040401e-14,0"/>
+          </x0:RotatablePortLocationModelDecoratorParameter>
+        </data>
+      </port>
+    </node>
+    <node id="n35">
+      <data key="d1">
+        <x:List>
+          <y:Label LayoutParameter="{y:GraphMLReference 1}">
+            <y:Label.Text>80°</y:Label.Text>
+          </y:Label>
+        </x:List>
+      </data>
+      <data key="d2">
+        <y:RectD X="-111.82408883346564" Y="517.4038765061039" Width="100" Height="50"/>
+      </data>
+      <data key="d4">
+        <x0:RotatableNodeStyleDecorator Angle="80" Wrapped="{y:GraphMLReference 3}"/>
+      </data>
+    </node>
+    <edge id="e0" source="n23" target="n5" sourceport="p0" targetport="p0">
+      <data key="d7">
+        <x:List>
+          <y:Bend Location="-312.5771629183134,180.41674897690325"/>
+          <y:Bend Location="374.43087043218696,180.41674897690325"/>
+        </x:List>
+      </data>
+    </edge>
+    <edge id="e1" source="n5" target="n31" sourceport="p1" targetport="p0">
+    </edge>
+    <edge id="e2" source="n23" target="n31" sourceport="p1" targetport="p1">
+    </edge>
+    <edge id="e3" source="n12" target="n18" sourceport="p0" targetport="p0">
+      <data key="d7">
+        <x:List>
+          <y:Bend Location="36.00000000000007,-196.66482618707343"/>
+        </x:List>
+      </data>
+    </edge>
+    <edge id="e4" source="n1" target="n5" sourceport="p0" targetport="p2">
+      <data key="d7">
+        <x:List>
+          <y:Bend Location="123.72539018779102,361.05914318130857"/>
+        </x:List>
+      </data>
+    </edge>
+    <edge id="e5" source="n29" target="n2" sourceport="p0" targetport="p0">
+      <data key="d7">
+        <x:List>
+          <y:Bend Location="-485.59770854841634,610"/>
+          <y:Bend Location="188.3830569411461,610"/>
+        </x:List>
+      </data>
+    </edge>
+    <edge id="e6" source="n23" target="n27" sourceport="p2" targetport="p0">
+      <data key="d7">
+        <x:List>
+          <y:Bend Location="-336.2845779460605,35.33333333333325"/>
+        </x:List>
+      </data>
+    </edge>
+    <edge id="e7" source="n13" target="n33" sourceport="p0" targetport="p0">
+      <data key="d7">
+        <x:List>
+          <y:Bend Location="-208.22633909317878,-234.49006225107033"/>
+        </x:List>
+      </data>
+    </edge>
+    <edge id="e8" source="n16" target="n8" sourceport="p0" targetport="p0">
+      <data key="d7">
+        <x:List>
+          <y:Bend Location="161.26202367904176,121.67278747913937"/>
+        </x:List>
+      </data>
+    </edge>
+    <edge id="e9" source="n12" target="n18" sourceport="p1" targetport="p1">
+      <data key="d7">
+        <x:List>
+          <y:Bend Location="14.000000000000057,-169.78785199928376"/>
+        </x:List>
+      </data>
+    </edge>
+    <edge id="e10" source="n13" target="n19" sourceport="p1" targetport="p0">
+      <data key="d7">
+        <x:List>
+          <y:Bend Location="-61.82408883346524,-257.26356019127445"/>
+        </x:List>
+      </data>
+    </edge>
+    <edge id="e11" source="n30" target="n27" sourceport="p0" targetport="p1">
+      <data key="d7">
+        <x:List>
+          <y:Bend Location="-367.26130373675727,64.66666666666659"/>
+        </x:List>
+      </data>
+    </edge>
+    <edge id="e12" source="n29" target="n6" sourceport="p1" targetport="p0">
+      <data key="d7">
+        <x:List>
+          <y:Bend Location="417.2613037367571,222.37182626256046"/>
+        </x:List>
+      </data>
+    </edge>
+    <edge id="e13" source="n34" target="n5" sourceport="p0" targetport="p3">
+      <data key="d7">
+        <x:List>
+          <y:Bend Location="86.9227874791393,473.06673009216865"/>
+          <y:Bend Location="86.9227874791393,345.87681122117243"/>
+        </x:List>
+      </data>
+    </edge>
+    <edge id="e14" source="n27" target="n8" sourceport="p2" targetport="p1">
+      <data key="d7">
+        <x:List>
+          <y:Bend Location="47.087341226347256,49.999999999999915"/>
+          <y:Bend Location="47.087341226347256,151.9753901877911"/>
+        </x:List>
+      </data>
+    </edge>
+  </graph>
 </graphml>

@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.4.
- ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.5.
+ ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -28,15 +28,12 @@
  ***************************************************************************/
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Media;
 using System.Xml;
-using yWorks.Controls;
-using yWorks.Controls.Input;
+using Demo.yFiles.Toolkit;
 using yWorks.Geometry;
 using yWorks.Graph;
 using yWorks.Graph.DataBinding;
@@ -52,10 +49,9 @@ namespace Demo.yFiles.DataBinding.AdjacencyGraphBuilder
   /// </summary>
   public partial class AdjacencyGraphBuilderWindow
   {
-    private static readonly ILabelModelParameter edgeLabelLayoutParameter = FreeEdgeLabelModel.Instance.CreateDefaultParameter();
-
     public AdjacencyGraphBuilderWindow() {
       InitializeComponent();
+      InitializeGraphDefaults();
     }
 
     private void AdjacencyGraphBuilderWindow_OnLoaded(object sender, RoutedEventArgs e) {
@@ -63,12 +59,7 @@ namespace Demo.yFiles.DataBinding.AdjacencyGraphBuilder
     }
 
     private async void AdjacencyGraphBuilderModelChanged(object sender, SelectionChangedEventArgs e) {
-      var newGraph = GetGraphBuilder(graphSourceComboBox.SelectedIndex).Graph;
-
-      // add some insets to group nodes
-      newGraph.GetDecorator().NodeDecorator.InsetsProviderDecorator.SetImplementation(newGraph.IsGroupNode, new GroupNodeInsetsProvider());
-
-      graphControl.Graph = newGraph;
+      BuildGraph(graphSourceComboBox.SelectedIndex);
 
       // Perform an animated layout of the organization chart graph when the window is loaded.
       await graphControl.MorphLayout(new HierarchicLayout {
@@ -79,35 +70,34 @@ namespace Demo.yFiles.DataBinding.AdjacencyGraphBuilder
       }, TimeSpan.FromSeconds(2));
     }
 
-    private yWorks.Graph.DataBinding.AdjacencyGraphBuilder GetGraphBuilder(int index) {
+    private void BuildGraph(int index) {
       var configurationName = ((ComboBoxItem) graphSourceComboBox.Items[index]).Content as string;
       var dataProvider = ((ComboBoxItem) graphSourceComboBox.Items[index]).Tag as XmlDataProvider;
 
       if ("Organization with Predecessor"== configurationName) {
-        return CreateOrganizationBuilder(dataProvider, false, false);
+        BuildOrganization(dataProvider, false, false);
       } else if ("Organization with Successors" == configurationName) {
-        return CreateOrganizationBuilder(dataProvider, true, false);      
+        BuildOrganization(dataProvider, true, false);
       } else if ("Organization with Predecessor Id" == configurationName) {
-        return CreateOrganizationBuilder(dataProvider, false, true);
+        BuildOrganization(dataProvider, false, true);
       } else if ("Organization with Successors Ids" == configurationName) {
-        return CreateOrganizationBuilder(dataProvider, true, true);      
+        BuildOrganization(dataProvider, true, true);
       }
-      return null;
     }
 
     /// <summary>
-    /// Extract Data provider from the given XML and create and configure a graph builder.
+    /// Extract Data provider from the given XML and create and configure a graph builder and build the graph.
     /// </summary>
-    /// <param name="xnlDataProvider">The XML.</param>
+    /// <param name="xmlDataProvider">The XML.</param>
     /// <param name="useSuccessor"></param>
     /// <param name="useIds"></param>
-    /// <returns></returns>
-    private yWorks.Graph.DataBinding.AdjacencyGraphBuilder CreateOrganizationBuilder(XmlDataProvider xnlDataProvider, bool useSuccessor, bool useIds) {
+    private void BuildOrganization(XmlDataProvider xmlDataProvider, bool useSuccessor, bool useIds) {
       // extract employees, positions, and business units as enumerables
-      var employees = xnlDataProvider.Document.DocumentElement.GetElementsByTagName("employee").Cast<XmlElement>();
+      var employees = xmlDataProvider.Document.DocumentElement.GetElementsByTagName("employee").Cast<XmlElement>();
       var positions = employees.Select(employee => employee.GetAttribute("position")).Distinct();
-      var businessunits = xnlDataProvider.Document.DocumentElement.GetElementsByTagName("businessunit").Cast<XmlElement>();
-      var adjacentNodesGraphBuilder = new yWorks.Graph.DataBinding.AdjacencyGraphBuilder();
+      var businessunits = xmlDataProvider.Document.DocumentElement.GetElementsByTagName("businessunit").Cast<XmlElement>();
+      graphControl.Graph.Clear();
+      var adjacentNodesGraphBuilder = new yWorks.Graph.DataBinding.AdjacencyGraphBuilder(graphControl.Graph);
 
       // first node collection: employees
 
@@ -115,20 +105,19 @@ namespace Demo.yFiles.DataBinding.AdjacencyGraphBuilder
       var nodesSource = adjacentNodesGraphBuilder.CreateNodesSource(employees);
       // nodes are grouped in business units
       nodesSource.ParentIdProvider = employee => employee.GetAttribute("businessUnit");
-      var nodeBrush = new LinearGradientBrush(Color.FromRgb(255,165,0), Color.FromRgb(255,237,204), new Point(0, 0), new Point(0, 1));
       // adjust the size so the node labels fit
       nodesSource.NodeCreator.LayoutProvider = element => {
         var width = 5 + 7 * Math.Max(element.GetAttribute("name").Length, element.GetAttribute("position").Length);
         return new RectD(0, 0, width, 40);
       };
-      nodesSource.NodeCreator.Defaults.Style = new ShapeNodeStyle() {
-          Pen = Pens.DarkOrange,
-          Brush = nodeBrush,
-          Shape = ShapeNodeShape.RoundRectangle
-      };
+
       // set label provider
       var nodeNameLabels = nodesSource.NodeCreator.CreateLabelBinding(element => element.GetAttribute("name"));
-      nodeNameLabels.Defaults.LayoutParameter = new InteriorStretchLabelModel() {Insets = new InsetsD(5, 5, 5, 10)}.CreateParameter(InteriorStretchLabelModel.Position.Center);
+      nodeNameLabels.Defaults.LayoutParameter = new InteriorStretchLabelModel() {Insets = new InsetsD(5, 5, 5, 5)}.CreateParameter(InteriorStretchLabelModel.Position.Center);
+      var nodeNameLabelStyle = DemoStyles.CreateDemoNodeLabelStyle();
+      nodeNameLabelStyle.Insets = InsetsD.Empty;
+      nodeNameLabelStyle.VerticalTextAlignment = VerticalAlignment.Top;
+      nodeNameLabels.Defaults.Style = nodeNameLabelStyle;
       var nodePositionLabels = nodesSource.NodeCreator.CreateLabelBinding(element => element.GetAttribute("position"));
       nodePositionLabels.Defaults.LayoutParameter = new InteriorStretchLabelModel() {Insets = new InsetsD(5, 20, 5, 5)}.CreateParameter(InteriorStretchLabelModel.Position.Center);
 
@@ -137,12 +126,9 @@ namespace Demo.yFiles.DataBinding.AdjacencyGraphBuilder
       // create nodes source for positions with different style and size
       var positionsSource = adjacentNodesGraphBuilder.CreateNodesSource(positions);
       positionsSource.NodeCreator.Defaults.Size = new SizeD(100, 60);
-      positionsSource.NodeCreator.Defaults.Style = new ShapeNodeStyle( ) {
-          Pen = Pens.SeaGreen,
-          Brush = Brushes.PaleGreen,
-          Shape = ShapeNodeShape.RoundRectangle
-      };
+      positionsSource.NodeCreator.Defaults.Style = DemoStyles.CreateDemoNodeStyle(Themes.PaletteGreen);
       var positionLabelCreator = positionsSource.NodeCreator.CreateLabelBinding(position => position);
+      positionLabelCreator.Defaults.Style = DemoStyles.CreateDemoNodeLabelStyle(Themes.PaletteGreen);
       positionLabelCreator.Defaults.LayoutParameter = new InteriorStretchLabelModel() {Insets = new InsetsD(5)}.CreateParameter(InteriorStretchLabelModel.Position.Center);
 
       // group node collections: business units
@@ -156,30 +142,13 @@ namespace Demo.yFiles.DataBinding.AdjacencyGraphBuilder
         return null;
       };
       groupNodesSource.NodeCreator.Defaults.Size = new SizeD(50, 50);
-      var groupNodeBrush = new LinearGradientBrush(Color.FromRgb(225,242,253), Colors.LightSkyBlue, new Point(0.5, 0), new Point(0.5, 1)) { Opacity = 0.5 };
-      groupNodesSource.NodeCreator.Defaults.Style = new ShapeNodeStyle() {
-          Pen = Pens.LightSkyBlue,
-          Brush = groupNodeBrush
-      };
       var groupLabels = groupNodesSource.NodeCreator.CreateLabelBinding(element => element.GetAttribute("name"));
-      groupLabels.Defaults.Style = new DefaultLabelStyle() {
-          TextBrush = Brushes.DarkGray,
-          TextSize = 24,
-      };
       groupLabels.Defaults.LayoutParameter = InteriorLabelModel.NorthWest;
 
       // prepare edge creation
-      EdgeCreator<XmlElement> edgeCreator = new EdgeCreator<XmlElement> {
-          Defaults = { Style = new PolylineEdgeStyle() { SmoothingLength = 20, TargetArrow = Arrows.Default } }
-      };
+      EdgeCreator<XmlElement> edgeCreator = new EdgeCreator<XmlElement> { Defaults = graphControl.Graph.EdgeDefaults };
       var edgeLabels = edgeCreator.CreateLabelBinding(element => element.GetAttribute("name"));
-      edgeLabels.Defaults.Style = new DefaultLabelStyle() {
-          BackgroundBrush = new SolidColorBrush(Color.FromRgb(225,242,253)),
-          BackgroundPen = Pens.LightSkyBlue,
-          Insets = new InsetsD(2),
-          TextSize = 8
-      };
-      edgeLabels.Defaults.LayoutParameter = edgeLabelLayoutParameter; 
+      edgeLabels.Defaults = graphControl.Graph.EdgeDefaults.Labels;
 
       // configure the successor and predecessor sources
       // for this demo this depends on the chosen settings
@@ -205,21 +174,24 @@ namespace Demo.yFiles.DataBinding.AdjacencyGraphBuilder
       }
 
       // either way: we create edges between the employee and his/her position
-      nodesSource.AddSuccessorIds(employee => new []{employee.GetAttribute("position")}, new EdgeCreator<XmlElement>());
+      nodesSource.AddSuccessorIds(employee => new[] { employee.GetAttribute("position") },
+          new EdgeCreator<XmlElement> { Defaults = graphControl.Graph.EdgeDefaults });
 
-      adjacentNodesGraphBuilder.LabelAdded += (sender, args) => {
-        var newLabel = true;
-      }; 
-      
       adjacentNodesGraphBuilder.BuildGraph();
-      return adjacentNodesGraphBuilder;
     }
 
-  }
-  sealed class GroupNodeInsetsProvider : INodeInsetsProvider {
-    public InsetsD GetInsets(INode node) {
-      return new InsetsD(5, 20, 5, 5);
+    private void InitializeGraphDefaults() {
+      var graph = graphControl.Graph;
+      
+      // initialize demo styles
+      DemoStyles.InitDemoStyles(graph);
+      // remove insets of demo node label styles 
+      ((DefaultLabelStyle) graph.NodeDefaults.Labels.Style).Insets = InsetsD.Empty;
+      // set insets and bigger text size for demo group node label styles 
+      ((DefaultLabelStyle) graph.GroupNodeDefaults.Labels.Style).Insets = new InsetsD(2);
+      ((DefaultLabelStyle) graph.GroupNodeDefaults.Labels.Style).TextSize = 24;
+      // increase tab height of GroupNodeStyle so the increased group node labels fit into the header
+      ((GroupNodeStyle) graph.GroupNodeDefaults.Style).TabHeight = 28;
     }
   }
-
 }

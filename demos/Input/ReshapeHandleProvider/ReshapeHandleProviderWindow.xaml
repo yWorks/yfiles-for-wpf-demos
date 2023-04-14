@@ -1,6 +1,6 @@
 <!-- ************************************************************************ -->
-<!-- This demo file is part of yFiles WPF 3.4.                           -->
-<!-- Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
+<!-- This demo file is part of yFiles WPF 3.5.                           -->
+<!-- Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
 <!-- 72070 Tuebingen, Germany. All rights reserved.                           -->
 <!--                                                                          -->
 <!-- yFiles demo files exhibit yFiles WPF functionalities. Any redistribution  -->
@@ -48,7 +48,7 @@
                         <ListItem>
                             <Paragraph>
                                 Select a <Run FontWeight="Bold" Foreground="{StaticResource DemoGreen}">green</Run>
-                                or <Run FontWeight="Bold" Foreground="{StaticResource DemoBlue}">blue</Run> port 
+                                or <Run FontWeight="Bold" Foreground="{StaticResource DemoLightblue}">blue</Run> port 
                                 and see its reshape handles at its corners. Also note that there
                                 is a different handle at the center that was provided by the 
                                 <Run FontStyle="Italic" Text="IHandleProvider"/> to change the port location. 

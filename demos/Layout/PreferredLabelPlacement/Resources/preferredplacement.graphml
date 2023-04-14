@@ -1,38 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--Created by yFiles WPF 2.2-->
+<!--Created by yFiles WPF 3.5-->
 <graphml xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/3.0" xmlns:y="http://www.yworks.com/xml/yfiles-common/3.0" xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/3.0/xaml" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml.wpf/2.0/ygraphml.xsd " xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://graphml.graphdrawing.org/xmlns">
   <key id="d0" for="all" attr.name="UserTags" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/UserTags" />
   <key id="d1" for="node" attr.name="NodeLabels" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeLabels" />
   <key id="d2" for="node" attr.name="NodeGeometry" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeGeometry" />
-  <key id="d3" for="node" attr.name="NodeStyle" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeStyle" />
   <key id="d4" for="edge" attr.name="EdgeLabels" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/EdgeLabels" />
   <key id="d5" for="edge" attr.name="EdgeGeometry" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/EdgeGeometry" />
-  <key id="d6" for="edge" attr.name="EdgeStyle" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/EdgeStyle" />
   <key id="d7" for="port" attr.name="PortLocationParameter" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/PortLocationParameter">
     <default>
       <x:Static Member="y:FreeNodePortLocationModel.NodeCenterAnchored" />
     </default>
   </key>
-  <key id="d8" for="port" attr.name="PortStyle" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/PortStyle">
-    <default>
-      <x:Static Member="y:VoidPortStyle.Instance" />
-    </default>
-  </key>
-  <key id="d9" attr.name="SharedData" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/SharedData" />
-  <data key="d9">
-    <y:SharedData>
-      <ywpf:ShinyPlateNodeStyle x:Key="1" Brush="#FFFFA500" DrawShadow="False" />
-      <ywpf:PolylineEdgeStyle x:Key="2" TargetArrow="Default" SourceArrow="None" />
-      <ywpf:DefaultLabelStyle x:Key="3" Typeface="Arial,Normal,Normal,Normal" BackgroundPen="LightBlue" BackgroundBrush="#f0ffffff" AutoFlip="False"/>
-    </y:SharedData>
-  </data>
   <graph id="G" edgedefault="directed">
     <node id="n0">
       <data key="d2">
         <y:RectD X="-386.86" Y="-413.105" Width="50" Height="30" />
-      </data>
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
       </data>
       <port name="p0">
         <data key="d7">
@@ -64,9 +46,6 @@
       <data key="d2">
         <y:RectD X="-476.86" Y="-234.85500000000002" Width="50" Height="30" />
       </data>
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
-      </data>
       <port name="p0">
         <data key="d7">
           <y:FreeNodePortLocationModelParameter Ratio="0.5,0" />
@@ -76,9 +55,6 @@
     <node id="n2">
       <data key="d2">
         <y:RectD X="-386.86" Y="-234.85500000000002" Width="50" Height="30" />
-      </data>
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
       </data>
       <port name="p0">
         <data key="d7">
@@ -105,9 +81,6 @@
       <data key="d2">
         <y:RectD X="-31.860000000000014" Y="-413.105" Width="50" Height="30" />
       </data>
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
-      </data>
       <port name="p0">
         <data key="d7">
           <y:FreeNodePortLocationModelParameter Ratio="0.25,1" />
@@ -123,9 +96,6 @@
       <data key="d2">
         <y:RectD X="253.14" Y="-413.105" Width="50" Height="30" />
       </data>
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
-      </data>
       <port name="p0">
         <data key="d7">
           <y:FreeNodePortLocationModelParameter Ratio="0.5,1" />
@@ -135,9 +105,6 @@
     <node id="n5">
       <data key="d2">
         <y:RectD X="-280.19333333333338" Y="-234.85500000000002" Width="50" Height="30" />
-      </data>
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
       </data>
       <port name="p0">
         <data key="d7">
@@ -158,9 +125,6 @@
     <node id="n6">
       <data key="d2">
         <y:RectD X="-182.69333333333333" Y="-234.85500000000002" Width="50" Height="30" />
-      </data>
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
       </data>
       <port name="p0">
         <data key="d7">
@@ -187,9 +151,6 @@
       <data key="d2">
         <y:RectD X="-44.360000000000014" Y="-234.85500000000002" Width="50" Height="30" />
       </data>
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
-      </data>
       <port name="p0">
         <data key="d7">
           <y:FreeNodePortLocationModelParameter Ratio="0.5,0" />
@@ -205,9 +166,6 @@
       <data key="d2">
         <y:RectD X="118.13999999999999" Y="-234.85500000000002" Width="50" Height="30" />
       </data>
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
-      </data>
       <port name="p0">
         <data key="d7">
           <y:FreeNodePortLocationModelParameter Ratio="0.25,1" />
@@ -222,9 +180,6 @@
     <node id="n9">
       <data key="d2">
         <y:RectD X="240.64" Y="-234.85500000000002" Width="50" Height="30" />
-      </data>
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
       </data>
       <port name="p0">
         <data key="d7">
@@ -246,9 +201,6 @@
       <data key="d2">
         <y:RectD X="-374.36" Y="-94.355000000000018" Width="50" Height="30" />
       </data>
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
-      </data>
       <port name="p0">
         <data key="d7">
           <y:FreeNodePortLocationModelParameter Ratio="0.25,0" />
@@ -263,9 +215,6 @@
     <node id="n11">
       <data key="d2">
         <y:RectD X="-294.36" Y="-94.355000000000018" Width="50" Height="30" />
-      </data>
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
       </data>
       <port name="p0">
         <data key="d7">
@@ -282,9 +231,6 @@
       <data key="d2">
         <y:RectD X="-195.19333333333333" Y="-94.355000000000018" Width="50" Height="30" />
       </data>
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
-      </data>
       <port name="p0">
         <data key="d7">
           <y:FreeNodePortLocationModelParameter Ratio="0.75,0" />
@@ -300,9 +246,6 @@
       <data key="d2">
         <y:RectD X="0.63999999999998636" Y="-94.355000000000018" Width="50" Height="30" />
       </data>
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
-      </data>
       <port name="p0">
         <data key="d7">
           <y:FreeNodePortLocationModelParameter Ratio="0.5,1" />
@@ -313,9 +256,6 @@
       <data key="d2">
         <y:RectD X="80.639999999999986" Y="-94.355000000000018" Width="50" Height="30" />
       </data>
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
-      </data>
       <port name="p0">
         <data key="d7">
           <y:FreeNodePortLocationModelParameter Ratio="0.5,1" />
@@ -325,9 +265,6 @@
     <node id="n15">
       <data key="d2">
         <y:RectD X="-79.360000000000014" Y="-94.355000000000018" Width="50" Height="30" />
-      </data>
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
       </data>
       <port name="p0">
         <data key="d7">
@@ -354,9 +291,6 @@
       <data key="d2">
         <y:RectD X="160.64" Y="-94.355000000000018" Width="50" Height="30" />
       </data>
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
-      </data>
       <port name="p0">
         <data key="d7">
           <y:FreeNodePortLocationModelParameter Ratio="0.5,0" />
@@ -377,9 +311,6 @@
       <data key="d2">
         <y:RectD X="240.64" Y="-94.355000000000018" Width="50" Height="30" />
       </data>
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
-      </data>
       <port name="p0">
         <data key="d7">
           <y:FreeNodePortLocationModelParameter Ratio="0.5,0" />
@@ -389,9 +320,6 @@
     <node id="n18">
       <data key="d2">
         <y:RectD X="215.64" Y="14.644999999999982" Width="50" Height="30" />
-      </data>
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
       </data>
       <port name="p0">
         <data key="d7">
@@ -403,9 +331,6 @@
       <data key="d2">
         <y:RectD X="135.64" Y="14.644999999999982" Width="50" Height="30" />
       </data>
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
-      </data>
       <port name="p0">
         <data key="d7">
           <y:FreeNodePortLocationModelParameter Ratio="0.5,0" />
@@ -415,9 +340,6 @@
     <node id="n20">
       <data key="d2">
         <y:RectD X="0.63999999999998636" Y="14.644999999999982" Width="50" Height="30" />
-      </data>
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
       </data>
       <port name="p0">
         <data key="d7">
@@ -449,9 +371,6 @@
       <data key="d2">
         <y:RectD X="-329.36" Y="14.644999999999982" Width="50" Height="30" />
       </data>
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
-      </data>
       <port name="p0">
         <data key="d7">
           <y:FreeNodePortLocationModelParameter Ratio="0.5,0" />
@@ -466,9 +385,6 @@
     <node id="n22">
       <data key="d2">
         <y:RectD X="-329.36" Y="129.14499999999998" Width="50" Height="30" />
-      </data>
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
       </data>
       <port name="p0">
         <data key="d7">
@@ -485,9 +401,6 @@
       <data key="d2">
         <y:RectD X="-11.860000000000014" Y="129.14499999999998" Width="50" Height="30" />
       </data>
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
-      </data>
       <port name="p0">
         <data key="d7">
           <y:FreeNodePortLocationModelParameter Ratio="0.5,0" />
@@ -503,9 +416,6 @@
       <data key="d2">
         <y:RectD X="148.14" Y="129.14499999999998" Width="50" Height="30" />
       </data>
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
-      </data>
       <port name="p0">
         <data key="d7">
           <y:FreeNodePortLocationModelParameter Ratio="0.5,0" />
@@ -515,9 +425,6 @@
     <node id="n25">
       <data key="d2">
         <y:RectD X="68.139999999999986" Y="129.14499999999998" Width="50" Height="30" />
-      </data>
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
       </data>
       <port name="p0">
         <data key="d7">
@@ -534,9 +441,6 @@
       <data key="d2">
         <y:RectD X="-316.86" Y="285.145" Width="50" Height="30" />
       </data>
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
-      </data>
       <port name="p0">
         <data key="d7">
           <y:FreeNodePortLocationModelParameter Ratio="0.75,0" />
@@ -551,9 +455,6 @@
     <node id="n27">
       <data key="d2">
         <y:RectD X="0.63999999999998636" Y="285.145" Width="50" Height="30" />
-      </data>
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
       </data>
       <port name="p0">
         <data key="d7">
@@ -570,9 +471,6 @@
       <data key="d2">
         <y:RectD X="98.139999999999986" Y="285.145" Width="50" Height="30" />
       </data>
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
-      </data>
       <port name="p0">
         <data key="d7">
           <y:FreeNodePortLocationModelParameter Ratio="0.5,0" />
@@ -586,12 +484,9 @@
           <y:Bend Location="-451.86,-307.855" />
         </x:List>
       </data>
-      <data key="d6">
-        <y:GraphMLReference ResourceKey="2" />
-      </data>
       <data key="d4">
         <x:List>
-          <y:Label Style="{y:GraphMLReference 3}" PreferredSize="30,14">
+          <y:Label>
             <y:Label.Text>Label</y:Label.Text>
             <y:Label.LayoutParameter>
               <y:FreeEdgeLabelModelParameter Ratio="0.6880541519687291" Distance="46.265430260420246" />
@@ -609,12 +504,9 @@
           <y:Bend Location="-345.193333333333,-249.855" />
         </x:List>
       </data>
-      <data key="d6">
-        <y:GraphMLReference ResourceKey="2" />
-      </data>
       <data key="d4">
         <x:List>
-          <y:Label Style="{y:GraphMLReference 3}" PreferredSize="30,14">
+          <y:Label>
             <y:Label.Text>Label</y:Label.Text>
             <y:Label.LayoutParameter>
               <y:FreeEdgeLabelModelParameter Ratio="0.55822720505947043" Distance="-11.289883320968585" />
@@ -624,12 +516,9 @@
       </data>
     </edge>
     <edge id="e2" source="n0" target="n2" sourceport="p2" targetport="p1">
-      <data key="d6">
-        <y:GraphMLReference ResourceKey="2" />
-      </data>
       <data key="d4">
         <x:List>
-          <y:Label Style="{y:GraphMLReference 3}" PreferredSize="30,14">
+          <y:Label>
             <y:Label.Text>Label</y:Label.Text>
             <y:Label.LayoutParameter>
               <y:FreeEdgeLabelModelParameter Ratio="0.554806070826307" Distance="20" />
@@ -647,12 +536,9 @@
           <y:Bend Location="-371.86,-368.105" />
         </x:List>
       </data>
-      <data key="d6">
-        <y:GraphMLReference ResourceKey="2" />
-      </data>
       <data key="d4">
         <x:List>
-          <y:Label Style="{y:GraphMLReference 3}" PreferredSize="30,14">
+          <y:Label>
             <y:Label.Text>Label</y:Label.Text>
             <y:Label.LayoutParameter>
               <y:FreeEdgeLabelModelParameter Ratio="0.43117757370064275" Distance="-46.254548079989121" Angle="3.1415926535897931" />
@@ -662,12 +548,9 @@
       </data>
     </edge>
     <edge id="e4" source="n2" target="n10" sourceport="p3" targetport="p0">
-      <data key="d6">
-        <y:GraphMLReference ResourceKey="2" />
-      </data>
       <data key="d4">
         <x:List>
-          <y:Label Style="{y:GraphMLReference 3}" PreferredSize="30,14">
+          <y:Label>
             <y:Label.Text>Label</y:Label.Text>
             <y:Label.LayoutParameter>
               <y:FreeEdgeLabelModelParameter Ratio="0.34389140271493213" Distance="20" />
@@ -685,12 +568,9 @@
           <y:Bend Location="-336.86,-109.355" />
         </x:List>
       </data>
-      <data key="d6">
-        <y:GraphMLReference ResourceKey="2" />
-      </data>
       <data key="d4">
         <x:List>
-          <y:Label Style="{y:GraphMLReference 3}" PreferredSize="30,14">
+          <y:Label>
             <y:Label.Text>Label</y:Label.Text>
             <y:Label.LayoutParameter>
               <y:FreeEdgeLabelModelParameter Ratio="0.47300771208226222" Distance="28.139617024268357" />
@@ -706,12 +586,9 @@
           <y:Bend Location="-269.36,-109.355" />
         </x:List>
       </data>
-      <data key="d6">
-        <y:GraphMLReference ResourceKey="2" />
-      </data>
       <data key="d4">
         <x:List>
-          <y:Label Style="{y:GraphMLReference 3}" PreferredSize="30,14">
+          <y:Label>
             <y:Label.Text>Label</y:Label.Text>
             <y:Label.LayoutParameter>
               <y:FreeEdgeLabelModelParameter Ratio="0.36115972909215449" Distance="15.005389286273136" />
@@ -727,12 +604,9 @@
           <y:Bend Location="-157.693333333333,-307.855" />
         </x:List>
       </data>
-      <data key="d6">
-        <y:GraphMLReference ResourceKey="2" />
-      </data>
       <data key="d4">
         <x:List>
-          <y:Label Style="{y:GraphMLReference 3}" PreferredSize="30,14">
+          <y:Label>
             <y:Label.Text>Label</y:Label.Text>
             <y:Label.LayoutParameter>
               <y:FreeEdgeLabelModelParameter Ratio="0.75905302324864843" Distance="-38.871149647807634" />
@@ -742,12 +616,9 @@
       </data>
     </edge>
     <edge id="e8" source="n3" target="n7" sourceport="p0" targetport="p0">
-      <data key="d6">
-        <y:GraphMLReference ResourceKey="2" />
-      </data>
       <data key="d4">
         <x:List>
-          <y:Label Style="{y:GraphMLReference 3}" PreferredSize="30,14">
+          <y:Label>
             <y:Label.Text>Label</y:Label.Text>
             <y:Label.LayoutParameter>
               <y:FreeEdgeLabelModelParameter Ratio="0.554806070826307" Distance="20" />
@@ -765,12 +636,9 @@
           <y:Bend Location="253.14,-249.855" />
         </x:List>
       </data>
-      <data key="d6">
-        <y:GraphMLReference ResourceKey="2" />
-      </data>
       <data key="d4">
         <x:List>
-          <y:Label Style="{y:GraphMLReference 3}" PreferredSize="30,14">
+          <y:Label>
             <y:Label.Text>Label</y:Label.Text>
             <y:Label.LayoutParameter>
               <y:FreeEdgeLabelModelParameter Ratio="0.7337696517887381" Distance="-30.926826523465646" />
@@ -780,24 +648,21 @@
       </data>
     </edge>
     <edge id="e10" source="n4" target="n9" sourceport="p0" targetport="p1">
-      <data key="d6">
-        <y:GraphMLReference ResourceKey="2" />
-      </data>
       <data key="d4">
         <x:List>
-          <y:Label Style="{y:GraphMLReference 3}" PreferredSize="30,14">
+          <y:Label>
             <y:Label.Text>Label</y:Label.Text>
             <y:Label.LayoutParameter>
               <y:FreeEdgeLabelModelParameter Ratio="0.39291736930860033" Distance="20" />
             </y:Label.LayoutParameter>
           </y:Label>
-          <y:Label Style="{y:GraphMLReference 3}" PreferredSize="30,14">
+          <y:Label>
             <y:Label.Text>Label</y:Label.Text>
             <y:Label.LayoutParameter>
               <y:FreeEdgeLabelModelParameter Ratio="0.554806070826307" Distance="20" />
             </y:Label.LayoutParameter>
           </y:Label>
-          <y:Label Style="{y:GraphMLReference 3}" PreferredSize="30,14">
+          <y:Label>
             <y:Label.Text>Label</y:Label.Text>
             <y:Label.LayoutParameter>
               <y:FreeEdgeLabelModelParameter Ratio="0.71669477234401346" Distance="20" />
@@ -815,12 +680,9 @@
           <y:Bend Location="-279.36,270.145" />
         </x:List>
       </data>
-      <data key="d6">
-        <y:GraphMLReference ResourceKey="2" />
-      </data>
       <data key="d4">
         <x:List>
-          <y:Label Style="{y:GraphMLReference 3}" PreferredSize="30,14">
+          <y:Label>
             <y:Label.Text>Label</y:Label.Text>
             <y:Label.LayoutParameter>
               <y:FreeEdgeLabelModelParameter Ratio="0.477100633356791" Distance="-8.6782526447158315" />
@@ -830,12 +692,9 @@
       </data>
     </edge>
     <edge id="e12" source="n12" target="n6" sourceport="p0" targetport="p1">
-      <data key="d6">
-        <y:GraphMLReference ResourceKey="2" />
-      </data>
       <data key="d4">
         <x:List>
-          <y:Label Style="{y:GraphMLReference 3}" PreferredSize="30,14">
+          <y:Label>
             <y:Label.Text>Label</y:Label.Text>
             <y:Label.LayoutParameter>
               <y:FreeEdgeLabelModelParameter Ratio="0.65610859728506787" Distance="20" Angle="3.1415926535897931" />
@@ -851,12 +710,9 @@
           <y:Bend Location="-182.693333333333,-109.355" />
         </x:List>
       </data>
-      <data key="d6">
-        <y:GraphMLReference ResourceKey="2" />
-      </data>
       <data key="d4">
         <x:List>
-          <y:Label Style="{y:GraphMLReference 3}" PreferredSize="30,14">
+          <y:Label>
             <y:Label.Text>Label</y:Label.Text>
             <y:Label.LayoutParameter>
               <y:FreeEdgeLabelModelParameter Ratio="0.35551916103594683" Distance="17.085720625834536" />
@@ -872,12 +728,9 @@
           <y:Bend Location="-71.0266666666667,-173.855" />
         </x:List>
       </data>
-      <data key="d6">
-        <y:GraphMLReference ResourceKey="2" />
-      </data>
       <data key="d4">
         <x:List>
-          <y:Label Style="{y:GraphMLReference 3}" PreferredSize="30,14">
+          <y:Label>
             <y:Label.Text>Label</y:Label.Text>
             <y:Label.LayoutParameter>
               <y:FreeEdgeLabelModelParameter Ratio="0.44996420274396892" Distance="-21.90263918056862" />
@@ -893,12 +746,9 @@
           <y:Bend Location="-54.36,-109.355" />
         </x:List>
       </data>
-      <data key="d6">
-        <y:GraphMLReference ResourceKey="2" />
-      </data>
       <data key="d4">
         <x:List>
-          <y:Label Style="{y:GraphMLReference 3}" PreferredSize="30,14">
+          <y:Label>
             <y:Label.Text>Label</y:Label.Text>
             <y:Label.LayoutParameter>
               <y:FreeEdgeLabelModelParameter Ratio="0.364637799817644" Distance="7.5920628746976613" />
@@ -914,12 +764,9 @@
           <y:Bend Location="-37.6933333333333,-109.355" />
         </x:List>
       </data>
-      <data key="d6">
-        <y:GraphMLReference ResourceKey="2" />
-      </data>
       <data key="d4">
         <x:List>
-          <y:Label Style="{y:GraphMLReference 3}" PreferredSize="30,14">
+          <y:Label>
             <y:Label.Text>Label</y:Label.Text>
             <y:Label.LayoutParameter>
               <y:FreeEdgeLabelModelParameter Ratio="0.18659298786231665" Distance="-20.791816935908521" />
@@ -935,12 +782,9 @@
           <y:Bend Location="185.64,-173.855" />
         </x:List>
       </data>
-      <data key="d6">
-        <y:GraphMLReference ResourceKey="2" />
-      </data>
       <data key="d4">
         <x:List>
-          <y:Label Style="{y:GraphMLReference 3}" PreferredSize="30,14">
+          <y:Label>
             <y:Label.Text>Label</y:Label.Text>
             <y:Label.LayoutParameter>
               <y:FreeEdgeLabelModelParameter Ratio="0.34316660628134465" Distance="0.30567685589518856" />
@@ -950,12 +794,9 @@
       </data>
     </edge>
     <edge id="e18" source="n9" target="n17" sourceport="p2" targetport="p0">
-      <data key="d6">
-        <y:GraphMLReference ResourceKey="2" />
-      </data>
       <data key="d4">
         <x:List>
-          <y:Label Style="{y:GraphMLReference 3}" PreferredSize="30,14">
+          <y:Label>
             <y:Label.Text>Label</y:Label.Text>
             <y:Label.LayoutParameter>
               <y:FreeEdgeLabelModelParameter Ratio="0.34389140271493213" Distance="20" />
@@ -971,12 +812,9 @@
           <y:Bend Location="-304.36,-34.355" />
         </x:List>
       </data>
-      <data key="d6">
-        <y:GraphMLReference ResourceKey="2" />
-      </data>
       <data key="d4">
         <x:List>
-          <y:Label Style="{y:GraphMLReference 3}" PreferredSize="30,14">
+          <y:Label>
             <y:Label.Text>Label</y:Label.Text>
             <y:Label.LayoutParameter>
               <y:FreeEdgeLabelModelParameter Ratio="0.64934369140101789" Distance="35.298467163431688" />
@@ -986,12 +824,9 @@
       </data>
     </edge>
     <edge id="e20" source="n21" target="n22" sourceport="p1" targetport="p0">
-      <data key="d6">
-        <y:GraphMLReference ResourceKey="2" />
-      </data>
       <data key="d4">
         <x:List>
-          <y:Label Style="{y:GraphMLReference 3}" PreferredSize="30,14">
+          <y:Label>
             <y:Label.Text>Label</y:Label.Text>
             <y:Label.LayoutParameter>
               <y:FreeEdgeLabelModelParameter Ratio="0.68047337278106512" Distance="20" />
@@ -1001,30 +836,27 @@
       </data>
     </edge>
     <edge id="e21" source="n22" target="n26" sourceport="p1" targetport="p1">
-      <data key="d6">
-        <y:GraphMLReference ResourceKey="2" />
-      </data>
       <data key="d4">
         <x:List>
-          <y:Label Style="{y:GraphMLReference 3}" PreferredSize="30,14">
+          <y:Label>
             <y:Label.Text>Label</y:Label.Text>
             <y:Label.LayoutParameter>
               <y:FreeEdgeLabelModelParameter Ratio="0.21428571428571427" Distance="20" />
             </y:Label.LayoutParameter>
           </y:Label>
-          <y:Label Style="{y:GraphMLReference 3}" PreferredSize="30,14">
+          <y:Label>
             <y:Label.Text>Label</y:Label.Text>
             <y:Label.LayoutParameter>
               <y:FreeEdgeLabelModelParameter Ratio="0.40476190476190477" Distance="20" />
             </y:Label.LayoutParameter>
           </y:Label>
-          <y:Label Style="{y:GraphMLReference 3}" PreferredSize="30,14">
+          <y:Label>
             <y:Label.Text>Label</y:Label.Text>
             <y:Label.LayoutParameter>
               <y:FreeEdgeLabelModelParameter Ratio="0.59523809523809523" Distance="20" />
             </y:Label.LayoutParameter>
           </y:Label>
-          <y:Label Style="{y:GraphMLReference 3}" PreferredSize="30,14">
+          <y:Label>
             <y:Label.Text>Label</y:Label.Text>
             <y:Label.LayoutParameter>
               <y:FreeEdgeLabelModelParameter Ratio="0.7857142857142857" Distance="20" />
@@ -1034,12 +866,9 @@
       </data>
     </edge>
     <edge id="e22" source="n13" target="n20" sourceport="p0" targetport="p0">
-      <data key="d6">
-        <y:GraphMLReference ResourceKey="2" />
-      </data>
       <data key="d4">
         <x:List>
-          <y:Label Style="{y:GraphMLReference 3}" PreferredSize="30,14">
+          <y:Label>
             <y:Label.Text>Label</y:Label.Text>
             <y:Label.LayoutParameter>
               <y:FreeEdgeLabelModelParameter Ratio="0.46835443037974683" Distance="20" />
@@ -1055,12 +884,9 @@
           <y:Bend Location="42.3066666666666,-0.355000000000018" />
         </x:List>
       </data>
-      <data key="d6">
-        <y:GraphMLReference ResourceKey="2" />
-      </data>
       <data key="d4">
         <x:List>
-          <y:Label Style="{y:GraphMLReference 3}" PreferredSize="30,14">
+          <y:Label>
             <y:Label.Text>Label</y:Label.Text>
             <y:Label.LayoutParameter>
               <y:FreeEdgeLabelModelParameter Ratio="0.40866379824209648" Distance="-7.5388929314386948" />
@@ -1076,12 +902,9 @@
           <y:Bend Location="8.9733333333333,-0.355000000000018" />
         </x:List>
       </data>
-      <data key="d6">
-        <y:GraphMLReference ResourceKey="2" />
-      </data>
       <data key="d4">
         <x:List>
-          <y:Label Style="{y:GraphMLReference 3}" PreferredSize="30,14">
+          <y:Label>
             <y:Label.Text>Label</y:Label.Text>
             <y:Label.LayoutParameter>
               <y:FreeEdgeLabelModelParameter Ratio="0.16156022065915951" Distance="38.747934411805062" />
@@ -1097,12 +920,9 @@
           <y:Bend Location="160.64,-34.355" />
         </x:List>
       </data>
-      <data key="d6">
-        <y:GraphMLReference ResourceKey="2" />
-      </data>
       <data key="d4">
         <x:List>
-          <y:Label Style="{y:GraphMLReference 3}" PreferredSize="30,14">
+          <y:Label>
             <y:Label.Text>Label</y:Label.Text>
             <y:Label.LayoutParameter>
               <y:FreeEdgeLabelModelParameter Ratio="0.520418930008988" Distance="26.318154898616545" />
@@ -1118,12 +938,9 @@
           <y:Bend Location="240.64,-34.355" />
         </x:List>
       </data>
-      <data key="d6">
-        <y:GraphMLReference ResourceKey="2" />
-      </data>
       <data key="d4">
         <x:List>
-          <y:Label Style="{y:GraphMLReference 3}" PreferredSize="30,14">
+          <y:Label>
             <y:Label.Text>Label</y:Label.Text>
             <y:Label.LayoutParameter>
               <y:FreeEdgeLabelModelParameter Ratio="0.48205908850849688" Distance="-2.2852310393950055" />
@@ -1133,12 +950,9 @@
       </data>
     </edge>
     <edge id="e27" source="n20" target="n23" sourceport="p3" targetport="p0">
-      <data key="d6">
-        <y:GraphMLReference ResourceKey="2" />
-      </data>
       <data key="d4">
         <x:List>
-          <y:Label Style="{y:GraphMLReference 3}" PreferredSize="30,14">
+          <y:Label>
             <y:Label.Text>Label</y:Label.Text>
             <y:Label.LayoutParameter>
               <y:FreeEdgeLabelModelParameter Ratio="0.68047337278106512" Distance="20" />
@@ -1154,12 +968,9 @@
           <y:Bend Location="173.14,95.145" />
         </x:List>
       </data>
-      <data key="d6">
-        <y:GraphMLReference ResourceKey="2" />
-      </data>
       <data key="d4">
         <x:List>
-          <y:Label Style="{y:GraphMLReference 3}" PreferredSize="30,14">
+          <y:Label>
             <y:Label.Text>Label</y:Label.Text>
             <y:Label.LayoutParameter>
               <y:FreeEdgeLabelModelParameter Ratio="0.80360926858595916" Distance="-12.275160750921144" />
@@ -1169,12 +980,9 @@
       </data>
     </edge>
     <edge id="e29" source="n23" target="n27" sourceport="p1" targetport="p0">
-      <data key="d6">
-        <y:GraphMLReference ResourceKey="2" />
-      </data>
       <data key="d4">
         <x:List>
-          <y:Label Style="{y:GraphMLReference 3}" PreferredSize="30,14">
+          <y:Label>
             <y:Label.Text>Label</y:Label.Text>
             <y:Label.LayoutParameter>
               <y:FreeEdgeLabelModelParameter Distance="20" />
@@ -1192,12 +1000,9 @@
           <y:Bend Location="38.14,270.145" />
         </x:List>
       </data>
-      <data key="d6">
-        <y:GraphMLReference ResourceKey="2" />
-      </data>
       <data key="d4">
         <x:List>
-          <y:Label Style="{y:GraphMLReference 3}" PreferredSize="30,14">
+          <y:Label>
             <y:Label.Text>Label</y:Label.Text>
             <y:Label.LayoutParameter>
               <y:FreeEdgeLabelModelParameter Ratio="0.52703982807617777" Distance="10.659928808443235" />
@@ -1213,12 +1018,9 @@
           <y:Bend Location="123.14,215.145" />
         </x:List>
       </data>
-      <data key="d6">
-        <y:GraphMLReference ResourceKey="2" />
-      </data>
       <data key="d4">
         <x:List>
-          <y:Label Style="{y:GraphMLReference 3}" PreferredSize="30,14">
+          <y:Label>
             <y:Label.Text>Label</y:Label.Text>
             <y:Label.LayoutParameter>
               <y:FreeEdgeLabelModelParameter Ratio="0.487833892073105" Distance="11.143038073249686" />

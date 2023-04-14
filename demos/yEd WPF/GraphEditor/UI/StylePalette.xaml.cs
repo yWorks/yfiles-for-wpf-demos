@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.4.
- ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.5.
+ ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -176,7 +176,7 @@ namespace Demo.yFiles.Graph.Editor
         }
         // clear tags except for group nodes - no one needs them....
         foreach (var node in graph.Nodes) {
-          if (!Equals("Group Nodes", node.Tag)) {
+          if (!GraphEditorWindow.IsGroupNode(node)) {
             node.Tag = null;
           }
         }

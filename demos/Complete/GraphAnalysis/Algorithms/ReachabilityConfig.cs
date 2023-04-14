@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.4.
- ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.5.
+ ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -29,7 +29,6 @@
 
 using System.Linq;
 using System.Windows.Controls;
-using System.Windows.Media;
 using yWorks.Analysis;
 using yWorks.Controls.Input;
 using yWorks.Graph;
@@ -61,9 +60,10 @@ namespace Demo.yFiles.Algorithms.GraphAnalysis
           StartNodes = {Item = markedSource}
       }.Run(graph);
 
+      var color = GenerateColors(false)[0];
       foreach (var node in result.ReachableNodes) {
         node.Tag = new Tag {
-            CurrentColor = Colors.Blue,
+            CurrentColor = color,
             IsSource = node == markedSource
         };
       }
@@ -72,7 +72,7 @@ namespace Demo.yFiles.Algorithms.GraphAnalysis
         if (result.IsReachable(edge.GetSourceNode()) &&
             result.IsReachable(edge.GetTargetNode())) {
           edge.Tag = new Tag {
-              CurrentColor = Colors.Blue,
+              CurrentColor = color,
               Directed = Directed
           };
         }

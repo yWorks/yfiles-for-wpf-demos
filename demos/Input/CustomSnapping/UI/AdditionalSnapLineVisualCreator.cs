@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.4.
- ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.5.
+ ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -27,7 +27,6 @@
  ** 
  ***************************************************************************/
 
-using System;
 using System.Collections.Generic;
 using System.Windows.Media;
 using System.Windows.Shapes;
@@ -42,6 +41,8 @@ namespace Demo.yFiles.Graph.Input.CustomSnapping.UI
   /// </summary>
   public class AdditionalSnapLineVisualCreator : IVisualCreator
   {
+    private readonly Brush SnapLineBrush = (Brush) new SolidColorBrush(Color.FromRgb(0xCA, 0x0C, 0x3B)).GetAsFrozen();
+    
     public PointD From { get; set; }
 
     public PointD To { get; set; }
@@ -86,7 +87,7 @@ namespace Demo.yFiles.Graph.Input.CustomSnapping.UI
     }
 
     public Visual CreateVisual(IRenderContext context) {
-      return new Line { Stroke = Brushes.Red, StrokeThickness = 1, X1 = From.X, Y1 = From.Y, X2 = To.X, Y2 = To.Y };
+      return new Line { Stroke = SnapLineBrush, StrokeThickness = 2, X1 = From.X, Y1 = From.Y, X2 = To.X, Y2 = To.Y };
     }
 
     public Visual UpdateVisual(IRenderContext context, Visual oldVisual) {

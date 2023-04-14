@@ -1,6 +1,6 @@
 <!-- ************************************************************************ -->
-<!-- This demo file is part of yFiles WPF 3.4.                           -->
-<!-- Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
+<!-- This demo file is part of yFiles WPF 3.5.                           -->
+<!-- Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
 <!-- 72070 Tuebingen, Germany. All rights reserved.                           -->
 <!--                                                                          -->
 <!-- yFiles demo files exhibit yFiles WPF functionalities. Any redistribution  -->
@@ -86,7 +86,7 @@
                         </ListItem>
                         <ListItem>
                             <Paragraph>
-                                <Run FontWeight="Bold" Foreground="{StaticResource DemoBlue}">Blue Edge</Run>: Orthogonal edge editing is enabled for the inner segments
+                                <Run FontWeight="Bold" Foreground="{StaticResource DemoLightblue}">Blue Edge</Run>: Orthogonal edge editing is enabled for the inner segments
                                 but the first and the last segment can have an arbitrary slope. If a new bend is added to one of these two
                                 segments, the newly created inner segment becomes orthogonal immediately.
                             </Paragraph>

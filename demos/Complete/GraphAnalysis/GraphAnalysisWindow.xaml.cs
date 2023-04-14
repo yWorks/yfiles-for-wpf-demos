@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.4.
- ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.5.
+ ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -157,7 +157,8 @@ namespace Demo.yFiles.Algorithms.GraphAnalysis
           TextSize = 10,
           BackgroundBrush = Brushes.AliceBlue,
           BackgroundPen = (Pen) new Pen(Brushes.LightSkyBlue, 2).GetAsFrozen(),
-          AutoFlip = false
+          AutoFlip = false,
+          Insets = new InsetsD(3, 5, 3, 5) 
       };
     }
 
@@ -425,7 +426,7 @@ namespace Demo.yFiles.Algorithms.GraphAnalysis
         // no specific item - just clear the graph
         graph.Clear();
         // and fit the content
-        graphControl.FitGraphBounds();
+        await graphControl.FitGraphBounds();
         return;
       }
       inLoadSample = true;

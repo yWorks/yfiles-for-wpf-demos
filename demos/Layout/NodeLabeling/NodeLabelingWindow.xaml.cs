@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.4.
- ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.5.
+ ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -36,9 +36,9 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Markup;
-using System.Windows.Media;
 using Demo.yFiles.Option.Handler;
 using Demo.yFiles.Option.I18N;
+using Demo.yFiles.Toolkit;
 using yWorks.Controls;
 using yWorks.Layout.Labeling;
 using yWorks.Controls.Input;
@@ -140,9 +140,10 @@ namespace Demo.yFiles.Layout.NodeLabeling
       // add background
       object userObject = new BackgroundVisualCreator();
       graphControl.BackgroundGroup.AddChild(userObject);
+
       // initialize the graph
-      InitializeGraph();
       InitializeStyles();
+      InitializeGraph();
 
       // initialize the input mode
       InitializeInputModes();
@@ -151,7 +152,7 @@ namespace Demo.yFiles.Layout.NodeLabeling
 
       // do initial label placement
       await DoLabelPlacement();
-      graphControl.FitGraphBounds();
+      await graphControl.FitGraphBounds();
     }
 
     /// <summary>
@@ -166,10 +167,11 @@ namespace Demo.yFiles.Layout.NodeLabeling
     }
 
     private void InitializeStyles() {
-      graphControl.Graph.NodeDefaults.Style = new ShinyPlateNodeStyle {Brush = Brushes.Orange, DrawShadow = false, Radius = 1};
+      DemoStyles.InitDemoStyles(graphControl.Graph);
+
       graphControl.Graph.NodeDefaults.Size = new SizeD(10, 10);
 
-      var innerLabelStyle = new DefaultLabelStyle { TextSize = 8 };
+      var innerLabelStyle = DemoStyles.CreateDemoNodeLabelStyle();
       var labelStyle = new CityLabelStyle(innerLabelStyle) {InnerLabelStyle = innerLabelStyle};
 
       graphControl.Graph.NodeDefaults.Labels.Style = labelStyle;
@@ -228,14 +230,14 @@ namespace Demo.yFiles.Layout.NodeLabeling
 
       // configure and run the layout algorithm
       var labelingAlgorithm = new GenericLabeling
-                                          {
-                                            MaximumDuration = 0,
-                                            OptimizationStrategy = OptimizationStrategy.Balanced,
-                                            PlaceEdgeLabels = false,
-                                            PlaceNodeLabels = true,
-                                            ReduceLabelOverlaps = true,
-                                            ProfitModel = new ExtendedLabelCandidateProfitModel(),
-                                          };
+      {
+        MaximumDuration = 0,
+        OptimizationStrategy = OptimizationStrategy.Balanced,
+        PlaceEdgeLabels = false,
+        PlaceNodeLabels = true,
+        ReduceLabelOverlaps = true,
+        ProfitModel = new ExtendedLabelCandidateProfitModel(),
+      };
 
       var layoutExecutor = new LayoutExecutor(graphControl, graphControl.Graph, labelingAlgorithm)
       {

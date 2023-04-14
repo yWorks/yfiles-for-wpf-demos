@@ -1,6 +1,6 @@
 <!-- ************************************************************************ -->
-<!-- This demo file is part of yFiles WPF 3.4.                           -->
-<!-- Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
+<!-- This demo file is part of yFiles WPF 3.5.                           -->
+<!-- Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
 <!-- 72070 Tuebingen, Germany. All rights reserved.                           -->
 <!--                                                                          -->
 <!-- yFiles demo files exhibit yFiles WPF functionalities. Any redistribution  -->
@@ -51,6 +51,11 @@
             <Paragraph>
                 The interactive editing capabilities of the graph component of this demo are explained in the
                 <Run FontStyle="Italic">SimpleEditor</Run> demo.
+            </Paragraph>
+            <Paragraph>
+                For algorithms that require a source and/or a target node, the source node is
+                <Run FontWeight="Bold" Foreground="{StaticResource DemoGreen}">green</Run> and the target
+                node is <Run FontWeight="Bold" Foreground="{StaticResource DemoRed}">red</Run>.
             </Paragraph>
             <Paragraph Style="{StaticResource HtmlH3}">Things To Try</Paragraph>
             <List>

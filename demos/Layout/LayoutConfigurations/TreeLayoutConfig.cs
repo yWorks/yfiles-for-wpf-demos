@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.4.
- ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.5.
+ ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -72,6 +72,7 @@ namespace Demo.yFiles.Layout.Configurations
 
       SpacingItem = 20;
       RootAlignmentItem = EnumRootAlignment.Center;
+      AlignPortsItem = false;
       AllowMultiParentsItem = false;
       PortAssignmentItem = PortAssignmentMode.None;
       
@@ -102,6 +103,9 @@ namespace Demo.yFiles.Layout.Configurations
       // required to prevent WrongGraphStructure exception which may be thrown by TreeLayout if there are edges
       // between group nodes
       layout.PrependStage(new HandleEdgesBetweenGroupsStage(placeLabels));
+
+      layout.ConsiderNodeLabels = ConsiderNodeLabelsItem;
+
       if (EdgeLabelingItem == EnumEdgeLabeling.Generic) {
         layout.IntegratedEdgeLabeling = false;
 
@@ -175,7 +179,9 @@ namespace Demo.yFiles.Layout.Configurations
                     ? ChildPlacement.VerticalToRight
                     : ChildPlacement.HorizontalDownward;
 
-                return new DefaultNodePlacer(childPlacement, RootAlignment.LeadingOnBus, SpacingItem, SpacingItem);
+                var defaultNodePlacer = new DefaultNodePlacer(childPlacement, RootAlignment.LeadingOnBus, SpacingItem, SpacingItem);
+                defaultNodePlacer.AlignPorts = AlignPortsItem;
+                return defaultNodePlacer;
               }
           }
       };
@@ -295,27 +301,27 @@ namespace Demo.yFiles.Layout.Configurations
       switch (NodePlacerItem) {
         case EnumNodePlacer.Default:
           layout.DefaultNodePlacer = new DefaultNodePlacer {
-              HorizontalDistance = SpacingItem, VerticalDistance = SpacingItem, RootAlignment = rootAlignment1
+              HorizontalDistance = SpacingItem, VerticalDistance = SpacingItem, RootAlignment = rootAlignment1, AlignPorts = AlignPortsItem
           };
           layout.MultiParentAllowed = allowMultiParents;
           break;
         case EnumNodePlacer.Simple:
-          layout.DefaultNodePlacer = new SimpleNodePlacer { Spacing = SpacingItem, RootAlignment = rootAlignment2 };
+          layout.DefaultNodePlacer = new SimpleNodePlacer { Spacing = SpacingItem, RootAlignment = rootAlignment2, AlignPorts = AlignPortsItem};
           break;
         case EnumNodePlacer.Bus:
-          layout.DefaultNodePlacer = new BusNodePlacer { Spacing = SpacingItem, };
+          layout.DefaultNodePlacer = new BusNodePlacer { Spacing = SpacingItem, AlignPorts = AlignPortsItem };
           layout.MultiParentAllowed = allowMultiParents;
           break;
         case EnumNodePlacer.DoubleLine:
-          layout.DefaultNodePlacer = new DoubleLineNodePlacer { Spacing = SpacingItem, RootAlignment = rootAlignment2 };
+          layout.DefaultNodePlacer = new DoubleLineNodePlacer { Spacing = SpacingItem, RootAlignment = rootAlignment2, AlignPorts = AlignPortsItem };
           break;
         case EnumNodePlacer.LeftRight:
-          layout.DefaultNodePlacer = new LeftRightNodePlacer { Spacing = SpacingItem };
+          layout.DefaultNodePlacer = new LeftRightNodePlacer { Spacing = SpacingItem, AlignPorts = AlignPortsItem };
           layout.MultiParentAllowed = allowMultiParents;
           break;
         case EnumNodePlacer.Layered:
           layout.DefaultNodePlacer = new LayeredNodePlacer {
-              Spacing = SpacingItem, LayerSpacing = SpacingItem, RootAlignment = rootAlignment2
+              Spacing = SpacingItem, LayerSpacing = SpacingItem, RootAlignment = rootAlignment2, AlignPorts = AlignPortsItem
           };
           break;
         case EnumNodePlacer.AspectRatio:
@@ -330,7 +336,7 @@ namespace Demo.yFiles.Layout.Configurations
           layout.MultiParentAllowed = allowMultiParents;
           break;
         case EnumNodePlacer.Grid:
-          layout.DefaultNodePlacer = new GridNodePlacer { Spacing = SpacingItem, RootAlignment = rootAlignment2 };
+          layout.DefaultNodePlacer = new GridNodePlacer { Spacing = SpacingItem, RootAlignment = rootAlignment2, AlignPorts = AlignPortsItem };
           break;
         case EnumNodePlacer.Compact:
           layout.DefaultNodePlacer = new CompactNodePlacer {
@@ -346,7 +352,8 @@ namespace Demo.yFiles.Layout.Configurations
                   RoutingStyle = LayeredRoutingStyle.Orthogonal,
                   Spacing = SpacingItem,
                   LayerSpacing = SpacingItem,
-                  RootAlignment = rootAlignment2
+                  RootAlignment = rootAlignment2,
+                  AlignPorts = AlignPortsItem
               };
 
           this.delegatingRightPlacer =
@@ -354,13 +361,16 @@ namespace Demo.yFiles.Layout.Configurations
                   VerticalAlignment = 0,
                   RoutingStyle = LayeredRoutingStyle.Orthogonal,
                   LayerSpacing = SpacingItem,
-                  RootAlignment = rootAlignment2
+                  RootAlignment = rootAlignment2,
+                  AlignPorts = AlignPortsItem
               };
 
-          this.delegatingRootPlacer = new DelegatingNodePlacer(RotatableNodePlacerBase.Matrix.Default,
+          var delegatingRootPlacer = new DelegatingNodePlacer(RotatableNodePlacerBase.Matrix.Default,
               this.delegatingLeftPlacer,
               this.delegatingRightPlacer
           );
+          delegatingRootPlacer.AlignPorts = AlignPortsItem;
+          this.delegatingRootPlacer = delegatingRootPlacer;
           break;
       }
 
@@ -534,6 +544,30 @@ namespace Demo.yFiles.Layout.Configurations
                NodePlacerItem == EnumNodePlacer.Bus ||
                NodePlacerItem == EnumNodePlacer.Dendrogram ||
                NodePlacerItem == EnumNodePlacer.Compact;
+      }
+    }
+
+    [Label("Align Ports")]
+    [OptionGroup("NodePlacerGroup", 40)]
+    [DefaultValue(false)]
+    public bool AlignPortsItem { get; set; }
+
+    public bool ShouldDisableAlignPortsItem {
+      get {
+        return
+            (NodePlacerItem != EnumNodePlacer.Default &&
+             NodePlacerItem != EnumNodePlacer.Simple &&
+             NodePlacerItem != EnumNodePlacer.Bus &&
+             NodePlacerItem != EnumNodePlacer.DoubleLine &&
+             NodePlacerItem != EnumNodePlacer.LeftRight &&
+             NodePlacerItem != EnumNodePlacer.Layered &&
+             NodePlacerItem != EnumNodePlacer.Grid &&
+             NodePlacerItem != EnumNodePlacer.DelegatingLayered &&
+             NodePlacerItem != EnumNodePlacer.HV) ||
+            (RootAlignmentItem != EnumRootAlignment.Center &&
+             RootAlignmentItem != EnumRootAlignment.Median &&
+             RootAlignmentItem != EnumRootAlignment.Left &&
+             RootAlignmentItem != EnumRootAlignment.Right);
       }
     }
 

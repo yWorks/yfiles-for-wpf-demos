@@ -72,11 +72,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ZOrderChangedEventArgs.cs" />
-    <Compile Include="ZOrderGraphClipboard.cs" />
-    <Compile Include="ZOrderGraphMLIOHandler.cs" />
-    <Compile Include="ZOrderGraphModelManager.cs" />
     <Compile Include="ZOrderNodePositionHandler.cs" />
-    <Compile Include="ZOrderGraphEditorInputMode.cs" />
+    <Compile Include="ZOrderReparentHandler.cs" />
     <Compile Include="ZOrderSupport.cs" />
     <Compile Include="ZOrderWindow.xaml.cs">
       <DependentUpon>ZOrderWindow.xaml</DependentUpon>

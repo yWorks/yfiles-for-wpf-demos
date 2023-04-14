@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.4.
- ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.5.
+ ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -29,11 +29,10 @@
 
 using System.Windows;
 using System.Windows.Media;
+using Demo.yFiles.Toolkit;
 using yWorks.Controls.Input;
 using yWorks.Geometry;
 using yWorks.Graph;
-using yWorks.Graph.Styles;
-using yWorks.Graph.LabelModels;
 
 namespace Demo.yFiles.Graph.Input.ReparentHandler
 {
@@ -72,6 +71,8 @@ namespace Demo.yFiles.Graph.Input.ReparentHandler
       graphEditorInputMode.AllowGroupSelection = false;
       // and enable the undo feature.
       graph.SetUndoEngineEnabled(true);
+      
+      DemoStyles.InitDemoStyles(graph);
 
       // Finally, set the input mode to the graph control.
       graphControl.InputMode = graphEditorInputMode;
@@ -100,7 +101,7 @@ namespace Demo.yFiles.Graph.Input.ReparentHandler
       /// <param name="node">The node that will possibly be reparented.</param>
       /// <returns>Whether this is a reparenting gesture.</returns>
       public override bool IsReparentGesture(IInputModeContext context, INode node) {
-        return base.IsReparentGesture(context, node) || Colors.Green.Equals(node.Tag);
+        return base.IsReparentGesture(context, node) || Themes.PaletteGreen.Equals(node.Tag);
       }
 
       /// <summary>
@@ -114,7 +115,7 @@ namespace Demo.yFiles.Graph.Input.ReparentHandler
       /// current parent.</param>
       /// <returns>Whether the node may be detached and reparented.</returns>
       public override bool ShouldReparent(IInputModeContext context, INode node) {
-        return !Colors.Firebrick.Equals(node.Tag);
+        return !Themes.PaletteRed.Equals(node.Tag);
       }
 
       /// <summary>
@@ -138,7 +139,7 @@ namespace Demo.yFiles.Graph.Input.ReparentHandler
           return true;
         }
         // Otherwise allow nodes to be moved only if their tags are the same color
-        if (nodeTag is Color && parentTag is Color) {
+        if (nodeTag is Palette && parentTag is Palette) {
           return nodeTag.Equals(parentTag);
         }
         // Finally, if there is no new parent, this is ok, too
@@ -153,18 +154,18 @@ namespace Demo.yFiles.Graph.Input.ReparentHandler
     /// </summary>
     private static void CreateSampleGraph(IGraph graph) {
       // Create some group nodes
-      var group1 = CreateGroupNode(graph, 100, 100, Colors.RoyalBlue, "Only Blue Children");
-      var group2 = CreateGroupNode(graph, 160, 130, Colors.RoyalBlue, "Only Blue Children");
-      var greenGroup = CreateGroupNode(graph, 100, 350, Colors.Green, "Only Green Children");
-      CreateGroupNode(graph, 400, 350, Colors.Green, "Only Green Children");
+      var group1 = CreateGroupNode(graph, 100, 100, Themes.PaletteLightblue, "Only Blue Children");
+      var group2 = CreateGroupNode(graph, 160, 130, Themes.PaletteLightblue, "Only Blue Children");
+      var greenGroup = CreateGroupNode(graph, 100, 350, Themes.PaletteGreen, "Only Green Children");
+      CreateGroupNode(graph, 400, 350, Themes.PaletteGreen, "Only Green Children");
 
       // And some regular nodes
-      INode blueNode = graph.CreateNode(new RectD(110, 130, 30, 30), new ShinyPlateNodeStyle { Brush = Brushes.RoyalBlue }, Colors.RoyalBlue);
-      INode greenNode = graph.CreateNode(new RectD(130, 380, 30, 30), new ShinyPlateNodeStyle { Brush = Brushes.Green }, Colors.Green);
-      graph.CreateNode(new RectD(400, 100, 30, 30), new ShinyPlateNodeStyle { Brush = Brushes.Firebrick }, Colors.Firebrick);
-      graph.CreateNode(new RectD(500, 100, 30, 30), new ShinyPlateNodeStyle { Brush = Brushes.Green }, Colors.Green);
-      graph.CreateNode(new RectD(400, 200, 30, 30), new ShinyPlateNodeStyle { Brush = Brushes.RoyalBlue }, Colors.RoyalBlue);
-      graph.CreateNode(new RectD(500, 200, 30, 30), new ShinyPlateNodeStyle { Brush = Brushes.Firebrick }, Colors.Firebrick);
+      INode blueNode = graph.CreateNode(new RectD(110, 130, 30, 30), DemoStyles.CreateDemoNodeStyle(Themes.PaletteLightblue), Themes.PaletteLightblue);
+      INode greenNode = graph.CreateNode(new RectD(130, 380, 30, 30), DemoStyles.CreateDemoNodeStyle(Themes.PaletteGreen), Themes.PaletteGreen);
+      graph.CreateNode(new RectD(400, 100, 30, 30), DemoStyles.CreateDemoNodeStyle(Themes.PaletteRed), Themes.PaletteRed);
+      graph.CreateNode(new RectD(500, 100, 30, 30), DemoStyles.CreateDemoNodeStyle(Themes.PaletteGreen), Themes.PaletteGreen);
+      graph.CreateNode(new RectD(400, 200, 30, 30), DemoStyles.CreateDemoNodeStyle(Themes.PaletteLightblue), Themes.PaletteLightblue);
+      graph.CreateNode(new RectD(500, 200, 30, 30), DemoStyles.CreateDemoNodeStyle(Themes.PaletteRed), Themes.PaletteRed);
 
       // Add some initial children to the groups
       graph.GroupNodes(group1, new[] { blueNode, group2 });
@@ -180,20 +181,15 @@ namespace Demo.yFiles.Graph.Input.ReparentHandler
     /// <summary>
     /// Creates a group node for the sample graph with a specific styling.
     /// </summary>
-    private static INode CreateGroupNode(IGraph graph, double x, double y, Color fillColor, string labelText) {
+    private static INode CreateGroupNode(IGraph graph, double x, double y, Palette palette, string labelText) {
       var groupNode = graph.CreateGroupNode();
-      graph.SetStyle(groupNode, new PanelNodeStyle {Color = fillColor, LabelInsetsColor = fillColor, Insets = new InsetsD(5, 20, 5, 5)});
+      graph.SetStyle(groupNode, DemoStyles.CreateDemoGroupStyle(palette));
       graph.SetNodeLayout(groupNode, new RectD(x, y, 130, 100));
 
       // The label style and placement
-      var labelStyle = new DefaultLabelStyle();
-      labelStyle.TextBrush = Brushes.White;
-      var labelModel = new InteriorStretchLabelModel();
-      labelModel.Insets = new InsetsD(5, 2, 5, 4);
-      var modelParameter = labelModel.CreateParameter(InteriorStretchLabelModel.Position.North);
-      graph.AddLabel(groupNode, labelText, modelParameter, labelStyle);
+      graph.AddLabel(groupNode, labelText, style:DemoStyles.CreateDemoGroupLabelStyle(palette));
 
-      groupNode.Tag = fillColor;
+      groupNode.Tag = palette;
       return groupNode;
     }
 

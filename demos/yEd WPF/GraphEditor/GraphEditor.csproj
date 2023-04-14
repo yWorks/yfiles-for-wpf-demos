@@ -106,6 +106,7 @@
     <Compile Include="Modules\SmartOrganicLayoutModule.cs" />
     <Compile Include="Modules\TreeLayoutModule.cs" />
     <Compile Include="Modules\YModule.cs" />
+    <Compile Include="Styles\BridgeEdgeStyle.cs" />
     <Compile Include="Styles\CirclePortStyle.cs" />
     <Compile Include="Styles\ArcEdgeStyle.cs" />
     <Compile Include="Styles\DynamicArrowEdgeStyleBase.cs" />
@@ -318,7 +319,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\yWorks.gif" />
+    <Resource Include="Resources\yWorks.png" />
     <Resource Include="yFiles.ico" />
   </ItemGroup>
   <ItemGroup>
@@ -370,10 +371,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Actions\" />
-    <Folder Include="IO\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.4.
- ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.5.
+ ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -237,6 +237,65 @@ namespace Demo.yFiles.Graph.Undo
 
     // Random Generator to create random color
     private readonly Random rnd = new Random();
+    private readonly Color[] backgroundColors = {
+      Color.FromRgb(0x11,0x1d,0x4a),
+      Color.FromRgb(0x0b,0x71,0x89),
+      Color.FromRgb(0xff,0x6c,0x00),
+      Color.FromRgb(0xab,0x23,0x46),
+      Color.FromRgb(0x62,0x1b,0x00),
+      Color.FromRgb(0x17,0xbe,0xbb),
+      Color.FromRgb(0xff,0xc9,0x14),
+      Color.FromRgb(0xff,0x6c,0x00),
+      Color.FromRgb(0x2e,0x28,0x2a),
+      Color.FromRgb(0x76,0xb0,0x41),
+      Color.FromRgb(0x67,0xb7,0xdc),
+      Color.FromRgb(0x67,0x71,0xdc),
+      Color.FromRgb(0x24,0x22,0x65),
+      Color.FromRgb(0xdc,0x67,0xce),
+      Color.FromRgb(0xa3,0x67,0xdc),
+      Color.FromRgb(0x36,0x30,0x20),
+      Color.FromRgb(0x60,0x5c,0x4e),
+      Color.FromRgb(0xa4,0x99,0x66),
+      Color.FromRgb(0xc7,0xc7,0xa6),
+      Color.FromRgb(0xea,0xff,0xda),
+      Color.FromRgb(0xa4,0x77,0x8b),
+      Color.FromRgb(0xaa,0x45,0x86),
+      Color.FromRgb(0x17,0x7e,0x89),
+      Color.FromRgb(0xf2,0x64,0x19),
+      Color.FromRgb(0xe0,0x1a,0x4f),
+      Color.FromRgb(0x01,0xba,0xff),
+      Color.FromRgb(0xff,0x6c,0x00),
+      Color.FromRgb(0x24,0x22,0x65),
+      Color.FromRgb(0x56,0x92,0x6e),
+      Color.FromRgb(0x6d,0xbc,0x8d),
+      Color.FromRgb(0x6c,0x4f,0x77),
+      Color.FromRgb(0x42,0x81,0xa4),
+      Color.FromRgb(0xe0,0xe0,0x4f),
+      Color.FromRgb(0xc1,0xc1,0xc1),
+      Color.FromRgb(0xdb,0x3a,0x34),
+      Color.FromRgb(0xf0,0xc8,0x08),
+      Color.FromRgb(0x2d,0x4d,0x3a),
+      Color.FromRgb(0xab,0x23,0x46),
+      Color.FromRgb(0x76,0xb0,0x41),
+      Color.FromRgb(0xa3,0x67,0xdc),
+      Color.FromRgb(0xc1,0xc1,0xc1),
+      Color.FromRgb(0xff,0x6c,0x00),
+      Color.FromRgb(0xff,0xc9,0x14),
+      Color.FromRgb(0xff,0x6c,0x00),
+      Color.FromRgb(0x76,0xb0,0x41),
+      Color.FromRgb(0x2d,0x72,0x8f),
+      Color.FromRgb(0xc1,0xc1,0xc1),
+      Color.FromRgb(0x24,0x22,0x65),
+      Color.FromRgb(0x01,0xba,0xff),
+      Color.FromRgb(0xf2,0x64,0x19),
+      Color.FromRgb(0xfd,0xca,0x40),
+      Color.FromRgb(0xff,0x6c,0x00),
+      Color.FromRgb(0x24,0x22,0x65),
+      Color.FromRgb(0x61,0xa0,0x44),
+      Color.FromRgb(0xa3,0x7a,0xb3),
+      Color.FromRgb(0xca,0x0c,0x3b),
+      Color.FromRgb(0x46,0xa8,0xd5),
+    };
 
     /// <summary>
     /// This changes all node's color to a random value.
@@ -246,7 +305,10 @@ namespace Demo.yFiles.Graph.Undo
       var oldColor = (Color) defaultStyle.StyleTag;
 
       // Generate random color
-      Color newColor = Color.FromArgb(255, (byte) rnd.Next(0, 255), (byte) rnd.Next(0, 255), (byte) rnd.Next(0, 255));
+      Color newColor = oldColor;
+      while (newColor == oldColor) {
+        newColor = backgroundColors[rnd.Next(backgroundColors.Length)];
+      }
       // Set the style's color to new value
       defaultStyle.StyleTag = newColor;
 

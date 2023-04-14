@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.4.
- ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.5.
+ ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -34,6 +34,7 @@ using yWorks.Layout.Labeling;
 using yWorks.Layout.Router;
 using yWorks.Layout.Router.Polyline;
 using yWorks.Layout.Tree;
+using EdgeRoutingStyle = yWorks.Layout.Router.Polyline.EdgeRoutingStyle;
 
 namespace Demo.yFiles.Layout.PreferredLabelPlacement
 {
@@ -52,11 +53,11 @@ namespace Demo.yFiles.Layout.PreferredLabelPlacement
     public NonTreeEdgeRouterStage() {
       var polylineRouter = new EdgeRouter
       {
-        PolylineRouting = true,
         Rerouting = true
       };
       polylineRouter.DefaultEdgeLayoutDescriptor.PenaltySettings.BendPenalty = 3;
       polylineRouter.DefaultEdgeLayoutDescriptor.PenaltySettings.EdgeCrossingPenalty = 5;
+      polylineRouter.DefaultEdgeLayoutDescriptor.RoutingStyle = EdgeRoutingStyle.Octilinear;
       this.nonTreeEdgeRouter = polylineRouter;
       this.nonTreeEdgeLabelLayout = CreateFastLabeling();
     }

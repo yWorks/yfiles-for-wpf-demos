@@ -1,6 +1,6 @@
 <!-- ************************************************************************ -->
-<!-- This demo file is part of yFiles WPF 3.4.                           -->
-<!-- Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
+<!-- This demo file is part of yFiles WPF 3.5.                           -->
+<!-- Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
 <!-- 72070 Tuebingen, Germany. All rights reserved.                           -->
 <!--                                                                          -->
 <!-- yFiles demo files exhibit yFiles WPF functionalities. Any redistribution  -->
@@ -45,19 +45,4 @@
             </Setter.Value>
         </Setter>
     </Style>
-    <Style x:Key="GroupNodeStyle" TargetType="ywpf:NodeControl">
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type ywpf:NodeControl}">
-                    <Border Background="CornflowerBlue" CornerRadius="0">
-                        <Canvas Width="Auto" Height="Auto">
-                            <Button Canvas.Top="2" Canvas.Left="2" Command="{x:Static ywpf:GraphCommands.ExpandGroup}" CommandParameter="{TemplateBinding Item}">+</Button>
-                            <Button Canvas.Top="2" Canvas.Right="2" Command="{x:Static ywpf:GraphCommands.CollapseGroup}" CommandParameter="{TemplateBinding Item}">-</Button>
-                        </Canvas>
-                    </Border>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
 </ResourceDictionary>

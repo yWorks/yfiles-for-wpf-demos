@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.4.
- ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.5.
+ ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -28,6 +28,7 @@
  ***************************************************************************/
 
 using System;
+using System.Globalization;
 using System.Windows.Media;
 using yWorks.Analysis;
 using yWorks.Geometry;
@@ -99,8 +100,9 @@ namespace Demo.yFiles.Algorithms.GraphAnalysis
           minimumNodeCentrality = result.MinimumNodeCentrality;
           normalizedNodeCentrality = result.NormalizedNodeCentrality;
           result.NormalizedEdgeCentrality.ForEach((edge, centralityId) => {
-            edge.Tag = Math.Round(centralityId * 100.0) / 100;
-            graph.AddLabel(edge, edge.Tag.ToString(), tag : "Centrality");
+            edge.Tag = new Tag { Directed = Directed };
+            var centrality = Math.Round(centralityId * 100.0) / 100;
+            graph.AddLabel(edge, centrality.ToString(CultureInfo.InvariantCulture), tag : "Centrality");
           });
           break;
         }
@@ -130,12 +132,12 @@ namespace Demo.yFiles.Algorithms.GraphAnalysis
 
       normalizedNodeCentrality.ForEach((node, centralityId) => {
         var textLabelStyle = new DefaultLabelStyle { TextBrush = Brushes.White };
-        node.Tag = Math.Round(centralityId * 100.0) / 100;
 
-        if (double.IsNaN((double) node.Tag) || double.IsNaN(diff)) {
-          node.Tag = "Inf";
-        }
-        graph.AddLabel(node, node.Tag.ToString(), style : textLabelStyle, tag : "Centrality");
+        var centrality = Math.Round(centralityId * 100.0) / 100;
+        node.Tag = centrality;
+
+        var labelText = double.IsNaN(centrality) || double.IsNaN(diff) ? "Inf" : centrality.ToString(CultureInfo.InvariantCulture);
+        graph.AddLabel(node, labelText, style : textLabelStyle, tag : "Centrality");
 
         if (diff == 0 || double.IsNaN(diff)) {
           graph.SetStyle(node, GetMarkedNodeStyle(0, colorNumber));
@@ -163,10 +165,13 @@ namespace Demo.yFiles.Algorithms.GraphAnalysis
     /// <param name="maxValue">The maximum value. The closer value is to maxValue the darker is the resulting node style.</param>
     /// <returns></returns>
     private INodeStyle GetMarkedNodeStyle(int value, int maxValue) {
-      var colors = GenerateColors(true, maxValue, true);
-      return new ShapeNodeStyle { Brush = new SolidColorBrush(colors[value % colors.Length]) };
+      var colors = GenerateColors(true, maxValue);
+      return new ShapeNodeStyle {
+        Brush = new SolidColorBrush(colors[value % colors.Length]),
+        Pen = null,
+        Shape = ShapeNodeShape.Ellipse
+      };
     }
-    
   }
 
   /// <summary>

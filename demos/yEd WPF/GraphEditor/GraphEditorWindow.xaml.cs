@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.4.
- ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.5.
+ ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -69,6 +69,7 @@ using yWorks.GraphML;
 using yWorks.Layout;
 using yWorks.Utils;
 using ArcEdgeStyle = Demo.yFiles.GraphEditor.Styles.ArcEdgeStyle;
+using GroupNodeStyle = yWorks.Graph.Styles.GroupNodeStyle;
 
 namespace Demo.yFiles.GraphEditor
 {
@@ -113,7 +114,7 @@ namespace Demo.yFiles.GraphEditor
 
     private TableEditorInputMode tableEditorInputMode;
 
-    private static Predicate<INode> IsGroupNode;
+    internal static Predicate<INode> IsGroupNode;
 
     /// <summary>
     /// Option Handlers for nodes...
@@ -620,7 +621,7 @@ namespace Demo.yFiles.GraphEditor
 
     private static bool IsGroupNodeMethod(INode node) {
       // check the node's tag
-      return Equals("Group Nodes", node.Tag)
+      return Equals("Groups", node.Tag)
         || node.Lookup(typeof(ITable)) != null;
     }
 
@@ -733,10 +734,21 @@ namespace Demo.yFiles.GraphEditor
       Table.InstallStaticUndoSupport(Graph);
 
       var groupNodeDefaults = foldingView.Graph.GroupNodeDefaults;
-      groupNodeDefaults.Style = new GroupNodeStyle() {Wrapped = 
-        new PanelNodeStyle { Color = Color.FromArgb(255, 207, 226, 248),LabelInsetsColor = Color.FromArgb(255, 166, 202, 240) }};
+      groupNodeDefaults.Style = new GroupNodeStyle() {
+          TabWidth = 30,
+          TabHeight = 20,
+          TabInset = 3,
+          TabPosition = GroupNodeStyleTabPosition.TopTrailing,
+          GroupIcon = GroupNodeStyleIconType.Minus,
+          IconForegroundBrush = (Brush)new SolidColorBrush(Color.FromRgb(0x0B, 0x71, 0x89)).GetAsFrozen(),
+          IconOffset = 2,
+          HitTransparentContentArea = true,
+          TabBackgroundBrush = (Brush)new SolidColorBrush(Color.FromRgb(0x0B, 0x71, 0x89)).GetAsFrozen(),
+          ContentAreaBrush = Brushes.White,
+          TabBrush = (Brush)new SolidColorBrush(Color.FromRgb(0x9D, 0xC6, 0xD0)).GetAsFrozen()
+      };
 
-      masterGraph.NodeDefaults.Style = new BevelNodeStyle {Color = Colors.DarkOrange, Inset = 2, Radius = 5};
+      masterGraph.NodeDefaults.Style = new ShapeNodeStyle {Brush = Brushes.DarkOrange, Pen = Pens.Black, Shape = ShapeNodeShape.RoundRectangle};
       masterGraph.NodeDefaults.Size = new SizeD(50, 30);
       // centered in the node, similar to InteriorLabelModel.Center, but with a smart label placement logic
       masterGraph.NodeDefaults.Labels.LayoutParameter =
@@ -2030,7 +2042,6 @@ namespace Demo.yFiles.GraphEditor
 
     private Window helpWindow;
     private Window overview;
-    private Window hierarchy;
     private bool moduleRunning;
 
     private void PopulateNodeContextMenu(ContextMenu contextMenu) {

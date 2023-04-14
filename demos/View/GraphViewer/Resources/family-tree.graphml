@@ -28,9 +28,17 @@
   <data key="d9">
     <y:SharedData>
       <ywpf:DefaultLabelStyle x:Key="1" Typeface="Arial,Normal,Normal,Normal" TextBrush="Black"/>
-      <ywpf:ShinyPlateNodeStyle x:Key="3" Brush="Orange" Pen="Orange" />
-      <ywpf:ShinyPlateNodeStyle x:Key="4" Brush="LightSkyBlue" Pen="LightSkyBlue" />
-      <ywpf:ShapeNodeStyle x:Key="5" Brush="Black" Pen="Black" Shape="Ellipse" />
+      <ywpf:RectangleNodeStyle x:Key="3" Brush="#ff6c00" CornerSize="3.5">
+        <ywpf:RectangleNodeStyle.Pen>
+          <Pen xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Brush="#662b00" Thickness="1.5"/>
+        </ywpf:RectangleNodeStyle.Pen>
+      </ywpf:RectangleNodeStyle>
+      <ywpf:RectangleNodeStyle x:Key="4" Brush="#68b0e3" CornerSize="3.5">
+        <ywpf:RectangleNodeStyle.Pen>
+          <Pen xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Brush="#662b00" Thickness="1.5"/>
+        </ywpf:RectangleNodeStyle.Pen>
+      </ywpf:RectangleNodeStyle>
+      <ywpf:ShapeNodeStyle x:Key="5" Brush="#662b00" Pen="#662b00" Shape="Ellipse" />
     </y:SharedData>
   </data>
   <graph id="G" edgedefault="directed">

@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.4.
- ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.5.
+ ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -28,12 +28,11 @@
  ***************************************************************************/
 
 using System.Windows;
-using System.Windows.Media;
+using Demo.yFiles.Toolkit;
 using yWorks.Controls;
 using yWorks.Controls.Input;
 using yWorks.Geometry;
 using yWorks.Graph;
-using yWorks.Graph.Styles;
 using yWorks.Graph.LabelModels;
 
 namespace Demo.yFiles.Graph.Input.HandleProvider
@@ -57,18 +56,22 @@ namespace Demo.yFiles.Graph.Input.HandleProvider
     private void OnWindowLoaded(object sender, RoutedEventArgs e) {
       IGraph graph = graphControl.Graph;
 
+      var labelDecorator = graph.GetDecorator().LabelDecorator;
       // add a custom handle provider for labels
-      graph.GetDecorator().LabelDecorator.HandleProviderDecorator.SetFactory(GetLabelHandleProvider);
+      labelDecorator.HandleProviderDecorator.SetFactory(GetLabelHandleProvider);
       // for rotatable labels: modify the selection visualization to indicate that this label can be rotated
       var template = graphControl.TryFindResource(LabelRotateHandle.LabelSelectionTemplateKey) as DataTemplate;
-      graph.GetDecorator().LabelDecorator.SelectionDecorator.SetImplementationWrapper((label, wrapped) => {
-        if (label.LayoutParameter.Model is FreeNodeLabelModel 
+      labelDecorator.SelectionDecorator.SetImplementationWrapper((label, wrapped) => {
+        if (label.LayoutParameter.Model is FreeNodeLabelModel
           || label.LayoutParameter.Model is FreeEdgeLabelModel
           || label.LayoutParameter.Model is FreeLabelModel) {
-          return new LabelSelectionIndicatorInstaller {Template = template};
+          return new LabelSelectionIndicatorInstaller { Template = template};
         }
         return wrapped;
       });
+
+      // Ensure that the handle follows the label when moved
+      labelDecorator.PositionHandlerDecorator.SetFactory(label => new LabelPositionHandler(label) { Visualization = Visualization.Live });
 
       InitializeGraphDefaults(graph);
       InitializeInputMode();
@@ -82,21 +85,13 @@ namespace Demo.yFiles.Graph.Input.HandleProvider
     }
 
     private void InitializeGraphDefaults(IGraph graph) {
-      graph.NodeDefaults.Style = new ShinyPlateNodeStyle {Brush = Brushes.Orange };
+      DemoStyles.InitDemoStyles(graph);
       graph.NodeDefaults.Size = new SizeD(100, 50);
-
-      // create a label style that shows the labels bounds
-      DefaultLabelStyle labelStyle = new DefaultLabelStyle {
-        BackgroundPen = Pens.LightGray,
-        BackgroundBrush = new SolidColorBrush(Color.FromArgb(0x77, 0xCC, 0xFF, 0xFF)),
-        TextAlignment = TextAlignment.Center
-      };
-      graph.NodeDefaults.Labels.Style = labelStyle;
+      
       //Our resize logic does not work together with all label models resp. label model parameters
       //for simplicity, we just use a centered label for nodes
       graph.NodeDefaults.Labels.LayoutParameter =
         new GenericLabelModel(InteriorLabelModel.Center).CreateDefaultParameter();
-      graph.EdgeDefaults.Labels.Style = labelStyle;
 
       var labelModel = new EdgeSegmentLabelModel { Distance = 10 };
       graph.EdgeDefaults.Labels.LayoutParameter = labelModel.CreateParameterFromSource(0, 0.5, EdgeSides.RightOfEdge);
@@ -128,11 +123,14 @@ namespace Demo.yFiles.Graph.Input.HandleProvider
     private static void CreateSampleGraph(IGraph graph) {
       INode n1 = graph.CreateNode(new PointD(100, 100));
       INode n2 = graph.CreateNode(new PointD(500, 0));
+      var rotatingLabelStyle = DemoStyles.CreateDemoNodeLabelStyle(Themes.Palette13);
+      rotatingLabelStyle.AutoFlip = false;
       graph.AddLabel(n1, "Centered Node Label. Resizes symmetrically.");
-      var label2 = graph.AddLabel(n2, "Free Node Label.\nSupports rotation and asymmetric resizing");
+      var label2 = graph.AddLabel(n2, "Free Node Label.\nSupports rotation and asymmetric resizing", style:rotatingLabelStyle);
       var label2Layout = label2.GetLayout();
       graph.SetLabelLayoutParameter(label2,
-                                   new FreeNodeLabelModel().CreateParameter(new PointD(0.5, 0.5), new PointD(-label2Layout.Width/2, -label2Layout.Height/2), PointD.Origin, PointD.Origin, 0));
+          new FreeNodeLabelModel().CreateParameter(new PointD(0.5, 0.5),
+              new PointD(-label2Layout.Width / 2, -label2Layout.Height / 2), PointD.Origin, PointD.Origin, 0));
 
       var edge = graph.CreateEdge(n2, n1);
       graph.AddLabel(edge, "Rotated Edge Label");

@@ -1,6 +1,6 @@
 <!-- ************************************************************************ -->
-<!-- This demo file is part of yFiles WPF 3.4.                           -->
-<!-- Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
+<!-- This demo file is part of yFiles WPF 3.5.                           -->
+<!-- Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
 <!-- 72070 Tuebingen, Germany. All rights reserved.                           -->
 <!--                                                                          -->
 <!-- yFiles demo files exhibit yFiles WPF functionalities. Any redistribution  -->
@@ -36,7 +36,8 @@
                 <ResourceDictionary>
                     <Undo:BackgroundColorConverter x:Key="BackgroundColorConverter" />
                 	<Style x:Key="UndoNodeControlStyle" TargetType="ywpf:NodeControl" >
-                        <Setter Property="BorderThickness" Value="3"/>
+                        <Setter Property="BorderBrush" Value="#617984"/>
+                        <Setter Property="BorderThickness" Value="1.5"/>
                         <Setter Property="ContentTemplate">
                             <Setter.Value>
                                 <DataTemplate DataType="{x:Type Undo:MyBusinessObject}">
@@ -47,26 +48,24 @@
                         <Setter Property="Template">
                             <Setter.Value>
                                 <ControlTemplate TargetType="ywpf:NodeControl">
-                                    <Border CornerRadius="5" BorderThickness="1">
-                                        <Border.BorderBrush>
-                                            <SolidColorBrush Color="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=StyleTag, Converter={StaticResource BackgroundColorConverter}, ConverterParameter={x:Static Colors.Black}}" />
-                                        </Border.BorderBrush>
+                                    <Border CornerRadius="4" BorderThickness="{TemplateBinding BorderThickness}" BorderBrush="{TemplateBinding BorderBrush}">
                                         <Border.Background>
-                                            <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                            <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
                                                 <LinearGradientBrush.GradientStops>
                                                     <GradientStop Offset="0" Color="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=StyleTag, Converter={StaticResource BackgroundColorConverter}, ConverterParameter={x:Static Colors.White}}" />
                                                     <GradientStop Offset="1" Color="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=StyleTag}" />
                                                 </LinearGradientBrush.GradientStops>
                                             </LinearGradientBrush>
                                         </Border.Background>
-                                        <StackPanel>
-                                            <Border>
-                                                <Border.Background>
-                                                    <SolidColorBrush x:Name="ShineBrush" Opacity="1" Color="White" />
-                                                </Border.Background>
-                                            </Border>
-                                            <ContentControl Margin="10" HorizontalAlignment="Stretch" Content="{TemplateBinding Content}" ContentTemplate="{TemplateBinding ContentTemplate}" HorizontalContentAlignment="Stretch"/>
-                                        </StackPanel>
+                                        <Grid>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition />
+                                                <RowDefinition />
+                                            </Grid.RowDefinitions>
+                                            <!-- Name -->
+                                            <Border Grid.Row="0"  Background="#40FFFFFF" CornerRadius="3.25,3.25,0,0"/>
+                                            <ContentControl Grid.RowSpan="2" Margin="10" HorizontalAlignment="Stretch" Content="{TemplateBinding Content}" ContentTemplate="{TemplateBinding ContentTemplate}" HorizontalContentAlignment="Stretch"/>
+                                        </Grid>
                                     </Border>
                                 </ControlTemplate>
                             </Setter.Value>

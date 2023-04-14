@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.4.
- ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.5.
+ ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -32,6 +32,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using Demo.yFiles.Toolkit;
 using yWorks.Controls.Input;
 using yWorks.Geometry;
 using yWorks.Graph;
@@ -245,12 +246,9 @@ namespace Demo.yFiles.Graph.Collapse
       fullGraph.NodeDefaults.Style = new NodeControlNodeStyle("InnerNodeStyleTemplate");
       fullGraph.NodeDefaults.Size = new SizeD(60, 30);
       fullGraph.NodeDefaults.ShareStyleInstance = false;
-
-
-      // and a style for the labels
-      DefaultLabelStyle labelStyle = new DefaultLabelStyle();
-      fullGraph.NodeDefaults.Labels.Style = labelStyle;
-
+      
+      // Create a nice default style for the edges
+      fullGraph.EdgeDefaults.Style = DemoStyles.CreateDemoEdgeStyle();
 
       // now build a simple sample tree
       BuildTree(fullGraph, 3, 3, 3);

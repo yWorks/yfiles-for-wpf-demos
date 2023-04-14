@@ -1,6 +1,6 @@
 <!-- ************************************************************************ -->
-<!-- This demo file is part of yFiles WPF 3.4.                           -->
-<!-- Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
+<!-- This demo file is part of yFiles WPF 3.5.                           -->
+<!-- Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
 <!-- 72070 Tuebingen, Germany. All rights reserved.                           -->
 <!--                                                                          -->
 <!-- yFiles demo files exhibit yFiles WPF functionalities. Any redistribution  -->
@@ -40,11 +40,19 @@
                 <y:GraphOverviewControl Name="GraphOverviewControl" GraphControl="{Binding ElementName=graphControl}" Visibility="Hidden"/>
             </HeaderedContentControl>
             <HeaderedContentControl Header="Description" Grid.Row="1"  Style="{StaticResource HeaderedContentStyle}">
-                <RichTextBox BorderThickness="0" IsReadOnly="True">
+                <RichTextBox BorderThickness="0" IsReadOnly="True" IsDocumentEnabled="True">
                     <FlowDocument>
                         <Paragraph>
                             This demo shows how to load data from a Neo4j database and display it with yFiles WPF.
-                            First, connect to a Neo4j database by entering a URL, a username, and a password into the corresponding form fields, then click the Connect button.
+                        </Paragraph>
+                        <Paragraph>
+                            If you don't have a database running, you can install 
+                            <Hyperlink NavigateUri="https://neo4j.com/download/" RequestNavigate="OnLinkClicked">Neo4j Desktop</Hyperlink>
+                            or leave the preset to connect to a public Neo4j sample database. More public sample databases are available on the
+                            <Hyperlink NavigateUri="https://neo4j.com/developer/example-data/#demo-server" RequestNavigate="OnLinkClicked">Neo4j Dataset Demo server</Hyperlink>. 
+                            For servers with more than one active database, the database name must also be specified.
+                        </Paragraph>
+                        <Paragraph>
                             After establishing a connection, a small set of data from the database will be displayed.
                         </Paragraph>
                         <Paragraph Style="{StaticResource HtmlH2}">Things to Try</Paragraph>
@@ -106,7 +114,7 @@
                         </TextBlock.Style>
                     </TextBlock>
                 </Grid>
-                <Button IsDefault="True" Content="? Run Query" Click="RunQuery_OnClick">
+                <Button IsDefault="True" Content="Run Query" Click="RunQuery_OnClick">
                 </Button>
                 <CheckBox x:Name="ReplaceGraphCheckbox"  IsChecked="True">Replace Current Graph</CheckBox>
             </ToolBar>

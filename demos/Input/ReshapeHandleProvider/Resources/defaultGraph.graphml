@@ -45,9 +45,11 @@
       <ywpf:Arrow x:Key="44" Type="None" />
       <ywpf:PolylineEdgeStyle x:Key="45" TargetArrow="{y:GraphMLReference 44}" SourceArrow="{y:GraphMLReference 44}">
         <ywpf:PolylineEdgeStyle.Pen>
-          <Pen Brush="#FF000000" Thickness="3" StartLineCap="Square" EndLineCap="Square" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" />
+          <Pen Brush="#2E282A" Thickness="3" StartLineCap="Square" EndLineCap="Square" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" />
         </ywpf:PolylineEdgeStyle.Pen>
       </ywpf:PolylineEdgeStyle>
+      <ywpf:ShapeNodeStyle x:Key="Green" Pen="{x:Null}" Brush="#61A044" />
+      <ywpf:ShapeNodeStyle x:Key="Blue" Pen="{x:Null}" Brush="#46A8D5" />
     </y:SharedData>
   </data>
   <graph id="G">
@@ -82,7 +84,7 @@
         </data>
         <data key="d9">
           <ywpf:NodeStylePortStyleAdapter RenderSize="7, 7">
-            <ywpf:ShapeNodeStyle Pen="{x:Null}" Brush="#FF008000" />
+            <y:GraphMLReference ResourceKey="Green" />
           </ywpf:NodeStylePortStyleAdapter>
         </data>
       </port>
@@ -106,7 +108,7 @@
         </data>
         <data key="d9">
           <ywpf:NodeStylePortStyleAdapter RenderSize="7, 7">
-            <ywpf:ShapeNodeStyle Pen="{x:Null}" Brush="#FF008000" />
+            <y:GraphMLReference ResourceKey="Green" />
           </ywpf:NodeStylePortStyleAdapter>
         </data>
       </port>
@@ -123,7 +125,7 @@
         </data>
         <data key="d9">
           <ywpf:NodeStylePortStyleAdapter RenderSize="7, 7">
-            <ywpf:ShapeNodeStyle Pen="{x:Null}" Brush="#FF1E90FF" />
+            <y:GraphMLReference ResourceKey="Blue" />
           </ywpf:NodeStylePortStyleAdapter>
         </data>
       </port>
@@ -159,7 +161,7 @@
         </data>
         <data key="d9">
           <ywpf:NodeStylePortStyleAdapter RenderSize="7, 7">
-            <ywpf:ShapeNodeStyle Pen="{x:Null}" Brush="#FF008000" />
+            <y:GraphMLReference ResourceKey="Green" />
           </ywpf:NodeStylePortStyleAdapter>
         </data>
       </port>
@@ -183,7 +185,7 @@
         </data>
         <data key="d9">
           <ywpf:NodeStylePortStyleAdapter RenderSize="7, 7">
-            <ywpf:ShapeNodeStyle Pen="{x:Null}" Brush="#FF008000" />
+            <y:GraphMLReference ResourceKey="Green" />
           </ywpf:NodeStylePortStyleAdapter>
         </data>
       </port>
@@ -200,7 +202,7 @@
         </data>
         <data key="d9">
           <ywpf:NodeStylePortStyleAdapter RenderSize="7, 7">
-            <ywpf:ShapeNodeStyle Pen="{x:Null}" Brush="#FF1E90FF" />
+            <y:GraphMLReference ResourceKey="Blue" />
           </ywpf:NodeStylePortStyleAdapter>
         </data>
       </port>
@@ -229,7 +231,7 @@
         </data>
         <data key="d9">
           <ywpf:NodeStylePortStyleAdapter RenderSize="7, 7">
-            <ywpf:ShapeNodeStyle Pen="{x:Null}" Brush="#FF008000" />
+            <y:GraphMLReference ResourceKey="Green" />
           </ywpf:NodeStylePortStyleAdapter>
         </data>
       </port>
@@ -246,7 +248,7 @@
         </data>
         <data key="d9">
           <ywpf:NodeStylePortStyleAdapter RenderSize="7, 7">
-            <ywpf:ShapeNodeStyle Pen="{x:Null}" Brush="#FF008000" />
+            <y:GraphMLReference ResourceKey="Green" />
           </ywpf:NodeStylePortStyleAdapter>
         </data>
       </port>
@@ -263,7 +265,7 @@
         </data>
         <data key="d9">
           <ywpf:NodeStylePortStyleAdapter RenderSize="7, 7">
-            <ywpf:ShapeNodeStyle Pen="{x:Null}" Brush="#FF1E90FF" />
+            <y:GraphMLReference ResourceKey="Blue" />
           </ywpf:NodeStylePortStyleAdapter>
         </data>
       </port>
@@ -299,7 +301,7 @@
         </data>
         <data key="d9">
           <ywpf:NodeStylePortStyleAdapter RenderSize="7, 7">
-            <ywpf:ShapeNodeStyle Pen="{x:Null}" Brush="#FF008000" />
+            <y:GraphMLReference ResourceKey="Green" />
           </ywpf:NodeStylePortStyleAdapter>
         </data>
       </port>
@@ -316,7 +318,7 @@
         </data>
         <data key="d9">
           <ywpf:NodeStylePortStyleAdapter RenderSize="7, 7">
-            <ywpf:ShapeNodeStyle Pen="{x:Null}" Brush="#FF1E90FF" />
+            <y:GraphMLReference ResourceKey="Blue" />
           </ywpf:NodeStylePortStyleAdapter>
         </data>
       </port>
@@ -345,7 +347,7 @@
         </data>
         <data key="d9">
           <ywpf:NodeStylePortStyleAdapter RenderSize="7, 7">
-            <ywpf:ShapeNodeStyle Pen="{x:Null}" Brush="#FF008000" />
+            <y:GraphMLReference ResourceKey="Green" />
           </ywpf:NodeStylePortStyleAdapter>
         </data>
       </port>
@@ -362,7 +364,7 @@
         </data>
         <data key="d9">
           <ywpf:NodeStylePortStyleAdapter RenderSize="7, 7">
-            <ywpf:ShapeNodeStyle Pen="{x:Null}" Brush="#FF1E90FF" />
+            <y:GraphMLReference ResourceKey="Blue" />
           </ywpf:NodeStylePortStyleAdapter>
         </data>
       </port>
@@ -391,7 +393,7 @@
         </data>
         <data key="d9">
           <ywpf:NodeStylePortStyleAdapter RenderSize="7, 7">
-            <ywpf:ShapeNodeStyle Pen="{x:Null}" Brush="#FF008000" />
+            <y:GraphMLReference ResourceKey="Green" />
           </ywpf:NodeStylePortStyleAdapter>
         </data>
       </port>
@@ -408,7 +410,7 @@
         </data>
         <data key="d9">
           <ywpf:NodeStylePortStyleAdapter RenderSize="7, 7">
-            <ywpf:ShapeNodeStyle Pen="{x:Null}" Brush="#FF008000" />
+            <y:GraphMLReference ResourceKey="Green" />
           </ywpf:NodeStylePortStyleAdapter>
         </data>
       </port>
@@ -425,7 +427,7 @@
         </data>
         <data key="d9">
           <ywpf:NodeStylePortStyleAdapter RenderSize="7, 7">
-            <ywpf:ShapeNodeStyle Pen="{x:Null}" Brush="#FF1E90FF" />
+            <y:GraphMLReference ResourceKey="Blue" />
           </ywpf:NodeStylePortStyleAdapter>
         </data>
       </port>
@@ -461,7 +463,7 @@
         </data>
         <data key="d9">
           <ywpf:NodeStylePortStyleAdapter RenderSize="7, 7">
-            <ywpf:ShapeNodeStyle Pen="{x:Null}" Brush="#FF008000" />
+            <y:GraphMLReference ResourceKey="Green" />
           </ywpf:NodeStylePortStyleAdapter>
         </data>
       </port>
@@ -478,7 +480,7 @@
         </data>
         <data key="d9">
           <ywpf:NodeStylePortStyleAdapter RenderSize="7, 7">
-            <ywpf:ShapeNodeStyle Pen="{x:Null}" Brush="#FF008000" />
+            <y:GraphMLReference ResourceKey="Green" />
           </ywpf:NodeStylePortStyleAdapter>
         </data>
       </port>
@@ -495,7 +497,7 @@
         </data>
         <data key="d9">
           <ywpf:NodeStylePortStyleAdapter RenderSize="7, 7">
-            <ywpf:ShapeNodeStyle Pen="{x:Null}" Brush="#FF1E90FF" />
+            <y:GraphMLReference ResourceKey="Blue" />
           </ywpf:NodeStylePortStyleAdapter>
         </data>
       </port>
@@ -512,7 +514,7 @@
         </data>
         <data key="d9">
           <ywpf:NodeStylePortStyleAdapter RenderSize="7, 7">
-            <ywpf:ShapeNodeStyle Pen="{x:Null}" Brush="#FF008000" />
+            <y:GraphMLReference ResourceKey="Green" />
           </ywpf:NodeStylePortStyleAdapter>
         </data>
       </port>
@@ -536,7 +538,7 @@
         </data>
         <data key="d9">
           <ywpf:NodeStylePortStyleAdapter RenderSize="7, 7">
-            <ywpf:ShapeNodeStyle Pen="{x:Null}" Brush="#FF008000" />
+            <y:GraphMLReference ResourceKey="Green" />
           </ywpf:NodeStylePortStyleAdapter>
         </data>
       </port>
@@ -553,7 +555,7 @@
         </data>
         <data key="d9">
           <ywpf:NodeStylePortStyleAdapter RenderSize="7, 7">
-            <ywpf:ShapeNodeStyle Pen="{x:Null}" Brush="#FF1E90FF" />
+            <y:GraphMLReference ResourceKey="Blue" />
           </ywpf:NodeStylePortStyleAdapter>
         </data>
       </port>
@@ -570,7 +572,7 @@
         </data>
         <data key="d9">
           <ywpf:NodeStylePortStyleAdapter RenderSize="7, 7">
-            <ywpf:ShapeNodeStyle Pen="{x:Null}" Brush="#FF008000" />
+            <y:GraphMLReference ResourceKey="Green" />
           </ywpf:NodeStylePortStyleAdapter>
         </data>
       </port>
@@ -587,7 +589,7 @@
         </data>
         <data key="d9">
           <ywpf:NodeStylePortStyleAdapter RenderSize="7, 7">
-            <ywpf:ShapeNodeStyle Pen="{x:Null}" Brush="#FF008000" />
+            <y:GraphMLReference ResourceKey="Green" />
           </ywpf:NodeStylePortStyleAdapter>
         </data>
       </port>
@@ -624,7 +626,7 @@ Converter]]></y:Label.Text>
         </data>
         <data key="d9">
           <ywpf:NodeStylePortStyleAdapter RenderSize="7, 7">
-            <ywpf:ShapeNodeStyle Pen="{x:Null}" Brush="#FF008000" />
+            <y:GraphMLReference ResourceKey="Green" />
           </ywpf:NodeStylePortStyleAdapter>
         </data>
       </port>
@@ -648,7 +650,7 @@ Converter]]></y:Label.Text>
         </data>
         <data key="d9">
           <ywpf:NodeStylePortStyleAdapter RenderSize="7, 7">
-            <ywpf:ShapeNodeStyle Pen="{x:Null}" Brush="#FF008000" />
+            <y:GraphMLReference ResourceKey="Green" />
           </ywpf:NodeStylePortStyleAdapter>
         </data>
       </port>
@@ -665,7 +667,7 @@ Converter]]></y:Label.Text>
         </data>
         <data key="d9">
           <ywpf:NodeStylePortStyleAdapter RenderSize="7, 7">
-            <ywpf:ShapeNodeStyle Pen="{x:Null}" Brush="#FF008000" />
+            <y:GraphMLReference ResourceKey="Green" />
           </ywpf:NodeStylePortStyleAdapter>
         </data>
       </port>
@@ -689,7 +691,7 @@ Converter]]></y:Label.Text>
         </data>
         <data key="d9">
           <ywpf:NodeStylePortStyleAdapter RenderSize="7, 7">
-            <ywpf:ShapeNodeStyle Pen="{x:Null}" Brush="#FF008000" />
+            <y:GraphMLReference ResourceKey="Green" />
           </ywpf:NodeStylePortStyleAdapter>
         </data>
       </port>
@@ -706,7 +708,7 @@ Converter]]></y:Label.Text>
         </data>
         <data key="d9">
           <ywpf:NodeStylePortStyleAdapter RenderSize="7, 7">
-            <ywpf:ShapeNodeStyle Pen="{x:Null}" Brush="#FF1E90FF" />
+            <y:GraphMLReference ResourceKey="Blue" />
           </ywpf:NodeStylePortStyleAdapter>
         </data>
       </port>
@@ -723,7 +725,7 @@ Converter]]></y:Label.Text>
         </data>
         <data key="d9">
           <ywpf:NodeStylePortStyleAdapter RenderSize="7, 7">
-            <ywpf:ShapeNodeStyle Pen="{x:Null}" Brush="#FF1E90FF" />
+            <y:GraphMLReference ResourceKey="Blue" />
           </ywpf:NodeStylePortStyleAdapter>
         </data>
       </port>
@@ -740,7 +742,7 @@ Converter]]></y:Label.Text>
         </data>
         <data key="d9">
           <ywpf:NodeStylePortStyleAdapter RenderSize="7, 7">
-            <ywpf:ShapeNodeStyle Pen="{x:Null}" Brush="#FF1E90FF" />
+            <y:GraphMLReference ResourceKey="Blue" />
           </ywpf:NodeStylePortStyleAdapter>
         </data>
       </port>
@@ -776,7 +778,7 @@ Converter]]></y:Label.Text>
         </data>
         <data key="d9">
           <ywpf:NodeStylePortStyleAdapter RenderSize="7, 7">
-            <ywpf:ShapeNodeStyle Pen="{x:Null}" Brush="#FF008000" />
+            <y:GraphMLReference ResourceKey="Green" />
           </ywpf:NodeStylePortStyleAdapter>
         </data>
       </port>
@@ -793,7 +795,7 @@ Converter]]></y:Label.Text>
         </data>
         <data key="d9">
           <ywpf:NodeStylePortStyleAdapter RenderSize="7, 7">
-            <ywpf:ShapeNodeStyle Pen="{x:Null}" Brush="#FF008000" />
+            <y:GraphMLReference ResourceKey="Green" />
           </ywpf:NodeStylePortStyleAdapter>
         </data>
       </port>
@@ -810,7 +812,7 @@ Converter]]></y:Label.Text>
         </data>
         <data key="d9">
           <ywpf:NodeStylePortStyleAdapter RenderSize="7, 7">
-            <ywpf:ShapeNodeStyle Pen="{x:Null}" Brush="#FF1E90FF" />
+            <y:GraphMLReference ResourceKey="Blue" />
           </ywpf:NodeStylePortStyleAdapter>
         </data>
       </port>
@@ -839,7 +841,7 @@ Converter]]></y:Label.Text>
         </data>
         <data key="d9">
           <ywpf:NodeStylePortStyleAdapter RenderSize="7, 7">
-            <ywpf:ShapeNodeStyle Pen="{x:Null}" Brush="#FF008000" />
+            <y:GraphMLReference ResourceKey="Green" />
           </ywpf:NodeStylePortStyleAdapter>
         </data>
       </port>
@@ -856,7 +858,7 @@ Converter]]></y:Label.Text>
         </data>
         <data key="d9">
           <ywpf:NodeStylePortStyleAdapter RenderSize="7, 7">
-            <ywpf:ShapeNodeStyle Pen="{x:Null}" Brush="#FF1E90FF" />
+            <y:GraphMLReference ResourceKey="Blue" />
           </ywpf:NodeStylePortStyleAdapter>
         </data>
       </port>
@@ -885,7 +887,7 @@ Converter]]></y:Label.Text>
         </data>
         <data key="d9">
           <ywpf:NodeStylePortStyleAdapter RenderSize="7, 7">
-            <ywpf:ShapeNodeStyle Pen="{x:Null}" Brush="#FF008000" />
+            <y:GraphMLReference ResourceKey="Green" />
           </ywpf:NodeStylePortStyleAdapter>
         </data>
       </port>
@@ -902,7 +904,7 @@ Converter]]></y:Label.Text>
         </data>
         <data key="d9">
           <ywpf:NodeStylePortStyleAdapter RenderSize="7, 7">
-            <ywpf:ShapeNodeStyle Pen="{x:Null}" Brush="#FF008000" />
+            <y:GraphMLReference ResourceKey="Green" />
           </ywpf:NodeStylePortStyleAdapter>
         </data>
       </port>
@@ -926,7 +928,7 @@ Converter]]></y:Label.Text>
         </data>
         <data key="d9">
           <ywpf:NodeStylePortStyleAdapter RenderSize="7, 7">
-            <ywpf:ShapeNodeStyle Pen="{x:Null}" Brush="#FF1E90FF" />
+            <y:GraphMLReference ResourceKey="Blue" />
           </ywpf:NodeStylePortStyleAdapter>
         </data>
       </port>

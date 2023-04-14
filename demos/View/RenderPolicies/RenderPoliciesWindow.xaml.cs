@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.4.
- ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.5.
+ ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using Demo.yFiles.Toolkit;
 using yWorks.Controls;
 using yWorks.Controls.Input;
 using yWorks.Geometry;
@@ -128,36 +129,12 @@ namespace Demo.yFiles.Graph.RenderPolicies
     /// </summary>
     private void SetGraphDefaults() {
       var graph = graphControl.Graph;
+      DemoStyles.InitDemoStyles(graph);
 
-      graph.NodeDefaults.Style = new ShapeNodeStyle {
-          Pen = Pens.White,
-          Brush = (Brush) new SolidColorBrush(Color.FromArgb(238, 255, 140, 0)).GetAsFrozen()
-      };
-      graph.NodeDefaults.Size = new SizeD(40, 40);
-      graph.NodeDefaults.Labels.Style = new DefaultLabelStyle {
-          VerticalTextAlignment = VerticalAlignment.Center,
-          TextWrapping = TextWrapping.Wrap
-      };
-      graph.NodeDefaults.Labels.LayoutParameter = InteriorLabelModel.Center;
       graph.NodeDefaults.Ports.Style = new NodeStylePortStyleAdapter(new ShapeNodeStyle {
-          Brush = Brushes.DarkBlue,
-          Pen = Pens.DarkBlue,
-          Shape = ShapeNodeShape.Ellipse
+        Brush = (Brush) new SolidColorBrush(Color.FromRgb(0x11, 0x1D, 0x4A)).GetAsFrozen(),
+        Shape = ShapeNodeShape.Ellipse
       });
-      graph.GroupNodeDefaults.Style = new PanelNodeStyle {
-          Color = Color.FromArgb(229, 214, 229, 248),
-          Insets = new InsetsD(18, 5, 5, 5),
-          LabelInsetsColor = Color.FromRgb(214, 229, 248)
-      };
-      graph.GroupNodeDefaults.Labels.Style = new DefaultLabelStyle {
-          TextAlignment = TextAlignment.Center
-      };
-      graph.GroupNodeDefaults.Labels.LayoutParameter = InteriorStretchLabelModel.North;
-      graph.EdgeDefaults.Labels.LayoutParameter = new SmartEdgeLabelModel().CreateParameterFromSource(0, 5, 0);
-      graph.EdgeDefaults.Labels.Style = new DefaultLabelStyle {
-          BackgroundBrush = Brushes.White,
-          BackgroundPen = Pens.LightGray
-      };
     }
 
     /// <summary>

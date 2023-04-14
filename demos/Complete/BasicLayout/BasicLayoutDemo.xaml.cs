@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.4.
- ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.5.
+ ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -31,7 +31,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Media;
+using Demo.yFiles.Toolkit;
 using yWorks.Layout;
 using yWorks.Layout.Circular;
 using yWorks.Layout.Hierarchic;
@@ -41,9 +41,8 @@ using yWorks.Layout.Router;
 using yWorks.Layout.Router.Polyline;
 using yWorks.Layout.Tree;
 using yWorks.Controls.Input;
-using yWorks.Geometry;
 using yWorks.Graph;
-using yWorks.Graph.Styles;
+using EdgeRoutingStyle = yWorks.Layout.Router.Polyline.EdgeRoutingStyle;
 
 namespace Demo.yFiles.Layout.BasicLayout
 {
@@ -125,7 +124,7 @@ namespace Demo.yFiles.Layout.BasicLayout
       var polylineRouter = new EdgeRouter
       {
         Grid = new Grid(0, 0, 10),
-        PolylineRouting = true,
+        DefaultEdgeLayoutDescriptor = { RoutingStyle = EdgeRoutingStyle.Orthogonal },
         Rerouting = true
       };
       polylineRouter.DefaultEdgeLayoutDescriptor.PenaltySettings.BendPenalty = 3;
@@ -150,29 +149,8 @@ namespace Demo.yFiles.Layout.BasicLayout
 
       graphControl.FileOperationsEnabled = true;
       graphControl.NavigationCommandsEnabled = true;
-      //Create graph
-      graph.NodeDefaults.Size = new SizeD(50, 30);
 
-      // set the style as the default for all new nodes
-      graph.NodeDefaults.Style = graph.NodeDefaults.Style = new BevelNodeStyle
-      {
-        Color = Color.FromArgb(0xFF, 0xFF, 0x8C, 0x00),
-        Inset = 2,
-        Radius = 5,
-      };
-
-      // set the style as the default for all new edges
-      graph.EdgeDefaults.Style = new PolylineEdgeStyle {TargetArrow = Arrows.Default};
-
-      // set the style as the default for all new node labels
-      graph.NodeDefaults.Labels.Style = new DefaultLabelStyle();
-      PanelNodeStyle groupNodeStyle = new PanelNodeStyle
-      {
-        Color = Color.FromArgb(255, 135, 206, 250),
-        LabelInsetsColor = Color.FromArgb(255, 173, 216, 230),
-        Insets = new InsetsD(10, 10, 10, 20)
-      };
-      graph.GroupNodeDefaults.Style = groupNodeStyle;
+      DemoStyles.InitDemoStyles(graph);
 
       ReadSampleGraph();
 

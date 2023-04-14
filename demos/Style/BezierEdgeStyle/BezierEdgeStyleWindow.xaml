@@ -1,6 +1,6 @@
 <!-- ************************************************************************ -->
-<!-- This demo file is part of yFiles WPF 3.4.                           -->
-<!-- Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
+<!-- This demo file is part of yFiles WPF 3.5.                           -->
+<!-- Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
 <!-- 72070 Tuebingen, Germany. All rights reserved.                           -->
 <!--                                                                          -->
 <!-- yFiles demo files exhibit yFiles WPF functionalities. Any redistribution  -->
@@ -120,12 +120,12 @@
                             <FlowDocument>
                                 <Paragraph>
                                     <Run Style="{StaticResource HtmlCode}">BezierEdgeStyle</Run> allows for smooth curved edge routes.
-                                    This demo shows how to use this style and interactively edit the B�zier curves.
+                                    This demo shows how to use this style and interactively edit the B&#233;zier curves.
                                 </Paragraph>
                                 <Paragraph Style="{StaticResource HtmlH2}">Creating Edges</Paragraph>
                                 <Paragraph>
                                     Start dragging at an unselected node and click on the canvas to add bends or control
-                                    points for the B�zier curve.
+                                    points for the B&#233;zier curve.
                                 </Paragraph>
                                 <Paragraph>
                                     When <Run Style="{StaticResource HtmlEm}">Smooth Editing</Run> is enabled, the edge path will

@@ -1,6 +1,6 @@
 <!-- ************************************************************************ -->
-<!-- This demo file is part of yFiles WPF 3.4.                           -->
-<!-- Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
+<!-- This demo file is part of yFiles WPF 3.5.                           -->
+<!-- Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
 <!-- 72070 Tuebingen, Germany. All rights reserved.                           -->
 <!--                                                                          -->
 <!-- yFiles demo files exhibit yFiles WPF functionalities. Any redistribution  -->
@@ -57,24 +57,16 @@
             <Setter Property="ContentTemplate">
                 <Setter.Value>
                     <DataTemplate>
-                        <Border BorderBrush="DarkOrange" Padding="3" BorderThickness="1" CornerRadius="5">
-                            <Border.Background>
-                                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                                    <LinearGradientBrush.GradientStops>
-                                        <GradientStop Color="#FFFFA500" Offset="0" />
-                                        <GradientStop Color="#FFFFEDCC" Offset="1" />
-                                    </LinearGradientBrush.GradientStops>
-                                </LinearGradientBrush>
-                            </Border.Background>
+                        <Border BorderBrush="#27401b" Background="#61a044" Padding="3" BorderThickness="1" CornerRadius="5">
                             <StackPanel Orientation="Vertical">
                                 <StackPanel Orientation="Horizontal">
                                     <!-- This is data from a row in the Contact table. -->
-                                    <TextBlock Text="{Binding Path=FirstName}" Padding="0,0,3,0"/>
-                                    <TextBlock Text="{Binding Path=MiddleName}" Padding="0,0,3,0"/>
-                                    <TextBlock Text="{Binding Path=LastName}"/>
+                                    <TextBlock Text="{Binding Path=FirstName}" Foreground="#27401b" Padding="0,0,3,0"/>
+                                    <TextBlock Text="{Binding Path=MiddleName}" Foreground="#27401b" Padding="0,0,3,0"/>
+                                    <TextBlock Text="{Binding Path=LastName}" Foreground="#27401b" />
                                 </StackPanel>
                                 <!-- The title is stored in the corresponding Employee row. -->
-                                <TextBlock Text="{Binding Path=Contact_Employee/Title}"/>
+                                <TextBlock Text="{Binding Path=Contact_Employee/Title}" Foreground="#27401b"/>
                             </StackPanel>
                         </Border>
                     </DataTemplate>

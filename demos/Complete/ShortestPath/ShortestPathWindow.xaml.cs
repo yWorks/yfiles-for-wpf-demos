@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.4.
- ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.5.
+ ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -36,6 +36,7 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Media;
 using Demo.Base.RandomGraphGenerator;
+using Demo.yFiles.Toolkit;
 using yWorks.Analysis;
 using yWorks.Controls.Input;
 using yWorks.Geometry;
@@ -142,7 +143,6 @@ namespace Demo.yFiles.Algorithms.ShortestPath
       // show weight tooltips
       editMode.ToolTipItems = GraphItemTypes.Edge;
       editMode.QueryItemToolTip += EditModeOnQueryItemToolTip;
-      editMode.MouseHoverInputMode.ToolTipLocationOffset = new PointD(0, -20);
 
       // when the WaitInputMode kicks in, disable buttons which might cause
       // inconsistencies when performed while a layout calculation is running
@@ -212,13 +212,13 @@ namespace Demo.yFiles.Algorithms.ShortestPath
           // add the 'Remove Mark' item
           var removeMarkItem = new MenuItem { Header = "Remove Mark" };
           removeMarkItem.Click += async delegate {
-                                                    List<INode> sn = sourceNodes.ToList();
-                                                    sn.RemoveAll((node1 => selection.IsSelected(node1)));
-                                                    await MarkAsSource(sn);
-                                                    List<INode> tn = targetNodes.ToList();
-                                                    tn.RemoveAll((node1 => selection.IsSelected(node1)));
-                                                    await MarkAsTarget(tn);
-                                                  };
+              List<INode> sn = sourceNodes.ToList();
+              sn.RemoveAll((node1 => selection.IsSelected(node1)));
+              await MarkAsSource(sn);
+              List<INode> tn = targetNodes.ToList();
+              tn.RemoveAll((node1 => selection.IsSelected(node1)));
+              await MarkAsTarget(tn);
+            };
           e.Menu.Items.Add(removeMarkItem);
         }
       }
@@ -229,23 +229,12 @@ namespace Demo.yFiles.Algorithms.ShortestPath
     /// Initializes the styles to use for the graph.
     /// </summary>
     private void InitializeStyles() {
-      defaultNodeStyle = new ShinyPlateNodeStyle { Brush = Brushes.DarkOrange };
-      sourceNodeStyle = new ShinyPlateNodeStyle { Brush = Brushes.LimeGreen };
-      targetNodeStyle = new ShinyPlateNodeStyle { Brush = Brushes.OrangeRed };
-      sourceAndTargetNodeStyle = new ShinyPlateNodeStyle
-      {
-        Brush = new LinearGradientBrush
-        {
-          GradientStops = new GradientStopCollection
-          {
-            new GradientStop {Color = Colors.Green, Offset = 0.49},
-            new GradientStop {Color = Colors.Red, Offset = 0.51}
-          },
-          SpreadMethod = GradientSpreadMethod.Pad,
-        }
-      };
-      defaultEdgeStyle = new PolylineEdgeStyle {TargetArrow = directed ? Arrows.Default : Arrows.None};
-      pathEdgeStyle = new PolylineEdgeStyle { Pen = new Pen(Brushes.Red, 4.0f), TargetArrow = directed ? Arrows.Default : Arrows.None };
+      defaultNodeStyle = DemoStyles.CreateDemoNodeStyle(Themes.PaletteOrange);
+      sourceNodeStyle = DemoStyles.CreateDemoNodeStyle(Themes.PaletteGreen);
+      targetNodeStyle = DemoStyles.CreateDemoNodeStyle(Themes.PaletteRed);
+      sourceAndTargetNodeStyle = DemoStyles.CreateDemoNodeStyle(Themes.PaletteBlue);
+      defaultEdgeStyle = DemoStyles.CreateDemoEdgeStyle();
+      pathEdgeStyle = new PolylineEdgeStyle { Pen = new Pen(Brushes.Red, 4.0f) };
     }
 
     /// <summary>
@@ -255,7 +244,7 @@ namespace Demo.yFiles.Algorithms.ShortestPath
       graphControl.Graph.NodeDefaults.Style = defaultNodeStyle;
       graphControl.Graph.NodeDefaults.Size = new SizeD(30, 30);
       graphControl.Graph.EdgeDefaults.Style = defaultEdgeStyle;
-      graphControl.Graph.EdgeDefaults.Labels.Style = new DefaultLabelStyle {Typeface = new Typeface("Arial"), TextSize = 10, TextBrush = Brushes.Black, BackgroundBrush = Brushes.White};
+      graphControl.Graph.EdgeDefaults.Labels.Style = DemoStyles.CreateDemoEdgeLabelStyle();
     }
 
     private async void OnLoaded(object sender, EventArgs e) {
@@ -281,9 +270,23 @@ namespace Demo.yFiles.Algorithms.ShortestPath
 
     private async void directedComboBox_SelectedIndexChanged(object sender, EventArgs e) {
       directed = directedComboBox.SelectedIndex == 0 ? true : false;
-      defaultEdgeStyle.TargetArrow = directed ? Arrows.Default : Arrows.None;
-      pathEdgeStyle.TargetArrow = directed ? Arrows.Default : Arrows.None;
+      UpdateArrow(defaultEdgeStyle, directed);
+      UpdateArrow(pathEdgeStyle, directed);
       await CalculateShortestPath();
+    }
+
+    private static void UpdateArrow(PolylineEdgeStyle style, bool directed) {
+      if (directed) {
+        var demoArrow = DemoStyles.CreateDemoEdgeStyle(showTargetArrow: true).TargetArrow as Arrow;
+        var prototype = demoArrow ?? new Arrow() { Type = ArrowType.None };
+        style.TargetArrow = new Arrow() {
+          Brush = style.Pen.Brush,
+          Scale = prototype.Scale,
+          Type = prototype.Type
+        };
+      } else {
+        style.TargetArrow = Arrows.None;        
+      }
     }
 
     private async void newGraphButton_Click(object sender, EventArgs e) {
@@ -399,7 +402,7 @@ namespace Demo.yFiles.Algorithms.ShortestPath
       graphControl.Graph.Clear();
       randomGraphGenerator.Generate(graphControl.Graph);
       // center the graph to prevent the initial layout fading in from the top left corner
-      graphControl.FitGraphBounds();
+      await graphControl.FitGraphBounds();
       await ApplyLayout();
     }
 

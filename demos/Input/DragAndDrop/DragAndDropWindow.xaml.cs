@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.4.
- ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.5.
+ ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -33,6 +33,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
+using Demo.yFiles.Toolkit;
 using yWorks.Controls.Input;
 using yWorks.Controls;
 using yWorks.Geometry;
@@ -67,7 +68,7 @@ namespace Demo.yFiles.Input.DragAndDrop
       nodeDropInputMode.Enabled = true;
 
       // we want nodes that have a PanelNodeStyle assigned to be created as group nodes.
-      nodeDropInputMode.IsGroupNodePredicate = draggedNode => draggedNode.Style is PanelNodeStyle;
+      nodeDropInputMode.IsGroupNodePredicate = draggedNode => draggedNode.Style is GroupNodeStyle;
 
       // we enable dropping nodes onto leaf nodes ...
       nodeDropInputMode.AllowNonGroupNodeAsParent = true;
@@ -125,6 +126,8 @@ namespace Demo.yFiles.Input.DragAndDrop
 
       // Enable undo
       graphControl.Graph.SetUndoEngineEnabled(true);
+      
+      DemoStyles.InitDemoStyles(graphControl.Graph);
 
       // populate the control with some nodes
       CreateSampleGraph();
@@ -141,7 +144,7 @@ namespace Demo.yFiles.Input.DragAndDrop
             INode newNode = nodeCreator(context, graph, location, parent);
             graph.SetStyle(newNode, paletteNode.Style);
             graph.SetNodeLayout(newNode, RectD.FromCenter(location, paletteNode.Layout.ToSizeD()));
-            graph.SetIsGroupNode(newNode, paletteNode.Style is PanelNodeStyle);
+            graph.SetIsGroupNode(newNode, paletteNode.Style is GroupNodeStyle);
             foreach (var label in paletteNode.Labels) {
               graph.AddLabel(newNode, label.Text, label.LayoutParameter, label.Style);
             }
@@ -156,17 +159,17 @@ namespace Demo.yFiles.Input.DragAndDrop
     private void CreateSampleGraph() {
       // Create a group node in which the dragged node can be dropped
       var graph = graphControl.Graph;
-      INode groupNode = graph.CreateGroupNode(null, new RectD(100, 100, 70, 70), new PanelNodeStyle { Color = Colors.LightBlue, Insets = new InsetsD(0, 15, 0, 0) });
-      graph.AddLabel(groupNode, "Group Node", InteriorStretchLabelModel.North);
+      INode groupNode = graph.CreateGroupNode(null, new RectD(100, 100, 70, 70));
+      graph.AddLabel(groupNode, "Group Node");
       graph.AddLabel(groupNode, "Drop a node over me!", ExteriorLabelModel.South);
 
       // Create a node to which the dragged node can snap
-      INode node1 = graph.CreateNode(new RectD(300, 100, 30, 30), new BevelNodeStyle {Color = Colors.DarkOrange });
+      INode node1 = graph.CreateNode(new RectD(300, 100, 30, 30));
       graph.AddLabel(node1, "Sample Node", ExteriorLabelModel.North);
       graph.AddLabel(node1, "Drag a node near me!", ExteriorLabelModel.South);
 
       // Create a node which can be converted to a group node automatically, if a node is dropped onto it
-      INode node2 = graph.CreateNode(new RectD(450, 200, 30, 30), new BevelNodeStyle {Color = Colors.Green });
+      INode node2 = graph.CreateNode(new RectD(450, 200, 30, 30), DemoStyles.CreateDemoNodeStyle(Themes.PaletteGreen));
       graph.AddLabel(node2, "Sample Node", ExteriorLabelModel.North);
       graph.AddLabel(node2, "Drag a node onto me to convert me to a group node!", ExteriorLabelModel.South);
     }
@@ -188,19 +191,28 @@ namespace Demo.yFiles.Input.DragAndDrop
     /// Initializes the style panel of this demo.
     /// </summary>
     private void InitializeStylesList() {
-      int nodeSize = 30;
+      const int nodeWidth = 60;
+      const int nodeHeight = 40;
 
       // Create a new Graph in which the palette nodes live
       IGraph nodeContainer = new DefaultGraph();
+      DemoStyles.InitDemoStyles(nodeContainer);
+      
+      var defaultLabelStyle = new DefaultLabelStyle{
+          BackgroundPen = (Pen) new Pen(new SolidColorBrush(Color.FromRgb(101, 152, 204)), 1).GetAsFrozen(),
+          BackgroundBrush = Brushes.White,
+          Insets = new InsetsD(3, 5, 3, 5)
+      };
+
+      nodeContainer.NodeDefaults.Labels.Style = defaultLabelStyle;
+      nodeContainer.EdgeDefaults.Labels.Style = defaultLabelStyle;
+      
       // Create some nodes
+      nodeContainer.CreateNode(new RectD(0, 0, nodeWidth, nodeHeight), DemoStyles.CreateDemoShapeNodeStyle(ShapeNodeShape.Rectangle));
+      nodeContainer.CreateNode(new RectD(0, 0, nodeWidth, nodeHeight));
 
-      nodeContainer.CreateNode(new RectD(0, 0, nodeSize, nodeSize), new ShapeNodeStyle { Shape = ShapeNodeShape.Rectangle, Pen = Pens.Black, Brush = Brushes.DarkOrange });
-      nodeContainer.CreateNode(new RectD(0, 0, nodeSize, nodeSize), new ShapeNodeStyle { Shape = ShapeNodeShape.RoundRectangle, Pen = Pens.Black, Brush = Brushes.DarkOrange });
-      nodeContainer.CreateNode(new RectD(0, 0, nodeSize, nodeSize), new BevelNodeStyle {Color = Colors.DarkOrange });
-      nodeContainer.CreateNode(new RectD(0, 0, nodeSize, nodeSize), new ShinyPlateNodeStyle { Brush = Brushes.DarkOrange });
-
-      INode node = nodeContainer.CreateNode(new RectD(0, 0, 70, 70), new PanelNodeStyle { Color = Colors.LightBlue, Insets = new InsetsD(0, 15, 0, 0) });
-      nodeContainer.AddLabel(node, "Group Node", InteriorStretchLabelModel.North);
+      INode node = nodeContainer.CreateGroupNode(layout:new RectD(0, 0, 70, 70));
+      nodeContainer.AddLabel(node, "Group Node");
 
       var nodeLabelContainer = nodeContainer.CreateNode(new RectD(0, 0, 70, 70), VoidNodeStyle.Instance, "Node Label Container");
       var nodeLabel = nodeContainer.AddLabel(nodeLabelContainer, "Node Label", InteriorLabelModel.Center);

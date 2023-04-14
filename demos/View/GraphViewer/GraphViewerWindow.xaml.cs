@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.4.
- ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.5.
+ ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -28,20 +28,20 @@
  ***************************************************************************/
 
 using System;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
+using Demo.yFiles.Toolkit;
 using yWorks.Controls;
 using yWorks.Controls.Input;
 using yWorks.Geometry;
 using yWorks.Graph;
 using yWorks.Graph.Styles;
-using yWorks.GraphML;
 
 namespace Demo.yFiles.Graph.Viewer
 {
@@ -239,30 +239,11 @@ namespace Demo.yFiles.Graph.Viewer
     private void EnableFolding() {
       // create the manager
       manager = new FoldingManager();
+      DemoStyles.InitDemoStyles(manager.MasterGraph, foldingEnabled: true);
       // replace the displayed graph with a managed view
       graphControl.Graph = manager.CreateFoldingView().Graph;
-      WrapGroupNodeStyles();
     }
 
-    /// <summary>
-    /// Change the default style for group nodes.
-    /// </summary>
-    /// <remarks>We use <see cref="CollapsibleNodeStyleDecorator"/> to wrap the
-    /// <see cref="PanelNodeStyle"/> from the last demo, since we want to have nice
-    /// +/- buttons for collapse/expand. Note that if you haven't defined
-    /// a custom group node style, you don't have to do anything at all, since
-    /// <see cref="FoldingManager"/> already
-    /// provides such a decorated group node style by default.</remarks>
-    private void WrapGroupNodeStyles() {
-      IFoldingView foldingView = graphControl.Graph.GetFoldingView();
-      if (foldingView != null) {
-        //PanelNodeStyle is a nice style especially suited for group nodes
-        PanelNodeStyle style = new PanelNodeStyle {Color = Colors.LightBlue };
-
-        //Wrap the style with CollapsibleNodeStyleDecorator
-        foldingView.Graph.GroupNodeDefaults.Style = new CollapsibleNodeStyleDecorator(style);
-      }
-    }
 
     private void OnCurrentItemChanged(object sender, EventArgs propertyChangedEventArgs) {
       var currentItem = graphControl.CurrentItem;
@@ -382,7 +363,8 @@ namespace Demo.yFiles.Graph.Viewer
 
     private void nodeUrlButton_LinkClicked(object sender, EventArgs e) {
       // Open the link...
-      System.Diagnostics.Process.Start(nodeUrlButton.Tag.ToString());
+      var startInfo = new ProcessStartInfo { FileName = nodeUrlButton.Tag.ToString(), UseShellExecute = true };
+      Process.Start(startInfo);
     }
   }
 

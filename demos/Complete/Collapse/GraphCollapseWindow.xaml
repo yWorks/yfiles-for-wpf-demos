@@ -1,6 +1,6 @@
 <!-- ************************************************************************ -->
-<!-- This demo file is part of yFiles WPF 3.4.                           -->
-<!-- Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
+<!-- This demo file is part of yFiles WPF 3.5.                           -->
+<!-- Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
 <!-- 72070 Tuebingen, Germany. All rights reserved.                           -->
 <!--                                                                          -->
 <!-- yFiles demo files exhibit yFiles WPF functionalities. Any redistribution  -->
@@ -37,66 +37,24 @@
 					<Setter.Value>
 						<ControlTemplate TargetType="ToggleButton">
 							<Grid>
-								<Border CornerRadius="5" BorderThickness="2" BorderBrush="DarkGray">
-									<Border x:Name="InnerBorder" CornerRadius="4" BorderBrush="White" BorderThickness="1">
-										<Border.Background>
-											<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-												<GradientStop Color="#FFFFCC00" />
-												<GradientStop Color="#FFFF9900" Offset="1" />
-											</LinearGradientBrush>
-										</Border.Background>
-									</Border>
-								</Border>
-
-								<Border CornerRadius="4" Margin="2" x:Name="HighlightBorder" Opacity="0">
-									<Border.Background>
-										<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-											<GradientStop Color="#AAFFFFFF" />
-											<GradientStop Color="#00FFFFFF" Offset="1" />
-										</LinearGradientBrush>
-									</Border.Background>
-								</Border>
-
-								<Path x:Name="IconBorderPath" Fill="#FFCCCCCC" Stretch="None" Height="18" HorizontalAlignment="Center" VerticalAlignment="Center" Width="18" Data="M5,0 L13,0 L13,5 L18,5 L18,13 L13,13 L13,18 L5,18 L5,13 L0,13 L0,5 L5,5 z" />
-								<Path x:Name="IconPath" Stretch="None" Stroke="White" Height="16" HorizontalAlignment="Center" VerticalAlignment="Center" Width="16" Data="M5.5,0.5 L10.5,0.5 L10.5,5.5 L15.5,5.5 L15.5,10.5 L10.5,10.5 L10.5,15.5 L5.5,15.5 L5.5,10.5 L0.5,10.5 L0.5,5.5 L5.5,5.5 z">
-									<Path.Fill>
-										<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-											<GradientStop Color="#FF434343" Offset="1" />
-											<GradientStop Color="#FFB2B2B2" />
-										</LinearGradientBrush>
-									</Path.Fill>
-								</Path>
-
-							</Grid>
+                                <Border x:Name="InnerBorder" CornerRadius="4" Background="#01baff" />
+                                <Path x:Name="IconPath" Stretch="None" Fill="#999999" Stroke="White" Height="16" HorizontalAlignment="Center" VerticalAlignment="Center" Width="16" Data="M5.5,0.5 L10.5,0.5 L10.5,5.5 L15.5,5.5 L15.5,10.5 L10.5,10.5 L10.5,15.5 L5.5,15.5 L5.5,10.5 L0.5,10.5 L0.5,5.5 L5.5,5.5 z" />
+                            </Grid>
 							<ControlTemplate.Triggers>
-								<Trigger Property="IsMouseOver" Value="False">
-									<Setter TargetName="HighlightBorder" Property="Opacity" Value="0" />
-								</Trigger>
-								<Trigger Property="IsMouseOver" Value="True">
-									<Setter TargetName="HighlightBorder" Property="Opacity" Value="1" />
-								</Trigger>
 								<Trigger Property="IsChecked" Value="True">
 									<Setter TargetName="InnerBorder" Property="Background">
 										<Setter.Value>
-											<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-												<GradientStop Color="#FFFFCC00" />
-												<GradientStop Color="#FFFF9900" Offset="1" />
-											</LinearGradientBrush>
+                                            <SolidColorBrush Color="#f26419" />
 										</Setter.Value>
 									</Setter>
-									<Setter TargetName="IconBorderPath" Property="Data" Value="M5,0 L13,0 L13,5 L18,5 L18,13 L13,13 L13,18 L5,18 L5,13 L0,13 L0,5 L5,5 z" />
 									<Setter TargetName="IconPath" Property="Data" Value="M5.5,0.5 L10.5,0.5 L10.5,5.5 L15.5,5.5 L15.5,10.5 L10.5,10.5 L10.5,15.5 L5.5,15.5 L5.5,10.5 L0.5,10.5 L0.5,5.5 L5.5,5.5 z" />
 								</Trigger>
 								<Trigger Property="IsChecked" Value="False">
 									<Setter TargetName="InnerBorder" Property="Background">
 										<Setter.Value>
-											<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-												<GradientStop Color="#FFCCFFFF" />
-												<GradientStop Color="#FF99CCFF" Offset="1" />
-											</LinearGradientBrush>
+											<SolidColorBrush Color="#01baff" />
 										</Setter.Value>
 									</Setter>
-									<Setter TargetName="IconBorderPath" Property="Data" Value="M13,5 L18,5 L18,13 L13,13 L5,13 L0,13 L0,5 L5,5 z" />
 									<Setter TargetName="IconPath" Property="Data" Value="M10.5,5.5 L15.5,5.5 L15.5,10.5 L10.5,10.5 L5.5,10.5 L0.5,10.5 L0.5,5.5 L5.5,5.5 z" />
 								</Trigger>
 							</ControlTemplate.Triggers>
@@ -126,15 +84,10 @@
 				<Setter Property="Template">
 					<Setter.Value>
 						<ControlTemplate TargetType="ywpf:NodeControl">
-							<Border CornerRadius="5" BorderBrush="DarkGray" BorderThickness="2">
-								<Border CornerRadius="4" BorderBrush="White" BorderThickness="1">
-									<Border.Background>
-										<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-											<GradientStop x:Name="BackgroundStop1" Color="#FFCCFF99" />
-											<GradientStop x:Name="BackgroundStop2" Color="#FF99CC33" Offset="1" />
-										</LinearGradientBrush>
-									</Border.Background>
-								</Border>
+							<Border CornerRadius="4">
+								<Border.Background>
+									<SolidColorBrush Color="#76b041" />
+								</Border.Background>
 							</Border>
 						</ControlTemplate>
 					</Setter.Value>

@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.4.
- ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.5.
+ ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -297,17 +297,17 @@ namespace Demo.yFiles.Layout.Configurations
         // layout all siblings with label 'TL' separately with tree layout
         var treeLayout = new TreeLayout { DefaultNodePlacer = new LeftRightNodePlacer() };
         foreach (var listOfNodes in FindSubComponents(graphControl.Graph, "TL")) {
-          layoutData.SubComponents.Add(treeLayout).Items = listOfNodes;
+          layoutData.Subcomponents.Add(new SubcomponentDescriptor(treeLayout)).Items = listOfNodes;
         }
         // layout all siblings with label 'HL' separately with hierarchical layout
         var hierarchicLayout = new HierarchicLayout { LayoutOrientation = LayoutOrientation.LeftToRight };
         foreach (var listOfNodes in FindSubComponents(graphControl.Graph, "HL")) {
-          layoutData.SubComponents.Add(hierarchicLayout).Items = listOfNodes;
+          layoutData.Subcomponents.Add(new SubcomponentDescriptor(hierarchicLayout)).Items = listOfNodes;
         }
         // layout all siblings with label 'OL' separately with organic layout
         var organicLayout = new OrganicLayout { PreferredEdgeLength = 100, Deterministic = true };
         foreach (var listOfNodes in FindSubComponents(graphControl.Graph, "OL")) {
-          layoutData.SubComponents.Add(organicLayout).Items = listOfNodes;
+          layoutData.Subcomponents.Add(new SubcomponentDescriptor(organicLayout)).Items = listOfNodes;
         }
       }
 

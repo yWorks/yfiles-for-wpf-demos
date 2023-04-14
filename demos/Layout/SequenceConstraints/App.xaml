@@ -1,6 +1,6 @@
 <!-- ************************************************************************ -->
-<!-- This demo file is part of yFiles WPF 3.4.                           -->
-<!-- Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
+<!-- This demo file is part of yFiles WPF 3.5.                           -->
+<!-- Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
 <!-- 72070 Tuebingen, Germany. All rights reserved.                           -->
 <!--                                                                          -->
 <!-- yFiles demo files exhibit yFiles WPF functionalities. Any redistribution  -->
@@ -62,16 +62,7 @@
                         <Setter Property="Template">
                             <Setter.Value>
                                 <ControlTemplate TargetType="ywpf:NodeControl">
-                                    <Border BorderThickness="1" BorderBrush="Gray">
-                                        <Border.Background>
-                                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                                <LinearGradientBrush.GradientStops>
-                                                    <GradientStop Offset="0" Color="White" />
-                                                    <GradientStop Offset="0.15" Color="#FFFBFBFB" />
-                                                    <GradientStop Offset="0.35" Color="#FFDDDDFF" />
-                                                </LinearGradientBrush.GradientStops>
-                                            </LinearGradientBrush>
-                                        </Border.Background>
+                                    <Border BorderThickness="1" BorderBrush="Gray" Background="#FFD2D9DD">
                                         <StackPanel>
                                             <Border>
                                                 <Border.Background>

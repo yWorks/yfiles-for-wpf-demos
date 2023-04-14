@@ -1,6 +1,6 @@
 <!-- ************************************************************************ -->
-<!-- This demo file is part of yFiles WPF 3.4.                           -->
-<!-- Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
+<!-- This demo file is part of yFiles WPF 3.5.                           -->
+<!-- Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
 <!-- 72070 Tuebingen, Germany. All rights reserved.                           -->
 <!--                                                                          -->
 <!-- yFiles demo files exhibit yFiles WPF functionalities. Any redistribution  -->
@@ -101,14 +101,14 @@
             <StackPanel Orientation="Vertical" DockPanel.Dock="Top">
                 <Menu>
                     <MenuItem Header="File">
-                        <MenuItem Command="Open" CommandTarget="{Binding ElementName=view}" />
-                        <MenuItem Command="Save" CommandTarget="{Binding ElementName=view}"/>
-                        <MenuItem Command="SaveAs" CommandTarget="{Binding ElementName=view}"/>
+                        <MenuItem Command="Open" CommandTarget="{Binding ElementName=graphControl}" />
+                        <MenuItem Command="Save" CommandTarget="{Binding ElementName=graphControl}"/>
+                        <MenuItem Command="SaveAs" CommandTarget="{Binding ElementName=graphControl}"/>
                         <Separator/>
                         <MenuItem Header="Quit" Click="exitToolStripMenuItem_Click" />
                     </MenuItem>
                     <MenuItem Header="View">
-                        <MenuItem Header="Show Contents" Command="{x:Static Folding:FoldingWindow.ShowContentsCommand}"/>
+                        <MenuItem Header="Show Contents" Command="{x:Static Folding:FoldingWindow.ShowContentsCommand}" CommandTarget="{Binding ElementName=graphControl}"/>
                         <MenuItem Header="Show Model" Click="showModelToolStripMenuItem_Click"/>
                         <Separator/>
                         <MenuItem Header="Separate Folding Edges" Click="separateFoldingEdgesToolStripMenuItem_Click" />
@@ -117,28 +117,28 @@
                         <MenuItem Header="Merge Undirected Folding Edges" Click="mergeUndirectedFoldingEdgesToolStripMenuItem_Click" />
                     </MenuItem>
                     <MenuItem Header="Grouping">
-                        <MenuItem Command="{x:Static ywpf:GraphCommands.ExpandGroup}"/>
-                        <MenuItem Command="{x:Static ywpf:GraphCommands.CollapseGroup}"/>
+                        <MenuItem Command="{x:Static ywpf:GraphCommands.ExpandGroup}" CommandTarget="{Binding ElementName=graphControl}"/>
+                        <MenuItem Command="{x:Static ywpf:GraphCommands.CollapseGroup}" CommandTarget="{Binding ElementName=graphControl}"/>
                         <Separator/>
-                        <MenuItem Command="{x:Static ywpf:GraphCommands.EnterGroup}" />
-                        <MenuItem Command="{x:Static ywpf:GraphCommands.ExitGroup}" />
+                        <MenuItem Command="{x:Static ywpf:GraphCommands.EnterGroup}" CommandTarget="{Binding ElementName=graphControl}"/>
+                        <MenuItem Command="{x:Static ywpf:GraphCommands.ExitGroup}" CommandTarget="{Binding ElementName=graphControl}"/>
                     </MenuItem>
                 </Menu>
                 <ToolBar DockPanel.Dock="Top">
-                    <Button Command="Open" CommandTarget="{Binding ElementName=view}" />
-                    <Button Command="SaveAs" CommandTarget="{Binding ElementName=view}" />
+                    <Button Command="Open" CommandTarget="{Binding ElementName=graphControl}" />
+                    <Button Command="SaveAs" CommandTarget="{Binding ElementName=graphControl}" />
                     <Separator />
-                    <Button Command="IncreaseZoom" CommandTarget="{Binding ElementName=view}"/>
-                    <Button Command="DecreaseZoom" CommandTarget="{Binding ElementName=view}"/>
-                    <Button Command="{x:Static ywpf:GraphControl.FitGraphBoundsCommand}" CommandTarget="{Binding ElementName=view}" />
+                    <Button Command="IncreaseZoom" CommandTarget="{Binding ElementName=graphControl}"/>
+                    <Button Command="DecreaseZoom" CommandTarget="{Binding ElementName=graphControl}"/>
+                    <Button Command="{x:Static ywpf:GraphControl.FitGraphBoundsCommand}" CommandTarget="{Binding ElementName=graphControl}" />
                     <Separator />
-                    <Button Command="{x:Static ywpf:GraphCommands.EnterGroup}"/>
-                    <Button Command="{x:Static ywpf:GraphCommands.ExitGroup}"/>
+                    <Button Command="{x:Static ywpf:GraphCommands.EnterGroup}" CommandTarget="{Binding ElementName=graphControl}"/>
+                    <Button Command="{x:Static ywpf:GraphCommands.ExitGroup}" CommandTarget="{Binding ElementName=graphControl}"/>
                     <Separator />
                     <Button Content="Show Group Contents" Command="{x:Static Folding:FoldingWindow.ShowContentsCommand}"/>
                     <Separator />
-                    <Button Content="Expand Group" Command="{x:Static ywpf:GraphCommands.ExpandGroup}"/>
-                    <Button Content="Collapse Group" Command="{x:Static ywpf:GraphCommands.CollapseGroup}"/>
+                    <Button Content="Expand Group" Command="{x:Static ywpf:GraphCommands.ExpandGroup}" CommandTarget="{Binding ElementName=graphControl}"/>
+                    <Button Content="Collapse Group" Command="{x:Static ywpf:GraphCommands.CollapseGroup}" CommandTarget="{Binding ElementName=graphControl}"/>
 
                 </ToolBar>
             </StackPanel>

@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.4.
- ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.5.
+ ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -28,6 +28,7 @@
  ***************************************************************************/
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -92,13 +93,10 @@ namespace Demo.yFiles.Complete.IsometricDrawing
     private void InitializeProjection() {
       // set an isometric projection
       graphControl.Projection = Projections.Isometric;
-      // use a graph model manager that renders the nodes in their correct z-order
-      graphControl.GraphModelManager = new IsometricGraphModelManager(graphControl) {
-          HierarchicNestingPolicy = HierarchicNestingPolicy.GroupNodes,
-          LabelLayerPolicy = LabelLayerPolicy.AtOwner,
-      };
+      // configure the GraphModelManager to render the nodes in their correct z-order
+      ConfigureGraphModelManager();
     }
-
+    
     /// <summary>
     /// Enables and configures folding.
     /// </summary>
@@ -174,8 +172,8 @@ namespace Demo.yFiles.Complete.IsometricDrawing
       geim.AllowGroupingOperations = true;
 
       // add listeners to invoke an incremental layout when collapsing/expanding a group
-      geim.NavigationInputMode.GroupCollapsed += (source, args) => RunLayout(args.Item);
-      geim.NavigationInputMode.GroupExpanded += (source, args) => RunLayout(args.Item);
+      geim.NavigationInputMode.GroupCollapsed += async (source, args) => await RunLayout(args.Item);
+      geim.NavigationInputMode.GroupExpanded += async (source, args) => await RunLayout(args.Item);
       
       // ensure that every node has geometry and color information
       geim.NodeCreated += ((sender, evt) => {
@@ -374,21 +372,21 @@ namespace Demo.yFiles.Complete.IsometricDrawing
           true
       );
       graphControl.GraphMLIOHandler.Parsing += (sender, args) => EnableUI(false);
-      graphControl.GraphMLIOHandler.Parsed += (sender, args) => {
+      graphControl.GraphMLIOHandler.Parsed += async (sender, args) => {
         // after loading apply isometric styles and geometry to the nodes and labels
         ApplyIsometricStyles();
-        RunLayout();
+        await RunLayout();
       };
     }
 
-    private void OnHLLayoutClick(object sender, RoutedEventArgs e) {
+    private async void OnHLLayoutClick(object sender, RoutedEventArgs e) {
       layoutType = LayoutHierarchic;
-      RunLayout();
+      await RunLayout();
     }
 
-    private void OnOTLayoutClick(object sender, RoutedEventArgs e) {
+    private async void OnOTLayoutClick(object sender, RoutedEventArgs e) {
       layoutType = LayoutOrthogonal;
-      RunLayout();
+      await RunLayout();
     }
 
     /// <summary>
@@ -488,9 +486,155 @@ namespace Demo.yFiles.Complete.IsometricDrawing
           new RotateTransform(e.NewValue), 
           Projections.Isometric
       } };
-      // update z-order of model items according to new rotation
-      ((IsometricGraphModelManager) graphControl.GraphModelManager).Update();
+      UpdateZOrder();
+    }
+
+    #region Handle visual overlaps
+
+    
+    /// <summary>
+    /// Configure the graph model manager to render the nodes in their correct z-order.
+    /// </summary>
+    /// <remarks>
+    /// Renders nodes which should be hidden by other nodes in the current projection
+    /// behind these nodes.
+    /// </remarks>
+    private void ConfigureGraphModelManager() {
+      var manager = graphControl.GraphModelManager;
+      manager.HierarchicNestingPolicy = HierarchicNestingPolicy.GroupNodes;
+      manager.LabelLayerPolicy = LabelLayerPolicy.AtOwner;
+      // use a custom comparer to render nodes which appear in the background of the current perspective first.
+      manager.NodeManager.Comparer = new IsometricComparer(graphControl);
+      // The comparer needs the user object (=node) to be set on the main canvas object
+      manager.ProvideUserObjectOnMainCanvasObject = true;
+    }
+    
+    /// <summary>
+    /// Update the z-order of model items according to new rotation.
+    /// </summary>
+    /// <remarks>
+    /// Has to be done each time the projection changes.
+    /// Can be omitted in application which do not change the projection.
+    /// </remarks>
+    private void UpdateZOrder() {
+      ((IsometricComparer)graphControl.GraphModelManager.NodeManager.Comparer).Update();
+      foreach (var node in graphControl.Graph.Nodes) {
+        graphControl.GraphModelManager.NodeManager.Update(node);
+      }
       graphControl.Invalidate();
     }
+
+    /// <summary>
+    /// An <see cref="IComparer{T}"/> for nodes that determines their render order in an isometric view.
+    /// </summary>
+    /// <remarks>
+    /// This heuristic assumes that all nodes have a cubical form and no two nodes have overlapping <see cref="INode.Layout"/>. 
+    /// </remarks>
+    sealed class IsometricComparer : IComparer<INode>
+    {
+      private readonly CanvasControl control;
+      private Transform projection;
+
+      private bool leftFaceVisible;
+      private bool backFaceVisible;
+
+      public IsometricComparer(CanvasControl control) {
+        this.control = control;
+        Update();
+      }
+
+      /// <summary>
+      /// Updates which faces are visible and therefore which corners should be used for the z-order comparison.
+      /// </summary>
+      /// <remarks>
+      /// This method has to be called when the <see cref="CanvasControl.Projection"/> has changed.
+      /// </remarks>
+      internal void Update() {
+        if (control.Projection != projection) {
+          projection = control.Projection;
+          var upVector = IsometricNodeStyle.CalculateHeightVector(projection);
+          leftFaceVisible = upVector.X > 0;
+          backFaceVisible = upVector.Y > 0;
+        }
+      }
+
+      public int Compare(INode x, INode y) {
+        var projection = control.Projection;
+        var xViewCenter = PointD.Origin;
+        var yViewCenter = PointD.Origin;
+        var xViewRight = PointD.Origin;
+        var yViewRight = PointD.Origin;
+        var xViewLeft = PointD.Origin;
+        var yViewLeft = PointD.Origin;
+        if (leftFaceVisible && backFaceVisible) {
+          xViewCenter = x.Layout.GetTopLeft();
+          yViewCenter = y.Layout.GetTopLeft();
+          xViewRight = x.Layout.GetBottomLeft();
+          yViewRight = y.Layout.GetBottomLeft();
+          xViewLeft = x.Layout.GetTopRight();
+          yViewLeft = y.Layout.GetTopRight();
+        } else if (!leftFaceVisible && backFaceVisible) {
+          xViewCenter = x.Layout.GetTopRight();
+          yViewCenter = y.Layout.GetTopRight();
+          xViewRight = x.Layout.GetTopLeft();
+          yViewRight = y.Layout.GetTopLeft();
+          xViewLeft = x.Layout.GetBottomRight();
+          yViewLeft = y.Layout.GetBottomRight();
+        } else if (!leftFaceVisible && !backFaceVisible) {
+          xViewCenter = x.Layout.GetBottomRight();
+          yViewCenter = y.Layout.GetBottomRight();
+          xViewRight = x.Layout.GetTopRight();
+          yViewRight = y.Layout.GetTopRight();
+          xViewLeft = x.Layout.GetBottomLeft();
+          yViewLeft = y.Layout.GetBottomLeft();
+        } else if (leftFaceVisible && !backFaceVisible) {
+          xViewCenter = x.Layout.GetBottomLeft();
+          yViewCenter = y.Layout.GetBottomLeft();
+          xViewRight = x.Layout.GetBottomRight();
+          yViewRight = y.Layout.GetBottomRight();
+          xViewLeft = x.Layout.GetTopLeft();
+          yViewLeft = y.Layout.GetTopLeft();
+        }
+
+        var sgnX = leftFaceVisible ? -1 : 1;
+        var sgnY = backFaceVisible ? -1 : 1;
+
+        var dViewCenter = ((PointD) projection.Transform(yViewCenter)) - ((PointD) projection.Transform(xViewCenter));
+        // determine order in two steps:
+        // 1) compare view coordinates of ViewCenter values to determine which node corners to compare in step 2
+        // 2) compare the world coordinates of the corners found in step 1 considering which faces are visible
+        if (dViewCenter.X < 0 && dViewCenter.Y < 0) {
+          var vector = yViewRight - xViewLeft;
+          if (vector.X * sgnX > 0 && vector.Y * sgnY > 0) {
+            return -1;
+          } else {
+            return 1;
+          }
+        } else if (dViewCenter.X > 0 && dViewCenter.Y > 0) {
+          var vector = yViewLeft - xViewRight;
+          if (vector.X * sgnX < 0 && vector.Y * sgnY < 0) {
+            return 1;
+          } else {
+            return -1;
+          }
+        } else if (dViewCenter.X > 0) {
+          var vector = yViewCenter - xViewRight;
+          if (vector.X * sgnX > 0 && vector.Y * sgnY > 0) {
+            return -1;
+          } else {
+            return 1;
+          }
+        } else {
+          var vector = yViewRight - xViewCenter;
+          if (vector.X * sgnX < 0 && vector.Y * sgnY < 0) {
+            return 1;
+          } else {
+            return -1;
+          }
+        }
+      }
+    }
+
+    #endregion
   }
 }

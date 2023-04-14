@@ -1,6 +1,6 @@
 <!-- ************************************************************************ -->
-<!-- This demo file is part of yFiles WPF 3.4.                           -->
-<!-- Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
+<!-- This demo file is part of yFiles WPF 3.5.                           -->
+<!-- Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
 <!-- 72070 Tuebingen, Germany. All rights reserved.                           -->
 <!--                                                                          -->
 <!-- yFiles demo files exhibit yFiles WPF functionalities. Any redistribution  -->
@@ -35,12 +35,13 @@
     <SolidColorBrush x:Key="HeaderBackgroundBrush" Color="{StaticResource ResourceKey={x:Static SystemColors.ControlDarkColorKey}}"/>
     <SolidColorBrush x:Key="HeaderForegroundBrush" Color="{StaticResource ResourceKey={x:Static SystemColors.ControlLightLightColorKey}}"/>
     
-    <SolidColorBrush x:Key="DemoRed" Color="Firebrick" />
-    <SolidColorBrush x:Key="DemoBlue" Color="RoyalBlue" />
-    <SolidColorBrush x:Key="DemoGreen" Color="Green" />
-    <SolidColorBrush x:Key="DemoPurple" Color="Purple" />
-    <SolidColorBrush x:Key="DemoOrange" Color="Orange" />
-    <SolidColorBrush x:Key="DemoGray" Color="Gray" />
+    <SolidColorBrush x:Key="DemoRed" Color="#ca0c3b" />
+    <SolidColorBrush x:Key="DemoLightblue" Color="#46a8d5" />
+    <SolidColorBrush x:Key="DemoGreen" Color="#61a044" />
+    <SolidColorBrush x:Key="DemoPurple" Color="#a37ab3" />
+    <SolidColorBrush x:Key="DemoOrange" Color="#ff6c00" />
+    <SolidColorBrush x:Key="DemoGold" Color="#f0c808" />
+    <SolidColorBrush x:Key="DemoBlue" Color="#242265" />
 
     <DataTemplate x:Key="HeaderTemplate">
         <Border Background="{StaticResource HeaderBackgroundBrush}" Padding="10,5">

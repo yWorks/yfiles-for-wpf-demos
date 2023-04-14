@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--Created by @PRODUCT@ @ASSEMBLY_VERSION@-->
+<!--Created by yFiles WPF 3.5-->
 <graphml xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/3.0" xmlns:y="http://www.yworks.com/xml/yfiles-common/3.0" xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/3.0/xaml" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml.wpf/3.0/ygraphml.xsd " xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://graphml.graphdrawing.org/xmlns">
   <key id="d0" attr.name="NodeLabels" for="node" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeLabels" />
   <key id="d1" attr.name="NodeGeometry" for="node" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeGeometry" />
@@ -22,10 +22,10 @@
   <key id="d10" attr.name="SharedData" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/SharedData" />
   <data key="d10">
     <y:SharedData>
-      <ywpf:ShapeNodeStyle x:Key="1" Pen="{x:Null}" Brush="#FF008B8B" Shape="Ellipse" />
+      <ywpf:ShapeNodeStyle x:Key="1" Pen="{x:Null}" Brush="#76b041" Shape="Ellipse" />
       <ywpf:PolylineEdgeStyle x:Key="2">
         <ywpf:PolylineEdgeStyle.Pen>
-          <Pen Brush="#FF008B8B" Thickness="5" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" />
+          <Pen Brush="#76b041" Thickness="5" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" />
         </ywpf:PolylineEdgeStyle.Pen>
       </ywpf:PolylineEdgeStyle>
     </y:SharedData>

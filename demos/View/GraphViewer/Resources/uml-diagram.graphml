@@ -28,14 +28,21 @@
     <y:SharedData>
       <ywpf:DefaultLabelStyle x:Key="1" Typeface="Arial,Normal,Normal,Normal" TextBrush="Black" >
       </ywpf:DefaultLabelStyle>
-      <ywpf:ShinyPlateNodeStyle x:Key="2" Brush="#ffcc00" Pen="#ffcc00" />
-      <ywpf:ShinyPlateNodeStyle x:Key="3" Brush="#bdb992" Pen="#bdb992" />
-      <ywpf:PolylineEdgeStyle x:Key="4" TargetArrow="None" SourceArrow="Default">
+      <ywpf:ShapeNodeStyle x:Key="2" Brush="#ffab26" Pen="#662b00" />
+      <ywpf:ShapeNodeStyle x:Key="3" Brush="#b9ccd6" Pen="#662b00" />
+      <ywpf:PolylineEdgeStyle x:Key="4" TargetArrow="None">
         <ywpf:PolylineEdgeStyle.Pen>
-          <av:Pen Brush="DarkBlue" DashStyle="{x:Static av:DashStyles.Dash}"/>
+          <av:Pen Brush="#336699" DashStyle="{x:Static av:DashStyles.Dash}"/>
         </ywpf:PolylineEdgeStyle.Pen>
+        <ywpf:PolylineEdgeStyle.SourceArrow>
+          <ywpf:Arrow Type="Default" Brush="#336699"/>
+        </ywpf:PolylineEdgeStyle.SourceArrow>
       </ywpf:PolylineEdgeStyle>
-      <ywpf:PolylineEdgeStyle x:Key="5" TargetArrow="Default" SourceArrow="None" Pen="DarkBlue"/>
+      <ywpf:PolylineEdgeStyle x:Key="5" SourceArrow="None" Pen="#336699">
+        <ywpf:PolylineEdgeStyle.TargetArrow>
+          <ywpf:Arrow Type="Default" Brush="#336699"/>
+        </ywpf:PolylineEdgeStyle.TargetArrow>
+      </ywpf:PolylineEdgeStyle>
     </y:SharedData>
   </data>
   <graph id="G" edgedefault="directed">

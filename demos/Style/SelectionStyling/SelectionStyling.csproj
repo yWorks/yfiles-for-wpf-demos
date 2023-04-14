@@ -71,7 +71,6 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MySimpleLabelStyle.cs" />
     <Compile Include="SelectionStylingDemo.xaml.cs">
       <DependentUpon>SelectionStylingDemo.xaml</DependentUpon>
     </Compile>

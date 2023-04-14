@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.4.
- ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.5.
+ ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -159,9 +159,12 @@ namespace Tutorial.GettingStarted
 
       // Adds labels to several graph elements
       Graph.AddLabel(node1, "N 1");
-      Graph.AddLabel(node2, "N 2");
+      var node2Label = Graph.AddLabel(node2, "N 2");
       var node3Label = Graph.AddLabel(node3, "N 3");
       Graph.AddLabel(edgeAtPorts, "Edge at Ports");
+
+      var model = new InteriorStretchLabelModel { Insets = new InsetsD(3) };
+      Graph.SetLabelLayoutParameter(node2Label, model.CreateParameter(InteriorStretchLabelModel.Position.South));
 
       /////////////////////////////////////////////////////
       /////////////////////////////////////////////////////
@@ -169,7 +172,7 @@ namespace Tutorial.GettingStarted
       #endregion
 
       ///////////////// New in this Sample /////////////////
-      
+
       // Override default label placement
 
       // For our "special" label, we use a model that describes discrete positions
@@ -177,7 +180,7 @@ namespace Tutorial.GettingStarted
       ExteriorLabelModel exteriorLabelModel = new ExteriorLabelModel();
 
       // We use some extra insets from the label to the node bounds
-      exteriorLabelModel.Insets = new InsetsD(5);
+      exteriorLabelModel.Insets = new InsetsD(20);
 
       // We assign this label a specific symbolic position out of the eight possible
       // external locations valid for ExteriorLabelModel
@@ -185,8 +188,6 @@ namespace Tutorial.GettingStarted
 
       /////////////////////////////////////////////////////
     }
-
-
 
     #region Default style setup
 
@@ -200,28 +201,30 @@ namespace Tutorial.GettingStarted
     private void SetDefaultStyles() {
 
       #region Default Node Style
-      // Sets the default style for nodes
-      // Creates a nice ShinyPlateNodeStyle instance, using an orange Brush.
-      INodeStyle defaultNodeStyle = new ShinyPlateNodeStyle { Brush = new SolidColorBrush(Color.FromArgb(255, 255, 140, 0)) };
-
       // Sets this style as the default for all nodes that don't have another
       // style assigned explicitly
-      Graph.NodeDefaults.Style = defaultNodeStyle;
+      Graph.NodeDefaults.Style = new ShapeNodeStyle
+      {
+        Shape = ShapeNodeShape.RoundRectangle,
+        Brush = new SolidColorBrush(Color.FromRgb(255, 108, 0)),
+        Pen = new Pen(new SolidColorBrush(Color.FromRgb(102, 43, 0)), 1.5)
+      };
 
       #endregion
 
       #region Default Edge Style
       // Sets the default style for edges:
-      // Creates an edge style that will apply a gray pen with thickness 1
-      // to the entire line using PolyLineEdgeStyle,
-      // which draws a polyline determined by the edge's control points (bends)
-      var defaultEdgeStyle = new PolylineEdgeStyle { Pen = Pens.Gray };
-
-      // Sets the source and target arrows on the edge style instance
-      // (Actually: no source arrow)
-      // Note that IEdgeStyle itself does not have these properties
-      // Also note that by default there are no arrows
-      defaultEdgeStyle.TargetArrow = Arrows.Default;
+      // Creates a PolylineEdgeStyle which will be used as default for all edges
+      // that don't have another style assigned explicitly
+      var defaultEdgeStyle = new PolylineEdgeStyle
+      {
+        Pen = new Pen(new SolidColorBrush(Color.FromRgb(102, 43, 0)), 1.5),
+        TargetArrow = new Arrow
+        {
+          Type = ArrowType.Triangle,
+          Brush = new SolidColorBrush(Color.FromRgb(102, 43, 0))
+        }
+      };
 
       // Sets the defined edge style as the default for all edges that don't have
       // another style assigned explicitly:
@@ -231,7 +234,12 @@ namespace Tutorial.GettingStarted
       #region Default Label Styles
       // Sets the default style for labels
       // Creates a label style with the label text color set to dark red
-      ILabelStyle defaultLabelStyle = new DefaultLabelStyle { Typeface = new Typeface("Tahoma"), TextSize = 12, TextBrush = Brushes.DarkRed };
+      ILabelStyle defaultLabelStyle = new DefaultLabelStyle
+      {
+        Typeface = new Typeface("Tahoma"),
+        TextSize = 12,
+        TextBrush = Brushes.Black
+      };
 
       // Sets the defined style as the default for both edge and node labels:
       Graph.EdgeDefaults.Labels.Style = Graph.NodeDefaults.Labels.Style = defaultLabelStyle;

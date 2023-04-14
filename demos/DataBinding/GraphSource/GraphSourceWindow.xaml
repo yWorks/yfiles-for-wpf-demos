@@ -1,6 +1,6 @@
 <!-- ************************************************************************ -->
-<!-- This demo file is part of yFiles WPF 3.4.                           -->
-<!-- Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
+<!-- This demo file is part of yFiles WPF 3.5.                           -->
+<!-- Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
 <!-- 72070 Tuebingen, Germany. All rights reserved.                           -->
 <!--                                                                          -->
 <!-- yFiles demo files exhibit yFiles WPF functionalities. Any redistribution  -->
@@ -79,8 +79,8 @@
                     <Setter Property="ContentTemplate">
                         <Setter.Value>
                             <DataTemplate>
-                                <Border Background="#FFE1F2FD" BorderBrush="LightSkyBlue" Padding="2" BorderThickness="1" CornerRadius="1">
-                                  <TextBlock Width="Auto" Height="Auto" Text="{Binding XPath=@name}"  FontSize="8"/>
+                                <Border Background="#e0d5cc" Padding="2" BorderThickness="1" CornerRadius="1">
+                                  <TextBlock Width="Auto" Height="Auto" Text="{Binding XPath=@name}"  FontSize="8" Foreground="#662b00"/>
                                 </Border>    
                             </DataTemplate>
                         </Setter.Value>
@@ -92,14 +92,8 @@
                     <Setter Property="ContentTemplate">
                         <Setter.Value>
                             <DataTemplate>
-                                <Border BorderBrush="LightSkyBlue" BorderThickness="1">
-                                    <Border.Background>
-                                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0" Opacity="0.5">
-                                            <GradientStop Color="LightSkyBlue" Offset="1"/>
-                                            <GradientStop Color="#FFE1F2FD" Offset="0"/>
-                                        </LinearGradientBrush>
-                                    </Border.Background>
-                                    <TextBlock Width="Auto" Height="Auto" Text="{Binding XPath=@name}" FontSize="24" FontWeight="Bold" Foreground="DarkGray"/>
+                                <Border BorderBrush="#042d37" BorderThickness="1">
+                                    <TextBlock Width="Auto" Height="Auto" Text="{Binding XPath=@name}" FontSize="24" FontWeight="Bold" Foreground="#042d37" Background="#9dc6d0"/>
                                 </Border>
                             </DataTemplate>
                         </Setter.Value>
@@ -111,20 +105,12 @@
                     <Setter Property="ContentTemplate">
                         <Setter.Value>
                             <DataTemplate>
-                                <Border BorderBrush="DarkOrange" Padding="3" BorderThickness="1" CornerRadius="5">
-                                    <Border.Background>
-                                        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                                            <LinearGradientBrush.GradientStops>
-                                                <GradientStop Color="#FFFFA500" Offset="0" />
-                                                <GradientStop Color="#FFFFEDCC" Offset="1" />
-                                            </LinearGradientBrush.GradientStops>
-                                        </LinearGradientBrush>
-                                    </Border.Background>
+                                <Border BorderBrush="#662b00" Background="#ff6c00"  Padding="3" BorderThickness="1" CornerRadius="5">
                                     <StackPanel Orientation="Vertical">
                                         <StackPanel Orientation="Horizontal">
-                                            <TextBlock Text="{Binding XPath=@name}"/>
+                                            <TextBlock Text="{Binding XPath=@name}" Background="#ffc499" Foreground="#662b00"/>
                                         </StackPanel>
-                                        <TextBlock Text="{Binding XPath=@position}"/>
+                                        <TextBlock Text="{Binding XPath=@position}" Background="#ffc499" Foreground="#662b00"/>
                                     </StackPanel>
                                 </Border>
                             </DataTemplate>

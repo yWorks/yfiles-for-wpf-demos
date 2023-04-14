@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.4.
- ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.5.
+ ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -27,23 +27,15 @@
  ** 
  ***************************************************************************/
 
-using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using Microsoft.Win32;
 using yWorks.Algorithms.Geometry;
 using yWorks.Layout;
 using yWorks.Layout.Grouping;
-using Brushes = System.Windows.Media.Brushes;
-using Color = System.Windows.Media.Color;
-using HorizontalAlignment = System.Windows.HorizontalAlignment;
-using Point = System.Windows.Point;
-using Rectangle = System.Windows.Shapes.Rectangle;
-using SaveFileDialog = Microsoft.Win32.SaveFileDialog;
-using Size = System.Windows.Size;
-
 
 namespace Demo.Layout.LayoutGraphViewer
 {
@@ -67,6 +59,12 @@ namespace Demo.Layout.LayoutGraphViewer
     /// </summary>
     class GraphCanvas : Canvas
     {
+      private static readonly Brush NodeFill = (Brush) new SolidColorBrush(Color.FromRgb(255, 108, 0)).GetAsFrozen();
+      private static readonly Brush NodeStroke = (Brush) new SolidColorBrush(Color.FromRgb(102, 43, 0)).GetAsFrozen();
+      private static readonly Brush GroupNodeStroke = (Brush) new SolidColorBrush(Color.FromRgb(19, 112, 136)).GetAsFrozen();
+      private static readonly Brush LabelFill = (Brush) new SolidColorBrush(Color.FromRgb(255, 195, 152)).GetAsFrozen();
+      private static readonly Brush EdgeStroke = (Brush) new SolidColorBrush(Color.FromRgb(102, 47, 1)).GetAsFrozen();
+
       private int _padding = 50;
       private double scale = 1;
       public double Scale {
@@ -74,14 +72,14 @@ namespace Demo.Layout.LayoutGraphViewer
         set {
           scale = value;
 
-          var scaleTranform = new ScaleTransform() {
+          var scaleTransform = new ScaleTransform() {
             ScaleX = value,
             ScaleY = value
           };
           var translateTransform = new TranslateTransform(_padding, _padding);
 
           var transformGroup = new TransformGroup();
-          transformGroup.Children.Add(scaleTranform);
+          transformGroup.Children.Add(scaleTransform);
           transformGroup.Children.Add(translateTransform);
           this.RenderTransform = transformGroup;
         }
@@ -94,8 +92,11 @@ namespace Demo.Layout.LayoutGraphViewer
         // Add all edges
         foreach (var edge in graph.Edges) {
           IEdgeLayout el = graph.GetLayout(edge);
-          var l = new Polyline();
-          l.Stroke = Brushes.Black;
+          var l = new Polyline
+          {
+            Stroke = EdgeStroke,
+            StrokeThickness = 1.5
+          };
           l.Points.Add(new Point(graph.GetSourcePointAbs(edge).X, graph.GetSourcePointAbs(edge).Y));
           for (int i = 0; i < el.PointCount(); i++) {
             Point p = new Point(el.GetPoint(i).X, el.GetPoint(i).Y);
@@ -103,6 +104,7 @@ namespace Demo.Layout.LayoutGraphViewer
           }
           l.Points.Add(new Point(graph.GetTargetPointAbs(edge).X, graph.GetTargetPointAbs(edge).Y));
           this.Children.Add(l);
+          this.Children.Add(GetArrowhead(l));
 
           // edge labels
           var edgeLabelLayout = graph.GetLabelLayout(edge);
@@ -114,48 +116,77 @@ namespace Demo.Layout.LayoutGraphViewer
                 graph.GetLayout(edge.Target),
                 labelLayout.ModelParameter);
             this.Children.Add(GetPolygon(orientedRectangle));
-
           }
         }
 
         // add all nodes
         foreach (var node in graph.Nodes) {
           INodeLayout nl = graph.GetLayout(node);
-          Color color = grouping.IsGroupNode(node) ? Color.FromArgb(60, 255, 60, 0) : Color.FromArgb(255, 255, 255, 0);
 
-
-          var rect = new Rectangle();
+          var isGroupNode = grouping.IsGroupNode(node);
+          var stroke = isGroupNode ? GroupNodeStroke : NodeStroke;
+          var rect = new Rectangle
+          {
+            RadiusX = 3.5,
+            RadiusY = 3.5,
+            StrokeThickness = isGroupNode ? 5 : 1.5,
+            Stroke = stroke,
+            Fill = isGroupNode ? null : NodeFill,
+            Width = nl.Width,
+            Height = nl.Height
+          };
           this.Children.Add(rect);
-          rect.Stroke = new SolidColorBrush() {Color = Colors.Black};
-          rect.Fill = new SolidColorBrush() { Color = color };
-          rect.Width = nl.Width;
-          rect.Height = nl.Height;
           Canvas.SetTop(rect, nl.Y);
           Canvas.SetLeft(rect, nl.X);
 
           // display the node index 
           var text = new TextBlock() {
-              Text = String.Empty + node.Index,
+              Text = string.Empty + node.Index,
               HorizontalAlignment = HorizontalAlignment.Center,
-              VerticalAlignment = VerticalAlignment.Center
-          }; 
-          
+              VerticalAlignment = VerticalAlignment.Center,
+              Foreground = stroke
+          };
+
           this.Children.Add(text);
-          text.Measure(new Size(Double.PositiveInfinity, Double.PositiveInfinity));
+          text.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
           Canvas.SetTop(text, nl.Y + nl.Height/2 - text.DesiredSize.Height/2);
           Canvas.SetLeft(text, nl.X + nl.Width/2 - text.DesiredSize.Width/2);
         }
       }
-    }
 
-    private static Polygon GetPolygon(YOrientedRectangle orientedRectangle) {
-      var poly = new Polygon();
-      poly.Stroke = Brushes.Red;
-      poly.Points.Add(new Point((float) orientedRectangle.AnchorX, (float) orientedRectangle.AnchorY));
-      poly.Points.Add(new Point((float) (orientedRectangle.AnchorX + orientedRectangle.Height * orientedRectangle.UpX), (float) (orientedRectangle.AnchorY + orientedRectangle.Height * orientedRectangle.UpY)));
-      poly.Points.Add(new Point((float) (orientedRectangle.AnchorX + orientedRectangle.Height * orientedRectangle.UpX + orientedRectangle.Width * -orientedRectangle.UpY), (float) (orientedRectangle.AnchorY + orientedRectangle.Height * orientedRectangle.UpY + orientedRectangle.Width * orientedRectangle.UpX)));
-      poly.Points.Add(new Point((float) (orientedRectangle.AnchorX + orientedRectangle.Width * -orientedRectangle.UpY), (float) (orientedRectangle.AnchorY + orientedRectangle.Width * orientedRectangle.UpX)));
-      return poly;
+      private Polygon GetArrowhead(Polyline l) {
+        var lastPoint = l.Points[l.Points.Count - 1];
+        var previousPoint = l.Points[l.Points.Count - 2];
+        var lastSegmentVector = lastPoint - previousPoint;
+        lastSegmentVector.Normalize();
+        var perpendicular = new Vector(lastSegmentVector.Y, -lastSegmentVector.X);
+
+        return new Polygon
+        {
+          Fill = EdgeStroke,
+          Points =
+          {
+            lastPoint,
+            lastPoint - 8 * lastSegmentVector + 4 * perpendicular,
+            lastPoint - 8 * lastSegmentVector - 4 * perpendicular
+          }
+        };
+      }
+
+      private static Polygon GetPolygon(YOrientedRectangle orientedRectangle) {
+        var poly = new Polygon
+        {
+          Fill = LabelFill,
+          Points =
+          {
+            new Point(orientedRectangle.AnchorX, orientedRectangle.AnchorY),
+            new Point((orientedRectangle.AnchorX + orientedRectangle.Height * orientedRectangle.UpX), (orientedRectangle.AnchorY + orientedRectangle.Height * orientedRectangle.UpY)),
+            new Point((orientedRectangle.AnchorX + orientedRectangle.Height * orientedRectangle.UpX + orientedRectangle.Width * -orientedRectangle.UpY), (orientedRectangle.AnchorY + orientedRectangle.Height * orientedRectangle.UpY + orientedRectangle.Width * orientedRectangle.UpX)),
+            new Point((orientedRectangle.AnchorX + orientedRectangle.Width * -orientedRectangle.UpY), (orientedRectangle.AnchorY + orientedRectangle.Width * orientedRectangle.UpX))
+          }
+        };
+        return poly;
+      }
     }
 
     private void Btn_zoomIn(object sender, RoutedEventArgs e) {

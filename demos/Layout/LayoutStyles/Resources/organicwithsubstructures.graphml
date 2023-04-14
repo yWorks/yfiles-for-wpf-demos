@@ -25,6 +25,7 @@
       <ywpf:ShapeNodeStyle x:Key="MediumOrchid" Pen="MediumOrchid" Brush="MediumOrchid" Shape="Ellipse"/>
       <ywpf:ShapeNodeStyle x:Key="DarkOrange" Pen="DarkOrange" Brush="DarkOrange" Shape="Ellipse"/>
       <ywpf:ShapeNodeStyle x:Key="PaleVioletRed" Pen="PaleVioletRed" Brush="PaleVioletRed" Shape="Ellipse"/>
+      <ywpf:ShapeNodeStyle x:Key="Navy" Pen="Navy" Brush="Navy" Shape="Ellipse"/>
       <ywpf:DefaultLabelStyle x:Key="1" TextBrush="White"/>
     </y:SharedData>
   </data>
@@ -1081,6 +1082,7 @@
       </data>
       <port name="p0"/>
       <port name="p1"/>
+      <port name="p2"/>
     </node>
     <node id="n63">
       <data key="d0">
@@ -1207,16 +1209,8 @@
       <data key="d3">
         <y:GraphMLReference ResourceKey="DarkOrange"/>
       </data>
-      <port name="p0">
-        <data key="d7">
-          <y:FreeNodePortLocationModelParameter Ratio="0.4999999999999962,0.5"/>
-        </data>
-      </port>
-      <port name="p1">
-        <data key="d7">
-          <y:FreeNodePortLocationModelParameter Ratio="0.4999999999999962,0.5"/>
-        </data>
-      </port>
+    <port name="p0"/>
+    <port name="p1"/>
     </node>
     <node id="n71">
       <data key="d0">
@@ -1234,6 +1228,7 @@
       </data>
       <port name="p0"/>
       <port name="p1"/>
+      <port name="p2"/>
     </node>
     <node id="n72">
       <data key="d0">
@@ -1314,6 +1309,259 @@
       <port name="p0"/>
       <port name="p1"/>
       <port name="p2"/>
+    </node>
+    <node id="n77">
+      <data key="d0">
+        <x:List>
+          <y:Label LayoutParameter="{x:Static y:InteriorLabelModel.Center}" Style="{y:GraphMLReference 1}">
+            <y:Label.Text>Ch</y:Label.Text>
+          </y:Label>
+        </x:List>
+      </data>
+      <data key="d1">
+        <y:RectD X="0" Y="0" Width="30" Height="30"/>
+      </data>
+      <data key="d3">
+        <y:GraphMLReference ResourceKey="LimeGreen"/>
+      </data>
+      <port name="p0"/>
+      <port name="p1"/>
+    </node>
+    <node id="n78">
+      <data key="d0">
+        <x:List>
+          <y:Label LayoutParameter="{x:Static y:InteriorLabelModel.Center}" Style="{y:GraphMLReference 1}">
+            <y:Label.Text>Ch</y:Label.Text>
+          </y:Label>
+        </x:List>
+      </data>
+      <data key="d1">
+        <y:RectD X="0" Y="0" Width="30" Height="30"/>
+      </data>
+      <data key="d3">
+        <y:GraphMLReference ResourceKey="LimeGreen"/>
+      </data>
+      <port name="p0"/>
+      <port name="p1"/>
+    </node>
+    <node id="n79">
+      <data key="d0">
+        <x:List>
+          <y:Label LayoutParameter="{x:Static y:InteriorLabelModel.Center}" Style="{y:GraphMLReference 1}">
+            <y:Label.Text>T</y:Label.Text>
+          </y:Label>
+        </x:List>
+      </data>
+      <data key="d1">
+        <y:RectD X="0" Y="0" Width="30" Height="30"/>
+      </data>
+      <data key="d3">
+        <y:GraphMLReference ResourceKey="Navy"/>
+      </data>
+      <port name="p0"/>
+      <port name="p1"/>
+      <port name="p2"/>
+      <port name="p3"/>
+    </node>
+    <node id="n80">
+      <data key="d0">
+        <x:List>
+          <y:Label LayoutParameter="{x:Static y:InteriorLabelModel.Center}" Style="{y:GraphMLReference 1}">
+            <y:Label.Text>T</y:Label.Text>
+          </y:Label>
+        </x:List>
+      </data>
+      <data key="d1">
+        <y:RectD X="0" Y="0" Width="30" Height="30"/>
+      </data>
+      <data key="d3">
+        <y:GraphMLReference ResourceKey="Navy"/>
+      </data>
+      <port name="p0"/>
+    </node>
+    <node id="n81">
+      <data key="d0">
+        <x:List>
+          <y:Label LayoutParameter="{x:Static y:InteriorLabelModel.Center}" Style="{y:GraphMLReference 1}">
+            <y:Label.Text>T</y:Label.Text>
+          </y:Label>
+        </x:List>
+      </data>
+      <data key="d1">
+        <y:RectD X="0" Y="0" Width="30" Height="30"/>
+      </data>
+      <data key="d3">
+        <y:GraphMLReference ResourceKey="Navy"/>
+      </data>
+      <port name="p0"/>
+      <port name="p1"/>
+      <port name="p2"/>
+    </node>
+    <node id="n82">
+      <data key="d0">
+        <x:List>
+          <y:Label LayoutParameter="{x:Static y:InteriorLabelModel.Center}" Style="{y:GraphMLReference 1}">
+            <y:Label.Text>T</y:Label.Text>
+          </y:Label>
+        </x:List>
+      </data>
+      <data key="d1">
+        <y:RectD X="0" Y="0" Width="30" Height="30"/>
+      </data>
+      <data key="d3">
+        <y:GraphMLReference ResourceKey="Navy"/>
+      </data>
+      <port name="p0"/>
+      <port name="p1"/>
+    </node>
+    <node id="n83">
+      <data key="d0">
+        <x:List>
+          <y:Label LayoutParameter="{x:Static y:InteriorLabelModel.Center}" Style="{y:GraphMLReference 1}">
+            <y:Label.Text>T</y:Label.Text>
+          </y:Label>
+        </x:List>
+      </data>
+      <data key="d1">
+        <y:RectD X="0" Y="0" Width="30" Height="30"/>
+      </data>
+      <data key="d3">
+        <y:GraphMLReference ResourceKey="Navy"/>
+      </data>
+      <port name="p0"/>
+    </node>
+    <node id="n84">
+      <data key="d0">
+        <x:List>
+          <y:Label LayoutParameter="{x:Static y:InteriorLabelModel.Center}" Style="{y:GraphMLReference 1}">
+            <y:Label.Text>T</y:Label.Text>
+          </y:Label>
+        </x:List>
+      </data>
+      <data key="d1">
+        <y:RectD X="0" Y="0" Width="30" Height="30"/>
+      </data>
+      <data key="d3">
+        <y:GraphMLReference ResourceKey="Navy"/>
+      </data>
+      <port name="p0"/>
+    </node>
+    <node id="n85">
+      <data key="d0">
+        <x:List>
+          <y:Label LayoutParameter="{x:Static y:InteriorLabelModel.Center}" Style="{y:GraphMLReference 1}">
+            <y:Label.Text>T</y:Label.Text>
+          </y:Label>
+        </x:List>
+      </data>
+      <data key="d1">
+        <y:RectD X="0" Y="0" Width="30" Height="30"/>
+      </data>
+      <data key="d3">
+        <y:GraphMLReference ResourceKey="Navy"/>
+      </data>
+      <port name="p0"/>
+    </node>
+    <node id="n86">
+      <data key="d0">
+        <x:List>
+          <y:Label LayoutParameter="{x:Static y:InteriorLabelModel.Center}" Style="{y:GraphMLReference 1}">
+            <y:Label.Text>Ch</y:Label.Text>
+          </y:Label>
+        </x:List>
+      </data>
+      <data key="d1">
+        <y:RectD X="0" Y="0" Width="30" Height="30"/>
+      </data>
+      <data key="d3">
+        <y:GraphMLReference ResourceKey="LimeGreen"/>
+      </data>
+      <port name="p0"/>
+      <port name="p1"/>
+    </node>
+    <node id="n87">
+      <data key="d0">
+        <x:List>
+          <y:Label LayoutParameter="{x:Static y:InteriorLabelModel.Center}" Style="{y:GraphMLReference 1}">
+            <y:Label.Text>Ch</y:Label.Text>
+          </y:Label>
+        </x:List>
+      </data>
+      <data key="d1">
+        <y:RectD X="0" Y="0" Width="30" Height="30"/>
+      </data>
+      <data key="d3">
+        <y:GraphMLReference ResourceKey="LimeGreen"/>
+      </data>
+      <port name="p0"/>
+      <port name="p1"/>
+    </node>
+    <node id="n88">
+      <data key="d0">
+        <x:List>
+          <y:Label LayoutParameter="{x:Static y:InteriorLabelModel.Center}" Style="{y:GraphMLReference 1}">
+            <y:Label.Text>Ch</y:Label.Text>
+          </y:Label>
+        </x:List>
+      </data>
+      <data key="d1">
+        <y:RectD X="0" Y="0" Width="30" Height="30"/>
+      </data>
+      <data key="d3">
+        <y:GraphMLReference ResourceKey="LimeGreen"/>
+      </data>
+      <port name="p0"/>
+      <port name="p1"/>
+    </node>
+    <node id="n89">
+      <data key="d0">
+        <x:List>
+          <y:Label LayoutParameter="{x:Static y:InteriorLabelModel.Center}" Style="{y:GraphMLReference 1}">
+            <y:Label.Text>Ch</y:Label.Text>
+          </y:Label>
+        </x:List>
+      </data>
+      <data key="d1">
+        <y:RectD X="0" Y="0" Width="30" Height="30"/>
+      </data>
+      <data key="d3">
+        <y:GraphMLReference ResourceKey="LimeGreen"/>
+      </data>
+      <port name="p0"/>
+      <port name="p1"/>
+    </node>
+    <node id="n90">
+      <data key="d0">
+        <x:List>
+          <y:Label LayoutParameter="{x:Static y:InteriorLabelModel.Center}" Style="{y:GraphMLReference 1}">
+            <y:Label.Text>Ch</y:Label.Text>
+          </y:Label>
+        </x:List>
+      </data>
+      <data key="d1">
+        <y:RectD X="0" Y="0" Width="30" Height="30"/>
+      </data>
+      <data key="d3">
+        <y:GraphMLReference ResourceKey="LimeGreen"/>
+      </data>
+      <port name="p0"/>
+    </node>
+    <node id="n91">
+      <data key="d0">
+        <x:List>
+          <y:Label LayoutParameter="{x:Static y:InteriorLabelModel.Center}" Style="{y:GraphMLReference 1}">
+            <y:Label.Text>Ch</y:Label.Text>
+          </y:Label>
+        </x:List>
+      </data>
+      <data key="d1">
+        <y:RectD X="0" Y="0" Width="30" Height="30"/>
+      </data>
+      <data key="d3">
+        <y:GraphMLReference ResourceKey="LimeGreen"/>
+      </data>
+      <port name="p0"/>
+      <port name="p1"/>
     </node>
     <edge id="e0" source="n4" target="n3" sourceport="p0" targetport="p0"/>
     <edge id="e1" source="n3" target="n2" sourceport="p1" targetport="p0"/>
@@ -1401,5 +1649,20 @@
     <edge id="e83" source="n70" target="n76" sourceport="p1" targetport="p0"/>
     <edge id="e84" source="n76" target="n20" sourceport="p1" targetport="p5"/>
     <edge id="e85" source="n76" target="n11" sourceport="p2" targetport="p5"/>
+    <edge id="e86" source="n78" target="n77" sourceport="p0" targetport="p0"/>
+    <edge id="e87" source="n71" target="n78" sourceport="p2" targetport="p1"/>
+    <edge id="e88" source="n79" target="n80" sourceport="p0" targetport="p0"/>
+    <edge id="e89" source="n79" target="n81" sourceport="p1" targetport="p0"/>
+    <edge id="e90" source="n79" target="n82" sourceport="p2" targetport="p0"/>
+    <edge id="e91" source="n81" target="n83" sourceport="p1" targetport="p0"/>
+    <edge id="e92" source="n81" target="n84" sourceport="p2" targetport="p0"/>
+    <edge id="e93" source="n82" target="n85" sourceport="p1" targetport="p0"/>
+    <edge id="e94" source="n62" target="n79" sourceport="p2" targetport="p3"/>
+    <edge id="e95" source="n87" target="n86" sourceport="p0" targetport="p0"/>
+    <edge id="e96" source="n77" target="n87" sourceport="p1" targetport="p1"/>
+    <edge id="e97" source="n89" target="n88" sourceport="p0" targetport="p0"/>
+    <edge id="e98" source="n91" target="n90" sourceport="p0" targetport="p0"/>
+    <edge id="e99" source="n88" target="n91" sourceport="p1" targetport="p1"/>
+    <edge id="e100" source="n86" target="n89" sourceport="p1" targetport="p1"/>
   </graph>
 </graphml>

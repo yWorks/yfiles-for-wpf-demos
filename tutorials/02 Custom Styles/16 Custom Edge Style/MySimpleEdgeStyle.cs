@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.4.
- ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.5.
+ ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -202,22 +202,7 @@ namespace Tutorial.CustomStyles
     /// Creates the geometry for the path from the given GeneralPath.
     /// </summary>
     private Geometry CreateGeometry(GeneralPath gp) {
-      PolyLineSegment pl = new PolyLineSegment();
-      PathFigure figure = new PathFigure { Segments = { pl } };
-      
-      // create path
-      if (gp != null) {
-        var cursor = gp.CreateCursor();
-        if (cursor.MoveNext()) {
-          figure.StartPoint = cursor.CurrentEndPoint;
-        }
-        // loop all bends of the edge
-        while (cursor.MoveNext()) {
-          pl.Points.Add(cursor.CurrentEndPoint);
-        }
-      }
-
-      return new PathGeometry { Figures = { figure } };
+      return gp.CreateGeometry(new Matrix2D());
     }
 
     #endregion

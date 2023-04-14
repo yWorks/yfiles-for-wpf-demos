@@ -1,6 +1,6 @@
 <!-- ************************************************************************ -->
-<!-- This demo file is part of yFiles WPF 3.4.                           -->
-<!-- Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
+<!-- This demo file is part of yFiles WPF 3.5.                           -->
+<!-- Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
 <!-- 72070 Tuebingen, Germany. All rights reserved.                           -->
 <!--                                                                          -->
 <!-- yFiles demo files exhibit yFiles WPF functionalities. Any redistribution  -->
@@ -75,7 +75,7 @@
                         </ListItem>
                         <ListItem>
                             <Paragraph>
-                                <Run FontWeight="Bold" Foreground="{StaticResource DemoBlue}">Blue nodes</Run> combine the green and orange restrictions: they move only
+                                <Run FontWeight="Bold" Foreground="{StaticResource DemoLightblue}">Blue nodes</Run> combine the green and orange restrictions: they move only
                                 vertically or horizontally and cannot leave the rectangle.
                             </Paragraph>
                         </ListItem>

@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.4.
- ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.5.
+ ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -31,6 +31,7 @@ using System;
 using System.IO;
 using System.Windows;
 using System.Windows.Media;
+using Demo.yFiles.Toolkit;
 using yWorks.Controls;
 using yWorks.Controls.Input;
 using yWorks.Geometry;
@@ -76,9 +77,9 @@ namespace Demo.yFiles.Graph.CustomLabelModel
     /// on the number of possible placements.
     /// </summary>
     protected void InitializeGraph() {
-      Graph.NodeDefaults.Labels.LayoutParameter = new MyNodeLabelModel().CreateDefaultParameter();
+      DemoStyles.InitDemoStyles(Graph);
 
-      graphControl.Graph.NodeDefaults.Style = new ShinyPlateNodeStyle { Brush = Brushes.Orange };
+      Graph.NodeDefaults.Labels.LayoutParameter = new MyNodeLabelModel().CreateDefaultParameter();
 
       Graph.AddLabel(Graph.CreateNode(new RectD(90, 90, 100, 100)), "Click and Drag", new MyNodeLabelModel { CandidateCount = 0, Offset = 20 }.CreateDefaultParameter());
       Graph.AddLabel(Graph.CreateNode(new RectD(250, 90, 100, 100)),

@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.4.
- ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.5.
+ ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -66,8 +66,8 @@ namespace Demo.yFiles.Layout.MazeRouting
       GridEnabledItem = grid != null;
       GridSpacingItem = grid != null ? grid.Spacing : 10;
 
-      EnablePolylineRoutingItem = true;
-      PreferredPolylineSegmentLengthItem = router.PreferredPolylineSegmentLength;
+      RoutingStyleItem = EdgeRoutingStyle.Octilinear;
+      PreferredOctilinearSegmentLengthItem = router.DefaultEdgeLayoutDescriptor.PreferredOctilinearSegmentLength;
     }
 
     public EdgeRouter CreateConfiguredLayout(GraphControl graphControl) {
@@ -117,8 +117,8 @@ namespace Demo.yFiles.Layout.MazeRouting
 
       router.Rerouting = EnableReroutingItem;
 
-      router.PolylineRouting = EnablePolylineRoutingItem;
-      router.PreferredPolylineSegmentLength = PreferredPolylineSegmentLengthItem;
+      router.DefaultEdgeLayoutDescriptor.RoutingStyle = RoutingStyleItem;
+      router.DefaultEdgeLayoutDescriptor.PreferredOctilinearSegmentLength = PreferredOctilinearSegmentLengthItem;
       router.MaximumDuration = MaximumDurationItem * 1000;
 
       return router;
@@ -265,20 +265,22 @@ namespace Demo.yFiles.Layout.MazeRouting
       get { return GridEnabledItem == false; }
     }
 
-    [Label("Octilinear Routing")]
+    [Label("Routing Style")]
     [OptionGroup("PolylineGroup", 10)]
-    [DefaultValue(true)]
-    public bool EnablePolylineRoutingItem { get; set; }
+    [DefaultValue(EdgeRoutingStyle.Octilinear)]
+    [EnumValue("Octilinear", EdgeRoutingStyle.Octilinear)]
+    [EnumValue("Orthogonal",EdgeRoutingStyle.Orthogonal )]
+    public EdgeRoutingStyle RoutingStyleItem { get; set; }
 
-    [Label("Preferred Polyline Segment Length")]
+    [Label("Preferred Octilinear Segment Length")]
     [OptionGroup("PolylineGroup", 20)]
     [DefaultValue(30.0d)]
     [MinMax(Min = 5, Max = 500)]
     [ComponentType(ComponentTypes.Slider)]
-    public double PreferredPolylineSegmentLengthItem { get; set; }
+    public double PreferredOctilinearSegmentLengthItem { get; set; }
 
-    public bool ShouldDisablePreferredPolylineSegmentLengthItem {
-      get { return EnablePolylineRoutingItem == false; }
+    public bool ShouldDisablePreferredOctilinearSegmentLengthItem {
+      get { return RoutingStyleItem != EdgeRoutingStyle.Octilinear; }
     }
   }
 }

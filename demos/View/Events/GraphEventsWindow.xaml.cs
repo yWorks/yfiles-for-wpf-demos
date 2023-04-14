@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.4.
- ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.5.
+ ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -45,6 +45,7 @@ using yWorks.Graph.Styles;
 using yWorks.Graph.LabelModels;
 using yWorks.Graph.PortLocationModels;
 using yWorks.Utils;
+using Demo.yFiles.Toolkit;
 
 namespace Demo.yFiles.Graph.Events
 {
@@ -101,20 +102,7 @@ namespace Demo.yFiles.Graph.Events
 
     private void InitializeGraph() {
       var graph = graphControl.Graph;
-      graph.NodeDefaults.Style = new ShinyPlateNodeStyle { Brush = Brushes.Orange };
-      var groupStyle = new PanelNodeStyle
-      {
-        Color = Color.FromArgb(255, 214, 229, 248),
-        LabelInsetsColor = Color.FromArgb(255, 214, 229, 248),
-        Insets = new InsetsD(5, 18, 5, 5)
-      };
-      var groupNodeDefaults = graph.GroupNodeDefaults;
-      groupNodeDefaults.Style = new CollapsibleNodeStyleDecorator(groupStyle);
-      groupNodeDefaults.Labels.LayoutParameter = InteriorStretchLabelModel.North;
-      groupNodeDefaults.Labels.Style = new DefaultLabelStyle
-      {
-        TextAlignment = TextAlignment.Right
-      };
+      DemoStyles.InitDemoStyles(graph, foldingEnabled: true);
     }
 
     private void InitializeInputModes() {
@@ -727,6 +715,7 @@ namespace Demo.yFiles.Graph.Events
 
       editorMode.HandleInputMode.Dragged += InputModeOnDragged;
       editorMode.HandleInputMode.Dragging += InputModeOnDragging;
+      editorMode.HandleInputMode.Clicked += InputModeOnClick;
     }
 
     private void DeregisterHandleModeEvents(object sender, RoutedEventArgs routedEventArgs) {
@@ -739,6 +728,7 @@ namespace Demo.yFiles.Graph.Events
 
       editorMode.HandleInputMode.Dragged -= InputModeOnDragged;
       editorMode.HandleInputMode.Dragging -= InputModeOnDragging;
+      editorMode.HandleInputMode.Clicked -= InputModeOnClick;
     }
 
     private void RegisterMoveViewportModeEvents(object sender, RoutedEventArgs routedEventArgs) {
@@ -1439,6 +1429,9 @@ namespace Demo.yFiles.Graph.Events
 
     private void InputModeOnDragStarted(object sender, InputModeEventArgs inputModeEventArgs) {
       Log(sender.GetType().Name + " DragStarted" + GetAffectedItems(sender), "DragStarted");
+    }
+    private void InputModeOnClick(object sender, ClickEventArgs clickEventArgs) {
+      Log(sender.GetType().Name + " Clicked Handle", "HandleClicked");
     }
 
     private static string GetAffectedItems(object sender) {

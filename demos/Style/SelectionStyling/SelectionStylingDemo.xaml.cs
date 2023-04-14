@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.4.
- ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.5.
+ ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -38,6 +38,7 @@ using yWorks.Geometry;
 using yWorks.Graph;
 using yWorks.Graph.Styles;
 using yWorks.Graph.LabelModels;
+using Demo.yFiles.Toolkit;
 
 [assembly :
   XmlnsDefinition("http://www.yworks.com/yFilesWPF/demos/SelectionStyling/1.0", "Demo.yFiles.Graph.SelectionStyling")]
@@ -74,13 +75,7 @@ namespace Demo.yFiles.Graph.SelectionStyling
     protected virtual void OnLoaded(object src, RoutedEventArgs e) {
       // initialize default graph styles
       var graph = graphControl.Graph;
-      graph.NodeDefaults.Style = new ShinyPlateNodeStyle { Brush = Brushes.DarkOrange };
-      graph.NodeDefaults.Size = new SizeD(50, 30);
-
-      graph.NodeDefaults.Labels.Style = new MySimpleLabelStyle();
-      graph.NodeDefaults.Labels.LayoutParameter =
-        new ExteriorLabelModel {Insets = new InsetsD(15)}.CreateParameter(ExteriorLabelModel.Position.North);
-      graph.EdgeDefaults.Labels.Style = new MySimpleLabelStyle();
+      DemoStyles.InitDemoStyles(graph);
 
       // initialize the graph
       graphControl.ImportFromGraphML("Resources\\SelectionStyling.graphml");

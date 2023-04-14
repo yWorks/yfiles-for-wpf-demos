@@ -1,6 +1,6 @@
 <!-- ************************************************************************ -->
-<!-- This demo file is part of yFiles WPF 3.4.                           -->
-<!-- Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
+<!-- This demo file is part of yFiles WPF 3.5.                           -->
+<!-- Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
 <!-- 72070 Tuebingen, Germany. All rights reserved.                           -->
 <!--                                                                          -->
 <!-- yFiles demo files exhibit yFiles WPF functionalities. Any redistribution  -->
@@ -36,8 +36,6 @@
                 <ResourceDictionary Source="pack://application:,,,/DemoToolkit;component/StyleResources.xaml" />
                 <ResourceDictionary>
                     <Style x:Key="ClipboardStyle" TargetType="ywpf:NodeControl">
-                        <Setter Property="MinHeight" Value="60"/>
-                        <Setter Property="MinWidth" Value="120"/>
                         <Setter Property="ContentTemplate">
                             <Setter.Value>
                                 <DataTemplate>
@@ -45,13 +43,15 @@
                                 </DataTemplate>
                             </Setter.Value>
                         </Setter>
+                        <Setter Property="BorderBrush" Value="#617984"/>
+                        <Setter Property="BorderThickness" Value="1.5"/>
                         <Setter Property="Background">
                             <Setter.Value>
                                 <!-- Background Gradient -->
                                 <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
                                     <LinearGradientBrush.GradientStops>
-                                        <GradientStop Offset="0" Color="#FFCCFFFF" />
-                                        <GradientStop Offset="1" Color="#FF249ae7" />
+                                        <GradientStop Offset="0" Color="#C1E1F1" />
+                                        <GradientStop Offset="1" Color="#67B7DC" />
                                     </LinearGradientBrush.GradientStops>
                                 </LinearGradientBrush>
                             </Setter.Value>
@@ -59,18 +59,19 @@
                         <Setter Property="Template">
                             <Setter.Value>
                                 <ControlTemplate TargetType="ywpf:NodeControl">
-                                    <Border CornerRadius="5" Background="{TemplateBinding Background}" BorderThickness="{TemplateBinding BorderThickness}" BorderBrush="{TemplateBinding BorderBrush}">
-                                        <StackPanel>
+                                    <Border CornerRadius="4" Background="{TemplateBinding Background}" BorderThickness="{TemplateBinding BorderThickness}" BorderBrush="{TemplateBinding BorderBrush}">
+                                        <Grid>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition />
+                                                <RowDefinition />
+                                            </Grid.RowDefinitions>
                                             <!-- Name -->
-                                            <Border>
-                                                <Border.Background>
-                                                    <SolidColorBrush x:Name="ShineBrush" Opacity="0.25" Color="White" />
-                                                </Border.Background>
-                                                <TextBlock Margin="1,10,1,5" Text="{Binding RelativeSource={RelativeSource TemplatedParent},Path=Content.Name}" TextAlignment="Center" HorizontalAlignment="Center" FontSize="13"/>
+                                            <Border Grid.Row="0"  Background="#40FFFFFF" CornerRadius="3.25,3.25,0,0">
+                                                <TextBlock Text="{Binding RelativeSource={RelativeSource TemplatedParent},Path=Content.Name}" TextAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="13"/>
                                             </Border>
                                             <!-- Other Properties -->
-                                            <ContentControl Margin="10" HorizontalAlignment="Center" Content="{TemplateBinding Content}" ContentTemplate="{TemplateBinding ContentTemplate}" HorizontalContentAlignment="Stretch"/>
-                                        </StackPanel>
+                                            <ContentControl Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Content="{TemplateBinding Content}" ContentTemplate="{TemplateBinding ContentTemplate}" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                                        </Grid>
                                     </Border>
                                 </ControlTemplate>
                             </Setter.Value>

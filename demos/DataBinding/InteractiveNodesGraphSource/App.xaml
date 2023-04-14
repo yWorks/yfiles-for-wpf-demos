@@ -1,6 +1,6 @@
 <!-- ************************************************************************ -->
-<!-- This demo file is part of yFiles WPF 3.4.                           -->
-<!-- Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
+<!-- This demo file is part of yFiles WPF 3.5.                           -->
+<!-- Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
 <!-- 72070 Tuebingen, Germany. All rights reserved.                           -->
 <!--                                                                          -->
 <!-- yFiles demo files exhibit yFiles WPF functionalities. Any redistribution  -->
@@ -38,18 +38,10 @@
                         <Setter Property="Margin" Value="3"/>
                     </Style>
                     <DataTemplate DataType="{x:Type GraphSource:BusinessData}">
-                        <Border BorderBrush="DarkOrange" Padding="3" BorderThickness="1" CornerRadius="5">
-                            <Border.Background>
-                                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                                    <LinearGradientBrush.GradientStops>
-                                        <GradientStop Color="#FFFFA500" Offset="0" />
-                                        <GradientStop Color="#FFFFEDCC" Offset="1" />
-                                    </LinearGradientBrush.GradientStops>
-                                </LinearGradientBrush>
-                            </Border.Background>
+                        <Border BorderBrush="#27401b" Background="#61a044" Padding="3" BorderThickness="1" CornerRadius="5">
                             <StackPanel Orientation="Vertical">
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="{Binding Path=NodeName}"/>
+                                    <TextBlock Text="{Binding Path=NodeName}" Foreground="#27401b" Background="#c0d9b4"/>
                                 </StackPanel>
                             </StackPanel>
                         </Border>

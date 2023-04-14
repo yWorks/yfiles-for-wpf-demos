@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.4.
- ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.5.
+ ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -34,6 +34,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using Demo.yFiles.Graph.TableEditor.Style;
+using Demo.yFiles.Toolkit;
 using yWorks.Controls.Input;
 using yWorks.Geometry;
 using yWorks.Graph;
@@ -68,7 +69,7 @@ namespace Demo.yFiles.Graph.TableEditor
     /// <summary>
     /// The default style for normal nodes
     /// </summary>
-    private readonly ShinyPlateNodeStyle defaultNormalNodeStyle = new ShinyPlateNodeStyle { Brush = Brushes.Orange, Radius = 0};
+    private readonly INodeStyle defaultNormalNodeStyle = DemoStyles.CreateDemoNodeStyle();
 
     /// <summary>
     /// The default size for normal nodes

@@ -4,10 +4,8 @@
   <key id="d0" for="all" attr.name="UserTags" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/UserTags" />
   <key id="d1" for="node" attr.name="NodeLabels" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeLabels" />
   <key id="d2" for="node" attr.name="NodeGeometry" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeGeometry" />
-  <key id="d3" for="node" attr.name="NodeStyle" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeStyle" />
   <key id="d4" for="edge" attr.name="EdgeLabels" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/EdgeLabels" />
   <key id="d5" for="edge" attr.name="EdgeGeometry" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/EdgeGeometry" />
-  <key id="d6" for="edge" attr.name="EdgeStyle" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/EdgeStyle" />
   <key id="d7" for="port" attr.name="PortLocationParameter" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/PortLocationParameter">
     <default>
       <x:Static Member="y:FreeNodePortLocationModel.NodeCenterAnchored" />
@@ -29,16 +27,10 @@
       <data key="d2">
         <y:RectD X="-133.5" Y="157.83333333333337" Width="187" Height="81" />
       </data>
-      <data key="d3">
-        <ywpf:ShinyPlateNodeStyle Brush="Orange" />
-      </data>
       <data key="d1">
         <x:List>
           <y:Label LayoutParameter="{y:GraphMLReference 1}">
             <y:Label.Text>A</y:Label.Text>
-            <y:Label.Style>
-              <ywpf:DefaultLabelStyle />
-            </y:Label.Style>
           </y:Label>
         </x:List>
       </data>
@@ -58,16 +50,10 @@
       <data key="d2">
         <y:RectD X="272.03999999999996" Y="126.78000000000003" Width="62.831999999999994" Height="81" />
       </data>
-      <data key="d3">
-        <ywpf:ShinyPlateNodeStyle Brush="Orange" />
-      </data>
       <data key="d1">
         <x:List>
           <y:Label LayoutParameter="{y:GraphMLReference 1}">
             <y:Label.Text>B</y:Label.Text>
-            <y:Label.Style>
-              <ywpf:DefaultLabelStyle />
-            </y:Label.Style>
           </y:Label>
         </x:List>
       </data>
@@ -82,16 +68,10 @@
       <data key="d2">
         <y:RectD X="94.828" Y="314.19999999999993" Width="62.831999999999994" Height="27.120000000000005" />
       </data>
-      <data key="d3">
-        <ywpf:ShinyPlateNodeStyle Brush="Orange" />
-      </data>
       <data key="d1">
         <x:List>
           <y:Label LayoutParameter="{y:GraphMLReference 1}">
             <y:Label.Text><![CDATA[move me]]></y:Label.Text>
-            <y:Label.Style>
-              <ywpf:DefaultLabelStyle />
-            </y:Label.Style>
           </y:Label>
         </x:List>
       </data>
@@ -100,9 +80,6 @@
     <node id="n3">
       <data key="d2">
         <y:RectD X="-186.31400000000002" Y="47.96000019073486" Width="74.314000000000021" Height="38.873333142598511" />
-      </data>
-      <data key="d3">
-        <ywpf:ShinyPlateNodeStyle Brush="Orange" />
       </data>
       <data key="d1">
         <x:List>
@@ -115,9 +92,6 @@
                 </y:InteriorLabelModelParameter.Model>
               </y:InteriorLabelModelParameter>
             </y:Label.LayoutParameter>
-            <y:Label.Style>
-              <ywpf:DefaultLabelStyle />
-            </y:Label.Style>
           </y:Label>
         </x:List>
       </data>
@@ -129,9 +103,6 @@
           <y:Bend Location="303.456,26.6000000000001" />
         </x:List>
       </data>
-      <data key="d6">
-        <ywpf:PolylineEdgeStyle TargetArrow="Default" SourceArrow="None" />
-      </data>
     </edge>
     <edge id="e1" source="n2" target="n0" sourceport="p0" targetport="p1">
       <data key="d5">
@@ -139,18 +110,12 @@
           <y:Bend Location="126.244,198.333333333333" />
         </x:List>
       </data>
-      <data key="d6">
-        <ywpf:PolylineEdgeStyle TargetArrow="Default" SourceArrow="None"  />
-      </data>
     </edge>
     <edge id="e2" source="n0" target="n1" sourceport="p2" targetport="p1">
       <data key="d5">
         <x:List>
           <y:Bend Location="143.57,-67.1199999999999" />
         </x:List>
-      </data>
-      <data key="d6">
-        <ywpf:PolylineEdgeStyle TargetArrow="Default" SourceArrow="None"  />
       </data>
       <data key="d4">
         <x:List>
@@ -163,9 +128,6 @@
                 </y:EdgeSegmentLabelModelParameter.Model>
               </y:EdgeSegmentLabelModelParameter>
             </y:Label.LayoutParameter>
-            <y:Label.Style>
-              <ywpf:DefaultLabelStyle />
-            </y:Label.Style>
           </y:Label>
         </x:List>
       </data>

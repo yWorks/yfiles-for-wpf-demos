@@ -4,7 +4,6 @@
   <key id="d0" for="all" attr.name="UserTags" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/UserTags" />
   <key id="d1" for="node" attr.name="NodeLabels" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeLabels" />
   <key id="d2" for="node" attr.name="NodeGeometry" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeGeometry" />
-  <key id="d3" for="node" attr.name="NodeStyle" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeStyle" />
   <key id="d4" for="edge" attr.name="EdgeLabels" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/EdgeLabels" />
   <key id="d5" for="edge" attr.name="EdgeGeometry" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/EdgeGeometry" />
   <key id="d6" for="edge" attr.name="EdgeStyle" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/EdgeStyle" />
@@ -23,17 +22,17 @@
     <y:SharedData>
       <ywpf:PolylineEdgeStyle x:Key="1" TargetArrow="None" SourceArrow="None">
         <ywpf:PolylineEdgeStyle.Pen>
-          <Pen Brush="#FF0000FF" Thickness="2" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" />
+          <Pen Brush="#FF0B7189" Thickness="2" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" />
         </ywpf:PolylineEdgeStyle.Pen>
       </ywpf:PolylineEdgeStyle>
       <ywpf:PolylineEdgeStyle x:Key="2" TargetArrow="None" SourceArrow="None">
         <ywpf:PolylineEdgeStyle.Pen>
-          <Pen Brush="#FFFF0000" Thickness="2" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" />
+          <Pen Brush="#FFAB2346" Thickness="2" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" />
         </ywpf:PolylineEdgeStyle.Pen>
       </ywpf:PolylineEdgeStyle>
       <ywpf:PolylineEdgeStyle x:Key="3" TargetArrow="None" SourceArrow="None">
         <ywpf:PolylineEdgeStyle.Pen>
-          <Pen Brush="#FF008000" Thickness="2" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" />
+          <Pen Brush="#FF662B00" Thickness="2" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" />
         </ywpf:PolylineEdgeStyle.Pen>
       </ywpf:PolylineEdgeStyle>
     </y:SharedData>
@@ -42,9 +41,6 @@
     <node id="n0">
       <data key="d2">
         <y:RectD X="-374.50000000000023" Y="313" Width="50" Height="50" />
-      </data>
-      <data key="d3">
-        <x:Static Member="demo:BusRouterNodeStyles.Computer" />
       </data>
       <port name="p0">
         <data key="d7">
@@ -96,9 +92,6 @@
       <data key="d2">
         <y:RectD X="-206.35000000000002" Y="21.074683958163291" Width="50" Height="50" />
       </data>
-      <data key="d3">
-        <demo:VectorNodeStyle TemplateKey="Printer" />
-      </data>
       <port name="p0">
         <data key="d7">
           <y:FreeNodePortLocationModelParameter Ratio="1,0.5" />
@@ -109,9 +102,6 @@
       <data key="d2">
         <y:RectD X="-206.35000000000002" Y="313" Width="50" Height="50" />
       </data>
-      <data key="d3">
-        <x:Static Member="demo:BusRouterNodeStyles.Computer" />
-      </data>
       <port name="p0">
         <data key="d7">
           <y:FreeNodePortLocationModelParameter Ratio="0.5,0" />
@@ -121,9 +111,6 @@
     <node id="n3">
       <data key="d2">
         <y:RectD X="-124.99999999999986" Y="-143.9253160418366" Width="50" Height="50" />
-      </data>
-      <data key="d3">
-        <x:Static Member="demo:BusRouterNodeStyles.Network" />
       </data>
       <port name="p0">
         <data key="d7">
@@ -205,9 +192,6 @@
       <data key="d2">
         <y:RectD X="-38.199999999999818" Y="313" Width="50" Height="50" />
       </data>
-      <data key="d3">
-        <x:Static Member="demo:BusRouterNodeStyles.Computer" />
-      </data>
       <port name="p0">
         <data key="d7">
           <y:FreeNodePortLocationModelParameter Ratio="0.5,0" />
@@ -217,9 +201,6 @@
     <node id="n5">
       <data key="d2">
         <y:RectD X="129.95000000000039" Y="313" Width="50" Height="50" />
-      </data>
-      <data key="d3">
-        <x:Static Member="demo:BusRouterNodeStyles.Computer" />
       </data>
       <port name="p0">
         <data key="d7">
@@ -231,9 +212,6 @@
       <data key="d2">
         <y:RectD X="129.95000000000039" Y="159.53734197908159" Width="50" Height="50" />
       </data>
-      <data key="d3">
-        <x:Static Member="demo:BusRouterNodeStyles.Computer" />
-      </data>
       <port name="p0">
         <data key="d7">
           <y:FreeNodePortLocationModelParameter Ratio="0.5,1" />
@@ -243,9 +221,6 @@
     <node id="n7">
       <data key="d2">
         <y:RectD X="-38.199999999999818" Y="159.53734197908165" Width="50" Height="50" />
-      </data>
-      <data key="d3">
-        <x:Static Member="demo:BusRouterNodeStyles.Computer" />
       </data>
       <port name="p0">
         <data key="d7">
@@ -257,9 +232,6 @@
       <data key="d2">
         <y:RectD X="-374.50000000000023" Y="159.53734197908165" Width="50" Height="50" />
       </data>
-      <data key="d3">
-        <x:Static Member="demo:BusRouterNodeStyles.Computer" />
-      </data>
       <port name="p0">
         <data key="d7">
           <y:FreeNodePortLocationModelParameter Ratio="0.5,1" />
@@ -269,9 +241,6 @@
     <node id="n9">
       <data key="d2">
         <y:RectD X="-206.35000000000002" Y="159.53734197908165" Width="50" Height="50" />
-      </data>
-      <data key="d3">
-        <x:Static Member="demo:BusRouterNodeStyles.Computer" />
       </data>
       <port name="p0">
         <data key="d7">
@@ -283,9 +252,6 @@
       <data key="d2">
         <y:RectD X="-439.77499999999986" Y="-355.45132901045923" Width="50" Height="50" />
       </data>
-      <data key="d3">
-        <x:Static Member="demo:BusRouterNodeStyles.Computer" />
-      </data>
       <port name="p0">
         <data key="d7">
           <y:FreeNodePortLocationModelParameter Ratio="0.5,1" />
@@ -295,9 +261,6 @@
     <node id="n11">
       <data key="d2">
         <y:RectD X="-264.77499999999986" Y="-243.45132901045923" Width="50" Height="50" />
-      </data>
-      <data key="d3">
-        <x:Static Member="demo:BusRouterNodeStyles.Computer" />
       </data>
       <port name="p0">
         <data key="d7">
@@ -309,9 +272,6 @@
       <data key="d2">
         <y:RectD X="-238.77499999999986" Y="-337.45132901045923" Width="50" Height="50" />
       </data>
-      <data key="d3">
-        <x:Static Member="demo:BusRouterNodeStyles.Computer" />
-      </data>
       <port name="p0">
         <data key="d7">
           <y:FreeNodePortLocationModelParameter Ratio="0.5,1" />
@@ -321,9 +281,6 @@
     <node id="n13">
       <data key="d2">
         <y:RectD X="-415.77499999999986" Y="-212.45132901045918" Width="50" Height="50" />
-      </data>
-      <data key="d3">
-        <x:Static Member="demo:BusRouterNodeStyles.Computer" />
       </data>
       <port name="p0">
         <data key="d7">
@@ -335,9 +292,6 @@
       <data key="d2">
         <y:RectD X="-555.77499999999986" Y="-240.45132901045923" Width="50" Height="50" />
       </data>
-      <data key="d3">
-        <x:Static Member="demo:BusRouterNodeStyles.Computer" />
-      </data>
       <port name="p0">
         <data key="d7">
           <y:FreeNodePortLocationModelParameter Ratio="0.5,0" />
@@ -347,9 +301,6 @@
     <node id="n15">
       <data key="d2">
         <y:RectD X="-320.77499999999986" Y="-405.45132901045923" Width="50" Height="50" />
-      </data>
-      <data key="d3">
-        <x:Static Member="demo:BusRouterNodeStyles.Printer" />
       </data>
       <port name="p0">
         <data key="d7">
@@ -361,9 +312,6 @@
       <data key="d2">
         <y:RectD X="110.22500000000014" Y="-449.45132901045923" Width="50" Height="50" />
       </data>
-      <data key="d3">
-        <x:Static Member="demo:BusRouterNodeStyles.Printer" />
-      </data>
       <port name="p0">
         <data key="d7">
           <y:FreeNodePortLocationModelParameter Ratio="0.5,1" />
@@ -373,9 +321,6 @@
     <node id="n17">
       <data key="d2">
         <y:RectD X="323.22500000000014" Y="-449.45132901045923" Width="50" Height="50" />
-      </data>
-      <data key="d3">
-        <x:Static Member="demo:BusRouterNodeStyles.Computer" />
       </data>
       <port name="p0">
         <data key="d7">
@@ -387,9 +332,6 @@
       <data key="d2">
         <y:RectD X="110.22500000000014" Y="-243.45132901045923" Width="50" Height="50" />
       </data>
-      <data key="d3">
-        <x:Static Member="demo:BusRouterNodeStyles.Printer" />
-      </data>
       <port name="p0">
         <data key="d7">
           <y:FreeNodePortLocationModelParameter Ratio="0.5,0" />
@@ -399,9 +341,6 @@
     <node id="n19">
       <data key="d2">
         <y:RectD X="212.22500000000014" Y="-346.45198703137754" Width="50" Height="50" />
-      </data>
-      <data key="d3">
-        <x:Static Member="demo:BusRouterNodeStyles.Computer" />
       </data>
       <port name="p0">
         <data key="d7">
@@ -413,9 +352,6 @@
       <data key="d2">
         <y:RectD X="323.22500000000014" Y="-243.45132901045923" Width="50" Height="50" />
       </data>
-      <data key="d3">
-        <x:Static Member="demo:BusRouterNodeStyles.Printer" />
-      </data>
       <port name="p0">
         <data key="d7">
           <y:FreeNodePortLocationModelParameter Ratio="0.5,0" />
@@ -425,9 +361,6 @@
     <node id="n21">
       <data key="d2">
         <y:RectD X="-502.27499999999986" Y="-425.96000000000009" Width="50" Height="50" />
-      </data>
-      <data key="d3">
-        <x:Static Member="demo:BusRouterNodeStyles.Printer" />
       </data>
       <port name="p0">
         <data key="d7">
@@ -439,9 +372,6 @@
       <data key="d2">
         <y:RectD X="-582.27499999999986" Y="-335.96000000000004" Width="50" Height="50" />
       </data>
-      <data key="d3">
-        <x:Static Member="demo:BusRouterNodeStyles.Computer" />
-      </data>
       <port name="p0">
         <data key="d7">
           <y:FreeNodePortLocationModelParameter Ratio="0.5,0.5" />
@@ -451,9 +381,6 @@
     <node id="n23">
       <data key="d2">
         <y:RectD X="-576.27499999999986" Y="-445.96000000000009" Width="50" Height="50" />
-      </data>
-      <data key="d3">
-        <x:Static Member="demo:BusRouterNodeStyles.Printer" />
       </data>
       <port name="p0">
         <data key="d7">

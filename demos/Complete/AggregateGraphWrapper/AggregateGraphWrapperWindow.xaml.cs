@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.4.
- ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.5.
+ ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -151,7 +151,7 @@ namespace Demo.yFiles.Graph.AggregateGraphWrapperDemo
         var separateAllowed = Graph.Nodes.Any(n => AggregateGraph.IsAggregationItem(n));
         var separateAll = new MenuItem { Header = "Separate All" , IsEnabled = separateAllowed };
         separateAll.Click += (o, args) => {
-          AggregateGraph.SeparateAll();
+          AggregateGraph.SeparateToOriginalItems();
           RunLayout();
         };
         e.Menu.Items.Add(separateAll);
@@ -254,10 +254,10 @@ namespace Demo.yFiles.Graph.AggregateGraphWrapperDemo
     /// </summary>
     /// <remarks>
     /// Before aggregating the nodes, all existing aggregations are
-    /// <see cref="AggregateGraphWrapper.SeparateAll">separated</see>.
+    /// <see cref="AggregateGraphWrapper.SeparateToOriginalItems">separated</see>.
     /// </remarks>
     private void AggregateAll<TKey>(Func<INode, TKey> selector, Func<TKey, INodeStyle> styleFactory) {
-      AggregateGraph.SeparateAll();
+      AggregateGraph.SeparateToOriginalItems();
 
       foreach (var grouping in Graph.Nodes.GroupBy(selector).ToList()) {
         Aggregate(grouping.ToList(), grouping.Key, styleFactory);

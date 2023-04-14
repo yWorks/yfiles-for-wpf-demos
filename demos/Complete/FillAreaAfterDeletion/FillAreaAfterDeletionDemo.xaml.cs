@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.4.
- ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.5.
+ ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -31,6 +31,7 @@ using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using Demo.yFiles.Toolkit;
 using yWorks.Controls;
 using yWorks.Controls.Input;
 using yWorks.Geometry;
@@ -114,13 +115,10 @@ namespace Demo.yFiles.Graph.FillAreaAfterDeletion
     /// Prepares the <see cref="LayoutExecutor"/> that is called after the selection is deleted.
     /// </summary>
     private void OnDeletingSelection(object sender, SelectionEventArgs<IModelItem> e) {
-      // determine the bounds of the selection
-      var rect = GetBounds(e.Selection);
-
       // configure the layout that will fill free space
       var layout = new FillAreaLayout {
           ComponentAssignmentStrategy = ComponentAssignmentStrategy,
-          Area = rect.ToYRectangle()
+          Area = GetBounds(e.Selection).ToYRectangle()
       };
 
       // configure the LayoutExecutor that will perform the layout and morph the result
@@ -145,6 +143,16 @@ namespace Demo.yFiles.Graph.FillAreaAfterDeletion
         var node = item as INode;
         if (node != null) {
           bounds += node.Layout.ToRectD();
+        } else {
+          var edge = item as IEdge;
+          if (edge != null) {
+            if (edge.SourcePort != null) {
+              bounds += edge.SourcePort.GetLocation();
+            }
+            if (edge.TargetPort != null) {
+              bounds += edge.TargetPort.GetLocation();
+            }
+          }
         }
       }
       return bounds;
@@ -154,7 +162,7 @@ namespace Demo.yFiles.Graph.FillAreaAfterDeletion
     /// Initializes styles and loads a sample graph.
     /// </summary>
     protected virtual void InitializeGraph() {
-      GraphControl.Graph.NodeDefaults.Style = new ShinyPlateNodeStyle {Brush = Brushes.Orange};
+      DemoStyles.InitDemoStyles(GraphControl.Graph);
     }
 
     #endregion

@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.4.
- ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.5.
+ ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -36,6 +36,7 @@ using yWorks.Geometry;
 using yWorks.Graph;
 using yWorks.Graph.Styles;
 using yWorks.Graph.LabelModels;
+using System.Windows.Controls;
 
 namespace Demo.yFiles.Graph.Input.LabelEditing
 {
@@ -102,7 +103,6 @@ namespace Demo.yFiles.Graph.Input.LabelEditing
       }
 
       private void ConfigureTextEditorInputMode(IInputModeContext context, TextEditorInputMode mode, ILabel label) {
-        var oldBackground = mode.TextBox.Background;
         var oldVisual = labelCanvasObject.Visible;
 
         // We know that this label helper is only used once this demo is properly set up.
@@ -128,7 +128,8 @@ namespace Demo.yFiles.Graph.Input.LabelEditing
         afterEditing = delegate {
           textEditorInputMode.ShowInViewCoordinatesProperty = false;
           labelCanvasObject.Visible = oldVisual;
-          mode.TextBox.Background = oldBackground;
+          mode.TextBox.ClearValue(Panel.BackgroundProperty);
+          mode.TextBox.ClearValue(Control.FontSizeProperty);
           mode.TextEdited -= afterEditing;
           mode.EditingCanceled -= afterEditing;
         };

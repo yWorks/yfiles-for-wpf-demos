@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<!--Created by yFiles WPF 2.1-->
+<!--Created by yFiles WPF 3.5-->
 <graphml xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/3.0" xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/3.0/xaml" xmlns:y="http://www.yworks.com/xml/yfiles-common/3.0" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml.wpf/2.0/ygraphml.xsd " xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://graphml.graphdrawing.org/xmlns">
   <key id="d0" for="all" attr.name="UserTags" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/UserTags" />
   <key id="d1" for="node" attr.name="NodeLabels" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeLabels" />
@@ -10,7 +10,11 @@
   </key>
   <key id="d3" for="node" attr.name="NodeStyle" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeStyle" >
     <default>
-      <ywpf:BevelNodeStyle Inset="2" Radius="5" Color="#FFFF8C00" />
+      <ywpf:RectangleNodeStyle Brush="#FFFF6C00" CornerSize="3.5">
+        <ywpf:RectangleNodeStyle.Pen>
+          <Pen Brush="#FF662B00" Thickness="1.5" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" />
+        </ywpf:RectangleNodeStyle.Pen>
+      </ywpf:RectangleNodeStyle>
     </default>
   </key>
   <key id="d4" for="node" attr.type="boolean" attr.name="Expanded" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/folding/Expanded">
@@ -21,7 +25,14 @@
   <key id="d7" for="edge" attr.name="EdgeGeometry" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/EdgeGeometry" />
   <key id="d8" for="edge" attr.name="EdgeStyle" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/EdgeStyle" >
     <default>
-      <ywpf:PolylineEdgeStyle TargetArrow="Default" SourceArrow="None" />
+      <ywpf:PolylineEdgeStyle>
+        <ywpf:PolylineEdgeStyle.Pen>
+          <Pen Brush="#FF662B00" Thickness="1.5" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" />
+        </ywpf:PolylineEdgeStyle.Pen>
+        <ywpf:PolylineEdgeStyle.TargetArrow>
+          <ywpf:Arrow Type="Triangle" Brush="#FF662B00" />
+        </ywpf:PolylineEdgeStyle.TargetArrow>
+      </ywpf:PolylineEdgeStyle>
     </default>
   </key>
   <key id="d9" for="edge" attr.name="EdgeViewState" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/folding/EdgeViewState" />

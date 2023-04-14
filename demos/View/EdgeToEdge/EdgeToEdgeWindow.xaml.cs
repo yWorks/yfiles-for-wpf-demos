@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.4.
- ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.5.
+ ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -31,6 +31,7 @@ using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Media;
+using Demo.yFiles.Toolkit;
 using yWorks.Controls;
 using yWorks.Controls.Input;
 using yWorks.Geometry;
@@ -153,15 +154,19 @@ namespace Demo.yFiles.Graph.EdgeToEdge
       
       #region Configure Graph defaults
 
-      // set the default node style
-      Graph.NodeDefaults.Style = new ShinyPlateNodeStyle { Brush = Brushes.Orange };
+      DemoStyles.InitDemoStyles(Graph);
 
       // assign default edge style
-      Graph.EdgeDefaults.Style = new PolylineEdgeStyle();
+      Graph.EdgeDefaults.Style = new PolylineEdgeStyle { Pen = DemoStyles.CreateDemoEdgeStyle().Pen };
       Graph.EdgeDefaults.ShareStyleInstance = false;
 
       // assign a port style for the ports at the edges
-      Graph.EdgeDefaults.Ports.Style = new NodeStylePortStyleAdapter(new ShapeNodeStyle { Shape = ShapeNodeShape.Ellipse, Brush = Brushes.Black, Pen = null }) { RenderSize = new SizeD(3, 3) };
+      Graph.EdgeDefaults.Ports.Style =
+          new NodeStylePortStyleAdapter(new ShapeNodeStyle {
+              Shape = ShapeNodeShape.Ellipse,
+              Brush = Brushes.Black,
+              Pen = null
+          }) { RenderSize = new SizeD(3, 3) };
 
       #endregion
 

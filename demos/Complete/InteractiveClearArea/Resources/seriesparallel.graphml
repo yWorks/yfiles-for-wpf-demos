@@ -1,37 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--Created by @PRODUCT@ @ASSEMBLY_VERSION@-->
+<!--Created by yFiles WPF 3.5-->
 <graphml xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/3.0" xmlns:y="http://www.yworks.com/xml/yfiles-common/3.0" xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/3.0/xaml" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml.wpf/3.0/ygraphml.xsd " xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://graphml.graphdrawing.org/xmlns">
   <key id="d0" attr.name="NodeLabels" for="node" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeLabels" />
   <key id="d1" attr.name="NodeGeometry" for="node" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeGeometry" />
   <key id="d2" attr.name="UserTags" for="all" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/UserTags" />
-  <key id="d3" attr.name="NodeStyle" for="node" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeStyle" />
   <key id="d4" attr.name="EdgeLabels" for="edge" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/EdgeLabels" />
   <key id="d5" attr.name="EdgeGeometry" for="edge" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/EdgeGeometry" />
-  <key id="d6" attr.name="EdgeStyle" for="edge" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/EdgeStyle" />
   <key id="d7" attr.name="PortLabels" for="port" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/PortLabels" />
   <key id="d8" attr.name="PortLocationParameter" for="port" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/PortLocationParameter">
     <default>
       <x:Static Member="y:FreeNodePortLocationModel.NodeCenterAnchored" />
     </default>
   </key>
-  <key id="d9" attr.name="PortStyle" for="port" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/PortStyle">
-    <default>
-      <x:Static Member="y:VoidPortStyle.Instance" />
-    </default>
-  </key>
-  <key id="d10" attr.name="SharedData" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/SharedData" />
-  <data key="d10">
-    <y:SharedData>
-      <ywpf:ShinyPlateNodeStyle x:Key="1" Brush="#FFFFA500" />
-    </y:SharedData>
-  </data>
   <graph id="G">
     <node id="n0">
       <data key="d1">
         <y:RectD X="313.125" Y="0" Width="70" Height="71" />
-      </data>
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
       </data>
       <port name="p0" />
       <port name="p1" />
@@ -42,9 +26,6 @@
       <data key="d1">
         <y:RectD X="191" Y="101" Width="114.75" Height="30" />
       </data>
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
-      </data>
       <port name="p0" />
       <port name="p1" />
       <port name="p2" />
@@ -54,18 +35,12 @@
       <data key="d1">
         <y:RectD X="550.75" Y="202.5" Width="30" Height="30" />
       </data>
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
-      </data>
       <port name="p0" />
       <port name="p1" />
     </node>
     <node id="n3">
       <data key="d1">
         <y:RectD X="530.75" Y="262.5" Width="70" Height="71" />
-      </data>
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
       </data>
       <port name="p0" />
       <port name="p1" />
@@ -74,9 +49,6 @@
       <data key="d1">
         <y:RectD X="526.75" Y="363.5" Width="78" Height="30" />
       </data>
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
-      </data>
       <port name="p0" />
       <port name="p1" />
     </node>
@@ -84,18 +56,12 @@
       <data key="d1">
         <y:RectD X="550.75" Y="423.5" Width="30" Height="53" />
       </data>
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
-      </data>
       <port name="p0" />
       <port name="p1" />
     </node>
     <node id="n6">
       <data key="d1">
         <y:RectD X="333.125" Y="608" Width="30" Height="30" />
-      </data>
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
       </data>
       <port name="p0" />
       <port name="p1" />
@@ -106,9 +72,6 @@
       <data key="d1">
         <y:RectD X="634.75" Y="295.5" Width="45.5" Height="88" />
       </data>
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
-      </data>
       <port name="p0" />
       <port name="p1" />
     </node>
@@ -116,18 +79,12 @@
       <data key="d1">
         <y:RectD X="0" Y="273.375" Width="30" Height="132.25" />
       </data>
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
-      </data>
       <port name="p0" />
       <port name="p1" />
     </node>
     <node id="n9">
       <data key="d1">
         <y:RectD X="115.375" Y="161" Width="30" Height="30" />
-      </data>
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
       </data>
       <port name="p0" />
       <port name="p1" />
@@ -137,9 +94,6 @@
     <node id="n10">
       <data key="d1">
         <y:RectD X="219.875" Y="548" Width="57" Height="30" />
-      </data>
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
       </data>
       <port name="p0" />
       <port name="p1" />
@@ -152,9 +106,6 @@
       <data key="d1">
         <y:RectD X="115.375" Y="488" Width="30" Height="30" />
       </data>
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
-      </data>
       <port name="p0" />
       <port name="p1" />
       <port name="p2" />
@@ -164,18 +115,12 @@
       <data key="d1">
         <y:RectD X="99.5" Y="283" Width="30" Height="30" />
       </data>
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
-      </data>
       <port name="p0" />
       <port name="p1" />
     </node>
     <node id="n13">
       <data key="d1">
         <y:RectD X="60" Y="343" Width="109" Height="53" />
-      </data>
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
       </data>
       <port name="p0" />
       <port name="p1" />
@@ -184,18 +129,12 @@
       <data key="d1">
         <y:RectD X="182.75" Y="221" Width="78" Height="73.5" />
       </data>
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
-      </data>
       <port name="p0" />
       <port name="p1" />
     </node>
     <node id="n15">
       <data key="d1">
         <y:RectD X="199" Y="324.5" Width="45.5" Height="73.5" />
-      </data>
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
       </data>
       <port name="p0" />
       <port name="p1" />
@@ -204,9 +143,6 @@
       <data key="d1">
         <y:RectD X="206.75" Y="428" Width="30" Height="30" />
       </data>
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
-      </data>
       <port name="p0" />
       <port name="p1" />
     </node>
@@ -214,18 +150,12 @@
       <data key="d1">
         <y:RectD X="290.75" Y="302.75" Width="30" Height="73.5" />
       </data>
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
-      </data>
       <port name="p0" />
       <port name="p1" />
     </node>
     <node id="n18">
       <data key="d1">
         <y:RectD X="408.75" Y="215" Width="30" Height="88" />
-      </data>
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
       </data>
       <port name="p0" />
       <port name="p1" />
@@ -236,18 +166,12 @@
       <data key="d1">
         <y:RectD X="370.75" Y="333" Width="30" Height="30" />
       </data>
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
-      </data>
       <port name="p0" />
       <port name="p1" />
     </node>
     <node id="n20">
       <data key="d1">
         <y:RectD X="350.75" Y="393" Width="70" Height="71" />
-      </data>
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
       </data>
       <port name="p0" />
       <port name="p1" />
@@ -256,18 +180,12 @@
       <data key="d1">
         <y:RectD X="450.75" Y="342" Width="30" Height="53" />
       </data>
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
-      </data>
       <port name="p0" />
       <port name="p1" />
     </node>
     <node id="n22">
       <data key="d1">
         <y:RectD X="450.75" Y="425" Width="30" Height="30" />
-      </data>
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
       </data>
       <port name="p0" />
       <port name="p1" />
@@ -279,13 +197,6 @@
           <y:Bend Location="248.375,86" />
         </x:List>
       </data>
-      <data key="d6">
-        <ywpf:PolylineEdgeStyle TargetArrow="Default">
-          <ywpf:PolylineEdgeStyle.Pen>
-            <Pen Brush="#FF000000" Thickness="1" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" />
-          </ywpf:PolylineEdgeStyle.Pen>
-        </ywpf:PolylineEdgeStyle>
-      </data>
     </edge>
     <edge id="e1" source="n0" target="n2" sourceport="p1" targetport="p0">
       <data key="d5">
@@ -294,54 +205,16 @@
           <y:Bend Location="565.75,86" />
         </x:List>
       </data>
-      <data key="d6">
-        <ywpf:PolylineEdgeStyle TargetArrow="Default">
-          <ywpf:PolylineEdgeStyle.Pen>
-            <Pen Brush="#FF000000" Thickness="1" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" />
-          </ywpf:PolylineEdgeStyle.Pen>
-        </ywpf:PolylineEdgeStyle>
-      </data>
     </edge>
-    <edge id="e2" source="n2" target="n3" sourceport="p1" targetport="p0">
-      <data key="d6">
-        <ywpf:PolylineEdgeStyle TargetArrow="Default">
-          <ywpf:PolylineEdgeStyle.Pen>
-            <Pen Brush="#FF000000" Thickness="1" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" />
-          </ywpf:PolylineEdgeStyle.Pen>
-        </ywpf:PolylineEdgeStyle>
-      </data>
-    </edge>
-    <edge id="e3" source="n3" target="n4" sourceport="p1" targetport="p0">
-      <data key="d6">
-        <ywpf:PolylineEdgeStyle TargetArrow="Default">
-          <ywpf:PolylineEdgeStyle.Pen>
-            <Pen Brush="#FF000000" Thickness="1" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" />
-          </ywpf:PolylineEdgeStyle.Pen>
-        </ywpf:PolylineEdgeStyle>
-      </data>
-    </edge>
-    <edge id="e4" source="n4" target="n5" sourceport="p1" targetport="p0">
-      <data key="d6">
-        <ywpf:PolylineEdgeStyle TargetArrow="Default">
-          <ywpf:PolylineEdgeStyle.Pen>
-            <Pen Brush="#FF000000" Thickness="1" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" />
-          </ywpf:PolylineEdgeStyle.Pen>
-        </ywpf:PolylineEdgeStyle>
-      </data>
-    </edge>
+    <edge id="e2" source="n2" target="n3" sourceport="p1" targetport="p0"/>
+    <edge id="e3" source="n3" target="n4" sourceport="p1" targetport="p0"/>
+    <edge id="e4" source="n4" target="n5" sourceport="p1" targetport="p0"/>
     <edge id="e5" source="n5" target="n6" sourceport="p1" targetport="p0">
       <data key="d5">
         <x:List>
           <y:Bend Location="565.75,593" />
           <y:Bend Location="348.125,593" />
         </x:List>
-      </data>
-      <data key="d6">
-        <ywpf:PolylineEdgeStyle TargetArrow="Default">
-          <ywpf:PolylineEdgeStyle.Pen>
-            <Pen Brush="#FF000000" Thickness="1" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" />
-          </ywpf:PolylineEdgeStyle.Pen>
-        </ywpf:PolylineEdgeStyle>
       </data>
     </edge>
     <edge id="e6" source="n0" target="n7" sourceport="p2" targetport="p0">
@@ -351,13 +224,6 @@
           <y:Bend Location="657.5,86" />
         </x:List>
       </data>
-      <data key="d6">
-        <ywpf:PolylineEdgeStyle TargetArrow="Default">
-          <ywpf:PolylineEdgeStyle.Pen>
-            <Pen Brush="#FF000000" Thickness="1" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" />
-          </ywpf:PolylineEdgeStyle.Pen>
-        </ywpf:PolylineEdgeStyle>
-      </data>
     </edge>
     <edge id="e7" source="n7" target="n6" sourceport="p1" targetport="p1">
       <data key="d5">
@@ -365,13 +231,6 @@
           <y:Bend Location="657.5,593" />
           <y:Bend Location="348.125,593" />
         </x:List>
-      </data>
-      <data key="d6">
-        <ywpf:PolylineEdgeStyle TargetArrow="Default">
-          <ywpf:PolylineEdgeStyle.Pen>
-            <Pen Brush="#FF000000" Thickness="1" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" />
-          </ywpf:PolylineEdgeStyle.Pen>
-        </ywpf:PolylineEdgeStyle>
       </data>
     </edge>
     <edge id="e8" source="n9" target="n8" sourceport="p0" targetport="p0">
@@ -381,13 +240,6 @@
           <y:Bend Location="15,206" />
         </x:List>
       </data>
-      <data key="d6">
-        <ywpf:PolylineEdgeStyle TargetArrow="Default">
-          <ywpf:PolylineEdgeStyle.Pen>
-            <Pen Brush="#FF000000" Thickness="1" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" />
-          </ywpf:PolylineEdgeStyle.Pen>
-        </ywpf:PolylineEdgeStyle>
-      </data>
     </edge>
     <edge id="e9" source="n10" target="n6" sourceport="p0" targetport="p2">
       <data key="d5">
@@ -395,13 +247,6 @@
           <y:Bend Location="248.375,593" />
           <y:Bend Location="348.125,593" />
         </x:List>
-      </data>
-      <data key="d6">
-        <ywpf:PolylineEdgeStyle TargetArrow="Default">
-          <ywpf:PolylineEdgeStyle.Pen>
-            <Pen Brush="#FF000000" Thickness="1" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" />
-          </ywpf:PolylineEdgeStyle.Pen>
-        </ywpf:PolylineEdgeStyle>
       </data>
     </edge>
     <edge id="e10" source="n11" target="n10" sourceport="p0" targetport="p1">
@@ -411,13 +256,6 @@
           <y:Bend Location="248.375,533" />
         </x:List>
       </data>
-      <data key="d6">
-        <ywpf:PolylineEdgeStyle TargetArrow="Default">
-          <ywpf:PolylineEdgeStyle.Pen>
-            <Pen Brush="#FF000000" Thickness="1" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" />
-          </ywpf:PolylineEdgeStyle.Pen>
-        </ywpf:PolylineEdgeStyle>
-      </data>
     </edge>
     <edge id="e11" source="n8" target="n11" sourceport="p1" targetport="p1">
       <data key="d5">
@@ -425,13 +263,6 @@
           <y:Bend Location="15,473" />
           <y:Bend Location="130.375,473" />
         </x:List>
-      </data>
-      <data key="d6">
-        <ywpf:PolylineEdgeStyle TargetArrow="Default">
-          <ywpf:PolylineEdgeStyle.Pen>
-            <Pen Brush="#FF000000" Thickness="1" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" />
-          </ywpf:PolylineEdgeStyle.Pen>
-        </ywpf:PolylineEdgeStyle>
       </data>
     </edge>
     <edge id="e12" source="n9" target="n12" sourceport="p1" targetport="p0">
@@ -441,36 +272,14 @@
           <y:Bend Location="114.5,206" />
         </x:List>
       </data>
-      <data key="d6">
-        <ywpf:PolylineEdgeStyle TargetArrow="Default">
-          <ywpf:PolylineEdgeStyle.Pen>
-            <Pen Brush="#FF000000" Thickness="1" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" />
-          </ywpf:PolylineEdgeStyle.Pen>
-        </ywpf:PolylineEdgeStyle>
-      </data>
     </edge>
-    <edge id="e13" source="n12" target="n13" sourceport="p1" targetport="p0">
-      <data key="d6">
-        <ywpf:PolylineEdgeStyle TargetArrow="Default">
-          <ywpf:PolylineEdgeStyle.Pen>
-            <Pen Brush="#FF000000" Thickness="1" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" />
-          </ywpf:PolylineEdgeStyle.Pen>
-        </ywpf:PolylineEdgeStyle>
-      </data>
-    </edge>
+    <edge id="e13" source="n12" target="n13" sourceport="p1" targetport="p0"/>
     <edge id="e14" source="n13" target="n11" sourceport="p1" targetport="p2">
       <data key="d5">
         <x:List>
           <y:Bend Location="114.5,473" />
           <y:Bend Location="130.375,473" />
         </x:List>
-      </data>
-      <data key="d6">
-        <ywpf:PolylineEdgeStyle TargetArrow="Default">
-          <ywpf:PolylineEdgeStyle.Pen>
-            <Pen Brush="#FF000000" Thickness="1" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" />
-          </ywpf:PolylineEdgeStyle.Pen>
-        </ywpf:PolylineEdgeStyle>
       </data>
     </edge>
     <edge id="e15" source="n16" target="n11" sourceport="p0" targetport="p3">
@@ -480,13 +289,6 @@
           <y:Bend Location="130.375,473" />
         </x:List>
       </data>
-      <data key="d6">
-        <ywpf:PolylineEdgeStyle TargetArrow="Default">
-          <ywpf:PolylineEdgeStyle.Pen>
-            <Pen Brush="#FF000000" Thickness="1" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" />
-          </ywpf:PolylineEdgeStyle.Pen>
-        </ywpf:PolylineEdgeStyle>
-      </data>
     </edge>
     <edge id="e16" source="n9" target="n14" sourceport="p2" targetport="p0">
       <data key="d5">
@@ -495,45 +297,15 @@
           <y:Bend Location="221.75,206" />
         </x:List>
       </data>
-      <data key="d6">
-        <ywpf:PolylineEdgeStyle TargetArrow="Default">
-          <ywpf:PolylineEdgeStyle.Pen>
-            <Pen Brush="#FF000000" Thickness="1" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" />
-          </ywpf:PolylineEdgeStyle.Pen>
-        </ywpf:PolylineEdgeStyle>
-      </data>
     </edge>
-    <edge id="e17" source="n14" target="n15" sourceport="p1" targetport="p0">
-      <data key="d6">
-        <ywpf:PolylineEdgeStyle TargetArrow="Default">
-          <ywpf:PolylineEdgeStyle.Pen>
-            <Pen Brush="#FF000000" Thickness="1" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" />
-          </ywpf:PolylineEdgeStyle.Pen>
-        </ywpf:PolylineEdgeStyle>
-      </data>
-    </edge>
-    <edge id="e18" source="n15" target="n16" sourceport="p1" targetport="p1">
-      <data key="d6">
-        <ywpf:PolylineEdgeStyle TargetArrow="Default">
-          <ywpf:PolylineEdgeStyle.Pen>
-            <Pen Brush="#FF000000" Thickness="1" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" />
-          </ywpf:PolylineEdgeStyle.Pen>
-        </ywpf:PolylineEdgeStyle>
-      </data>
-    </edge>
+    <edge id="e17" source="n14" target="n15" sourceport="p1" targetport="p0"/>
+    <edge id="e18" source="n15" target="n16" sourceport="p1" targetport="p1"/>
     <edge id="e19" source="n1" target="n9" sourceport="p1" targetport="p3">
       <data key="d5">
         <x:List>
           <y:Bend Location="248.375,146" />
           <y:Bend Location="130.375,146" />
         </x:List>
-      </data>
-      <data key="d6">
-        <ywpf:PolylineEdgeStyle TargetArrow="Default">
-          <ywpf:PolylineEdgeStyle.Pen>
-            <Pen Brush="#FF000000" Thickness="1" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" />
-          </ywpf:PolylineEdgeStyle.Pen>
-        </ywpf:PolylineEdgeStyle>
       </data>
     </edge>
     <edge id="e20" source="n0" target="n6" sourceport="p3" targetport="p3">
@@ -545,13 +317,6 @@
           <y:Bend Location="348.125,593" />
         </x:List>
       </data>
-      <data key="d6">
-        <ywpf:PolylineEdgeStyle TargetArrow="Default">
-          <ywpf:PolylineEdgeStyle.Pen>
-            <Pen Brush="#FF000000" Thickness="1" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" />
-          </ywpf:PolylineEdgeStyle.Pen>
-        </ywpf:PolylineEdgeStyle>
-      </data>
     </edge>
     <edge id="e21" source="n1" target="n17" sourceport="p2" targetport="p0">
       <data key="d5">
@@ -559,13 +324,6 @@
           <y:Bend Location="248.375,146" />
           <y:Bend Location="305.75,146" />
         </x:List>
-      </data>
-      <data key="d6">
-        <ywpf:PolylineEdgeStyle TargetArrow="Default">
-          <ywpf:PolylineEdgeStyle.Pen>
-            <Pen Brush="#FF000000" Thickness="1" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" />
-          </ywpf:PolylineEdgeStyle.Pen>
-        </ywpf:PolylineEdgeStyle>
       </data>
     </edge>
     <edge id="e22" source="n17" target="n10" sourceport="p1" targetport="p2">
@@ -575,13 +333,6 @@
           <y:Bend Location="248.375,533" />
         </x:List>
       </data>
-      <data key="d6">
-        <ywpf:PolylineEdgeStyle TargetArrow="Default">
-          <ywpf:PolylineEdgeStyle.Pen>
-            <Pen Brush="#FF000000" Thickness="1" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" />
-          </ywpf:PolylineEdgeStyle.Pen>
-        </ywpf:PolylineEdgeStyle>
-      </data>
     </edge>
     <edge id="e23" source="n1" target="n18" sourceport="p3" targetport="p0">
       <data key="d5">
@@ -589,13 +340,6 @@
           <y:Bend Location="248.375,146" />
           <y:Bend Location="423.75,146" />
         </x:List>
-      </data>
-      <data key="d6">
-        <ywpf:PolylineEdgeStyle TargetArrow="Default">
-          <ywpf:PolylineEdgeStyle.Pen>
-            <Pen Brush="#FF000000" Thickness="1" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" />
-          </ywpf:PolylineEdgeStyle.Pen>
-        </ywpf:PolylineEdgeStyle>
       </data>
     </edge>
     <edge id="e24" source="n18" target="n19" sourceport="p1" targetport="p0">
@@ -605,36 +349,14 @@
           <y:Bend Location="385.75,318" />
         </x:List>
       </data>
-      <data key="d6">
-        <ywpf:PolylineEdgeStyle TargetArrow="Default">
-          <ywpf:PolylineEdgeStyle.Pen>
-            <Pen Brush="#FF000000" Thickness="1" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" />
-          </ywpf:PolylineEdgeStyle.Pen>
-        </ywpf:PolylineEdgeStyle>
-      </data>
     </edge>
-    <edge id="e25" source="n19" target="n20" sourceport="p1" targetport="p0">
-      <data key="d6">
-        <ywpf:PolylineEdgeStyle TargetArrow="Default">
-          <ywpf:PolylineEdgeStyle.Pen>
-            <Pen Brush="#FF000000" Thickness="1" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" />
-          </ywpf:PolylineEdgeStyle.Pen>
-        </ywpf:PolylineEdgeStyle>
-      </data>
-    </edge>
+    <edge id="e25" source="n19" target="n20" sourceport="p1" targetport="p0"/>
     <edge id="e26" source="n20" target="n10" sourceport="p1" targetport="p3">
       <data key="d5">
         <x:List>
           <y:Bend Location="385.75,533" />
           <y:Bend Location="248.375,533" />
         </x:List>
-      </data>
-      <data key="d6">
-        <ywpf:PolylineEdgeStyle TargetArrow="Default">
-          <ywpf:PolylineEdgeStyle.Pen>
-            <Pen Brush="#FF000000" Thickness="1" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" />
-          </ywpf:PolylineEdgeStyle.Pen>
-        </ywpf:PolylineEdgeStyle>
       </data>
     </edge>
     <edge id="e27" source="n22" target="n10" sourceport="p0" targetport="p4">
@@ -644,13 +366,6 @@
           <y:Bend Location="248.375,533" />
         </x:List>
       </data>
-      <data key="d6">
-        <ywpf:PolylineEdgeStyle TargetArrow="Default">
-          <ywpf:PolylineEdgeStyle.Pen>
-            <Pen Brush="#FF000000" Thickness="1" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" />
-          </ywpf:PolylineEdgeStyle.Pen>
-        </ywpf:PolylineEdgeStyle>
-      </data>
     </edge>
     <edge id="e28" source="n18" target="n21" sourceport="p2" targetport="p0">
       <data key="d5">
@@ -659,23 +374,8 @@
           <y:Bend Location="465.75,318" />
         </x:List>
       </data>
-      <data key="d6">
-        <ywpf:PolylineEdgeStyle TargetArrow="Default">
-          <ywpf:PolylineEdgeStyle.Pen>
-            <Pen Brush="#FF000000" Thickness="1" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" />
-          </ywpf:PolylineEdgeStyle.Pen>
-        </ywpf:PolylineEdgeStyle>
-      </data>
     </edge>
-    <edge id="e29" source="n21" target="n22" sourceport="p1" targetport="p1">
-      <data key="d6">
-        <ywpf:PolylineEdgeStyle TargetArrow="Default">
-          <ywpf:PolylineEdgeStyle.Pen>
-            <Pen Brush="#FF000000" Thickness="1" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" />
-          </ywpf:PolylineEdgeStyle.Pen>
-        </ywpf:PolylineEdgeStyle>
-      </data>
-    </edge>
+    <edge id="e29" source="n21" target="n22" sourceport="p1" targetport="p1"/>
     <edge id="e30" source="n18" target="n10" sourceport="p3" targetport="p5">
       <data key="d5">
         <x:List>
@@ -684,13 +384,6 @@
           <y:Bend Location="496.25,533" />
           <y:Bend Location="248.375,533" />
         </x:List>
-      </data>
-      <data key="d6">
-        <ywpf:PolylineEdgeStyle TargetArrow="Default">
-          <ywpf:PolylineEdgeStyle.Pen>
-            <Pen Brush="#FF000000" Thickness="1" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" />
-          </ywpf:PolylineEdgeStyle.Pen>
-        </ywpf:PolylineEdgeStyle>
       </data>
     </edge>
   </graph>

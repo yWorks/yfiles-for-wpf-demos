@@ -5,9 +5,9 @@ Complex demo application that showcases most features that are present in yFiles
 You will find the following programming samples in this package: 
 
 
-| Name | Description 
-|:---|:---
-|**GraphEditor** | Complex demo application that showcases most features that are present in yFiles WPF. 
+| Name | Description |
+|:---|:---|
+|**GraphEditor** | Complex demo application that showcases most features that are present in yFiles WPF. |
 
 ## Running the Demos
 

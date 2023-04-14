@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.4.
- ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.5.
+ ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -41,6 +41,7 @@ using yWorks.Graph.LabelModels;
 using yWorks.Graph.Styles;
 using yWorks.Layout;
 using yWorks.Layout.Labeling;
+using GroupNodeStyle = Demo.yFiles.Graph.Bpmn.Styles.GroupNodeStyle;
 // Just for better readability in code
 using BpmnNM = Demo.yFiles.Graph.Bpmn.BpmnDi.BpmnNamespaceManager;
 
@@ -343,7 +344,7 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
         // there is no ChoreographyActivityShape, so no further checks needed
         return true;
       }
-      if (element.Parent.Name == "choreographyTask" || element.Parent.Name == "subChoreography") {
+      if (element.Parent != null && (element.Parent.Name == "choreographyTask" || element.Parent.Name == "subChoreography")) {
         // if a ChoreographyActivityShape is defined, we need to be inside the defined choreographyTask or subChoreography
         var choreoShape = GetShape(element.Parent, plane);
         if (choreoShape != null) {
@@ -1469,19 +1470,23 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
         return null;
       }
 
-      // Get bends & ports from waypoints
-      var count = waypoints.Count;
-      // First waypoint is source Port
-      var source = waypoints[0];
-      // Last is target port
-      var target = waypoints[count - 1];
-      waypoints.Remove(source);
-      waypoints.Remove(target);
-
       // Get source & target node
       var sourceNode = sourceVar.Node;
       var targetNode = targetVar.Node;
 
+      // Get bends & ports from waypoints
+      var count = waypoints.Count;
+      var source = sourceNode.Layout.GetCenter();
+      var target = targetNode.Layout.GetCenter();
+      if (count > 0) {
+        // First waypoint is source Port
+        source = waypoints[0];
+        // Last is target port
+        target = waypoints[count - 1];
+        waypoints.Remove(source);
+        waypoints.Remove(target);
+      }
+      
       IPort sourcePort = null;
       IPort targetPort = null;
 
@@ -1570,12 +1575,16 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
 
       // Get bends & ports from waypoints
       var count = waypoints.Count;
-      // First waypoint is source Port
-      var source = waypoints[0];
-      // Last is target port
-      var target = waypoints[count - 1];
-      waypoints.Remove(source);
-      waypoints.Remove(target);
+      var source = sourceNode.Layout.GetCenter();
+      var target = targetNode.Layout.GetCenter();
+      if (count > 0) {
+        // First waypoint is source Port
+        source = waypoints[0];
+        // Last is target port
+        target = waypoints[count - 1];
+        waypoints.Remove(source);
+        waypoints.Remove(target);
+      }
 
       // Get source & target port
       var sourcePort = sourceVar.Name == BpmnDiConstants.BoundaryEventElement ? sourceVar.Port : MasterGraph.AddPort(sourceNode, source);

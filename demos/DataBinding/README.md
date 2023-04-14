@@ -5,16 +5,16 @@ These source code samples demonstrate how to use the `TreeSource` and `GraphSour
 You will find the following programming samples in this package: 
 
 
-| Name | Description 
-|:---|:---
-|**AdjacencyGraphBuilder** | Demonstrates data binding using class `AdjacencyGraphBuilder`. 
-|**BusinessModelAdapter** | Shows how to integrate a custom Business Model with yFiles WPF. 
-|**DataSet** | Sample Form that demonstrates data binding using a `TreeSource` to a DataSet. 
-|**Dynamic** | Sample Form that demonstrates data binding using a `TreeSource` to dynamic business data. 
-|**GraphBuilder** | Demonstrates data binding using class `GraphBuilder`. 
-|**GraphSource** | Demonstrates data binding using class `GraphSource`. 
-|**InteractiveEdgesGraphSource** | Demonstrates data binding using class `AdjacentEdgesGraphSource`. Allows interactive changes to the data model and dynamically updates the graph structure accordingly. 
-|**InteractiveNodesGraphSource** | Demonstrates data binding using class `AdjacentNodesGraphSource`. Allows interactive changes to the data model and dynamically updates the graph structure accordingly. 
+| Name | Description |
+|:---|:---|
+|**AdjacencyGraphBuilder** | Demonstrates data binding using class `AdjacencyGraphBuilder`. |
+|**BusinessModelAdapter** | Shows how to integrate a custom Business Model with yFiles WPF. |
+|**DataSet** | Sample Form that demonstrates data binding using a `TreeSource` to a DataSet. |
+|**Dynamic** | Sample Form that demonstrates data binding using a `TreeSource` to dynamic business data. |
+|**GraphBuilder** | Demonstrates data binding using class `GraphBuilder`. |
+|**GraphSource** | Demonstrates data binding using class `GraphSource`. |
+|**InteractiveEdgesGraphSource** | Demonstrates data binding using class `AdjacentEdgesGraphSource`. Allows interactive changes to the data model and dynamically updates the graph structure accordingly. |
+|**InteractiveNodesGraphSource** | Demonstrates data binding using class `AdjacentNodesGraphSource`. Allows interactive changes to the data model and dynamically updates the graph structure accordingly. |
 
 ## Running the Demos
 

@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.4.
- ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.5.
+ ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -33,6 +33,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
+using Demo.yFiles.Toolkit;
 using yWorks.Controls;
 using yWorks.Controls.Input;
 using yWorks.Graph;
@@ -210,14 +211,14 @@ namespace Demo.yFiles.Layout.MazeRouting
     protected virtual void InitializeGraph() {
       // setting styles for maze nodes
       Graph.NodeDefaults.Style =
-        new ShapeNodeStyle { Pen = null, Brush = new SolidColorBrush(Color.FromRgb(102, 153, 204)) };
+        new ShapeNodeStyle { Pen = null, Brush = new SolidColorBrush(Color.FromRgb(0x24, 0x22, 0x65)) };
 
       // add maze nodes to graph and store in a list
       graphControl.GraphMLIOHandler.Read(Graph, "Resources/mazeOnly.graphml");
       var mazeNodes = Graph.Nodes.ToList();
 
       // update styles for normal nodes
-      Graph.NodeDefaults.Style = new ShinyPlateNodeStyle { Brush = Brushes.Orange };
+      DemoStyles.InitDemoStyles(Graph, nodeTheme: Themes.Palette31, groupTheme: Themes.Palette31, edgeTheme: Themes.Palette31);
       graphControl.GraphMLIOHandler.ClearGraphBeforeRead = false;
       graphControl.GraphMLIOHandler.Read(Graph, "Resources/normalNodesOnly.graphml");
 

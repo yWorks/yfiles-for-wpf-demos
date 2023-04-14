@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.4.
- ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.5.
+ ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -30,8 +30,8 @@
 using System;
 using System.Linq;
 using System.Windows;
-using System.Windows.Media;
 using System.Windows.Threading;
+using Demo.yFiles.Toolkit;
 using yWorks.Controls;
 using yWorks.Algorithms;
 using yWorks.Layout;
@@ -41,7 +41,6 @@ using yWorks.Layout.Orthogonal;
 using yWorks.Controls.Input;
 using yWorks.Geometry;
 using yWorks.Graph;
-using yWorks.Graph.Styles;
 
 namespace Demo.yFiles.Layout.AbortHandler
 {
@@ -91,7 +90,7 @@ namespace Demo.yFiles.Layout.AbortHandler
     /// </summary>
     protected virtual void InitializeGraph() {
       // set the default node style and size
-      GraphControl.Graph.NodeDefaults.Style = new ShinyPlateNodeStyle { Brush = Brushes.Orange };
+      DemoStyles.InitDemoStyles(GraphControl.Graph);
       GraphControl.Graph.NodeDefaults.Size = new SizeD(60, 40);
 
       BuildGraph(GraphControl.Graph);

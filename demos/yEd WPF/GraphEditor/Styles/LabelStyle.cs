@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.4.
- ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.5.
+ ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -30,6 +30,7 @@
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Media;
+using System.Windows.Shapes;
 using yWorks.Annotations;
 using yWorks.Controls;
 using yWorks.Controls.Input;
@@ -161,6 +162,17 @@ namespace Demo.yFiles.GraphEditor.Styles
       {
         if (value != style.FlowDirection) {
           style.FlowDirection = value;
+        }
+      }
+    }
+
+    [DefaultValue(LabelShape.Rectangle)]
+    public LabelShape Shape {
+      get { return style.Shape; }
+      set
+      {
+        if (value != style.Shape) {
+          style.Shape = value;
         }
       }
     }

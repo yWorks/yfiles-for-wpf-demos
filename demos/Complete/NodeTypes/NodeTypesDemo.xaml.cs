@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.4.
- ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.5.
+ ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -33,6 +33,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using Demo.yFiles.Toolkit;
 using yWorks.Controls;
 using yWorks.Controls.Input;
 using yWorks.Geometry;
@@ -74,12 +75,8 @@ namespace Demo.yFiles.Graph.NodeTypes
     };
 
     // edge visualizations for directed and undirected edges
-    private static readonly IEdgeStyle directedEdgeStyle = new PolylineEdgeStyle {
-        Pen = new Pen(Brushes.Black, 1.5), TargetArrow = Arrows.Default
-    };
-    private static readonly IEdgeStyle undirectedEdgeStyle = new PolylineEdgeStyle {
-        Pen = new Pen(Brushes.Black, 1.5), TargetArrow = Arrows.None
-    };
+    private static readonly IEdgeStyle directedEdgeStyle = DemoStyles.CreateDemoEdgeStyle();
+    private static readonly IEdgeStyle undirectedEdgeStyle = DemoStyles.CreateDemoEdgeStyle(showTargetArrow: false);
 
     /// <summary>
     /// Returns the GraphControl instance used in the form.
@@ -175,6 +172,7 @@ namespace Demo.yFiles.Graph.NodeTypes
     /// Configures the defaults for the graph.
     /// </summary>
     private void InitializeGraph(IGraph graph) {
+      DemoStyles.InitDemoStyles(graph);
       graph.NodeDefaults.ShareStyleInstance = false;
       graph.NodeDefaults.Size = new SizeD(40, 40);
       

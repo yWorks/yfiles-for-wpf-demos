@@ -80,7 +80,6 @@
     </ApplicationDefinition>
     <Compile Include="HeightHandle.cs" />
     <Compile Include="HeightHandleProvider.cs" />
-    <Compile Include="IsometricGraphModelManager.cs" />
     <Compile Include="IsometricGroupNodeStyle.cs" />
     <Compile Include="IsometricNodeStyle.cs" />
     <Compile Include="Model\EdgeData.cs" />

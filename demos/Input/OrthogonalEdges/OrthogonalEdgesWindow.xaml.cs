@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.4.
- ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.5.
+ ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -31,7 +31,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
-using System.Windows.Media;
+using Demo.yFiles.Toolkit;
 using yWorks.Controls.Input;
 using yWorks.Geometry;
 using yWorks.Graph;
@@ -62,36 +62,36 @@ namespace Demo.yFiles.Graph.Input.OrthogonalEdges
       
       // Add different IOrthogonalEdgeHelpers to demonstrate various custom behaviour.
       edgeDecorator.OrthogonalEdgeHelperDecorator.SetImplementation(
-        edge => ((Color) edge.Tag == Colors.Firebrick), new RedOrthogonalEdgeHelper());
+        edge => (edge.Tag == Themes.PaletteRed), new RedOrthogonalEdgeHelper());
       // Green edges have the regular orthogonal editing behavior and therefore, 
       // don't need a custom implementation.
       edgeDecorator.OrthogonalEdgeHelperDecorator.SetImplementation(
-        edge => ((Color) edge.Tag == Colors.Green), new OrthogonalEdgeHelper());
+        edge => (edge.Tag == Themes.PaletteGreen), new OrthogonalEdgeHelper());
       edgeDecorator.OrthogonalEdgeHelperDecorator.SetImplementation(
-        edge => ((Color) edge.Tag == Colors.Purple), new PurpleOrthogonalEdgeHelper());
+        edge => (edge.Tag == Themes.PalettePurple), new PurpleOrthogonalEdgeHelper());
       edgeDecorator.OrthogonalEdgeHelperDecorator.SetImplementation(
-        edge => ((Color) edge.Tag == Colors.Orange), new OrangeOrthogonalEdgeHelper());
+        edge => (edge.Tag == Themes.PaletteOrange), new OrangeOrthogonalEdgeHelper());
       edgeDecorator.OrthogonalEdgeHelperDecorator.SetImplementation(
-        edge => ((Color) edge.Tag == Colors.RoyalBlue), new BlueOrthogonalEdgeHelper());
+        edge => (edge.Tag == Themes.PaletteLightblue), new BlueOrthogonalEdgeHelper());
 
       // Disable moving of the complete edge for orthogonal edges since this would create way too many bends.
       edgeDecorator.PositionHandlerDecorator.HideImplementation(
-        edge => ((Color) edge.Tag == Colors.Orange) || 
-                ((Color) edge.Tag == Colors.Green) ||
-                ((Color) edge.Tag == Colors.Purple)
+        edge => (edge.Tag == Themes.PaletteOrange) || 
+                (edge.Tag == Themes.PaletteGreen) ||
+                (edge.Tag == Themes.PalettePurple)
         );
 
       // Add a custom BendCreator for blue edges that ensures orthogonality 
       // if a bend is added to the first or last (non-orthogonal) segment.
       edgeDecorator.BendCreatorDecorator.SetImplementation(
-        edge => ((Color) edge.Tag == Colors.RoyalBlue), new BlueBendCreator());
+        edge => (edge.Tag == Themes.PaletteLightblue), new BlueBendCreator());
 
       // Add custom IEdgePortHandleProviders to make the handles of 
       // purple and orange edge move within the bounds of the node.
       edgeDecorator.EdgePortHandleProviderDecorator.SetImplementationWrapper(
-        edge => (Color)edge.Tag == Colors.Purple, (edge, provider) => new PurpleEdgePortHandleProvider(provider));
+        edge => edge.Tag == Themes.PalettePurple, (edge, provider) => new PurpleEdgePortHandleProvider(provider));
       edgeDecorator.EdgePortHandleProviderDecorator.SetImplementation(
-        edge => (Color)edge.Tag == Colors.Orange, new OrangeEdgePortHandleProvider());
+        edge => edge.Tag == Themes.PaletteOrange, new OrangeEdgePortHandleProvider());
     }
 
     private void OnWindowLoaded(object sender, RoutedEventArgs e) {
@@ -145,13 +145,13 @@ namespace Demo.yFiles.Graph.Input.OrthogonalEdges
     /// </summary>
     private void CreateSampleGraph(IGraph graph) {
 
-      CreateSubgraph(graph, Colors.Firebrick, 0, false);
-      CreateSubgraph(graph, Colors.Green, 110, false);
-      CreateSubgraph(graph, Colors.Purple, 220, true);
-      CreateSubgraph(graph, Colors.Orange, 330, false);
+      CreateSubgraph(graph, Themes.PaletteRed, 0, false);
+      CreateSubgraph(graph, Themes.PaletteGreen, 110, false);
+      CreateSubgraph(graph, Themes.PalettePurple, 220, true);
+      CreateSubgraph(graph, Themes.PaletteOrange, 330, false);
 
       // The blue edge has more bends than the other edges
-      var blueEdge = CreateSubgraph(graph, Colors.RoyalBlue, 440, false);
+      var blueEdge = CreateSubgraph(graph, Themes.PaletteLightblue, 440, false);
       var blueBends = blueEdge.Bends.ToArray();
       graph.Remove(blueBends[1]);
       graph.Remove(blueBends[0]);
@@ -166,21 +166,19 @@ namespace Demo.yFiles.Graph.Input.OrthogonalEdges
     /// <summary>
     /// Creates the sample graph of the given color with two nodes and a single edge.
     /// </summary>
-    private static IEdge CreateSubgraph(IGraph graph, Color color, double yOffset, bool createPorts) {
-      var brush = new SolidColorBrush(color);
+    private static IEdge CreateSubgraph(IGraph graph, Palette palette, double yOffset, bool createPorts) {
       // Create two nodes
-      var nodeStyle = new ShinyPlateNodeStyle {Brush = brush };
-      var n1 = graph.CreateNode(new RectD(110, 100 + yOffset, 40, 40), nodeStyle, color);
-      var n2 = graph.CreateNode(new RectD(450, 130 + yOffset, 40, 40), nodeStyle, color);
+      var n1 = graph.CreateNode(new RectD(110, 100 + yOffset, 40, 40), DemoStyles.CreateDemoNodeStyle(palette), palette);
+      var n2 = graph.CreateNode(new RectD(450, 130 + yOffset, 40, 40), DemoStyles.CreateDemoNodeStyle(palette), palette);
 
       // Create an edge, either between the two nodes or between the nodes's ports
       IEdge edge;
       if (!createPorts) {
-        edge = graph.CreateEdge(n1, n2, new PolylineEdgeStyle {Pen = new Pen(brush, 1)}, color);
+        edge = graph.CreateEdge(n1, n2, DemoStyles.CreateDemoEdgeStyle(palette, false), palette);
       } else {
         var p1 = CreateSamplePorts(graph, n1, true);
         var p2 = CreateSamplePorts(graph, n2, false);
-        edge = graph.CreateEdge(p1[1], p2[2], new PolylineEdgeStyle {Pen = new Pen(brush, 1)}, color);
+        edge = graph.CreateEdge(p1[1], p2[2], DemoStyles.CreateDemoEdgeStyle(palette, false), palette);
       }
 
       // Add bends that create a veredge.SourcePort.Locationtical segment in the middle of the edge

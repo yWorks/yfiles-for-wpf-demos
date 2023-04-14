@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.4.
- ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.5.
+ ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -32,6 +32,8 @@ using System.ComponentModel;
 using System.Reflection;
 using Demo.yFiles.Toolkit.OptionHandler;
 using yWorks.Controls;
+using yWorks.Graph;
+using yWorks.Graph.LabelModels;
 using yWorks.Layout;
 using yWorks.Layout.Labeling;
 using yWorks.Layout.Radial;
@@ -57,19 +59,20 @@ namespace Demo.yFiles.Layout.Configurations
 
       CenterStrategyItem = CenterNodesPolicy.WeightedCentrality;
       LayeringStrategyItem = LayeringStrategy.Bfs;
-      MinimumLayerDistanceItem = (int)layout.MinimumLayerDistance;
-      MinimumNodeToNodeDistanceItem = (int)layout.MinimumNodeToNodeDistance;
-      MaximumChildSectorSizeItem = (int)layout.MaximumChildSectorAngle;
+      MinimumLayerDistanceItem = (int) layout.MinimumLayerDistance;
+      MinimumNodeToNodeDistanceItem = (int) layout.MinimumNodeToNodeDistance;
+      MaximumChildSectorSizeItem = (int) layout.MaximumChildSectorAngle;
       EdgeRoutingStrategyItem = EdgeRoutingStyle.Arc;
-      EdgeSmoothnessItem = (int) Math.Min(MaximumSmoothness, (1 + MaximumSmoothness*SmoothnessAngleFactor - layout.MinimumBendAngle)/SmoothnessAngleFactor);
+      EdgeSmoothnessItem = (int) Math.Min(MaximumSmoothness,
+          (1 + MaximumSmoothness * SmoothnessAngleFactor - layout.MinimumBendAngle) / SmoothnessAngleFactor);
       EdgeBundlingStrengthItem = 0.95;
 
       EdgeLabelingItem = false;
-      ConsiderNodeLabelsItem = layout.ConsiderNodeLabels;
       LabelPlacementAlongEdgeItem = EnumLabelPlacementAlongEdge.Centered;
       LabelPlacementSideOfEdgeItem = EnumLabelPlacementSideOfEdge.OnEdge;
       LabelPlacementOrientationItem = EnumLabelPlacementOrientation.Horizontal;
       LabelPlacementDistanceItem = 10;
+      NodeLabelingStyleItem = EnumNodeLabelingPolicies.ConsiderCurrentPosition;
     }
 
     /// <inheritdoc />
@@ -86,7 +89,6 @@ namespace Demo.yFiles.Layout.Configurations
       layout.MaximumChildSectorAngle = MaximumChildSectorSizeItem;
       layout.CenterNodesPolicy = CenterStrategyItem;
       layout.LayeringStrategy = LayeringStrategyItem;
-      layout.ConsiderNodeLabels = ConsiderNodeLabelsItem;
 
       var ebc = layout.EdgeBundling;
       ebc.BundlingStrength = EdgeBundlingStrengthItem;
@@ -96,14 +98,53 @@ namespace Demo.yFiles.Layout.Configurations
 
       if (EdgeLabelingItem) {
         var labeling = new GenericLabeling {
-            PlaceEdgeLabels = true,
-            PlaceNodeLabels = false,
-            ReduceAmbiguity = ReduceAmbiguityItem
+            PlaceEdgeLabels = true, PlaceNodeLabels = false, ReduceAmbiguity = ReduceAmbiguityItem
         };
         layout.LabelingEnabled = true;
         layout.Labeling = labeling;
       }
-      
+
+      switch (NodeLabelingStyleItem) {
+        case EnumNodeLabelingPolicies.None:
+          layout.ConsiderNodeLabels = false;
+          break;
+        case EnumNodeLabelingPolicies.RaylikeLeaves:
+          layout.IntegratedNodeLabeling = true;
+          layout.NodeLabelingPolicy = NodeLabelingPolicy.RayLikeLeaves;
+          break;
+        case EnumNodeLabelingPolicies.Raylike:
+          layout.IntegratedNodeLabeling = true;
+          layout.NodeLabelingPolicy = NodeLabelingPolicy.RayLike;
+          break;
+        case EnumNodeLabelingPolicies.ConsiderCurrentPosition:
+          layout.ConsiderNodeLabels = true;
+          break;
+        case EnumNodeLabelingPolicies.Horizontal:
+          layout.IntegratedNodeLabeling = true;
+          layout.NodeLabelingPolicy = NodeLabelingPolicy.Horizontal;
+          break;
+        default:
+          layout.ConsiderNodeLabels = false;
+          break;
+      }
+
+      if (this.NodeLabelingStyleItem == EnumNodeLabelingPolicies.RaylikeLeaves ||
+          NodeLabelingStyleItem == EnumNodeLabelingPolicies.Raylike ||
+          NodeLabelingStyleItem == EnumNodeLabelingPolicies.Horizontal) {
+        foreach (var label in graphControl.Graph.Labels) {
+          if (label.Owner is INode) {
+            graphControl.Graph.SetLabelLayoutParameter(
+                label,
+                FreeNodeLabelModel.Instance.FindBestParameter(
+                    label,
+                    FreeNodeLabelModel.Instance,
+                    label.GetLayout()
+                )
+            );
+          }
+        }
+      }
+
       return layout;
     }
 
@@ -131,7 +172,7 @@ namespace Demo.yFiles.Layout.Configurations
     [OptionGroup("RootGroup", 5)]
     [ComponentType(ComponentTypes.OptionGroup)]
     public object DescriptionGroup;
-    
+
     [Label("General")]
     [OptionGroup("RootGroup", 10)]
     [ComponentType(ComponentTypes.OptionGroup)]
@@ -159,13 +200,15 @@ namespace Demo.yFiles.Layout.Configurations
 
     // ReSharper restore UnusedMember.Global
     // ReSharper restore InconsistentNaming    
+
     [OptionGroup("DescriptionGroup", 10)]
     [ComponentType(ComponentTypes.FormattedText)]
     public string DescriptionText {
       get {
-        return "<Paragraph>The radial layout arranges the nodes of a graph on concentric circles. Similar to hierarchic layouts, "
-               + "the overall flow of the graph is nicely visualized.</Paragraph>"
-               + "<Paragraph>This style is well suited for the visualization of directed graphs and tree-like structures.</Paragraph>";
+        return
+            "<Paragraph>The radial layout arranges the nodes of a graph on concentric circles. Similar to hierarchic layouts, "
+            + "the overall flow of the graph is nicely visualized.</Paragraph>"
+            + "<Paragraph>This style is well suited for the visualization of directed graphs and tree-like structures.</Paragraph>";
       }
     }
 
@@ -194,8 +237,10 @@ namespace Demo.yFiles.Layout.Configurations
     [OptionGroup("GeneralGroup", 40)]
     [DefaultValue(EdgeRoutingStyle.Arc)]
     [EnumValue("Straight", EdgeRoutingStyle.Polyline)]
-    [EnumValue("Arc",EdgeRoutingStyle.Arc)]
-    [EnumValue("Bundled",EdgeRoutingStyle.Bundled)]
+    [EnumValue("Arc", EdgeRoutingStyle.Arc)]
+    [EnumValue("Curved", EdgeRoutingStyle.Curved)]
+    [EnumValue("Radial Polyline", EdgeRoutingStyle.RadialPolyline)]
+    [EnumValue("Bundled", EdgeRoutingStyle.Bundled)]
     public EdgeRoutingStyle EdgeRoutingStrategyItem { get; set; }
 
     [Label("Arc Smoothness")]
@@ -224,22 +269,28 @@ namespace Demo.yFiles.Layout.Configurations
     [OptionGroup("GeneralGroup", 60)]
     [DefaultValue(CenterNodesPolicy.WeightedCentrality)]
     [EnumValue("Directed", CenterNodesPolicy.Directed)]
-    [EnumValue("Centrality",CenterNodesPolicy.Centrality)]
-    [EnumValue("Weighted Centrality",CenterNodesPolicy.WeightedCentrality)]
-    [EnumValue("Selected Nodes",CenterNodesPolicy.Custom)]
+    [EnumValue("Centrality", CenterNodesPolicy.Centrality)]
+    [EnumValue("Weighted Centrality", CenterNodesPolicy.WeightedCentrality)]
+    [EnumValue("Selected Nodes", CenterNodesPolicy.Custom)]
     public CenterNodesPolicy CenterStrategyItem { get; set; }
 
     [Label("Circle Assignment Strategy")]
     [OptionGroup("GeneralGroup", 70)]
     [DefaultValue(LayeringStrategy.Bfs)]
     [EnumValue("Distance From Center", LayeringStrategy.Bfs)]
-    [EnumValue("Hierarchic",LayeringStrategy.Hierarchical)]
+    [EnumValue("Hierarchic", LayeringStrategy.Hierarchical)]
+    [EnumValue("Dendrogram", LayeringStrategy.Dendrogram)]
     public LayeringStrategy LayeringStrategyItem { get; set; }
 
-    [Label("Consider Node Labels")]
+    [Label("Node Labeling")]
     [OptionGroup("NodePropertiesGroup", 10)]
-    [DefaultValue(false)]
-    public bool ConsiderNodeLabelsItem { get; set; }
+    [DefaultValue(EnumNodeLabelingPolicies.ConsiderCurrentPosition)]
+    [EnumValue("Ignore Labels", EnumNodeLabelingPolicies.None)]
+    [EnumValue("Consider Labels", EnumNodeLabelingPolicies.ConsiderCurrentPosition)]
+    [EnumValue("Horizontal", EnumNodeLabelingPolicies.Horizontal)]
+    [EnumValue("Ray-like at Leaves", EnumNodeLabelingPolicies.RaylikeLeaves)]
+    [EnumValue("Ray-like", EnumNodeLabelingPolicies.Raylike)]
+    public EnumNodeLabelingPolicies NodeLabelingStyleItem { get; set; }
 
     [Label("Edge Labeling")]
     [OptionGroup("EdgePropertiesGroup", 10)]
@@ -259,9 +310,9 @@ namespace Demo.yFiles.Layout.Configurations
     [OptionGroup("PreferredPlacementGroup", 10)]
     [DefaultValue(EnumLabelPlacementOrientation.Horizontal)]
     [EnumValue("Parallel", EnumLabelPlacementOrientation.Parallel)]
-    [EnumValue("Orthogonal",EnumLabelPlacementOrientation.Orthogonal)]
-    [EnumValue("Horizontal",EnumLabelPlacementOrientation.Horizontal)]
-    [EnumValue("Vertical",EnumLabelPlacementOrientation.Vertical)]
+    [EnumValue("Orthogonal", EnumLabelPlacementOrientation.Orthogonal)]
+    [EnumValue("Horizontal", EnumLabelPlacementOrientation.Horizontal)]
+    [EnumValue("Vertical", EnumLabelPlacementOrientation.Vertical)]
     public EnumLabelPlacementOrientation LabelPlacementOrientationItem { get; set; }
 
     public bool ShouldDisableLabelPlacementOrientationItem {
@@ -272,11 +323,11 @@ namespace Demo.yFiles.Layout.Configurations
     [OptionGroup("PreferredPlacementGroup", 20)]
     [DefaultValue(EnumLabelPlacementAlongEdge.Centered)]
     [EnumValue("Anywhere", EnumLabelPlacementAlongEdge.Anywhere)]
-    [EnumValue("At Source",EnumLabelPlacementAlongEdge.AtSource)]
-    [EnumValue("At Source Port",EnumLabelPlacementAlongEdge.AtSourcePort)]
-    [EnumValue("At Target",EnumLabelPlacementAlongEdge.AtTarget)]
-    [EnumValue("At Target Port",EnumLabelPlacementAlongEdge.AtTargetPort)]
-    [EnumValue("Centered",EnumLabelPlacementAlongEdge.Centered)]
+    [EnumValue("At Source", EnumLabelPlacementAlongEdge.AtSource)]
+    [EnumValue("At Source Port", EnumLabelPlacementAlongEdge.AtSourcePort)]
+    [EnumValue("At Target", EnumLabelPlacementAlongEdge.AtTarget)]
+    [EnumValue("At Target Port", EnumLabelPlacementAlongEdge.AtTargetPort)]
+    [EnumValue("Centered", EnumLabelPlacementAlongEdge.Centered)]
     public EnumLabelPlacementAlongEdge LabelPlacementAlongEdgeItem { get; set; }
 
     public bool ShouldDisableLabelPlacementAlongEdgeItem {
@@ -287,10 +338,10 @@ namespace Demo.yFiles.Layout.Configurations
     [OptionGroup("PreferredPlacementGroup", 30)]
     [DefaultValue(EnumLabelPlacementSideOfEdge.OnEdge)]
     [EnumValue("Anywhere", EnumLabelPlacementSideOfEdge.Anywhere)]
-    [EnumValue("On Edge",EnumLabelPlacementSideOfEdge.OnEdge)]
-    [EnumValue("Left",EnumLabelPlacementSideOfEdge.Left)]
-    [EnumValue("Right",EnumLabelPlacementSideOfEdge.Right)]
-    [EnumValue("Left or Right",EnumLabelPlacementSideOfEdge.LeftOrRight)]
+    [EnumValue("On Edge", EnumLabelPlacementSideOfEdge.OnEdge)]
+    [EnumValue("Left", EnumLabelPlacementSideOfEdge.Left)]
+    [EnumValue("Right", EnumLabelPlacementSideOfEdge.Right)]
+    [EnumValue("Left or Right", EnumLabelPlacementSideOfEdge.LeftOrRight)]
     public EnumLabelPlacementSideOfEdge LabelPlacementSideOfEdgeItem { get; set; }
 
     public bool ShouldDisableLabelPlacementSideOfEdgeItem {
@@ -310,7 +361,7 @@ namespace Demo.yFiles.Layout.Configurations
 
     public enum EdgeRoutingStyle
     {
-      Polyline = 1, Arc = 5, Bundled
+      Polyline = 1, Arc = 5, RadialPolyline = 6, Curved = 7, Bundled
     }
-  }  
+  }
 }

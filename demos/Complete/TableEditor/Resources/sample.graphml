@@ -46,7 +46,7 @@
       <y:StretchStripeLabelModelParameter x:Key="11" Position="West"/>
       <y:StretchStripeLabelModelParameter x:Key="5" Position="North"/>
       <ywpf:Typeface x:Key="6" />
-      <SolidColorBrush xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" x:Key="8">#FFFFA500</SolidColorBrush>
+      <SolidColorBrush xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" x:Key="8">#ff6c00</SolidColorBrush>
       <Pen Brush="#FF000000" Thickness="1" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" x:Key="9">
         <Pen.DashStyle>
           <DashStyle Offset="1" Dashes="2 2 0 2" />
@@ -151,7 +151,7 @@
             <y:RectD X="0" Y="-439.58333333333331" Width="80" Height="50" />
           </data>
           <data key="d3">
-            <ywpf:ShinyPlateNodeStyle Brush="{y:GraphMLReference 8}" Radius="0" />
+            <ywpf:RectangleNodeStyle Brush="{y:GraphMLReference 8}" CornerSize="3.5"/>
           </data>
           <port name="p0">
             <data key="d7">
@@ -174,7 +174,7 @@
             <y:RectD X="235" Y="-443.75" Width="80" Height="50" />
           </data>
           <data key="d3">
-            <ywpf:ShinyPlateNodeStyle Brush="{y:GraphMLReference 8}" Radius="0" />
+            <ywpf:RectangleNodeStyle Brush="{y:GraphMLReference 8}" CornerSize="3.5"/>
           </data>
           <port name="p0">
             <data key="d7">
@@ -207,7 +207,7 @@
             <y:RectD X="370" Y="-300" Width="80" Height="50" />
           </data>
           <data key="d3">
-            <ywpf:ShinyPlateNodeStyle Brush="{y:GraphMLReference 8}" Radius="0" />
+            <ywpf:RectangleNodeStyle Brush="{y:GraphMLReference 8}" CornerSize="3.5"/>
           </data>
           <port name="p0">
             <data key="d7">
@@ -230,7 +230,7 @@
             <y:RectD X="520" Y="-460.41666666666669" Width="80" Height="50" />
           </data>
           <data key="d3">
-            <ywpf:ShinyPlateNodeStyle Brush="{y:GraphMLReference 8}" Radius="0" />
+            <ywpf:RectangleNodeStyle Brush="{y:GraphMLReference 8}" CornerSize="3.5"/>
           </data>
           <port name="p0">
             <data key="d7">
@@ -248,7 +248,7 @@
             <y:RectD X="735" Y="-300" Width="80" Height="50" />
           </data>
           <data key="d3">
-            <ywpf:ShinyPlateNodeStyle Brush="{y:GraphMLReference 8}" Radius="0" />
+            <ywpf:RectangleNodeStyle Brush="{y:GraphMLReference 8}" CornerSize="3.5"/>
           </data>
           <port name="p0">
             <data key="d7">
@@ -282,7 +282,7 @@
                 <y:RectD X="125" Y="-184.5" Width="80" Height="50" />
               </data>
               <data key="d3">
-                <ywpf:ShinyPlateNodeStyle Brush="{y:GraphMLReference 8}" Radius="0" />
+                <ywpf:RectangleNodeStyle Brush="{y:GraphMLReference 8}" CornerSize="3.5"/>
               </data>
               <port name="p0">
                 <data key="d7">
@@ -300,7 +300,7 @@
                 <y:RectD X="235" Y="-184.5" Width="80" Height="50" />
               </data>
               <data key="d3">
-                <ywpf:ShinyPlateNodeStyle Brush="{y:GraphMLReference 8}" Radius="0" />
+                <ywpf:RectangleNodeStyle Brush="{y:GraphMLReference 8}" CornerSize="3.5"/>
               </data>
               <port name="p0">
                 <data key="d7">
@@ -323,7 +323,7 @@
                 <y:RectD X="125" Y="-264.5" Width="80" Height="50" />
               </data>
               <data key="d3">
-                <ywpf:ShinyPlateNodeStyle Brush="{y:GraphMLReference 8}" Radius="0" />
+                <ywpf:RectangleNodeStyle Brush="{y:GraphMLReference 8}" CornerSize="3.5"/>
               </data>
               <port name="p0">
                 <data key="d7">
@@ -359,7 +359,7 @@
                 <y:RectD X="620" Y="-184.5" Width="80" Height="50" />
               </data>
               <data key="d3">
-                <ywpf:ShinyPlateNodeStyle Brush="{y:GraphMLReference 8}" Radius="0" />
+                <ywpf:RectangleNodeStyle Brush="{y:GraphMLReference 8}" CornerSize="3.5"/>
               </data>
               <port name="p0">
                 <data key="d7">
@@ -377,7 +377,7 @@
                 <y:RectD X="520" Y="-184.5" Width="80" Height="50" />
               </data>
               <data key="d3">
-                <ywpf:ShinyPlateNodeStyle Brush="{y:GraphMLReference 8}" Radius="0" />
+                <ywpf:RectangleNodeStyle Brush="{y:GraphMLReference 8}" CornerSize="3.5"/>
               </data>
               <port name="p0">
                 <data key="d7">

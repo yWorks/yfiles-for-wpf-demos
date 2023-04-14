@@ -25,57 +25,538 @@
   </key>
   <key id="d12" for="port" attr.name="PortViewState" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/folding/PortViewState" />
   <key id="d13" attr.name="SharedData" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/SharedData" />
+  <key id="d14" attr.name="Tooltip" attr.type="string" />
   <data key="d13">
     <y:SharedData>
       <ywpf:TypefaceFormat x:Key="1" Size="14" />
     </y:SharedData>
   </data>
   <graph id="G" edgedefault="directed">
-    <node id="modern0">
+    <!-- Shape Nodes -->
+    <node id="shape-rect">
       <data key="d3">
-        <ywpf:BevelNodeStyle Inset="3" Radius="10" Color="Orange" DrawShadow="false"/>
+        <ywpf:ShapeNodeStyle Brush="DarkOrange" Pen="Black" Shape="Rectangle" />
       </data>
-      <data key="d0"><![CDATA[Modern Nodes]]></data>
+      <data key="d0"><![CDATA[Shape Nodes]]></data>
+      <data key="d14">Rectangle</data>
+      <data key="d2">
+        <y:RectD X="0" Y="0" Width="45" Height="30" />
+      </data>
+    </node>
+    <node id="shape-round-top-left">
+      <data key="d3">
+        <ywpf:RectangleNodeStyle Brush="DarkOrange" Pen="Black" Corners="TopLeft" />
+      </data>
+      <data key="d0"><![CDATA[Shape Nodes]]></data>
+      <data key="d14">Rounded Top-Left</data>
       <data key="d2">
         <y:RectD X="0" Y="0" Width="30" Height="30" />
       </data>
     </node>
-    <node id="modern1">
+    <node id="shape-round-top-right">
       <data key="d3">
-        <ywpf:BevelNodeStyle Inset="3" Radius="10" Color="Orange" DrawShadow="true"/>
+        <ywpf:RectangleNodeStyle Brush="DarkOrange" Pen="Black" Corners="TopRight" />
       </data>
-      <data key="d0"><![CDATA[Modern Nodes]]></data>
+      <data key="d0"><![CDATA[Shape Nodes]]></data>
+      <data key="d14">Rounded Top-Right</data>
       <data key="d2">
         <y:RectD X="0" Y="0" Width="30" Height="30" />
       </data>
     </node>
-    <node id="modern2">
+    <node id="shape-round-bottom-left">
       <data key="d3">
-        <ywpf:ShinyPlateNodeStyle Brush="Orange" DrawShadow="false"/>
+        <ywpf:RectangleNodeStyle Brush="DarkOrange" Pen="Black" Corners="BottomLeft" />
       </data>
-      <data key="d0"><![CDATA[Modern Nodes]]></data>
+      <data key="d0"><![CDATA[Shape Nodes]]></data>
+      <data key="d14">Rounded Bottom-Left</data>
       <data key="d2">
         <y:RectD X="0" Y="0" Width="30" Height="30" />
       </data>
     </node>
-    <node id="modern3">
+    <node id="shape-round-bottom-right">
       <data key="d3">
-        <ywpf:ShinyPlateNodeStyle Brush="Orange" DrawShadow="true"/>
+        <ywpf:RectangleNodeStyle Brush="DarkOrange" Pen="Black" Corners="BottomRight" />
       </data>
-      <data key="d0"><![CDATA[Modern Nodes]]></data>
+      <data key="d0"><![CDATA[Shape Nodes]]></data>
+      <data key="d14">Rounded Bottom-Right</data>
       <data key="d2">
         <y:RectD X="0" Y="0" Width="30" Height="30" />
       </data>
     </node>
-    <node id="modern4">
+    <node id="shape-round-rectangle">
       <data key="d3">
-        <ywpf:PanelNodeStyle Color="Orange" LabelInsetsColor="LightGray" Insets="5" />
+        <ywpf:RectangleNodeStyle Brush="DarkOrange" Pen="Black" />
       </data>
-      <data key="d0"><![CDATA[Modern Nodes]]></data>
+      <data key="d0"><![CDATA[Shape Nodes]]></data>
+      <data key="d14">Rounded Rectangle</data>
       <data key="d2">
         <y:RectD X="0" Y="0" Width="30" Height="30" />
       </data>
     </node>
+    <node id="shape-diamond">
+      <data key="d3">
+        <ywpf:ShapeNodeStyle Brush="DarkOrange" Pen="Black" Shape="Diamond" />
+      </data>
+      <data key="d0"><![CDATA[Shape Nodes]]></data>
+      <data key="d14">Diamond</data>
+      <data key="d2">
+        <y:RectD X="0" Y="0" Width="30" Height="30" />
+      </data>
+    </node>
+    <node id="shape-clipped-top-left">
+      <data key="d3">
+        <ywpf:RectangleNodeStyle Brush="DarkOrange" Pen="Black" Corners="TopLeft" CornerStyle="Cut" />
+      </data>
+      <data key="d0"><![CDATA[Shape Nodes]]></data>
+      <data key="d14">Clipped Top-Left</data>
+      <data key="d2">
+        <y:RectD X="0" Y="0" Width="30" Height="30" />
+      </data>
+    </node>
+    <node id="shape-clipped-top-right">
+      <data key="d3">
+        <ywpf:RectangleNodeStyle Brush="DarkOrange" Pen="Black" Corners="TopRight" CornerStyle="Cut" />
+      </data>
+      <data key="d0"><![CDATA[Shape Nodes]]></data>
+      <data key="d14">Clipped Top-Right</data>
+      <data key="d2">
+        <y:RectD X="0" Y="0" Width="30" Height="30" />
+      </data>
+    </node>
+    <node id="shape-clipped-bottom-left">
+      <data key="d3">
+        <ywpf:RectangleNodeStyle Brush="DarkOrange" Pen="Black" Corners="BottomLeft" CornerStyle="Cut" />
+      </data>
+      <data key="d0"><![CDATA[Shape Nodes]]></data>
+      <data key="d14">Clipped Bottom-Left</data>
+      <data key="d2">
+        <y:RectD X="0" Y="0" Width="30" Height="30" />
+      </data>
+    </node>
+    <node id="shape-clipped-bottom-right">
+      <data key="d3">
+        <ywpf:RectangleNodeStyle Brush="DarkOrange" Pen="Black" Corners="BottomRight" CornerStyle="Cut" />
+      </data>
+      <data key="d0"><![CDATA[Shape Nodes]]></data>
+      <data key="d14">Clipped Bottom-Right</data>
+      <data key="d2">
+        <y:RectD X="0" Y="0" Width="30" Height="30" />
+      </data>
+    </node>
+    <node id="shape-ellipse">
+      <data key="d3">
+        <ywpf:ShapeNodeStyle Brush="DarkOrange" Pen="Black" Shape="Ellipse" />
+      </data>
+      <data key="d0"><![CDATA[Shape Nodes]]></data>
+      <data key="d14">Ellipse</data>
+      <data key="d2">
+        <y:RectD X="0" Y="0" Width="45" Height="30" />
+      </data>
+    </node>
+    <node id="shape-fat-arrow-right">
+      <data key="d3">
+        <ywpf:ShapeNodeStyle Brush="DarkOrange" Pen="Black" Shape="FatArrow" />
+      </data>
+      <data key="d0"><![CDATA[Shape Nodes]]></data>
+      <data key="d14">Fat Arrow Right</data>
+      <data key="d2">
+        <y:RectD X="0" Y="0" Width="30" Height="30" />
+      </data>
+    </node>
+    <node id="shape-fat-arrow2-right">
+      <data key="d3">
+        <ywpf:ShapeNodeStyle Brush="DarkOrange" Pen="Black" Shape="FatArrow2" />
+      </data>
+      <data key="d0"><![CDATA[Shape Nodes]]></data>
+      <data key="d14">Fat Arrow Left</data>
+      <data key="d2">
+        <y:RectD X="0" Y="0" Width="30" Height="30" />
+      </data>
+    </node>
+    <node id="shape-hexagon">
+      <data key="d3">
+        <ywpf:ShapeNodeStyle Brush="DarkOrange" Pen="Black" Shape="Hexagon" />
+      </data>
+      <data key="d0"><![CDATA[Shape Nodes]]></data>
+      <data key="d14">Hexagon</data>
+      <data key="d2">
+        <y:RectD X="0" Y="0" Width="30" Height="30" />
+      </data>
+    </node>
+    <node id="shape-Octagon">
+      <data key="d3">
+        <ywpf:ShapeNodeStyle Brush="DarkOrange" Pen="Black" Shape="Octagon" />
+      </data>
+      <data key="d0"><![CDATA[Shape Nodes]]></data>
+      <data key="d14">Octagon</data>
+      <data key="d2">
+        <y:RectD X="0" Y="0" Width="30" Height="30" />
+      </data>
+    </node>
+    <node id="shape-sheared-rectangle-right">
+      <data key="d3">
+        <ywpf:ArrowNodeStyle Brush="DarkOrange" Pen="Black" Shape="Parallelogram" Angle="0.20943951023931953" />
+      </data>
+      <data key="d0"><![CDATA[Shape Nodes]]></data>
+      <data key="d14">Sheared Rectangle Right</data>
+      <data key="d2">
+        <y:RectD X="0" Y="0" Width="30" Height="30" />
+      </data>
+    </node>
+    <node id="shape-sheared-rectangle-left">
+      <data key="d3">
+        <ywpf:ArrowNodeStyle Brush="DarkOrange" Pen="Black" Shape="Parallelogram" Angle="0.20943951023931953" Direction="Left" />
+      </data>
+      <data key="d0"><![CDATA[Shape Nodes]]></data>
+      <data key="d14">Sheared Rectangle Left</data>
+      <data key="d2">
+        <y:RectD X="0" Y="0" Width="30" Height="30" />
+      </data>
+    </node>
+    <node id="shape-star5">
+      <data key="d3">
+        <ywpf:ShapeNodeStyle Brush="DarkOrange" Pen="Black" Shape="Star5" />
+      </data>
+      <data key="d0"><![CDATA[Shape Nodes]]></data>
+      <data key="d14">Five-pointed star</data>
+      <data key="d2">
+        <y:RectD X="0" Y="0" Width="30" Height="30" />
+      </data>
+    </node>
+    <node id="shape-star5up">
+      <data key="d3">
+        <ywpf:ShapeNodeStyle Brush="DarkOrange" Pen="Black" Shape="Star5Up" />
+      </data>
+      <data key="d0"><![CDATA[Shape Nodes]]></data>
+      <data key="d14">Five-pointed star</data>
+      <data key="d2">
+        <y:RectD X="0" Y="0" Width="30" Height="30" />
+      </data>
+    </node>
+    <node id="shape-star6">
+      <data key="d3">
+        <ywpf:ShapeNodeStyle Brush="DarkOrange" Pen="Black" Shape="Star6" />
+      </data>
+      <data key="d0"><![CDATA[Shape Nodes]]></data>
+      <data key="d14">Six-pointed star</data>
+      <data key="d2">
+        <y:RectD X="0" Y="0" Width="30" Height="30" />
+      </data>
+    </node>
+    <node id="shape-star8">
+      <data key="d3">
+        <ywpf:ShapeNodeStyle Brush="DarkOrange" Pen="Black" Shape="Star8" />
+      </data>
+      <data key="d0"><![CDATA[Shape Nodes]]></data>
+      <data key="d14">Eight-pointed star</data>
+      <data key="d2">
+        <y:RectD X="0" Y="0" Width="30" Height="30" />
+      </data>
+    </node>
+    <node id="shape-trapezoid">
+      <data key="d3">
+        <ywpf:ArrowNodeStyle Brush="DarkOrange" Pen="Black" Shape="Trapezoid" Angle="0.20943951023931953" Direction="Left" />
+      </data>
+      <data key="d0"><![CDATA[Shape Nodes]]></data>
+      <data key="d14">Trapezoid</data>
+      <data key="d2">
+        <y:RectD X="0" Y="0" Width="30" Height="30" />
+      </data>
+    </node>
+    <node id="shape-trapezoid2">
+      <data key="d3">
+        <ywpf:ArrowNodeStyle Brush="DarkOrange" Pen="Black" Shape="Trapezoid" Angle="0.20943951023931953" />
+      </data>
+      <data key="d0"><![CDATA[Shape Nodes]]></data>
+      <data key="d14">Trapezoid 2</data>
+      <data key="d2">
+        <y:RectD X="0" Y="0" Width="30" Height="30" />
+      </data>
+    </node>
+    <node id="shape-triangle-up">
+      <data key="d3">
+        <ywpf:ShapeNodeStyle Brush="DarkOrange" Pen="Black" Shape="Triangle" />
+      </data>
+      <data key="d0"><![CDATA[Shape Nodes]]></data>
+      <data key="d14">Triangle Up</data>
+      <data key="d2">
+        <y:RectD X="0" Y="0" Width="30" Height="30" />
+      </data>
+    </node>
+    <node id="shape-triangle-down">
+      <data key="d3">
+        <ywpf:ShapeNodeStyle Brush="DarkOrange" Pen="Black" Shape="Triangle2" />
+      </data>
+      <data key="d0"><![CDATA[Shape Nodes]]></data>
+      <data key="d14">Triangle Down</data>
+      <data key="d2">
+        <y:RectD X="0" Y="0" Width="30" Height="30" />
+      </data>
+    </node>
+    <node id="shape-pill">
+      <data key="d3">
+        <ywpf:RectangleNodeStyle Brush="DarkOrange" Pen="Black" CornerSize="1" ScaleCornerSize="True" />
+      </data>
+      <data key="d0"><![CDATA[Shape Nodes]]></data>
+      <data key="d14">Pill</data>
+      <data key="d2">
+        <y:RectD X="0" Y="0" Width="45" Height="30" />
+      </data>
+    </node>
+    <node id="shape-pill-clipped">
+      <data key="d3">
+        <ywpf:RectangleNodeStyle Brush="DarkOrange" Pen="Black" CornerStyle="Cut" CornerSize="1" ScaleCornerSize="True" />
+      </data>
+      <data key="d0"><![CDATA[Shape Nodes]]></data>
+      <data key="d14">Pill Clipped</data>
+      <data key="d2">
+        <y:RectD X="0" Y="0" Width="45" Height="30" />
+      </data>
+    </node>
+    <node id="shape-rounded-bottom">
+      <data key="d3">
+        <ywpf:RectangleNodeStyle Brush="DarkOrange" Pen="Black" Corners="Bottom" />
+      </data>
+      <data key="d0"><![CDATA[Shape Nodes]]></data>
+      <data key="d14">Rounded Bottom</data>
+      <data key="d2">
+        <y:RectD X="0" Y="0" Width="45" Height="30" />
+      </data>
+    </node>
+    <node id="shape-rounded-top">
+      <data key="d3">
+        <ywpf:RectangleNodeStyle Brush="DarkOrange" Pen="Black" Corners="Top" />
+      </data>
+      <data key="d0"><![CDATA[Shape Nodes]]></data>
+      <data key="d14">Rounded Top</data>
+      <data key="d2">
+        <y:RectD X="0" Y="0" Width="45" Height="30" />
+      </data>
+    </node>
+    <node id="shape-clipped-bottom">
+      <data key="d3">
+        <ywpf:RectangleNodeStyle Brush="DarkOrange" Pen="Black" Corners="Bottom" CornerStyle="Cut" />
+      </data>
+      <data key="d0"><![CDATA[Shape Nodes]]></data>
+      <data key="d14">Clipped Bottom</data>
+      <data key="d2">
+        <y:RectD X="0" Y="0" Width="45" Height="30" />
+      </data>
+    </node>
+    <node id="shape-clipped-top">
+      <data key="d3">
+        <ywpf:RectangleNodeStyle Brush="DarkOrange" Pen="Black" Corners="Top" CornerStyle="Cut" />
+      </data>
+      <data key="d0"><![CDATA[Shape Nodes]]></data>
+      <data key="d14">Clipped Top</data>
+      <data key="d2">
+        <y:RectD X="0" Y="0" Width="45" Height="30" />
+      </data>
+    </node>
+    <node id="shape-rounded-left">
+      <data key="d3">
+        <ywpf:RectangleNodeStyle Brush="DarkOrange" Pen="Black" Corners="Left" />
+      </data>
+      <data key="d0"><![CDATA[Shape Nodes]]></data>
+      <data key="d14">Rounded Left</data>
+      <data key="d2">
+        <y:RectD X="0" Y="0" Width="45" Height="30" />
+      </data>
+    </node>
+    <node id="shape-rounded-right">
+      <data key="d3">
+        <ywpf:RectangleNodeStyle Brush="DarkOrange" Pen="Black" Corners="Right" />
+      </data>
+      <data key="d0"><![CDATA[Shape Nodes]]></data>
+      <data key="d14">Rounded Right</data>
+      <data key="d2">
+        <y:RectD X="0" Y="0" Width="45" Height="30" />
+      </data>
+    </node>
+    <node id="shape-clipped-left">
+      <data key="d3">
+        <ywpf:RectangleNodeStyle Brush="DarkOrange" Pen="Black" Corners="Left" CornerStyle="Cut" />
+      </data>
+      <data key="d0"><![CDATA[Shape Nodes]]></data>
+      <data key="d14">Clipped Left</data>
+      <data key="d2">
+        <y:RectD X="0" Y="0" Width="45" Height="30" />
+      </data>
+    </node>
+    <node id="shape-clipped-right">
+      <data key="d3">
+        <ywpf:RectangleNodeStyle Brush="DarkOrange" Pen="Black" Corners="Right" CornerStyle="Cut" />
+      </data>
+      <data key="d0"><![CDATA[Shape Nodes]]></data>
+      <data key="d14">Clipped Right</data>
+      <data key="d2">
+        <y:RectD X="0" Y="0" Width="45" Height="30" />
+      </data>
+    </node>
+    <node id="shape-rounded-diagonally">
+      <data key="d3">
+        <ywpf:RectangleNodeStyle Brush="DarkOrange" Pen="Black" Corners="BottomRight,TopLeft" />
+      </data>
+      <data key="d0"><![CDATA[Shape Nodes]]></data>
+      <data key="d14">Rounded diagonally</data>
+      <data key="d2">
+        <y:RectD X="0" Y="0" Width="45" Height="30" />
+      </data>
+    </node>
+    <node id="shape-rounded-diagonally2">
+      <data key="d3">
+        <ywpf:RectangleNodeStyle Brush="DarkOrange" Pen="Black" Corners="BottomLeft,TopRight" />
+      </data>
+      <data key="d0"><![CDATA[Shape Nodes]]></data>
+      <data key="d14">Rounded diagonally</data>
+      <data key="d2">
+        <y:RectD X="0" Y="0" Width="45" Height="30" />
+      </data>
+    </node>
+    <node id="shape-clipped-diagonally">
+      <data key="d3">
+        <ywpf:RectangleNodeStyle Brush="DarkOrange" Pen="Black" Corners="BottomRight,TopLeft" CornerStyle="Cut" />
+      </data>
+      <data key="d0"><![CDATA[Shape Nodes]]></data>
+      <data key="d14">Clipped diagonally</data>
+      <data key="d2">
+        <y:RectD X="0" Y="0" Width="45" Height="30" />
+      </data>
+    </node>
+    <node id="shape-clipped-diagonally2">
+      <data key="d3">
+        <ywpf:RectangleNodeStyle Brush="DarkOrange" Pen="Black" Corners="BottomLeft,TopRight" CornerStyle="Cut" />
+      </data>
+      <data key="d0"><![CDATA[Shape Nodes]]></data>
+      <data key="d14">Clipped diagonally</data>
+      <data key="d2">
+        <y:RectD X="0" Y="0" Width="45" Height="30" />
+      </data>
+    </node>
+    <node id="shape-arrow-left">
+      <data key="d3">
+        <ywpf:ArrowNodeStyle Brush="DarkOrange" Pen="Black" Direction="Left" ShaftRatio="0.6" />
+      </data>
+      <data key="d0"><![CDATA[Shape Nodes]]></data>
+      <data key="d14">Arrow Node Left</data>
+      <data key="d2">
+        <y:RectD X="0" Y="0" Width="45" Height="30" />
+      </data>
+    </node>
+    <node id="shape-notched-arrow-left">
+      <data key="d3">
+        <ywpf:ArrowNodeStyle Brush="DarkOrange" Pen="Black" Shape="NotchedArrow" Direction="Left" ShaftRatio="0.6" />
+      </data>
+      <data key="d0"><![CDATA[Shape Nodes]]></data>
+      <data key="d14">Notched Arrow Node Left</data>
+      <data key="d2">
+        <y:RectD X="0" Y="0" Width="45" Height="30" />
+      </data>
+    </node>
+    <node id="shape-arrow-right">
+      <data key="d3">
+        <ywpf:ArrowNodeStyle Brush="DarkOrange" Pen="Black" Direction="Right" ShaftRatio="0.6" />
+      </data>
+      <data key="d0"><![CDATA[Shape Nodes]]></data>
+      <data key="d14">Arrow Node Right</data>
+      <data key="d2">
+        <y:RectD X="0" Y="0" Width="45" Height="30" />
+      </data>
+    </node>
+    <node id="shape-notched-arrow-right">
+      <data key="d3">
+        <ywpf:ArrowNodeStyle Brush="DarkOrange" Pen="Black" Shape="NotchedArrow" Direction="Right" ShaftRatio="0.6" />
+      </data>
+      <data key="d0"><![CDATA[Shape Nodes]]></data>
+      <data key="d14">Notched Arrow Node Right</data>
+      <data key="d2">
+        <y:RectD X="0" Y="0" Width="45" Height="30" />
+      </data>
+    </node>
+    <node id="shape-double-arrow-horizontal">
+      <data key="d3">
+        <ywpf:ArrowNodeStyle Brush="DarkOrange" Pen="Black" Shape="DoubleArrow" Direction="Left" ShaftRatio="0.6" />
+      </data>
+      <data key="d0"><![CDATA[Shape Nodes]]></data>
+      <data key="d14">Notched Arrow Node Right</data>
+      <data key="d2">
+        <y:RectD X="0" Y="0" Width="45" Height="30" />
+      </data>
+    </node>
+    <node id="shape-arrow-down">
+      <data key="d3">
+        <ywpf:ArrowNodeStyle Brush="DarkOrange" Pen="Black" Direction="Down" ShaftRatio="0.6" />
+      </data>
+      <data key="d0"><![CDATA[Shape Nodes]]></data>
+      <data key="d14">Arrow Node Down</data>
+      <data key="d2">
+        <y:RectD X="0" Y="0" Width="30" Height="45" />
+      </data>
+    </node>
+    <node id="shape-notched-arrow-down">
+      <data key="d3">
+        <ywpf:ArrowNodeStyle Brush="DarkOrange" Pen="Black" Shape="NotchedArrow" Direction="Down" ShaftRatio="0.6" />
+      </data>
+      <data key="d0"><![CDATA[Shape Nodes]]></data>
+      <data key="d14">Notched Arrow Node Down</data>
+      <data key="d2">
+        <y:RectD X="0" Y="0" Width="30" Height="45" />
+      </data>
+    </node>
+    <node id="shape-arrow-up">
+      <data key="d3">
+        <ywpf:ArrowNodeStyle Brush="DarkOrange" Pen="Black" Direction="Up" ShaftRatio="0.6" />
+      </data>
+      <data key="d0"><![CDATA[Shape Nodes]]></data>
+      <data key="d14">Arrow Node Up</data>
+      <data key="d2">
+        <y:RectD X="0" Y="0" Width="30" Height="45" />
+      </data>
+    </node>
+    <node id="shape-notched-arrow-up">
+      <data key="d3">
+        <ywpf:ArrowNodeStyle Brush="DarkOrange" Pen="Black" Shape="NotchedArrow" Direction="Up" ShaftRatio="0.6" />
+      </data>
+      <data key="d0"><![CDATA[Shape Nodes]]></data>
+      <data key="d14">Notched Arrow Node Up</data>
+      <data key="d2">
+        <y:RectD X="0" Y="0" Width="30" Height="45" />
+      </data>
+    </node>
+    <node id="shape-double-arrow-vertical">
+      <data key="d3">
+        <ywpf:ArrowNodeStyle Brush="DarkOrange" Pen="Black" Shape="DoubleArrow" Direction="Up" ShaftRatio="0.6" />
+      </data>
+      <data key="d0"><![CDATA[Shape Nodes]]></data>
+      <data key="d14">Notched Arrow Node Up</data>
+      <data key="d2">
+        <y:RectD X="0" Y="0" Width="30" Height="45" />
+      </data>
+    </node>  
+    <node id="n12">
+      <data key="d3">
+        <ywpf:GeneralPathNodeStyle Brush="DarkOrange" Pen="Black">
+          <ywpf:GeneralPathNodeStyle.Path>
+            <y:GeneralPath>
+              <y:MoveTo Point="0,0" />
+              <y:LineTo Point="0.5,0.2" />
+              <y:LineTo Point="1,0" />
+              <y:LineTo Point="0.8,0.5" />
+              <y:LineTo Point="1,1" />
+              <y:LineTo Point="0.5,0.8" />
+              <y:LineTo Point="0,1" />
+              <y:LineTo Point="0.2,0.5" />
+              <y:Close />
+            </y:GeneralPath>
+          </ywpf:GeneralPathNodeStyle.Path>
+        </ywpf:GeneralPathNodeStyle>
+      </data>
+      <data key="d0"><![CDATA[Shape Nodes]]></data>
+      <data key="d2">
+        <y:RectD X="-923.7" Y="-149.45" Width="30" Height="30" />
+      </data>
+    </node>
+    <!-- Computer Nodes -->
     <node id="n3">
       <data key="d3">
         <VectorNodeStyle TemplateKey="Computer" xmlns="http://www.yworks.com/yfiles-wpf/2.1/demos/GraphEditor/Styles" />
@@ -121,6 +602,9 @@
         <y:RectD X="0" Y="0" Width="30" Height="30" />
       </data>
     </node>
+
+
+    <!-- People Nodes -->
     <node id="n7">
       <data key="d3">
         <VectorNodeStyle TemplateKey="UserIcon_Male_2" xmlns="http://www.yworks.com/yfiles-wpf/2.1/demos/GraphEditor/Styles" />
@@ -157,185 +641,12 @@
         <y:RectD X="0" Y="0" Width="30" Height="30" />
       </data>
     </node>
-    <node id="n12">
-      <data key="d3">
-        <ywpf:GeneralPathNodeStyle Brush="Orange" Pen="Black">
-          <ywpf:GeneralPathNodeStyle.Path>
-            <y:GeneralPath>
-              <y:MoveTo Point="0,0" />
-              <y:LineTo Point="0.5,0.200000002980232" />
-              <y:LineTo Point="1,0" />
-              <y:LineTo Point="0.800000011920929,0.5" />
-              <y:LineTo Point="1,1" />
-              <y:LineTo Point="0.5,0.800000011920929" />
-              <y:LineTo Point="0,1" />
-              <y:LineTo Point="0.200000002980232,0.5" />
-              <y:Close />
-            </y:GeneralPath>
-          </ywpf:GeneralPathNodeStyle.Path>
-        </ywpf:GeneralPathNodeStyle>
-      </data>
-      <data key="d0"><![CDATA[Shape Nodes]]></data>
-      <data key="d2">
-        <y:RectD X="-923.7" Y="-149.45" Width="30" Height="30" />
-      </data>
-    </node>
-    <node id="n13">
-      <data key="d3">
-        <ywpf:ShapeNodeStyle Pen="Black" Brush="Orange" Shape="Diamond" />
-      </data>
-      <data key="d0"><![CDATA[Shape Nodes]]></data>
-      <data key="d2">
-        <y:RectD X="-865.575" Y="-86.325" Width="30" Height="30" />
-      </data>
-    </node>
-    <node id="n14">
-      <data key="d3">
-        <ywpf:ShapeNodeStyle Pen="Black" Brush="Orange" Shape="Ellipse" />
-      </data>
-      <data key="d0"><![CDATA[Shape Nodes]]></data>
-      <data key="d2">
-        <y:RectD X="-760.575" Y="-112.325" Width="30" Height="30" />
-      </data>
-    </node>
-    <node id="n15">
-      <data key="d3">
-        <ywpf:ShapeNodeStyle Pen="Black" Brush="Orange" Shape="FatArrow" />
-      </data>
-      <data key="d0"><![CDATA[Shape Nodes]]></data>
-      <data key="d2">
-        <y:RectD X="-656.575" Y="-86.325" Width="30" Height="30" />
-      </data>
-    </node>
-    <node id="n16">
-      <data key="d3">
-        <ywpf:ShapeNodeStyle Pen="Black" Brush="Orange" Shape="FatArrow2" />
-      </data>
-      <data key="d0"><![CDATA[Shape Nodes]]></data>
-      <data key="d2">
-        <y:RectD X="-914.575" Y="14.675" Width="30" Height="30" />
-      </data>
-    </node>
-    <node id="n17">
-      <data key="d3">
-        <ywpf:ShapeNodeStyle Pen="Black" Brush="Orange" Shape="Hexagon" />
-      </data>
-      <data key="d0"><![CDATA[Shape Nodes]]></data>
-      <data key="d2">
-        <y:RectD X="-781.575" Y="-11.325" Width="30" Height="30" />
-      </data>
-    </node>
-    <node id="n18">
-      <data key="d3">
-        <ywpf:ShapeNodeStyle Pen="Black" Brush="Orange" Shape="Octagon" />
-      </data>
-      <data key="d0"><![CDATA[Shape Nodes]]></data>
-      <data key="d2">
-        <y:RectD X="-709.575" Y="-23.325" Width="30" Height="30" />
-      </data>
-    </node>
-    <node id="n19">
-      <data key="d3">
-        <ywpf:ShapeNodeStyle Pen="Black" Brush="Orange" />
-      </data>
-      <data key="d0"><![CDATA[Shape Nodes]]></data>
-      <data key="d2">
-        <y:RectD X="-577.575" Y="-63.325" Width="30" Height="30" />
-      </data>
-    </node>
-    <node id="n20">
-      <data key="d3">
-        <ywpf:ShapeNodeStyle Pen="Black" Brush="Orange" Shape="RoundRectangle" />
-      </data>
-      <data key="d0"><![CDATA[Shape Nodes]]></data>
-      <data key="d2">
-        <y:RectD X="-939.575" Y="106.675" Width="30" Height="30" />
-      </data>
-    </node>
-    <node id="n21">
-      <data key="d3">
-        <ywpf:ShapeNodeStyle Pen="Black" Brush="Orange" Shape="ShearedRectangle" />
-      </data>
-      <data key="d0"><![CDATA[Shape Nodes]]></data>
-      <data key="d2">
-        <y:RectD X="-732.575" Y="94.675" Width="30" Height="30" />
-      </data>
-    </node>
-    <node id="n22">
-      <data key="d3">
-        <ywpf:ShapeNodeStyle Pen="Black" Brush="Orange" Shape="ShearedRectangle2" />
-      </data>
-      <data key="d0"><![CDATA[Shape Nodes]]></data>
-      <data key="d2">
-        <y:RectD X="-558.575" Y="62.675" Width="30" Height="30" />
-      </data>
-    </node>
-    <node id="n23">
-      <data key="d3">
-        <ywpf:ShapeNodeStyle Pen="Black" Brush="Orange" Shape="Star5" />
-      </data>
-      <data key="d0"><![CDATA[Shape Nodes]]></data>
-      <data key="d2">
-        <y:RectD X="-633.575" Y="31.675" Width="30" Height="30" />
-      </data>
-    </node>
-    <node id="n24">
-      <data key="d3">
-        <ywpf:ShapeNodeStyle Pen="Black" Brush="Orange" Shape="Star6" />
-      </data>
-      <data key="d0"><![CDATA[Shape Nodes]]></data>
-      <data key="d2">
-        <y:RectD X="-832.575" Y="72.3625" Width="30" Height="30" />
-      </data>
-    </node>
-    <node id="n25">
-      <data key="d3">
-        <ywpf:ShapeNodeStyle Pen="Black" Brush="Orange" Shape="Star8" />
-      </data>
-      <data key="d0"><![CDATA[Shape Nodes]]></data>
-      <data key="d2">
-        <y:RectD X="-812.575" Y="165.3625" Width="30" Height="30" />
-      </data>
-    </node>
-    <node id="n26">
-      <data key="d3">
-        <ywpf:ShapeNodeStyle Pen="Black" Brush="Orange" Shape="Trapez" />
-      </data>
-      <data key="d0"><![CDATA[Shape Nodes]]></data>
-      <data key="d2">
-        <y:RectD X="-684.575" Y="188.3625" Width="30" Height="30" />
-      </data>
-    </node>
-    <node id="n27">
-      <data key="d3">
-        <ywpf:ShapeNodeStyle Pen="Black" Brush="Orange" Shape="Trapez2" />
-      </data>
-      <data key="d0"><![CDATA[Shape Nodes]]></data>
-      <data key="d2">
-        <y:RectD X="-597.575" Y="150.3625" Width="30" Height="30" />
-      </data>
-    </node>
-    <node id="n28">
-      <data key="d3">
-        <ywpf:ShapeNodeStyle Pen="Black" Brush="Orange" Shape="Triangle" />
-      </data>
-      <data key="d0"><![CDATA[Shape Nodes]]></data>
-      <data key="d2">
-        <y:RectD X="-895.575" Y="181.3625" Width="30" Height="30" />
-      </data>
-    </node>
-    <node id="n29">
-      <data key="d3">
-        <ywpf:ShapeNodeStyle Pen="Black" Brush="Orange" Shape="Triangle2" />
-      </data>
-      <data key="d0"><![CDATA[Shape Nodes]]></data>
-      <data key="d2">
-        <y:RectD X="-749.575" Y="230.3625" Width="30" Height="30" />
-      </data>
-    </node>
+
+    
+    <!-- Labels -->
     <node id="n31">
       <data key="d3">
-        <ywpf:BevelNodeStyle Inset="3" Radius="10" Color="Orange" />
+        <ywpf:BevelNodeStyle Inset="3" Radius="10" Color="DarkOrange" />
       </data>
       <data key="d0"><![CDATA[Dummy]]></data>
       <data key="d1">
@@ -348,42 +659,27 @@
           </y:Label>
           <y:Label LayoutParameter="{x:Static y:InteriorLabelModel.Center}">
             <y:Label.Text>1</y:Label.Text>
-            <y:Label.Style>
-              <ywpf:NodeStyleLabelStyleAdapter LabelStyleInsets="5">
-                <ywpf:NodeStyleLabelStyleAdapter.NodeStyle>
-                  <ywpf:BevelNodeStyle Inset="3" Radius="10" Color="LightGray" />
-                </ywpf:NodeStyleLabelStyleAdapter.NodeStyle>
-                <ywpf:NodeStyleLabelStyleAdapter.LabelStyle>
-                   <LabelStyle xmlns="http://www.yworks.com/yfiles-wpf/2.1/demos/GraphEditor/Styles" />
-                </ywpf:NodeStyleLabelStyleAdapter.LabelStyle>
-              </ywpf:NodeStyleLabelStyleAdapter>
-            </y:Label.Style>
+              <y:Label.Style>
+                  <LabelStyle xmlns="http://www.yworks.com/yfiles-wpf/2.1/demos/GraphEditor/Styles" BackgroundBrush="LightGray" BackgroundPen="DarkGray"/>
+              </y:Label.Style>
+          </y:Label>          
+            <y:Label LayoutParameter="{x:Static y:InteriorLabelModel.Center}">
+            <y:Label.Text>1</y:Label.Text>
+              <y:Label.Style>
+                  <LabelStyle xmlns="http://www.yworks.com/yfiles-wpf/2.1/demos/GraphEditor/Styles" BackgroundBrush="LightGray" BackgroundPen="DarkGray" Shape="RoundRectangle"/>
+              </y:Label.Style>
           </y:Label>
           <y:Label LayoutParameter="{x:Static y:InteriorLabelModel.Center}">
             <y:Label.Text>1</y:Label.Text>
-            <y:Label.Style>
-              <ywpf:NodeStyleLabelStyleAdapter LabelStyleInsets="5">
-                <ywpf:NodeStyleLabelStyleAdapter.NodeStyle>
-                  <ywpf:ShinyPlateNodeStyle Brush="LightGray" />
-                </ywpf:NodeStyleLabelStyleAdapter.NodeStyle>
-                <ywpf:NodeStyleLabelStyleAdapter.LabelStyle>
-                   <LabelStyle xmlns="http://www.yworks.com/yfiles-wpf/2.1/demos/GraphEditor/Styles" />
-                </ywpf:NodeStyleLabelStyleAdapter.LabelStyle>
-              </ywpf:NodeStyleLabelStyleAdapter>
-            </y:Label.Style>
-          </y:Label>
-          <y:Label LayoutParameter="{x:Static y:InteriorLabelModel.Center}">
+              <y:Label.Style>
+                  <LabelStyle xmlns="http://www.yworks.com/yfiles-wpf/2.1/demos/GraphEditor/Styles" BackgroundBrush="LightGray" BackgroundPen="DarkGray" Shape="Pill"/>
+              </y:Label.Style>
+          </y:Label> 
+         <y:Label LayoutParameter="{x:Static y:InteriorLabelModel.Center}">
             <y:Label.Text>1</y:Label.Text>
-            <y:Label.Style>
-              <ywpf:NodeStyleLabelStyleAdapter LabelStyleInsets="5">
-                <ywpf:NodeStyleLabelStyleAdapter.NodeStyle>
-                  <ywpf:ShapeNodeStyle Brush="LightGray" Pen="DarkGray" Shape="Ellipse"/>
-                </ywpf:NodeStyleLabelStyleAdapter.NodeStyle>
-                <ywpf:NodeStyleLabelStyleAdapter.LabelStyle>
-                   <LabelStyle xmlns="http://www.yworks.com/yfiles-wpf/2.1/demos/GraphEditor/Styles" />
-                </ywpf:NodeStyleLabelStyleAdapter.LabelStyle>
-              </ywpf:NodeStyleLabelStyleAdapter>
-            </y:Label.Style>
+              <y:Label.Style>
+                  <LabelStyle xmlns="http://www.yworks.com/yfiles-wpf/2.1/demos/GraphEditor/Styles" BackgroundBrush="LightGray" BackgroundPen="DarkGray" Shape="Hexagon"/>
+              </y:Label.Style>
           </y:Label>
         </x:List>
       </data>
@@ -391,117 +687,226 @@
         <y:RectD X="-710.95" Y="-194.95" Width="30" Height="30" />
       </data>
     </node>
-    <node id="n32">
+    
+    
+    <!-- Groups -->
+    <node id="groups-icon-top">
       <data key="d3">
-        <GroupNodeStyle xmlns="http://www.yworks.com/yfiles-wpf/2.1/demos/GraphEditor/Styles" ButtonLocation="TopLeft">
-          <ywpf:PanelNodeStyle Color="#FFCFE2F8" LabelInsetsColor="#FFA6CAF0" />
-        </GroupNodeStyle>
+        <ywpf:GroupNodeStyle TabWidth="30" TabHeight="20" TabInset="3" TabPosition="TopTrailing" GroupIcon="Minus" IconForegroundBrush="#0B7189" IconOffset="2" HitTransparentContentArea="True" TabBackgroundBrush="#0B7189" ContentAreaBrush="White" TabBrush="#9DC6D0">
+          <ywpf:GroupNodeStyle.Pen>
+            <Pen xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Brush="#0B7189" Thickness="2"/>
+          </ywpf:GroupNodeStyle.Pen>
+        </ywpf:GroupNodeStyle>
       </data>
-      <data key="d0"><![CDATA[Group Nodes]]></data>
+      <data key="d0"><![CDATA[Groups]]></data>
+      <data key="d14">Group, Icon Top</data>
       <data key="d2">
-        <y:RectD X="-710.95" Y="-194.95" Width="100" Height="80" />
-      </data>
-      <data key="d0"><![CDATA[Group Nodes]]></data>
-      <data key="d2">
-        <y:RectD X="-710.95" Y="-194.95" Width="80" Height="30" />
+        <y:RectD X="0" Y="0" Width="75" Height="65" />
       </data>
     </node>
-    <node id="n33">
+    <node id="groups-icon-bottom">
       <data key="d3">
-        <GroupNodeStyle xmlns="http://www.yworks.com/yfiles-wpf/2.1/demos/GraphEditor/Styles">
-          <ywpf:ShapeNodeStyle Brush="#FFCFE2F8" Pen="#FFA6CAF0" />
-        </GroupNodeStyle>
+        <ywpf:GroupNodeStyle TabWidth="30" TabHeight="20" TabInset="3" TabPosition="BottomTrailing" GroupIcon="Minus" IconForegroundBrush="#0B7189" IconOffset="2" HitTransparentContentArea="True" TabBackgroundBrush="#0B7189" ContentAreaBrush="White" TabBrush="#9DC6D0">
+          <ywpf:GroupNodeStyle.Pen>
+            <Pen xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Brush="#0B7189" Thickness="2"/>
+          </ywpf:GroupNodeStyle.Pen>
+        </ywpf:GroupNodeStyle>
       </data>
-      <data key="d0"><![CDATA[Group Nodes]]></data>
+      <data key="d0"><![CDATA[Groups]]></data>
+      <data key="d14">Group, Icon Bottom</data>
       <data key="d2">
-        <y:RectD X="-710.95" Y="-194.95" Width="100" Height="80" />
+        <y:RectD X="0" Y="0" Width="75" Height="65" />
       </data>
     </node>
-    <node id="n34">
+    <node id="groups-icon-left">
       <data key="d3">
-        <GroupNodeStyle xmlns="http://www.yworks.com/yfiles-wpf/2.1/demos/GraphEditor/Styles">
-          <ywpf:ShapeNodeStyle Brush="#FFCFE2F8" Pen="#FFA6CAF0" Shape="RoundRectangle"/>
-        </GroupNodeStyle>
+        <ywpf:GroupNodeStyle TabWidth="30" TabHeight="20" TabInset="3" TabPosition="LeftTrailing" GroupIcon="Minus" IconForegroundBrush="#0B7189" IconOffset="2" HitTransparentContentArea="True" TabBackgroundBrush="#0B7189" ContentAreaBrush="White" TabBrush="#9DC6D0">
+          <ywpf:GroupNodeStyle.Pen>
+            <Pen xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Brush="#0B7189" Thickness="2"/>
+          </ywpf:GroupNodeStyle.Pen>
+        </ywpf:GroupNodeStyle>
       </data>
-      <data key="d0"><![CDATA[Group Nodes]]></data>
+      <data key="d0"><![CDATA[Groups]]></data>
+      <data key="d14">Group, Icon Bottom</data>
       <data key="d2">
-        <y:RectD X="-710.95" Y="-194.95" Width="100" Height="80" />
+        <y:RectD X="0" Y="0" Width="75" Height="65" />
       </data>
     </node>
-    <node id="n35">
+    <node id="groups-icon-right">
       <data key="d3">
-        <GroupNodeStyle xmlns="http://www.yworks.com/yfiles-wpf/2.1/demos/GraphEditor/Styles">
-          <ywpf:BevelNodeStyle Radius="3" Color="#FFCFE2F8"/>
-        </GroupNodeStyle>
+        <ywpf:GroupNodeStyle TabWidth="30" TabHeight="20" TabInset="3" TabPosition="RightTrailing" GroupIcon="Minus" IconForegroundBrush="#0B7189" IconOffset="2" HitTransparentContentArea="True" TabBackgroundBrush="#0B7189" ContentAreaBrush="White" TabBrush="#9DC6D0">
+          <ywpf:GroupNodeStyle.Pen>
+            <Pen xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Brush="#0B7189" Thickness="2"/>
+          </ywpf:GroupNodeStyle.Pen>
+        </ywpf:GroupNodeStyle>
       </data>
-      <data key="d0"><![CDATA[Group Nodes]]></data>
+      <data key="d0"><![CDATA[Groups]]></data>
+      <data key="d14">Group, Icon Bottom</data>
       <data key="d2">
-        <y:RectD X="-710.95" Y="-194.95" Width="100" Height="80" />
+        <y:RectD X="0" Y="0" Width="75" Height="65" />
       </data>
     </node>
-    <node id="n36">
+    <node id="groups-tab-top">
       <data key="d3">
-        <GroupNodeStyle xmlns="http://www.yworks.com/yfiles-wpf/2.1/demos/GraphEditor/Styles">
-          <ywpf:BevelNodeStyle Radius="3" Color="#FFCFE2F8" DrawShadow="true"/>
-        </GroupNodeStyle>
+        <ywpf:GroupNodeStyle TabWidth="30" TabHeight="20" TabInset="3" GroupIcon="Minus" IconForegroundBrush="#0B7189" IconOffset="2" HitTransparentContentArea="True" TabBackgroundBrush="#0B7189" ContentAreaBrush="White" TabBrush="#0B7189">
+          <ywpf:GroupNodeStyle.Pen>
+            <Pen xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Brush="#0B7189" Thickness="2"/>
+          </ywpf:GroupNodeStyle.Pen>
+        </ywpf:GroupNodeStyle>
       </data>
-      <data key="d0"><![CDATA[Group Nodes]]></data>
+      <data key="d0"><![CDATA[Groups]]></data>
+      <data key="d14">Group, Tap Top</data>
       <data key="d2">
-        <y:RectD X="-710.95" Y="-194.95" Width="100" Height="80" />
+        <y:RectD X="0" Y="0" Width="75" Height="65" />
+      </data>
+      <data key="d1">
+				<x:List>
+					<y:Label>
+						<y:Label.Text>Group</y:Label.Text>
+						<y:Label.LayoutParameter>
+							<y:GroupNodeLabelModelParameter PlaceOnTab="False">
+								<y:GroupNodeLabelModelParameter.Model>
+									<y:GroupNodeLabelModel/>
+								</y:GroupNodeLabelModelParameter.Model>
+							</y:GroupNodeLabelModelParameter>
+						</y:Label.LayoutParameter>
+            <y:Label.Style>
+              <ywpf:DefaultLabelStyle TextBrush="#EEEEEE" TextTrimming="CharacterEllipsis" VerticalTextAlignment="Center" TextAlignment="Center"/>
+            </y:Label.Style>
+					</y:Label>
+				</x:List>
       </data>
     </node>
-    <node id="n37">
+    <node id="groups-tab-bottom">
       <data key="d3">
-          <ywpf:PanelNodeStyle Color="#FFCFE2F8" LabelInsetsColor="#FFA6CAF0" />
+        <ywpf:GroupNodeStyle TabPosition="Bottom" TabWidth="30" TabHeight="20" TabInset="3" GroupIcon="Minus" IconForegroundBrush="#0B7189" IconOffset="2" HitTransparentContentArea="True" TabBackgroundBrush="#0B7189" ContentAreaBrush="White" TabBrush="#0B7189">
+          <ywpf:GroupNodeStyle.Pen>
+            <Pen xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Brush="#0B7189" Thickness="2"/>
+          </ywpf:GroupNodeStyle.Pen>
+        </ywpf:GroupNodeStyle>
       </data>
-      <data key="d0"><![CDATA[Group Nodes]]></data>
+      <data key="d0"><![CDATA[Groups]]></data>
+      <data key="d14">Group, Tap Bottom</data>
       <data key="d2">
-        <y:RectD X="-710.95" Y="-194.95" Width="100" Height="80" />
+        <y:RectD X="0" Y="0" Width="75" Height="65" />
       </data>
-      <data key="d0"><![CDATA[Group Nodes]]></data>
-      <data key="d2">
-        <y:RectD X="-710.95" Y="-194.95" Width="80" Height="30" />
+      <data key="d1">
+        <x:List>
+          <y:Label>
+            <y:Label.Text>Group</y:Label.Text>
+            <y:Label.LayoutParameter>
+              <y:GroupNodeLabelModelParameter PlaceOnTab="False">
+                <y:GroupNodeLabelModelParameter.Model>
+                  <y:GroupNodeLabelModel/>
+                </y:GroupNodeLabelModelParameter.Model>
+              </y:GroupNodeLabelModelParameter>
+            </y:Label.LayoutParameter>
+            <y:Label.Style>
+              <ywpf:DefaultLabelStyle TextBrush="#EEEEEE" TextTrimming="CharacterEllipsis" VerticalTextAlignment="Center" TextAlignment="Center"/>
+            </y:Label.Style>
+          </y:Label>
+        </x:List>
       </data>
     </node>
-    <node id="n38">
+    <node id="groups-tab-left">
       <data key="d3">
-          <ywpf:ShapeNodeStyle Brush="#FFCFE2F8" Pen="#FFA6CAF0" />
+        <ywpf:GroupNodeStyle TabPosition="Left" TabWidth="30" TabHeight="20" TabInset="3" GroupIcon="Minus" IconForegroundBrush="#0B7189" IconOffset="2" HitTransparentContentArea="True" TabBackgroundBrush="#0B7189" ContentAreaBrush="White" TabBrush="#0B7189">
+          <ywpf:GroupNodeStyle.Pen>
+            <Pen xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Brush="#0B7189" Thickness="2"/>
+          </ywpf:GroupNodeStyle.Pen>
+        </ywpf:GroupNodeStyle>
       </data>
-      <data key="d0"><![CDATA[Group Nodes]]></data>
+      <data key="d0"><![CDATA[Groups]]></data>
+      <data key="d14">Group, Tap Left</data>
       <data key="d2">
-        <y:RectD X="-710.95" Y="-194.95" Width="100" Height="80" />
+        <y:RectD X="0" Y="0" Width="75" Height="65" />
+      </data>
+      <data key="d1">
+        <x:List>
+          <y:Label>
+            <y:Label.Text>Group</y:Label.Text>
+            <y:Label.LayoutParameter>
+              <y:GroupNodeLabelModelParameter PlaceOnTab="False">
+                <y:GroupNodeLabelModelParameter.Model>
+                  <y:GroupNodeLabelModel/>
+                </y:GroupNodeLabelModelParameter.Model>
+              </y:GroupNodeLabelModelParameter>
+            </y:Label.LayoutParameter>
+            <y:Label.Style>
+              <ywpf:DefaultLabelStyle TextBrush="#EEEEEE" TextTrimming="CharacterEllipsis" VerticalTextAlignment="Center" TextAlignment="Center"/>
+            </y:Label.Style>
+          </y:Label>
+        </x:List>
       </data>
     </node>
-    <node id="n39">
+    <node id="groups-tab-right">
       <data key="d3">
-          <ywpf:ShapeNodeStyle Brush="#FFCFE2F8" Pen="#FFA6CAF0" Shape="RoundRectangle"/>
+        <ywpf:GroupNodeStyle TabPosition="Right" TabWidth="30" TabHeight="20" TabInset="3" GroupIcon="Minus" IconForegroundBrush="#0B7189" IconOffset="2" HitTransparentContentArea="True" TabBackgroundBrush="#0B7189" ContentAreaBrush="White" TabBrush="#0B7189">
+          <ywpf:GroupNodeStyle.Pen>
+            <Pen xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Brush="#0B7189" Thickness="2"/>
+          </ywpf:GroupNodeStyle.Pen>
+        </ywpf:GroupNodeStyle>
       </data>
-      <data key="d0"><![CDATA[Group Nodes]]></data>
+      <data key="d0"><![CDATA[Groups]]></data>
+      <data key="d14">Group, Tap Right</data>
       <data key="d2">
-        <y:RectD X="-710.95" Y="-194.95" Width="100" Height="80" />
+        <y:RectD X="0" Y="0" Width="75" Height="65" />
+      </data>
+      <data key="d1">
+        <x:List>
+          <y:Label>
+            <y:Label.Text>Group</y:Label.Text>
+            <y:Label.LayoutParameter>
+              <y:GroupNodeLabelModelParameter PlaceOnTab="False">
+                <y:GroupNodeLabelModelParameter.Model>
+                  <y:GroupNodeLabelModel/>
+                </y:GroupNodeLabelModelParameter.Model>
+              </y:GroupNodeLabelModelParameter>
+            </y:Label.LayoutParameter>
+            <y:Label.Style>
+              <ywpf:DefaultLabelStyle TextBrush="#EEEEEE" TextTrimming="CharacterEllipsis" VerticalTextAlignment="Center" TextAlignment="Center"/>
+            </y:Label.Style>
+          </y:Label>
+        </x:List>
       </data>
     </node>
-    <node id="n40">
+    <node id="groups-outlined">
       <data key="d3">
-          <ywpf:BevelNodeStyle Radius="3" Color="#FFCFE2F8"/>
+        <ywpf:GroupNodeStyle TabPosition="None" TabWidth="30" TabHeight="20" TabInset="3" GroupIcon="None" FolderIcon="None" IconForegroundBrush="#0B7189" IconOffset="2" HitTransparentContentArea="True" TabBackgroundBrush="White" ContentAreaBrush="White" TabBrush="#0B7189">
+          <ywpf:GroupNodeStyle.Pen>
+            <Pen xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Brush="#ABABAB" Thickness="2"/>
+          </ywpf:GroupNodeStyle.Pen>
+        </ywpf:GroupNodeStyle>
       </data>
-      <data key="d0"><![CDATA[Group Nodes]]></data>
+      <data key="d0"><![CDATA[Groups]]></data>
+      <data key="d14">Outlined Group</data>
       <data key="d2">
-        <y:RectD X="-710.95" Y="-194.95" Width="100" Height="80" />
+        <y:RectD X="0" Y="0" Width="75" Height="65" />
       </data>
     </node>
-    <node id="n41">
+    <node id="groups-dashed">
       <data key="d3">
-          <ywpf:BevelNodeStyle Radius="3" Color="#FFCFE2F8" DrawShadow="true"/>
+        <ywpf:GroupNodeStyle TabPosition="None" TabWidth="30" TabHeight="20" TabInset="3" GroupIcon="None" FolderIcon="None" IconForegroundBrush="#0B7189" IconOffset="2" HitTransparentContentArea="True" TabBackgroundBrush="White" ContentAreaBrush="White" TabBrush="#0B7189">
+          <ywpf:GroupNodeStyle.Pen>
+            <Pen xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Brush="#ABABAB" Thickness="2">
+              <Pen.DashStyle>
+                <DashStyle Dashes="1 2" Offset="0.5"/>
+              </Pen.DashStyle>
+            </Pen>
+          </ywpf:GroupNodeStyle.Pen>
+        </ywpf:GroupNodeStyle>
       </data>
-      <data key="d0"><![CDATA[Group Nodes]]></data>
+      <data key="d0"><![CDATA[Groups]]></data>
+      <data key="d14">Dashed Group</data>
       <data key="d2">
-        <y:RectD X="-710.95" Y="-194.95" Width="100" Height="80" />
+        <y:RectD X="0" Y="0" Width="75" Height="65" />
       </data>
     </node>
+   
+    <!-- Ports -->
     <node id="n42">
       <data key="d3">
-        <ywpf:BevelNodeStyle Inset="3" Radius="10" Color="Orange" />
+        <ywpf:BevelNodeStyle Inset="3" Radius="10" Color="DarkOrange" />
       </data>
       <data key="d0"><![CDATA[Dummy]]></data>
       <data key="d2">
@@ -514,6 +919,9 @@
         </data>
       </port>
     </node>
+    
+    
+    <!-- Edges -->
     <node id="sourcedummy">
       <data key="d0"><![CDATA[Dummy]]></data>
       <port name="p0"/>
@@ -705,6 +1113,21 @@
     <edge id="e45" source="sourcedummy" target="targetdummy" sourceport="p0" targetport="p0">
       <data key="d8">
         <ArcEdgeStyle xmlns="http://www.yworks.com/yfiles-wpf/2.1/demos/GraphEditor/Styles" Pen="Black" FixedHeight="False" TargetArrowType="None" SourceArrowType="None" />
+      </data>
+    </edge>
+    <edge id="e46" source="sourcedummy" target="targetdummy" sourceport="p0" targetport="p0">
+      <data key="d8">
+        <BridgeEdgeStyle xmlns="http://www.yworks.com/yfiles-wpf/2.1/demos/GraphEditor/Styles" Pen="Black" TargetArrowType="None" Height="20" SourceArrowType="None" />
+      </data>
+    </edge>
+    <edge id="e47" source="sourcedummy" target="targetdummy" sourceport="p0" targetport="p0">
+      <data key="d8">
+        <BridgeEdgeStyle xmlns="http://www.yworks.com/yfiles-wpf/2.1/demos/GraphEditor/Styles" Pen="Black" TargetArrowType="Default" Height="20" SourceArrowType="None" />
+      </data>
+    </edge>
+    <edge id="e48" source="sourcedummy" target="targetdummy" sourceport="p0" targetport="p0">
+      <data key="d8">
+        <ywpf:ArrowEdgeStyle />
       </data>
     </edge>
   </graph>

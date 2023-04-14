@@ -1,6 +1,6 @@
 <!-- ************************************************************************ -->
-<!-- This demo file is part of yFiles WPF 3.4.                           -->
-<!-- Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
+<!-- This demo file is part of yFiles WPF 3.5.                           -->
+<!-- Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
 <!-- 72070 Tuebingen, Germany. All rights reserved.                           -->
 <!--                                                                          -->
 <!-- yFiles demo files exhibit yFiles WPF functionalities. Any redistribution  -->
@@ -51,12 +51,12 @@
                     <List>
                         <ListItem>
                             <Paragraph>
-                                Move the topmost <Bold>black node</Bold> and one of the
+                                Move the topmost <Bold>orange node</Bold> and one of the
                                 <Bold>star shaped nodes</Bold> around and compare 
                                 <Bold>their different grid snapping</Bold> behavior.
                             </Paragraph>
                             <Paragraph>
-                                While the black node only snaps to grid points with its center, the star shaped node
+                                While the orange node only snaps to grid points with its center, the star shaped node
                                 snaps with all points of its outline, but then again only to the grid points, 
                                 not in between.
                             </Paragraph>
@@ -64,7 +64,7 @@
                         <ListItem>
                             <Paragraph>
                                 Move the
-                                <Bold>unconnected black node</Bold>
+                                <Bold>unconnected orange node</Bold>
                                 close to an orthogonal node or edge label to snap it to the label's bounds.
                             </Paragraph>
                         </ListItem>

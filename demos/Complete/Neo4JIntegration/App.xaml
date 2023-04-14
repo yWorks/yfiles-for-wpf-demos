@@ -1,6 +1,6 @@
 <!-- ************************************************************************ -->
-<!-- This demo file is part of yFiles WPF 3.4.                           -->
-<!-- Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
+<!-- This demo file is part of yFiles WPF 3.5.                           -->
+<!-- Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
 <!-- 72070 Tuebingen, Germany. All rights reserved.                           -->
 <!--                                                                          -->
 <!-- yFiles demo files exhibit yFiles WPF functionalities. Any redistribution  -->
@@ -49,7 +49,7 @@
 
                                     <StackPanel>
                                         <Border BorderBrush="{Binding Labels, Converter={StaticResource HeaderBrushConverter}}" CornerRadius="5,5,0,0" BorderThickness="0.5,5,0.5,0" Height="5"/>
-                                        <Border CornerRadius="0,0,2,2" BorderThickness="0.5,0,0.5,0.5" Padding="5,0,5,5" BorderBrush="#80000000" Background="White">
+                                        <Border CornerRadius="0,0,2,2" BorderThickness="0.5,0,0.5,0.5" Padding="5,0,5,5" BorderBrush="#4d4d4d">
                                             <StackPanel>
                                                 <Grid>
                                                     <Grid.ColumnDefinitions>

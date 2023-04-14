@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.4.
- ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.5.
+ ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -54,7 +54,10 @@ namespace Demo.yFiles.GraphEditor.Styles
       delegateStyle = new CollapsibleNodeStyleDecorator {ButtonStyle = null};
       ButtonLocation = ButtonLocation.TopLeft;
       Inset = 5;
+#pragma warning disable CS0618
+      //We keep this for compatibility reasons with older versions/files
       Wrapped = new PanelNodeStyle();
+#pragma warning restore CS0618
     }
 
     public object Clone() {

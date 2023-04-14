@@ -1,6 +1,6 @@
 <!-- ************************************************************************ -->
-<!-- This demo file is part of yFiles WPF 3.4.                           -->
-<!-- Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
+<!-- This demo file is part of yFiles WPF 3.5.                           -->
+<!-- Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
 <!-- 72070 Tuebingen, Germany. All rights reserved.                           -->
 <!--                                                                          -->
 <!-- yFiles demo files exhibit yFiles WPF functionalities. Any redistribution  -->
@@ -93,13 +93,13 @@
                 <Button Command="{x:Static ywpf:GraphCommands.UngroupSelection}" CommandTarget="{Binding ElementName=graphControl}"/>
                 <Separator />
                 <Button Content="{StaticResource RaiseIcon}" ContentTemplate="{StaticResource ImageButtonContentTemplate}" Margin="0" 
-                        Command="{x:Static zOrder:ZOrderGraphEditorInputMode.Raise}" CommandTarget="{Binding ElementName=graphControl}" />
+                        Command="{x:Static zOrder:ZOrderSupport.RaiseCommand}" CommandTarget="{Binding ElementName=graphControl}" />
                 <Button Content="{StaticResource LowerIcon}" ContentTemplate="{StaticResource ImageButtonContentTemplate}" Margin="0" 
-                        Command="{x:Static zOrder:ZOrderGraphEditorInputMode.Lower}" CommandTarget="{Binding ElementName=graphControl}" />
+                        Command="{x:Static zOrder:ZOrderSupport.LowerCommand}" CommandTarget="{Binding ElementName=graphControl}" />
                 <Button Content="{StaticResource ToFrontIcon}" ContentTemplate="{StaticResource ImageButtonContentTemplate}" Margin="0" 
-                        Command="{x:Static zOrder:ZOrderGraphEditorInputMode.ToFront}" CommandTarget="{Binding ElementName=graphControl}" />
+                        Command="{x:Static zOrder:ZOrderSupport.ToFrontCommand}" CommandTarget="{Binding ElementName=graphControl}" />
                 <Button Content="{StaticResource ToBackIcon}" ContentTemplate="{StaticResource ImageButtonContentTemplate}" Margin="0" 
-                        Command="{x:Static zOrder:ZOrderGraphEditorInputMode.ToBack}" CommandTarget="{Binding ElementName=graphControl}" />
+                        Command="{x:Static zOrder:ZOrderSupport.ToBackCommand}" CommandTarget="{Binding ElementName=graphControl}" />
             </ToolBar>
         </ToolBarTray>
         <Grid>

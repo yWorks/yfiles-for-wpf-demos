@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.4.
- ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.5.
+ ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -28,7 +28,6 @@
  ***************************************************************************/
 
 using System.Collections.Generic;
-using System.Windows.Media;
 using yWorks.Analysis;
 using yWorks.Graph;
 
@@ -52,14 +51,15 @@ namespace Demo.yFiles.Algorithms.GraphAnalysis
       var result = new SpanningTree {Costs = {Delegate = GetEdgeWeight}}.Run(graph);
       // highlight the tree nodes and edges
       var nodes = new HashSet<INode>();
+      var color = GenerateColors(false)[0];
       foreach (var edge in result.Edges) {
-        edge.Tag = new Tag{CurrentColor = Colors.Blue};
+        edge.Tag = new Tag{CurrentColor = color};
         nodes.Add(edge.GetSourceNode());
         nodes.Add(edge.GetTargetNode());
       }
       foreach (var node in nodes) {
         node.Tag = new Tag {
-            CurrentColor = Colors.Blue
+            CurrentColor = color
         };
       }
     }

@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.4.
- ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.5.
+ ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -29,10 +29,12 @@
 
 using System.ComponentModel;
 using System.Reflection;
-using yWorks.Layout;
-using yWorks.Layout.Circular;
 using Demo.yFiles.Toolkit.OptionHandler;
 using yWorks.Controls;
+using yWorks.Graph;
+using yWorks.Graph.LabelModels;
+using yWorks.Layout;
+using yWorks.Layout.Circular;
 using yWorks.Layout.Labeling;
 
 namespace Demo.yFiles.Layout.Configurations 
@@ -55,13 +57,16 @@ namespace Demo.yFiles.Layout.Configurations
       LayoutStyleItem = LayoutStyle.BccCompact;
       ActOnSelectionOnlyItem = false;
       FromSketchItem = false;
-      HandleNodeLabelsItem = false;
 
       PartitionStyleItem = PartitionStyle.Cycle;
       MinimumNodeDistanceItem = 30;
       ChooseRadiusAutomaticallyItem = true;
       FixedRadiusItem = 200;
 
+      DefaultBetweenCirclesRoutingItem = RoutingStyle.Straight;
+      DefaultInCircleRoutingStyleItem = RoutingStyle.Straight;
+      DefaultOnCircleRoutingStyleItem = OnCircleRoutingStyle.Straight;
+      
       EdgeRoutingPolicyItem = EdgeRoutingPolicy.Interior;
       CircleDistanceItem = 20;
       EdgeToEdgeDistanceItem = 10;
@@ -85,6 +90,8 @@ namespace Demo.yFiles.Layout.Configurations
       LabelPlacementSideOfEdgeItem = EnumLabelPlacementSideOfEdge.OnEdge;
       LabelPlacementOrientationItem = EnumLabelPlacementOrientation.Horizontal;
       LabelPlacementDistanceItem = 10;
+
+      NodeLabelingStyleItem = EnumNodeLabelingPolicies.ConsiderCurrentPosition;
     }
 
     /// <inheritdoc />
@@ -102,7 +109,6 @@ namespace Demo.yFiles.Layout.Configurations
       layout.SubgraphLayoutEnabled = ActOnSelectionOnlyItem;
       layout.MaximumDeviationAngle = MaximumDeviationAngleItem;
       layout.FromSketchMode = FromSketchItem;
-      layout.ConsiderNodeLabels = HandleNodeLabelsItem;
 
       layout.PartitionStyle = PartitionStyleItem;
 
@@ -126,12 +132,51 @@ namespace Demo.yFiles.Layout.Configurations
         layout.Labeling = genericLabeling;
       }
 
+      layout.DefaultEdgeLayoutDescriptor.BetweenCirclesRoutingStyle = DefaultBetweenCirclesRoutingItem;
+      layout.DefaultEdgeLayoutDescriptor.InCircleRoutingStyle = DefaultInCircleRoutingStyleItem;
+      layout.DefaultEdgeLayoutDescriptor.OnCircleRoutingStyle = DefaultOnCircleRoutingStyleItem;
+      
       var ebc = layout.EdgeBundling;
       var bundlingDescriptor = new EdgeBundleDescriptor();
       bundlingDescriptor.Bundled = EdgeBundlingItem;
       ebc.BundlingStrength = EdgeBundlingStrengthItem;
       ebc.DefaultBundleDescriptor = bundlingDescriptor;
 
+      switch (NodeLabelingStyleItem) {
+        case EnumNodeLabelingPolicies.None:
+          layout.ConsiderNodeLabels = false;
+          break;
+        case EnumNodeLabelingPolicies.RaylikeLeaves:
+          layout.IntegratedNodeLabeling = true;
+          layout.NodeLabelingPolicy = NodeLabelingPolicy.RayLikeLeaves;
+          break;
+        case EnumNodeLabelingPolicies.ConsiderCurrentPosition:
+          layout.ConsiderNodeLabels = true;
+          break;
+        case EnumNodeLabelingPolicies.Horizontal:
+          layout.IntegratedNodeLabeling = true;
+          layout.NodeLabelingPolicy = NodeLabelingPolicy.Horizontal;
+          break;
+        default:
+          layout.ConsiderNodeLabels = false;
+          break;
+      }
+
+      if (NodeLabelingStyleItem == EnumNodeLabelingPolicies.RaylikeLeaves ||
+          NodeLabelingStyleItem == EnumNodeLabelingPolicies.Horizontal) {
+        foreach (var label in graphControl.Graph.Labels) {
+          if (label.Owner is INode) {
+            graphControl.Graph.SetLabelLayoutParameter(
+                label,
+                FreeNodeLabelModel.Instance.FindBestParameter(
+                    label,
+                    FreeNodeLabelModel.Instance,
+                    label.GetLayout()
+                )
+            );
+          }
+        }
+      }
       return layout;
     }
 
@@ -180,8 +225,13 @@ namespace Demo.yFiles.Layout.Configurations
     [ComponentType(ComponentTypes.OptionGroup)]
     public object EdgesGroup;
 
+    [Label("Default edges")]
+    [OptionGroup("EdgesGroup", 40)]
+    [ComponentType(ComponentTypes.OptionGroup)]
+    public object DefaultEdgesGroup;
+
     [Label("Exterior edges")]
-    [OptionGroup("EdgesGroup", 20)]
+    [OptionGroup("EdgesGroup", 50)]
     [ComponentType(ComponentTypes.OptionGroup)]
     public object ExteriorEdgesGroup;
 
@@ -253,7 +303,8 @@ namespace Demo.yFiles.Layout.Configurations
     [DefaultValue(PartitionStyle.Cycle)]
     [EnumValue("Circle", PartitionStyle.Cycle)]
     [EnumValue("Disk",PartitionStyle.Disk)]
-    [EnumValue("Organic Disk",PartitionStyle.Organic)]
+    [EnumValue("Compact Disk",PartitionStyle.CompactDisk)]
+    [EnumValue("Organic",PartitionStyle.Organic)]
     public PartitionStyle PartitionStyleItem { get; set; }
     
     [Label("Minimum Node Distance")]
@@ -292,7 +343,42 @@ namespace Demo.yFiles.Layout.Configurations
     [EnumValue("Selected edges outside", EdgeRoutingPolicy.MarkedExterior)]
     public EdgeRoutingPolicy EdgeRoutingPolicyItem { get; set; }
 
-    [Label("Distance from circle")]
+
+    [Label("Routing Style Between Circles")]
+    [OptionGroup("DefaultEdgesGroup", 10)]
+    [DefaultValue(RoutingStyle.Straight)]
+    [EnumValue("Straight", RoutingStyle.Straight)]
+    [EnumValue("Curved", RoutingStyle.Curved)]
+    public RoutingStyle DefaultBetweenCirclesRoutingItem { get; set; }
+
+    public bool ShouldDisableDefaultBetweenCirclesRoutingItem {
+      get { return this.EdgeRoutingPolicyItem == EdgeRoutingPolicy.Exterior; }
+    }
+
+    [Label("Routing Style Within Partitions")]
+    [OptionGroup("DefaultEdgesGroup", 20)]
+    [DefaultValue(RoutingStyle.Straight)]
+    [EnumValue("Straight", RoutingStyle.Straight)]
+    [EnumValue("Curved", RoutingStyle.Curved)]
+    public RoutingStyle DefaultInCircleRoutingStyleItem { get; set; }
+
+    public bool ShouldDisableDefaultInCircleRoutingStyleItem {
+      get { return this.EdgeRoutingPolicyItem == EdgeRoutingPolicy.Exterior; }
+    }
+
+    [Label("Routing Style Between Neighbors")]
+    [OptionGroup("DefaultEdgesGroup", 30)]
+    [DefaultValue(RoutingStyle.Straight)]
+    [EnumValue("Straight", OnCircleRoutingStyle.Straight)]
+    [EnumValue("Curved", OnCircleRoutingStyle.Curved)]
+    [EnumValue("On Circle", OnCircleRoutingStyle.OnCircle)]
+    public OnCircleRoutingStyle DefaultOnCircleRoutingStyleItem { get; set; }
+
+    public bool ShouldDisableDefaultOnCircleRoutingStyleItem {
+      get { return this.EdgeRoutingPolicyItem == EdgeRoutingPolicy.Exterior; }
+    }
+
+    [Label("Distance to circle")]
     [OptionGroup("ExteriorEdgesGroup", 10)]
     [DefaultValue(20d)]
     [MinMax(Min = 10.0d, Max = 100.0d)]
@@ -348,7 +434,7 @@ namespace Demo.yFiles.Layout.Configurations
     }
 
     [Label("Enable Edge Bundling")]
-    [OptionGroup("EdgesGroup", 40)]
+    [OptionGroup("EdgesGroup", 20)]
     [DefaultValue(false)]
     public bool EdgeBundlingItem { get; set; }
 
@@ -416,11 +502,15 @@ namespace Demo.yFiles.Layout.Configurations
       get { return LayoutStyleItem == LayoutStyle.SingleCycle; }
     }
 
-    [Label("Consider Node Labels")]
+    [Label("Node Labeling")]
     [OptionGroup("NodePropertiesGroup", 10)]
-    [DefaultValue(false)]
-    public bool HandleNodeLabelsItem { get; set; }
-
+    [DefaultValue(EnumNodeLabelingPolicies.ConsiderCurrentPosition)]
+    [EnumValue("Ignore Labels", EnumNodeLabelingPolicies.None)]
+    [EnumValue("Consider Labels", EnumNodeLabelingPolicies.ConsiderCurrentPosition)]
+    [EnumValue("Horizontal", EnumNodeLabelingPolicies.Horizontal)]
+    [EnumValue("Ray-like at Leaves", EnumNodeLabelingPolicies.RaylikeLeaves)]
+    public EnumNodeLabelingPolicies NodeLabelingStyleItem { get; set; }
+        
     [Label("Edge Labeling")]
     [OptionGroup("EdgePropertiesGroup", 10)]
     [DefaultValue(false)]

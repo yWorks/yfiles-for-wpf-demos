@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.4.
- ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.5.
+ ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -66,7 +66,7 @@ namespace SankeyLayout
       var graph = graphControl.Graph;
       graph.NodeDefaults.Style = new ShapeNodeStyle
       {
-        Brush = (Brush) new SolidColorBrush(Color.FromRgb(102, 153, 204)).GetAsFrozen(),
+        Brush = (Brush) new SolidColorBrush(Color.FromRgb(0x42, 0x81, 0xA4)).GetAsFrozen(),
         Pen = null
       };
       graph.EdgeDefaults.Style = new BezierEdgeStyle(new DemoEdgeStyleRenderer(graphControl.Selection, false));
@@ -111,7 +111,7 @@ namespace SankeyLayout
       // allow nodes to be only moved vertically 
       graph.GetDecorator().NodeDecorator.PositionHandlerDecorator.SetImplementationWrapper((node, handler) => new HorizontallyConstrainedPositionHandler(handler));
 
-      graphControl.HighlightIndicatorManager = new HighlightManager(graphControl);
+      graphControl.HighlightIndicatorManager = new HighlightManager();
     }
 
     private void CreateInputMode() {
@@ -190,42 +190,50 @@ namespace SankeyLayout
 
     #region Sample Graph
     private void CreateSampleGraph() {
+      var blackParty = CustomTag.NewNodeTag(0, 0, 0);
+      var blueParty = CustomTag.NewNodeTag(0x24, 0x22, 0x65);
+      var greenParty = CustomTag.NewNodeTag(0x56, 0x92, 0x6E);
+      var redParty = CustomTag.NewNodeTag(0xDB, 0x3A, 0x34);
+      var purpleParty = CustomTag.NewNodeTag(0x6C, 0x4F, 0x77);
+      var yellowParty = CustomTag.NewNodeTag(0xF0, 0xC8, 0x08);
+      var nonVoters = CustomTag.NewNodeTag(0x42, 0x81, 0xA4);
+
       var graph = graphControl.Graph;
-      var n0 = graph.CreateNode(new RectD(0, 0, 30, 30), tag: new CustomTag { brush = Brushes.Black });
+      var n0 = graph.CreateNode(new RectD(0, 0, 30, 30), tag: blackParty);
       graph.AddLabel(n0, "Black Party");
-      var n1 = graph.CreateNode(new RectD(0, 100, 30, 30), tag: new CustomTag { brush = Brushes.Red });
+      var n1 = graph.CreateNode(new RectD(0, 100, 30, 30), tag: redParty);
       graph.AddLabel(n1, "Red Party");
-      var n2 = graph.CreateNode(new RectD(0, 200, 30, 30), tag: new CustomTag { brush = Brushes.Goldenrod });
+      var n2 = graph.CreateNode(new RectD(0, 200, 30, 30), tag: yellowParty);
       graph.AddLabel(n2, "Yellow Party");
-      var n3 = graph.CreateNode(new RectD(0, 300, 30, 30), tag: new CustomTag { brush = Brushes.Green });
+      var n3 = graph.CreateNode(new RectD(0, 300, 30, 30), tag: greenParty);
       graph.AddLabel(n3, "Green Party");
-      var n4 = graph.CreateNode(new RectD(0, 400, 30, 30), tag: new CustomTag { brush = Brushes.Purple });
+      var n4 = graph.CreateNode(new RectD(0, 400, 30, 30), tag: purpleParty);
       graph.AddLabel(n4, "Purple Party");
-      var n5 = graph.CreateNode(new RectD(100, 0, 30, 30), tag: new CustomTag { brush = Brushes.Black });
+      var n5 = graph.CreateNode(new RectD(100, 0, 30, 30), tag: blackParty);
       graph.AddLabel(n5, "Black Party");
-      var n6 = graph.CreateNode(new RectD(100, 100, 30, 30), tag: new CustomTag { brush = Brushes.Red });
+      var n6 = graph.CreateNode(new RectD(100, 100, 30, 30), tag: redParty);
       graph.AddLabel(n6, "Red Party");
-      var n7 = graph.CreateNode(new RectD(100, 200, 30, 30), tag: new CustomTag { brush = Brushes.Goldenrod });
+      var n7 = graph.CreateNode(new RectD(100, 200, 30, 30), tag: yellowParty);
       graph.AddLabel(n7, "Yellow Party");
-      var n8 = graph.CreateNode(new RectD(100, 300, 30, 30), tag: new CustomTag { brush = Brushes.Green });
+      var n8 = graph.CreateNode(new RectD(100, 300, 30, 30), tag: greenParty);
       graph.AddLabel(n8, "Green Party");
-      var n9 = graph.CreateNode(new RectD(100, 400, 30, 30), tag: new CustomTag { brush = Brushes.Purple });
+      var n9 = graph.CreateNode(new RectD(100, 400, 30, 30), tag: purpleParty);
       graph.AddLabel(n9, "Purple Party");
-      var n10 = graph.CreateNode(new RectD(100, 500, 30, 30), tag: new CustomTag { brush = Brushes.Gray });
+      var n10 = graph.CreateNode(new RectD(100, 500, 30, 30), tag: nonVoters);
       graph.AddLabel(n10, "Non-voter");
-      var n11 = graph.CreateNode(new RectD(200, 0, 30, 30), tag: new CustomTag { brush = Brushes.Black });
+      var n11 = graph.CreateNode(new RectD(200, 0, 30, 30), tag: blackParty);
       graph.AddLabel(n11, "Black Party");
-      var n12 = graph.CreateNode(new RectD(200, 100, 30, 30), tag: new CustomTag { brush = Brushes.Red });
+      var n12 = graph.CreateNode(new RectD(200, 100, 30, 30), tag: redParty);
       graph.AddLabel(n12, "Red Party");
-      var n13 = graph.CreateNode(new RectD(200, 200, 30, 30), tag: new CustomTag { brush = Brushes.Goldenrod });
+      var n13 = graph.CreateNode(new RectD(200, 200, 30, 30), tag: yellowParty);
       graph.AddLabel(n13, "Yellow Party");
-      var n14 = graph.CreateNode(new RectD(200, 300, 30, 30), tag: new CustomTag { brush = Brushes.Green });
+      var n14 = graph.CreateNode(new RectD(200, 300, 30, 30), tag: greenParty);
       graph.AddLabel(n14, "Green Party");
-      var n15 = graph.CreateNode(new RectD(200, 400, 30, 30), tag: new CustomTag { brush = Brushes.Purple });
+      var n15 = graph.CreateNode(new RectD(200, 400, 30, 30), tag: purpleParty);
       graph.AddLabel(n15, "Purple Party");
-      var n16 = graph.CreateNode(new RectD(200, 500, 30, 30), tag: new CustomTag { brush = Brushes.DodgerBlue });
+      var n16 = graph.CreateNode(new RectD(200, 500, 30, 30), tag: blueParty);
       graph.AddLabel(n16, "Blue Party");
-      var n17 = graph.CreateNode(new RectD(200, 600, 30, 30), tag: new CustomTag { brush = Brushes.Gray });
+      var n17 = graph.CreateNode(new RectD(200, 600, 30, 30), tag: nonVoters);
       graph.AddLabel(n17, "Non-voter");
 
       var e0 = graph.CreateEdge(n0, n5);
@@ -323,14 +331,13 @@ namespace SankeyLayout
 
       // assign node styles
       foreach (var node in graph.Nodes) {
-        graph.SetStyle(node, new ShapeNodeStyle
-        {
+        graph.SetStyle(node, new ShapeNodeStyle {
           Brush = ((CustomTag)node.Tag).brush,
           Pen = null
         });
 
         foreach (var edge in graph.OutEdgesAt(node)) {
-          edge.Tag = new CustomTag { thickness = 1, brush = new SolidColorBrush {Color = ((CustomTag) node.Tag).brush.Color, Opacity = 0.2}};
+          edge.Tag = CustomTag.NewEdgeTag((CustomTag) node.Tag);
         }
       }
 
@@ -375,11 +382,11 @@ namespace SankeyLayout
       foreach (var node in graph.Nodes) {
         if (incoming) {
           foreach (var edge in graph.OutEdgesAt(node)) {
-            edge.Tag = new CustomTag { thickness = 1, brush = (SolidColorBrush) new SolidColorBrush { Color = ((CustomTag) node.Tag).brush.Color, Opacity = 0.2 }.GetAsFrozen() };
+            edge.Tag = CustomTag.NewEdgeTag((CustomTag) node.Tag);
           }
         } else {
           foreach (var edge in graph.InEdgesAt(node)) {
-            edge.Tag = new CustomTag { thickness = 1, brush = (SolidColorBrush) new SolidColorBrush { Color = ((CustomTag) node.Tag).brush.Color, Opacity = 0.2 }.GetAsFrozen() };
+            edge.Tag = CustomTag.NewEdgeTag((CustomTag) node.Tag);
           }
         }
       }
@@ -464,5 +471,18 @@ namespace SankeyLayout
     public double thickness;
 
     public SolidColorBrush brush;
+
+    public static CustomTag NewNodeTag(byte r, byte g, byte b) {
+      return new CustomTag {
+        brush = (SolidColorBrush) new SolidColorBrush(Color.FromRgb(r, g, b)).GetAsFrozen()
+      };
+    }
+
+    public static CustomTag NewEdgeTag(CustomTag prototype) {
+      return new CustomTag {
+        thickness = 1,
+        brush = (SolidColorBrush) new SolidColorBrush { Color = prototype.brush.Color, Opacity = 0.5 }.GetAsFrozen()
+      };
+    }
   }
 }

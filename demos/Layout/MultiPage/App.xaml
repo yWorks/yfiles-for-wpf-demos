@@ -1,6 +1,6 @@
 <!-- ************************************************************************ -->
-<!-- This demo file is part of yFiles WPF 3.4.                           -->
-<!-- Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
+<!-- This demo file is part of yFiles WPF 3.5.                           -->
+<!-- Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
 <!-- 72070 Tuebingen, Germany. All rights reserved.                           -->
 <!--                                                                          -->
 <!-- yFiles demo files exhibit yFiles WPF functionalities. Any redistribution  -->
@@ -38,12 +38,7 @@
                     <Style x:Key="ConnectorNodeTemplate" TargetType="ywpf:NodeControl">
                         <Setter Property="Background">
                             <Setter.Value>
-                                <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
-                                    <LinearGradientBrush.GradientStops>
-                                        <GradientStop Offset="0" Color="#FFFFCC00" />
-                                        <GradientStop Offset="1" Color="#FFFF9900" />
-                                    </LinearGradientBrush.GradientStops>
-                                </LinearGradientBrush>
+                                <SolidColorBrush Color="#FFFF6C00"/>
                             </Setter.Value>
                         </Setter>
                         <Setter Property="Template">
@@ -51,7 +46,7 @@
                                 <ControlTemplate TargetType="ywpf:NodeControl">
                                 	<Border CornerRadius="5" Background="{TemplateBinding Background}" BorderThickness="2" ToolTip="A connector node. Click to navigate to the connected page.">
                                 		<Border.BorderBrush>
-                                			<SolidColorBrush x:Name="borderBrush" Color="#FFFF9900" Opacity="0.5" />
+                                			<SolidColorBrush x:Name="borderBrush" Color="#FF662B00" Opacity="0.5" />
                                 		</Border.BorderBrush>
                                 	</Border>
                                     <ControlTemplate.Triggers>
@@ -79,12 +74,7 @@
                     <Style x:Key="ProxyNodeTemplate" TargetType="ywpf:NodeControl">
                         <Setter Property="Background">
                             <Setter.Value>
-                                <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
-                                    <LinearGradientBrush.GradientStops>
-                                        <GradientStop Offset="0" Color="#FFCCFF99" />
-                                        <GradientStop Offset="1" Color="#FF99CC33" />
-                                    </LinearGradientBrush.GradientStops>
-                                </LinearGradientBrush>
+                                <SolidColorBrush Color="#FF76B041"/>
                             </Setter.Value>
                         </Setter>
                         <Setter Property="Template">
@@ -92,7 +82,7 @@
                                 <ControlTemplate TargetType="ywpf:NodeControl">
                                 	<Border CornerRadius="5" Background="{TemplateBinding Background}" BorderThickness="2" ToolTip="A proxy node. Click to navigate to the page containing the proxy reference node.">
                                 		<Border.BorderBrush>
-                                			<SolidColorBrush x:Name="borderBrush" Color="#FF99CC33" Opacity="0.5" />
+                                			<SolidColorBrush x:Name="borderBrush" Color="#FF2F461A" Opacity="0.5" />
                                 		</Border.BorderBrush>
                                 	</Border>
                                     <ControlTemplate.Triggers>
@@ -120,12 +110,7 @@
                     <Style x:Key="ProxyReferenceNodeTemplate" TargetType="ywpf:NodeControl">
                         <Setter Property="Background">
                             <Setter.Value>
-                                <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
-                                    <LinearGradientBrush.GradientStops>
-                                        <GradientStop Offset="0" Color="#FFFFA6FF" />
-                                        <GradientStop Offset="1" Color="#FFFF00FF" />
-                                    </LinearGradientBrush.GradientStops>
-                                </LinearGradientBrush>
+                                <SolidColorBrush Color="#FFAB2346"/>
                             </Setter.Value>
                         </Setter>
                         <Setter Property="Template">
@@ -133,7 +118,7 @@
                                 <ControlTemplate TargetType="ywpf:NodeControl">
                                 	<Border CornerRadius="5" Background="{TemplateBinding Background}" BorderThickness="2" ToolTip="A proxy reference node. Click to navigate to the page containing the referenced proxy node.">
                                 		<Border.BorderBrush>
-                                			<SolidColorBrush x:Name="borderBrush" Color="#FFFF00FF" Opacity="0.5" />
+                                			<SolidColorBrush x:Name="borderBrush" Color="#FF440E1C" Opacity="0.5" />
                                 		</Border.BorderBrush>
                                 	</Border>
                                     <ControlTemplate.Triggers>
@@ -161,18 +146,13 @@
                     <Style x:Key="NormalNodeTemplate" TargetType="ywpf:NodeControl">
                         <Setter Property="Background">
                             <Setter.Value>
-                                <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
-                                    <LinearGradientBrush.GradientStops>
-                                        <GradientStop Offset="0" Color="#FFCCFFFF" />
-                                        <GradientStop Offset="1" Color="#FF99CCFF" />
-                                    </LinearGradientBrush.GradientStops>
-                                </LinearGradientBrush>
+                                <SolidColorBrush Color="#FF17BEBB"/>
                             </Setter.Value>
                         </Setter>
                         <Setter Property="Template">
                             <Setter.Value>
                                 <ControlTemplate TargetType="ywpf:NodeControl">
-                                    <Border CornerRadius="5" Background="{TemplateBinding Background}" BorderThickness="2" BorderBrush="#FF99CCFF" ToolTip="A normal node."/>
+                                    <Border CornerRadius="5" Background="{TemplateBinding Background}" BorderThickness="2" BorderBrush="#FF094C4B" ToolTip="A normal node."/>
                                 </ControlTemplate>
                             </Setter.Value>
                         </Setter>

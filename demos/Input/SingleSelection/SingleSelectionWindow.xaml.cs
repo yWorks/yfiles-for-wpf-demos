@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.4.
- ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.5.
+ ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -30,10 +30,9 @@
 using System.Windows;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
-using System.Windows.Media;
+using Demo.yFiles.Toolkit;
 using yWorks.Controls.Input;
 using yWorks.Graph;
-using yWorks.Graph.Styles;
 
 namespace Demo.yFiles.Graph.Input.SingleSelection
 {
@@ -69,12 +68,13 @@ namespace Demo.yFiles.Graph.Input.SingleSelection
     }
 
     private void OnWindowLoaded(object sender, RoutedEventArgs e) {
-      graphControl.Graph.NodeDefaults.Style = new ShinyPlateNodeStyle { Brush = Brushes.Orange };
       var graphEditorInputMode = new GraphEditorInputMode();
       graphControl.InputMode = graphEditorInputMode;
       oldPasteItems = graphEditorInputMode.PasteSelectableItems;
 
       EnableSingleSelection(true);
+      
+      DemoStyles.InitDemoStyles(graphControl.Graph);
 
       LoadGraph();
       graphControl.FitGraphBounds();

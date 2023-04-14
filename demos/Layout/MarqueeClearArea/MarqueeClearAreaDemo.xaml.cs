@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.4.
- ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.5.
+ ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -30,7 +30,7 @@
 using System;
 using System.Linq;
 using System.Windows;
-using System.Windows.Media;
+using Demo.yFiles.Toolkit;
 using yWorks.Controls;
 using yWorks.Controls.Input;
 using yWorks.Geometry;
@@ -104,7 +104,11 @@ namespace Demo.yFiles.Graph.MarqueeClearArea
     /// Initializes styles and loads a sample graph.
     /// </summary>
     protected virtual void InitializeGraph() {
-      GraphControl.Graph.NodeDefaults.Style = new ShinyPlateNodeStyle {Brush = Brushes.Orange};
+      DemoStyles.InitDemoStyles(GraphControl.Graph);
+      // The content area of the group nodes should not be hit transparent in this demo,
+      // since we also want to allow the marquee rectangle within group nodes.
+      ((GroupNodeStyle) GraphControl.Graph.GroupNodeDefaults.Style).HitTransparentContentArea = false;
+      
       GraphControl.ImportFromGraphML("Resources\\grouping.graphml");
     }
 

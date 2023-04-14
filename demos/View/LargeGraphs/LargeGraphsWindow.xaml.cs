@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.4.
- ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.5.
+ ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -59,6 +59,7 @@ using yWorks.Graph;
 using yWorks.Graph.Styles;
 using yWorks.Graph.LabelModels;
 using yWorks.GraphML;
+using Demo.yFiles.Toolkit;
 
 namespace Demo.yFiles.Graph.LargeGraphs
 {
@@ -730,6 +731,7 @@ namespace Demo.yFiles.Graph.LargeGraphs
 
       await Task.Run(() => {
         var ioh = new GraphMLIOHandler();
+        ioh.DeserializationPropertyOverrides.Set(SerializationProperties.ParseLabelSize, false);
         using (var stream = new GZipStream(File.OpenRead(info.Filename), CompressionMode.Decompress)) {
           ioh.Read(g, stream);
         }
@@ -747,7 +749,7 @@ namespace Demo.yFiles.Graph.LargeGraphs
 
       graphControl.Graph = g;
       UpdateDirtyHandlingOptimizationSetting(graphControl);
-      graphControl.FitGraphBounds();
+      await graphControl.FitGraphBounds();
     }
 
     /// <summary>
@@ -829,14 +831,9 @@ namespace Demo.yFiles.Graph.LargeGraphs
     private void UpdateStyles() {
       var p = PerformanceSettings;
 
-      // A few colors we need more than once
-      var darkOrange = Brushes.DarkOrange;
-      var black = Pens.Black;
-      var white = Brushes.White;
-
       // Default label styles (those are also used at high zoom levels)
-      var simpleEdgeLabelStyle = new DefaultLabelStyle { BackgroundBrush = white };
-      var simpleNodeLabelStyle = new DefaultLabelStyle();
+      var simpleEdgeLabelStyle = DemoStyles.CreateDemoEdgeLabelStyle();
+      var simpleNodeLabelStyle = DemoStyles.CreateDemoNodeLabelStyle();
 
       if (p.FastStylesEnabled) {
         // Nodes
@@ -844,11 +841,25 @@ namespace Demo.yFiles.Graph.LargeGraphs
         {
           Styles =
           {
-            { 0, new ShapeNodeStyle { Shape = ShapeNodeShape.Rectangle, Pen = null, Brush = darkOrange }},
-            { p.ComplexNodeStyleThreshold / 100 / 2,
-              new ShapeNodeStyle { Shape = ShapeNodeShape.RoundRectangle, Pen = black, Brush = darkOrange }},
+            { 0, DemoStyles.CreateDemoShapeNodeStyle(ShapeNodeShape.Rectangle) },
+            {
+              p.ComplexNodeStyleThreshold / 100 / 2,
+              DemoStyles.CreateDemoNodeStyle()
+            },
             { p.ComplexNodeStyleThreshold / 100,
-              new ShinyPlateNodeStyle { Pen = black, Brush =  darkOrange }}
+              new RectangleNodeStyle {
+                Corners = Corners.TopLeft | Corners.BottomRight,
+                Pen = new Pen(Themes.PaletteOrange.Stroke, 1.5),
+                Brush = new LinearGradientBrush {
+                  StartPoint= new Point(0, 0),
+                  EndPoint = new Point(0, 1),
+                  GradientStops = {
+                    new GradientStop(((SolidColorBrush) Themes.PaletteOrange.NodeLabelFill).Color, 0),
+                    new GradientStop(((SolidColorBrush) Themes.PaletteOrange.Fill).Color, 1)
+                  }
+                }
+              }
+            }
           }
         };
         // Edges
@@ -875,14 +886,14 @@ namespace Demo.yFiles.Graph.LargeGraphs
             { 0, VoidLabelStyle.Instance },
             {
               p.EdgeLabelVisibilityThreshold / 100,
-              new FastLabelStyle(AutoFlipMode.AutoFlip) { BackgroundBrush = white }
+              new FastLabelStyle(AutoFlipMode.AutoFlip) { BackgroundBrush = Brushes.White }
             },
             { p.EdgeLabelTextThreshold / 100, simpleEdgeLabelStyle }
           }
         };
       } else {
-        nodeStyle.Style = new ShapeNodeStyle { Shape = ShapeNodeShape.Rectangle, Pen = black, Brush = darkOrange };
-        edgeStyle.Style = new PolylineEdgeStyle();
+        nodeStyle.Style = DemoStyles.CreateDemoNodeStyle();
+        edgeStyle.Style = DemoStyles.CreateDemoEdgeStyle(showTargetArrow: false);
         edgeLabelStyle.Style = simpleEdgeLabelStyle;
         nodeLabelStyle.Style = simpleNodeLabelStyle;
       }

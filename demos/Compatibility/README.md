@@ -5,9 +5,9 @@ Support project to facilitate migration from yFiles WPF 2.5 to yFiles WPF 3.0.
 You will find the following programming samples in this package: 
 
 
-| Name | Description 
-|:---|:---
-|**Compatibility** | Support project to facilitate migration from yFiles WPF 2.5 to yFiles WPF 3.0. 
+| Name | Description |
+|:---|:---|
+|**Compatibility** | Support project to facilitate migration from yFiles WPF 2.5 to yFiles WPF 3.0. |
 
 ## Running the Demos
 

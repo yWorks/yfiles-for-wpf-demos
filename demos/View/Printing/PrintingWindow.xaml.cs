@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.4.
- ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.5.
+ ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -46,6 +46,7 @@ using yWorks.Geometry;
 using yWorks.Graph;
 using yWorks.Graph.Styles;
 using yWorks.Utils;
+using Demo.yFiles.Toolkit;
 
 namespace Demo.yFiles.Printing
 {
@@ -156,11 +157,10 @@ namespace Demo.yFiles.Printing
     private void InitializeGraph() {
       IGraph graph = graphControl.Graph;
       // initialize defaults
-      graph.NodeDefaults.Style = new ShinyPlateNodeStyle { Brush = Brushes.DarkOrange };
-      graph.EdgeDefaults.Style = new PolylineEdgeStyle {TargetArrow = Arrows.Default};
+      DemoStyles.InitDemoStyles(graph);
 
       // create sample graph
-      graph.AddLabel(graph.CreateNode(new PointD(30, 30)), "Node");
+      graph.AddLabel(graph.CreateNode(new RectD(15, 15, 50, 30)), "Node");
       INode node = graph.CreateNode(new PointD(90, 30));
       graph.CreateEdge(node, graph.CreateNode(new PointD(90, 90)));
 

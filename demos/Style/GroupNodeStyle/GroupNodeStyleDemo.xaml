@@ -1,0 +1,138 @@
+<!-- ************************************************************************ -->
+<!-- This demo file is part of yFiles WPF 3.5.                           -->
+<!-- Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
+<!-- 72070 Tuebingen, Germany. All rights reserved.                           -->
+<!--                                                                          -->
+<!-- yFiles demo files exhibit yFiles WPF functionalities. Any redistribution  -->
+<!-- of demo resource files, with or without modification, is not permitted.  -->
+<!--                                                                          -->
+<!-- Owners of a valid software license for a yFiles WPF version that this     -->
+<!-- demo is shipped with are allowed to use the resource file as basis for   -->
+<!-- their own yFiles WPF powered applications. Use of such programs is        -->
+<!-- governed by the rights and conditions as set out in the yFiles WPF        -->
+<!-- license agreement.                                                       -->
+<!--                                                                          -->
+<!-- THIS SOFTWARE IS PROVIDED ''AS IS'' AND ANY EXPRESS OR IMPLIED           -->
+<!-- WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF     -->
+<!-- MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN  -->
+<!-- NO EVENT SHALL yWorks BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,    -->
+<!-- SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED -->
+<!-- TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR   -->
+<!-- PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF   -->
+<!-- LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING     -->
+<!-- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS       -->
+<!-- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.             -->
+<!--                                                                          -->
+<!-- ************************************************************************ -->
+<Window x:Class="Demo.yFiles.Graph.GroupNodes.GroupNodeStyleDemo"
+ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+ xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/3.0/xaml"
+ xmlns:editor="http://www.yworks.com/yfilesWPF/3.0/demos/optionhandler"
+ Title="Demo.yFiles.Graph.GroupNodeStyle"
+ Height="600"
+ Width="800"
+ Style="{StaticResource DemoWindow}"
+ Loaded="OnLoaded">
+    <DockPanel>
+        <ToolBarTray Height="Auto" Width="Auto" DockPanel.Dock="Top">
+            <ToolBar
+                Width="{Binding ActualWidth, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ToolBarTray}}}"
+                Height="Auto">
+                <Button ToolTip="Reset" Click="OnResetClicked">
+                    <Image Source="{StaticResource RefreshIcon}"/>
+                </Button>
+                <Separator/>
+                <Button Command="IncreaseZoom" CommandTarget="{Binding ElementName=graphControl}" />
+                <Button Command="DecreaseZoom" CommandTarget="{Binding ElementName=graphControl}" />
+                <Button
+                 Command="{x:Static ywpf:GraphControl.FitGraphBoundsCommand}"
+                 CommandTarget="{Binding ElementName=graphControl}" />
+            </ToolBar>
+        </ToolBarTray>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="250" />
+                <ColumnDefinition Width="5" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="5" />
+                <ColumnDefinition Width="350" />
+            </Grid.ColumnDefinitions>
+            <HeaderedContentControl
+             Grid.Column="0" Header="Description" 
+             Style="{StaticResource HeaderedContentStyle}"
+             BorderThickness="0,0,1,0">
+                <ScrollViewer
+                 DockPanel.Dock="Left" 
+                 Width="Auto" 
+                 HorizontalScrollBarVisibility="Disabled"
+                 VerticalScrollBarVisibility="Auto" 
+                 Padding="5">
+                    <RichTextBox IsReadOnly="True" BorderThickness="0">
+                        <FlowDocument>
+                            <Paragraph>
+                                The <Run Style="{StaticResource HtmlCode}">GroupNodeStyle</Run> is a style primarily 
+                                intended for groups and folders, i.e., collapsed groups.
+                            </Paragraph>
+                            <Paragraph>
+                                This style offers many configuration options for customizing its look. Please see chapter
+                                <Run Style="{StaticResource HtmlEm}">GroupNodeStyle</Run> in the Developer's Guide and the 
+                                <Run Style="{StaticResource HtmlEm}">GroupNodeStyle</Run> API documentation for more detailed
+                                information.
+                            </Paragraph>
+                            <Paragraph>
+                                The related <Run Style="{StaticResource HtmlCode}">GroupNodeLabelModel</Run> places 
+                                node labels inside the tab or the background area next to the tab of a group or folder 
+                                when used together with <Run Style="{StaticResource HtmlCode}">GroupNodeStyle</Run>.
+                            </Paragraph>
+                            <Paragraph Style="{StaticResource HtmlH2}">
+                                Things to try
+                            </Paragraph>
+                            <List Margin="0" Padding="0">
+                                <ListItem Margin="25,0,0,0">
+                                    <Paragraph>
+                                        Click the expansion state icons
+                                        <Path Width="8" Height="8" Fill="#666666" Data="M4.8,0h-1.6v3.2h-3.2v1.6h3.2v3.2h1.6v-3.2h3.2v-1.6h-3.2Z"/>,
+                                        <Path Width="8" Height="8" Fill="#666666" Data="M0,3.2h8.0v1.6h-8.0Z"/>,
+                                        <Path Width="8" Height="8" Fill="#666666" Data="M6.48,1.84l-2.48,2.4l-2.48,-2.4l-1.12,1.12l3.6,3.6l3.6,-3.6Z"/>,
+                                        <Path Width="8" Height="8" Fill="#666666" Data="M6.48,6.16l-2.48,-2.4l-2.48,2.4l-1.12,-1.12l3.6,-3.6l3.6,3.6Z"/>,
+                                        <Path Width="8" Height="8" Fill="#666666" Data="M0.4,2.4h7.2l-3.6,4.8Z"/>, or
+                                        <Path Width="8" Height="8" Fill="#666666" Data="M0.4,5.6h7.2l-3.6,-4.8Z"/>
+                                        to collapse groups or expand folders.
+                                    </Paragraph>
+                                </ListItem>
+                                <ListItem Margin="25,0,0,0">
+                                    <Paragraph>
+                                        Double-click a group or a folder. This will collapse a group and expand a folder even if
+                                        there is no expansion state icon.
+                                    </Paragraph>
+                                </ListItem>
+                                <ListItem Margin="25,0,0,0">
+                                    <Paragraph>
+                                        Select a group node to see the configured properties of its style in the properties panel.
+                                    </Paragraph>
+                                </ListItem>
+                                <ListItem Margin="25,0,0,0">
+                                    <Paragraph>
+                                        Change the values in the properties panel and see how the selected group node (and its twin) changes.
+                                    </Paragraph>
+                                </ListItem>
+                                <ListItem Margin="25,0,0,0">
+                                    <Paragraph>
+                                        Use the
+                                        <Image Width="16" Height="16" Source="{StaticResource RefreshIcon}" ToolTip="Reset"/>
+                                        button in the toolbar to restore the graph to its initial state.
+                                    </Paragraph>
+                                </ListItem>
+                            </List>
+                        </FlowDocument>
+                    </RichTextBox>
+                </ScrollViewer>
+            </HeaderedContentControl>
+            <GridSplitter Width="5" Grid.Column="1" ResizeBehavior="PreviousAndNext" />
+            <ywpf:GraphControl Grid.Column="2" Width="Auto" x:Name="graphControl" />
+            <GridSplitter Width="5" Grid.Column="3" ResizeBehavior="PreviousAndNext" />
+            <editor:EditorControl x:Name="editorControl" Grid.Column="4" IsAutoAdopt="True" IsAutoCommit="True" />
+        </Grid>
+    </DockPanel>
+</Window>

@@ -1,6 +1,6 @@
 <!-- ************************************************************************ -->
-<!-- This demo file is part of yFiles WPF 3.4.                           -->
-<!-- Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
+<!-- This demo file is part of yFiles WPF 3.5.                           -->
+<!-- Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
 <!-- 72070 Tuebingen, Germany. All rights reserved.                           -->
 <!--                                                                          -->
 <!-- yFiles demo files exhibit yFiles WPF functionalities. Any redistribution  -->
@@ -63,7 +63,7 @@
                             <FlowDocument>
                                 <Paragraph>
                                     This demo shows how the
-                                    <Run FontStyle="Italic">yfiles.router.EdgeRouter</Run> can be used for finding routes through a maze. 
+                                    <Run FontStyle="Italic">EdgeRouter</Run> can be used for finding routes through a maze. 
                                     This algorithm tries to find the way with the fewest possible changes in direction trying to avoid possible obstacles.
                                 </Paragraph>
                                 <Paragraph>

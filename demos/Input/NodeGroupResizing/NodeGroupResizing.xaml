@@ -1,6 +1,6 @@
 <!-- ************************************************************************ -->
-<!-- This demo file is part of yFiles WPF 3.4.                           -->
-<!-- Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
+<!-- This demo file is part of yFiles WPF 3.5.                           -->
+<!-- Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
 <!-- 72070 Tuebingen, Germany. All rights reserved.                           -->
 <!--                                                                          -->
 <!-- yFiles demo files exhibit yFiles WPF functionalities. Any redistribution  -->
@@ -53,15 +53,15 @@
                 <Button Command="{x:Static ywpf:GraphCommands.UngroupSelection}"
                         CommandTarget="{Binding ElementName=graphControl}" />
                 <Separator />
-                <ToggleButton x:Name="snappingButton" ToolTip="Snapping" Click="SnappingButtonClick"
+                <ToggleButton x:Name="_snappingButton" ToolTip="Snapping" Click="SnappingButtonClick"
                               Content="{StaticResource SnappingIcon}"
                               ContentTemplate="{StaticResource ImageButtonContentTemplate}" />
-                <ToggleButton x:Name="orthogonalEditingButton" ToolTip="Orthogonal Edges"
+                <ToggleButton x:Name="_orthogonalEditingButton" ToolTip="Orthogonal Edges"
                               Click="OrthogonalEditingButtonClick" Content="{StaticResource OrthogonalEditingIcon}"
                               ContentTemplate="{StaticResource ImageButtonContentTemplate}" />
                 <Separator />
                 <Label>Resize Mode:</Label>
-                <ComboBox x:Name="ResizeMode" SelectionChanged="ResizeModeSelectionChanged">
+                <ComboBox x:Name="_resizeMode" SelectionChanged="ResizeModeSelectionChanged">
                     <ComboBoxItem IsSelected="True">Resize Nodes</ComboBoxItem>
                     <ComboBoxItem>Scale Locations</ComboBoxItem>
                 </ComboBox>

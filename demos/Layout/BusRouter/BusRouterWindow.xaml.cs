@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.4.
- ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.5.
+ ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -36,6 +36,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Markup;
 using System.Windows.Media;
+using Demo.yFiles.Toolkit;
 using yWorks.Controls;
 using yWorks.Controls.Input;
 using yWorks.Geometry;
@@ -52,14 +53,13 @@ namespace Demo.yFiles.Layout.BusRouterDemo
   /// </summary>
   public partial class BusRouterWindow
   {
-    private readonly BusRouter layout = new BusRouter
-                                   {
-                                     Scope = Scope.RouteAllEdges,
-                                     MinimumDistanceToNode = 10,
-                                     MinimumDistanceToEdge = 5,
-                                     PreferredBackboneSegmentCount = 1,
-                                     CrossingCost = 1,
-                                   };
+    private readonly BusRouter layout = new BusRouter {
+      Scope = Scope.RouteAllEdges,
+      MinimumDistanceToNode = 10,
+      MinimumDistanceToEdge = 5,
+      PreferredBackboneSegmentCount = 1,
+      CrossingCost = 1,
+    };
 
     #region Initialization
 
@@ -86,6 +86,8 @@ namespace Demo.yFiles.Layout.BusRouterDemo
     /// and creating a small sample graph.
     /// </summary>
     protected virtual async Task InitializeGraph() {
+      DemoStyles.InitDemoStyles(graphControl.Graph);
+      graphControl.Graph.NodeDefaults.Size = new SizeD(50, 50);
       graphControl.ImportFromGraphML(Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().CodeBase), "Resources\\default.graphml"));
       await DoLayout(Scope.RouteAllEdges);
     }
@@ -108,11 +110,7 @@ namespace Demo.yFiles.Layout.BusRouterDemo
     /// </remarks>
     /// <returns>a new GraphEditorInputMode instance</returns>
     protected virtual IInputMode CreateEditorMode() {
-      var mode = new GraphEditorInputMode
-      {
-        // don't allow nodes to be created using a mouse click
-        NodeCreator = (context, graph, location, parent) => graphControl.Graph.CreateNode(
-          new RectD(location, new SizeD(50, 50)), BusRouterNodeStyles.GetRandomStyle()),
+      var mode = new GraphEditorInputMode {
         // disable node resizing
         ShowHandleItems = GraphItemTypes.Bend | GraphItemTypes.Edge,
         // don't allow edges to be created by the user
@@ -214,45 +212,6 @@ namespace Demo.yFiles.Layout.BusRouterDemo
   }
 
   /// <summary>
-  /// Contains known node styles
-  /// </summary>
-  public static class BusRouterNodeStyles
-  {
-    /// <summary>
-    /// Node is represented by a computer icon.
-    /// </summary>
-    public static readonly INodeStyle Computer = new VectorNodeStyle { TemplateKey = "Computer" };
-
-    /// <summary>
-    /// Node is represented by a network icon.
-    /// </summary>
-    public static readonly INodeStyle Network = new VectorNodeStyle { TemplateKey = "Network" };
-
-    /// <summary>
-    /// Node is represented by a printer icon
-    /// </summary>
-    public static readonly INodeStyle Printer = new VectorNodeStyle { TemplateKey = "Printer" };
-
-    private static readonly Random random = new Random();
-
-    /// <summary>
-    /// Gets a random style.
-    /// </summary>
-    /// <returns>A random style</returns>
-    public static INodeStyle GetRandomStyle() {
-      var r = random.Next(0, 10);
-      if(r < 3) { // 30% chance
-        return Network;
-      }
-      if(r < 5) { // 20% chance
-        return Printer;
-      }
-      // 50% chance
-      return Computer;
-    }
-  }
-
-  /// <summary>
   /// Contains predefined <see cref="Pen"/>s.
   /// </summary>
   public static class PenStyles
@@ -264,10 +223,17 @@ namespace Demo.yFiles.Layout.BusRouterDemo
     private static readonly Random Random = new Random();
 
     static PenStyles() {
-      Values = new[]{
-                     Colors.Black, Colors.Orange, Colors.DarkCyan, 
-                     Colors.DarkGray, Colors.Brown, Colors.DarkBlue, Colors.DarkMagenta, Colors.DarkSlateBlue, Colors.Purple
-                   }.Select(color => new Pen(new SolidColorBrush(color), 2)).ToArray();
+      Values = new[] {
+        Color.FromRgb(0xAB, 0x23, 0x46), // sample graph edge color
+        Color.FromRgb(0x66, 0x2b, 0x00), // sample graph edge color
+        Color.FromRgb(0x0B, 0x71, 0x89), // sample graph edge color
+        Color.FromRgb(0x11, 0x1D, 0x4A),
+        Color.FromRgb(0x17, 0xBE, 0xBB),
+        Color.FromRgb(0xFF, 0xC9, 0x14),
+        Color.FromRgb(0xFF, 0x6C, 0x00),
+        Color.FromRgb(0x2E, 0x28, 0x2A),
+        Color.FromRgb(0x76, 0xB0, 0x41),
+      }.Select(color => new Pen(new SolidColorBrush(color), 2)).ToArray();
     }
 
     private static int index;

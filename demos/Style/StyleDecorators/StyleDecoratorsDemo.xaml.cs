@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.4.
- ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.5.
+ ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -37,6 +37,7 @@ using yWorks.Geometry;
 using yWorks.Graph;
 using yWorks.Graph.Styles;
 using yWorks.Graph.LabelModels;
+using Demo.yFiles.Toolkit;
 
 [assembly :
   XmlnsDefinition("http://www.yworks.com/yFilesWPF/demos/StyleDecorators/1.0",
@@ -97,43 +98,46 @@ namespace Demo.yFiles.Graph.StyleDecorators
     /// elements in the graph.
     /// </summary>
     protected virtual void InitializeDefaultStyles() {
-      Pen pen = new Pen(new SolidColorBrush(Color.FromArgb(0xFF, 0x24, 0x9A, 0xE7)), 1);
-      LinearGradientBrush brush = new LinearGradientBrush(Color.FromArgb(0xFF, 0xCC, 0xFF, 0xFF),
-                                                          Color.FromArgb(0xFF, 0x24, 0x9A, 0xE7), 90.0);
-      // Create a new style and use it as default node style
-      Graph.NodeDefaults.Style = new NodeStyleDecorator(
-        new ShapeNodeStyle { Shape = ShapeNodeShape.RoundRectangle, Pen = pen, Brush = brush },
-        "Resources/computer.png");
+      DemoStyles.InitDemoStyles(Graph);
+
+      Graph.NodeDefaults.Style = new NodeStyleDecorator(BaseStyle, "Resources/computer.png");
       Graph.NodeDefaults.Size = new SizeD(80, 40);
 
-      // Create a new style and use it as default edge style
-      Graph.EdgeDefaults.Style = new EdgeStyleDecorator(new NodeStylePortStyleAdapter(new ShapeNodeStyle { Shape = ShapeNodeShape.Ellipse, Brush = Brushes.DarkGray, Pen = null }) { RenderSize = new SizeD(3, 3) });
-      // Create a new style and use it as default label style
+      Graph.EdgeDefaults.Style = new EdgeStyleDecorator(new NodeStylePortStyleAdapter
+      {
+        NodeStyle = new ShapeNodeStyle
+        {
+          Brush = Brushes.LightGray,
+          Pen = null,
+          Shape = ShapeNodeShape.Ellipse
+        },
+        RenderSize = new SizeD(5, 5)
+      });
 
-      ILabelStyle labelStyle = new LabelStyleDecorator(new DefaultLabelStyle());
-      Graph.NodeDefaults.Labels.Style = labelStyle;
-      Graph.EdgeDefaults.Labels.Style = labelStyle;
-      Graph.NodeDefaults.Labels.LayoutParameter = new InteriorLabelModel().CreateParameter(InteriorLabelModel.Position.Center);
+      Graph.NodeDefaults.Labels.Style = new LabelStyleDecorator(new DefaultLabelStyle
+      {
+        TextBrush = (Brush) new SolidColorBrush(Color.FromRgb(0x22, 0x45, 0x56)).GetAsFrozen(),
+        BackgroundBrush = (Brush) new SolidColorBrush(Color.FromRgb(0xB4, 0xDB, 0xED)).GetAsFrozen()
+      });
+      Graph.NodeDefaults.Labels.LayoutParameter = InteriorLabelModel.Center;
+
+      Graph.EdgeDefaults.Labels.Style = new LabelStyleDecorator(new DefaultLabelStyle());
+      Graph.EdgeDefaults.Labels.LayoutParameter = new SmartEdgeLabelModel().CreateDefaultParameter();
     }
 
     private void CreateSampleGraph() {
-      INodeStyle nodeStyle = new ShapeNodeStyle
-      {
-        Shape = ShapeNodeShape.RoundRectangle,
-        Pen = new Pen(new SolidColorBrush(Color.FromArgb(0xFF, 0x24, 0x9A, 0xE7)), 1),
-        Brush = new LinearGradientBrush(Color.FromArgb(0xFF, 0xCC, 0xFF, 0xFF), Color.FromArgb(0xFF, 0x24, 0x9A, 0xE7), 90.0)
-      };
+      var baseStyle = BaseStyle;
 
-      var node1 = CreateNode(new PointD(0, 0), new NodeStyleDecorator(nodeStyle, "Resources/internet.png"), "Root");
-      var node2 = CreateNode(new PointD(120, -50), new NodeStyleDecorator(nodeStyle, "Resources/switch.png"), "Switch");
-      var node3 = CreateNode(new PointD(-130, 60), new NodeStyleDecorator(nodeStyle, "Resources/switch.png"), "Switch");
-      var node4 = CreateNode(new PointD(95, -180), new NodeStyleDecorator(nodeStyle, "Resources/scanner.png"), "Scanner");
-      var node5 = CreateNode(new PointD(240, -110), new NodeStyleDecorator(nodeStyle, "Resources/printer.png"), "Printer");
-      var node6 = CreateNode(new PointD(200, 50), new NodeStyleDecorator(nodeStyle, "Resources/computer.png"), "Workstation");
-      var node7 = CreateNode(new PointD(-160, -60), new NodeStyleDecorator(nodeStyle, "Resources/printer.png"), "Printer");
-      var node8 = CreateNode(new PointD(-260, 40), new NodeStyleDecorator(nodeStyle, "Resources/scanner.png"), "Scanner");
-      var node9 = CreateNode(new PointD(-200, 170), new NodeStyleDecorator(nodeStyle, "Resources/computer.png"), "Workstation");
-      var node10 = CreateNode(new PointD(-50, 160), new NodeStyleDecorator(nodeStyle, "Resources/computer.png"), "Workstation");
+      var node1 = CreateNode(new PointD(0, 0), new NodeStyleDecorator(baseStyle, "Resources/internet.png"), "Root");
+      var node2 = CreateNode(new PointD(120, -50), new NodeStyleDecorator(baseStyle, "Resources/switch.png"), "Switch");
+      var node3 = CreateNode(new PointD(-130, 60), new NodeStyleDecorator(baseStyle, "Resources/switch.png"), "Switch");
+      var node4 = CreateNode(new PointD(95, -180), new NodeStyleDecorator(baseStyle, "Resources/scanner.png"), "Scanner");
+      var node5 = CreateNode(new PointD(240, -110), new NodeStyleDecorator(baseStyle, "Resources/printer.png"), "Printer");
+      var node6 = CreateNode(new PointD(200, 50), new NodeStyleDecorator(baseStyle, "Resources/computer.png"), "Workstation");
+      var node7 = CreateNode(new PointD(-160, -60), new NodeStyleDecorator(baseStyle, "Resources/printer.png"), "Printer");
+      var node8 = CreateNode(new PointD(-260, 40), new NodeStyleDecorator(baseStyle, "Resources/scanner.png"), "Scanner");
+      var node9 = CreateNode(new PointD(-200, 170), new NodeStyleDecorator(baseStyle, "Resources/computer.png"), "Workstation");
+      var node10 = CreateNode(new PointD(-50, 160), new NodeStyleDecorator(baseStyle, "Resources/computer.png"), "Workstation");
 
       Graph.CreateEdge(node1, node2, Graph.EdgeDefaults.Style, TrafficLoad.VeryHigh);
       Graph.CreateEdge(node1, node3, Graph.EdgeDefaults.Style, TrafficLoad.High);
@@ -157,6 +161,17 @@ namespace Demo.yFiles.Graph.StyleDecorators
     /// </summary>
     public IGraph Graph {
       get { return graphControl.Graph; }
+    }
+
+    private INodeStyle BaseStyle {
+      get {
+        return new ShapeNodeStyle
+        {
+          Brush = Themes.PaletteLightblue.Fill,
+          Pen = null,
+          Shape = ShapeNodeShape.Rectangle
+        };
+      }
     }
 
     private void ReloadGraphButtonClick(object sender, RoutedEventArgs e) {

@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.4.
- ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.5.
+ ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -1552,7 +1552,7 @@ namespace Demo.yFiles.IO.GraphML.Compat.Xaml
     /// <param name="style">The style instance which has been used to create the visual.</param>
     public UIElementLabelStyleDataContext(IRenderContext context, ILabel label, UIElementLabelStyle style) {
       this.style = style;
-      this.modelItem = modelItem;
+      this.modelItem = label;
       this.canvas = context != null ? context.CanvasControl : null;
       new PropertyChangeAdapter(this, style);
     }

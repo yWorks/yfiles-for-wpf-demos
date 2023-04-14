@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.4.
- ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.5.
+ ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -37,6 +37,7 @@ using System.Windows;
 using System.Windows.Automation;
 using System.Windows.Controls;
 using System.Windows.Media;
+using Demo.yFiles.Toolkit;
 using yWorks.Controls;
 using yWorks.Controls.Input;
 using yWorks.Geometry;
@@ -127,13 +128,13 @@ namespace Demo.yFiles.Graph.UIAutomation
       IGraph graph = new FoldingManager().CreateFoldingView().Graph;
 
       // Initialize defaults
-      graph.NodeDefaults.Style = new ShinyPlateNodeStyle { Brush = Brushes.DarkOrange };
+      DemoStyles.InitDemoStyles(graph, foldingEnabled: true);
 
       // Mapper for using custom AutomationIds. This is just a sample that shows how to add a mapper that returns
       // an automation ID from the model item's tag. In practice you might return a property of the tag object if that
       // identifies your model item uniquely.
       graph.MapperRegistry.CreateDelegateMapper(GraphControl.AutomationIdKey,
-          delegate(IModelItem key) {
+          (IModelItem key) => {
             if (key.Tag == null) {
               return null;
             }
@@ -155,11 +156,10 @@ namespace Demo.yFiles.Graph.UIAutomation
 
       graph.CreateEdge(node2, graph.CreateNode(new PointD(200, 30)));
 
-      // Node with a templated style – the controls within the template do appear in the UIA tree as well and can be
+      // Node with a templated style â€“ the controls within the template do appear in the UIA tree as well and can be
       // interacted with.
       graph.CreateNode(new RectD(100, 150, 150, 150), new NodeControlNodeStyle("NodeStyle"));
 
-      graph.GroupNodeDefaults.Style = new NodeControlNodeStyle("GroupNodeStyle") { Insets = new InsetsD(3, 20, 3, 3) };
       graph.GroupNodes(node1, node2);
 
       graphControl.Graph = graph;
@@ -422,6 +422,10 @@ namespace Demo.yFiles.Graph.UIAutomation
     private void OnSelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e) {
       RefreshOverlay();
       RefreshPatternInterface();
+    }
+
+    private void OnGraphControlViewportChanged(object sender, PropertyChangedEventArgs e) {
+      RefreshOverlay();
     }
 
     private void RefreshOverlay() {

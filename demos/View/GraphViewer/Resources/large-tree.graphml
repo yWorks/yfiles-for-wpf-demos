@@ -8,11 +8,6 @@
   <key id="d3" for="node" attr.name="NodeStyle" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeStyle"/>
   <key id="d4" for="edge" attr.name="EdgeLabels" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/EdgeLabels" />
   <key id="d5" for="edge" attr.name="EdgeGeometry" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/EdgeGeometry" />
-  <key id="d6" for="edge" attr.name="EdgeStyle" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/EdgeStyle">
-    <default>
-      <ywpf:PolylineEdgeStyle TargetArrow="Default" SourceArrow="None" />
-    </default>
-  </key>
   <key id="d7" for="port" attr.name="PortLocationParameter" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/PortLocationParameter">
     <default>
       <x:Static Member="y:FreeNodePortLocationModel.NodeCenterAnchored" />
@@ -36,7 +31,7 @@
         <y:GraphSettings.NodeDefaults>
           <y:NodeDefaults Size="40,35" ShareStyleInstance="True">
             <y:NodeDefaults.Style>
-              <ywpf:ShinyPlateNodeStyle Brush="Orange"/>
+              <ywpf:ShapeNodeStyle Brush="Orange" Pen="{x:Null}"/>
             </y:NodeDefaults.Style>
             <y:NodeDefaults.Labels>
               <y:LabelDefaults AutoAdjustPreferredSize="True" ShareLayoutParameterInstance="True" LayoutParameter="{x:Static y:InteriorLabelModel.Center}" Style="{y:GraphMLReference 1}" ShareStyleInstance="True" />
@@ -46,6 +41,13 @@
             </y:NodeDefaults.Ports>
           </y:NodeDefaults>
         </y:GraphSettings.NodeDefaults>
+        <y:GraphSettings.EdgeDefaults>
+          <y:EdgeDefaults ShareStyleInstance="True">
+            <y:EdgeDefaults.Style>
+              <ywpf:PolylineEdgeStyle Pen="#336699"/>
+            </y:EdgeDefaults.Style>
+          </y:EdgeDefaults>
+        </y:GraphSettings.EdgeDefaults>
       </y:GraphSettings>
     </data>
     <data key="GraphDescription">

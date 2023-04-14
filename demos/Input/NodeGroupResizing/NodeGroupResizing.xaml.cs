@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.4.
- ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.5.
+ ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -30,6 +30,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using Demo.yFiles.Toolkit;
 using yWorks.Controls;
 using yWorks.Controls.Input;
 using yWorks.Geometry;
@@ -85,35 +86,26 @@ namespace Demo.yFiles.Graph.Input.NodeGroupResizing
       };
       graphEditorInputMode.Add(nodeGroupResizingInputMode);
 
+      // set style defaults
+      DemoStyles.InitDemoStyles(graphControl.Graph);
+
       // load sample graph
       graphControl.ImportFromGraphML("Resources/sampleGraph.graphml");
       graphControl.FitContent();
       graphControl.Graph.GetUndoEngine().Clear();
-
-      // set style defaults
-      graphControl.Graph.NodeDefaults.Style = new ShinyPlateNodeStyle { Brush = Brushes.Orange };
-      Color groupNodeColor = Color.FromArgb(255, 214, 229, 248);
-      var groupNodeDefaults = graphControl.Graph.GroupNodeDefaults;
-      groupNodeDefaults.Style = new PanelNodeStyle {
-          Color = groupNodeColor, 
-          Insets = new InsetsD(5, 18, 5, 5), 
-          LabelInsetsColor = groupNodeColor,
-      };
-      groupNodeDefaults.Labels.Style = new DefaultLabelStyle { TextAlignment = TextAlignment.Right };
-      groupNodeDefaults.Labels.LayoutParameter = InteriorStretchLabelModel.North;
     }
 
     private void SnappingButtonClick(object sender, RoutedEventArgs e) {
-      graphEditorInputMode.SnapContext.Enabled = snappingButton.IsChecked == true;
+      graphEditorInputMode.SnapContext.Enabled = _snappingButton.IsChecked == true;
     }
 
     private void OrthogonalEditingButtonClick(object sender, RoutedEventArgs e) {
-      graphEditorInputMode.OrthogonalEdgeEditingContext.Enabled = orthogonalEditingButton.IsChecked == true;
+      graphEditorInputMode.OrthogonalEdgeEditingContext.Enabled = _orthogonalEditingButton.IsChecked == true;
     }
 
     private void ResizeModeSelectionChanged(object sender, SelectionChangedEventArgs e) {
       if (nodeGroupResizingInputMode != null) {
-        nodeGroupResizingInputMode.Mode = ResizeMode.SelectedIndex == 0
+        nodeGroupResizingInputMode.Mode = _resizeMode.SelectedIndex == 0
             ? NodeGroupResizing.ResizeMode.Resize
             : NodeGroupResizing.ResizeMode.Scale;
       }

@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.4.
- ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.5.
+ ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -35,6 +35,7 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
+using Demo.yFiles.Toolkit;
 using yWorks.Controls;
 using yWorks.Algorithms;
 using yWorks.Algorithms.Geometry;
@@ -66,7 +67,7 @@ namespace Demo.yFiles.Layout.MultiPage
   /// </remarks>
   public partial class MultiPageWindow
   {
-    // list of availabel core layouts
+    // list of available core layouts
     private Dictionary<string, ILayoutAlgorithm> coreLayouts;
     // the current core layout
     private ILayoutAlgorithm coreLayout = new HierarchicLayout();
@@ -93,23 +94,27 @@ namespace Demo.yFiles.Layout.MultiPage
       InitializeInputMode();
       // load the original graph
       modelGraph = new DefaultGraph();
+      // set a default node label style similar to those used for the visualization later,
+      // so the node labels read from the GraphML file are assigned a correct size that considers the
+      // paddings of the label style
+      modelGraph.NodeDefaults.Labels.Style = DemoStyles.CreateDemoNodeLabelStyle(Themes.Palette21);
+      
       GraphMLIOHandler ioHandler = new GraphMLIOHandler();
       ioHandler.Read(modelGraph, "Resources/pop-artists-small.graphml");
       // add the page bounds visual
       pageBoundsVisualCreator = new PageBoundsVisualCreator();
       graphControl.BackgroundGroup.AddChild(pageBoundsVisualCreator);
-      // calculate the muti-page layout
+      // calculate the multi-page layout
       RunMultipageLayout();
     }
 
     private void InitializeInputMode() {
       // create the inputmode and disable selection and focus
-      GraphViewerInputMode mode = new GraphViewerInputMode()
-                                    {
-                                      ClickableItems = GraphItemTypes.Node,
-                                      SelectableItems = GraphItemTypes.None,
-                                      FocusableItems = GraphItemTypes.None,
-                                    };
+      GraphViewerInputMode mode = new GraphViewerInputMode() {
+        ClickableItems = GraphItemTypes.Node,
+        SelectableItems = GraphItemTypes.None,
+        FocusableItems = GraphItemTypes.None,
+      };
       // handle clicks on nodes
       mode.ItemClicked += (sender, e) => GotoReferencingNode((INode)e.Item);
       graphControl.InputMode = mode;
@@ -220,7 +225,7 @@ namespace Demo.yFiles.Layout.MultiPage
             ShowLoadingIndicator(false);
           }));
         }
-        }).Start();
+      }).Start();
     }
 
     /// <summary>
@@ -228,12 +233,6 @@ namespace Demo.yFiles.Layout.MultiPage
     /// </summary>
     private void ApplyLayoutResult(MultiPageLayoutResult multiPageLayout, double pageWidth, double pageHeight)
     {
-      // decorations for underlined labels
-      var decorations = new TextDecorationCollection
-      {
-        new TextDecoration(TextDecorationLocation.Underline, Pens.Black, 0, TextDecorationUnit.FontRecommended, TextDecorationUnit.FontRecommended)
-      };
-
       // use the MultiPageGraphBuilder to create a list of IGraph instances that represent the single pages
       MultiPageIGraphBuilder builder = new MultiPageIGraphBuilder(multiPageLayout)
       {
@@ -243,22 +242,34 @@ namespace Demo.yFiles.Layout.MultiPage
         NormalNodeDefaults =
         {
           Style = new NodeControlNodeStyle("NormalNodeTemplate"),
-          Labels = { Style = new DefaultLabelStyle(), LayoutParameter = InteriorLabelModel.Center }
+          Labels = { Style = DemoStyles.CreateDemoNodeLabelStyle(Themes.Palette21), LayoutParameter = InteriorLabelModel.Center }
         },
         ConnectorNodeDefaults =
         {
           Style = new NodeControlNodeStyle("ConnectorNodeTemplate"),
-          Labels = { Style = new DefaultLabelStyle { TextDecorations = decorations }, LayoutParameter = InteriorLabelModel.Center }
+          Labels = { Style = DemoStyles.CreateDemoNodeLabelStyle(Themes.Palette23), LayoutParameter = InteriorLabelModel.Center }
         },
         ProxyNodeDefaults =
         {
           Style = new NodeControlNodeStyle("ProxyNodeTemplate"),
-          Labels = { Style = new DefaultLabelStyle { TextDecorations = decorations }, LayoutParameter = InteriorLabelModel.Center }
+          Labels = { Style = DemoStyles.CreateDemoNodeLabelStyle(Themes.Palette25), LayoutParameter = InteriorLabelModel.Center }
         },
         ProxyReferenceNodeDefaults =
         {
           Style = new NodeControlNodeStyle("ProxyReferenceNodeTemplate"),
-          Labels = { Style = new DefaultLabelStyle { TextDecorations = decorations }, LayoutParameter = InteriorLabelModel.Center }
+          Labels = { Style = DemoStyles.CreateDemoNodeLabelStyle(Themes.Palette14), LayoutParameter = InteriorLabelModel.Center }
+        },
+        NormalEdgeDefaults = {
+          Style = DemoStyles.CreateDemoEdgeStyle(Themes.Palette21, false)
+        },
+        ConnectorEdgeDefaults = {
+          Style = DemoStyles.CreateDemoEdgeStyle(Themes.Palette23, false)
+        },
+        ProxyEdgeDefaults = {
+          Style = DemoStyles.CreateDemoEdgeStyle(Themes.Palette25, false)
+        },
+        ProxyReferenceEdgeDefaults = {
+          Style = DemoStyles.CreateDemoEdgeStyle(Themes.Palette14)
         }
       };
 

@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.4.
- ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.5.
+ ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -69,6 +69,10 @@ namespace Demo.yFiles.Graph.Input.HandleProvider {
 
     public Cursor Cursor {
       get { return Cursors.SizeWE; }
+    }
+
+    public void HandleClick(ClickEventArgs eventArgs) {
+      // ignore clicks
     }
 
     private IPoint location;

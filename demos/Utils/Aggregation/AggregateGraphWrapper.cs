@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.4.
- ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.5.
+ ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -600,6 +600,12 @@ namespace Demo.yFiles.Aggregation
     /// Separates all aggregation nodes such that this graph contains exactly the same items as the
     /// <see cref="GraphWrapperBase.WrappedGraph"/>.
     /// </summary>
+    /// <remarks>
+    /// This method separates all aggregated nodes recursively until the original items are visible again. Therefore,
+    /// it raises all events for each intermediate aggregation item as well, in contrast to
+    /// <see cref="SeparateToOriginalItems"/> which skips all intermediate aggregation states and directly restores the
+    /// original items.
+    /// </remarks>
     public void SeparateAll() {
       do {
         var visibleNodes = aggregationNodes.Where(AggregationItemPredicate).ToList();
@@ -607,6 +613,36 @@ namespace Demo.yFiles.Aggregation
           Separate(aggregationNode);
         }
       } while (aggregationNodes.Count > 0);
+    }
+
+    /// <summary>
+    /// Separates the currently visible items and restores directly the original items of the
+    /// <see cref="GraphWrapperBase.WrappedGraph"/>.
+    /// </summary>
+    /// <remarks>
+    /// In contrast to <see cref="SeparateAll"/>, this method does not recursively separate all aggregation items on
+    /// each level. After separating the currently visible nodes, it immediately restores the original items of the
+    /// <see cref="GraphWrapperBase.WrappedGraph"/>.
+    /// </remarks>
+    public void SeparateToOriginalItems() {
+      // remove the visible node, raising all events for them
+      var visibleNodes = aggregationNodes.Where(AggregationItemPredicate).ToList();
+      foreach (var aggregationNode in visibleNodes) {
+        var adjacentEdges = EdgesAt(aggregationNode).ToList();
+        foreach (var edge in adjacentEdges) {
+          RemoveAggregationEdge((AggregationEdge) edge);
+        }
+        RemoveAggregationNode(aggregationNode);
+      }
+
+      // directly show the actual nodes of the graph by clearing all aggregation states
+      filteredAggregationItems.Clear();
+      filteredOriginalNodes.Clear();
+      aggregationNodes.Clear();
+      aggregationEdges.Clear();
+
+      // update the filteredGraph, raising the related events for showing the nodes
+      filteredGraph.NodePredicateChanged();
     }
 
     #endregion

@@ -4,37 +4,8 @@
   <key id="d0" for="all" attr.name="UserTags" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/UserTags" />
   <key id="d1" for="node" attr.name="NodeLabels" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeLabels" />
   <key id="d2" for="node" attr.name="NodeGeometry" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeGeometry" />
-  <key id="d3" for="node" attr.name="NodeStyle" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeStyle" />
-  <key id="d4" for="node" attr.type="boolean" attr.name="Expanded" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/folding/Expanded">
-    <default>true</default>
-  </key>
-  <key id="d5" for="node" attr.name="NodeViewState" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/folding/1.1/NodeViewState" />
-  <key id="d6" for="edge" attr.name="EdgeLabels" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/EdgeLabels" />
-  <key id="d7" for="edge" attr.name="EdgeGeometry" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/EdgeGeometry" />
-  <key id="d8" for="edge" attr.name="EdgeStyle" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/EdgeStyle" />
-  <key id="d9" for="edge" attr.name="EdgeViewState" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/folding/1.1/EdgeViewState" />
-  <key id="d10" for="port" attr.name="PortLocationParameter" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/PortLocationParameter">
-    <default>
-      <x:Static Member="y:FreeNodePortLocationModel.NodeCenterAnchored" />
-    </default>
-  </key>
-  <key id="d11" for="port" attr.name="PortStyle" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/PortStyle">
-    <default>
-      <x:Static Member="y:VoidPortStyle.Instance" />
-    </default>
-  </key>
-  <key id="d12" for="port" attr.name="PortViewState" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/folding/1.1/PortViewState" />
-  <key id="d13" attr.name="SharedData" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/SharedData" />
-  <data key="d13">
-    <y:SharedData>
-      <ywpf:ShinyPlateNodeStyle x:Key="1" Brush="#FFFFA500" DrawShadow="False" Radius="1"/>
-    </y:SharedData>
-  </data>
   <graph id="G" edgedefault="directed">
     <node id="n1">
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
-      </data>
       <data key="d1">
         <x:List>
           <y:Label>
@@ -46,9 +17,6 @@
                 </y:SandwichParameter.Model>
               </y:SandwichParameter>
             </y:Label.LayoutParameter>
-            <y:Label.Style>
-              <demo:CityLabelStyle/>
-            </y:Label.Style>
           </y:Label>
         </x:List>
       </data>
@@ -57,9 +25,6 @@
       </data>
     </node>
     <node id="n2">
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
-      </data>
       <data key="d1">
         <x:List>
           <y:Label>
@@ -71,9 +36,6 @@
                 </y:SandwichParameter.Model>
               </y:SandwichParameter>
             </y:Label.LayoutParameter>
-            <y:Label.Style>
-              <demo:CityLabelStyle/>
-            </y:Label.Style>
           </y:Label>
         </x:List>
       </data>
@@ -82,9 +44,6 @@
       </data>
     </node>
     <node id="n3">
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
-      </data>
       <data key="d1">
         <x:List>
           <y:Label>
@@ -96,9 +55,6 @@
                 </y:SandwichParameter.Model>
               </y:SandwichParameter>
             </y:Label.LayoutParameter>
-            <y:Label.Style>
-                <demo:CityLabelStyle/>
-            </y:Label.Style>
           </y:Label>
         </x:List>
       </data>
@@ -107,9 +63,6 @@
       </data>
     </node>
     <node id="n4">
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
-      </data>
       <data key="d1">
         <x:List>
           <y:Label>
@@ -121,9 +74,6 @@
                 </y:SandwichParameter.Model>
               </y:SandwichParameter>
             </y:Label.LayoutParameter>
-            <y:Label.Style>
-              <demo:CityLabelStyle/>
-            </y:Label.Style>
           </y:Label>
         </x:List>
       </data>
@@ -132,9 +82,6 @@
       </data>
     </node>
     <node id="n5">
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
-      </data>
       <data key="d1">
         <x:List>
           <y:Label>
@@ -146,9 +93,6 @@
                 </y:SandwichParameter.Model>
               </y:SandwichParameter>
             </y:Label.LayoutParameter>
-            <y:Label.Style>
-              <demo:CityLabelStyle/>
-            </y:Label.Style>
           </y:Label>
         </x:List>
       </data>
@@ -157,9 +101,6 @@
       </data>
     </node>
     <node id="n6">
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
-      </data>
       <data key="d1">
         <x:List>
           <y:Label>
@@ -171,9 +112,6 @@
                 </y:SandwichParameter.Model>
               </y:SandwichParameter>
             </y:Label.LayoutParameter>
-            <y:Label.Style>
-              <demo:CityLabelStyle/>
-            </y:Label.Style>
           </y:Label>
         </x:List>
       </data>
@@ -182,9 +120,6 @@
       </data>
     </node>
     <node id="n7">
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
-      </data>
       <data key="d1">
         <x:List>
           <y:Label>
@@ -196,9 +131,6 @@
                 </y:SandwichParameter.Model>
               </y:SandwichParameter>
             </y:Label.LayoutParameter>
-            <y:Label.Style>
-              <demo:CityLabelStyle/>
-            </y:Label.Style>
           </y:Label>
         </x:List>
       </data>
@@ -207,9 +139,6 @@
       </data>
     </node>
     <node id="n8">
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
-      </data>
       <data key="d1">
         <x:List>
           <y:Label>
@@ -221,9 +150,6 @@
                 </y:SandwichParameter.Model>
               </y:SandwichParameter>
             </y:Label.LayoutParameter>
-            <y:Label.Style>
-              <demo:CityLabelStyle/>
-            </y:Label.Style>
           </y:Label>
         </x:List>
       </data>
@@ -232,9 +158,6 @@
       </data>
     </node>
     <node id="n9">
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
-      </data>
       <data key="d1">
         <x:List>
           <y:Label>
@@ -246,9 +169,6 @@
                 </y:SandwichParameter.Model>
               </y:SandwichParameter>
             </y:Label.LayoutParameter>
-            <y:Label.Style>
-              <demo:CityLabelStyle/>
-            </y:Label.Style>
           </y:Label>
         </x:List>
       </data>
@@ -257,9 +177,6 @@
       </data>
     </node>
     <node id="n10">
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
-      </data>
       <data key="d1">
         <x:List>
           <y:Label>
@@ -271,9 +188,6 @@
                 </y:SandwichParameter.Model>
               </y:SandwichParameter>
             </y:Label.LayoutParameter>
-            <y:Label.Style>
-              <demo:CityLabelStyle/>
-            </y:Label.Style>
           </y:Label>
         </x:List>
       </data>
@@ -282,9 +196,6 @@
       </data>
     </node>
     <node id="n11">
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
-      </data>
       <data key="d1">
         <x:List>
           <y:Label>
@@ -296,9 +207,6 @@
                 </y:SandwichParameter.Model>
               </y:SandwichParameter>
             </y:Label.LayoutParameter>
-            <y:Label.Style>
-              <demo:CityLabelStyle/>
-            </y:Label.Style>
           </y:Label>
         </x:List>
       </data>
@@ -307,9 +215,6 @@
       </data>
     </node>
     <node id="n12">
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
-      </data>
       <data key="d1">
         <x:List>
           <y:Label>
@@ -321,9 +226,6 @@
                 </y:SandwichParameter.Model>
               </y:SandwichParameter>
             </y:Label.LayoutParameter>
-            <y:Label.Style>
-              <demo:CityLabelStyle/>
-            </y:Label.Style>
           </y:Label>
         </x:List>
       </data>
@@ -332,9 +234,6 @@
       </data>
     </node>
     <node id="n13">
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
-      </data>
       <data key="d1">
         <x:List>
           <y:Label>
@@ -346,9 +245,6 @@
                 </y:SandwichParameter.Model>
               </y:SandwichParameter>
             </y:Label.LayoutParameter>
-            <y:Label.Style>
-              <demo:CityLabelStyle/>
-            </y:Label.Style>
           </y:Label>
         </x:List>
       </data>
@@ -357,9 +253,6 @@
       </data>
     </node>
     <node id="n14">
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
-      </data>
       <data key="d1">
         <x:List>
           <y:Label>
@@ -371,9 +264,6 @@
                 </y:SandwichParameter.Model>
               </y:SandwichParameter>
             </y:Label.LayoutParameter>
-            <y:Label.Style>
-              <demo:CityLabelStyle/>
-            </y:Label.Style>
           </y:Label>
         </x:List>
       </data>
@@ -382,9 +272,6 @@
       </data>
     </node>
     <node id="n15">
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
-      </data>
       <data key="d1">
         <x:List>
           <y:Label>
@@ -396,9 +283,6 @@
                 </y:SandwichParameter.Model>
               </y:SandwichParameter>
             </y:Label.LayoutParameter>
-            <y:Label.Style>
-              <demo:CityLabelStyle/>
-            </y:Label.Style>
           </y:Label>
         </x:List>
       </data>
@@ -407,9 +291,6 @@
       </data>
     </node>
     <node id="n16">
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
-      </data>
       <data key="d1">
         <x:List>
           <y:Label>
@@ -421,9 +302,6 @@
                 </y:SandwichParameter.Model>
               </y:SandwichParameter>
             </y:Label.LayoutParameter>
-            <y:Label.Style>
-              <demo:CityLabelStyle/>
-            </y:Label.Style>
           </y:Label>
         </x:List>
       </data>
@@ -432,9 +310,6 @@
       </data>
     </node>
     <node id="n17">
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
-      </data>
       <data key="d1">
         <x:List>
           <y:Label>
@@ -446,9 +321,6 @@
                 </y:SandwichParameter.Model>
               </y:SandwichParameter>
             </y:Label.LayoutParameter>
-            <y:Label.Style>
-              <demo:CityLabelStyle/>
-            </y:Label.Style>
           </y:Label>
         </x:List>
       </data>
@@ -457,9 +329,6 @@
       </data>
     </node>
     <node id="n18">
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
-      </data>
       <data key="d1">
         <x:List>
           <y:Label>
@@ -471,9 +340,6 @@
                 </y:SandwichParameter.Model>
               </y:SandwichParameter>
             </y:Label.LayoutParameter>
-            <y:Label.Style>
-              <demo:CityLabelStyle/>
-            </y:Label.Style>
           </y:Label>
         </x:List>
       </data>
@@ -482,9 +348,6 @@
       </data>
     </node>
     <node id="n19">
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
-      </data>
       <data key="d1">
         <x:List>
           <y:Label>
@@ -496,9 +359,6 @@
                 </y:SandwichParameter.Model>
               </y:SandwichParameter>
             </y:Label.LayoutParameter>
-            <y:Label.Style>
-              <demo:CityLabelStyle/>
-            </y:Label.Style>
           </y:Label>
         </x:List>
       </data>
@@ -507,9 +367,6 @@
       </data>
     </node>
     <node id="n20">
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
-      </data>
       <data key="d1">
         <x:List>
           <y:Label>
@@ -521,9 +378,6 @@
                 </y:SandwichParameter.Model>
               </y:SandwichParameter>
             </y:Label.LayoutParameter>
-            <y:Label.Style>
-              <demo:CityLabelStyle/>
-            </y:Label.Style>
           </y:Label>
         </x:List>
       </data>
@@ -532,9 +386,6 @@
       </data>
     </node>
     <node id="n21">
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
-      </data>
       <data key="d1">
         <x:List>
           <y:Label>
@@ -546,9 +397,6 @@
                 </y:SandwichParameter.Model>
               </y:SandwichParameter>
             </y:Label.LayoutParameter>
-            <y:Label.Style>
-              <demo:CityLabelStyle/>
-            </y:Label.Style>
           </y:Label>
         </x:List>
       </data>
@@ -557,9 +405,6 @@
       </data>
     </node>
     <node id="n22">
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
-      </data>
       <data key="d1">
         <x:List>
           <y:Label>
@@ -571,9 +416,6 @@
                 </y:SandwichParameter.Model>
               </y:SandwichParameter>
             </y:Label.LayoutParameter>
-            <y:Label.Style>
-              <demo:CityLabelStyle/>
-            </y:Label.Style>
           </y:Label>
         </x:List>
       </data>
@@ -582,9 +424,6 @@
       </data>
     </node>
     <node id="n23">
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
-      </data>
       <data key="d1">
         <x:List>
           <y:Label>
@@ -596,9 +435,6 @@
                 </y:SandwichParameter.Model>
               </y:SandwichParameter>
             </y:Label.LayoutParameter>
-            <y:Label.Style>
-              <demo:CityLabelStyle/>
-            </y:Label.Style>
           </y:Label>
         </x:List>
       </data>
@@ -607,9 +443,6 @@
       </data>
     </node>
     <node id="n24">
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
-      </data>
       <data key="d1">
         <x:List>
           <y:Label>
@@ -621,9 +454,6 @@
                 </y:SandwichParameter.Model>
               </y:SandwichParameter>
             </y:Label.LayoutParameter>
-            <y:Label.Style>
-              <demo:CityLabelStyle/>
-            </y:Label.Style>
           </y:Label>
         </x:List>
       </data>
@@ -632,9 +462,6 @@
       </data>
     </node>
     <node id="n25">
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
-      </data>
       <data key="d1">
         <x:List>
           <y:Label>
@@ -646,9 +473,6 @@
                 </y:SandwichParameter.Model>
               </y:SandwichParameter>
             </y:Label.LayoutParameter>
-            <y:Label.Style>
-              <demo:CityLabelStyle/>
-            </y:Label.Style>
           </y:Label>
         </x:List>
       </data>
@@ -657,9 +481,6 @@
       </data>
     </node>
     <node id="n26">
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
-      </data>
       <data key="d1">
         <x:List>
           <y:Label>
@@ -671,9 +492,6 @@
                 </y:SandwichParameter.Model>
               </y:SandwichParameter>
             </y:Label.LayoutParameter>
-            <y:Label.Style>
-              <demo:CityLabelStyle/>
-            </y:Label.Style>
           </y:Label>
         </x:List>
       </data>
@@ -682,9 +500,6 @@
       </data>
     </node>
     <node id="n27">
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
-      </data>
       <data key="d1">
         <x:List>
           <y:Label>
@@ -696,9 +511,6 @@
                 </y:SandwichParameter.Model>
               </y:SandwichParameter>
             </y:Label.LayoutParameter>
-            <y:Label.Style>
-              <demo:CityLabelStyle/>
-            </y:Label.Style>
           </y:Label>
         </x:List>
       </data>
@@ -707,9 +519,6 @@
       </data>
     </node>
     <node id="n28">
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
-      </data>
       <data key="d1">
         <x:List>
           <y:Label>
@@ -721,9 +530,6 @@
                 </y:SandwichParameter.Model>
               </y:SandwichParameter>
             </y:Label.LayoutParameter>
-            <y:Label.Style>
-              <demo:CityLabelStyle/>
-            </y:Label.Style>
           </y:Label>
         </x:List>
       </data>
@@ -732,9 +538,6 @@
       </data>
     </node>
     <node id="n29">
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
-      </data>
       <data key="d1">
         <x:List>
           <y:Label>
@@ -746,9 +549,6 @@
                 </y:SandwichParameter.Model>
               </y:SandwichParameter>
             </y:Label.LayoutParameter>
-            <y:Label.Style>
-              <demo:CityLabelStyle/>
-            </y:Label.Style>
           </y:Label>
         </x:List>
       </data>
@@ -757,9 +557,6 @@
       </data>
     </node>
     <node id="n30">
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
-      </data>
       <data key="d1">
         <x:List>
           <y:Label>
@@ -771,9 +568,6 @@
                 </y:SandwichParameter.Model>
               </y:SandwichParameter>
             </y:Label.LayoutParameter>
-            <y:Label.Style>
-              <demo:CityLabelStyle/>
-            </y:Label.Style>
           </y:Label>
         </x:List>
       </data>
@@ -782,9 +576,6 @@
       </data>
     </node>
     <node id="n31">
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
-      </data>
       <data key="d1">
         <x:List>
           <y:Label>
@@ -796,9 +587,6 @@
                 </y:SandwichParameter.Model>
               </y:SandwichParameter>
             </y:Label.LayoutParameter>
-            <y:Label.Style>
-              <demo:CityLabelStyle/>
-            </y:Label.Style>
           </y:Label>
         </x:List>
       </data>
@@ -807,9 +595,6 @@
       </data>
     </node>
     <node id="n32">
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
-      </data>
       <data key="d1">
         <x:List>
           <y:Label>
@@ -821,9 +606,6 @@
                 </y:SandwichParameter.Model>
               </y:SandwichParameter>
             </y:Label.LayoutParameter>
-            <y:Label.Style>
-              <demo:CityLabelStyle/>
-            </y:Label.Style>
           </y:Label>
         </x:List>
       </data>
@@ -832,9 +614,6 @@
       </data>
     </node>
     <node id="n33">
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
-      </data>
       <data key="d1">
         <x:List>
           <y:Label>
@@ -846,9 +625,6 @@
                 </y:SandwichParameter.Model>
               </y:SandwichParameter>
             </y:Label.LayoutParameter>
-            <y:Label.Style>
-              <demo:CityLabelStyle/>
-            </y:Label.Style>
           </y:Label>
         </x:List>
       </data>
@@ -857,9 +633,6 @@
       </data>
     </node>
     <node id="n34">
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
-      </data>
       <data key="d1">
         <x:List>
           <y:Label>
@@ -871,9 +644,6 @@
                 </y:SandwichParameter.Model>
               </y:SandwichParameter>
             </y:Label.LayoutParameter>
-            <y:Label.Style>
-              <demo:CityLabelStyle/>
-            </y:Label.Style>
           </y:Label>
         </x:List>
       </data>
@@ -882,9 +652,6 @@
       </data>
     </node>
     <node id="n35">
-    <data key="d3">
-      <y:GraphMLReference ResourceKey="1" />
-    </data>
       <data key="d1">
         <x:List>
           <y:Label>
@@ -896,9 +663,6 @@
                 </y:SandwichParameter.Model>
               </y:SandwichParameter>
             </y:Label.LayoutParameter>
-            <y:Label.Style>
-              <demo:CityLabelStyle/>
-            </y:Label.Style>
           </y:Label>
         </x:List>
       </data>
@@ -907,9 +671,6 @@
     </data>
   </node>
     <node id="n36">
-      <data key="d3">
-        <y:GraphMLReference ResourceKey="1" />
-      </data>
       <data key="d1">
         <x:List>
           <y:Label>
@@ -921,9 +682,6 @@
                 </y:SandwichParameter.Model>
               </y:SandwichParameter>
             </y:Label.LayoutParameter>
-            <y:Label.Style>
-              <demo:CityLabelStyle/>
-            </y:Label.Style>
           </y:Label>
         </x:List>
       </data>

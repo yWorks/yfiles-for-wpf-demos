@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.4.
- ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.5.
+ ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -184,7 +184,7 @@ namespace Demo.yFiles.Layout.PortCandidateDemo
       graphControl.ImportFromGraphML("Resources\\defaultGraph.graphml");
 
       // make sure the graph fits
-      graphControl.FitGraphBounds();
+      await graphControl.FitGraphBounds();
 
       // do the layout
       await ApplyLayout();
@@ -208,18 +208,17 @@ namespace Demo.yFiles.Layout.PortCandidateDemo
     /// </remarks>
     /// <returns>a new GraphEditorInputMode instance</returns>
     protected virtual IInputMode CreateEditorMode() {
-      GraphEditorInputMode mode = new GraphEditorInputMode
-                                    {
-                                      // don't allow nodes to be created using a mouse click
-                                      AllowCreateNode = false,
-                                      // disable node resizing
-                                      ShowHandleItems = GraphItemTypes.Bend | GraphItemTypes.Edge,
-                                      // edge creation - uncomment to allow edges only to be created orthogonally
-                                      // CreateEdgeInputMode = {OrthogonalEdgeCreation = true},
-                                      // OrthogonalEdgeEditingContext = new OrthogonalEdgeEditingContext(),
-                                      // enable drag and drop
-                                      NodeDropInputMode = {Enabled = true}
-                                    };
+      GraphEditorInputMode mode = new GraphEditorInputMode {
+        // don't allow nodes to be created using a mouse click
+        AllowCreateNode = false,
+        // disable node resizing
+        ShowHandleItems = GraphItemTypes.Bend | GraphItemTypes.Edge,
+        // edge creation - uncomment to allow edges only to be created orthogonally
+        // CreateEdgeInputMode = {OrthogonalEdgeCreation = true},
+        // OrthogonalEdgeEditingContext = new OrthogonalEdgeEditingContext(),
+        // enable drag and drop
+        NodeDropInputMode = {Enabled = true}
+      };
       // wrap the original node creator so it removes the label from the dragged node
       var originalNodeCreator = mode.NodeDropInputMode.ItemCreator;
       mode.NodeDropInputMode.ItemCreator =

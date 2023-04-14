@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.4.
- ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.5.
+ ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -87,28 +87,30 @@ namespace Tutorial.GettingStarted
       ///////////////// New in this Sample /////////////////
 
       #region Default Node Style
-      // Sets the default style for nodes
-      // Creates a nice ShinyPlateNodeStyle instance, using an orange Brush.
-      INodeStyle defaultNodeStyle = new ShinyPlateNodeStyle { Brush = new SolidColorBrush(Color.FromArgb(255, 255, 140, 0)) };
-
       // Sets this style as the default for all nodes that don't have another
       // style assigned explicitly
-      Graph.NodeDefaults.Style = defaultNodeStyle;
+      Graph.NodeDefaults.Style = new ShapeNodeStyle
+      {
+        Shape = ShapeNodeShape.RoundRectangle,
+        Brush = new SolidColorBrush(Color.FromRgb(255, 108, 0)),
+        Pen = new Pen(new SolidColorBrush(Color.FromRgb(102, 43, 0)), 1.5)
+      };
 
       #endregion
 
       #region Default Edge Style
       // Sets the default style for edges:
-      // Creates an edge style that will apply a gray pen with thickness 1
-      // to the entire line using PolyLineEdgeStyle,
-      // which draws a polyline determined by the edge's control points (bends)
-      var defaultEdgeStyle = new PolylineEdgeStyle { Pen = Pens.Gray };
-
-      // Sets the source and target arrows on the edge style instance
-      // (Actually: no source arrow)
-      // Note that IEdgeStyle itself does not have these properties
-      // Also note that by default there are no arrows
-      defaultEdgeStyle.TargetArrow = Arrows.Default;
+      // Creates a PolylineEdgeStyle which will be used as default for all edges
+      // that don't have another style assigned explicitly
+      var defaultEdgeStyle = new PolylineEdgeStyle
+      {
+        Pen = new Pen(new SolidColorBrush(Color.FromRgb(102, 43, 0)), 1.5),
+        TargetArrow = new Arrow
+        {
+          Type = ArrowType.Triangle,
+          Brush = new SolidColorBrush(Color.FromRgb(102, 43, 0))
+        }
+      };
 
       // Sets the defined edge style as the default for all edges that don't have
       // another style assigned explicitly:
@@ -118,7 +120,12 @@ namespace Tutorial.GettingStarted
       #region Default Label Styles
       // Sets the default style for labels
       // Creates a label style with the label text color set to dark red
-      ILabelStyle defaultLabelStyle = new DefaultLabelStyle { Typeface = new Typeface("Tahoma"), TextSize = 12, TextBrush = Brushes.DarkRed };
+      ILabelStyle defaultLabelStyle = new DefaultLabelStyle
+      {
+        Typeface = new Typeface("Tahoma"),
+        TextSize = 12,
+        TextBrush = Brushes.Black
+      };
 
       // Sets the defined style as the default for both edge and node labels:
       Graph.EdgeDefaults.Labels.Style = Graph.NodeDefaults.Labels.Style = defaultLabelStyle;
@@ -194,7 +201,7 @@ namespace Tutorial.GettingStarted
       // Adds labels to several graph elements
       Graph.AddLabel(node1, "N 1");
       Graph.AddLabel(node2, "N 2");
-      Graph.AddLabel(node3, "N 3");
+      var n3Label = Graph.AddLabel(node3, "N 3");
       var edgeLabel = Graph.AddLabel(edgeAtPorts, "Edge at Ports");
 
       /////////////////////////////////////////////////////
@@ -203,46 +210,56 @@ namespace Tutorial.GettingStarted
       #endregion
 
       ///////////////// New in this Sample /////////////////
-      
-      // Override default styles
-
-      // Changes the style for the second node
-      // Creates a new node style, this time a ShapeNodeStyle:
-      ShapeNodeStyle sns = new ShapeNodeStyle { Shape = ShapeNodeShape.Ellipse, Pen = Pens.Black, Brush = Brushes.OrangeRed };
-
-      // Sets the node's style property to the new style through its owning graph,
-      // since you can't set the style property of an INode directly
-      // (you'll set most other graph object properties this way as well)
-      Graph.SetStyle(node2, sns);
-
-      // Creates a different style for the label with black text and a red border
-      // and intransparent white background
-      DefaultLabelStyle sls = new DefaultLabelStyle { Typeface = new Typeface("Arial Black"), TextSize = 12, TextBrush = Brushes.Black };
-      sls.BackgroundPen = Pens.Red;
-      sls.BackgroundBrush = Brushes.White;
-
-      // And sets the style for the edge label, again through its owning graph.
-      Graph.SetStyle(edgeLabel, sls);
-      
-      // Override the style for the "Edge at Ports" edge:
-      // Uses a dashed red Pen with thickness 2.
-      Pen defaultPen = new Pen(Brushes.Red, 2) { DashStyle = DashStyles.Dash };
-      defaultPen.Freeze();
-      // Creates an edge style that will apply the new default pen
-      // to the entire line using PolyLineEdgeStyle,
-      // which draws a polyline determined by the edge's control points (bends)
-      var edgeStyle = new PolylineEdgeStyle { Pen = defaultPen };
 
       // Sets the source and target arrows on the edge style instance
       // Note that IEdgeStyle itself does not have these properties
-      // also note: by default the arrows have a default brush and pen
-      edgeStyle.SourceArrow = Arrows.Circle;
-      // set color and size to match the thick red line
-      edgeStyle.TargetArrow = new Arrow(Brushes.Red.Color) { Type = ArrowType.Short, Scale = 2 };
+      var sourceArrowStyle = new Arrow {
+        Type = ArrowType.Circle,
+        Pen = Pens.Blue,
+        Brush = Brushes.Red,
+        CropLength = 3
+      };
 
-      // Sets the defined edge style as the default for all edges that don't have
-      // another style assigned explicitly:
-      Graph.SetStyle(edge2, edgeStyle);
+      var targetArrowStyle = new Arrow {
+        Type = ArrowType.Short,
+        Pen = Pens.Blue,
+        Brush = Brushes.Blue,
+        CropLength = 1
+      };
+
+      var edgeStyle = new PolylineEdgeStyle {
+        Pen = new Pen(Brushes.Red, 2) { DashStyle = DashStyles.Dash },
+        SourceArrow = sourceArrowStyle,
+        TargetArrow = targetArrowStyle
+      };
+
+      // Assign the defined edge style as the default for all edges that don't have
+      // another style assigned explicitly
+      Graph.SetStyle(edge1, edgeStyle);
+
+      // Creates a different style for the label with black text and a red border
+      var sls = new DefaultLabelStyle {
+        BackgroundPen = Pens.Red,
+        BackgroundBrush = Brushes.White,
+        Insets = new InsetsD(5, 3, 5, 3)
+      };
+
+      // And sets the style for the label, again through its owning graph.
+      Graph.SetStyle(n3Label, sls);
+      // Custom node style
+      var nodeStyle2 = new ShapeNodeStyle{
+        Shape = ShapeNodeShape.Ellipse,
+        Brush = new SolidColorBrush(Color.FromRgb(0xff, 0x6c, 0)),
+        Pen = new Pen(Brushes.Red, 2)
+      };
+      Graph.SetStyle(node2, nodeStyle2);
+      var nodeStyle3 = new RectangleNodeStyle
+      {
+        Brush = new SolidColorBrush(Color.FromRgb(0xff, 0x6c, 0)),
+        Pen = Pens.White,
+        CornerStyle = CornerStyle.Cut
+      };
+      Graph.SetStyle(node3, nodeStyle3);
 
       //////////////////////////////////////////////////////
     }

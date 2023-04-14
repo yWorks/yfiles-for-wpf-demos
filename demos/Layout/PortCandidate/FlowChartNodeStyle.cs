@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.4.
- ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.5.
+ ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -28,6 +28,7 @@
  ***************************************************************************/
 
 using System.Windows.Media;
+using Demo.yFiles.Toolkit;
 using yWorks.Controls;
 using yWorks.Geometry;
 using yWorks.Graph;
@@ -44,21 +45,7 @@ namespace Demo.yFiles.Layout.PortCandidateDemo
   public class FlowChartNodeStyle : NodeStyleBase<VisualGroup>
   {
     public FlowChartNodeStyle() {
-      NodeStyle = new ShapeNodeStyle()
-                         {
-                           Brush = new LinearGradientBrush
-                                     {
-                                       StartPoint = new PointD(0, 0),
-                                       EndPoint = new PointD(1, 1),
-                                       GradientStops = new GradientStopCollection
-                                                         {
-                                                           new GradientStop(Color.FromRgb(255, 221, 136), 0.3),
-                                                           new GradientStop(Color.FromRgb(255, 153, 0), 0.6)
-                                                         }
-                                     },
-                           Pen = new Pen(new SolidColorBrush(Color.FromRgb(255, 153, 0)), 1),
-
-                         };
+      NodeStyle = DemoStyles.CreateDemoShapeNodeStyle(ShapeNodeShape.Rectangle);
       PortStyle = new CirclePortStyle();
     }
 

@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.4.
- ** Copyright (c) 2000-2021 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.5.
+ ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -33,6 +33,7 @@ using System.ComponentModel;
 using System.IO;
 using yWorks.Controls.Input;
 using Demo.yFiles.Option.Handler;
+using Demo.yFiles.Toolkit;
 using yWorks.Controls;
 using yWorks.Graph;
 
@@ -129,6 +130,8 @@ namespace Demo.yFiles.Graph.Input.SnapLines
       GraphControl.ZoomChanged += delegate { UpdateGrid(); };
       GraphControl.ViewportChanged += delegate { UpdateGrid(); };
 
+      DemoStyles.InitDemoStyles(GraphControl.Graph);
+      
       InitializeGraph();
     }
 
