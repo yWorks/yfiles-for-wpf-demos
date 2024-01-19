@@ -1,6 +1,6 @@
 <!-- ************************************************************************ -->
-<!-- This demo file is part of yFiles WPF 3.5.                           -->
-<!-- Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
+<!-- This demo file is part of yFiles WPF 3.6.                           -->
+<!-- Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
 <!-- 72070 Tuebingen, Germany. All rights reserved.                           -->
 <!--                                                                          -->
 <!-- yFiles demo files exhibit yFiles WPF functionalities. Any redistribution  -->
@@ -46,27 +46,9 @@
                                 <ControlTemplate TargetType="ywpf:NodeControl">
                                 	<Border CornerRadius="5" Background="{TemplateBinding Background}" BorderThickness="2" ToolTip="A connector node. Click to navigate to the connected page.">
                                 		<Border.BorderBrush>
-                                			<SolidColorBrush x:Name="borderBrush" Color="#FF662B00" Opacity="0.5" />
+                                			<SolidColorBrush x:Name="borderBrush" Color="#FF662B00" />
                                 		</Border.BorderBrush>
                                 	</Border>
-                                    <ControlTemplate.Triggers>
-                                        <Trigger Property="IsMouseOver" Value="true">
-                                            <Trigger.EnterActions>
-                                                <BeginStoryboard>
-                                                    <Storyboard>
-                                                        <DoubleAnimation Storyboard.TargetName="borderBrush" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:1"/>
-                                                    </Storyboard>
-                                                </BeginStoryboard>
-                                            </Trigger.EnterActions>
-                                            <Trigger.ExitActions>
-                                                <BeginStoryboard>
-                                                    <Storyboard>
-                                                        <DoubleAnimation Storyboard.TargetName="borderBrush" Storyboard.TargetProperty="Opacity" Duration="0:0:1"/>
-                                                    </Storyboard>
-                                                </BeginStoryboard>
-                                            </Trigger.ExitActions>
-                                        </Trigger>
-                                    </ControlTemplate.Triggers>
                                 </ControlTemplate>
                             </Setter.Value>
                         </Setter>
@@ -82,7 +64,7 @@
                                 <ControlTemplate TargetType="ywpf:NodeControl">
                                 	<Border CornerRadius="5" Background="{TemplateBinding Background}" BorderThickness="2" ToolTip="A proxy node. Click to navigate to the page containing the proxy reference node.">
                                 		<Border.BorderBrush>
-                                			<SolidColorBrush x:Name="borderBrush" Color="#FF2F461A" Opacity="0.5" />
+                                			<SolidColorBrush x:Name="borderBrush" Color="#FF2F461A" />
                                 		</Border.BorderBrush>
                                 	</Border>
                                     <ControlTemplate.Triggers>
@@ -118,7 +100,7 @@
                                 <ControlTemplate TargetType="ywpf:NodeControl">
                                 	<Border CornerRadius="5" Background="{TemplateBinding Background}" BorderThickness="2" ToolTip="A proxy reference node. Click to navigate to the page containing the referenced proxy node.">
                                 		<Border.BorderBrush>
-                                			<SolidColorBrush x:Name="borderBrush" Color="#FF440E1C" Opacity="0.5" />
+                                			<SolidColorBrush x:Name="borderBrush" Color="#FF440E1C" />
                                 		</Border.BorderBrush>
                                 	</Border>
                                     <ControlTemplate.Triggers>

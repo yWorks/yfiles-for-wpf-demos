@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.5.
- ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.6.
+ ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -410,7 +410,7 @@ namespace Demo.yFiles.Layout.Tree
       graph.Clear();
       INode root = graph.CreateNode();
       graph.SetStyle(root, NewNodeStyle(0));
-      var placer = new DefaultNodePlacer { ChildPlacement = ChildPlacement.VerticalToRight };
+      var placer = new DefaultNodePlacer { ChildPlacement = ChildPlacement.HorizontalDownward };
       placers[root] = placer;
       CreateSubTree(graph, root, 1, 2);
     }
@@ -426,7 +426,7 @@ namespace Demo.yFiles.Layout.Tree
         graph.CreateEdge(root, child);
         graph.SetStyle(child, NewNodeStyle(layer));
 
-        var placer = new DefaultNodePlacer { ChildPlacement = ChildPlacement.VerticalToRight };
+        var placer = new DefaultNodePlacer { ChildPlacement = ChildPlacement.HorizontalDownward };
         placers[child] = placer;
 
         if (layers > 0) {

@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.5.
- ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.6.
+ ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -288,16 +288,16 @@ namespace Demo.yFiles.Graph.Input.PositionHandler
     #region Sample Graph Creation
 
     private static void CreateSampleGraph(IGraph graph) {
-      CreateNode(graph, 100, 100, 100, 30, Themes.PaletteRed, Colors.WhiteSmoke, "Unmovable");
-      CreateNode(graph, 300, 100, 100, 30, Themes.PaletteGreen, Colors.WhiteSmoke, "One Axis");
-      CreateNode(graph, 80, 250, 140, 40, Themes.PaletteOrange, Colors.Black, "Limited to Rectangle");
-      CreateNode(graph, 280, 250, 140, 40, Themes.PaletteLightblue, Colors.WhiteSmoke, "Limited to Rectangle\nand One Axis");
+      CreateNode(graph, 100, 100, 100, 30, Themes.PaletteRed, "Unmovable");
+      CreateNode(graph, 300, 100, 100, 30, Themes.PaletteGreen, "One Axis");
+      CreateNode(graph, 80, 250, 140, 40, Themes.PaletteOrange, "Limited to Rectangle");
+      CreateNode(graph, 280, 250, 140, 40, Themes.PaletteLightblue, "Limited to Rectangle\nand One Axis");
     }
 
     /// <summary>
     /// Creates a sample node for this demo.
     /// </summary>
-    private static void CreateNode(IGraph graph, double x, double y, double w, double h, Palette palette, Color textColor, string labelText) {
+    private static void CreateNode(IGraph graph, double x, double y, double w, double h, Palette palette, string labelText) {
       INode node = graph.CreateNode(new RectD(x, y, w, h), DemoStyles.CreateDemoNodeStyle(palette), palette);
       graph.SetStyle(graph.AddLabel(node, labelText), DemoStyles.CreateDemoNodeLabelStyle(palette));
     }

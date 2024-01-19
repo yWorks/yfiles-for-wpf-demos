@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.5.
- ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.6.
+ ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -67,7 +67,7 @@ namespace Demo.yFiles.Input.DragAndDrop
       // by default the mode available in GraphEditorInputMode is disabled, so first enable it
       nodeDropInputMode.Enabled = true;
 
-      // we want nodes that have a PanelNodeStyle assigned to be created as group nodes.
+      // we want nodes that have a GroupNodeStyle assigned to be created as group nodes.
       nodeDropInputMode.IsGroupNodePredicate = draggedNode => draggedNode.Style is GroupNodeStyle;
 
       // we enable dropping nodes onto leaf nodes ...
@@ -208,8 +208,8 @@ namespace Demo.yFiles.Input.DragAndDrop
       nodeContainer.EdgeDefaults.Labels.Style = defaultLabelStyle;
       
       // Create some nodes
-      nodeContainer.CreateNode(new RectD(0, 0, nodeWidth, nodeHeight), DemoStyles.CreateDemoShapeNodeStyle(ShapeNodeShape.Rectangle));
-      nodeContainer.CreateNode(new RectD(0, 0, nodeWidth, nodeHeight));
+      nodeContainer.CreateNode(new RectD(0, 0, nodeWidth, nodeHeight), DemoStyles.CreateDemoShapeNodeStyle(ShapeNodeShape.RoundRectangle));
+      nodeContainer.CreateNode(new RectD(0, 0, nodeWidth, nodeHeight), DemoStyles.CreateDemoShapeNodeStyle(ShapeNodeShape.Ellipse));
 
       INode node = nodeContainer.CreateGroupNode(layout:new RectD(0, 0, 70, 70));
       nodeContainer.AddLabel(node, "Group Node");

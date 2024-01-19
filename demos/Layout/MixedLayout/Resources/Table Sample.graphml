@@ -22,7 +22,6 @@
   <key id="d12" attr.name="SharedData" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/SharedData" />
   <data key="d12">
     <y:SharedData>
-      <SolidColorBrush xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" x:Key="1">#FF0B7189</SolidColorBrush>
       <y:InteriorLabelModelParameter x:Key="2" Position="Center">
         <y:InteriorLabelModelParameter.Model>
           <y:InteriorLabelModel />
@@ -38,7 +37,6 @@
           <y:GroupNodeLabelModel />
         </y:GroupNodeLabelModelParameter.Model>
       </y:GroupNodeLabelModelParameter>
-      <SolidColorBrush xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" x:Key="5">#FF9DC6D0</SolidColorBrush>
       <Pen Brush="#FF0B7189" Thickness="2" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" p8:Freeze="true" x:Key="6" xmlns:p8="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options" />
     </y:SharedData>
   </data>
@@ -55,7 +53,7 @@
         <y:RectD X="87" Y="259.04" Width="118" Height="140" />
       </data>
       <data key="d4">
-        <ywpf:GroupNodeStyle TabWidth="30" TabHeight="20" TabInset="3" TabPosition="TopTrailing" GroupIcon="Minus" IconForegroundBrush="{y:GraphMLReference 1}" IconOffset="2" HitTransparentContentArea="True" TabBackgroundBrush="{y:GraphMLReference 1}" TabBrush="{y:GraphMLReference 5}" Pen="{y:GraphMLReference 6}" />
+        <ywpf:GroupNodeStyle TabWidth="30" TabHeight="20" TabInset="3" TabPosition="TopTrailing" GroupIcon="Minus" IconForegroundBrush="#FF0B7189" IconOffset="2" HitTransparentContentArea="True" TabBackgroundBrush="#FF0B7189" TabBrush="#FF9DC6D0" Pen="{y:GraphMLReference 6}" />
       </data>
       <graph id="n0:">
         <node id="n0::n0">
@@ -119,7 +117,7 @@
         <y:RectD X="67" Y="475.03999999999996" Width="120" Height="164" />
       </data>
       <data key="d4">
-        <ywpf:GroupNodeStyle TabWidth="30" TabHeight="20" TabInset="3" TabPosition="TopTrailing" GroupIcon="Minus" IconForegroundBrush="{y:GraphMLReference 1}" IconOffset="2" HitTransparentContentArea="True" TabBackgroundBrush="{y:GraphMLReference 1}" TabBrush="{y:GraphMLReference 5}" Pen="{y:GraphMLReference 6}" />
+        <ywpf:GroupNodeStyle TabWidth="30" TabHeight="20" TabInset="3" TabPosition="TopTrailing" GroupIcon="Minus" IconForegroundBrush="#FF0B7189" IconOffset="2" HitTransparentContentArea="True" TabBackgroundBrush="#FF0B7189" TabBrush="#FF9DC6D0" Pen="{y:GraphMLReference 6}" />
       </data>
       <graph id="n1:">
         <node id="n1::n0">
@@ -198,7 +196,7 @@
         <y:RectD X="312" Y="364.04" Width="115" Height="251.99999999999994" />
       </data>
       <data key="d4">
-        <ywpf:GroupNodeStyle TabWidth="30" TabHeight="20" TabInset="3" TabPosition="TopTrailing" GroupIcon="Minus" IconForegroundBrush="{y:GraphMLReference 1}" IconOffset="2" HitTransparentContentArea="True" TabBackgroundBrush="{y:GraphMLReference 1}" TabBrush="{y:GraphMLReference 5}" Pen="{y:GraphMLReference 6}" />
+        <ywpf:GroupNodeStyle TabWidth="30" TabHeight="20" TabInset="3" TabPosition="TopTrailing" GroupIcon="Minus" IconForegroundBrush="#FF0B7189" IconOffset="2" HitTransparentContentArea="True" TabBackgroundBrush="#FF0B7189" TabBrush="#FF9DC6D0" Pen="{y:GraphMLReference 6}" />
       </data>
       <graph id="n2:">
         <node id="n2::n0">
@@ -294,7 +292,7 @@
         <y:RectD X="563" Y="440.04" Width="134" Height="220.99999999999994" />
       </data>
       <data key="d4">
-        <ywpf:GroupNodeStyle TabWidth="30" TabHeight="20" TabInset="3" TabPosition="TopTrailing" GroupIcon="Minus" IconForegroundBrush="{y:GraphMLReference 1}" IconOffset="2" HitTransparentContentArea="True" TabBackgroundBrush="{y:GraphMLReference 1}" TabBrush="{y:GraphMLReference 5}" Pen="{y:GraphMLReference 6}" />
+        <ywpf:GroupNodeStyle TabWidth="30" TabHeight="20" TabInset="3" TabPosition="TopTrailing" GroupIcon="Minus" IconForegroundBrush="#FF0B7189" IconOffset="2" HitTransparentContentArea="True" TabBackgroundBrush="#FF0B7189" TabBrush="#FF9DC6D0" Pen="{y:GraphMLReference 6}" />
       </data>
       <graph id="n3:">
         <node id="n3::n0">

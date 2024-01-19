@@ -1,6 +1,6 @@
 <!-- ************************************************************************ -->
-<!-- This demo file is part of yFiles WPF 3.5.                           -->
-<!-- Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
+<!-- This demo file is part of yFiles WPF 3.6.                           -->
+<!-- Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
 <!-- 72070 Tuebingen, Germany. All rights reserved.                           -->
 <!--                                                                          -->
 <!-- yFiles demo files exhibit yFiles WPF functionalities. Any redistribution  -->
@@ -44,8 +44,8 @@
                 <ResourceDictionary Source="Resources/Icons_People.xaml" />
                 <ResourceDictionary>
                     <System:String x:Key="AppName">yEd WPF</System:String>
-                    <System:String x:Key="CopyRight">Copyright 2008-2022</System:String>
-                    <System:String x:Key="AppVersion">3.5</System:String>
+                    <System:String x:Key="CopyRight">Copyright 2008-2024</System:String>
+                    <System:String x:Key="AppVersion">3.6</System:String>
                     <System:String x:Key="AppDescription">Powered by yFiles WPF</System:String>
                     <System:String x:Key="Vendor">yWorks GmbH</System:String>
                     <System1:Uri x:Key="VendorUrl">http://www.yWorks.com</System1:Uri>

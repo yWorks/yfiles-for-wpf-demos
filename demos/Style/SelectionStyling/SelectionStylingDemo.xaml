@@ -1,6 +1,6 @@
 <!-- ************************************************************************ -->
-<!-- This demo file is part of yFiles WPF 3.5.                           -->
-<!-- Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
+<!-- This demo file is part of yFiles WPF 3.6.                           -->
+<!-- Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
 <!-- 72070 Tuebingen, Germany. All rights reserved.                           -->
 <!--                                                                          -->
 <!-- yFiles demo files exhibit yFiles WPF functionalities. Any redistribution  -->
@@ -76,6 +76,11 @@
           <Paragraph Style="{StaticResource HtmlDt}">Mixed</Paragraph>
           <Paragraph Style="{StaticResource HtmlDi}">
             Uses WorldCoordinates rendering for zoom level &#x2265; 1 and ViewCoordinates rendering for zoom level &lt; 1.
+          </Paragraph>
+          <Paragraph Style="{StaticResource HtmlDt}">NoDownScaling</Paragraph>
+          <Paragraph Style="{StaticResource HtmlDi}">
+              Uses WorldCoordinates rendering for zoom level &#x2265;&#160;1 and ViewCoordinates rendering for zoom level &lt;&#160;1,
+              but in the latter case, the visual does not scale down below its initial size.
           </Paragraph>
         </FlowDocument>
       </RichTextBox>

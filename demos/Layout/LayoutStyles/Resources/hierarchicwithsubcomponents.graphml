@@ -22,7 +22,6 @@
   <data key="d10">
     <y:SharedData>
       <y:RatioAnchoredLabelModelParameter x:Key="3" LayoutRatio="0.5,0.5" LabelRatio="0.5,0.5"/>
-      <y:RatioAnchoredLabelModelParameter x:Key="4" LayoutRatio="0.5,0.5" LabelRatio="0.5,0.5"/>
       <ywpf:ShapeNodeStyle x:Key="freeNode" Pen="{x:Null}" Brush="#FF0B7189"/>
       <ywpf:ShapeNodeStyle x:Key="hlNode" Pen="{x:Null}" Brush="#FFA4778B" />
       <ywpf:ShapeNodeStyle x:Key="olNode" Pen="{x:Null}" Brush="#FFC7C7A6" />
@@ -35,19 +34,14 @@
           <ywpf:Arrow Type="Triangle" Brush="#FF0B7189" />
         </ywpf:PolylineEdgeStyle.TargetArrow>
       </ywpf:PolylineEdgeStyle>
+      <ywpf:DefaultLabelStyle x:Key="labelStyle" TextSize="12" TextAlignment="Center" AutoFlip="False"/>
     </y:SharedData>
   </data>
   <graph id="G" edgedefault="directed">
     <node id="n0">
       <data key="d0">
         <x:List>
-          <y:Label>
-            <y:Label.LayoutParameter>
-              <y:RatioAnchoredLabelModelParameter LayoutOffset="38,18"/>
-            </y:Label.LayoutParameter>
-            <y:Label.Style>
-              <ywpf:DefaultLabelStyle TextSize="12" Typeface="Dialog,Normal,Normal,Normal" TextBrush="#FF000000" TextAlignment="Center" AutoFlip="False"/>
-          </y:Label.Style>
+          <y:Label LayoutParameter="{y:GraphMLReference 3}" Style="{y:GraphMLReference labelStyle}">
           </y:Label>
         </x:List>
       </data>
@@ -81,14 +75,7 @@
     <node id="n1">
       <data key="d0">
         <x:List>
-          <y:Label>
-            <y:Label.LayoutParameter>
-              <y:RatioAnchoredLabelModelParameter LayoutOffset="38,18"/>
-            </y:Label.LayoutParameter>
-            <y:Label.Style>
-              <ywpf:DefaultLabelStyle TextSize="12" Typeface="Dialog,Normal,Normal,Normal" TextBrush="#FF000000" TextAlignment="Center" AutoFlip="False">
-              </ywpf:DefaultLabelStyle>
-            </y:Label.Style>
+          <y:Label LayoutParameter="{y:GraphMLReference 3}" Style="{y:GraphMLReference labelStyle}">
           </y:Label>
         </x:List>
       </data>
@@ -115,6 +102,12 @@
       </port>
     </node>
     <node id="n2">
+      <data key="d0">
+        <x:List>
+          <y:Label LayoutParameter="{y:GraphMLReference 3}" Style="{y:GraphMLReference labelStyle}">
+          </y:Label>
+        </x:List>
+      </data>
       <data key="d1">
         <y:RectD X="191.14999999999998" Y="454.404255319149" Width="80" Height="40"/>
       </data>
@@ -145,14 +138,7 @@
     <node id="n3">
       <data key="d0">
         <x:List>
-          <y:Label>
-            <y:Label.LayoutParameter>
-              <y:RatioAnchoredLabelModelParameter LayoutOffset="38,18"/>
-            </y:Label.LayoutParameter>
-            <y:Label.Style>
-              <ywpf:DefaultLabelStyle TextSize="12" Typeface="Dialog,Normal,Normal,Normal" TextBrush="#FF000000" TextAlignment="Center" AutoFlip="False">
-              </ywpf:DefaultLabelStyle>
-            </y:Label.Style>
+          <y:Label LayoutParameter="{y:GraphMLReference 3}" Style="{y:GraphMLReference labelStyle}">
           </y:Label>
         </x:List>
       </data>
@@ -186,12 +172,8 @@
     <node id="n4">
       <data key="d0">
         <x:List>
-          <y:Label LayoutParameter="{y:GraphMLReference 4}">
+          <y:Label LayoutParameter="{y:GraphMLReference 3}" Style="{y:GraphMLReference labelStyle}">
             <y:Label.Text>HL</y:Label.Text>
-            <y:Label.Style>
-              <ywpf:DefaultLabelStyle TextSize="12" Typeface="Dialog,Normal,Normal,Normal" TextBrush="#FF000000" TextAlignment="Center" AutoFlip="False">
-              </ywpf:DefaultLabelStyle>
-            </y:Label.Style>
           </y:Label>
         </x:List>
       </data>
@@ -240,14 +222,7 @@
     <node id="n5">
       <data key="d0">
         <x:List>
-          <y:Label>
-            <y:Label.LayoutParameter>
-              <y:RatioAnchoredLabelModelParameter LayoutOffset="13,13"/>
-            </y:Label.LayoutParameter>
-            <y:Label.Style>
-              <ywpf:DefaultLabelStyle TextSize="12" Typeface="Dialog,Normal,Normal,Normal" TextBrush="#FF000000" TextAlignment="Center" AutoFlip="False">
-              </ywpf:DefaultLabelStyle>
-            </y:Label.Style>
+          <y:Label LayoutParameter="{y:GraphMLReference 3}" Style="{y:GraphMLReference labelStyle}">
           </y:Label>
         </x:List>
       </data>
@@ -271,12 +246,8 @@
     <node id="n6">
       <data key="d0">
         <x:List>
-          <y:Label LayoutParameter="{y:GraphMLReference 3}">
+          <y:Label LayoutParameter="{y:GraphMLReference 3}" Style="{y:GraphMLReference labelStyle}">
             <y:Label.Text>TL</y:Label.Text>
-            <y:Label.Style>
-              <ywpf:DefaultLabelStyle TextSize="12" Typeface="Dialog,Normal,Normal,Normal" TextBrush="#FF000000" TextAlignment="Center" AutoFlip="False">
-              </ywpf:DefaultLabelStyle>
-            </y:Label.Style>
           </y:Label>
         </x:List>
       </data>
@@ -302,12 +273,8 @@
     <node id="n7">
       <data key="d0">
         <x:List>
-          <y:Label LayoutParameter="{y:GraphMLReference 3}">
+          <y:Label LayoutParameter="{y:GraphMLReference 3}" Style="{y:GraphMLReference labelStyle}">
             <y:Label.Text>TL</y:Label.Text>
-            <y:Label.Style>
-              <ywpf:DefaultLabelStyle TextSize="12" TextBrush="#FF000000" TextAlignment="Center" AutoFlip="False">
-              </ywpf:DefaultLabelStyle>
-            </y:Label.Style>
           </y:Label>
         </x:List>
       </data>
@@ -322,12 +289,8 @@
     <node id="n8">
       <data key="d0">
         <x:List>
-          <y:Label LayoutParameter="{y:GraphMLReference 3}">
+          <y:Label LayoutParameter="{y:GraphMLReference 3}" Style="{y:GraphMLReference labelStyle}">
             <y:Label.Text>TL</y:Label.Text>
-            <y:Label.Style>
-              <ywpf:DefaultLabelStyle TextSize="12" TextBrush="#FF000000" TextAlignment="Center" AutoFlip="False">
-              </ywpf:DefaultLabelStyle>
-            </y:Label.Style>
           </y:Label>
         </x:List>
       </data>
@@ -347,12 +310,8 @@
     <node id="n9">
       <data key="d0">
         <x:List>
-          <y:Label LayoutParameter="{y:GraphMLReference 3}">
+          <y:Label LayoutParameter="{y:GraphMLReference 3}" Style="{y:GraphMLReference labelStyle}">
             <y:Label.Text>HL</y:Label.Text>
-            <y:Label.Style>
-              <ywpf:DefaultLabelStyle TextSize="12" TextBrush="#FF000000" VerticalTextAlignment="Center"  TextAlignment="Center" AutoFlip="False">
-              </ywpf:DefaultLabelStyle>
-            </y:Label.Style>
           </y:Label>
         </x:List>
       </data>
@@ -376,12 +335,8 @@
     <node id="n10">
       <data key="d0">
         <x:List>
-          <y:Label LayoutParameter="{y:GraphMLReference 3}">
+          <y:Label LayoutParameter="{y:GraphMLReference 3}" Style="{y:GraphMLReference labelStyle}">
             <y:Label.Text>HL</y:Label.Text>
-            <y:Label.Style>
-              <ywpf:DefaultLabelStyle TextSize="12" TextBrush="#FF000000" VerticalTextAlignment="Center"  TextAlignment="Center" AutoFlip="False">
-              </ywpf:DefaultLabelStyle>
-            </y:Label.Style>
           </y:Label>
         </x:List>
       </data>
@@ -398,6 +353,12 @@
       </port>
     </node>
     <node id="n11">
+      <data key="d0">
+        <x:List>
+          <y:Label LayoutParameter="{y:GraphMLReference 3}" Style="{y:GraphMLReference labelStyle}">
+          </y:Label>
+        </x:List>
+      </data>
       <data key="d1">
         <y:RectD X="216.14999999999998" Y="452.936170212766" Width="30" Height="30"/>
       </data>
@@ -423,14 +384,7 @@
     <node id="n12">
       <data key="d0">
         <x:List>
-          <y:Label>
-            <y:Label.LayoutParameter>
-              <y:RatioAnchoredLabelModelParameter LayoutOffset="38,18"/>
-            </y:Label.LayoutParameter>
-            <y:Label.Style>
-              <ywpf:DefaultLabelStyle TextSize="12" TextBrush="#FF000000" Typeface="Dialog,Normal,Normal,Normal" TextAlignment="Center" AutoFlip="False">
-              </ywpf:DefaultLabelStyle>
-            </y:Label.Style>
+          <y:Label LayoutParameter="{y:GraphMLReference 3}" Style="{y:GraphMLReference labelStyle}">
           </y:Label>
         </x:List>
       </data>
@@ -449,14 +403,7 @@
     <node id="n13">
       <data key="d0">
         <x:List>
-          <y:Label>
-            <y:Label.LayoutParameter>
-              <y:RatioAnchoredLabelModelParameter LayoutOffset="13,13"/>
-            </y:Label.LayoutParameter>
-            <y:Label.Style>
-              <ywpf:DefaultLabelStyle TextSize="12" TextBrush="#FF000000" Typeface="Dialog,Normal,Normal,Normal" TextAlignment="Center" AutoFlip="False">
-              </ywpf:DefaultLabelStyle>
-            </y:Label.Style>
+          <y:Label LayoutParameter="{y:GraphMLReference 3}" Style="{y:GraphMLReference labelStyle}">
           </y:Label>
         </x:List>
       </data>
@@ -480,12 +427,8 @@
     <node id="n14">
       <data key="d0">
         <x:List>
-          <y:Label LayoutParameter="{y:GraphMLReference 3}">
+          <y:Label LayoutParameter="{y:GraphMLReference 3}" Style="{y:GraphMLReference labelStyle}">
             <y:Label.Text>OL</y:Label.Text>
-            <y:Label.Style>
-              <ywpf:DefaultLabelStyle TextSize="12" TextBrush="#FF000000" TextAlignment="Center" AutoFlip="False">
-              </ywpf:DefaultLabelStyle>
-            </y:Label.Style>
           </y:Label>
         </x:List>
       </data>
@@ -511,12 +454,8 @@
     <node id="n15">
       <data key="d0">
         <x:List>
-          <y:Label LayoutParameter="{y:GraphMLReference 3}">
+          <y:Label LayoutParameter="{y:GraphMLReference 3}" Style="{y:GraphMLReference labelStyle}">
             <y:Label.Text>OL</y:Label.Text>
-            <y:Label.Style>
-              <ywpf:DefaultLabelStyle TextSize="12" TextBrush="#FF000000" TextAlignment="Center" AutoFlip="False">
-              </ywpf:DefaultLabelStyle>
-            </y:Label.Style>
           </y:Label>
         </x:List>
       </data>
@@ -531,12 +470,8 @@
     <node id="n16">
       <data key="d0">
         <x:List>
-          <y:Label LayoutParameter="{y:GraphMLReference 3}">
+          <y:Label LayoutParameter="{y:GraphMLReference 3}" Style="{y:GraphMLReference labelStyle}">
             <y:Label.Text>OL</y:Label.Text>
-            <y:Label.Style>
-              <ywpf:DefaultLabelStyle TextSize="12" TextBrush="#FF000000" TextAlignment="Center" AutoFlip="False">
-              </ywpf:DefaultLabelStyle>
-            </y:Label.Style>
           </y:Label>
         </x:List>
       </data>
@@ -551,12 +486,8 @@
     <node id="n17">
       <data key="d0">
         <x:List>
-          <y:Label LayoutParameter="{y:GraphMLReference 3}">
+          <y:Label LayoutParameter="{y:GraphMLReference 3}" Style="{y:GraphMLReference labelStyle}">
             <y:Label.Text>OL</y:Label.Text>
-            <y:Label.Style>
-              <ywpf:DefaultLabelStyle TextSize="12" TextBrush="#FF000000" TextAlignment="Center" AutoFlip="False">
-              </ywpf:DefaultLabelStyle>
-            </y:Label.Style>
           </y:Label>
         </x:List>
       </data>
@@ -571,12 +502,8 @@
     <node id="n18">
       <data key="d0">
         <x:List>
-          <y:Label LayoutParameter="{y:GraphMLReference 3}">
+          <y:Label LayoutParameter="{y:GraphMLReference 3}" Style="{y:GraphMLReference labelStyle}">
             <y:Label.Text>OL</y:Label.Text>
-            <y:Label.Style>
-              <ywpf:DefaultLabelStyle TextSize="12" TextBrush="#FF000000" TextAlignment="Center" AutoFlip="False">
-              </ywpf:DefaultLabelStyle>
-            </y:Label.Style>
           </y:Label>
         </x:List>
       </data>
@@ -591,12 +518,8 @@
     <node id="n19">
       <data key="d0">
         <x:List>
-          <y:Label LayoutParameter="{y:GraphMLReference 4}">
+          <y:Label LayoutParameter="{y:GraphMLReference 3}" Style="{y:GraphMLReference labelStyle}">
             <y:Label.Text>HL</y:Label.Text>
-            <y:Label.Style>
-              <ywpf:DefaultLabelStyle TextSize="12" TextBrush="#FF000000" VerticalTextAlignment="Center" TextAlignment="Center" AutoFlip="False">
-              </ywpf:DefaultLabelStyle>
-            </y:Label.Style>
           </y:Label>
         </x:List>
       </data>
@@ -625,12 +548,8 @@
     <node id="n20">
       <data key="d0">
         <x:List>
-          <y:Label LayoutParameter="{y:GraphMLReference 4}">
+          <y:Label LayoutParameter="{y:GraphMLReference 3}" Style="{y:GraphMLReference labelStyle}">
             <y:Label.Text>HL</y:Label.Text>
-            <y:Label.Style>
-              <ywpf:DefaultLabelStyle TextSize="12" TextBrush="#FF000000" VerticalTextAlignment="Center" TextAlignment="Center" AutoFlip="False">
-              </ywpf:DefaultLabelStyle>
-            </y:Label.Style>
           </y:Label>
         </x:List>
       </data>
@@ -659,12 +578,8 @@
     <node id="n21">
       <data key="d0">
         <x:List>
-          <y:Label LayoutParameter="{y:GraphMLReference 3}">
+          <y:Label LayoutParameter="{y:GraphMLReference 3}" Style="{y:GraphMLReference labelStyle}">
             <y:Label.Text>OL</y:Label.Text>
-            <y:Label.Style>
-              <ywpf:DefaultLabelStyle TextSize="12" TextBrush="#FF000000" TextAlignment="Center" AutoFlip="False">
-              </ywpf:DefaultLabelStyle>
-            </y:Label.Style>
           </y:Label>
         </x:List>
       </data>
@@ -684,12 +599,8 @@
     <node id="n22">
       <data key="d0">
         <x:List>
-          <y:Label LayoutParameter="{y:GraphMLReference 4}">
+          <y:Label LayoutParameter="{y:GraphMLReference 3}" Style="{y:GraphMLReference labelStyle}">
             <y:Label.Text>HL</y:Label.Text>
-            <y:Label.Style>
-              <ywpf:DefaultLabelStyle TextSize="12" TextBrush="#FF000000" VerticalTextAlignment="Center" TextAlignment="Center" AutoFlip="False">
-              </ywpf:DefaultLabelStyle>
-            </y:Label.Style>
           </y:Label>
         </x:List>
       </data>
@@ -718,12 +629,8 @@
     <node id="n23">
       <data key="d0">
         <x:List>
-          <y:Label LayoutParameter="{y:GraphMLReference 4}">
+          <y:Label LayoutParameter="{y:GraphMLReference 3}" Style="{y:GraphMLReference labelStyle}">
             <y:Label.Text>HL</y:Label.Text>
-            <y:Label.Style>
-              <ywpf:DefaultLabelStyle TextSize="12" TextBrush="#FF000000" VerticalTextAlignment="Center" TextAlignment="Center" AutoFlip="False">
-              </ywpf:DefaultLabelStyle>
-            </y:Label.Style>
           </y:Label>
         </x:List>
       </data>
@@ -752,12 +659,8 @@
     <node id="n24">
       <data key="d0">
         <x:List>
-          <y:Label LayoutParameter="{y:GraphMLReference 4}">
+          <y:Label LayoutParameter="{y:GraphMLReference 3}" Style="{y:GraphMLReference labelStyle}">
             <y:Label.Text>HL</y:Label.Text>
-            <y:Label.Style>
-              <ywpf:DefaultLabelStyle TextSize="12" TextBrush="#FF000000" VerticalTextAlignment="Center" TextAlignment="Center" AutoFlip="False">
-              </ywpf:DefaultLabelStyle>
-            </y:Label.Style>
           </y:Label>
         </x:List>
       </data>
@@ -781,12 +684,8 @@
     <node id="n25">
       <data key="d0">
         <x:List>
-          <y:Label LayoutParameter="{y:GraphMLReference 3}">
+          <y:Label LayoutParameter="{y:GraphMLReference 3}" Style="{y:GraphMLReference labelStyle}">
             <y:Label.Text>TL</y:Label.Text>
-            <y:Label.Style>
-              <ywpf:DefaultLabelStyle TextSize="12" TextBrush="#FF000000" TextAlignment="Center" AutoFlip="False">
-              </ywpf:DefaultLabelStyle>
-            </y:Label.Style>
           </y:Label>
         </x:List>
       </data>
@@ -801,12 +700,8 @@
     <node id="n26">
       <data key="d0">
         <x:List>
-          <y:Label LayoutParameter="{y:GraphMLReference 3}">
+          <y:Label LayoutParameter="{y:GraphMLReference 3}" Style="{y:GraphMLReference labelStyle}">
             <y:Label.Text>TL</y:Label.Text>
-            <y:Label.Style>
-              <ywpf:DefaultLabelStyle TextSize="12" TextBrush="#FF000000" TextAlignment="Center" AutoFlip="False">
-              </ywpf:DefaultLabelStyle>
-            </y:Label.Style>
           </y:Label>
         </x:List>
       </data>
@@ -821,12 +716,8 @@
     <node id="n27">
       <data key="d0">
         <x:List>
-          <y:Label LayoutParameter="{y:GraphMLReference 3}">
+          <y:Label LayoutParameter="{y:GraphMLReference 3}" Style="{y:GraphMLReference labelStyle}">
             <y:Label.Text>TL</y:Label.Text>
-            <y:Label.Style>
-              <ywpf:DefaultLabelStyle TextSize="12" TextBrush="#FF000000" TextAlignment="Center" AutoFlip="False">
-              </ywpf:DefaultLabelStyle>
-            </y:Label.Style>
           </y:Label>
         </x:List>
       </data>
@@ -841,12 +732,8 @@
     <node id="n28">
       <data key="d0">
         <x:List>
-          <y:Label LayoutParameter="{y:GraphMLReference 3}">
+          <y:Label LayoutParameter="{y:GraphMLReference 3}" Style="{y:GraphMLReference labelStyle}">
             <y:Label.Text>TL</y:Label.Text>
-            <y:Label.Style>
-              <ywpf:DefaultLabelStyle TextSize="12" TextBrush="#FF000000" TextAlignment="Center" AutoFlip="False">
-              </ywpf:DefaultLabelStyle>
-            </y:Label.Style>
           </y:Label>
         </x:List>
       </data>
@@ -866,12 +753,8 @@
     <node id="n29">
       <data key="d0">
         <x:List>
-          <y:Label LayoutParameter="{y:GraphMLReference 3}">
+          <y:Label LayoutParameter="{y:GraphMLReference 3}" Style="{y:GraphMLReference labelStyle}">
             <y:Label.Text>TL</y:Label.Text>
-            <y:Label.Style>
-              <ywpf:DefaultLabelStyle TextSize="12" TextBrush="#FF000000" TextAlignment="Center" AutoFlip="False">
-              </ywpf:DefaultLabelStyle>
-            </y:Label.Style>
           </y:Label>
         </x:List>
       </data>
@@ -884,6 +767,12 @@
       <port name="p0"/>
     </node>
     <node id="n30">
+      <data key="d0">
+        <x:List>
+          <y:Label LayoutParameter="{y:GraphMLReference 3}" Style="{y:GraphMLReference labelStyle}">
+          </y:Label>
+        </x:List>
+      </data>
       <data key="d1">
         <y:RectD X="191.14999999999998" Y="441.468085106383" Width="80" Height="52.936170212766"/>
       </data>
@@ -904,12 +793,8 @@
     <node id="n31">
       <data key="d0">
         <x:List>
-          <y:Label LayoutParameter="{y:GraphMLReference 3}">
+          <y:Label LayoutParameter="{y:GraphMLReference 3}" Style="{y:GraphMLReference labelStyle}">
             <y:Label.Text>OL</y:Label.Text>
-            <y:Label.Style>
-              <ywpf:DefaultLabelStyle TextSize="12" TextBrush="#FF000000" TextAlignment="Center" AutoFlip="False">
-              </ywpf:DefaultLabelStyle>
-            </y:Label.Style>
           </y:Label>
         </x:List>
       </data>
@@ -924,12 +809,8 @@
     <node id="n32">
       <data key="d0">
         <x:List>
-          <y:Label LayoutParameter="{y:GraphMLReference 3}">
+          <y:Label LayoutParameter="{y:GraphMLReference 3}" Style="{y:GraphMLReference labelStyle}">
             <y:Label.Text>OL</y:Label.Text>
-            <y:Label.Style>
-              <ywpf:DefaultLabelStyle TextSize="12" TextBrush="#FF000000" TextAlignment="Center" AutoFlip="False">
-              </ywpf:DefaultLabelStyle>
-            </y:Label.Style>
           </y:Label>
         </x:List>
       </data>

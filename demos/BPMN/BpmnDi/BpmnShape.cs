@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.5.
- ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.6.
+ ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -60,7 +60,7 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
     /// <summary>
     /// Attribute which indicates the orientation if this is a pool or lane
     /// </summary>
-    public bool IsHorizontal { get; set; }
+    public bool? IsHorizontal { get; set; }
 
     /// <summary>
     /// Determines, if a marker should be depicted on the shape for exclusive Gateways.
@@ -144,7 +144,8 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
       Id = BpmnNM.GetAttributeValue(xShape, BpmnNM.BpmnDi, BpmnDiConstants.IdAttribute);
 
       // Get all additional Attributes
-      IsHorizontal = Convert.ToBoolean(BpmnNM.GetAttributeValue(xShape, BpmnNM.BpmnDi, BpmnDiConstants.IsHorizontalAttribute));
+      var isHorizontalString = BpmnNM.GetAttributeValue(xShape, BpmnNM.BpmnDi, BpmnDiConstants.IsHorizontalAttribute);
+      IsHorizontal = isHorizontalString != null ? (bool?) Convert.ToBoolean(isHorizontalString) : null;
       IsExpanded = BpmnNM.GetAttributeValue(xShape, BpmnNM.BpmnDi, BpmnDiConstants.IsExpandedAttribute);
       IsMarkerVisible = Convert.ToBoolean(BpmnNM.GetAttributeValue(xShape, BpmnNM.BpmnDi, BpmnDiConstants.IsMarkerVisibleAttribute));
       IsMessageVisible = Convert.ToBoolean(BpmnNM.GetAttributeValue(xShape, BpmnNM.BpmnDi, BpmnDiConstants.IsMessageVisibleAttribute));

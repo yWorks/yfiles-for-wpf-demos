@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.5.
- ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.6.
+ ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -205,7 +205,7 @@ namespace Demo.yFiles.Complete.IsometricDrawing
     private void InitializeGridVisual() {
       var grid = new GridVisualCreator(new GridInfo()) {
           GridStyle = GridStyle.Lines,
-          Pen = new Pen(new SolidColorBrush(Color.FromArgb(255, 210, 210, 210)), 0.1),
+          Pen = new Pen(Brushes.LightGray, 0.5),
           VisibilityThreshold = 10,
       };
       graphControl.BackgroundGroup.AddChild(grid, CanvasObjectDescriptors.AlwaysDirtyInstance);
@@ -325,7 +325,7 @@ namespace Demo.yFiles.Complete.IsometricDrawing
     #endregion
 
     /// <summary>
-    /// Loads a graph from <see cref="IsometricData"/> using a <see cref="MultiGraphBuilder"/> and initializes
+    /// Loads a graph from <see cref="IsometricData"/> using a <see cref="GraphBuilder"/> and initializes
     /// all styles and isometric data.
     /// </summary>
     /// <remarks>
@@ -502,7 +502,8 @@ namespace Demo.yFiles.Complete.IsometricDrawing
     private void ConfigureGraphModelManager() {
       var manager = graphControl.GraphModelManager;
       manager.HierarchicNestingPolicy = HierarchicNestingPolicy.GroupNodes;
-      manager.LabelLayerPolicy = LabelLayerPolicy.AtOwner;
+      manager.NodeLabelLayerPolicy = LabelLayerPolicy.AtOwner;
+      manager.EdgeLabelLayerPolicy = LabelLayerPolicy.AtOwner;
       // use a custom comparer to render nodes which appear in the background of the current perspective first.
       manager.NodeManager.Comparer = new IsometricComparer(graphControl);
       // The comparer needs the user object (=node) to be set on the main canvas object

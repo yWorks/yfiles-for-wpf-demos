@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.5.
- ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.6.
+ ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -134,22 +134,22 @@ namespace Demo.yFiles.Algorithms.GraphAnalysis
       graph.EdgeDefaults.Style = new PolylineEdgeStyle(new AnalysisPolylineEdgeStyleRenderer());
 
       // use a special decorator for selection
-      var selectionInstaller = new NodeStyleDecorationInstaller {
-          NodeStyle = new ShapeNodeStyle
+      var selectionNodeStyle = new IndicatorNodeStyleDecorator(
+          new ShapeNodeStyle
               { Shape = ShapeNodeShape.Ellipse, Pen = (Pen) new Pen(Brushes.Gray, 5).GetAsFrozen(), Brush = null }
-      };
+      );
 
       // use a special decorator for focus
-      var focusIndicatorInstaller = new NodeStyleDecorationInstaller {
-          NodeStyle = new ShapeNodeStyle {
+      var focusNodeStyle = new IndicatorNodeStyleDecorator(
+          new ShapeNodeStyle {
               Shape = ShapeNodeShape.Ellipse,
               Pen = (Pen) new Pen(Brushes.LightGray, 3) { DashStyle = DashStyles.Dash }.GetAsFrozen(),
               Brush = null
           }
-      };
-      var decorator = graph.GetDecorator();
-      decorator.NodeDecorator.SelectionDecorator.SetImplementation(selectionInstaller);
-      decorator.NodeDecorator.FocusIndicatorDecorator.SetImplementation(focusIndicatorInstaller);
+      );
+      
+      graphControl.SelectionIndicatorManager = new GraphSelectionIndicatorManager {NodeStyle = selectionNodeStyle};;
+      graphControl.FocusIndicatorManager = new GraphFocusIndicatorManager { NodeStyle = focusNodeStyle };
 
       graph.EdgeDefaults.Labels.LayoutParameter = FreeEdgeLabelModel.Instance.CreateDefaultParameter();
 
@@ -361,17 +361,9 @@ namespace Demo.yFiles.Algorithms.GraphAnalysis
       };
       var labelingData = new LabelingData {
           EdgeLabelPreferredPlacement = {
-              Delegate = label => {
-                var preferredPlacementDescriptor = new PreferredPlacementDescriptor();
-                if ("Centrality".Equals(label.Tag)) {
-                  preferredPlacementDescriptor.SideOfEdge = LabelPlacements.OnEdge;
-                } else {
-                  preferredPlacementDescriptor.SideOfEdge = LabelPlacements.RightOfEdge | LabelPlacements.LeftOfEdge;
-                  preferredPlacementDescriptor.DistanceToEdge = 5;
-                }
-                preferredPlacementDescriptor.Freeze();
-                return preferredPlacementDescriptor;
-              }
+              Delegate = label => "Centrality".Equals(label.Tag)
+                  ? new EdgePathLabelModel(0, 0, 0, true, EdgeSides.OnEdge).ToDescriptor()
+                  : new EdgePathLabelModel(5, 0, 0, true, EdgeSides.RightOfEdge | EdgeSides.LeftOfEdge).ToDescriptor()
           }
       };
       await graphControl.MorphLayout(labeling, TimeSpan.FromSeconds(0.2), labelingData);
@@ -479,7 +471,7 @@ namespace Demo.yFiles.Algorithms.GraphAnalysis
       }
       directed = directionComboBox.SelectedIndex == 1;
 
-      ResetStyles();
+      CurrentConfig.ResetGraph(graphControl.Graph);
       UpdateGraphInformation();
 
       if (!preventLayout) {

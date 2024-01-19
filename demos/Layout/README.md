@@ -19,6 +19,7 @@ You will find the following programming samples in this package:
 |**MixedLayout** | This demo shows how to use the recursive group layout to apply different layouts to the contents of group nodes. |
 |**MultiPage** | Shows how to use the multipage layout. |
 |**NodeLabeling** | Shows how to use a node labeling algorithm with different label models. |
+|**NodeTypes** | A demo that shows how different layout algorithms handle nodes with types. |
 |**PartialLayout** | This demo shows how to apply `PartialLayout` to orthogonal, organic, hierarchic or circular layouts and the effect of some of its configuration settings. |
 |**PortCandidate** | This demo shows how to use PortCandidateSets in conjunction with HierarchicLayout. |
 |**PreferredLabelPlacement** | Shows how the PreferredPlacementDescriptor for edge labels affects the label placement of layout algorithms. |

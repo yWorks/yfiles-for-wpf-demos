@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.5.
- ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.6.
+ ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -356,6 +356,12 @@ namespace Demo.yFiles.Graph.Input.PortCandidateProvider
 
     #region Sample Graph Creation
 
+    /// <summary>
+    /// Used for ports without special behavior.
+    /// </summary>
+    private static readonly Palette white =
+      new Palette("#ffffff", "#ffffff", "#ffffff", "#ffffff", "#ffffff");
+
     private void CreateSampleGraph() {
       IGraph graph = graphControl.Graph;
 
@@ -368,13 +374,13 @@ namespace Demo.yFiles.Graph.Input.PortCandidateProvider
       var portStyle = new ColorPortStyle();
 
       var blue1 = CreateNode(graph, 100, 300, 80, 30, Themes.PaletteLightblue, "One   Port");
-      graph.AddPort(blue1, blue1.Layout.GetCenter(), portStyle).Tag = Colors.Black;
+      graph.AddPort(blue1, blue1.Layout.GetCenter(), portStyle).Tag = white;
 
       var blue2 = CreateNode(graph, 350, 300, 100, 100, Themes.PaletteLightblue, "Many Ports");
       var portCandidateProvider = PortCandidateProviders.FromShapeGeometry(blue2, 0, 0.25, 0.5,
         0.75);
       portCandidateProvider.Style = portStyle;
-      portCandidateProvider.Tag = Colors.Black;
+      portCandidateProvider.Tag = white;
       var candidates = portCandidateProvider.GetSourcePortCandidates(graphControl.InputModeContext);
       foreach (IPortCandidate portCandidate in candidates) {
         if (portCandidate.Validity != PortCandidateValidity.Dynamic) {
@@ -408,8 +414,8 @@ namespace Demo.yFiles.Graph.Input.PortCandidateProvider
       var portStyle = new ColorPortStyle();
       graph.AddPort(node, FreeNodePortLocationModel.Instance.CreateParameter(new PointD(0.25, 0)), portStyle, Themes.PaletteRed);
       graph.AddPort(node, FreeNodePortLocationModel.Instance.CreateParameter(new PointD(0.75, 0)), portStyle, Themes.PaletteGreen);
-      graph.AddPort(node, FreeNodePortLocationModel.Instance.CreateParameter(new PointD(0, 0.25)), portStyle, Colors.Black);
-      graph.AddPort(node, FreeNodePortLocationModel.Instance.CreateParameter(new PointD(0, 0.75)), portStyle, Colors.Black);
+      graph.AddPort(node, FreeNodePortLocationModel.Instance.CreateParameter(new PointD(0, 0.25)), portStyle, white);
+      graph.AddPort(node, FreeNodePortLocationModel.Instance.CreateParameter(new PointD(0, 0.75)), portStyle, white);
       graph.AddPort(node, FreeNodePortLocationModel.Instance.CreateParameter(new PointD(1, 0.25)), portStyle, Themes.PaletteLightblue);
       graph.AddPort(node, FreeNodePortLocationModel.Instance.CreateParameter(new PointD(1, 0.75)), portStyle, Themes.PaletteOrange);
       graph.AddPort(node, FreeNodePortLocationModel.Instance.CreateParameter(new PointD(0.25, 1)), portStyle, Themes.PalettePurple);

@@ -18,7 +18,14 @@
   <key id="d5" for="edge" attr.name="EdgeGeometry" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/EdgeGeometry" />
   <key id="d6" for="edge" attr.name="EdgeStyle" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/EdgeStyle">
     <default>
-      <ywpf:PolylineEdgeStyle TargetArrow="Default"/>
+      <ywpf:PolylineEdgeStyle>
+        <ywpf:PolylineEdgeStyle.Pen>
+          <Pen xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Brush="#FF662B00" Thickness="1.5" />
+        </ywpf:PolylineEdgeStyle.Pen>
+        <ywpf:PolylineEdgeStyle.TargetArrow>
+          <ywpf:Arrow Type="Triangle" Brush="#FF662B00" />
+        </ywpf:PolylineEdgeStyle.TargetArrow>
+      </ywpf:PolylineEdgeStyle>
     </default>
   </key>
   <key id="d7" for="port" attr.name="PortLocationParameter" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/PortLocationParameter">

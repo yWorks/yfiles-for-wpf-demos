@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.5.
- ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.6.
+ ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -60,6 +60,8 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
 
     // maps a process BpmnElement to the BpmnElement that referenced this process in a 'processRef'
     private Dictionary<BpmnElement, BpmnElement> ProcessRefSource { get; set; }
+
+    private List<BpmnShape> delayedBoundaryEvents = new List<BpmnShape>();
 
     // The master graph
     private IGraph MasterGraph {
@@ -263,6 +265,12 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
       var bpmnEdges = new List<BpmnEdge>();
       foreach (var child in diagram.Plane.Element.Children) {
         BuildElement(child, diagram.Plane, localRoot, bpmnEdges);
+      }
+      if (delayedBoundaryEvents.Count > 0) {
+        foreach (var delayedBoundaryEvent in delayedBoundaryEvents) {
+          BuildBoundaryEvent(delayedBoundaryEvent);
+        }
+        delayedBoundaryEvents.Clear();
       }
       foreach (var bpmnEdge in bpmnEdges) {
         BuildEdge(bpmnEdge);
@@ -917,6 +925,9 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
         throw new ArgumentException("Shape with no parent", "shape");
       }
       if (parent.Node == null) {
+        if (!this.delayedBoundaryEvents.Contains(shape)) {
+          this.delayedBoundaryEvents.Add(shape);
+        }
         Document.Messages.Add("The node for boundaryEvent " + shape.Id + " was not (yet) created!");
         return;
       }
@@ -1058,7 +1069,7 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
         MasterGraph.SetStyle(node, partStyle);
 
         var table = partStyle.TableNodeStyle.Table;
-        if (shape.IsHorizontal) {
+        if (shape.IsHorizontal ?? false) {
           var row = table.RootRow.ChildRows.First();
           AddTableLabel(table, row, shape);
         } else {
@@ -1640,7 +1651,7 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
       }
 
       RectD layout = RectD.Empty;
-      bool isHorizontal = false;
+      bool? isHorizontal = null;
       var multipleInstance = false;
 
       var tableShape = GetShape(element, plane);
@@ -1660,17 +1671,27 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
       if (tableShape != null) {
         // table has a shape itself so we use its layout to initialize the table
         layout = new RectD(tableShape.X, tableShape.Y, tableShape.Width, tableShape.Height);
-        isHorizontal = tableShape.IsHorizontal;
-      } else {
+        if (tableShape.IsHorizontal != null) {
+          isHorizontal = tableShape.IsHorizontal;
+        }
+      }
+      var calculateRect = layout.IsEmpty;
+      if (calculateRect || isHorizontal == null) {
         // check the child lanes for their shapes
         foreach (var lane in element.GetChildren("lane")) {
           var laneShape = GetShape(lane, plane);
           if (laneShape != null) {
-            layout += new RectD(laneShape.X, laneShape.Y, laneShape.Width, laneShape.Height);
-            isHorizontal = laneShape.IsHorizontal;
+            if (calculateRect) {
+              layout += new RectD(laneShape.X, laneShape.Y, laneShape.Width, laneShape.Height);
+            }
+            if (isHorizontal == null && laneShape.IsHorizontal != null) {
+              isHorizontal = laneShape.IsHorizontal;
+            }
           }
         }
       }
+      // fallback
+      var definedHorizontal = isHorizontal ?? false;
       INode node = null;
       if (!layout.IsEmpty) {
         ITable table;
@@ -1680,13 +1701,13 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
         } else {
           // table was already initialized for the Process due to a Participant element
           node = MasterGraph.CreateNode(localRoot, layout);
-          var poolStyle = CreatePoolNodeStyle(isHorizontal);
+          var poolStyle = CreatePoolNodeStyle(definedHorizontal);
           poolStyle.MultipleInstance = multipleInstance;
           MasterGraph.SetStyle(node, poolStyle);
           table = poolStyle.TableNodeStyle.Table;
 
           // create dummy stripe for the direction where no lanes are defined
-          if (isHorizontal) {
+          if (definedHorizontal) {
             var col = table.CreateColumn(layout.Width - table.RowDefaults.Insets.Left);
             col.Tag = new PointD(layout.X, layout.Y);
           } else {
@@ -1695,7 +1716,7 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
           }
         }
 
-        IStripe parentStripe = isHorizontal
+        IStripe parentStripe = definedHorizontal
             ? table.RootRow.ChildRows.Any()
                 ? table.RootRow.ChildRows.First()
                 : (IStripe) table.RootRow
@@ -1703,7 +1724,7 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
                 ? table.RootColumn.ChildColumns.First()
                 : table.RootColumn;
         if (tableShape != null) {
-          parentStripe = AddToTable(tableShape, table, node, parentStripe);
+          parentStripe = AddToTable(tableShape, table, node, parentStripe, definedHorizontal);
         }
 
         element.Node = node;
@@ -1711,10 +1732,10 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
           parent.Node = node;
         }
 
-        AddChildLanes(element, table, parentStripe, plane, node);
+        AddChildLanes(element, table, parentStripe, plane, node, definedHorizontal);
 
         // Resize the root row/column after adding a colum/row with insets
-        if (isHorizontal) {
+        if (definedHorizontal) {
           var max = table.RootRow.GetLeaves().Select(s => s.Layout.X - table.Layout.X + s.Insets.Left).Max();
           table.SetSize(table.RootColumn.ChildColumns.First(), node.Layout.Width - max);
         } else {
@@ -1738,11 +1759,12 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
       return node;
     }
 
-    private void AddChildLanes(BpmnElement element, ITable table, IStripe parentStripe, BpmnPlane plane, INode node) {
+    private void AddChildLanes(BpmnElement element, ITable table, IStripe parentStripe, BpmnPlane plane, INode node,
+        bool isHorizontal) {
       foreach (var lane in element.GetChildren(BpmnDiConstants.LaneElement)) {
         var laneShape = GetShape(lane, plane);
         if (laneShape != null) {
-          var addedStripe = AddToTable(laneShape, table, node, parentStripe);
+          var addedStripe = AddToTable(laneShape, table, node, parentStripe, isHorizontal);
           foreach (var refElement in lane.GetChildren("flowNodeRef")) {
             BpmnElement bpmnElement;
             if (refElement.Value != null && TryGetElementForId(refElement.Value, out bpmnElement)) {
@@ -1751,21 +1773,21 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
           }
           var childLaneSet = lane.GetChild("childLaneSet");
           if (childLaneSet != null) {
-            AddChildLanes(childLaneSet, table, addedStripe, plane, node);
+            AddChildLanes(childLaneSet, table, addedStripe, plane, node, isHorizontal);
           }
         }
       }
     }
 
     // Adds the given lane to the appropriate table (pool), or creates a new one
-    private IStripe AddToTable(BpmnShape shape, ITable table, INode node, IStripe parentStripe) {
+    private IStripe AddToTable(BpmnShape shape, ITable table, INode node, IStripe parentStripe, bool isHorizontal) {
       // lane element
       var element = shape.Element;
 
       // Link the node to the BpmnElement of the lane
 
       element.Node = node;
-      if (shape.IsHorizontal) {
+      if (isHorizontal) {
         var parentRow = parentStripe as IRow;
         //getIndex
         var index = parentRow.ChildRows.Count(siblingRow =>
@@ -1791,7 +1813,7 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
 
     // Creates table (participant/pool)
     private PoolNodeStyle CreateTable(BpmnShape shape) {
-      var poolNodeStyle = CreatePoolNodeStyle(shape.IsHorizontal);
+      var poolNodeStyle = CreatePoolNodeStyle(shape.IsHorizontal ?? false);
       var table = poolNodeStyle.TableNodeStyle.Table;
 
       // Create first row & column

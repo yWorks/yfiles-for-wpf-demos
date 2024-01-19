@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.5.
- ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.6.
+ ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -32,6 +32,7 @@ using System.ComponentModel;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Markup;
+using Demo.yFiles.Toolkit;
 using yWorks.Controls.Input;
 using yWorks.Controls;
 using yWorks.Geometry;
@@ -109,6 +110,7 @@ namespace Demo.yFiles.Graph.Clipboard
       var style = new NodeControlNodeStyle("ClipboardStyle") { MinimumSize = new SizeD(120, 60) };
       // set the style as the default for all new nodes
       graph.NodeDefaults.Style = style;
+      graph.EdgeDefaults.Style = DemoStyles.CreateDemoEdgeStyle(Themes.Palette31);
 
       graph.NodeDefaults.Labels.LayoutParameter = ExteriorLabelModel.North;
       graph.EdgeDefaults.Labels.LayoutParameter = NinePositionsEdgeLabelModel.CenterAbove;

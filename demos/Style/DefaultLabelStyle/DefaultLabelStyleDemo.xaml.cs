@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.5.
- ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.6.
+ ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -148,6 +148,7 @@ namespace Demo.yFiles.Graph.DefaultLabels
       var edgeLabelModel = new SmartEdgeLabelModel { Angle = Math.PI / 2 };
 
       graph.EdgeDefaults.Labels.LayoutParameter = edgeLabelModel.CreateDefaultParameter();
+      graph.EdgeDefaults.Style =  CreateEdgeStyle(Themes.Palette12);
 
       var edge1 = graph.CreateEdge(graph.Nodes[0], graph.Nodes[1]);
       graph.AddBend(edge1, new PointD(0, 400));
@@ -237,7 +238,6 @@ namespace Demo.yFiles.Graph.DefaultLabels
 
       var edge2 = graph.CreateEdge(graph.Nodes[2], graph.Nodes[1]);
       graph.AddBend(edge2, new PointD(550, 625));
-      graph.SetStyle(edge2, CreateEdgeStyle(Themes.Palette12));
 
       // Add larger edge labels with different vertical and horizontal text alignment settings to the second edge
       graph.AddLabel(

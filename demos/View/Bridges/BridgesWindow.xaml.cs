@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.5.
- ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.6.
+ ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -258,7 +258,6 @@ namespace Demo.yFiles.Graph.Bridges
     /// <summary>
     /// Create a sample graph with edge/edge intersections and edge/group node intersections
     /// </summary>
-    /// <param name="graph"></param>
     private void CreateSampleGraph() {
       var graph = graphControl.Graph;
 

@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.5.
- ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.6.
+ ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -781,7 +781,7 @@ namespace Demo.yFiles.Option
     public override string ConvertToString(object o, IValueSerializerContext context) {
       Color c = (Color)o;
       string colorString = string.Format("#{0:X2}{1:X2}{2:X2}{3:X2}", c.A, c.R, c.G, c.B);
-      if (c != Colors.Transparent && c.A == 255) {
+      if (c == Colors.Transparent || c.A == 255) {
         string colorName;
         if (invColorMap.TryGetValue(colorString, out colorName)) {
           return colorName;

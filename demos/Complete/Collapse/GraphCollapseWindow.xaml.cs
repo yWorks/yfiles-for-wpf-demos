@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.5.
- ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.6.
+ ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -170,7 +170,7 @@ namespace Demo.yFiles.Graph.Collapse
     #endregion
 
     /// <summary>
-    /// Builds a sample graph
+    /// Builds a sample graph.
     /// </summary>
     private void BuildTree(IGraph graph, int children, int levels, int collapseLevel) {
       INode root = graph.CreateNode(new PointD(20, 20));
@@ -181,7 +181,7 @@ namespace Demo.yFiles.Graph.Collapse
     private readonly Random random = new Random(666);
 
     /// <summary>
-    /// Recusively add children to the tree
+    /// Recursively add children to the tree.
     /// </summary>
     private void AddChildren(int level, IGraph graph, INode root, int childCount, int collapseLevel) {
       int actualChildCount = random.Next(1, childCount + 1);

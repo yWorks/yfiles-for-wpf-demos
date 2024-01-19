@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.5.
- ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.6.
+ ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -265,7 +265,7 @@ namespace Demo.yFiles.Graph.NodeTypes
               Deterministic = true,
               ConsiderNodeSizes = true,
               MinimumNodeDistance = 30,
-              StarSubstructureStyle = StarSubstructureStyle.Circular,
+              StarSubstructureStyle = yWorks.Layout.Organic.StarSubstructureStyle.Circular,
               StarSubstructureTypeSeparation = false,
               ParallelSubstructureStyle = ParallelSubstructureStyle.Rectangular,
               ParallelSubstructureTypeSeparation = false,

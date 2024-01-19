@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--Created by @PRODUCT@ @ASSEMBLY_VERSION@-->
+<!--Created by yFiles WPF 3.5-->
 <graphml xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/3.0" xmlns:y="http://www.yworks.com/xml/yfiles-common/3.0" xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/3.0/xaml" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml.wpf/3.0/ygraphml.xsd " xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://graphml.graphdrawing.org/xmlns">
   <key id="d0" attr.type="boolean" attr.name="Expanded" for="node" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/folding/Expanded">
     <default>true</default>
@@ -37,9 +37,6 @@
       </data>
       <data key="d2">
         <y:RectD X="109.5" Y="0" Width="30" Height="30" />
-      </data>
-      <data key="d4">
-        <ywpf:ShapeNodeStyle Brush="#FFFF8C00" />
       </data>
       <port name="p0">
         <data key="d11">
@@ -338,9 +335,6 @@
       <data key="d2">
         <y:RectD X="198" Y="380" Width="30" Height="30" />
       </data>
-      <data key="d4">
-        <ywpf:ShapeNodeStyle Brush="#FFFF8C00" />
-      </data>
       <port name="p0">
         <data key="d11">
           <y:FreeNodePortLocationModelParameter Ratio="0.75,1" />
@@ -372,9 +366,6 @@
       </data>
       <data key="d2">
         <y:RectD X="138" Y="280" Width="30" Height="30" />
-      </data>
-      <data key="d4">
-        <ywpf:ShapeNodeStyle Brush="#FFFF8C00" />
       </data>
       <port name="p0">
         <data key="d11">
@@ -408,9 +399,6 @@
       <data key="d2">
         <y:RectD X="205.5" Y="440" Width="30" Height="30" />
       </data>
-      <data key="d4">
-        <ywpf:ShapeNodeStyle Brush="#FFFF8C00" />
-      </data>
       <port name="p0">
         <data key="d11">
           <y:FreeNodePortLocationModelParameter Ratio="0.5,0" />
@@ -427,9 +415,6 @@
       </data>
       <data key="d2">
         <y:RectD X="115.5" Y="440" Width="30" Height="30" />
-      </data>
-      <data key="d4">
-        <ywpf:ShapeNodeStyle Brush="#FFFF8C00" />
       </data>
       <port name="p0">
         <data key="d11">
@@ -453,9 +438,6 @@
       <data key="d2">
         <y:RectD X="138" Y="380" Width="30" Height="30" />
       </data>
-      <data key="d4">
-        <ywpf:ShapeNodeStyle Brush="#FFFF8C00" />
-      </data>
       <port name="p0">
         <data key="d11">
           <y:FreeNodePortLocationModelParameter Ratio="0.5,0" />
@@ -472,9 +454,6 @@
       </data>
       <data key="d2">
         <y:RectD X="279" Y="95" Width="30" Height="30" />
-      </data>
-      <data key="d4">
-        <ywpf:ShapeNodeStyle Brush="#FFFF8C00" />
       </data>
       <port name="p0">
         <data key="d11">
@@ -498,9 +477,6 @@
       <data key="d2">
         <y:RectD X="339" Y="95" Width="30" Height="30" />
       </data>
-      <data key="d4">
-        <ywpf:ShapeNodeStyle Brush="#FFFF8C00" />
-      </data>
       <port name="p0">
         <data key="d11">
           <y:FreeNodePortLocationModelParameter Ratio="0.5,1" />
@@ -523,9 +499,6 @@
       <data key="d2">
         <y:RectD X="399" Y="95" Width="30" Height="30" />
       </data>
-      <data key="d4">
-        <ywpf:ShapeNodeStyle Brush="#FFFF8C00" />
-      </data>
       <port name="p0">
         <data key="d11">
           <y:FreeNodePortLocationModelParameter Ratio="0.5,0" />
@@ -542,9 +515,6 @@
       </data>
       <data key="d2">
         <y:RectD X="369" Y="0" Width="30" Height="30" />
-      </data>
-      <data key="d4">
-        <ywpf:ShapeNodeStyle Brush="#FFFF8C00" />
       </data>
       <port name="p0">
         <data key="d11">

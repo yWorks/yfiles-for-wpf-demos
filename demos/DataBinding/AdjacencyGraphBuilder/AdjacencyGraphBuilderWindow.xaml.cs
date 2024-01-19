@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.5.
- ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.6.
+ ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -188,8 +188,9 @@ namespace Demo.yFiles.DataBinding.AdjacencyGraphBuilder
       // remove insets of demo node label styles 
       ((DefaultLabelStyle) graph.NodeDefaults.Labels.Style).Insets = InsetsD.Empty;
       // set insets and bigger text size for demo group node label styles 
-      ((DefaultLabelStyle) graph.GroupNodeDefaults.Labels.Style).Insets = new InsetsD(2);
-      ((DefaultLabelStyle) graph.GroupNodeDefaults.Labels.Style).TextSize = 24;
+      var groupLabelStyle = (DefaultLabelStyle) graph.GroupNodeDefaults.Labels.Style;
+      groupLabelStyle.Insets = new InsetsD(2);
+      groupLabelStyle.TextSize = 24;
       // increase tab height of GroupNodeStyle so the increased group node labels fit into the header
       ((GroupNodeStyle) graph.GroupNodeDefaults.Style).TabHeight = 28;
     }

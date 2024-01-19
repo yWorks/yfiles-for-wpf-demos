@@ -1,6 +1,6 @@
 <!-- ************************************************************************ -->
-<!-- This demo file is part of yFiles WPF 3.5.                           -->
-<!-- Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
+<!-- This demo file is part of yFiles WPF 3.6.                           -->
+<!-- Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
 <!-- 72070 Tuebingen, Germany. All rights reserved.                           -->
 <!--                                                                          -->
 <!-- yFiles demo files exhibit yFiles WPF functionalities. Any redistribution  -->
@@ -71,19 +71,27 @@
                     <RichTextBox IsReadOnly="True" BorderThickness="0">
                         <FlowDocument>
                             <Paragraph>
-                                The <Run Style="{StaticResource HtmlCode}">GroupNodeStyle</Run> is a style primarily 
+                                The
+                                <Run Style="{StaticResource HtmlCode}">GroupNodeStyle</Run> is a style primarily 
                                 intended for groups and folders, i.e., collapsed groups.
                             </Paragraph>
                             <Paragraph>
                                 This style offers many configuration options for customizing its look. Please see chapter
-                                <Run Style="{StaticResource HtmlEm}">GroupNodeStyle</Run> in the Developer's Guide and the 
+                                <Run Style="{StaticResource HtmlEm}">GroupNodeStyle</Run> in the Developer's Guide and the
                                 <Run Style="{StaticResource HtmlEm}">GroupNodeStyle</Run> API documentation for more detailed
                                 information.
                             </Paragraph>
                             <Paragraph>
-                                The related <Run Style="{StaticResource HtmlCode}">GroupNodeLabelModel</Run> places 
+                                Please note that the setting 
+                                <Run Style="{StaticResource HtmlEm}">Render Transparent Content Area</Run> 
+                                only has an effect with a transparent content area brush.
+                            </Paragraph>
+                            <Paragraph>
+                                The related
+                                <Run Style="{StaticResource HtmlCode}">GroupNodeLabelModel</Run> places 
                                 node labels inside the tab or the background area next to the tab of a group or folder 
-                                when used together with <Run Style="{StaticResource HtmlCode}">GroupNodeStyle</Run>.
+                                when used together with
+                                <Run Style="{StaticResource HtmlCode}">GroupNodeStyle</Run> .
                             </Paragraph>
                             <Paragraph Style="{StaticResource HtmlH2}">
                                 Things to try
@@ -92,11 +100,11 @@
                                 <ListItem Margin="25,0,0,0">
                                     <Paragraph>
                                         Click the expansion state icons
-                                        <Path Width="8" Height="8" Fill="#666666" Data="M4.8,0h-1.6v3.2h-3.2v1.6h3.2v3.2h1.6v-3.2h3.2v-1.6h-3.2Z"/>,
-                                        <Path Width="8" Height="8" Fill="#666666" Data="M0,3.2h8.0v1.6h-8.0Z"/>,
-                                        <Path Width="8" Height="8" Fill="#666666" Data="M6.48,1.84l-2.48,2.4l-2.48,-2.4l-1.12,1.12l3.6,3.6l3.6,-3.6Z"/>,
-                                        <Path Width="8" Height="8" Fill="#666666" Data="M6.48,6.16l-2.48,-2.4l-2.48,2.4l-1.12,-1.12l3.6,-3.6l3.6,3.6Z"/>,
-                                        <Path Width="8" Height="8" Fill="#666666" Data="M0.4,2.4h7.2l-3.6,4.8Z"/>, or
+                                        <Path Width="8" Height="8" Fill="#666666" Data="M4.8,0h-1.6v3.2h-3.2v1.6h3.2v3.2h1.6v-3.2h3.2v-1.6h-3.2Z"/> ,
+                                        <Path Width="8" Height="8" Fill="#666666" Data="M0,3.2h8.0v1.6h-8.0Z"/> ,
+                                        <Path Width="8" Height="8" Fill="#666666" Data="M6.48,1.84l-2.48,2.4l-2.48,-2.4l-1.12,1.12l3.6,3.6l3.6,-3.6Z"/> ,
+                                        <Path Width="8" Height="8" Fill="#666666" Data="M6.48,6.16l-2.48,-2.4l-2.48,2.4l-1.12,-1.12l3.6,-3.6l3.6,3.6Z"/> ,
+                                        <Path Width="8" Height="8" Fill="#666666" Data="M0.4,2.4h7.2l-3.6,4.8Z"/> , or
                                         <Path Width="8" Height="8" Fill="#666666" Data="M0.4,5.6h7.2l-3.6,-4.8Z"/>
                                         to collapse groups or expand folders.
                                     </Paragraph>
@@ -115,6 +123,11 @@
                                 <ListItem Margin="25,0,0,0">
                                     <Paragraph>
                                         Change the values in the properties panel and see how the selected group node (and its twin) changes.
+                                    </Paragraph>
+                                </ListItem>
+                                <ListItem Margin="25,0,0,0">
+                                    <Paragraph>
+                                        Resize a node to see the effects of the minimum content area size and the icon and tab size.
                                     </Paragraph>
                                 </ListItem>
                                 <ListItem Margin="25,0,0,0">

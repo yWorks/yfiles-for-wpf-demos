@@ -20,7 +20,6 @@ You will find the following programming samples in this package:
 |**LogicGate** | This demo shows how ports can be used to implement a digital system comprising logic gates and similar components. |
 |**Neo4JIntegration** | This demo shows how to load data from a Neo4j database and display it with yFiles WPF. |
 |**NetworkMonitoring** | This demo shows a basic network monitoring tool. You can watch the traffic flowing through the network and even influence the network by deactivating nodes. |
-|**NodeTypes** | A demo that shows how different layout algorithms handle nodes with types. |
 |**OrgChart** | An organization chart demo. |
 |**OverlapAvoidingEditor** | A demo that shows how to interactively edit graphs without creating overlaps. |
 |**RelocateSubtree** | A demo that shows how to interactively relocate subtrees from one parent to another. |

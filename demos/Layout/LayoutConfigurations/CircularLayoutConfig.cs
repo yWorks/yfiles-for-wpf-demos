@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.5.
- ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.6.
+ ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -84,6 +84,9 @@ namespace Demo.yFiles.Layout.Configurations
       MinimumTreeNodeDistanceItem = treeLayout.MinimumNodeDistance;
       AllowOverlapsItem = treeLayout.AllowOverlaps;
       PlaceChildrenOnCommonRadiusItem = true;
+
+      StarSubstructureItem = StarSubstructureStyle.None;
+      StarSubstructureSizeItem = layout.StarSubstructureSize;
 
       EdgeLabelingItem = false;
       LabelPlacementAlongEdgeItem = EnumLabelPlacementAlongEdge.Centered;
@@ -177,6 +180,10 @@ namespace Demo.yFiles.Layout.Configurations
           }
         }
       }
+
+      layout.StarSubstructureStyle = StarSubstructureItem;
+      layout.StarSubstructureSize = StarSubstructureSizeItem;
+
       return layout;
     }
 
@@ -240,8 +247,13 @@ namespace Demo.yFiles.Layout.Configurations
     [ComponentType(ComponentTypes.OptionGroup)]
     public object TreeGroup;
 
-    [Label("Labeling")]
+    [Label("Substructure Layout")]
     [OptionGroup("RootGroup", 50)]
+    [ComponentType(ComponentTypes.OptionGroup)]
+    public object SubstructureLayoutGroup;
+
+    [Label("Labeling")]
+    [OptionGroup("RootGroup", 60)]
     [ComponentType(ComponentTypes.OptionGroup)]
     public object LabelingGroup;
 
@@ -500,6 +512,24 @@ namespace Demo.yFiles.Layout.Configurations
 
     public bool ShouldDisableTreeGroupItem {
       get { return LayoutStyleItem == LayoutStyle.SingleCycle; }
+    }
+
+    [Label("Star")]
+    [OptionGroup("SubstructureLayoutGroup", 10)]
+    [DefaultValue(StarSubstructureStyle.None)]
+    [EnumValue("Ignore", StarSubstructureStyle.None)]
+    [EnumValue("Radial", StarSubstructureStyle.Radial)]
+    [EnumValue("Separated Radial", StarSubstructureStyle.SeparatedRadial)]
+    public StarSubstructureStyle StarSubstructureItem { get; set; }
+
+    [Label("Minimum Star Size")]
+    [OptionGroup("SubstructureLayoutGroup", 15)]
+    [MinMax(Min = 4, Max = 20)]
+    [DefaultValue(4)]
+    public int StarSubstructureSizeItem { get; set; }
+
+    public bool ShouldDisableStarSubstructureSizeItem {
+      get { return StarSubstructureItem == StarSubstructureStyle.None; }
     }
 
     [Label("Node Labeling")]

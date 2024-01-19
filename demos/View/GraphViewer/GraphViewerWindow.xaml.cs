@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.5.
- ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.6.
+ ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -106,8 +106,6 @@ namespace Demo.yFiles.Graph.Viewer
       orangePen.Freeze();
 
       // now decorate the nodes and edges with custom hover highlight styles
-      var decorator = graphControl.Graph.GetDecorator();
-
       // nodes should be given a rectangular orange rectangle highlight shape
       var highlightShape = new ShapeNodeStyle {
           Shape = ShapeNodeShape.RoundRectangle,
@@ -115,16 +113,11 @@ namespace Demo.yFiles.Graph.Viewer
           Brush = null
       };
 
-      var nodeStyleHighlight = new NodeStyleDecorationInstaller {
-          NodeStyle = highlightShape,
-          // that should be slightly larger than the real node
-          Margins = new InsetsD(5),
-          // but have a fixed size in the view coordinates
+      // that should be slightly larger than the real node
+      var nodeStyleHighlight = new IndicatorNodeStyleDecorator(highlightShape) {
+          Padding = new InsetsD(5), 
           ZoomPolicy = StyleDecorationZoomPolicy.ViewCoordinates
       };
-
-      // register it as the default implementation for all nodes
-      decorator.NodeDecorator.HighlightDecorator.SetImplementation(nodeStyleHighlight);
 
       // a similar style for the edges, however cropped by the highlight's insets
       var dummyCroppingArrow = new Arrow {
@@ -136,11 +129,13 @@ namespace Demo.yFiles.Graph.Viewer
           TargetArrow = dummyCroppingArrow,
           SourceArrow = dummyCroppingArrow
       };
-      var edgeStyleHighlight = new EdgeStyleDecorationInstaller {
-          EdgeStyle = edgeStyle,
+      var edgeStyleHighlight = new IndicatorEdgeStyleDecorator(edgeStyle) {
           ZoomPolicy = StyleDecorationZoomPolicy.ViewCoordinates
       };
-      decorator.EdgeDecorator.HighlightDecorator.SetImplementation(edgeStyleHighlight);
+      // register it as the default implementation for all nodes
+      graphControl.HighlightIndicatorManager = new GraphHighlightIndicatorManager {
+          NodeStyle = nodeStyleHighlight, EdgeStyle = edgeStyleHighlight
+      };
     }
 
     private void InitializeInputMode() {

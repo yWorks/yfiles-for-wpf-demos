@@ -1,6 +1,6 @@
 <!-- ************************************************************************ -->
-<!-- This demo file is part of yFiles WPF 3.5.                           -->
-<!-- Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
+<!-- This demo file is part of yFiles WPF 3.6.                           -->
+<!-- Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
 <!-- 72070 Tuebingen, Germany. All rights reserved.                           -->
 <!--                                                                          -->
 <!-- yFiles demo files exhibit yFiles WPF functionalities. Any redistribution  -->
@@ -57,7 +57,7 @@
                 	<List>
                 		<ListItem>
                 			<Paragraph>
-                                <Run FontWeight="Bold" Foreground="{StaticResource DemoRed}">Red nodes</Run> cannot be resized. They don't display resize handles.
+                                <Run FontWeight="Bold" Foreground="{StaticResource DemoRed}">Red nodes</Run> cannot be resized. They do not display resize handles.
                             </Paragraph>
                 		</ListItem>
                         <ListItem>
@@ -76,13 +76,13 @@
                             <Paragraph>
                                 <Run FontWeight="Bold" Foreground="{StaticResource DemoPurple}">Purple nodes</Run> show four handles at the corners and four
                                     different handles at the sides. During resizing, the corner handles always maintain the aspect ratio of the node while
-                                    the border handles don't.
+                                    the border handles do not.
                             </Paragraph>
                         </ListItem>
                         <ListItem>
                             <Paragraph>
                                 <Run FontWeight="Bold" Foreground="{StaticResource DemoOrange}">Orange nodes</Run> cannot extend beyond the black rectangle. Note that
-                                    orange nodes can only be resized so that the new bounding box stays withing the bounding black rectangle.
+                                    orange nodes can only be resized so that the new bounding box stays withing the black bounding rectangle.
                             </Paragraph>
                         </ListItem>
                         <ListItem>

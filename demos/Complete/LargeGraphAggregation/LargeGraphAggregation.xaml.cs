@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.5.
- ** Copyright (c) 2000-2022 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 3.6.
+ ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -40,7 +40,6 @@ using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using Demo.yFiles.Aggregation;
-using yWorks.Algorithms;
 using yWorks.Algorithms.Util;
 using yWorks.Analysis;
 using yWorks.Controls;
@@ -190,6 +189,7 @@ namespace Demo.yFiles.Complete.LargeGraphAggregation
       graphLoadingBar.Visibility = isEnabled ? Visibility.Hidden : Visibility.Visible;
 
       Window.Cursor = isEnabled ? System.Windows.Input.Cursors.Arrow : System.Windows.Input.Cursors.Wait;
+      SwitchViewButton.IsEnabled = isEnabled && !graphControl.Graph.Nodes.All(aggregationHelper.AggregateGraph.IsAggregationItem);
     }
 
     /// <summary>
@@ -244,6 +244,7 @@ namespace Demo.yFiles.Complete.LargeGraphAggregation
 
         // run layout
         await RunLayoutOnHierarchyView(affectedNodes);
+        SwitchViewButton.IsEnabled = !graphControl.Graph.Nodes.All(aggregationHelper.AggregateGraph.IsAggregationItem);
       };
     }
 
@@ -310,27 +311,14 @@ namespace Demo.yFiles.Complete.LargeGraphAggregation
       // freeze it for slightly improved performance
       orangePen.Freeze();
 
-      // now decorate the nodes and edges with custom hover highlight styles
-      var decorator = graphControl.Graph.GetDecorator();
-
-      // hide the default selection indicator
-      decorator.NodeDecorator.SelectionDecorator.HideImplementation();
+      // hide the default selection and focus indicator
+      graphControl.SelectionIndicatorManager = new GraphSelectionIndicatorManager() { NodeStyle = VoidNodeStyle.Instance };
+      graphControl.FocusIndicatorManager = new GraphFocusIndicatorManager { NodeStyle = VoidNodeStyle.Instance };
 
       // nodes should be given a rectangular orange rectangle highlight shape
       var highlightShape = new ShapeNodeStyle { Shape = ShapeNodeShape.Ellipse, Pen = orangePen, Brush = null };
-
-      var nodeStyleHighlight = new NodeStyleDecorationInstaller
-      {
-        NodeStyle = highlightShape,
-        // that should be slightly larger than the real node
-        Margins = new InsetsD(5),
-        // but have a fixed size in the view coordinates
-        ZoomPolicy = StyleDecorationZoomPolicy.ViewCoordinates
-      };
-
-      // register it as the default implementation for all nodes
-      decorator.NodeDecorator.HighlightDecorator.SetImplementation(nodeStyleHighlight);
-      decorator.NodeDecorator.FocusIndicatorDecorator.HideImplementation();
+      // that should be slightly larger than the real node
+      var nodeStyleHighlight = new IndicatorNodeStyleDecorator(highlightShape) { Padding = new InsetsD(5) };
 
       // a similar style for the edges, however cropped by the highlight's insets
       var dummyCroppingArrow = new Arrow { Type = ArrowType.None, CropLength = 5 };
@@ -340,12 +328,10 @@ namespace Demo.yFiles.Complete.LargeGraphAggregation
         TargetArrow = dummyCroppingArrow,
         SourceArrow = dummyCroppingArrow,
       };
-      var edgeStyleHighlight = new EdgeStyleDecorationInstaller
-      {
-        EdgeStyle = edgeStyle,
-        ZoomPolicy = StyleDecorationZoomPolicy.ViewCoordinates
+      var edgeStyleHighlight = new IndicatorEdgeStyleDecorator(edgeStyle) ;
+      graphControl.HighlightIndicatorManager = new GraphHighlightIndicatorManager {
+          NodeStyle = nodeStyleHighlight, EdgeStyle = edgeStyleHighlight
       };
-      decorator.EdgeDecorator.HighlightDecorator.SetImplementation(edgeStyleHighlight);
     }
 
     #endregion
