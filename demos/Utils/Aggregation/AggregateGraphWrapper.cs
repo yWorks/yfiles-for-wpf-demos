@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -28,6 +28,7 @@
  ***************************************************************************/
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using yWorks.Controls.Input;
@@ -40,60 +41,61 @@ using yWorks.Utils;
 
 namespace Demo.yFiles.Aggregation
 {
-  
   /// <summary>
-  /// Determines what kind of edges should be created when replacing original edges with aggregation edges in calls to
-  /// methods of the <see cref="AggregateGraphWrapper"/>.
+  ///   Determines what kind of edges should be created when replacing original edges with aggregation edges in calls to
+  ///   methods of the <see cref="AggregateGraphWrapper"/>.
   /// </summary>
   public enum EdgeReplacementPolicy
   {
     /// <summary>
-    /// Edges will not be replaced by aggregation edges.
-    /// </summary> 
+    ///   Edges will not be replaced by aggregation edges.
+    /// </summary>
     None,
 
     /// <summary>
-    /// During <see cref="AggregateGraphWrapper.Aggregate"/> all edges between any of the aggregated nodes and other
-    /// nodes are replaced by a single aggregation edge between the aggregation node and the other node.
+    ///   During <see cref="AggregateGraphWrapper.Aggregate"/> all edges between any of the aggregated nodes and other
+    ///   nodes are replaced by a single aggregation edge between the aggregation node and the other node.
     /// </summary>
     /// <remarks>
-    /// This means there will be no duplicate edges between any pairs of nodes. The direction of the created edge is not
-    /// deterministic.
+    ///   This means there will be no duplicate edges between any pairs of nodes. The direction of the created edge is not
+    ///   deterministic.
     /// </remarks>
     Undirected,
-    
+
     /// <summary>
-    /// Edges in both directions will be created, resulting in up to two edges between pairs of nodes.
+    ///   Edges in both directions will be created, resulting in up to two edges between pairs of nodes.
     /// </summary>
     Directed
   }
 
   /// <summary>
-  /// An IGraph implementation that wraps another graph and can replace some of its items by other items.
+  ///   An IGraph implementation that wraps another graph and can replace some of its items with other items.
   /// </summary>
   /// <remarks>
-  /// <para>
-  /// More precisely, a set of nodes can be aggregated to a new node with the <see cref="Aggregate"/> method.
-  /// This will hide the set of nodes and create a new aggregation node while replacing adjacent edges with aggregation edges.
-  /// </para>
-  /// <para>
-  /// Items of the wrapped graph ("original graph") are called <em>original items</em> while the temporary items that
-  /// are created for aggregation are called <em>aggregation items</em>.
-  /// </para>
-  /// <para>
-  /// This class implements a concept similar to grouping and folding. The conceptual difference is that with folding
-  /// the group nodes remain in the graph while the group is in expanded state. Contrary, with the AggregateGraphWrapper
-  /// the aggregation nodes are only in the graph when the nodes are aggregated. The difference in the implementation
-  /// is that the AggregateGraphWrapper reuses all original graph items, ensuring reference equality between items of the
-  /// wrapped graph and items of the AggregateGraphWrapper.
-  /// </para>
-  /// <para>
-  /// Note that this implementation does not support editing user gestures, e.g. with the <see cref="GraphEditorInputMode"/>.
-  /// </para>
-  /// <para>
-  /// Note also that this instance will register listeners with the wrapped graph instance, so <see cref="Dispose"/> should
-  /// be called if this instance is not used any more.
-  /// </para>
+  ///   <para>
+  ///     More precisely, a set of nodes can be aggregated to a new node with the <see cref="Aggregate"/> method.
+  ///     This will hide the set of nodes and create a new aggregation node while replacing adjacent edges with aggregation
+  ///     edges.
+  ///   </para>
+  ///   <para>
+  ///     Items of the wrapped graph ("original graph") are called <em>original items</em> while the temporary items that
+  ///     are created for aggregation are called <em>aggregation items</em>.
+  ///   </para>
+  ///   <para>
+  ///     This class implements a concept similar to grouping and folding. The conceptual difference is that with folding
+  ///     the group nodes remain in the graph while the group is in expanded state. Contrary, with the AggregateGraphWrapper
+  ///     the aggregation nodes are only in the graph when the nodes are aggregated. The difference in the implementation
+  ///     is that the AggregateGraphWrapper reuses all original graph items, ensuring reference equality between items of the
+  ///     wrapped graph and items of the AggregateGraphWrapper.
+  ///   </para>
+  ///   <para>
+  ///     Note that this implementation does not support editing user gestures, e.g. with the
+  ///     <see cref="GraphEditorInputMode"/>.
+  ///   </para>
+  ///   <para>
+  ///     Note also that this instance will register listeners with the wrapped graph instance, so <see cref="Dispose"/>
+  ///     should be called if this instance is not used any more.
+  ///   </para>
   /// </remarks>
   public sealed class AggregateGraphWrapper : GraphWrapperBase
   {
@@ -111,22 +113,25 @@ namespace Demo.yFiles.Aggregation
     private readonly IList<AggregationEdge> aggregationEdges = new List<AggregationEdge>();
 
     // live views of the currently visible items
-    private readonly ListEnumerable<INode> nodes;
-    private readonly ListEnumerable<IEdge> edges;
-    private readonly ListEnumerable<ILabel> labels;
-    private readonly ListEnumerable<IPort> ports;
+    private readonly IReadOnlyList<INode> nodes;
+    private readonly IReadOnlyList<IEdge> edges;
+    private readonly IReadOnlyList<ILabel> labels;
+    private readonly IReadOnlyList<IPort> ports;
 
     private INodeDefaults aggregationNodeDefaults;
     private IEdgeDefaults aggregationEdgeDefaults;
 
     private readonly AggregateLookupDecorator lookupDecorator;
 
+    private static readonly IReadOnlyList<IModelItem> EmptyReadOnlyList = new List<IModelItem>();
+    private static readonly IReadOnlyList<IEdge> EmptyReadOnlyEdgeList = new List<IEdge>();
+
     /// <summary>
-    /// Creates a new instance of this graph wrapper.
+    ///   Creates a new instance of this graph wrapper.
     /// </summary>
     /// <param name="graph">The graph to be wrapped ("original graph").</param>
     /// <exception cref="ArgumentException">
-    /// If the <paramref name="graph"/> is another <see cref="AggregateGraphWrapper"/>
+    ///   If the <paramref name="graph"/> is another <see cref="AggregateGraphWrapper"/>
     /// </exception>
     public AggregateGraphWrapper(IGraph graph) : base(graph) {
       if (graph is AggregateGraphWrapper) {
@@ -140,33 +145,34 @@ namespace Demo.yFiles.Aggregation
 
       lookupDecorator = new AggregateLookupDecorator(this);
 
-      nodes = new ListEnumerable<INode>(filteredGraph.Nodes.Concat(aggregationNodes.Where(AggregationItemPredicate)));
-      edges = new ListEnumerable<IEdge>(filteredGraph.Edges.Concat(aggregationEdges.Where(AggregationItemPredicate)));
+      nodes = new ListEnumerable<INode>(
+          filteredGraph.Nodes.Concat(aggregationNodes.Where(AggregationItemPredicate)));
+      edges = new ListEnumerable<IEdge>(
+          filteredGraph.Edges.Concat(aggregationEdges.Where(AggregationItemPredicate)));
       ports = new ListEnumerable<IPort>(nodes.SelectMany(node => node.Ports)
-                                             .Concat(edges.SelectMany(edge => edge.Ports)));
+          .Concat(edges.SelectMany(edge => edge.Ports)));
       labels = new ListEnumerable<ILabel>(nodes.SelectMany(node => node.Labels)
-                                               .Concat(edges.SelectMany(edge => edge.Labels)
-                                                            .Concat(ports.SelectMany(port => port.Labels))));
+          .Concat(edges.SelectMany(edge => edge.Labels).Concat(ports.SelectMany(port => port.Labels))));
     }
 
-    public override IListEnumerable<INode> Nodes { get { return nodes; } }
+    public override IReadOnlyList<INode> Nodes => nodes;
 
-    public override IListEnumerable<IEdge> Edges { get { return edges; } }
+    public override IReadOnlyList<IEdge> Edges => edges;
 
-    public override IListEnumerable<ILabel> Labels { get { return labels; } }
+    public override IReadOnlyList<ILabel> Labels => labels;
 
-    public override IListEnumerable<IPort> Ports { get { return ports; } }
+    public override IReadOnlyList<IPort> Ports => ports;
 
     /// <summary>
-    /// Sets what kind of edges should be created when replacing original edges with aggregation edges.
+    ///   Sets what kind of edges should be created when replacing original edges with aggregation edges.
     /// </summary>
     /// <remarks>
-    /// The default value is <see cref="Demo.yFiles.Aggregation.EdgeReplacementPolicy.Undirected"/>.
+    ///   The default value is <see cref="Demo.yFiles.Aggregation.EdgeReplacementPolicy.Undirected"/>.
     /// </remarks>
     public EdgeReplacementPolicy EdgeReplacementPolicy { get; set; }
 
     /// <summary>
-    /// Gets or sets the defaults for aggregation nodes.
+    ///   Gets or sets the defaults for aggregation nodes.
     /// </summary>
     /// <seealso cref="IGraph.NodeDefaults"/>
     public INodeDefaults AggregationNodeDefaults {
@@ -176,14 +182,14 @@ namespace Demo.yFiles.Aggregation
         }
         return aggregationNodeDefaults;
       }
-      set { aggregationNodeDefaults = value; }
+      set => aggregationNodeDefaults = value;
     }
 
     /// <summary>
-    /// Gets or sets the defaults for aggregation edges.
+    ///   Gets or sets the defaults for aggregation edges.
     /// </summary>
     /// <remarks>
-    /// Used when original edges are automatically replaced by aggregation edges.
+    ///   Used when original edges are automatically replaced by aggregation edges.
     /// </remarks>
     public IEdgeDefaults AggregationEdgeDefaults {
       get {
@@ -192,12 +198,12 @@ namespace Demo.yFiles.Aggregation
         }
         return aggregationEdgeDefaults;
       }
-      set { aggregationEdgeDefaults = value; }
+      set => aggregationEdgeDefaults = value;
     }
 
     /// <summary>
-    /// Calls the base method with the <see cref="filteredGraph"/> instead of the passed graph for correct event
-    /// forwarding.
+    ///   Calls the base method with the <see cref="filteredGraph"/> instead of the passed graph for correct event
+    ///   forwarding.
     /// </summary>
     protected override void OnGraphChanged(IGraph oldGraph, IGraph newGraph) {
       if (oldGraph == null) {
@@ -225,11 +231,11 @@ namespace Demo.yFiles.Aggregation
     #region hide/show
 
     /// <summary>
-    /// Hides the <paramref name="portOwner"/> and all items depending on it and raises the according removed events.
+    ///   Hides the <paramref name="portOwner"/> and all items depending on it and raises the according removed events.
     /// </summary>
     /// <remarks>
-    /// For nodes, their labels, ports and adjacent edges are hidden.
-    /// For edges, their labels, ports and bends are hidden.
+    ///   For nodes, their labels, ports and adjacent edges are hidden.
+    ///   For edges, their labels, ports and bends are hidden.
     /// </remarks>
     private void Hide(IPortOwner portOwner) {
       var aggregationNode = portOwner as AggregationNode;
@@ -269,7 +275,7 @@ namespace Demo.yFiles.Aggregation
     }
 
     /// <summary>
-    /// Shows an item, their labels/ports/bends, and their adjacent edges. Raises all necessary events.
+    ///   Shows an item, their labels/ports/bends, and their adjacent edges. Raises all necessary events.
     /// </summary>
     private void Show(IPortOwner item) {
       var aggregationNode = item as AggregationNode;
@@ -348,14 +354,14 @@ namespace Demo.yFiles.Aggregation
     #region Aggregate/Separate
 
     /// <summary>
-    /// Aggregates the <paramref name="nodes"/> to a new aggregation node.
+    ///   Aggregates the <paramref name="nodes"/> to a new aggregation node.
     /// </summary>
     /// <remarks>
-    /// This temporarily removes the <paramref name="nodes"/> together with their labels, ports, and adjacent edges.
-    /// Then a new aggregation node is created and replacement edges for all removed edges are created: for each edge
-    /// between a node in <paramref name="nodes"/> and a node not in <paramref name="nodes"/> a new edge is created. If
-    /// this would lead to multiple edges between the aggregation node and another node, only one edge (or two, see
-    /// <see cref="EdgeReplacementPolicy"/>) is created.
+    ///   This temporarily removes the <paramref name="nodes"/> together with their labels, ports, and adjacent edges.
+    ///   Then a new aggregation node is created and replacement edges for all removed edges are created: for each edge
+    ///   between a node in <paramref name="nodes"/> and a node not in <paramref name="nodes"/> a new edge is created. If
+    ///   this would lead to multiple edges between the aggregation node and another node, only one edge (or two, see
+    ///   <see cref="EdgeReplacementPolicy"/>) is created.
     /// </remarks>
     /// <seealso cref="Separate"/>
     /// <param name="nodes">The nodes to be temporarily removed.</param>
@@ -364,8 +370,11 @@ namespace Demo.yFiles.Aggregation
     /// <param name="tag">The style for the new aggregation node or <c>null</c></param>
     /// <returns>A new aggregation node.</returns>
     /// <exception cref="ArgumentException">Any of the <paramref name="nodes"/> is not in the graph.</exception>
-    public INode Aggregate(IListEnumerable<INode> nodes, RectD? layout = null,
-        INodeStyle style = null, object tag = null) {
+    public INode Aggregate(
+        IReadOnlyList<INode> nodes,
+        RectD? layout = null,
+        INodeStyle style = null,
+        object tag = null) {
       var badNode = nodes.FirstOrDefault(n => !Contains(n));
       if (badNode != null) {
         throw new ArgumentException("Cannot aggregate node " + badNode + " that is not in this graph.", "nodes");
@@ -405,9 +414,10 @@ namespace Demo.yFiles.Aggregation
     }
 
     /// <summary>
-    /// Replaces adjacent edges by new aggregation edges. Prevents duplicate edges following <see cref="EdgeReplacementPolicy"/>.
+    ///   Replaces adjacent edges by new aggregation edges. Prevents duplicate edges following
+    ///   <see cref="EdgeReplacementPolicy"/>.
     /// </summary>
-    private void ReplaceAdjacentEdges(IListEnumerable<INode> nodes, AggregationNode aggregationNode) {
+    private void ReplaceAdjacentEdges(IReadOnlyList<INode> nodes, AggregationNode aggregationNode) {
       var edgesAreDirected = EdgeReplacementPolicy == EdgeReplacementPolicy.Directed;
       var outgoingReplacementEdges = new Dictionary<IPortOwner, AggregationEdge>();
       var incomingReplacementEdges =
@@ -429,8 +439,11 @@ namespace Demo.yFiles.Aggregation
       }
     }
 
-    private void ReplaceEdges(AdjacencyTypes adjacencyType, INode node, IPortOwner aggregationPortOwner,
-        IListEnumerable<INode> items,
+    private void ReplaceEdges(
+        AdjacencyTypes adjacencyType,
+        INode node,
+        IPortOwner aggregationPortOwner,
+        IReadOnlyList<INode> items,
         IDictionary<IPortOwner, AggregationEdge> replacementEdges) {
       var adjacentEdges = EdgesAt(node, adjacencyType).ToList();
       foreach (var edge in adjacentEdges) {
@@ -472,15 +485,17 @@ namespace Demo.yFiles.Aggregation
     }
 
     /// <summary>
-    /// Separates nodes again that were previously aggregated via <see cref="Aggregate"/>.
+    ///   Separates nodes again that were previously aggregated via <see cref="Aggregate"/>.
     /// </summary>
     /// <remarks>
-    /// Removes the aggregation node permanently together with its labels, ports, and adjacent edges. Then inserts the
-    /// items that were temporarily removed in <see cref="Aggregate"/> again.
+    ///   Removes the aggregation node permanently together with its labels, ports, and adjacent edges. Then inserts the
+    ///   items that were temporarily removed in <see cref="Aggregate"/> again.
     /// </remarks>
     /// <param name="node">The aggregation node to separate.</param>
-    /// <exception cref="ArgumentException">The <paramref name="node"/> is not in the graph or is currently hidden or
-    /// is not an aggregation node.</exception>
+    /// <exception cref="ArgumentException">
+    ///   The <paramref name="node"/> is not in the graph or is currently hidden or
+    ///   is not an aggregation node.
+    /// </exception>
     public void Separate(INode node) {
       var aggregationNode = node as AggregationNode;
       if (aggregationNode == null) {
@@ -528,8 +543,8 @@ namespace Demo.yFiles.Aggregation
     }
 
     /// <summary>
-    /// When nodes are separated in a different order they were aggregated, we need to create new aggregation edges for the
-    /// nodes that were just expanded.
+    ///   When nodes are separated in a different order they were aggregated, we need to create new aggregation edges for the
+    ///   nodes that were just expanded.
     /// </summary>
     private void ReplaceMissingEdges(AggregationNode aggregationNode) {
       var edgesAreDirected = EdgeReplacementPolicy == EdgeReplacementPolicy.Directed;
@@ -554,7 +569,9 @@ namespace Demo.yFiles.Aggregation
       }
     }
 
-    private void ReplaceMissingEdges(AdjacencyTypes adjacencyType, INode node,
+    private void ReplaceMissingEdges(
+        AdjacencyTypes adjacencyType,
+        INode node,
         IDictionary<INode, AggregationEdge> seenNodes) {
       var isIncoming = adjacencyType == AdjacencyTypes.Incoming;
 
@@ -597,14 +614,14 @@ namespace Demo.yFiles.Aggregation
     }
 
     /// <summary>
-    /// Separates all aggregation nodes such that this graph contains exactly the same items as the
-    /// <see cref="GraphWrapperBase.WrappedGraph"/>.
+    ///   Separates all aggregation nodes such that this graph contains exactly the same items as the
+    ///   <see cref="GraphWrapperBase.WrappedGraph"/>.
     /// </summary>
     /// <remarks>
-    /// This method separates all aggregated nodes recursively until the original items are visible again. Therefore,
-    /// it raises all events for each intermediate aggregation item as well, in contrast to
-    /// <see cref="SeparateToOriginalItems"/> which skips all intermediate aggregation states and directly restores the
-    /// original items.
+    ///   This method separates all aggregated nodes recursively until the original items are visible again. Therefore,
+    ///   it raises all events for each intermediate aggregation item as well, in contrast to
+    ///   <see cref="SeparateToOriginalItems"/> which skips all intermediate aggregation states and directly restores the
+    ///   original items.
     /// </remarks>
     public void SeparateAll() {
       do {
@@ -616,13 +633,13 @@ namespace Demo.yFiles.Aggregation
     }
 
     /// <summary>
-    /// Separates the currently visible items and restores directly the original items of the
-    /// <see cref="GraphWrapperBase.WrappedGraph"/>.
+    ///   Separates the currently visible items and restores directly the original items of the
+    ///   <see cref="GraphWrapperBase.WrappedGraph"/>.
     /// </summary>
     /// <remarks>
-    /// In contrast to <see cref="SeparateAll"/>, this method does not recursively separate all aggregation items on
-    /// each level. After separating the currently visible nodes, it immediately restores the original items of the
-    /// <see cref="GraphWrapperBase.WrappedGraph"/>.
+    ///   In contrast to <see cref="SeparateAll"/>, this method does not recursively separate all aggregation items on
+    ///   each level. After separating the currently visible nodes, it immediately restores the original items of the
+    ///   <see cref="GraphWrapperBase.WrappedGraph"/>.
     /// </remarks>
     public void SeparateToOriginalItems() {
       // remove the visible node, raising all events for them
@@ -650,12 +667,12 @@ namespace Demo.yFiles.Aggregation
     #region get aggregation items
 
     /// <summary>
-    /// Returns <c>true</c> iff the <paramref name="item"/> is an aggregation item and therefore not contained
-    /// in the wrapped graph.
+    ///   Returns <c>true</c> iff the <paramref name="item"/> is an aggregation item and therefore not contained
+    ///   in the wrapped graph.
     /// </summary>
     /// <remarks>
-    /// Does not check if the item is currently <see cref="Contains">contained</see> in the graph or whether
-    /// the items was created by this graph instance.
+    ///   Does not check if the item is currently <see cref="Contains">contained</see> in the graph or whether
+    ///   the items was created by this graph instance.
     /// </remarks>
     /// <param name="item">The item to check.</param>
     /// <returns><c>true</c> iff the <paramref name="item"/> is an aggregation item.</returns>
@@ -664,49 +681,43 @@ namespace Demo.yFiles.Aggregation
     }
 
     /// <summary>
-    /// Returns the items that are directly aggregated by the <paramref name="item"/>.
+    ///   Returns the items that are directly aggregated by the <paramref name="item"/>.
     /// </summary>
     /// <remarks>
-    /// In contrast to <see cref="GetAllAggregatedOriginalItems"/> this method returns both original as well as
-    /// aggregation items, but only direct descendants in the aggregation hierarchy.
+    ///   In contrast to <see cref="GetAllAggregatedOriginalItems"/> this method returns both original as well as
+    ///   aggregation items, but only direct descendants in the aggregation hierarchy.
     /// </remarks>
     /// <remarks>
-    /// <paramref name="item"/> doesn't need to be <see cref="Contains">contained</see> currently but might be
-    /// aggregated in another item.
+    ///   <paramref name="item"/> doesn't need to be <see cref="Contains">contained</see> currently but might be
+    ///   aggregated in another item.
     /// </remarks>
     /// <param name="item">The aggregation item.</param>
-    /// <returns>The items that are aggregated by the <paramref name="item"/>. If an aggregation node is passed, this
-    /// will return the aggregated nodes. If an aggregation edge is passed, this will return the edges it replaces.
-    /// Otherwise an empty enumerable will be returned. The enumerable may contain both aggregation items as well as
-    /// original items.
+    /// <returns>
+    ///   The items that are aggregated by the <paramref name="item"/>. If an aggregation node is passed, this
+    ///   will return the aggregated nodes. If an aggregation edge is passed, this will return the edges it replaces.
+    ///   Otherwise an empty enumerable will be returned. The enumerable may contain both aggregation items as well as
+    ///   original items.
     /// </returns>
-    public IListEnumerable<IModelItem> GetAggregatedItems(IModelItem item) {
-      var node = item as AggregationNode;
-      if (node != null) {
-        return new ListEnumerable<IModelItem>(node.aggregatedNodes);
-      }
-
-      var edge = item as AggregationEdge;
-      if (edge != null) {
-        return new ListEnumerable<IModelItem>(edge.aggregatedEdges);
-      }
-
-      return ListEnumerable<IModelItem>.Empty;
+    public IReadOnlyList<IModelItem> GetAggregatedItems(IModelItem item) {
+      return item is AggregationNode node ? new List<IModelItem>(node.aggregatedNodes) :
+          item is AggregationEdge edge ? new List<IModelItem>(edge.aggregatedEdges) : EmptyReadOnlyList;
     }
 
     /// <summary>
-    /// Returns the (recursively) aggregated original items of the <paramref name="item"/>.
+    ///   Returns the (recursively) aggregated original items of the <paramref name="item"/>.
     /// </summary>
     /// <remarks>
-    /// In contrast to <see cref="GetAggregatedItems"/> this method returns only original items, but also items
-    /// recursively nested in the aggregation hierarchy.
+    ///   In contrast to <see cref="GetAggregatedItems"/> this method returns only original items, but also items
+    ///   recursively nested in the aggregation hierarchy.
     /// </remarks>
     /// <param name="item">The aggregation item.</param>
-    /// <returns>A list of items of the <see cref="GraphWrapperBase.WrappedGraph"/> that is either directly contained
-    /// in the <paramref name="item"/> or recursively in any contained aggregation items. This list consists only of
-    /// items of the wrapped graph.</returns>
+    /// <returns>
+    ///   A list of items of the <see cref="GraphWrapperBase.WrappedGraph"/> that is either directly contained
+    ///   in the <paramref name="item"/> or recursively in any contained aggregation items. This list consists only of
+    ///   items of the wrapped graph.
+    /// </returns>
     /// <seealso cref="GetAggregatedItems"/>
-    public IListEnumerable<IModelItem> GetAllAggregatedOriginalItems(IModelItem item) {
+    public IReadOnlyList<IModelItem> GetAllAggregatedOriginalItems(IModelItem item) {
       var result = new List<IModelItem>();
       var aggregatedItems = GetAggregatedItems(item);
       foreach (var aggregatedItem in aggregatedItems) {
@@ -716,7 +727,7 @@ namespace Demo.yFiles.Aggregation
           result.Add(aggregatedItem);
         }
       }
-      return new ListEnumerable<IModelItem>(result);
+      return result;
     }
 
     #endregion
@@ -724,10 +735,10 @@ namespace Demo.yFiles.Aggregation
     #region IGraph API
 
     /// <summary>
-    /// Removes the given item from the graph.
+    ///   Removes the given item from the graph.
     /// </summary>
     /// <remarks>
-    /// If <paramref name="item"/> is an aggregation node or aggregation edge, all aggregated items are removed as well.
+    ///   If <paramref name="item"/> is an aggregation node or aggregation edge, all aggregated items are removed as well.
     /// </remarks>
     /// <param name="item">The item to remove.</param>
     public override void Remove(IModelItem item) {
@@ -781,11 +792,10 @@ namespace Demo.yFiles.Aggregation
     private void CleanupPort(IPort port) {
       var isAggregationItem = IsAggregationItem(port);
       // check the auto-cleanup policy to apply
-      var autoCleanUp = (isAggregationItem ? AggregationNodeDefaults 
-          : IsGroupNode(port.Owner as INode) 
-              ? WrappedGraph.GroupNodeDefaults 
-              : WrappedGraph.NodeDefaults)
-                        .Ports.AutoCleanUp;
+      var autoCleanUp =
+          (isAggregationItem ? AggregationNodeDefaults :
+              IsGroupNode(port.Owner as INode) ? WrappedGraph.GroupNodeDefaults : WrappedGraph.NodeDefaults).Ports
+          .AutoCleanUp;
       if (!autoCleanUp) {
         return;
       }
@@ -854,33 +864,32 @@ namespace Demo.yFiles.Aggregation
       OnLabelRemoved(new LabelEventArgs(aggregationLabel, aggregationLabel.Owner));
     }
 
-    public override IListEnumerable<IEdge> EdgesAt(IPortOwner owner, AdjacencyTypes type = AdjacencyTypes.All) {
+    public override IReadOnlyList<IEdge> EdgesAt(IPortOwner owner, AdjacencyTypes type = AdjacencyTypes.All) {
       if (!Contains(owner)) {
         throw new ArgumentException("Owner is not in this graph", "owner");
       }
 
       switch (type) {
         case AdjacencyTypes.None:
-          return ListEnumerable<IEdge>.Empty;
+          return EmptyReadOnlyEdgeList;
         case AdjacencyTypes.Incoming:
           return new ListEnumerable<IEdge>(Edges.Where(edge => owner.Ports.Contains(edge.TargetPort)));
         case AdjacencyTypes.Outgoing:
           return new ListEnumerable<IEdge>(Edges.Where(edge => owner.Ports.Contains(edge.SourcePort)));
         default:
         case AdjacencyTypes.All:
-          return new ListEnumerable<IEdge>(Edges.Where(edge =>
-              owner.Ports.Contains(edge.SourcePort) || owner.Ports.Contains(edge.TargetPort)));
+          return new ListEnumerable<IEdge>(Edges.Where(edge => owner.Ports.Contains(edge.SourcePort) || owner.Ports.Contains(edge.TargetPort)));
       }
     }
 
-    public override IListEnumerable<IEdge> EdgesAt(IPort port, AdjacencyTypes type = AdjacencyTypes.All) {
+    public override IReadOnlyList<IEdge> EdgesAt(IPort port, AdjacencyTypes type = AdjacencyTypes.All) {
       if (!Contains(port)) {
         throw new ArgumentException("Port is not in this graph.", "port");
       }
 
       switch (type) {
         case AdjacencyTypes.None:
-          return ListEnumerable<IEdge>.Empty;
+          return EmptyReadOnlyEdgeList;
         case AdjacencyTypes.Incoming:
           return new ListEnumerable<IEdge>(Edges.Where(edge => port == edge.TargetPort));
         case AdjacencyTypes.Outgoing:
@@ -942,22 +951,23 @@ namespace Demo.yFiles.Aggregation
       if (!Contains(node)) {
         throw new ArgumentException("Node is not in this graph.", "node");
       }
-      if (double.IsNaN(layout.X) || double.IsNaN(layout.Y) || double.IsNaN(layout.Width) ||
-          double.IsNaN(layout.Height)) {
-        throw new ArgumentException("The layout must not contain a NaN value.", "layout");
+      if (!layout.IsFinite()) {
+        throw new ArgumentException("The layout must not contain a NaN or infinite value.", "layout");
       }
 
       var aggregationNode = node as AggregationNode;
       if (aggregationNode != null) {
         var oldLayout = aggregationNode.Layout.ToRectD();
-        aggregationNode.layout.Reshape(layout);
+        aggregationNode.layout.SetShape(layout);
         OnNodeLayoutChanged(aggregationNode, oldLayout);
       } else {
         base.SetNodeLayout(node, layout);
       }
     }
 
-    public override IPort AddPort(IPortOwner owner, IPortLocationModelParameter locationParameter = null,
+    public override IPort AddPort(
+        IPortOwner owner,
+        IPortLocationModelParameter locationParameter = null,
         IPortStyle style = null,
         object tag = null) {
       if (!Contains(owner)) {
@@ -992,9 +1002,6 @@ namespace Demo.yFiles.Aggregation
       }
       if (locationParameter == null) {
         throw new ArgumentNullException("locationParameter");
-      }
-      if (!locationParameter.Supports(port.Owner)) {
-        throw new ArgumentException("The parameter does not support this port", "locationParameter");
       }
 
       var aggregationPort = port as AggregationPort;
@@ -1046,16 +1053,20 @@ namespace Demo.yFiles.Aggregation
       var aggregationBend = bend as AggregationBend;
       if (aggregationBend != null) {
         var oldLocation = aggregationBend.Location.ToPointD();
-        aggregationBend.location.Relocate(location);
+        aggregationBend.location.SetLocation(location);
         OnBendLocationChanged(bend, oldLocation);
       } else {
         base.SetBendLocation(bend, location);
       }
     }
 
-    public override ILabel AddLabel(ILabelOwner owner, string text, ILabelModelParameter layoutParameter = null,
+    public override ILabel AddLabel(
+        ILabelOwner owner,
+        string text,
+        ILabelModelParameter layoutParameter = null,
         ILabelStyle style = null,
-        SizeD? preferredSize = null, object tag = null) {
+        SizeD? preferredSize = null,
+        object tag = null) {
       var labelOwner = owner as AggregationLabelOwner;
       if (labelOwner != null) {
         if (!Contains(owner)) {
@@ -1069,7 +1080,7 @@ namespace Demo.yFiles.Aggregation
         var labelModelParameter = layoutParameter ?? GetLabelModelParameter(labelOwner);
         var labelStyle = style ?? GetLabelStyle(labelOwner);
         var labelPreferredSize = preferredSize ??
-                                 this.CalculateLabelPreferredSize(labelOwner, text, labelModelParameter, labelStyle);
+            this.CalculateLabelPreferredSize(labelOwner, text, labelModelParameter, labelStyle);
 
         var aggregationLabel = new AggregationLabel(this) {
             owner = labelOwner,
@@ -1091,17 +1102,16 @@ namespace Demo.yFiles.Aggregation
     private ILabelModelParameter GetLabelModelParameter(AggregationLabelOwner owner) {
       if (owner is AggregationNode) {
         return AggregationNodeDefaults.Labels.GetLayoutParameterInstance(owner);
-      } else if (owner is AggregationEdge) {
+      }
+      if (owner is AggregationEdge) {
         return AggregationEdgeDefaults.Labels.GetLayoutParameterInstance(owner);
-      } else {
-        var aggregationPort = owner as AggregationPort;
-        if (aggregationPort != null) {
-          if (aggregationPort.Owner is INode) {
-            return AggregationNodeDefaults.Ports.Labels.GetLayoutParameterInstance(owner);
-          } else {
-            return AggregationEdgeDefaults.Ports.Labels.GetLayoutParameterInstance(owner);
-          }
+      }
+      var aggregationPort = owner as AggregationPort;
+      if (aggregationPort != null) {
+        if (aggregationPort.Owner is INode) {
+          return AggregationNodeDefaults.Ports.Labels.GetLayoutParameterInstance(owner);
         }
+        return AggregationEdgeDefaults.Ports.Labels.GetLayoutParameterInstance(owner);
       }
       // won't happen
       return null;
@@ -1110,24 +1120,23 @@ namespace Demo.yFiles.Aggregation
     private ILabelStyle GetLabelStyle(AggregationLabelOwner owner) {
       if (owner is AggregationNode) {
         return AggregationNodeDefaults.Labels.GetStyleInstance(owner);
-      } else if (owner is AggregationEdge) {
+      }
+      if (owner is AggregationEdge) {
         return AggregationEdgeDefaults.Labels.GetStyleInstance(owner);
-      } else {
-        var aggregationPort = owner as AggregationPort;
-        if (aggregationPort != null) {
-          if (aggregationPort.Owner is INode) {
-            return AggregationNodeDefaults.Ports.Labels.GetStyleInstance(owner);
-          } else {
-            return AggregationEdgeDefaults.Ports.Labels.GetStyleInstance(owner);
-          }
+      }
+      var aggregationPort = owner as AggregationPort;
+      if (aggregationPort != null) {
+        if (aggregationPort.Owner is INode) {
+          return AggregationNodeDefaults.Ports.Labels.GetStyleInstance(owner);
         }
+        return AggregationEdgeDefaults.Ports.Labels.GetStyleInstance(owner);
       }
       // won't happen
       return null;
     }
 
     public override void SetLabelText(ILabel label, string text) {
-      if (String.Equals(label.Text, text)) {
+      if (string.Equals(label.Text, text)) {
         return;
       }
       if (!Contains(label)) {
@@ -1175,10 +1184,6 @@ namespace Demo.yFiles.Aggregation
       if (layoutParameter == null) {
         throw new ArgumentNullException("layoutParameter");
       }
-      if (!layoutParameter.Supports(label)) {
-        throw new ArgumentException("The parameter does not support the label.", "layoutParameter");
-      }
-
       var aggregationLabel = label as AggregationLabel;
       if (aggregationLabel != null) {
         var oldParameter = label.LayoutParameter;
@@ -1257,7 +1262,7 @@ namespace Demo.yFiles.Aggregation
       }
     }
 
-    public override IListEnumerable<INode> GetChildren(INode node) {
+    public override IReadOnlyList<INode> GetChildren(INode node) {
       if (node == null) {
         // top-level nodes
         return new ListEnumerable<INode>(Nodes.Where(n => GetParent(n) == null));
@@ -1366,7 +1371,7 @@ namespace Demo.yFiles.Aggregation
 
     public override bool IsGroupNode(INode node) {
       if (node == null) {
-        // null represents the root which is always a group node 
+        // null represents the root which is always a group node
         return true;
       }
 
@@ -1420,7 +1425,7 @@ namespace Demo.yFiles.Aggregation
     }
 
     /// <summary>
-    /// Does not raise EdgeCreated event!!
+    ///   Does not raise EdgeCreated event!!
     /// </summary>
     private AggregationEdge CreateAggregationEdge(IPort sourcePort, IPort targetPort, object tag) {
       var aggregationEdge = new AggregationEdge(this, new List<IEdge>()) {
@@ -1459,67 +1464,59 @@ namespace Demo.yFiles.Aggregation
     }
 
     /// <summary>
-    /// An ILookupDecorator implementation that contains its own lookup chains.
+    ///   An ILookupDecorator implementation that contains its own lookup chains.
     /// </summary>
     /// <remarks>
-    /// New chain links are added to the chains of this decorator as well as to the decorator of the
-    /// <see cref="GraphWrapperBase.WrappedGraph"/>.
+    ///   New chain links are added to the chains of this decorator as well as to the decorator of the
+    ///   <see cref="GraphWrapperBase.WrappedGraph"/>.
     /// </remarks>
     private sealed class AggregateLookupDecorator : ILookup, ILookupDecorator
     {
       private ILookupDecorator wrappedDecorator;
       private readonly AggregateGraphWrapper graph;
 
-      private readonly LookupChain graphLookupChain = new LookupChain();
-      private readonly LookupChain nodeLookupChain = new LookupChain();
-      private readonly LookupChain edgeLookupChain = new LookupChain();
-      private readonly LookupChain bendLookupChain = new LookupChain();
-      private readonly LookupChain portLookupChain = new LookupChain();
-      private readonly LookupChain labelLookupChain = new LookupChain();
+      private readonly ContextLookup<IGraph> graphLookup = new();
+      private readonly ContextLookup<INode> nodeLookup = new();
+      private readonly ContextLookup<IEdge> edgeLookup = new();
+      private readonly ContextLookup<IBend> bendLookup = new();
+      private readonly ContextLookup<IPort> portLookup = new();
+      private readonly ContextLookup<ILabel> labelLookup = new();
 
       public AggregateLookupDecorator(AggregateGraphWrapper graph) {
         this.graph = graph;
 
-        graphLookupChain.Add(new GraphFallBackLookup());
+        graphLookup.AddLookup(new GraphFallBackLookup());
 
-        nodeLookupChain.Add(new ItemFallBackLookup());
-        nodeLookupChain.Add(new ItemDefaultLookup(DefaultGraph.DefaultNodeLookup));
-        nodeLookupChain.Add(new BlockReshapeAndPositionHandlerLookup());
+        nodeLookup.AddLookup(new ItemFallBackLookup());
+        nodeLookup.AddLookup(new ItemDefaultLookup(DefaultGraph.DefaultNodeLookup));
+        nodeLookup.AddLookup(new BlockReshapeAndPositionHandlerLookup());
 
-        edgeLookupChain.Add(new ItemFallBackLookup());
-        edgeLookupChain.Add(new ItemDefaultLookup(DefaultGraph.DefaultEdgeLookup));
+        edgeLookup.AddLookup(new ItemFallBackLookup());
+        edgeLookup.AddLookup(new ItemDefaultLookup(DefaultGraph.DefaultEdgeLookup));
 
-        bendLookupChain.Add(new ItemFallBackLookup());
-        bendLookupChain.Add(new ItemDefaultLookup(DefaultGraph.DefaultBendLookup));
+        bendLookup.AddLookup(new ItemFallBackLookup());
+        bendLookup.AddLookup(new ItemDefaultLookup(DefaultGraph.DefaultBendLookup));
 
-        portLookupChain.Add(new ItemFallBackLookup());
-        portLookupChain.Add(new ItemDefaultLookup(DefaultGraph.DefaultPortLookup));
+        portLookup.AddLookup(new ItemFallBackLookup());
+        portLookup.AddLookup(new ItemDefaultLookup(DefaultGraph.DefaultPortLookup));
 
-        labelLookupChain.Add(new ItemFallBackLookup());
-        labelLookupChain.Add(new ItemDefaultLookup(DefaultGraph.DefaultLabelLookup));
-      }
-
-      public bool CanDecorate(Type t) {
-        if (t == typeof(INode) || t == typeof(IEdge) || t == typeof(IBend) || t == typeof(IPort)
-            || t == typeof(ILabel) || t == typeof(IModelItem) || t == typeof(IGraph)) {
-          return wrappedDecorator == null || wrappedDecorator.CanDecorate(t);
-        }
-        return false;
+        labelLookup.AddLookup(new ItemFallBackLookup());
+        labelLookup.AddLookup(new ItemDefaultLookup(DefaultGraph.DefaultLabelLookup));
       }
 
       public void AddLookup(Type t, IContextLookupChainLink lookup) {
         if (t == typeof(INode)) {
-          nodeLookupChain.Add(lookup);
+          nodeLookup.AddLookup(lookup);
         } else if (t == typeof(IEdge)) {
-          edgeLookupChain.Add(lookup);
+          edgeLookup.AddLookup(lookup);
         } else if (t == typeof(IBend)) {
-          bendLookupChain.Add(lookup);
+          bendLookup.AddLookup(lookup);
         } else if (t == typeof(IPort)) {
-          portLookupChain.Add(lookup);
+          portLookup.AddLookup(lookup);
         } else if (t == typeof(ILabel)) {
-          labelLookupChain.Add(lookup);
+          labelLookup.AddLookup(lookup);
         } else if (t == typeof(IGraph)) {
-          graphLookupChain.Add(lookup);
+          graphLookup.AddLookup(lookup);
         } else {
           throw new ArgumentException("Cannot decorate type " + t);
         }
@@ -1531,17 +1528,17 @@ namespace Demo.yFiles.Aggregation
 
       public void RemoveLookup(Type t, IContextLookupChainLink lookup) {
         if (t == typeof(INode)) {
-          nodeLookupChain.Remove(lookup);
+          nodeLookup.RemoveLookup(lookup);
         } else if (t == typeof(IEdge)) {
-          edgeLookupChain.Remove(lookup);
+          edgeLookup.RemoveLookup(lookup);
         } else if (t == typeof(IBend)) {
-          bendLookupChain.Remove(lookup);
+          bendLookup.RemoveLookup(lookup);
         } else if (t == typeof(IPort)) {
-          portLookupChain.Remove(lookup);
+          portLookup.RemoveLookup(lookup);
         } else if (t == typeof(ILabel)) {
-          labelLookupChain.Remove(lookup);
+          labelLookup.RemoveLookup(lookup);
         } else if (t == typeof(IGraph)) {
-          graphLookupChain.Remove(lookup);
+          graphLookup.RemoveLookup(lookup);
         }
 
         if (wrappedDecorator != null) {
@@ -1554,32 +1551,27 @@ namespace Demo.yFiles.Aggregation
           wrappedDecorator = (ILookupDecorator) graph.BaseLookup(type);
           return this;
         }
-        if (type == typeof(LookupChain)) {
-          return graphLookupChain;
-        }
 
-        var lookup = graph.GetLookup();
-        if (lookup != null) {
-          return lookup.Lookup(type);
-        }
-
-        return graphLookupChain.Lookup(graph, type);
+        return graphLookup.Lookup(graph, type);
       }
 
       public object DelegateLookup(IModelItem item, Type type) {
         if (item is INode) {
-          return nodeLookupChain.Lookup(item, type);
-        } else if (item is IEdge) {
-          return edgeLookupChain.Lookup(item, type);
-        } else if (item is ILabel) {
-          return labelLookupChain.Lookup(item, type);
-        } else if (item is IBend) {
-          return bendLookupChain.Lookup(item, type);
-        } else if (item is IPort) {
-          return portLookupChain.Lookup(item, type);
-        } else {
-          return null;
+          return nodeLookup.Lookup((INode) item, type);
         }
+        if (item is IEdge) {
+          return edgeLookup.Lookup((IEdge) item, type);
+        }
+        if (item is ILabel) {
+          return labelLookup.Lookup((ILabel) item, type);
+        }
+        if (item is IBend) {
+          return bendLookup.Lookup((IBend) item, type);
+        }
+        if (item is IPort) {
+          return portLookup.Lookup((IPort) item, type);
+        }
+        return null;
       }
     }
 
@@ -1631,7 +1623,7 @@ namespace Demo.yFiles.Aggregation
       }
 
       public void SetNext(IContextLookup next) {
-        this.nextLink = next;
+        nextLink = next;
       }
     }
 
@@ -1654,7 +1646,7 @@ namespace Demo.yFiles.Aggregation
     }
 
     /// <summary>
-    /// A simple INode implementation for aggregation nodes.
+    ///   A simple INode implementation for aggregation nodes.
     /// </summary>
     private sealed class AggregationNode : AggregationLabelPortOwner, INode
     {
@@ -1667,9 +1659,7 @@ namespace Demo.yFiles.Aggregation
         this.aggregatedNodes = aggregatedNodes;
       }
 
-      public IRectangle Layout {
-        get { return layout; }
-      }
+      public IRectangle Layout => layout;
 
       public INodeStyle Style { get; internal set; }
 
@@ -1687,29 +1677,20 @@ namespace Demo.yFiles.Aggregation
         return Labels.Count > 0
             ? base.ToString()
             : "Aggregation Node (" + aggregatedNodes.Count + ") [" + layout.X + ", " + layout.Y + ", " + layout.Width +
-              ", " + layout.Height + "]";
+            ", " + layout.Height + "]";
       }
     }
 
     /// <summary>
-    /// A simple IEdge implementation for aggregation edges.
+    ///   A simple IEdge implementation for aggregation edges.
     /// </summary>
     private sealed class AggregationEdge : AggregationLabelPortOwner, IEdge
     {
       internal readonly IList<IEdge> aggregatedEdges;
 
-      internal readonly IList<AggregationBend> bends = new List<AggregationBend>();
+      internal readonly List<AggregationBend> bends = new();
 
-      private ListEnumerable<IBend> bendEnumerable;
-
-      public IListEnumerable<IBend> Bends {
-        get {
-          if (bendEnumerable == null) {
-            bendEnumerable = new ListEnumerable<IBend>(bends);
-          }
-          return bendEnumerable;
-        }
-      }
+      public IReadOnlyList<IBend> Bends => bends;
 
       public IPort SourcePort { get; internal set; }
 
@@ -1734,31 +1715,25 @@ namespace Demo.yFiles.Aggregation
       public override string ToString() {
         if (labels.Count > 0) {
           return base.ToString();
-        } else {
-          if ((SourcePort != null && SourcePort.Owner is IEdge) || (TargetPort != null && TargetPort.Owner is IEdge)) {
-            return "Aggregation Edge [ At another Edge ]";
-          } else {
-            return "Aggregation Edge (" + aggregatedEdges.Count + ") [" + SourcePort + " -> " + TargetPort + "]";
-          }
         }
+        if ((SourcePort != null && SourcePort.Owner is IEdge) || (TargetPort != null && TargetPort.Owner is IEdge)) {
+          return "Aggregation Edge [ At another Edge ]";
+        }
+        return "Aggregation Edge (" + aggregatedEdges.Count + ") [" + SourcePort + " -> " + TargetPort + "]";
       }
     }
 
     /// <summary>
-    /// A simple IBend implementation for bends of <see cref="AggregationEdge"/>s.
+    ///   A simple IBend implementation for bends of <see cref="AggregationEdge"/>s.
     /// </summary>
     private sealed class AggregationBend : AggregationItem, IBend
     {
       internal AggregationEdge owner;
       internal IMutablePoint location;
 
-      public IEdge Owner {
-        get { return owner; }
-      }
+      public IEdge Owner => owner;
 
-      public IPoint Location {
-        get { return location; }
-      }
+      public IPoint Location => location;
 
       public AggregationBend(AggregateGraphWrapper graph) : base(graph) { }
 
@@ -1775,15 +1750,13 @@ namespace Demo.yFiles.Aggregation
     }
 
     /// <summary>
-    /// A simple IPort implementation for ports of <see cref="AggregationLabelPortOwner"/>.
+    ///   A simple IPort implementation for ports of <see cref="AggregationLabelPortOwner"/>.
     /// </summary>
     private sealed class AggregationPort : AggregationLabelOwner, IPort
     {
       internal AggregationLabelPortOwner owner;
 
-      public IPortOwner Owner {
-        get { return owner; }
-      }
+      public IPortOwner Owner => owner;
 
       public IPortStyle Style { get; internal set; }
 
@@ -1817,7 +1790,7 @@ namespace Demo.yFiles.Aggregation
     }
 
     /// <summary>
-    /// A simple ILabel implementation for labels of <see cref="AggregationLabelOwner"/>.
+    ///   A simple ILabel implementation for labels of <see cref="AggregationLabelOwner"/>.
     /// </summary>
     private sealed class AggregationLabel : AggregationItem, ILabel
     {
@@ -1827,9 +1800,7 @@ namespace Demo.yFiles.Aggregation
 
       public SizeD PreferredSize { get; internal set; }
 
-      public ILabelOwner Owner {
-        get { return owner; }
-      }
+      public ILabelOwner Owner => owner;
 
       public string Text { get; internal set; }
 
@@ -1854,34 +1825,18 @@ namespace Demo.yFiles.Aggregation
 
     private abstract class AggregationLabelPortOwner : AggregationLabelOwner, IPortOwner
     {
-      internal readonly IList<IPort> ports = new List<IPort>();
-      private IListEnumerable<IPort> enumerable;
+      internal readonly List<IPort> ports = new();
 
-      public IListEnumerable<IPort> Ports {
-        get {
-          if (enumerable == null) {
-            enumerable = new ListEnumerable<IPort>(ports);
-          }
-          return enumerable;
-        }
-      }
+      public IReadOnlyList<IPort> Ports => ports;
 
       protected AggregationLabelPortOwner(AggregateGraphWrapper graph) : base(graph) { }
     }
 
     private abstract class AggregationLabelOwner : AggregationItem, ILabelOwner
     {
-      internal readonly IList<ILabel> labels = new List<ILabel>();
-      private IListEnumerable<ILabel> enumerable;
+      internal readonly List<ILabel> labels = new();
 
-      public IListEnumerable<ILabel> Labels {
-        get {
-          if (enumerable == null) {
-            enumerable = new ListEnumerable<ILabel>(labels);
-          }
-          return enumerable;
-        }
-      }
+      public IReadOnlyList<ILabel> Labels => labels;
 
       protected AggregationLabelOwner(AggregateGraphWrapper graph) : base(graph) { }
 
@@ -1900,7 +1855,7 @@ namespace Demo.yFiles.Aggregation
       }
 
       public object Tag {
-        get { return tag; }
+        get => tag;
         set {
           var oldTag = tag;
           tag = value;
@@ -1923,5 +1878,51 @@ namespace Demo.yFiles.Aggregation
     }
 
     #endregion
+
+    private sealed class ListEnumerable<T> : IReadOnlyList<T>
+    {
+      private readonly IEnumerable<T> impl;
+
+      internal ListEnumerable(IEnumerable<T> impl) {
+        this.impl = impl;
+      }
+
+      IEnumerator IEnumerable.GetEnumerator() {
+        return GetEnumerator();
+      }
+
+      public IEnumerator<T> GetEnumerator() {
+        return impl.GetEnumerator();
+      }
+
+      public int Count {
+        get {
+          var count = 0;
+          using var it = impl.GetEnumerator();
+          for (; it.MoveNext(); ++count) {
+            // do nothing
+          }
+          return count;
+        }
+      }
+
+      public T this[int index] {
+        get {
+          if (index < 0) {
+            throw new ArgumentOutOfRangeException(nameof(index),
+                "Index was out of range. Must be non-negative and less than the size of the collection.");
+          }
+          var count = 0;
+          using var it = impl.GetEnumerator();
+          for (; it.MoveNext(); ++count) {
+            if (index == count) {
+              return it.Current;
+            }
+          }
+          throw new ArgumentOutOfRangeException(nameof(index),
+              "Index was out of range. Must be non-negative and less than the size of the collection.");
+        }
+      }
+    }
   }
 }

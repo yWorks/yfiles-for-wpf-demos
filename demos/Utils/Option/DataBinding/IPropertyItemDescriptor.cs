@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -30,36 +30,32 @@
 namespace Demo.yFiles.Option.DataBinding
 {
   /// <summary>
-  /// A descriptor that is used by the <see cref="ISelectionProvider{T}"/> interface.
+  ///   A descriptor that is used by the <see cref="ISelectionProvider{T}"/> interface.
   /// </summary>
   /// <typeparam name="T">The item of the items being described.</typeparam>
   public interface IPropertyItemDescriptor<T>
   {
     /// <summary>
-    /// Returns the item whose virtual properties can be accessed via the <see cref="Properties"/>
-    /// map.
+    ///   Returns the item whose virtual properties can be accessed via the <see cref="Properties"/>
+    ///   map.
     /// </summary>
     T Item { get; }
+
     /// <summary>
-    /// Retrieves the map of the properties for the <see cref="Item"/>.
+    ///   Retrieves the map of the properties for the <see cref="Item"/>.
     /// </summary>
     IPropertyMap Properties { get; }
   }
 
-  internal class DefaultPropertyItemDescriptor<T>: IPropertyItemDescriptor<T> {
-    private T context;
-    private IPropertyMap properties;
+  internal class DefaultPropertyItemDescriptor<T> : IPropertyItemDescriptor<T>
+  {
     public DefaultPropertyItemDescriptor(T item, IPropertyMap properties) {
-      this.context = item;
-      this.properties = properties;
+      Item = item;
+      Properties = properties;
     }
 
-    public T Item {
-      get { return context; }
-    }
+    public T Item { get; }
 
-    public IPropertyMap Properties {
-      get { return properties; }
-    }
+    public IPropertyMap Properties { get; }
   }
 }

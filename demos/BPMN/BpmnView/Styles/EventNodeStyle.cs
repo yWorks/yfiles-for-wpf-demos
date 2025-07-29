@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -33,7 +33,6 @@ using System.ComponentModel;
 using System.Reflection;
 using System.Windows.Media;
 using Demo.yFiles.Graph.Bpmn.Util;
-using yWorks.Controls;
 using yWorks.Controls.Input;
 using yWorks.Geometry;
 using yWorks.Graph;
@@ -142,7 +141,7 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
 
     private IIcon eventIcon;
     private IIcon typeIcon;
-    private bool fillTypeIcon = false;
+    private bool fillTypeIcon;
 
     /// <summary>
     /// Creates a new instance.
@@ -198,7 +197,7 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
     protected override bool IsHit(IInputModeContext context, PointD location, INode node) {
       double size = Math.Min(node.Layout.Width, node.Layout.Height);
       RectD bounds = new RectD(node.Layout.GetCenter().X - size / 2, node.Layout.GetCenter().Y - size / 2, size, size);
-      return GeomUtilities.EllipseContains(bounds, location, context.HitTestRadius);
+      return GeometryUtilities.EllipseContains(bounds, location, context.HitTestRadius);
     }
   }
 }

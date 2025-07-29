@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -35,37 +35,34 @@ using System.Collections.Specialized;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Shapes;
 using yWorks.Controls.Input;
 using yWorks.Geometry;
 using yWorks.Graph;
 using yWorks.Graph.Styles;
-using yWorks.Layout;
 using yWorks.Layout.Organic;
 
 namespace Demo.yFiles.Graph.BusinessModelAdapter
 {
   /// <summary>
-  /// This class implements the main logic for this demo.
+  ///   Shows how to write a simple adapter that adapts an existing observable
+  ///   business model to an IGraph which can be visualized and edited in a view.
   /// </summary>
-  /// <remarks>
-  /// This demo shows how to write a simple adapter that adapts an existing observable
-  /// business model to an IGraph, that can be visualized and edited in a view.
-  /// </remarks>
   public partial class BusinessModelAdapterWindow
   {
     // keeps the mappings
-    private readonly Dictionary<Customer, INode> nodeMapping = new Dictionary<Customer, INode>();
+    private readonly Dictionary<Customer, INode> nodeMapping = new();
 
     // holds the style for the customer objects
     private readonly NodeControlNodeStyle customerNodeStyle;
 
-    // holds the actual "businessmodel"
+    // holds the actual "business model"
     private readonly ICollection<Customer> customers;
 
     // one dummy customer for inserting new customers.
     private readonly Customer dummyCustomer;
 
-    private OrganicLayout layout;
+    private readonly OrganicLayout layout;
 
     public BusinessModelAdapterWindow() {
       InitializeComponent();
@@ -76,18 +73,17 @@ namespace Demo.yFiles.Graph.BusinessModelAdapter
 
       customers = new ObservableCollection<Customer>();
 
-      this.Resources.Add("DummyCustomer", dummyCustomer);
+      Resources.Add("DummyCustomer", dummyCustomer);
 
+      var customer1 = new Customer("Mr. Tester", 42);
+      var customer2 = new Customer("Mrs. Tester", 43);
+      var customer3 = new Customer("Baby Tester", 2);
+      var customer4 = new Customer("Aunt Tester", 34);
 
-      Customer customer1 = new Customer("Mr. Tester", 42);
-      Customer customer2 = new Customer("Mrs. Tester", 43);
-      Customer customer3 = new Customer("Baby Tester", 2);
-      Customer customer4 = new Customer("Aunt Tester", 34);
-
-      this.customers.Add(customer1);
-      this.customers.Add(customer2);
-      this.customers.Add(customer3);
-      this.customers.Add(customer4);
+      customers.Add(customer1);
+      customers.Add(customer2);
+      customers.Add(customer3);
+      customers.Add(customer4);
 
       // add some relationships between customers
       customer2.RelatedCustomers.Add(customer3);
@@ -97,10 +93,10 @@ namespace Demo.yFiles.Graph.BusinessModelAdapter
       customer2.RelatedCustomers.Add(customer1);
 
       // publish the list so that the listview can pick it up
-      this.Resources.Add("Customers", this.customers);
+      Resources.Add("Customers", customers);
 
       // configure the GraphControl
-      GraphEditorInputMode editorInputMode = new GraphEditorInputMode();
+      var editorInputMode = new GraphEditorInputMode();
 
       // configure some structural edits
       editorInputMode.CreateBendInputMode.Enabled = false;
@@ -108,7 +104,7 @@ namespace Demo.yFiles.Graph.BusinessModelAdapter
       editorInputMode.DeletableItems = GraphItemTypes.None;
       editorInputMode.CreateEdgeInputMode.Enabled = true;
       editorInputMode.CreateEdgeInputMode.EdgeCreator = EdgeCreator;
-      
+
       // register custom code for the creation of new entities
       editorInputMode.NodeCreator = NodeCreator;
 
@@ -116,40 +112,46 @@ namespace Demo.yFiles.Graph.BusinessModelAdapter
       graphControl.InputMode = editorInputMode;
 
       // define the default edge style
-      ArcEdgeStyle style = new ArcEdgeStyle{Pen = new Pen(Brushes.Black, 2), Height = 30, TargetArrow = Arrows.Default, ProvideHeightHandle = false};
+      var style = new ArcEdgeStyle {
+          Pen = new Pen(Brushes.Black, 2),
+          Height = 30,
+          TargetArrow = new Arrow(ArrowType.Stealth),
+          ProvideHeightHandle = false
+      };
       Graph.EdgeDefaults.Style = style;
 
       // fetch the node style from the xaml templates
-      customerNodeStyle = new NodeControlNodeStyle("CustomerNodeStyle") { OutlineShape = new System.Windows.Shapes.Rectangle { RadiusX = 3, RadiusY = 3 } };
+      customerNodeStyle =
+          new NodeControlNodeStyle("CustomerNodeStyle") { OutlineShape = new Rectangle { RadiusX = 3, RadiusY = 3 } };
 
       // now create the graph from the bindinglist
-      CreateGraph(this.customers);
+      CreateGraph(customers);
 
       // register for change notification
-      ((INotifyCollectionChanged)customers).CollectionChanged += customers_CollectionChanged;
-      
+      ((INotifyCollectionChanged) customers).CollectionChanged += customers_CollectionChanged;
+
       layout = CreateLayout();
     }
 
-    private void BusinessModelAdapterWindow_OnLoaded(object sender, RoutedEventArgs e) {
+    private void OnLoaded(object sender, RoutedEventArgs e) {
       DoLayout();
     }
-    
+
     public static readonly RoutedUICommand RemoveCustomerCommand =
-      new RoutedUICommand("Remove Customer", "RemoveCustomer", typeof(BusinessModelAdapterWindow));
+        new("Remove Customer", "RemoveCustomer", typeof(BusinessModelAdapterWindow));
 
     public static readonly RoutedUICommand RemoveRelationCommand =
-     new RoutedUICommand("Remove Relation", "RemoveRelation", typeof(BusinessModelAdapterWindow));
+        new("Remove Relation", "RemoveRelation", typeof(BusinessModelAdapterWindow));
 
     /// <summary>
-    /// custom creation code that uses the model to actually trigger node creation
+    ///   custom creation code that uses the model to actually trigger node creation
     /// </summary>
     private INode NodeCreator(IInputModeContext context, IGraph graph, PointD location, INode parent) {
       // create the customer in the model
-      Customer customer = new Customer("New Customer", 42);
+      var customer = new Customer("New Customer", 42);
       customers.Add(customer);
       // see if it has been added
-      INode newNode = nodeMapping[customer];
+      var newNode = nodeMapping[customer];
       if (newNode != null) {
         // adjust the location
         graph.SetNodeCenter(newNode, location);
@@ -157,25 +159,27 @@ namespace Demo.yFiles.Graph.BusinessModelAdapter
       return newNode;
     }
 
-    private IEdge EdgeCreator(IInputModeContext context, IGraph graph, IPortCandidate sourcePort,
-                                              IPortCandidate targetPort, IEdge templateEdge)
-    {
-      //We perform the edge creation indirectly through the model
-      Customer sourceCustomer = (Customer) sourcePort.Owner.Tag;
-      Customer targetCustomer = (Customer) targetPort.Owner.Tag;
+    private IEdge EdgeCreator(
+        IInputModeContext context,
+        IGraph graph,
+        IPortCandidate sourcePort,
+        IPortCandidate targetPort,
+        IEdge templateEdge) {
+      // We perform the edge creation indirectly through the model
+      var sourceCustomer = (Customer) sourcePort.Owner.Tag;
+      var targetCustomer = (Customer) targetPort.Owner.Tag;
       var relatedCustomers = sourceCustomer.RelatedCustomers;
       if (sourceCustomer != targetCustomer && !sourceCustomer.RelatedCustomers.Contains(targetCustomer)) {
         relatedCustomers.Add(targetCustomer);
         var edge = Graph.GetEdge(sourcePort.Owner, targetPort.Owner);
-        //Return the newly created edge...
+        // Return the newly created edge...
         return edge;
-      } else {
-        return null;
       }
+      return null;
     }
 
     /// <summary>
-    ///  callback for the insert button
+    ///   callback for the insert button
     /// </summary>
     private void OnInsertClicked(object src, EventArgs args) {
       // create and add a new customer to the collection, this will trigger an update
@@ -184,27 +188,27 @@ namespace Demo.yFiles.Graph.BusinessModelAdapter
     }
 
     /// <summary>
-    ///  callback for the relate button
+    ///   callback for the relate button
     /// </summary>
     private void OnRelateClicked(object src, EventArgs args) {
       // determine relationships to be established
-      Customer firstCustomer = customerList.SelectedItem as Customer;
+      var firstCustomer = customerList.SelectedItem as Customer;
       if (firstCustomer != null) {
-        List<Customer> relationsToAdd = new List<Customer>(customerList.SelectedItems.Count);
+        var relationsToAdd = new List<Customer>(customerList.SelectedItems.Count);
         foreach (Customer relatedCustomer in customerList.SelectedItems) {
           if (relatedCustomer != firstCustomer && !firstCustomer.RelatedCustomers.Contains(relatedCustomer)) {
             relationsToAdd.Add(relatedCustomer);
           }
         }
         // create the relations - this will trigger edge creations in the graph
-        foreach (Customer relatedCustomer in relationsToAdd) {
+        foreach (var relatedCustomer in relationsToAdd) {
           firstCustomer.RelatedCustomers.Add(relatedCustomer);
         }
       }
     }
 
     /// <summary>
-    /// callback for the remove button
+    ///   callback for the remove button
     /// </summary>
     private void OnRemoveClicked(object src, EventArgs args) {
       // works on the model - triggers update in the graph
@@ -215,44 +219,41 @@ namespace Demo.yFiles.Graph.BusinessModelAdapter
     }
 
     /// <summary>
-    /// callback for removal of relationship
+    ///   callback for removal of relationship
     /// </summary>
     private void OnRemoveRelatedClicked(object src, EventArgs args) {
       // see if something is being displayed
-      IList<Customer> list = relatedCustomersList.ItemsSource as IList<Customer>;
+      var list = relatedCustomersList.ItemsSource as IList<Customer>;
       IList selectedRelations = new ArrayList(relatedCustomersList.SelectedItems);
       if (list != null && relatedCustomersList.SelectedItem is Customer) {
         foreach (Customer selectedRelation in selectedRelations) {
-          list.Remove(selectedRelation);  
+          list.Remove(selectedRelation);
         }
       }
     }
 
     /// <summary>
-    /// Called when the arrange button is clicked.
-    /// Performs a simple organic layout.
+    ///   Called when the arrange button is clicked.
+    ///   Performs a simple organic layout.
     /// </summary>
     private void OnArrangeClicked(object src, EventArgs e) {
       DoLayout();
     }
 
     private void DoLayout() {
-      LayoutGraphAdapter.ApplyLayout(Graph, layout);
+      Graph.ApplyLayout(layout);
       graphControl.FitGraphBounds();
     }
 
     private OrganicLayout CreateLayout() {
-      OrganicLayout organicLayout = new OrganicLayout
-      {
-        PreferredEdgeLength = 100,
-        MinimumNodeDistance = 30,
-        Deterministic = true
+      var organicLayout = new OrganicLayout {
+          DefaultPreferredEdgeLength = 100, DefaultMinimumNodeDistance = 30, Deterministic = true
       };
       return organicLayout;
     }
 
     /// <summary>
-    ///  callback that synchronized changes to the customer model
+    ///   callback that synchronized changes to the customer model
     /// </summary>
     private void customers_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
       switch (e.Action) {
@@ -288,37 +289,38 @@ namespace Demo.yFiles.Graph.BusinessModelAdapter
 
 
     /// <summary>
-    ///  helper method to create the graph
+    ///   helper method to create the graph
     /// </summary>
     private void CreateGraph(IEnumerable<Customer> customers) {
       // for all customers
-      foreach (Customer customer in customers) {
+      foreach (var customer in customers) {
         InsertCustomer(customer);
       }
     }
 
     /// <summary>
-    /// Inserts a new customer.
+    ///   Inserts a new customer.
     /// </summary>
     /// <param name="customer">The customer.</param>
     private void InsertCustomer(Customer customer) {
       // create or get a previously created node
-      INode sourceNode = GetOrCreateCustomerNode(customer);
+      var sourceNode = GetOrCreateCustomerNode(customer);
 
       // for each related customer
-      foreach (Customer relatedCustomer in customer.RelatedCustomers) {
+      foreach (var relatedCustomer in customer.RelatedCustomers) {
         InsertRelation(sourceNode, relatedCustomer);
       }
 
       if (customer.RelatedCustomers is INotifyCollectionChanged) {
-        INotifyCollectionChanged ncc = (INotifyCollectionChanged) customer.RelatedCustomers;
-        ncc.CollectionChanged +=
-          delegate(object sender, NotifyCollectionChangedEventArgs e) { RelationshipChanged(customer, e); };
+        var ncc = (INotifyCollectionChanged) customer.RelatedCustomers;
+        ncc.CollectionChanged += delegate(object sender, NotifyCollectionChangedEventArgs e) {
+          RelationshipChanged(customer, e);
+        };
       }
     }
 
     /// <summary>
-    /// Helper method that creates nodes and stores the mapping
+    ///   Helper method that creates nodes and stores the mapping
     /// </summary>
     private INode GetOrCreateCustomerNode(Customer customer) {
       // see if we already created the node
@@ -326,37 +328,36 @@ namespace Demo.yFiles.Graph.BusinessModelAdapter
       nodeMapping.TryGetValue(customer, out node);
       if (node == null) {
         // create the node at a default location using a default size
-        node = Graph.CreateNode(new RectD(10, 40 * Graph.Nodes.Count, 100, 50), this.customerNodeStyle, customer);
+        node = Graph.CreateNode(new RectD(10, 40 * Graph.Nodes.Count, 100, 50), customerNodeStyle, customer);
 
         // now update the size to the desired size
-        SizeD preferredSize =
-          this.customerNodeStyle.Renderer.GetPreferredSize(node, this.customerNodeStyle);
+        var preferredSize = customerNodeStyle.GetPreferredSize(graphControl.CreateRenderContext(), node);
         Graph.SetNodeLayout(node, new RectD(node.Layout.GetTopLeft(), preferredSize));
 
         // update the mapping
-        this.nodeMapping[customer] = node;
+        nodeMapping[customer] = node;
       }
       return node;
     }
 
     /// <summary>
-    /// Helper method that inserts a new relation.
+    ///   Helper method that inserts a new relation.
     /// </summary>
     /// <param name="sourceNode">The source node.</param>
     /// <param name="relatedCustomer">The related customer.</param>
     private void InsertRelation(INode sourceNode, Customer relatedCustomer) {
       // create or get the related customer node
-      INode targetNode = GetOrCreateCustomerNode(relatedCustomer);
+      var targetNode = GetOrCreateCustomerNode(relatedCustomer);
       // create an edge
       Graph.CreateEdge(sourceNode, targetNode);
     }
 
     /// <summary>
-    /// Helper method that removes a customer.
+    ///   Helper method that removes a customer.
     /// </summary>
     /// <param name="customer">The customer.</param>
     private void RemoveCustomer(Customer customer) {
-      INode node = nodeMapping[customer];
+      var node = nodeMapping[customer];
       if (node != null) {
         if (Graph.Contains(node)) {
           Graph.Remove(node);
@@ -366,37 +367,37 @@ namespace Demo.yFiles.Graph.BusinessModelAdapter
     }
 
     /// <summary>
-    /// Helper method that removes relations from a customer.
+    ///   Helper method that removes relations from a customer.
     /// </summary>
     private void RemoveRelations(INode node, Customer customer) {
-      INode targetNode = nodeMapping[customer];
+      var targetNode = nodeMapping[customer];
       if (targetNode != null) {
-        List<IEdge> toDelete = new List<IEdge>();
-        foreach (IEdge edge in Graph.EdgesAt(node)) {
+        var toDelete = new List<IEdge>();
+        foreach (var edge in Graph.EdgesAt(node)) {
           if (edge.SourcePort.Owner == node && edge.TargetPort.Owner == targetNode) {
             toDelete.Add(edge);
           }
         }
-        foreach (IEdge edge in toDelete) {
+        foreach (var edge in toDelete) {
           Graph.Remove(edge);
         }
       }
     }
 
     /// <summary>
-    /// callback that synchronizes changes in the relationships models.
+    ///   callback that synchronizes changes in the relationships models.
     /// </summary>
     private void RelationshipChanged(Customer customer, NotifyCollectionChangedEventArgs e) {
       switch (e.Action) {
         case NotifyCollectionChangedAction.Add: {
-          INode sourceNode = GetOrCreateCustomerNode(customer);
+          var sourceNode = GetOrCreateCustomerNode(customer);
           foreach (Customer relatedCustomer in e.NewItems) {
             InsertRelation(sourceNode, relatedCustomer);
           }
         }
           break;
         case NotifyCollectionChangedAction.Remove: {
-          INode sourceNode = nodeMapping[customer];
+          var sourceNode = nodeMapping[customer];
           if (sourceNode != null) {
             foreach (Customer relatedCustomer in e.OldItems) {
               RemoveRelations(sourceNode, relatedCustomer);
@@ -405,7 +406,7 @@ namespace Demo.yFiles.Graph.BusinessModelAdapter
         }
           break;
         case NotifyCollectionChangedAction.Replace: {
-          INode sourceNode = GetOrCreateCustomerNode(customer);
+          var sourceNode = GetOrCreateCustomerNode(customer);
           foreach (Customer relatedCustomer in e.NewItems) {
             InsertRelation(sourceNode, relatedCustomer);
           }
@@ -417,14 +418,14 @@ namespace Demo.yFiles.Graph.BusinessModelAdapter
         case NotifyCollectionChangedAction.Move:
           break;
         case NotifyCollectionChangedAction.Reset: {
-          INode sourceNode = nodeMapping[customer];
+          var sourceNode = nodeMapping[customer];
           if (sourceNode != null) {
-            foreach (IEdge edge in new List<IEdge>(Graph.EdgesAt(sourceNode))) {
+            foreach (var edge in new List<IEdge>(Graph.EdgesAt(sourceNode))) {
               if (Graph.Contains(edge)) {
                 Graph.Remove(edge);
               }
             }
-            foreach (Customer relatedCustomer in customer.RelatedCustomers) {
+            foreach (var relatedCustomer in customer.RelatedCustomers) {
               InsertRelation(sourceNode, relatedCustomer);
             }
           }
@@ -435,8 +436,6 @@ namespace Demo.yFiles.Graph.BusinessModelAdapter
       }
     }
 
-    private IGraph Graph {
-      get { return graphControl.Graph; }
-    }
+    private IGraph Graph => graphControl.Graph;
   }
 }

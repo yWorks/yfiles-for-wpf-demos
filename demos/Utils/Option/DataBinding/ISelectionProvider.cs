@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -30,56 +30,55 @@
 using System;
 using System.Collections.Generic;
 using Demo.yFiles.Option.Handler;
-using yWorks.Graph;
+using yWorks.Utils;
 
 namespace Demo.yFiles.Option.DataBinding
 {
   /// <summary>
-  /// The interface that is used by <see cref="OptionHandler.BuildFromSelection{T}"/>
-  /// to create and populate a set of properties for a given selection.
+  ///   The interface that is used by <see cref="OptionHandler.BuildFromSelection{T}"/>
+  ///   to create and populate a set of properties for a given selection.
   /// </summary>
   /// <typeparam name="T">The type of the items in the selection.</typeparam>
   /// <seealso cref="DefaultSelectionProvider{T}"/>
-  public interface ISelectionProvider<T>: ILookup
+  public interface ISelectionProvider<T> : ILookup
   {
     /// <summary>
-    /// The current selection.
+    ///   The current selection.
     /// </summary>
-    ICollection<IPropertyItemDescriptor<T>> Selection {
-      get;
-    }
+    ICollection<IPropertyItemDescriptor<T>> Selection { get; }
 
     /// <summary>
-    /// This method is called to update properties views that display the properties
-    /// of the current selection.
+    ///   This method is called to update properties views that display the properties
+    ///   of the current selection.
     /// </summary>
     void UpdatePropertyViews();
 
     /// <summary>
-    /// This method is called to update the currently selected items using the
-    /// values in the properties views.
+    ///   This method is called to update the currently selected items using the
+    ///   values in the properties view.
     /// </summary>
     void UpdateSelectedItems();
 
     /// <summary>
-    /// This event gets fired whenever the content or properties
-    /// of the items in the selection have been changed.
+    ///   This event gets fired whenever the content or properties
+    ///   of the items in the selection have been changed.
     /// </summary>
     event EventHandler SelectedItemsChanged;
 
     /// <summary>
-    /// This event gets fired whenever the properties
-    /// of the items in the properties views have been changed and should be committed to the 
-    /// corresponding items in the selection.
+    ///   This event gets fired whenever the properties
+    ///   of the items in the properties views have been changed and should be committed to the
+    ///   corresponding items in the selection.
     /// </summary>
     event EventHandler PropertyItemsChanged;
 
     /// <summary>
-    /// Bracketing event call that indicates a compound update.
+    ///   Bracketing event call that indicates a compound update.
     /// </summary>
     void BeginValueUpdate();
+
     /// <summary>
-    /// Bracketing event call that indicates the end of a compound update.
+    ///   Bracketing event call that indicates the end of a compound update.
     /// </summary>
     void EndValueUpdate();
   }

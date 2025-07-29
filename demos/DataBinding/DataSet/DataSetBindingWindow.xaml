@@ -1,6 +1,6 @@
 <!-- ************************************************************************ -->
-<!-- This demo file is part of yFiles WPF 3.6.                           -->
-<!-- Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
+<!-- This demo file is part of yFiles WPF 4.0.                           -->
+<!-- Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
 <!-- 72070 Tuebingen, Germany. All rights reserved.                           -->
 <!--                                                                          -->
 <!-- yFiles demo files exhibit yFiles WPF functionalities. Any redistribution  -->
@@ -27,12 +27,12 @@
 <Window x:Class="Demo.yFiles.DataBinding.DataSetBinding.DataSetBindingWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/3.0/xaml"
+        xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/4.0/xaml"
         xmlns:DataSetBindingDemo="clr-namespace:Demo.yFiles.DataBinding.DataSetBinding"
         x:Name="window"
         Title="AdventureWorks Employees, Data Binding with a DataSet"
         Width="1280" Height="850"
-        Loaded="Window_Loaded"
+        Loaded="OnLoaded"
         Style="{StaticResource DemoWindow}">
     
     <Window.Resources>
@@ -74,7 +74,7 @@
             </Setter>
         </Style>
         
-        <!-- The tree source constructs a tree Graph from suitable business objects. Set the NodesSource -->
+        <!-- The tree source constructs a tree graph from suitable business objects. Set the NodesSource -->
         <!-- property to the business objects which should be represented as nodes in the resulting tree. -->
         <!-- In this example the node sources are provided by the EmployeeRepository. -->
         <!-- The ChildBinding is used by the tree source to get the child business objects of a parent business -->
@@ -99,13 +99,13 @@
                 <FlowDocument>
                     <Paragraph>
                         <Run>
-                            This Demo shows how to use a
+                            This demo shows how to use a
                         </Run>
                         <Run FontStyle="Italic" Text="TreeSource"/>
                         <Run>
                             for data binding with a
                         </Run>
-                        <Run FontStyle="Italic" Text="DataSet."/>
+                        <Run FontStyle="Italic" Text="DataSet"/>.
                         <Run>
                             See the XAML file and the code behind for details.
                         </Run>
@@ -118,13 +118,7 @@
                 <ToolBar Width="{Binding ActualWidth, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ToolBarTray}}}" DockPanel.Dock="Top" Height="30">
                     <Button Command="IncreaseZoom" CommandTarget="{Binding ElementName=graphControl}"/>
                     <Button Command="DecreaseZoom"  CommandTarget="{Binding ElementName=graphControl}"/>
-                    <!-- The "Fit Contents" button triggers a new layout since the used layout does take -->
-                    <!-- the aspect ratio of the graph control into account. Thus after resizing the window -->
-                    <!-- you can adapt the graph to the new aspect ratio by using the "Fit Contents" button. -->
-                    <!-- The layout is configured in the code behind. It is an instance of AspectRatioTreeLayout. -->
-                    <Button ToolTip="Fit Contents"
-                            Command="{x:Static DataSetBindingDemo:DataSetBindingWindow.LayoutCommand}"
-                            CommandTarget="{Binding ElementName=graphControl}" ContentTemplate="{StaticResource ImageButtonContentTemplate}" Content="{StaticResource FitContentIcon}"/>
+                    <Button Command="{x:Static ywpf:GraphCommands.FitGraphBounds}" CommandTarget="{Binding ElementName=graphControl}"/>
                 </ToolBar>
             </ToolBarTray>
             <!-- The graph control displays the graph constructed by the TreeSource. -->

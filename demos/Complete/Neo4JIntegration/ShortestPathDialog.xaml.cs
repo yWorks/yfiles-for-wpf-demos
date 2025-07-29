@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -29,7 +29,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using System.Windows.Controls;
+using System.Windows;
 using yWorks.Graph;
 using INeo4jNode = Neo4j.Driver.INode;
 
@@ -53,7 +53,7 @@ namespace Neo4JIntegration
       InitializeComponent();
     }
 
-    private void Button_Click(object sender, System.Windows.RoutedEventArgs e) {
+    private void Button_Click(object sender, RoutedEventArgs e) {
       DialogResult = true;
     }
   }

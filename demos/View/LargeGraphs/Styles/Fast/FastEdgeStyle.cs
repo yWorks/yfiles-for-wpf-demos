@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -49,7 +49,7 @@ namespace Demo.yFiles.Graph.LargeGraphs.Styles.Fast
   ///     <item>Edges are hidden completely if they are shorter than a given number of pixels on screen.</item>
   ///   </list>
   ///   <para>
-  ///     When an edge has labels bends should not be hidden as long as the edge labels are visible. This is because edge
+  ///     When an edge has labels, bends should not be hidden as long as the edge labels are visible. This is because edge
   ///     labels are attached to the conceptual edge path, which includes bends. If bends are not drawn, edge labels may look
   ///     out of place or even far away from the actually displayed edge path. Using <see cref="LevelOfDetailLabelStyle" /> a
   ///     suitable zoom level at which to display labels can easily be configured.
@@ -60,7 +60,7 @@ namespace Demo.yFiles.Graph.LargeGraphs.Styles.Fast
     /// <summary>
     ///   Initializes a new instance of the <see cref="FastEdgeStyle" /> class with default settings.
     /// </summary>
-    /// <remarks>By default bends are not drawn below a zoom level of 50 % and edges shorter than 10 pixels are hidden.</remarks>
+    /// <remarks>By default bends are not drawn below a zoom level of 50% and edges shorter than 10 pixels are hidden.</remarks>
     public FastEdgeStyle() {
       DrawBendsThreshold = 0.5;
       MinimumEdgeLength = 10;
@@ -222,13 +222,13 @@ namespace Demo.yFiles.Graph.LargeGraphs.Styles.Fast
     private static StreamGeometry CreateGeometry(PointD source, PointD target, IEdge edge, bool drawBends) {
       var geometry = new StreamGeometry();
       using (var ctx = geometry.Open()) {
-        ctx.BeginFigure(source, false, false);
+        ctx.BeginFigure(source.ToPoint(), false, false);
         if (drawBends) {
           foreach (var b in edge.Bends) {
-            ctx.LineTo(b.Location.ToPointD(), true, true);
+            ctx.LineTo(b.Location.ToPoint(), true, true);
           }
         }
-        ctx.LineTo(target, true, false);
+        ctx.LineTo(target.ToPoint(), true, false);
       }
       geometry.Freeze();
       return geometry;

@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -29,9 +29,11 @@
 
 using System;
 using System.Collections.Generic;
-using yWorks.Algorithms;
+using System.Linq;
+using yWorks.Geometry;
 using yWorks.Layout;
-using yWorks.Layout.Hierarchic;
+using yWorks.Layout.Graph;
+using yWorks.Layout.Hierarchical;
 
 namespace SankeyLayout
 {
@@ -52,13 +54,13 @@ namespace SankeyLayout
 
     public double MinimumPortDistance { get; set; }
 
-    public override void ApplyLayout(LayoutGraph graph) {
+    protected override void ApplyLayoutImpl(LayoutGraph graph) {
       foreach (var node in graph.Nodes) {
         AdjustNodeSize(node, graph);
       }
 
       // run the core layout
-      ApplyLayoutCore(graph);
+      CoreLayout?.ApplyLayout(graph);
     }
 
     private void AdjustNodeSize(Node node, LayoutGraph graph) {
@@ -78,35 +80,44 @@ namespace SankeyLayout
       }
 
       // adjust size for edges with strong port constraints
-      var edgeThicknessDP = graph.GetDataProvider(HierarchicLayout.EdgeThicknessDpKey);
+      var edgeThicknessDP = graph.Context.GetItemData(HierarchicalLayout.EdgeThicknessDataKey);
       if (edgeThicknessDP != null) {
         foreach (var edge in node.Edges) {
-          var thickness = edgeThicknessDP.GetDouble(edge);
+          var thickness = edgeThicknessDP[edge];
 
-          var spc = PortConstraint.GetSPC(graph, edge);
-          if (edge.Source == node && spc != null && spc.Strong) {
-            var sourcePoint = graph.GetSourcePointRel(edge);
+          var spc = GetFirstPortCandidate(edge, true);
+          if (edge.Source == node && spc is
+              { Type: PortCandidateType.FixedOffset or PortCandidateType.FixedFromSketch }) {
+            var sourcePoint = spc.Type == PortCandidateType.FixedFromSketch ? edge.SourcePortOffset : spc.Offset;
             width = Math.Max(width, Math.Abs(sourcePoint.X) * 2 + thickness);
             height = Math.Max(height, Math.Abs(sourcePoint.Y) * 2 + thickness);
           }
 
-          var tpc = PortConstraint.GetTPC(graph, edge);
-          if (edge.Target == node && tpc != null && tpc.Strong) {
-            var targetPoint = graph.GetTargetPointRel(edge);
+          var tpc = GetFirstPortCandidate(edge, false);
+          if (edge.Target == node && tpc is
+              { Type: PortCandidateType.FixedOffset or PortCandidateType.FixedFromSketch }) {
+            var targetPoint = tpc.Type == PortCandidateType.FixedFromSketch ? edge.TargetPortOffset : tpc.Offset;
             width = Math.Max(width, Math.Abs(targetPoint.X) * 2 + thickness);
             height = Math.Max(height, Math.Abs(targetPoint.Y) * 2 + thickness);
           }
         }
       }
-      graph.SetSize(node, width, height);
+      node.Layout.Size = new SizeD(width, height);
+    }
+
+    private static LayoutPortCandidate GetFirstPortCandidate(Edge e, bool atSource) {
+      var dp = e.Graph!.Context.GetItemData(atSource
+          ? EdgePortCandidates.SourcePortCandidatesDataKey
+          : EdgePortCandidates.TargetPortCandidatesDataKey);
+      return dp?[e]?.Candidates.FirstOrDefault();
     }
 
     private double CalcRequiredSpace(IEnumerable<Edge> edges, LayoutGraph graph) {
       double requiredSpace = 0;
-      var edgeThicknessDP = graph.GetDataProvider(HierarchicLayout.EdgeThicknessDpKey);
+      var edgeThicknessDP = graph.Context.GetItemData(HierarchicalLayout.EdgeThicknessDataKey);
       var count = 0;
       foreach (var edge in edges) {
-        var thickness = edgeThicknessDP?.GetDouble(edge) ?? 0;
+        var thickness = edgeThicknessDP?[edge] ?? 0;
         requiredSpace += Math.Max(thickness, 1);
         count++;
       }

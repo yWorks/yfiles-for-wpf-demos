@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -39,7 +39,7 @@ using yWorks.Graph.PortLocationModels;
 namespace Demo.yFiles.Complete.RotatableNodes
 {
   /// <summary>
-  /// A node reshape handle that adjusts its position according to the node rotation.
+  ///   A node reshape handle that adjusts its position according to the node rotation.
   /// </summary>
   public class RotatedNodeResizeHandle : IHandle, IPoint
   {
@@ -48,22 +48,25 @@ namespace Demo.yFiles.Complete.RotatableNodes
     private readonly IReshapeHandler reshapeHandler;
     private PointD dummyLocation;
     private SizeD dummySize;
-    private readonly bool symmetricResize;
     private readonly List<IHandle> portHandles;
     private readonly OrientedRectangle initialLayout;
     private RectD initialRect;
 
-    public RotatedNodeResizeHandle(HandlePositions position, INode node, IReshapeHandler reshapeHandler, bool symmetricResize) {
+    public RotatedNodeResizeHandle(
+        HandlePositions position,
+        INode node,
+        IReshapeHandler reshapeHandler,
+        bool symmetricResize) {
       this.position = position;
       this.node = node;
       this.reshapeHandler = reshapeHandler;
-      this.symmetricResize = symmetricResize;
+      SymmetricResize = symmetricResize;
       portHandles = new List<IHandle>();
       initialLayout = new OrientedRectangle(GetNodeBasedOrientedRectangle());
     }
 
     /// <summary>
-    /// Returns the node rotation information.
+    ///   Returns the node rotation information.
     /// </summary>
     private CachingOrientedRectangle GetNodeBasedOrientedRectangle() {
       var wrapper = node.Style as RotatableNodeStyleDecorator;
@@ -71,15 +74,15 @@ namespace Demo.yFiles.Complete.RotatableNodes
     }
 
     /// <summary>
-    /// Sets the original node bounds according to the given anchor location and size.
+    ///   Sets the original node bounds according to the given anchor location and size.
     /// </summary>
     private RectD SetNodeLocationAndSize(IInputModeContext inputModeContext, PointD anchor, SizeD size) {
       var graph = inputModeContext.GetGraph();
       if (graph == null) {
         return RectD.Empty;
       }
-      var orientedRectangle = new OrientedRectangle(anchor.X, anchor.Y, size.Width, size.Height,
-        initialLayout.UpX, initialLayout.UpY);
+      var orientedRectangle = new OrientedRectangle(anchor.X, anchor.Y, size.Width, size.Height, initialLayout.UpX,
+          initialLayout.UpY);
       var center = orientedRectangle.GetCenter();
 
       var layout = RectD.FromCenter(center, size);
@@ -88,51 +91,52 @@ namespace Demo.yFiles.Complete.RotatableNodes
     }
 
     /// <summary>
-    /// Whether or not the node is symmetrically resized.
+    ///   Whether or not the node is symmetrically resized.
     /// </summary>
-    public bool SymmetricResize {
-      get { return symmetricResize; }
-    }
+    public bool SymmetricResize { get; }
 
     /// <summary>
-    /// Defines the visualization of the handle. In this case a dot that rotates nicely.
+    ///   Defines the visualization of the handle. In this case a dot that rotates nicely.
     /// </summary>
-    public HandleTypes Type {
-      get { return HandleTypes.Resize; }
-    }
+    public HandleType Type => HandleType.Resize;
 
     /// <summary>
-    /// The cursor visualization according to the handle position.
+    ///   Gets the optional tag object associated with the handle.
+    /// </summary>
+    public object Tag => null;
+
+    /// <summary>
+    ///   The cursor visualization according to the handle position.
     /// </summary>
     public Cursor Cursor {
       get {
         var layout = GetNodeBasedOrientedRectangle();
         var angle = layout.Angle;
-        var cursors = new[] { Cursors.SizeNESW, Cursors.SizeNS, Cursors.SizeNWSE, Cursors.SizeWE };
+        var cursors = new[] { Cursors.SizeNWSE, Cursors.SizeNS, Cursors.SizeNESW, Cursors.SizeWE };
         int index;
         // Pick the right array index for the respective handle location
         switch (position) {
-          case HandlePositions.NorthWest:
-          case HandlePositions.SouthEast:
-            index = 2;
-            break;
-          case HandlePositions.North:
-          case HandlePositions.South:
-            index = 1;
-            break;
-          case HandlePositions.NorthEast:
-          case HandlePositions.SouthWest:
+          case HandlePositions.TopLeft:
+          case HandlePositions.BottomRight:
             index = 0;
             break;
-          case HandlePositions.East:
-          case HandlePositions.West:
+          case HandlePositions.Top:
+          case HandlePositions.Bottom:
+            index = 1;
+            break;
+          case HandlePositions.TopRight:
+          case HandlePositions.BottomLeft:
+            index = 2;
+            break;
+          case HandlePositions.Right:
+          case HandlePositions.Left:
             index = 3;
             break;
           default:
             return Cursors.Hand;
         }
         // Then shift the array position according to the rotation angle
-        index += (int)Math.Round(angle / 45);
+        index += (int) Math.Round(angle / 45);
         index %= cursors.Length;
         if (index < 0) {
           index += cursors.Length;
@@ -142,26 +146,22 @@ namespace Demo.yFiles.Complete.RotatableNodes
     }
 
     /// <summary>
-    /// The location of this handle considering the node rotation.
+    ///   The location of this handle considering the node rotation.
     /// </summary>
-    public IPoint Location {
-      get {
-        return GetLocation(GetNodeBasedOrientedRectangle(), position);
-      }
-    }
-    
+    public IPoint Location => GetLocation(GetNodeBasedOrientedRectangle(), position);
+
     /// <summary>
-    /// Stores the initial layout of the node in case the user cancels the resizing.
+    ///   Stores the initial layout of the node in case the user cancels the resizing.
     /// </summary>
     /// <param name="inputModeContext"></param>
     public void InitializeDrag(IInputModeContext inputModeContext) {
       if (reshapeHandler != null) {
-        // if there is a reshape handler: initialize to 
+        // if there is a reshape handler: initialize to
         // ensure proper handling of a parent group node
         reshapeHandler.InitializeReshape(inputModeContext);
       }
-      initialLayout.Reshape(GetNodeBasedOrientedRectangle());
-      dummyLocation = initialLayout.GetAnchorLocation();
+      initialLayout.SetShape(GetNodeBasedOrientedRectangle());
+      dummyLocation = initialLayout.GetAnchor();
       dummySize = initialLayout.GetSize();
       initialRect = node.Layout.ToRectD();
 
@@ -175,49 +175,45 @@ namespace Demo.yFiles.Complete.RotatableNodes
     }
 
     /// <summary>
-    /// Adjusts the node location and size according to the new handle location.
+    ///   Adjusts the node location and size according to the new handle location.
     /// </summary>
     public void HandleMove(IInputModeContext inputModeContext, PointD originalLocation, PointD newLocation) {
       // calculate how much the handle was moved
       var upNormal = new PointD(-initialLayout.UpY, initialLayout.UpX);
       var deltaW = GetWidthDelta(originalLocation, newLocation, upNormal);
-      var up = initialLayout.GetUp();
+      var up = initialLayout.GetUpVector();
       var deltaH = GetHeightDelta(originalLocation, newLocation, up);
 
       // add one or two times delta to the width to expand the node right and left
-      dummySize = new SizeD(
-          initialLayout.Width + deltaW * (symmetricResize ? 2 : 1),
-          initialLayout.Height + deltaH * (symmetricResize ? 2 : 1));
+      dummySize = new SizeD(initialLayout.Width + deltaW * (SymmetricResize ? 2 : 1),
+          initialLayout.Height + deltaH * (SymmetricResize ? 2 : 1));
 
       // Calculate the new location.
       // Depending on our handle position, a different corner of the node should stay fixed.
-      if (symmetricResize) {
+      if (SymmetricResize) {
         var dx = upNormal.X * deltaW + up.X * deltaH;
         var dy = upNormal.Y * deltaW + up.Y * deltaH;
-        dummyLocation = initialLayout.GetAnchorLocation() - new PointD(dx, dy);
+        dummyLocation = initialLayout.GetAnchor() - new PointD(dx, dy);
       } else {
         var w = dummySize.Width - initialLayout.Width;
         var h = dummySize.Height - initialLayout.Height;
         switch (position) {
-          case HandlePositions.NorthWest:
-            dummyLocation = initialLayout.GetAnchorLocation()
-                            - new PointD(-up.Y * w, up.X * w);
+          case HandlePositions.TopLeft:
+            dummyLocation = initialLayout.GetAnchor() - new PointD(-up.Y * w, up.X * w);
             break;
-          case HandlePositions.South:
-          case HandlePositions.SouthWest:
-          case HandlePositions.West:
-            dummyLocation = initialLayout.GetAnchorLocation()
-                            - new PointD(up.X * h - up.Y * w, up.Y * h + up.X * w);
+          case HandlePositions.Bottom:
+          case HandlePositions.BottomLeft:
+          case HandlePositions.Left:
+            dummyLocation = initialLayout.GetAnchor() - new PointD(up.X * h - up.Y * w, up.Y * h + up.X * w);
             break;
-          case HandlePositions.SouthEast:
-            dummyLocation = initialLayout.GetAnchorLocation()
-                            - new PointD(up.X * h, up.Y * h);
+          case HandlePositions.BottomRight:
+            dummyLocation = initialLayout.GetAnchor() - new PointD(up.X * h, up.Y * h);
             break;
-          // case HandlePositions.North:
-          // case HandlePositions.NorthEast:
-          // case HandlePositions.East:
+          // case HandlePositions.Top:
+          // case HandlePositions.TopRight:
+          // case HandlePositions.Right:
           default:
-            dummyLocation = initialLayout.GetAnchorLocation();
+            dummyLocation = initialLayout.GetAnchor();
             break;
         }
       }
@@ -229,73 +225,73 @@ namespace Demo.yFiles.Complete.RotatableNodes
         portHandle.HandleMove(portContext, dummyLocation, newLocation);
       }
       if (reshapeHandler != null) {
-        // if there is a reshape handler: 
+        // if there is a reshape handler:
         // ensure proper handling of a parent group node
         reshapeHandler.HandleReshape(inputModeContext, initialRect, newLayout);
       }
     }
 
     /// <summary>
-    /// Returns the delta by which the width of the node was changed.
+    ///   Returns the delta by which the width of the node was changed.
     /// </summary>
     private double GetWidthDelta(PointD originalLocation, PointD newLocation, PointD vector) {
       switch (position) {
-        case HandlePositions.NorthWest:
-        case HandlePositions.West:
-        case HandlePositions.SouthWest:
+        case HandlePositions.TopLeft:
+        case HandlePositions.Left:
+        case HandlePositions.BottomLeft:
           // calculate the total distance the handle has been moved in this drag gesture
           // max with minus half the node size - because the node can't shrink below zero
           return Math.Max(vector.ScalarProduct(originalLocation - newLocation),
-              -initialLayout.Width * (symmetricResize ? 0.5 : 1));
-        case HandlePositions.NorthEast:
-        case HandlePositions.East:
-        case HandlePositions.SouthEast:
+              -initialLayout.Width * (SymmetricResize ? 0.5 : 1));
+        case HandlePositions.TopRight:
+        case HandlePositions.Right:
+        case HandlePositions.BottomRight:
           return Math.Max(vector.ScalarProduct(newLocation - originalLocation),
-              -initialLayout.Width * (symmetricResize ? 0.5 : 1));
+              -initialLayout.Width * (SymmetricResize ? 0.5 : 1));
         default:
           return 0.0;
       }
     }
 
     /// <summary>
-    /// Returns the delta by which the height of the node was changed.
+    ///   Returns the delta by which the height of the node was changed.
     /// </summary>
     private double GetHeightDelta(PointD originalLocation, PointD newLocation, PointD vector) {
       switch (position) {
-        case HandlePositions.NorthWest:
-        case HandlePositions.North:
-        case HandlePositions.NorthEast:
+        case HandlePositions.TopLeft:
+        case HandlePositions.Top:
+        case HandlePositions.TopRight:
           return Math.Max(vector.ScalarProduct(newLocation - originalLocation),
-              -initialLayout.Height * (symmetricResize ? 0.5 : 1));
-        case HandlePositions.SouthWest:
-        case HandlePositions.South:
-        case HandlePositions.SouthEast:
+              -initialLayout.Height * (SymmetricResize ? 0.5 : 1));
+        case HandlePositions.BottomLeft:
+        case HandlePositions.Bottom:
+        case HandlePositions.BottomRight:
           return Math.Max(vector.ScalarProduct(originalLocation - newLocation),
-              -initialLayout.Height * (symmetricResize ? 0.5 : 1));
+              -initialLayout.Height * (SymmetricResize ? 0.5 : 1));
         default:
           return 0.0;
       }
     }
 
     /// <summary>
-    /// Restores the original node layout.
+    ///   Restores the original node layout.
     /// </summary>
     public void CancelDrag(IInputModeContext inputModeContext, PointD originalLocation) {
-      SetNodeLocationAndSize(inputModeContext, initialLayout.GetAnchorLocation(), initialLayout.GetSize());
+      SetNodeLocationAndSize(inputModeContext, initialLayout.GetAnchor(), initialLayout.GetSize());
       var portContext = new DelegatingContext(inputModeContext);
       foreach (var portHandle in portHandles) {
         portHandle.CancelDrag(portContext, originalLocation);
       }
       portHandles.Clear();
       if (reshapeHandler != null) {
-        // if there is a reshape handler: 
+        // if there is a reshape handler:
         // ensure proper handling of a parent group node
         reshapeHandler.CancelReshape(inputModeContext, initialRect);
       }
     }
 
     /// <summary>
-    /// Applies the new node layout.
+    ///   Applies the new node layout.
     /// </summary>
     public void DragFinished(IInputModeContext inputModeContext, PointD originalLocation, PointD newLocation) {
       var newLayout = SetNodeLocationAndSize(inputModeContext, dummyLocation, dummySize);
@@ -305,14 +301,14 @@ namespace Demo.yFiles.Complete.RotatableNodes
       }
       portHandles.Clear();
       if (reshapeHandler != null) {
-        // if there is a reshape handler: 
+        // if there is a reshape handler:
         // ensure proper handling of a parent group node
         reshapeHandler.ReshapeFinished(inputModeContext, initialRect, newLayout);
       }
     }
 
     /// <summary>
-    /// Gets the location that is specified by the given ratios.
+    ///   Gets the location that is specified by the given ratios.
     /// </summary>
     private static PointD GetLocation(IOrientedRectangle rectangle, double ratioWidth, double ratioHeight) {
       var x1 = rectangle.AnchorX;
@@ -331,42 +327,38 @@ namespace Demo.yFiles.Complete.RotatableNodes
     #region IPoint members
 
     /// <summary>
-    /// Returns the x-coordinate of the rotated bounds.
+    ///   Returns the x-coordinate of the rotated bounds.
     /// </summary>
-    public double X {
-      get { return GetLocation(GetNodeBasedOrientedRectangle(), position).X; }
-    }
+    public double X => GetLocation(GetNodeBasedOrientedRectangle(), position).X;
 
     /// <summary>
-    /// Returns the y-coordinate of the rotated bounds.
+    ///   Returns the y-coordinate of the rotated bounds.
     /// </summary>
-    public double Y {
-      get { return GetLocation(GetNodeBasedOrientedRectangle(), position).Y; }
-    }
+    public double Y => GetLocation(GetNodeBasedOrientedRectangle(), position).Y;
 
     /// <summary>
-    /// Returns the location of the specified position on the border of the oriented rectangle.
+    ///   Returns the location of the specified position on the border of the oriented rectangle.
     /// </summary>
     private PointD GetLocation(IOrientedRectangle layout, HandlePositions position) {
       if (layout == null) {
-        return node.Layout.ToPointD();
+        return node.Layout.GetTopLeft();
       }
       switch (position) {
-        case HandlePositions.NorthWest:
+        case HandlePositions.TopLeft:
           return GetLocation(layout, 0.0, 1.0);
-        case HandlePositions.North:
+        case HandlePositions.Top:
           return GetLocation(layout, 0.5, 1.0);
-        case HandlePositions.NorthEast:
+        case HandlePositions.TopRight:
           return GetLocation(layout, 1.0, 1.0);
-        case HandlePositions.East:
+        case HandlePositions.Right:
           return GetLocation(layout, 1.0, 0.5);
-        case HandlePositions.SouthEast:
+        case HandlePositions.BottomRight:
           return GetLocation(layout, 1.0, 0.0);
-        case HandlePositions.South:
+        case HandlePositions.Bottom:
           return GetLocation(layout, 0.5, 0.0);
-        case HandlePositions.SouthWest:
-          return layout.GetAnchorLocation();
-        case HandlePositions.West:
+        case HandlePositions.BottomLeft:
+          return layout.GetAnchor();
+        case HandlePositions.Left:
           return GetLocation(layout, 0.0, 0.5);
         default:
           throw new ArgumentOutOfRangeException();
@@ -374,7 +366,7 @@ namespace Demo.yFiles.Complete.RotatableNodes
     }
 
     /// <summary>
-    /// Ignore clicking the handle.
+    ///   Ignore clicking the handle.
     /// </summary>
     /// <param name="eventArgs">Arguments describing the click.</param>
     public void HandleClick(ClickEventArgs eventArgs) {
@@ -385,77 +377,71 @@ namespace Demo.yFiles.Complete.RotatableNodes
   }
 
   /// <summary>
-  /// A context that returns no SnapContext in its lookup and delegates its other methods to an inner context.
+  ///   A context that returns no SnapContext in its lookup and delegates its other methods to an inner context.
   /// </summary>
   internal class DelegatingContext : IInputModeContext
   {
     private readonly IInputModeContext context;
 
     /// <summary>
-    /// Creates a new instance.
+    ///   Creates a new instance.
     /// </summary>
     internal DelegatingContext(IInputModeContext context) {
       this.context = context;
     }
 
     /// <summary>
-    /// The wrapped context's zoom.
+    ///   The wrapped context's zoom.
     /// </summary>
-    public double Zoom {
-      get { return context.Zoom; }
-    }
+    public double Zoom => context.Zoom;
 
     /// <summary>
-    /// The wrapped context's hit test radius.
+    ///   The wrapped context's hit test radius.
     /// </summary>
-    public double HitTestRadius {
-      get { return context.HitTestRadius; }
-    }
+    public double HitTestRadius => context.HitTestRadius;
 
     /// <summary>
-    /// The wrapped context's canvas component.
+    ///   The wrapped context's canvas component.
     /// </summary>
-    public CanvasControl CanvasControl {
-      get { return context.CanvasControl; }
-    }
+    public CanvasControl CanvasControl => context.CanvasControl;
 
     /// <summary>
-    /// The wrapped context's parent input mode.
+    ///   The wrapped context's parent input mode.
     /// </summary>
-    public IInputMode ParentInputMode {
-      get { return context.ParentInputMode; }
-    }
+    public IInputMode InputMode => context.InputMode;
 
     /// <summary>
-    /// Delegates to the wrapped context's lookup but cancels the snap context.
+    ///   Delegates to the wrapped context's lookup but cancels the snap context.
     /// </summary>
     public object Lookup(Type type) {
-      return type == typeof(SnapContext) ? null : context.Lookup(type);
+      return type == typeof(GraphSnapContext) ? null : context.Lookup(type);
     }
   }
 
   /// <summary>
-  /// This port handle is used only to trigger the updates of the orthogonal edge editing facility of yFiles.
+  ///   This port handle is used only to trigger the updates of the orthogonal edge editing facility of yFiles.
   /// </summary>
   /// <remarks>
-  /// In yFiles, all code related to updates of the orthogonal edge editing facility is internal. As a workaround,
-  /// we explicitly call internal port handles from our custom node handles.
+  ///   In yFiles, all code related to updates of the orthogonal edge editing facility is internal. As a workaround,
+  ///   we explicitly call internal port handles from our custom node handles.
   /// </remarks>
   internal class DummyPortLocationModelParameterHandle : PortLocationModelParameterHandle
   {
     public DummyPortLocationModelParameterHandle(IPort port) : base(port) { }
 
     /// <summary>
-    /// Does nothing since we don't want to change the port location.
+    ///   Does nothing since we don't want to change the port location.
     /// </summary>
     protected override void SetParameter(IGraph graph, IPort port, IPortLocationModelParameter newParameter) {
       // do nothing
     }
 
     /// <summary>
-    /// Returns the current port location since we don't want to change the port location.
+    ///   Returns the current port location since we don't want to change the port location.
     /// </summary>
-    protected override IPortLocationModelParameter GetNewParameter(IPort port, IPortLocationModel model,
+    protected override IPortLocationModelParameter GetNewParameter(
+        IPort port,
+        IPortLocationModel model,
         PointD newLocation) {
       return port.LocationParameter;
     }

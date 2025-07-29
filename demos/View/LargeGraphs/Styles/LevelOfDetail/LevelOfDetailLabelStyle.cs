@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -103,7 +103,7 @@ namespace Demo.yFiles.Graph.LargeGraphs.Styles.LevelOfDetail
     /// <returns>The preferred size.</returns>
     /// <remarks>
     ///   This level-of-detail style assumes that the most-detailed style has the most correct preferred size. In most
-    ///   cases that would simply be a <see cref="DefaultLabelStyle" /> instance.
+    ///   cases that would simply be a <see cref="LabelStyle" /> instance.
     /// </remarks>
     protected override SizeD GetPreferredSize(ILabel label) {
       var mostDetailedStyle = Styles.GetStyle(double.PositiveInfinity);

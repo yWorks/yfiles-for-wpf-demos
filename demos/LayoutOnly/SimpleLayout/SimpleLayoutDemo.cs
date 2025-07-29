@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -28,45 +28,45 @@
  ***************************************************************************/
 
 using System;
+using System.Windows;
 using Demo.Layout.LayoutGraphViewer;
-using yWorks.Algorithms;
 using yWorks.Layout;
 using yWorks.Layout.Circular;
-using yWorks.Layout.Hierarchic;
+using yWorks.Layout.Graph;
+using yWorks.Layout.Hierarchical;
 using yWorks.Layout.Organic;
 using yWorks.Layout.Orthogonal;
-using yWorks.Layout.Router.Polyline;
+using yWorks.Layout.Router;
 
 namespace Demo.Layout.BasicLayout
 {
   /// <summary>
-  /// This class shows how to use important layout and routing algorithms
-  /// to calculate coordinates for a graph. 
-  /// Featured layout and routing styles are Organic, Orthogonal (Router), 
-  /// Orthogonal (Layout), Circular and Hierarchical.
-  /// 
-  /// The resulting diagrams will be displayed in a simple graph viewer. 
-  /// Step to the next layout style by closing the window that was opened 
-  /// for the current layout style.
+  ///   This class shows how to use important layout and routing algorithms
+  ///   to calculate coordinates for a graph.
+  ///   Featured layout and routing styles are Organic, Orthogonal (Router),
+  ///   Orthogonal (Layout), Circular, and Hierarchical.
+  ///   The resulting diagrams will be displayed in a simple graph viewer.
+  ///   Step to the next layout style by closing the window that was opened
+  ///   for the current layout style.
   /// </summary>
   public class SimpleLayoutDemo
   {
     /// <summary>
-    /// Creates a small graph and applies an hierarchic layout to it.
-    /// Two different kinds of edge labeling mechanisms will be applied
-    /// to the graph.
-    /// The output of the calculated coordinates will be displayed in the
-    /// console.
+    ///   Creates a small graph and applies a hierarchical layout to it.
+    ///   Two different kinds of edge labeling mechanisms will be applied
+    ///   to the graph.
+    ///   The output of the calculated coordinates will be displayed in the
+    ///   console.
     /// </summary>
     [STAThread]
     public static void Main() {
-      DefaultLayoutGraph graph = new DefaultLayoutGraph();
+      var graph = new LayoutGraph();
 
-      //construct graph and assign sizes to its nodes
-      Node[] nodes = new Node[16];
-      for (int i = 0; i < 16; i++) {
+      // construct graph
+      var nodes = new Node[16];
+      for (var i = 0; i < 16; i++) {
+        // create nodes, they are by default placed at (0,0) with at size of (30,30)
         nodes[i] = graph.CreateNode();
-        graph.SetSize(nodes[i], 30, 30);
       }
       graph.CreateEdge(nodes[0], nodes[1]);
       graph.CreateEdge(nodes[0], nodes[2]);
@@ -88,46 +88,42 @@ namespace Demo.Layout.BasicLayout
       graph.CreateEdge(nodes[10], nodes[14]);
       graph.CreateEdge(nodes[12], nodes[15]);
 
-      GraphViewer gv = new GraphViewer();
+      var gv = new GraphViewer();
 
-      //using organic layout style
-      OrganicLayout organic = new OrganicLayout();
+      // using organic layout style
+      var organic = new OrganicLayout();
       organic.QualityTimeRatio = 1.0;
-      organic.NodeOverlapsAllowed = false;
-      organic.MinimumNodeDistance = 10;
-      organic.PreferredEdgeLength = 40;
-      new BufferedLayout(organic).ApplyLayout(graph);
-      LayoutGraphUtilities.ClipEdgesOnBounds(graph);
-      gv.AddLayoutGraph(new CopiedLayoutGraph(graph), "Organic Layout Style");
+      organic.AllowNodeOverlaps = false;
+      organic.DefaultMinimumNodeDistance = 10;
+      organic.DefaultPreferredEdgeLength = 40;
+      graph.ApplyLayout(organic);
+      gv.AddLayoutGraph(LayoutGraph.CreateCopy(graph), "Organic Layout Style");
 
-      //using orthogonal edge router (node positions stay fixed)
-      EdgeRouter router = new EdgeRouter();
-      new BufferedLayout(router).ApplyLayout(graph);
-      gv.AddLayoutGraph(new CopiedLayoutGraph(graph), "Polyline Edge Router");
+      // using orthogonal edge router (node positions stay fixed)
+      var router = new EdgeRouter();
+      graph.ApplyLayout(router);
+      gv.AddLayoutGraph(LayoutGraph.CreateCopy(graph), "Polyline Edge Router");
 
-
-      //using orthogonal layout style
-      OrthogonalLayout orthogonal = new OrthogonalLayout();
+      // using orthogonal layout style
+      var orthogonal = new OrthogonalLayout();
       orthogonal.GridSpacing = 15;
-      orthogonal.OptimizePerceivedBends = true;
-      new BufferedLayout(orthogonal).ApplyLayout(graph);
-      gv.AddLayoutGraph(new CopiedLayoutGraph(graph), "Orthogonal Layout Style");
+      orthogonal.QualityTimeRatio = 1.0;
+      graph.ApplyLayout(orthogonal);
+      gv.AddLayoutGraph(LayoutGraph.CreateCopy(graph), "Orthogonal Layout Style");
 
+      // using circular layout style
+      var circular = new CircularLayout();
+      circular.BackboneLayout.MinimumEdgeLength = 20;
+      circular.BackboneLayout.CompactnessFactor = 0.95;
+      graph.ApplyLayout(circular);
+      gv.AddLayoutGraph(LayoutGraph.CreateCopy(graph), "Circular Layout Style");
 
-      //using circular layout style
-      CircularLayout circular = new CircularLayout();
-      circular.BalloonLayout.MinimumEdgeLength = 20;
-      circular.BalloonLayout.CompactnessFactor = 0.1;
-      new BufferedLayout(circular).ApplyLayout(graph);
-      LayoutGraphUtilities.ClipEdgesOnBounds(graph);
-      gv.AddLayoutGraph(new CopiedLayoutGraph(graph), "Circular Layout Style");
-
-      //using hierarchical layout style
-      var hierarchic = new HierarchicLayout();
-      new BufferedLayout(hierarchic).ApplyLayout(graph);
+      // using hierarchical layout style
+      var hierarchical = new HierarchicalLayout();
+      graph.ApplyLayout(hierarchical);
       gv.AddLayoutGraph(graph, "Hierarchical Layout Style");
 
-      var application = new System.Windows.Application();
+      var application = new Application();
       application.Run(gv);
     }
   }

@@ -1,6 +1,6 @@
 <!-- ************************************************************************ -->
-<!-- This demo file is part of yFiles WPF 3.6.                           -->
-<!-- Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
+<!-- This demo file is part of yFiles WPF 4.0.                           -->
+<!-- Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
 <!-- 72070 Tuebingen, Germany. All rights reserved.                           -->
 <!--                                                                          -->
 <!-- yFiles demo files exhibit yFiles WPF functionalities. Any redistribution  -->
@@ -27,15 +27,24 @@
 <Window x:Class="Demo.yFiles.Graph.Events.GraphEventsWindow" 
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
-        xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/3.0/xaml"
+        xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/4.0/xaml"
+        xmlns:local="clr-namespace:Demo.yFiles.Graph.Events" 
         Title="Demo.yWorks.Graph.Events" Height="860" Width="1000" Loaded="OnLoaded" Style="{StaticResource DemoWindow}">
+    <Window.Resources>
+        <local:NodeImageConverter x:Key="NodeStyleImageConverter"/>
+        <DataTemplate x:Key="PaletteTemplate">
+            <Border BorderThickness="5" Mouse.PreviewMouseDown="OnTemplateMouseDown">
+                <Image Source="{Binding Converter={StaticResource NodeStyleImageConverter}}"/>
+            </Border>
+        </DataTemplate>
+    </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="220" />
             <ColumnDefinition Width="5" />
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="5" />
-            <ColumnDefinition Width="350" />
+            <ColumnDefinition Width="400" />
         </Grid.ColumnDefinitions>
         <DockPanel LastChildFill="True">
             <HeaderedContentControl Header="Event Log Options" DockPanel.Dock="Top" Style="{StaticResource HeaderedContentStyle}">
@@ -45,26 +54,22 @@
                             <CheckBox x:Name="logInputModeEvents" Checked="RegisterInputModeEvents" Unchecked="DeregisterInputModeEvents" ToolTip="Events dispatched by GraphViewerInputMode or GraphEditorInputMode.">Viewer/Editor Events</CheckBox>
                             <CheckBox x:Name="logNavigationModeEvents" Checked="RegisterNavigationModeEvents" Unchecked="DeregisterNavigationModeEvents" ToolTip="Events dispatched by NavigationInputMode when a group node was collapsed, expanded, entered or exited.">Navigation Events</CheckBox>
                             <CheckBox x:Name="logClickModeEvents" Checked="RegisterClickModeEvents" Unchecked="DeregisterClickModeEvents" ToolTip="Events dispatched by ClickInputMode.">Click Events</CheckBox>
-                            <CheckBox x:Name="logTapModeEvents" Checked="RegisterTapModeEvents" Unchecked="DeregisterTapModeEvents" ToolTip="Events dispatched by TapInputMode on touch devices.">Tap Events</CheckBox>
                             <CheckBox x:Name="logMoveModeEvents" Checked="RegisterMoveModeEvents" Unchecked="DeregisterMoveModeEvents" ToolTip="Events dispatched by MoveInputMode when an item was moved.">Move Events</CheckBox>
                             <CheckBox x:Name="logMoveViewportModeEvents" Checked="RegisterMoveViewportModeEvents" Unchecked="DeregisterMoveViewportModeEvents" ToolTip="Events dispatched by MoveViewportInputMode when the graph was panned or zoomed.">Move Viewport Events</CheckBox>
                             <CheckBox x:Name="logHandleModeEvents" Checked="RegisterHandleModeEvents" Unchecked="DeregisterHandleModeEvents" ToolTip="Events dispatched by HandleInputMode when a node was resized or another handle was moved.">Handle Move Events</CheckBox>
-                            <CheckBox x:Name="logMouseHoverModeEvents" Checked="RegisterMouseHoverModeEvents" Unchecked="DeregisterMouseHoverModeEvents" ToolTip="Events dispatched by MouseHoverInputMode when an item was hovered for a certain amount of time (e.g. to show a ToolTip).">Mouse Hover Events</CheckBox>
+                            <CheckBox x:Name="logItemHoverModeEvents" Checked="RegisterItemHoverModeEvents" Unchecked="DeregisterItemHoverModeEvents" ToolTip="Events dispatched by ItemHoverInputMode when the mouse enters or leaves an item.">Item Hover Events</CheckBox>
                             <CheckBox x:Name="logTextEditorModeEvents" Checked="RegisterTextEditorModeEvents" Unchecked="DeregisterTextEditorModeEvents" ToolTip="Events dispatched by TextEditorInputMode during Label Editing.">Text Editor Events</CheckBox>
                             <CheckBox x:Name="logContextMenuModeEvents" Checked="RegisterContextMenuModeEvents" Unchecked="DeregisterContextMenuModeEvents" ToolTip="Events dispatched by ContextMenuInputMode.">Context Menu Events</CheckBox>
                             <CheckBox x:Name="logCreateBendModeEvents" Checked="RegisterCreateBendModeEvents" Unchecked="DeregisterCreateBendModeEvents" ToolTip="Events dispatched by CreateBendInputMode during bend creation.">Create Bend Events</CheckBox>
                             <CheckBox x:Name="logCreateEdgeModeEvents" Checked="RegisterCreateEdgeModeEvents" Unchecked="DeregisterCreateEdgeModeEvents" ToolTip="Events dispatched by CreateEdgeInputMode during edge creation.">Create Edge Events</CheckBox>
-                            <CheckBox x:Name="logItemHoverModeEvents" Checked="RegisterItemHoverModeEvents" Unchecked="DeregisterItemHoverModeEvents" ToolTip="Events dispatched by ItemHoverInputMode when the mouse enters or leaves an item.">Item Hover Events</CheckBox>
-                            <CheckBox x:Name="logMoveLabelModeEvents" Checked="RegisterMoveLabelModeEvents" Unchecked="DeregisterMoveLabelModeEvents" ToolTip="Events dispatched by MoveLabelInputMode when a label was moved.">Move Label Events</CheckBox>
-                            <CheckBox x:Name="logClipboardEvents" Checked="RegisterClipboardEvents" Unchecked="DeregisterClipboardEvents" ToolTip="Events dispatched by the Clipboard when a Cut, Copy, or Paste operation occured.">Clipboard Events</CheckBox>
-                            <CheckBox x:Name="logUndoEvents" Checked="RegisterUndoEvents" Unchecked="DeregisterUndoEvents" ToolTip="Events dispatched by Undo engine when an operation was undone or redone.">Undo Events</CheckBox>
+                            <CheckBox x:Name="logItemDropModeEvents" Checked="RegisterItemDropModeEvents" Unchecked="DeregisterItemDropModeEvents" ToolTip="Events dispatched by ItemDropInputMode during a drag and drop gesture.">Drag and Drop Events</CheckBox>
+                            <CheckBox x:Name="logEditLabelModeEvents" Checked="RegisterEditLabelModeEvents" Unchecked="DeregisterEditLabelModeEvents" ToolTip="Events dispatched by EditLabelInputMode when adding/editing labels.">Label Edit Events</CheckBox>
                         </StackPanel>
                     </Expander>
-                    <Expander Header="GraphControl Events" Margin="5,5,5,0" BorderBrush="LightGray" IsExpanded="True">
+                    <Expander Header="GraphControl Events" Margin="5, 0, 5, 5" BorderBrush="LightGray" IsExpanded="True">
                         <StackPanel Orientation="Vertical" Margin="5">
-                            <CheckBox x:Name="logClipboard" Checked="RegisterClipboardCopierEvents" Unchecked="DeregisterClipboardCopierEvents" ToolTip="Logs actions in the clipboard and during duplication">Clipboard Events</CheckBox>
-                            <CheckBox x:Name="logMouseEvents" Checked="RegisterGraphControlMouseEvents" Unchecked="DeregisterGraphControlMouseEvents" ToolTip="Dispatched when the mouse is moved or mouse buttons are pressed.">Mouse Events</CheckBox>
-                            <CheckBox x:Name="logTouchEvents" Checked="RegisterGraphControlTouchEvents" Unchecked="DeregisterGraphControlTouchEvents" ToolTip="Dispatched on touch devices upon touch interaction.">Touch Events</CheckBox>
+                            <CheckBox x:Name="logClipboardEvents" Checked="RegisterClipboardAndClipboardCopierEvents" Unchecked="DeregisterClipboardAndClipboardCopierEvents" ToolTip="Events dispatched by the Clipboard and its copiers when a Cut, Copy, Paste, or Duplicate operation occured.">Clipboard Events</CheckBox>
+                            <CheckBox x:Name="logMouseEvents" Checked="RegisterGraphControlPointerEvents" Unchecked="DeregisterGraphControlPointerEvents" ToolTip="Dispatched when a pointer device is moved or device buttons are pressed.">Pointer Events</CheckBox>
                             <CheckBox x:Name="logKeyEvents" Checked="RegisterGraphControlKeyEvents" Unchecked="DeregisterGraphControlKeyEvents" ToolTip="Dispatched when a key is pressed or released.">Key Events</CheckBox>
                             <CheckBox x:Name="logSelectionEvents" Checked="RegisterSelectionEvents" Unchecked="DeregisterSelectionEvents" ToolTip="Dispatched by GraphControl.Selection when graph items are selected or deselected.">Selection Events</CheckBox>
                             <CheckBox x:Name="logViewportEvents" Checked="RegisterGraphControlViewportEvents" Unchecked="DeregisterGraphControlViewportEvents" ToolTip="Report changes of the view port and zoom level.">Viewport Events</CheckBox>
@@ -72,15 +77,17 @@
                             <CheckBox x:Name="logGraphControl" Checked="RegisterGraphControlEvents" Unchecked="DeregisterGraphControlEvents" ToolTip="Logs changes of the Current Item, the complete graph or the input mode.">Other Events</CheckBox>
                         </StackPanel>
                     </Expander>
-                    <Expander Header="Graph Events" Margin="5,5,5,0" BorderBrush="LightGray">
+                    <Expander Header="Graph Events" Margin="5, 0, 5, 5" BorderBrush="LightGray">
                         <StackPanel Orientation="Vertical" Margin="5">
                             <CheckBox x:Name="logNodeEvents" Checked="RegisterNodeEvents" Unchecked="DeregisterNodeEvents" ToolTip="Dispatched when a node is created, removed, or changed.">Node Events</CheckBox>
                             <CheckBox x:Name="logEdgeEvents" Checked="RegisterEdgeEvents" Unchecked="DeregisterEdgeEvents" ToolTip="Dispatched when an edge is created, removed, or changed.">Edge Events</CheckBox>
                             <CheckBox x:Name="logLabelEvents" Checked="RegisterLabelEvents" Unchecked="DeregisterLabelEvents" ToolTip="Dispatched when a label is created, removed, or changed.">Label Events</CheckBox>
                             <CheckBox x:Name="logPortEvents" Checked="RegisterPortEvents" Unchecked="DeregisterPortEvents" ToolTip="Dispatched when a port is created, removed, or changed.">Port Events</CheckBox>
                             <CheckBox x:Name="logBendEvents" Checked="RegisterBendEvents" Unchecked="DeregisterBendEvents" ToolTip="Dispatched when a bend is created, removed, or changed.">Bend Events</CheckBox>
-                            <CheckBox x:Name="logNodeBoundsEvents" Checked="RegisterNodeBoundsEvents" Unchecked="DeregisterNodeBoundsEvents" ToolTip="Dispatched when the bounds of a node have changed.">Node Bounds Changed Event</CheckBox>
+                            <CheckBox x:Name="logHierarchyEvents" Checked="RegisterHierarchyEvents" Unchecked="DeregisterHierarchyEvents" ToolTip="Dispatched when the group state or the parent of a node is changed.">Hierarchy Events</CheckBox>
+                            <CheckBox x:Name="logFoldingEvents" Checked="RegisterFoldingEvents" Unchecked="DeregisterFoldingEvents" ToolTip="Dispatched when a group is expanded, collapsed or a property is changed.">Folding Events</CheckBox>
                             <CheckBox x:Name="logGraphRenderEvents" Checked="RegisterGraphRenderEvents" Unchecked="DeregisterGraphRenderEvents" ToolTip="Reports events that occur when the graph is rendered within a control.">Graph Render Events</CheckBox>
+                            <CheckBox x:Name="logUndoEvents" Checked="RegisterUndoEvents" Unchecked="DeregisterUndoEvents" ToolTip="Events dispatched by UndoEngine when an operation was undone or redone.">Undo Events</CheckBox>
                         </StackPanel>
                     </Expander>
                 </StackPanel>
@@ -168,7 +175,7 @@
                     <MenuItem Command="IncreaseZoom" CommandTarget="{Binding ElementName=graphControl}"/>
                     <MenuItem Command="DecreaseZoom" CommandTarget="{Binding ElementName=graphControl}"/>
                     <MenuItem Header="Zoom 1:1" CommandParameter="1" Command="Zoom" CommandTarget="{Binding ElementName=graphControl}"/>
-                    <MenuItem Command="{x:Static ywpf:GraphControl.FitGraphBoundsCommand}" CommandTarget="{Binding ElementName=graphControl}" />
+                    <MenuItem Command="{x:Static ywpf:GraphCommands.FitGraphBounds}" CommandTarget="{Binding ElementName=graphControl}" />
                 </MenuItem>
                 <MenuItem Header="Grouping">
                     <MenuItem Command="{x:Static ywpf:GraphCommands.GroupSelection}" CommandTarget="{Binding ElementName=graphControl}"/>
@@ -187,32 +194,49 @@
                     <Separator />
                     <Button Command="IncreaseZoom" CommandTarget="{Binding ElementName=graphControl}" />
                     <Button Command="DecreaseZoom" CommandTarget="{Binding ElementName=graphControl}" />
-                    <Button Command="{x:Static ywpf:GraphControl.FitGraphBoundsCommand}" CommandTarget="{Binding ElementName=graphControl}" />
+                    <Button Command="{x:Static ywpf:GraphCommands.FitGraphBounds}" CommandTarget="{Binding ElementName=graphControl}" />
                     <Separator />
                     <ToggleButton x:Name="toggleEditingButton" Content="Toggle Editing" Checked="InstallEditorMode" Unchecked="InstallViewerMode" IsThreeState="False" ToolTip="Use GraphEditorInputMode/GraphViewerInputMode"/>
                     <ToggleButton x:Name="toggleOrthogonalEdgesButton" Content="Orthogonal Edges" Checked="EnableOrthogonalEdges" Unchecked="DisableOrthogonalEdges" IsThreeState="False" ToolTip="Use GraphEditorInputMode's Orthogonal Edge Editing Feature"/>
+                    <ToggleButton x:Name="toggleSingleClickReportingPolicyButton" Content="Wait for Second Click" Checked="EnableWaitForSecondClick" Unchecked="DisableWaitForSecondClick" IsThreeState="False" ToolTip="Change double click policy to DoubleClickOnly"/>
                 </ToolBar>
             </ToolBarTray>
             <ywpf:GraphControl Name="graphControl" Width="Auto" Height="Auto" />
         </DockPanel>
         <GridSplitter Width="5" Grid.Column="3" ResizeBehavior="PreviousAndNext" />
-        <HeaderedContentControl Grid.Column="4" Style="{StaticResource HeaderedContentStyle}" BorderThickness="1,0,0,0">
-            <HeaderedContentControl.Header>
-                <DockPanel>
-                    <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
-                        <CheckBox x:Name="groupEvents" VerticalAlignment="Center" Margin="0,0,10,0" IsChecked="True">Group identical events</CheckBox>
-                        <Button Content="Clear" Click="ClearButtonClick" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="10,1"/>
-                    </StackPanel>
-                    <Label>Event Log</Label>
-                </DockPanel>
-            </HeaderedContentControl.Header>
-            <ListView Name="eventLog" ItemTemplateSelector="{StaticResource MessageTemplateSelector}">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <StackPanel/>
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-            </ListView>
-        </HeaderedContentControl>
+        <DockPanel Grid.Column="4">
+            <HeaderedContentControl Style="{StaticResource HeaderedContentStyle}" BorderThickness="1,0,0,0" DockPanel.Dock="Top">
+                <HeaderedContentControl.Header>
+                    <Label>Drag Source</Label>
+                </HeaderedContentControl.Header>
+                <ScrollViewer Width="Auto" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                    <ListView x:Name="palette" ItemTemplate="{StaticResource PaletteTemplate}" SelectionMode="Single">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel Orientation="Horizontal"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                    </ListView>
+                </ScrollViewer>
+            </HeaderedContentControl>
+            <HeaderedContentControl Style="{StaticResource HeaderedContentStyle}" BorderThickness="1,0,0,0">
+                <HeaderedContentControl.Header>
+                    <DockPanel>
+                        <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
+                            <CheckBox x:Name="groupEvents" VerticalAlignment="Center" Margin="0,0,10,0" IsChecked="True">Group identical events</CheckBox>
+                            <Button Content="Clear" Click="ClearButtonClick" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="10,1"/>
+                        </StackPanel>
+                        <Label>Event Log</Label>
+                    </DockPanel>
+                </HeaderedContentControl.Header>
+                <ListView Name="eventLog" ItemTemplateSelector="{StaticResource MessageTemplateSelector}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ListView>
+            </HeaderedContentControl>
+        </DockPanel>
     </Grid>
 </Window>

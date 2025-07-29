@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -37,64 +37,67 @@ using yWorks.Layout.Partial;
 namespace Demo.yFiles.Graph.InteractiveClearArea
 {
   /// <summary>
-  /// Performs layout and animation while dragging the rectangular area.
+  ///   Performs layout and animation while dragging the rectangular area.
   /// </summary>
   internal class ClearAreaLayoutHelper
   {
     /// <summary>
-    /// We use the same <see cref="LayoutGraphAdapter"/> for one drag gesture.
+    ///   We use the same <see cref="LayoutGraphAdapter"/> for one drag gesture.
     /// </summary>
     private LayoutExecutor executor;
 
     /// <summary>
-    /// Options to control the layout behavior.
+    ///   Options to control the layout behavior.
     /// </summary>
     private readonly InteractiveClearAreaDemo.LayoutOptions options;
 
     /// <summary>
-    /// The graph that is displayed.
+    ///   The graph that is displayed.
     /// </summary>
     private IGraph Graph {
       get { return graphControl.Graph; }
     }
 
     /// <summary>
-    /// The control that displays the graph.
+    ///   The control that displays the graph.
     /// </summary>
     private readonly GraphControl graphControl;
 
     /// <summary>
-    /// The graph layout copy that stores the original layout before the rectangle has been dragged.
+    ///   The graph layout copy that stores the original layout before the rectangle has been dragged.
     /// </summary>
-    private GivenCoordinatesStageData resetToOriginalGraphStageData;
+    private GivenCoordinatesLayoutData<INode, IEdge, ILabel, ILabel> resetToOriginalGraphLayoutData;
 
     /// <summary>
-    /// The rectangular area that can be freely moved or resized.
+    ///   The rectangular area that can be freely moved or resized.
     /// </summary>
     private readonly MutableRectangle clearRect;
 
     /// <summary>
-    /// The layout of the rectangular area at the beginning of the gesture. Used for undo/redo.
+    ///   The layout of the rectangular area at the beginning of the gesture. Used for undo/redo.
     /// </summary>
     private RectD oldClearRect;
 
     /// <summary>
-    /// The <see cref="ILayoutAlgorithm"/> that makes space for the rectangular area.
+    ///   The <see cref="ILayoutAlgorithm"/> that makes space for the rectangular area.
     /// </summary>
     private ClearAreaLayout clearAreaLayout;
 
     /// <summary>
-    /// The group node we are currently inside.
+    ///   The group node we are currently inside.
     /// </summary>
     public INode GroupNode { get; set; }
 
     /// <summary>
-    /// Initializes the helper.
+    ///   Initializes the helper.
     /// </summary>
     /// <param name="graphControl">The control that displays the graph.</param>
     /// <param name="clearRect">The rectangle the is dragged.</param>
     /// <param name="options">Options to control the layout behavior.</param>
-    public ClearAreaLayoutHelper(GraphControl graphControl, MutableRectangle clearRect, InteractiveClearAreaDemo.LayoutOptions options) {
+    public ClearAreaLayoutHelper(
+        GraphControl graphControl,
+        MutableRectangle clearRect,
+        InteractiveClearAreaDemo.LayoutOptions options) {
       this.graphControl = graphControl;
       this.clearRect = clearRect;
       this.options = options;
@@ -103,11 +106,24 @@ namespace Demo.yFiles.Graph.InteractiveClearArea
     #region LayoutExecutor configurations
 
     /// <summary>
-    /// Creates a <see cref="GivenCoordinatesStageData"/> that store the layout of nodes and edges.
+    ///   A <see cref="LayoutExecutor"/> that is used while dragging the rectangle.
     /// </summary>
-    /// <returns>The <see cref="GivenCoordinatesStageData"/>.</returns>
-    private GivenCoordinatesStageData CreateGivenCoordinateStageData() {
-      var data = new GivenCoordinatesStageData();
+    /// <remarks>
+    ///   First, all nodes and edges are pushed back into place before the drag started. Then space
+    ///   is made for the rectangle at its current position. The animation morphs all elements to the
+    ///   calculated positions.
+    /// </remarks>
+    private void InitializeDraggingLayoutExecutor() {
+      clearAreaLayout = new ClearAreaLayout {
+          ComponentAssignmentStrategy = options.ComponentAssignmentStrategy,
+          ClearAreaStrategy = options.ClearAreaStrategy,
+          ConsiderEdges = options.ConsiderEdges
+      };
+      var clearAreaLayoutData = clearAreaLayout.CreateLayoutData(graphControl.Graph);
+      clearAreaLayoutData.AreaGroupNode.Predicate = node => node == GroupNode;
+
+      var layout = new GivenCoordinatesLayout(clearAreaLayout);
+      var data = layout.CreateLayoutData(graphControl.Graph);
       foreach (var node in Graph.Nodes) {
         data.NodeLocations.Mapper[node] = node.Layout.GetTopLeft();
         data.NodeSizes.Mapper[node] = node.Layout.GetSize();
@@ -115,64 +131,25 @@ namespace Demo.yFiles.Graph.InteractiveClearArea
       foreach (var edge in Graph.Edges) {
         data.EdgePaths.Mapper[edge] = edge.GetPathPoints();
       }
-      return data;
-    }
+      resetToOriginalGraphLayoutData = data;
 
-    /// <summary>
-    /// A <see cref="LayoutExecutor"/> that is used while dragging the rectangle.
-    /// </summary>
-    /// <remarks>
-    /// First, all nodes and edges are pushed back into place before the drag started. Then space 
-    /// is made for the rectangle at its current position. The animation morphs all elements to the 
-    /// calculated positions.
-    /// </remarks>
-    private LayoutExecutor CreateDraggingLayoutExecutor() {
-      return new LayoutExecutor(graphControl, CreateDraggingLayout())
-      {
-        LayoutData = CreateDraggingLayoutData(),
-        RunInThread = true,
-        Duration = TimeSpan.FromMilliseconds(150)
+      executor = new LayoutExecutor(graphControl, layout) {
+          AnimateViewport = false,
+          LayoutData = graphControl.Graph.CreateCompositeLayoutData(resetToOriginalGraphLayoutData, clearAreaLayoutData),
+          AnimationDuration = TimeSpan.FromMilliseconds(150)
       };
     }
 
     /// <summary>
-    /// A <see cref="LayoutExecutor"/> that is used after the drag is canceled.
+    ///   A <see cref="LayoutExecutor"/> that is used after the drag is canceled.
     /// </summary>
     /// <remarks>
-    /// All nodes and edges are pushed back into place before the drag started.
+    ///   All nodes and edges are pushed back into place before the drag started.
     /// </remarks>
     private LayoutExecutor CreateCanceledLayoutExecutor() {
-      return new LayoutExecutor(graphControl, new GivenCoordinatesStage())
-      {
-        LayoutData = resetToOriginalGraphStageData,
-        RunInThread = true,
-        Duration = TimeSpan.FromMilliseconds(150)
+      return new LayoutExecutor(graphControl, new GivenCoordinatesLayout()) {
+          LayoutData = resetToOriginalGraphLayoutData, AnimationDuration = TimeSpan.FromMilliseconds(150)
       };
-    }
-
-    /// <summary>
-    /// Creates a <see cref="ILayoutAlgorithm"/> used while dragging and finishing the gesture. 
-    /// </summary>
-    private ILayoutAlgorithm CreateDraggingLayout() {
-      return new GivenCoordinatesStage(
-          clearAreaLayout = new ClearAreaLayout {
-              ComponentAssignmentStrategy = options.ComponentAssignmentStrategy,
-              ClearAreaStrategy = options.ClearAreaStrategy,
-              ConsiderEdges = options.ConsiderEdges
-          });
-    }
-
-    /// <summary>
-    /// Creates a <see cref="LayoutData"/> used while dragging and finishing the gesture.
-    /// </summary>
-    private LayoutData CreateDraggingLayoutData() {
-      return new CompositeLayoutData(
-          resetToOriginalGraphStageData,
-          new ClearAreaLayoutData {
-              AreaGroupNode = {
-                  Delegate = node => node == GroupNode
-              }
-          });
     }
 
     #endregion
@@ -180,32 +157,32 @@ namespace Demo.yFiles.Graph.InteractiveClearArea
     #region Layout Execution
 
     /// <summary>
-    /// A lock which prevents re-entrant layout execution.
+    ///   A lock which prevents re-entrant layout execution.
     /// </summary>
     private bool layoutIsRunning;
 
     /// <summary>
-    /// Indicates whether a layout run has been requested while running a layout calculation.
+    ///   Indicates whether a layout run has been requested while running a layout calculation.
     /// </summary>
     private bool layoutPending;
 
     /// <summary>
-    /// Indicates that the gesture has been canceled and the original layout should be restored.
+    ///   Indicates that the gesture has been canceled and the original layout should be restored.
     /// </summary>
     private bool canceled;
-    
+
     /// <summary>
-    /// Indicates that the gesture has been finished and the new layout should be applied.
+    ///   Indicates that the gesture has been finished and the new layout should be applied.
     /// </summary>
     private bool stopped;
 
     /// <summary>
-    /// Creates a single unit to undo and redo the complete reparent gesture.
+    ///   Creates a single unit to undo and redo the complete reparent gesture.
     /// </summary>
     private ICompoundEdit layoutEdit;
 
     /// <summary>
-    /// Starts a layout calculation if none is already running.
+    ///   Starts a layout calculation if none is already running.
     /// </summary>
     public async void RunLayout() {
       if (layoutIsRunning) {
@@ -231,19 +208,18 @@ namespace Demo.yFiles.Graph.InteractiveClearArea
     }
 
     /// <summary>
-    /// Prepares the layout execution.
+    ///   Prepares the layout execution.
     /// </summary>
     public void InitializeLayout() {
       // prepare undo/redo
       oldClearRect = clearRect.ToRectD();
       layoutEdit = Graph.BeginEdit("Clear Area", "Clear Area");
-      
-      resetToOriginalGraphStageData = CreateGivenCoordinateStageData();
-      executor = CreateDraggingLayoutExecutor();
+
+      InitializeDraggingLayoutExecutor();
     }
 
     /// <summary>
-    /// Cancels the current layout calculation.
+    ///   Cancels the current layout calculation.
     /// </summary>
     public void CancelLayout() {
       executor.Stop();
@@ -252,7 +228,7 @@ namespace Demo.yFiles.Graph.InteractiveClearArea
     }
 
     /// <summary>
-    /// Stops the current layout calculation.
+    ///   Stops the current layout calculation.
     /// </summary>
     public void StopLayout() {
       executor.Stop();
@@ -261,19 +237,19 @@ namespace Demo.yFiles.Graph.InteractiveClearArea
     }
 
     /// <summary>
-    /// Called before the a layout run starts.
+    ///   Called before the a layout run starts.
     /// </summary>
     private void OnExecutorStarting() {
       if (canceled) {
         // use an executor that resets the graph to original layout
         executor = CreateCanceledLayoutExecutor();
       } else {
-        clearAreaLayout.Area = clearRect.ToRectD().ToYRectangle();
+        clearAreaLayout.Area = clearRect.ToRectD();
       }
     }
 
     /// <summary>
-    /// Called after the a layout run finished.
+    ///   Called after the a layout run finished.
     /// </summary>
     private void OnExecutorFinished() {
       if (canceled) {
@@ -283,9 +259,8 @@ namespace Demo.yFiles.Graph.InteractiveClearArea
         // save the layout of the rectangular area before and after the gesture
         var newRect = clearRect.ToRectD();
         var oldRect = oldClearRect;
-        graphControl.Graph.AddUndoUnit("Rectangle changed", "Rectangle changed",
-            () => clearRect.Reshape(oldRect),
-            () => clearRect.Reshape(newRect));
+        graphControl.Graph.AddUndoUnit("Rectangle changed", "Rectangle changed", () => clearRect.SetShape(oldRect),
+            () => clearRect.SetShape(newRect));
 
         // add all changes of the complete gesture as one undo/redo unit
         layoutEdit.Commit();
@@ -293,6 +268,5 @@ namespace Demo.yFiles.Graph.InteractiveClearArea
     }
 
     #endregion
-
   }
 }

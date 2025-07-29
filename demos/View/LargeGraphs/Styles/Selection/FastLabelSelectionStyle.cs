@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -42,7 +42,7 @@ namespace Demo.yFiles.Graph.LargeGraphs.Styles.Selection
   /// </summary>
   /// <remarks>
   ///   <para>
-  ///     This style essentially displays a rotated rectangle and scales its stroke thickness by 1 / zoom level. This means that positioning and size considerations can still be done in world coordinates and the rectangle doesn't require a series of transformations to end up where it should be.
+  ///     This style essentially displays a rotated rectangle and scales its stroke thickness by 1 / zoom level. This means that positioning and size considerations can still be done in world coordinates and the rectangle doesn't require a series of transformations to end up where it should be.
   ///   </para>
   ///   <para>
   ///     Since the default label selection decorator uses a solid color instead of a pattern, this style doesn't scale or cache its stroke brush, unlike <see cref="FastEdgeSelectionStyle"/> or <see cref="FastNodeSelectionStyle"/>.
@@ -127,17 +127,17 @@ namespace Demo.yFiles.Graph.LargeGraphs.Styles.Selection
     /// <param name="layout">The label's layout.</param>
     /// <returns>The selection rectangle geometry.</returns>
     private Geometry CreateGeometry(IOrientedRectangle layout) {
-      var up = layout.GetUp();
-      var anchor = layout.GetAnchorLocation();
+      var up = layout.GetUpVector();
+      var anchor = layout.GetAnchor();
       var right = new PointD(-up.Y, up.X);
 
       var g = new StreamGeometry();
       using (var ctx = g.Open()) {
-        ctx.BeginFigure(anchor, Fill != null, true);
-        ctx.LineTo(anchor + right * layout.Width, true, false);
-        ctx.LineTo(anchor + right * layout.Width + up * layout.Height, true, false);
-        ctx.LineTo(anchor + up * layout.Height, true, false);
-        ctx.LineTo(anchor, true, false);
+        ctx.BeginFigure(anchor.ToPoint(), Fill != null, true);
+        ctx.LineTo((anchor + right * layout.Width).ToPoint(), true, false);
+        ctx.LineTo((anchor + right * layout.Width + up * layout.Height).ToPoint(), true, false);
+        ctx.LineTo((anchor + up * layout.Height).ToPoint(), true, false);
+        ctx.LineTo(anchor.ToPoint(), true, false);
       }
       return g;
     }
@@ -152,8 +152,8 @@ namespace Demo.yFiles.Graph.LargeGraphs.Styles.Selection
       var layout = label.GetLayout();
       // Normally I'd say scale / 2 would be correct here, but scale / 4 reproduces the default label selection exactly.
       var amount = Stroke.Thickness * scale / 4;
-      var up = layout.GetUp();
-      var anchor = layout.GetAnchorLocation();
+      var up = layout.GetUpVector();
+      var anchor = layout.GetAnchor();
       var right = new PointD(-up.Y, up.X);
       var width = layout.Width;
       var height = layout.Height;

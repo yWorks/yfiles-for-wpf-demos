@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -84,7 +84,6 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
     /// <param name="xElement">The xElement</param>
     /// <param name="nameSpace">The namespace</param>
     /// <param name="attributeName">The local name of the attribute</param>
-    /// <returns></returns>
     internal static string GetAttributeValue(XElement xElement, XNamespace nameSpace, string attributeName) {
       // Some Attributes do not have a namespace declared explicitly. Since we test the parent for the correct namespace this is ok.
       var attrList = xElement.Attributes(attributeName).Where(el => el.Name.NamespaceName == nameSpace || el.Name.Namespace == "");
@@ -100,7 +99,6 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
     /// <param name="xElement">The element</param>
     /// <param name="nameSpace">The namespace</param>
     /// <param name="localName">The local name</param>
-    /// <returns></returns>
     internal static XElement GetElement(XElement xElement, XNamespace nameSpace, string localName) {
       return xElement.Element(nameSpace + localName);
     }
@@ -111,7 +109,6 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
     /// <param name="xElement">The element</param>
     /// <param name="nameSpace">The namespace</param>
     /// <param name="localName">The local name</param>
-    /// <returns></returns>
     internal static IEnumerable<XElement> GetElements(XElement xElement, XNamespace nameSpace, string localName) {
       return xElement.Elements(nameSpace + localName);
     }

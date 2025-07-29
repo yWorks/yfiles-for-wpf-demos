@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -28,49 +28,48 @@
  ***************************************************************************/
 
 using System;
-using yWorks.Algorithms;
+using yWorks.Analysis;
+using yWorks.Layout.Graph;
 
 namespace Demo.Base.ShortestPath
 {
   /// <summary>
-  /// Demonstrates the usage of the ShortestPaths class that
-  /// provides easy to use algorithms for finding shortest paths 
-  /// within weighted graphs.
+  ///   Demonstrates the usage of the ShortestPaths class that
+  ///   provides easy-to-use algorithms for finding shortest paths
+  ///   within weighted graphs.
   /// </summary>
   public class ShortestPathDemo
   {
     /// <summary>
-    /// Main method:
+    ///   Main method:
     /// </summary>
     public static void Main() {
       // Create a random graph with the given edge and node count
-      RandomGraphGenerator randomGraph = new RandomGraphGenerator(0);
+      var randomGraph = new RandomGraphGenerator(0);
       randomGraph.NodeCount = 30;
       randomGraph.EdgeCount = 60;
-      Graph graph = randomGraph.Generate();
+      var graph = randomGraph.Generate();
 
-      // Create an edgemap and assign random double weights to 
+      // Create an edgemap and assign random double weights to
       // the edges of the graph.
-      IEdgeMap weightMap = graph.CreateEdgeMap();
-      Random random = new Random(0);
-      for (IEdgeCursor ec = graph.GetEdgeCursor(); ec.Ok; ec.Next()) {
-        Edge e = ec.Edge;
-        weightMap.SetDouble(e, 100.0*random.NextDouble());
+      var weightMap = graph.CreateEdgeDataMap<double>();
+      var random = new Random(0);
+      foreach (var e in graph.Edges) {
+        weightMap[e] = 100.0 * random.NextDouble();
       }
 
       // Calculate the shortest path from the first to the last node
       // within the graph
-      if (!graph.Empty) {
-        Node from = graph.FirstNode;
-        Node to = graph.LastNode;
-        double sum = 0.0;
+      if (!graph.IsEmpty) {
+        var from = graph.Nodes.First;
+        var to = graph.Nodes.Last;
+        var sum = 0.0;
 
         // The undirected case first, i.e. edges of the graph and the
-        // resulting shortest path are considered to be undirected  
-        EdgeList path = ShortestPaths.SingleSourceSingleSink(graph, from, to, false, weightMap);
-        for (IEdgeCursor ec = path.Edges(); ec.Ok; ec.Next()) {
-          Edge e = ec.Edge;
-          double weight = weightMap.GetDouble(e);
+        // resulting shortest path are considered to be undirected
+        var path = LayoutGraphAlgorithms.ShortestPath(graph, from, to, false, weightMap);
+        foreach (var e in path) {
+          var weight = weightMap[e];
           Console.WriteLine(e + " weight = " + weight);
           sum += weight;
         }
@@ -80,17 +79,15 @@ namespace Demo.Base.ShortestPath
           Console.WriteLine("UNDIRECTED PATH LENGTH = " + sum);
         }
 
-
         // Next the directed case, i.e. edges of the graph and the
         // resulting shortest path are considered to be directed.
         // Note that this shortest path can't be shorter then the one
         // for the undirected case
 
-        path = ShortestPaths.SingleSourceSingleSink(graph, from, to, true, weightMap);
+        path = LayoutGraphAlgorithms.ShortestPath(graph, from, to, true, weightMap);
         sum = 0.0;
-        for (IEdgeCursor ec = path.Edges(); ec.Ok; ec.Next()) {
-          Edge e = ec.Edge;
-          double weight = weightMap.GetDouble(e);
+        foreach (var e in path) {
+          var weight = weightMap[e];
           Console.WriteLine(e + " weight = " + weight);
           sum += weight;
         }
@@ -100,24 +97,23 @@ namespace Demo.Base.ShortestPath
           Console.WriteLine("DIRECTED PATH LENGTH = " + sum);
         }
 
-
         Console.WriteLine("\nAuxiliary distance test\n");
 
-        INodeMap distanceMap = graph.CreateNodeMap();
-        INodeMap predMap = graph.CreateNodeMap();
-        ShortestPaths.SingleSource(graph, from, true, weightMap, distanceMap, predMap);
-        if (distanceMap.GetDouble(to) == double.PositiveInfinity) {
+        var distanceMap = graph.CreateNodeDataMap<double>();
+        var predMap = graph.CreateNodeDataMap<Edge>();
+        LayoutGraphAlgorithms.SingleSourceShortestPath(graph, from, true, weightMap, distanceMap, predMap);
+        if (distanceMap[to] == double.PositiveInfinity) {
           Console.WriteLine("Distance from first to last node is infinite");
         } else {
-          Console.WriteLine("Distance from first to last node is " + distanceMap.GetDouble(to));
+          Console.WriteLine("Distance from first to last node is " + distanceMap[to]);
         }
 
         // Dispose distanceMap since it is not needed anymore
-        graph.DisposeNodeMap(distanceMap);
+        graph.DisposeDataMap(distanceMap);
       }
 
       // Dispose weightMap since it is not needed anymore
-      graph.DisposeEdgeMap(weightMap);
+      graph.DisposeDataMap(weightMap);
 
       Console.WriteLine("\nPress key to end demo.");
       Console.ReadKey();

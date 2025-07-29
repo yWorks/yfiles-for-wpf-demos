@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -32,21 +32,22 @@ using yWorks.Controls.Input;
 using yWorks.Geometry;
 using yWorks.Graph;
 using yWorks.Graph.Styles;
+using yWorks.Utils;
 
 namespace Demo.yFiles.Graph.LargeGraphs.Styles
 {
   /// <summary>
-  ///   Simple <see cref="ILabelStyle" /> wrapper to simplify changing every label's style.
+  ///   Simple <see cref="ILabelStyle"/> wrapper to simplify changing every label's style.
   /// </summary>
   /// <remarks>
-  ///   This class also implements <see cref="ILabelStyleRenderer" /> because renderer instances are tightly integrated with
+  ///   This class also implements <see cref="ILabelStyleRenderer"/> because renderer instances are tightly integrated with
   ///   their styles and we cannot simply return another style's renderer from here.
   /// </remarks>
-  public class WrapperLabelStyle : ILabelStyle, ILabelStyleRenderer
+  public sealed class WrapperLabelStyle : ILabelStyle, ILabelStyleRenderer
   {
     /// <summary>
-    ///   Initializes a new instance of the <see cref="WrapperLabelStyle" /> class, wrapping the given
-    ///   <see cref="ILabelStyle" />.
+    ///   Initializes a new instance of the <see cref="WrapperLabelStyle"/> class, wrapping the given
+    ///   <see cref="ILabelStyle"/>.
     /// </summary>
     /// <param name="style">The style to wrap.</param>
     public WrapperLabelStyle(ILabelStyle style) {
@@ -60,51 +61,54 @@ namespace Demo.yFiles.Graph.LargeGraphs.Styles
 
     #region ILabelStyle
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     public object Clone() {
       return MemberwiseClone();
     }
 
-    /// <inheritdoc />
-    public ILabelStyleRenderer Renderer {
-      get { return this; }
-    }
+    /// <inheritdoc/>
+    public ILabelStyleRenderer Renderer => this;
 
     #endregion
 
     #region ILabelStyleRenderer
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     public IVisualCreator GetVisualCreator(ILabel label, ILabelStyle style) {
       return Style.Renderer.GetVisualCreator(label, Style);
     }
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     public IBoundsProvider GetBoundsProvider(ILabel label, ILabelStyle style) {
       return Style.Renderer.GetBoundsProvider(label, Style);
     }
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     public IVisibilityTestable GetVisibilityTestable(ILabel label, ILabelStyle style) {
       return Style.Renderer.GetVisibilityTestable(label, Style);
     }
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     public IHitTestable GetHitTestable(ILabel label, ILabelStyle style) {
       return Style.Renderer.GetHitTestable(label, Style);
     }
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     public IMarqueeTestable GetMarqueeTestable(ILabel label, ILabelStyle style) {
       return Style.Renderer.GetMarqueeTestable(label, Style);
     }
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
+    public ILassoTestable GetLassoTestable(ILabel label, ILabelStyle style) {
+      return Style.Renderer.GetLassoTestable(label, Style);
+    }
+
+    /// <inheritdoc/>
     public ILookup GetContext(ILabel label, ILabelStyle style) {
       return Style.Renderer.GetContext(label, Style);
     }
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     public SizeD GetPreferredSize(ILabel label, ILabelStyle style) {
       return Style.Renderer.GetPreferredSize(label, Style);
     }

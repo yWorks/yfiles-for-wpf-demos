@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -33,7 +33,7 @@ using yWorks.Graph;
 namespace Demo.yFiles.Graph.ZOrder {
 
   /// <summary>
-  /// Event argument class used by <see cref="ZOrderSupport.ZOrderChanged"/>. 
+  /// Event argument class used by <see cref="ZOrderSupport.ZOrderChanged"/>.
   /// </summary>
   public class ZOrderChangedEventArgs : EventArgs {
     /// <summary>
@@ -43,9 +43,9 @@ namespace Demo.yFiles.Graph.ZOrder {
     /// <param name="newZOrder">The new z-order of the item.</param>
     /// <param name="oldZOrder">The old z-order of the item.</param>
     public ZOrderChangedEventArgs(INode node, int newZOrder, int oldZOrder = 0) {
-      this.Node = node;
-      this.NewZOrder = newZOrder;
-      this.OldZOrder = oldZOrder;
+      Node = node;
+      NewZOrder = newZOrder;
+      OldZOrder = oldZOrder;
     }
 
     /// <summary>

@@ -8,10 +8,10 @@ You will find the following programming samples in this package:
 | Name | Description |
 |:---|:---|
 |**AbortHandler** | Shows how to abort running layout algorithms. |
-|**BusRouter** | This Demo shows how to use a BusRouter as layout. |
-|**IncrementalHierarchicLayout** | Demonstrates the use of the incremental layout facility provided by class HierarchicLayout. |
+|**BusRouter** | This demo shows how to create bus-style edge paths with EdgeRouter. |
+|**IncrementalHierarchicalLayout** | Demonstrates the use of the incremental layout facility provided by class HierarchicalLayout. |
 |**InteractiveOrganic** | Sample Form that demonstrates the usage of InteractiveOrganicLayout. |
-|**LayerConstraints** | Demonstrates how to use layer constraints with the HierarchicLayout to restrict the node layering. |
+|**LayerConstraints** | Demonstrates how to use layer constraints with the HierarchicalLayout to restrict the node layering. |
 |**LayoutConfigurations** | A demo library which provides several configurations for layout algorithms to be used with the option handler as shown in the LayoutStyles demo. |
 |**LayoutStyles** | This demo demonstrates the automatic layout algorithms shipped with yFiles and how the different settings affect the generated layout. <br />**Note: **This demo depends on the layout configurations from the `Demo.yFiles.Layout.Configurations` programming sample and on the option editor from the sample `Demo.yFiles.Toolkit.OptionHandler`. |
 |**MarqueeClearArea** | A demo that shows how to interactively move graph elements within a marquee area. |
@@ -20,12 +20,12 @@ You will find the following programming samples in this package:
 |**MultiPage** | Shows how to use the multipage layout. |
 |**NodeLabeling** | Shows how to use a node labeling algorithm with different label models. |
 |**NodeTypes** | A demo that shows how different layout algorithms handle nodes with types. |
-|**PartialLayout** | This demo shows how to apply `PartialLayout` to orthogonal, organic, hierarchic or circular layouts and the effect of some of its configuration settings. |
-|**PortCandidate** | This demo shows how to use PortCandidateSets in conjunction with HierarchicLayout. |
-|**PreferredLabelPlacement** | Shows how the PreferredPlacementDescriptor for edge labels affects the label placement of layout algorithms. |
-|**SankeyLayout** | This demo demonstrates how HierarchicLayout can be used to create Sankey diagrams. |
-|**SequenceConstraints** | Demonstrates how to use sequence constraints with the HierarchicLayout to restrict the node sequencing. |
-|**TreeLayout** | This demo demonstrates the different `INodePlacer` implementations for the `TreeLayout` algorithm. |
+|**PartialLayout** | This demo shows how to apply `PartialLayout` to orthogonal, organic, hierarchical or circular layouts and the effect of some of its configuration settings. |
+|**PortCandidate** | This demo shows how to use PortCandidateSets in conjunction with HierarchicalLayout. |
+|**PreferredLabelPlacement** | Shows how the EdgeLabelPreferredPlacement for edge labels affects the label placement of layout algorithms. |
+|**SankeyLayout** | This demo demonstrates how HierarchicalLayout can be used to create Sankey diagrams. |
+|**SequenceConstraints** | Demonstrates how to use sequence constraints with the HierarchicalLayout to restrict the node sequencing. |
+|**TreeLayout** | This demo demonstrates the different `ISubtreePlacer` implementations for the `TreeLayout` algorithm. |
 
 ## Running the Demos
 

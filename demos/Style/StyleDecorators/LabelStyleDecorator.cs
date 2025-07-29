@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -40,8 +40,8 @@ using yWorks.Graph.Styles;
 namespace Demo.yFiles.Graph.StyleDecorators {
 
   /// <summary>
-  /// A simple label style that shows how to decorate an arbitrary existing label style and 
-  /// delegate rendering, as well as all rendering helper methods, to the wrapped 
+  /// A simple label style that shows how to decorate an arbitrary existing label style and
+  /// delegate rendering, as well as all rendering helper methods, to the wrapped
   /// style. Additionally, two lines are added to the wrapped visualization.
   /// </summary>
   [Obfuscation(StripAfterObfuscation = false, Exclude = true, ApplyToMembers = true)]
@@ -55,10 +55,10 @@ namespace Demo.yFiles.Graph.StyleDecorators {
       set { wrapped = value; }
     }
 
-    public LabelStyleDecorator(): this(new DefaultLabelStyle()) {}
+    public LabelStyleDecorator(): this(new LabelStyle()) {}
 
     public LabelStyleDecorator(ILabelStyle wrappedStyle) {
-      this.wrapped = wrappedStyle;
+      wrapped = wrappedStyle;
     }
 
     protected override VisualGroup CreateVisual(IRenderContext context, ILabel label) {

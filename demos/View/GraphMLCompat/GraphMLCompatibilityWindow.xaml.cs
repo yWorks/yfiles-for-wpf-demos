@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -69,7 +69,7 @@ namespace Demo.yFiles.IO.GraphML.Compat
       // Take a look at the GraphMLCompatibility class for more detail on how this is accomplished
       graphControl.GraphMLIOHandler.ConfigureGraphMLCompatibility();
 
-      graphChooserBox.ItemsSource = new[] { "styles", "table", "nesting", "uml-diagram" };
+      graphChooserBox.ItemsSource = new[] { "styles", "legacy-styles", "folding"};
       graphChooserBox.SelectedIndex = 0;
 
       graphControl.FitGraphBounds();

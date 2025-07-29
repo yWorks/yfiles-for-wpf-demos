@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -29,29 +29,29 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Markup;
 using System.Windows.Media;
-using yWorks.Controls.Input;
+using Demo.yFiles.Toolkit;
 using yWorks.Controls;
+using yWorks.Controls.Input;
 using yWorks.Geometry;
 using yWorks.Graph;
-using yWorks.Graph.Styles;
 using yWorks.Graph.LabelModels;
 using yWorks.Graph.PortLocationModels;
+using yWorks.Graph.Styles;
 using yWorks.Utils;
-using Demo.yFiles.Toolkit;
 
 namespace Demo.yFiles.Graph.Events
 {
   /// <summary>
-  /// This demo shows how to register to the various events provided by the <see cref="IGraph">graph</see>,
-  /// the <see cref="GraphControl"></see> and the input modes.
+  ///   This demo shows how to register to the various events provided by the <see cref="IGraph">graph</see>,
+  ///   the <see cref="GraphControl"/> and the input modes.
   /// </summary>
   public partial class GraphEventsWindow
   {
@@ -61,13 +61,14 @@ namespace Demo.yFiles.Graph.Events
 
     public GraphEventsWindow() {
       // WPF Data Binding culture fix
-      LanguageProperty.OverrideMetadata(typeof (FrameworkElement),
+      LanguageProperty.OverrideMetadata(typeof(FrameworkElement),
           new FrameworkPropertyMetadata(XmlLanguage.GetLanguage(CultureInfo.CurrentCulture.IetfLanguageTag)));
 
       InitializeComponent();
     }
 
     public void OnLoaded(object source, EventArgs args) {
+      InitializePalette();
       EnableFolding();
       InitializeGraph();
       InitializeInputModes();
@@ -83,6 +84,7 @@ namespace Demo.yFiles.Graph.Events
 
       logInputModeEvents.IsChecked = true;
       toggleEditingButton.IsChecked = true;
+      toggleSingleClickReportingPolicyButton.IsChecked = false;
 
       eventLog.ItemsSource = messages;
     }
@@ -92,54 +94,82 @@ namespace Demo.yFiles.Graph.Events
     private void EnableFolding() {
       var graph = graphControl.Graph;
 
-      // enabled changing ports
-      var decorator = graph.GetDecorator().EdgeDecorator.EdgeReconnectionPortCandidateProviderDecorator;
-      decorator.SetImplementation(EdgeReconnectionPortCandidateProviders.AllNodeCandidates);
-
       manager = new FoldingManager(graph);
       graphControl.Graph = manager.CreateFoldingView().Graph;
     }
 
     private void InitializeGraph() {
       var graph = graphControl.Graph;
-      DemoStyles.InitDemoStyles(graph, foldingEnabled: true);
+      DemoStyles.InitDemoStyles(graph, foldingEnabled : true, orthogonalEdgeEditing : true);
     }
 
     private void InitializeInputModes() {
-      editorMode = new GraphEditorInputMode { OrthogonalEdgeEditingContext = new OrthogonalEdgeEditingContext {Enabled = false, MovePorts = true}, AllowGroupingOperations = true};
+      editorMode = new GraphEditorInputMode {
+          OrthogonalEdgeEditingContext = new OrthogonalEdgeEditingContext { Enabled = false, MovePorts = true }
+      };
       editorMode.ItemHoverInputMode.HoverItems = GraphItemTypes.All;
+      editorMode.NodeDropInputMode.Enabled = true;
+      editorMode.LabelDropInputMode.Enabled = true;
+      editorMode.LabelDropInputMode.UseLocationForParameter = true;
+      editorMode.ClickInputMode.SwallowFocusClick = true;
+
       viewerMode = new GraphViewerInputMode();
       viewerMode.ItemHoverInputMode.HoverItems = GraphItemTypes.All;
 
       graphControl.InputMode = editorMode;
     }
 
-    private void SetupToolTips() {
-      editorMode.ToolTipItems = GraphItemTypes.Node;
-      editorMode.QueryItemToolTip += (sender, args) => {
-        args.ToolTip = "ToolTip for " + args.Item;
-        args.Handled = true;
-      };
+    private void InitializePalette() {
+      var defaultsProvider = new DefaultGraph();
+      DemoStyles.InitDemoStyles(defaultsProvider);
 
-      viewerMode.ToolTipItems = GraphItemTypes.Node;
-      viewerMode.QueryItemToolTip += (sender, args) => {
-        args.ToolTip = "ToolTip for " + args.Item;
-        args.Handled = true;
-      };
+      var nodeTemplate = new SimpleNode();
+      nodeTemplate.Layout = new RectD(PointD.Origin, defaultsProvider.NodeDefaults.Size);
+      nodeTemplate.Style = defaultsProvider.NodeDefaults.Style;
+
+      palette.Items.Add(nodeTemplate);
+
+      var labelTemplate = new SimpleLabel();
+      var labelTemplateContainer = new SimpleNode();
+      labelTemplateContainer.Layout = new RectD(PointD.Origin, defaultsProvider.NodeDefaults.Size);
+      labelTemplateContainer.Style = VoidNodeStyle.Instance;
+      labelTemplateContainer.Tag = "Label Container";
+      labelTemplateContainer.Labels = new List<ILabel> { labelTemplate };
+      labelTemplate.Owner = labelTemplateContainer;
+      labelTemplate.Text = "Label";
+      labelTemplate.LayoutParameter = InteriorNodeLabelModel.Center;
+      labelTemplate.Style = defaultsProvider.NodeDefaults.Labels.Style;
+      labelTemplate.PreferredSize = labelTemplate.Style.Renderer.GetPreferredSize(labelTemplate, labelTemplate.Style);
+
+      palette.Items.Add(labelTemplateContainer);
+    }
+
+    private void SetupToolTips() {
+      editorMode.ToolTipItems = GraphItemTypes.All;
+      editorMode.QueryItemToolTip += QueryItemToolTipHandler;
+
+      viewerMode.ToolTipItems = GraphItemTypes.All;
+      viewerMode.QueryItemToolTip += QueryItemToolTipHandler;
+    }
+
+    private void QueryItemToolTipHandler(object sender, QueryItemToolTipEventArgs<IModelItem> args) {
+      args.ToolTip = "ToolTip for " + GraphItemTypesSupport.GetItemType(args.Item);
+      args.Handled = true;
     }
 
     private void SetupContextMenu() {
-      editorMode.ContextMenuItems = GraphItemTypes.Node;
-      editorMode.PopulateItemContextMenu += (sender, args) => {
-        args.Menu.Items.Add(new MenuItem { Header = "Dummy Item" });
-        args.Handled = true;
-      };
+      editorMode.ContextMenuItems = GraphItemTypes.All;
+      editorMode.PopulateItemContextMenu += PopulateContextMenuHandler;
 
-      viewerMode.ContextMenuItems = GraphItemTypes.Node;
-      viewerMode.PopulateItemContextMenu += (sender, args) => {
-        args.Menu.Items.Add(new MenuItem { Header = "Dummy Item" });
-        args.Handled = true;
-      };
+      viewerMode.ContextMenuItems = GraphItemTypes.All;
+      viewerMode.PopulateItemContextMenu += PopulateContextMenuHandler;
+    }
+
+    private void PopulateContextMenuHandler(object sender, PopulateItemContextMenuEventArgs<IModelItem> args) {
+      var type = GraphItemTypesSupport.GetItemType(args.Item);
+      args.Menu.Items.Add(new MenuItem { Header = "Menu Item for " + type });
+      args.ShowMenu = true;
+      args.Handled = true;
     }
 
     private void EnableUndo() {
@@ -150,19 +180,29 @@ namespace Demo.yFiles.Graph.Events
 
     #region Event Registration
 
-    private void RegisterGraphControlKeyEvents(object sender, RoutedEventArgs routedEventArgs) {
-      graphControl.CompoundKeyPressed += ControlOnCompoundKeyPressed;
-      graphControl.CompoundKeyReleased += ControlOnCompoundKeyReleased;
-      graphControl.CompoundKeyTyped += ControlOnCompoundKeyTyped;
+    private void RegisterGraphControlKeyEvents(object sender, RoutedEventArgs args) {
+      graphControl.CompoundKeyDown += ControlOnCompoundKeyDown;
+      graphControl.CompoundKeyUp += ControlOnCompoundKeyUp;
+      graphControl.CompoundKeyTextInput += ControlOnCompoundKeyTextInput;
     }
 
-    private void DeregisterGraphControlKeyEvents(object sender, RoutedEventArgs routedEventArgs) {
-      graphControl.CompoundKeyPressed -= ControlOnCompoundKeyPressed;
-      graphControl.CompoundKeyReleased -= ControlOnCompoundKeyReleased;
-      graphControl.CompoundKeyTyped -= ControlOnCompoundKeyTyped;
+    private void DeregisterGraphControlKeyEvents(object sender, RoutedEventArgs args) {
+      graphControl.CompoundKeyDown -= ControlOnCompoundKeyDown;
+      graphControl.CompoundKeyUp -= ControlOnCompoundKeyUp;
+      graphControl.CompoundKeyTextInput -= ControlOnCompoundKeyTextInput;
     }
 
-    private void RegisterClipboardCopierEvents(object sender, RoutedEventArgs routedEventArgs) {
+    private void RegisterClipboardAndClipboardCopierEvents(object sender, RoutedEventArgs args) {
+      RegisterClipboardEvents(sender, args);
+      RegisterClipboardCopierEvents(sender, args);
+    }
+
+    private void DeregisterClipboardAndClipboardCopierEvents(object sender, RoutedEventArgs args) {
+      DeregisterClipboardEvents(sender, args);
+      DeregisterClipboardCopierEvents(sender, args);
+    }
+
+    private void RegisterClipboardCopierEvents(object sender, RoutedEventArgs args) {
       graphControl.Clipboard.ToClipboardCopier.GraphCopied += ClipboardOnGraphCopiedToClipboard;
       graphControl.Clipboard.ToClipboardCopier.NodeCopied += ClipboardOnNodeCopiedToClipboard;
       graphControl.Clipboard.ToClipboardCopier.EdgeCopied += ClipboardOnEdgeCopiedToClipboard;
@@ -185,7 +225,7 @@ namespace Demo.yFiles.Graph.Events
       graphControl.Clipboard.DuplicateCopier.ObjectCopied += ClipboardOnObjectDuplicated;
     }
 
-    private void DeregisterClipboardCopierEvents(object sender, RoutedEventArgs routedEventArgs) {
+    private void DeregisterClipboardCopierEvents(object sender, RoutedEventArgs args) {
       graphControl.Clipboard.ToClipboardCopier.GraphCopied -= ClipboardOnGraphCopiedToClipboard;
       graphControl.Clipboard.ToClipboardCopier.NodeCopied -= ClipboardOnNodeCopiedToClipboard;
       graphControl.Clipboard.ToClipboardCopier.EdgeCopied -= ClipboardOnEdgeCopiedToClipboard;
@@ -207,122 +247,106 @@ namespace Demo.yFiles.Graph.Events
       graphControl.Clipboard.DuplicateCopier.LabelCopied -= ClipboardOnLabelDuplicated;
       graphControl.Clipboard.DuplicateCopier.ObjectCopied -= ClipboardOnObjectDuplicated;
     }
-    
-    private void RegisterClipboardEvents(object sender, RoutedEventArgs routedEventArgs) {
-      graphControl.Clipboard.ElementsCut += ClipboardOnCut;
-      graphControl.Clipboard.ElementsCopied += ClipboardOnCopy;
-      graphControl.Clipboard.ElementsPasted += ClipboardOnPaste;
-      graphControl.Clipboard.ElementsDuplicated += ClipboardOnDuplicate;
+
+    private void RegisterClipboardEvents(object sender, RoutedEventArgs args) {
+      graphControl.Clipboard.ItemsCutting += ClipboardOnItemsCutting;
+      graphControl.Clipboard.ItemsCut += ClipboardOnItemsCut;
+      graphControl.Clipboard.ItemsCopying += ClipboardOnItemsCopying;
+      graphControl.Clipboard.ItemsCopied += ClipboardOnItemsCopied;
+      graphControl.Clipboard.ItemsPasting += ClipboardOnItemsPasting;
+      graphControl.Clipboard.ItemsPasted += ClipboardOnItemsPasted;
+      graphControl.Clipboard.ItemsDuplicating += ClipboardOnItemsDuplicating;
+      graphControl.Clipboard.ItemsDuplicated += ClipboardOnItemsDuplicated;
     }
 
-    private void DeregisterClipboardEvents(object sender, RoutedEventArgs routedEventArgs) {
-      graphControl.Clipboard.ElementsCut -= ClipboardOnCut;
-      graphControl.Clipboard.ElementsCopied -= ClipboardOnCopy;
-      graphControl.Clipboard.ElementsPasted -= ClipboardOnPaste;
-      graphControl.Clipboard.ElementsDuplicated -= ClipboardOnDuplicate;
+    private void DeregisterClipboardEvents(object sender, RoutedEventArgs args) {
+      graphControl.Clipboard.ItemsCut -= ClipboardOnItemsCut;
+      graphControl.Clipboard.ItemsCopied -= ClipboardOnItemsCopied;
+      graphControl.Clipboard.ItemsPasted -= ClipboardOnItemsPasted;
+      graphControl.Clipboard.ItemsDuplicated -= ClipboardOnItemsDuplicated;
     }
 
-    private void RegisterUndoEvents(object sender, RoutedEventArgs routedEventArgs) {
-      var undoEngine = graphControl.Graph.GetUndoEngine();
+    private void RegisterUndoEvents(object sender, RoutedEventArgs args) {
+      var undoEngine = graphControl.Graph.GetUndoEngine()!;
+      undoEngine.PropertyChanged += UndoEngineOnPropertyChanged;
       undoEngine.UnitUndone += UndoEngineOnUnitUndone;
       undoEngine.UnitRedone += UndoEngineOnUnitRedone;
     }
 
-    private void DeregisterUndoEvents(object sender, RoutedEventArgs routedEventArgs) {
-      var undoEngine = graphControl.Graph.GetUndoEngine();
+    private void DeregisterUndoEvents(object sender, RoutedEventArgs args) {
+      var undoEngine = graphControl.Graph.GetUndoEngine()!;
+      undoEngine.PropertyChanged -= UndoEngineOnPropertyChanged;
       undoEngine.UnitUndone -= UndoEngineOnUnitUndone;
       undoEngine.UnitRedone -= UndoEngineOnUnitRedone;
     }
 
-    private void RegisterGraphControlMouseEvents(object sender, RoutedEventArgs routedEventArgs) {
-      graphControl.Mouse2DClicked += ControlOnMouse2DClicked;
-      graphControl.Mouse2DEntered += ControlOnMouse2DEntered;
-      graphControl.Mouse2DExited += ControlOnMouse2DExited;
-      graphControl.Mouse2DLostCapture += ControlOnMouse2DLostCapture;
-      graphControl.Mouse2DPressed += ControlOnMouse2DPressed;
-      graphControl.Mouse2DReleased += ControlOnMouse2DReleased;
-      graphControl.Mouse2DWheelTurned += ControlOnMouse2DWheelTurned;
-      graphControl.Mouse2DDragged += ControlOnMouse2DDragged;
-      graphControl.Mouse2DMoved += ControlOnMouse2DMoved;
+    private void RegisterGraphControlPointerEvents(object sender, RoutedEventArgs args) {
+      graphControl.PointerClick += ControlOnPointerClick;
+      graphControl.PointerEnter += ControlOnPointerEntered;
+      graphControl.PointerLeave += ControlOnPointerLeave;
+      graphControl.LostPointerCapture += ControlOnLostPointerCapture;
+      graphControl.PointerDown += ControlOnPointerDown;
+      graphControl.PointerUp += ControlOnPointerUp;
+      graphControl.Wheel += ControlOnWheel;
+      graphControl.PointerDrag += ControlOnPointerDrag;
+      graphControl.PointerMove += ControlOnPointerMoved;
+      graphControl.PointerLongPress += ControlOnPointerLongPress;
+      graphControl.PointerLongRest += ControlOnPointerLongRest;
     }
 
-    private void DeregisterGraphControlMouseEvents(object sender, RoutedEventArgs routedEventArgs) {
-      graphControl.Mouse2DClicked -= ControlOnMouse2DClicked;
-      graphControl.Mouse2DEntered -= ControlOnMouse2DEntered;
-      graphControl.Mouse2DExited -= ControlOnMouse2DExited;
-      graphControl.Mouse2DLostCapture -= ControlOnMouse2DLostCapture;
-      graphControl.Mouse2DPressed -= ControlOnMouse2DPressed;
-      graphControl.Mouse2DReleased -= ControlOnMouse2DReleased;
-      graphControl.Mouse2DWheelTurned -= ControlOnMouse2DWheelTurned;
-      graphControl.Mouse2DDragged -= ControlOnMouse2DDragged;
-      graphControl.Mouse2DMoved -= ControlOnMouse2DMoved;
+    private void DeregisterGraphControlPointerEvents(object sender, RoutedEventArgs args) {
+      graphControl.PointerClick -= ControlOnPointerClick;
+      graphControl.PointerEnter -= ControlOnPointerEntered;
+      graphControl.PointerLeave -= ControlOnPointerLeave;
+      graphControl.LostPointerCapture -= ControlOnLostPointerCapture;
+      graphControl.PointerDown -= ControlOnPointerDown;
+      graphControl.PointerUp -= ControlOnPointerUp;
+      graphControl.Wheel -= ControlOnWheel;
+      graphControl.PointerDrag -= ControlOnPointerDrag;
+      graphControl.PointerMove -= ControlOnPointerMoved;
+      graphControl.PointerLongPress -= ControlOnPointerLongPress;
+      graphControl.PointerLongRest -= ControlOnPointerLongRest;
     }
 
-    private void RegisterGraphControlTouchEvents(object sender, RoutedEventArgs routedEventArgs) {
-      graphControl.Touch2DDown += ControlOnTouch2DDown;
-      graphControl.Touch2DEntered += ControlOnTouch2DEntered;
-      graphControl.Touch2DExited += ControlOnTouch2DExited;
-      graphControl.Touch2DLongPressed += ControlOnTouch2DLongPressed;
-      graphControl.Touch2DLostCapture += ControlOnTouch2DLostCapture;
-      graphControl.Touch2DTapped += ControlOnTouch2DTapped;
-      graphControl.Touch2DUp += ControlOnTouch2DUp;
-      graphControl.Touch2DMoved += ControlOnTouch2DMoved;
-    }
-
-    private void DeregisterGraphControlTouchEvents(object sender, RoutedEventArgs routedEventArgs) {
-      graphControl.Touch2DDown -= ControlOnTouch2DDown;
-      graphControl.Touch2DEntered -= ControlOnTouch2DEntered;
-      graphControl.Touch2DExited -= ControlOnTouch2DExited;
-      graphControl.Touch2DLongPressed -= ControlOnTouch2DLongPressed;
-      graphControl.Touch2DLostCapture -= ControlOnTouch2DLostCapture;
-      graphControl.Touch2DTapped -= ControlOnTouch2DTapped;
-      graphControl.Touch2DUp -= ControlOnTouch2DUp;
-      graphControl.Touch2DMoved -= ControlOnTouch2DMoved;
-    }
-
-    private void RegisterGraphControlRenderEvents(object sender, RoutedEventArgs routedEventArgs) {
+    private void RegisterGraphControlRenderEvents(object sender, RoutedEventArgs args) {
       graphControl.PrepareRenderContext += ControlOnPrepareRenderContext;
       graphControl.UpdatedVisual += ControlOnUpdatedVisual;
       graphControl.UpdatingVisual += ControlOnUpdatingVisual;
     }
 
-    private void DeregisterGraphControlRenderEvents(object sender, RoutedEventArgs routedEventArgs) {
+    private void DeregisterGraphControlRenderEvents(object sender, RoutedEventArgs args) {
       graphControl.PrepareRenderContext -= ControlOnPrepareRenderContext;
       graphControl.UpdatedVisual -= ControlOnUpdatedVisual;
       graphControl.UpdatingVisual -= ControlOnUpdatingVisual;
     }
 
-    private void RegisterGraphControlViewportEvents(object sender, RoutedEventArgs routedEventArgs) {
-      graphControl.MouseWheelZoomFactorChanged += ControlOnMouseWheelZoomFactorChanged;
+    private void RegisterGraphControlViewportEvents(object sender, RoutedEventArgs args) {
       graphControl.ViewportChanged += ControlOnViewportChanged;
       graphControl.ZoomChanged += ControlOnZoomChanged;
     }
 
-    private void DeregisterGraphControlViewportEvents(object sender, RoutedEventArgs routedEventArgs) {
-      graphControl.MouseWheelZoomFactorChanged -= ControlOnMouseWheelZoomFactorChanged;
+    private void DeregisterGraphControlViewportEvents(object sender, RoutedEventArgs args) {
       graphControl.ViewportChanged -= ControlOnViewportChanged;
       graphControl.ZoomChanged -= ControlOnZoomChanged;
     }
 
-    private void RegisterNodeEvents(object sender, RoutedEventArgs routedEventArgs) {
+    private void RegisterNodeEvents(object sender, RoutedEventArgs args) {
+      graphControl.Graph.NodeLayoutChanged += OnNodeLayoutChanged;
       graphControl.Graph.NodeStyleChanged += OnNodeStyleChanged;
       graphControl.Graph.NodeTagChanged += OnNodeTagChanged;
       graphControl.Graph.NodeCreated += OnNodeCreated;
       graphControl.Graph.NodeRemoved += OnNodeRemoved;
-      graphControl.Graph.IsGroupNodeChanged += OnIsGroupNodeChanged;
-      graphControl.Graph.ParentChanged += OnParentChanged;
     }
 
-    private void DeregisterNodeEvents(object sender, RoutedEventArgs routedEventArgs) {
+    private void DeregisterNodeEvents(object sender, RoutedEventArgs args) {
+      graphControl.Graph.NodeLayoutChanged -= OnNodeLayoutChanged;
       graphControl.Graph.NodeStyleChanged -= OnNodeStyleChanged;
       graphControl.Graph.NodeTagChanged -= OnNodeTagChanged;
       graphControl.Graph.NodeCreated -= OnNodeCreated;
       graphControl.Graph.NodeRemoved -= OnNodeRemoved;
-      graphControl.Graph.IsGroupNodeChanged -= OnIsGroupNodeChanged;
-      graphControl.Graph.ParentChanged -= OnParentChanged;
     }
 
-    private void RegisterEdgeEvents(object sender, RoutedEventArgs routedEventArgs) {
+    private void RegisterEdgeEvents(object sender, RoutedEventArgs args) {
       graphControl.Graph.EdgeStyleChanged += OnEdgeStyleChanged;
       graphControl.Graph.EdgePortsChanged += OnEdgePortsChanged;
       graphControl.Graph.EdgeTagChanged += OnEdgeTagChanged;
@@ -330,7 +354,7 @@ namespace Demo.yFiles.Graph.Events
       graphControl.Graph.EdgeRemoved += OnEdgeRemoved;
     }
 
-    private void DeregisterEdgeEvents(object sender, RoutedEventArgs routedEventArgs) {
+    private void DeregisterEdgeEvents(object sender, RoutedEventArgs args) {
       graphControl.Graph.EdgeStyleChanged -= OnEdgeStyleChanged;
       graphControl.Graph.EdgePortsChanged -= OnEdgePortsChanged;
       graphControl.Graph.EdgeTagChanged -= OnEdgeTagChanged;
@@ -338,21 +362,21 @@ namespace Demo.yFiles.Graph.Events
       graphControl.Graph.EdgeRemoved -= OnEdgeRemoved;
     }
 
-    private void RegisterBendEvents(object sender, RoutedEventArgs routedEventArgs) {
+    private void RegisterBendEvents(object sender, RoutedEventArgs args) {
       graphControl.Graph.BendAdded += OnBendAdded;
       graphControl.Graph.BendLocationChanged += OnBendLocationChanged;
       graphControl.Graph.BendTagChanged += OnBendTagChanged;
       graphControl.Graph.BendRemoved += OnBendRemoved;
     }
 
-    private void DeregisterBendEvents(object sender, RoutedEventArgs routedEventArgs) {
+    private void DeregisterBendEvents(object sender, RoutedEventArgs args) {
       graphControl.Graph.BendAdded -= OnBendAdded;
       graphControl.Graph.BendLocationChanged -= OnBendLocationChanged;
       graphControl.Graph.BendTagChanged -= OnBendTagChanged;
       graphControl.Graph.BendRemoved -= OnBendRemoved;
     }
 
-    private void RegisterPortEvents(object sender, RoutedEventArgs routedEventArgs) {
+    private void RegisterPortEvents(object sender, RoutedEventArgs args) {
       graphControl.Graph.PortAdded += OnPortAdded;
       graphControl.Graph.PortLocationParameterChanged += OnPortLocationParameterChanged;
       graphControl.Graph.PortStyleChanged += OnPortStyleChanged;
@@ -360,7 +384,7 @@ namespace Demo.yFiles.Graph.Events
       graphControl.Graph.PortRemoved += OnPortRemoved;
     }
 
-    private void DeregisterPortEvents(object sender, RoutedEventArgs routedEventArgs) {
+    private void DeregisterPortEvents(object sender, RoutedEventArgs args) {
       graphControl.Graph.PortAdded -= OnPortAdded;
       graphControl.Graph.PortLocationParameterChanged -= OnPortLocationParameterChanged;
       graphControl.Graph.PortStyleChanged -= OnPortStyleChanged;
@@ -368,57 +392,68 @@ namespace Demo.yFiles.Graph.Events
       graphControl.Graph.PortRemoved -= OnPortRemoved;
     }
 
-    private void RegisterLabelEvents(object sender, RoutedEventArgs routedEventArgs) {
+    private void RegisterLabelEvents(object sender, RoutedEventArgs args) {
       graphControl.Graph.LabelAdded += OnLabelAdded;
       graphControl.Graph.LabelRemoved += OnLabelRemoved;
-      graphControl.Graph.LabelLayoutParameterChanged += OnLabelModelParameterChanged;
+      graphControl.Graph.LabelLayoutParameterChanged += OnLabelLayoutParameterChanged;
       graphControl.Graph.LabelStyleChanged += OnLabelStyleChanged;
       graphControl.Graph.LabelPreferredSizeChanged += OnLabelPreferredSizeChanged;
       graphControl.Graph.LabelTagChanged += OnLabelTagChanged;
       graphControl.Graph.LabelTextChanged += OnLabelTextChanged;
     }
 
-    private void DeregisterLabelEvents(object sender, RoutedEventArgs routedEventArgs) {
+    private void DeregisterLabelEvents(object sender, RoutedEventArgs args) {
       graphControl.Graph.LabelAdded -= OnLabelAdded;
       graphControl.Graph.LabelRemoved -= OnLabelRemoved;
-      graphControl.Graph.LabelLayoutParameterChanged -= OnLabelModelParameterChanged;
+      graphControl.Graph.LabelLayoutParameterChanged -= OnLabelLayoutParameterChanged;
       graphControl.Graph.LabelStyleChanged -= OnLabelStyleChanged;
       graphControl.Graph.LabelPreferredSizeChanged -= OnLabelPreferredSizeChanged;
       graphControl.Graph.LabelTagChanged -= OnLabelTagChanged;
       graphControl.Graph.LabelTextChanged -= OnLabelTextChanged;
     }
 
-    private void RegisterGraphRenderEvents(object sender, RoutedEventArgs routedEventArgs) {
+    private void RegisterHierarchyEvents(object sender, RoutedEventArgs args) {
+      graphControl.Graph.IsGroupNodeChanged += OnIsGroupNodeChanged;
+      graphControl.Graph.ParentChanged += OnParentChanged;
+    }
+
+    private void DeregisterHierarchyEvents(object sender, RoutedEventArgs args) {
+      graphControl.Graph.IsGroupNodeChanged -= OnIsGroupNodeChanged;
+      graphControl.Graph.ParentChanged -= OnParentChanged;
+    }
+
+    private void RegisterFoldingEvents(object sender, RoutedEventArgs args) {
+      var foldingView = graphControl.Graph.Lookup<IFoldingView>()!;
+      foldingView.GroupCollapsed += FoldingOnGroupCollapsed;
+      foldingView.GroupExpanded += FoldingOnGroupExpanded;
+      foldingView.PropertyChanged += FoldingOnPropertyChanged;
+    }
+
+    private void DeregisterFoldingEvents(object sender, RoutedEventArgs args) {
+      var foldingView = graphControl.Graph.Lookup<IFoldingView>()!;
+      foldingView.GroupCollapsed -= FoldingOnGroupCollapsed;
+      foldingView.GroupExpanded -= FoldingOnGroupExpanded;
+      foldingView.PropertyChanged -= FoldingOnPropertyChanged;
+    }
+
+    private void RegisterGraphRenderEvents(object sender, RoutedEventArgs args) {
       graphControl.Graph.DisplaysInvalidated += OnDisplaysInvalidated;
     }
 
-    private void DeregisterGraphRenderEvents(object sender, RoutedEventArgs routedEventArgs) {
+    private void DeregisterGraphRenderEvents(object sender, RoutedEventArgs args) {
       graphControl.Graph.DisplaysInvalidated -= OnDisplaysInvalidated;
     }
 
-    private void RegisterGraphControlEvents(object sender, RoutedEventArgs routedEventArgs) {
+    private void RegisterGraphControlEvents(object sender, RoutedEventArgs args) {
       graphControl.CurrentItemChanged += ControlOnCurrentItemChanged;
-      graphControl.GraphChanged += ControlOnGraphChanged;
-      graphControl.InputModeChanged += ControlOnInputModeChanged;
     }
 
-    private void DeregisterGraphControlEvents(object sender, RoutedEventArgs routedEventArgs) {
+    private void DeregisterGraphControlEvents(object sender, RoutedEventArgs args) {
       graphControl.CurrentItemChanged -= ControlOnCurrentItemChanged;
-      graphControl.GraphChanged -= ControlOnGraphChanged;
-      graphControl.InputModeChanged -= ControlOnInputModeChanged;
     }
 
-    private void RegisterNodeBoundsEvents(object sender, RoutedEventArgs routedEventArgs) {
-      graphControl.Graph.NodeLayoutChanged += OnNodeLayoutChanged;
-    }
-
-    private void DeregisterNodeBoundsEvents(object sender, RoutedEventArgs routedEventArgs) {
-      graphControl.Graph.NodeLayoutChanged -= OnNodeLayoutChanged;
-    }
-
-    private void RegisterInputModeEvents(object sender, RoutedEventArgs routedEventArgs) {
+    private void RegisterInputModeEvents(object sender, RoutedEventArgs args) {
       editorMode.CanvasClicked += GeimOnCanvasClicked;
-      editorMode.CanvasTapped += GeimOnCanvasTapped;
       editorMode.DeletedItem += GeimOnDeletedItem;
       editorMode.DeletedSelection += GeimOnDeletedSelection;
       editorMode.DeletingSelection += GeimOnDeletingSelection;
@@ -428,14 +463,10 @@ namespace Demo.yFiles.Graph.Events
       editorMode.ItemLeftDoubleClicked += GeimOnItemLeftDoubleClicked;
       editorMode.ItemRightClicked += GeimOnItemRightClicked;
       editorMode.ItemRightDoubleClicked += GeimOnItemRightDoubleClicked;
-      editorMode.ItemTapped += GeimOnItemTapped;
-      editorMode.ItemDoubleTapped += GeimOnItemDoubleTapped;
-      editorMode.LabelAdding += GeimOnLabelAdding;
-      editorMode.LabelAdded += GeimOnLabelAdded;
-      editorMode.LabelEditing += GeimOnLabelEditing;
-      editorMode.LabelTextChanged += GeimOnLabelTextChanged;
-      editorMode.LabelTextEditingCanceled += GeimOnLabelTextEditingCanceled;
-      editorMode.LabelTextEditingStarted += GeimOnLabelTextEditingStarted;
+      editorMode.ItemsCopied += GeimOnItemsCopied;
+      editorMode.ItemsCut += GeimOnItemsCut;
+      editorMode.ItemsDuplicated += GeimOnItemsDuplicated;
+      editorMode.ItemsPasted += GeimOnItemsPasted;
       editorMode.MultiSelectionFinished += GeimOnMultiSelectionFinished;
       editorMode.MultiSelectionStarted += GeimOnMultiSelectionStarted;
       editorMode.NodeCreated += GeimOnNodeCreated;
@@ -443,31 +474,23 @@ namespace Demo.yFiles.Graph.Events
       editorMode.EdgePortsChanged += GeimOnEdgePortsChanged;
       editorMode.PopulateItemContextMenu += GeimOnPopulateItemContextMenu;
       editorMode.QueryItemToolTip += GeimOnQueryItemToolTip;
-      editorMode.ValidateLabelText += GeimOnValidateLabelText;
-      editorMode.ElementsCopied += GeimOnElementsCopied;
-      editorMode.ElementsCut += GeimOnElementsCut;
-      editorMode.ElementsPasted += GeimOnElementsPasted;
-      editorMode.ElementsDuplicated += GeimOnElementsDuplicated;
+
       viewerMode.CanvasClicked += GvimOnCanvasClicked;
-      viewerMode.CanvasTapped += GvimOnCanvasTapped;
       viewerMode.ItemClicked += GvimOnItemClicked;
       viewerMode.ItemDoubleClicked += GvimOnItemDoubleClicked;
       viewerMode.ItemLeftClicked += GvimOnItemLeftClicked;
       viewerMode.ItemLeftDoubleClicked += GvimOnItemLeftDoubleClicked;
       viewerMode.ItemRightClicked += GvimOnItemRightClicked;
       viewerMode.ItemRightDoubleClicked += GvimOnItemRightDoubleClicked;
-      viewerMode.ItemTapped += GvimOnItemTapped;
-      viewerMode.ItemDoubleTapped += GvimOnItemDoubleTapped;
+      viewerMode.ItemsCopied += GvimOnItemsCopied;
       viewerMode.MultiSelectionFinished += GvimOnMultiSelectionFinished;
       viewerMode.MultiSelectionStarted += GvimOnMultiSelectionStarted;
       viewerMode.PopulateItemContextMenu += GvimOnPopulateItemContextMenu;
       viewerMode.QueryItemToolTip += GvimOnQueryItemToolTip;
-      viewerMode.ElementsCopied += GvimOnElementsCopied;
     }
 
-    private void DeregisterInputModeEvents(object sender, RoutedEventArgs routedEventArgs) {
+    private void DeregisterInputModeEvents(object sender, RoutedEventArgs args) {
       editorMode.CanvasClicked -= GeimOnCanvasClicked;
-      editorMode.CanvasTapped -= GeimOnCanvasTapped;
       editorMode.DeletedItem -= GeimOnDeletedItem;
       editorMode.DeletedSelection -= GeimOnDeletedSelection;
       editorMode.DeletingSelection -= GeimOnDeletingSelection;
@@ -477,14 +500,10 @@ namespace Demo.yFiles.Graph.Events
       editorMode.ItemLeftDoubleClicked -= GeimOnItemLeftDoubleClicked;
       editorMode.ItemRightClicked -= GeimOnItemRightClicked;
       editorMode.ItemRightDoubleClicked -= GeimOnItemRightDoubleClicked;
-      editorMode.ItemTapped -= GeimOnItemTapped;
-      editorMode.ItemDoubleTapped -= GeimOnItemDoubleTapped;
-      editorMode.LabelAdding -= GeimOnLabelAdding;
-      editorMode.LabelAdded -= GeimOnLabelAdded;
-      editorMode.LabelEditing -= GeimOnLabelEditing;
-      editorMode.LabelTextChanged -= GeimOnLabelTextChanged;
-      editorMode.LabelTextEditingCanceled -= GeimOnLabelTextEditingCanceled;
-      editorMode.LabelTextEditingStarted -= GeimOnLabelTextEditingStarted;
+      editorMode.ItemsCopied -= GeimOnItemsCopied;
+      editorMode.ItemsCut -= GeimOnItemsCut;
+      editorMode.ItemsPasted -= GeimOnItemsPasted;
+      editorMode.ItemsDuplicated -= GeimOnItemsDuplicated;
       editorMode.MultiSelectionFinished -= GeimOnMultiSelectionFinished;
       editorMode.MultiSelectionStarted -= GeimOnMultiSelectionStarted;
       editorMode.NodeCreated -= GeimOnNodeCreated;
@@ -492,87 +511,106 @@ namespace Demo.yFiles.Graph.Events
       editorMode.EdgePortsChanged -= GeimOnEdgePortsChanged;
       editorMode.PopulateItemContextMenu -= GeimOnPopulateItemContextMenu;
       editorMode.QueryItemToolTip -= GeimOnQueryItemToolTip;
-      editorMode.ValidateLabelText -= GeimOnValidateLabelText;
-      editorMode.ElementsCopied -= GeimOnElementsCopied;
-      editorMode.ElementsCut -= GeimOnElementsCut;
-      editorMode.ElementsPasted -= GeimOnElementsPasted;
-      editorMode.ElementsDuplicated -= GeimOnElementsDuplicated;
+
       viewerMode.CanvasClicked -= GvimOnCanvasClicked;
-      viewerMode.CanvasTapped -= GvimOnCanvasTapped;
       viewerMode.ItemClicked -= GvimOnItemClicked;
       viewerMode.ItemDoubleClicked -= GvimOnItemDoubleClicked;
       viewerMode.ItemLeftClicked -= GvimOnItemLeftClicked;
       viewerMode.ItemLeftDoubleClicked -= GvimOnItemLeftDoubleClicked;
       viewerMode.ItemRightClicked -= GvimOnItemRightClicked;
       viewerMode.ItemRightDoubleClicked -= GvimOnItemRightDoubleClicked;
-      viewerMode.ItemTapped -= GvimOnItemTapped;
-      viewerMode.ItemDoubleTapped -= GvimOnItemDoubleTapped;
+      viewerMode.ItemsCopied -= GvimOnItemsCopied;
       viewerMode.MultiSelectionFinished -= GvimOnMultiSelectionFinished;
       viewerMode.MultiSelectionStarted -= GvimOnMultiSelectionStarted;
       viewerMode.PopulateItemContextMenu -= GvimOnPopulateItemContextMenu;
       viewerMode.QueryItemToolTip -= GvimOnQueryItemToolTip;
-      viewerMode.ElementsCopied -= GvimOnElementsCopied;
     }
 
-    private void RegisterMoveModeEvents(object sender, RoutedEventArgs routedEventArgs) {
-      editorMode.MoveInputMode.DragCanceled += InputModeOnDragCanceled;
-      editorMode.MoveInputMode.DragCanceling += InputModeOnDragCanceling;
-      editorMode.MoveInputMode.DragFinished += InputModeOnDragFinished;
-      editorMode.MoveInputMode.DragFinishing += InputModeOnDragFinishing;
-      editorMode.MoveInputMode.DragStarted += InputModeOnDragStarted;
-      editorMode.MoveInputMode.DragStarting += InputModeOnDragStarting;
-
-      editorMode.MoveInputMode.Dragged += InputModeOnDragged;
-      editorMode.MoveInputMode.Dragging += InputModeOnDragging;
+    private void RegisterItemDropModeEvents(object sender, RoutedEventArgs args) {
+      editorMode.NodeDropInputMode.DragDropped += ItemDropModeDragDropped;
+      editorMode.NodeDropInputMode.DragEntered += ItemDropModeDragEntered;
+      editorMode.NodeDropInputMode.DragLeft += ItemDropModeDragLeft;
+      editorMode.NodeDropInputMode.DragOver += ItemDropModeDragOver;
+      editorMode.NodeDropInputMode.ItemCreated += ItemDropModeItemCreated;
+      editorMode.LabelDropInputMode.DragDropped += ItemDropModeDragDropped;
+      editorMode.LabelDropInputMode.DragEntered += ItemDropModeDragEntered;
+      editorMode.LabelDropInputMode.DragLeft += ItemDropModeDragLeft;
+      editorMode.LabelDropInputMode.DragOver += ItemDropModeDragOver;
+      editorMode.LabelDropInputMode.ItemCreated += ItemDropModeItemCreated;
+      // PortDropInputMode inherits DragDropped, DragEntered, DragLeft, DragOver, ItemCreated events from
+      // ItemDropInputMode, too
     }
 
-    private void DeregisterMoveModeEvents(object sender, RoutedEventArgs routedEventArgs) {
-      editorMode.MoveInputMode.DragCanceled -= InputModeOnDragCanceled;
-      editorMode.MoveInputMode.DragCanceling -= InputModeOnDragCanceling;
-      editorMode.MoveInputMode.DragFinished -= InputModeOnDragFinished;
-      editorMode.MoveInputMode.DragFinishing -= InputModeOnDragFinishing;
-      editorMode.MoveInputMode.DragStarted -= InputModeOnDragStarted;
-      editorMode.MoveInputMode.DragStarting -= InputModeOnDragStarting;
-
-      editorMode.MoveInputMode.Dragged -= InputModeOnDragged;
-      editorMode.MoveInputMode.Dragging -= InputModeOnDragging;
+    private void DeregisterItemDropModeEvents(object sender, RoutedEventArgs args) {
+      editorMode.NodeDropInputMode.DragDropped -= ItemDropModeDragDropped;
+      editorMode.NodeDropInputMode.DragEntered -= ItemDropModeDragEntered;
+      editorMode.NodeDropInputMode.DragLeft -= ItemDropModeDragLeft;
+      editorMode.NodeDropInputMode.DragOver -= ItemDropModeDragOver;
+      editorMode.NodeDropInputMode.ItemCreated -= ItemDropModeItemCreated;
+      editorMode.LabelDropInputMode.DragDropped -= ItemDropModeDragDropped;
+      editorMode.LabelDropInputMode.DragEntered -= ItemDropModeDragEntered;
+      editorMode.LabelDropInputMode.DragLeft -= ItemDropModeDragLeft;
+      editorMode.LabelDropInputMode.DragOver -= ItemDropModeDragOver;
+      editorMode.LabelDropInputMode.ItemCreated -= ItemDropModeItemCreated;
     }
 
-    private void RegisterMoveLabelModeEvents(object sender, RoutedEventArgs routedEventArgs) {
-      editorMode.MoveLabelInputMode.DragCanceled += InputModeOnDragCanceled;
-      editorMode.MoveLabelInputMode.DragCanceling += InputModeOnDragCanceling;
-      editorMode.MoveLabelInputMode.DragFinished += InputModeOnDragFinished;
-      editorMode.MoveLabelInputMode.DragFinishing += InputModeOnDragFinishing;
-      editorMode.MoveLabelInputMode.DragStarted += InputModeOnDragStarted;
-      editorMode.MoveLabelInputMode.DragStarting += InputModeOnDragStarting;
-
-      editorMode.MoveLabelInputMode.Dragged += InputModeOnDragged;
-      editorMode.MoveLabelInputMode.Dragging += InputModeOnDragging;
+    private void RegisterEditLabelModeEvents(object sender, RoutedEventArgs args) {
+      editorMode.EditLabelInputMode.QueryLabelAdding += EditLabelInputModeOnQueryLabelAdding;
+      editorMode.EditLabelInputMode.QueryLabelEditing += EditLabelInputModeOnQueryLabelEditing;
+      editorMode.EditLabelInputMode.LabelAdded += EditLabelInputModeOnLabelAdded;
+      editorMode.EditLabelInputMode.LabelDeleted += EditLabelInputModeOnLabelDeleted;
+      editorMode.EditLabelInputMode.LabelEdited += EditLabelInputModeOnLabelEdited;
+      editorMode.EditLabelInputMode.LabelEditingCanceled += EditLabelInputModeOnLabelEditingCanceled;
+      editorMode.EditLabelInputMode.LabelEditingStarted += EditLabelInputModeOnLabelEditingStarted;
+      editorMode.EditLabelInputMode.ValidateLabelText += EditLabelInputModeOnValidateLabelText;
     }
 
-    private void DeregisterMoveLabelModeEvents(object sender, RoutedEventArgs routedEventArgs) {
-      editorMode.MoveLabelInputMode.DragCanceled -= InputModeOnDragCanceled;
-      editorMode.MoveLabelInputMode.DragCanceling -= InputModeOnDragCanceling;
-      editorMode.MoveLabelInputMode.DragFinished -= InputModeOnDragFinished;
-      editorMode.MoveLabelInputMode.DragFinishing -= InputModeOnDragFinishing;
-      editorMode.MoveLabelInputMode.DragStarted -= InputModeOnDragStarted;
-      editorMode.MoveLabelInputMode.DragStarting -= InputModeOnDragStarting;
-
-      editorMode.MoveLabelInputMode.Dragged -= InputModeOnDragged;
-      editorMode.MoveLabelInputMode.Dragging -= InputModeOnDragging;
+    private void DeregisterEditLabelModeEvents(object sender, RoutedEventArgs args) {
+      editorMode.EditLabelInputMode.QueryLabelAdding -= EditLabelInputModeOnQueryLabelAdding;
+      editorMode.EditLabelInputMode.QueryLabelEditing -= EditLabelInputModeOnQueryLabelEditing;
+      editorMode.EditLabelInputMode.LabelAdded -= EditLabelInputModeOnLabelAdded;
+      editorMode.EditLabelInputMode.LabelDeleted -= EditLabelInputModeOnLabelDeleted;
+      editorMode.EditLabelInputMode.LabelEdited -= EditLabelInputModeOnLabelEdited;
+      editorMode.EditLabelInputMode.LabelEditingCanceled -= EditLabelInputModeOnLabelEditingCanceled;
+      editorMode.EditLabelInputMode.LabelEditingStarted -= EditLabelInputModeOnLabelEditingStarted;
+      editorMode.EditLabelInputMode.ValidateLabelText -= EditLabelInputModeOnValidateLabelText;
     }
 
-    private void RegisterItemHoverModeEvents(object sender, RoutedEventArgs routedEventArgs) {
+    private void RegisterMoveModeEvents(object sender, RoutedEventArgs args) {
+      editorMode.MoveSelectedItemsInputMode.DragCanceled += InputModeOnDragCanceled;
+      editorMode.MoveSelectedItemsInputMode.DragCanceling += InputModeOnDragCanceling;
+      editorMode.MoveSelectedItemsInputMode.DragFinished += InputModeOnDragFinished;
+      editorMode.MoveSelectedItemsInputMode.DragFinishing += InputModeOnDragFinishing;
+      editorMode.MoveSelectedItemsInputMode.DragStarted += InputModeOnDragStarted;
+      editorMode.MoveSelectedItemsInputMode.DragStarting += InputModeOnDragStarting;
+
+      editorMode.MoveSelectedItemsInputMode.Dragged += InputModeOnDragged;
+      editorMode.MoveSelectedItemsInputMode.Dragging += InputModeOnDragging;
+    }
+
+    private void DeregisterMoveModeEvents(object sender, RoutedEventArgs args) {
+      editorMode.MoveSelectedItemsInputMode.DragCanceled -= InputModeOnDragCanceled;
+      editorMode.MoveSelectedItemsInputMode.DragCanceling -= InputModeOnDragCanceling;
+      editorMode.MoveSelectedItemsInputMode.DragFinished -= InputModeOnDragFinished;
+      editorMode.MoveSelectedItemsInputMode.DragFinishing -= InputModeOnDragFinishing;
+      editorMode.MoveSelectedItemsInputMode.DragStarted -= InputModeOnDragStarted;
+      editorMode.MoveSelectedItemsInputMode.DragStarting -= InputModeOnDragStarting;
+
+      editorMode.MoveSelectedItemsInputMode.Dragged -= InputModeOnDragged;
+      editorMode.MoveSelectedItemsInputMode.Dragging -= InputModeOnDragging;
+    }
+
+    private void RegisterItemHoverModeEvents(object sender, RoutedEventArgs args) {
       editorMode.ItemHoverInputMode.HoveredItemChanged += ItemHoverInputModeOnHoveredItemChanged;
       viewerMode.ItemHoverInputMode.HoveredItemChanged += ItemHoverInputModeOnHoveredItemChanged;
     }
 
-    private void DeregisterItemHoverModeEvents(object sender, RoutedEventArgs routedEventArgs) {
+    private void DeregisterItemHoverModeEvents(object sender, RoutedEventArgs args) {
       editorMode.ItemHoverInputMode.HoveredItemChanged -= ItemHoverInputModeOnHoveredItemChanged;
       viewerMode.ItemHoverInputMode.HoveredItemChanged -= ItemHoverInputModeOnHoveredItemChanged;
     }
 
-    private void RegisterCreateBendModeEvents(object sender, RoutedEventArgs routedEventArgs) {
+    private void RegisterCreateBendModeEvents(object sender, RoutedEventArgs args) {
       editorMode.CreateBendInputMode.BendCreated += CreateBendInputModeOnBendCreated;
       editorMode.CreateBendInputMode.DragCanceled += InputModeOnDragCanceled;
 
@@ -580,7 +618,7 @@ namespace Demo.yFiles.Graph.Events
       editorMode.CreateBendInputMode.Dragging += InputModeOnDragging;
     }
 
-    private void DeregisterCreateBendModeEvents(object sender, RoutedEventArgs routedEventArgs) {
+    private void DeregisterCreateBendModeEvents(object sender, RoutedEventArgs args) {
       editorMode.CreateBendInputMode.BendCreated -= CreateBendInputModeOnBendCreated;
       editorMode.CreateBendInputMode.DragCanceled -= InputModeOnDragCanceled;
 
@@ -588,53 +626,29 @@ namespace Demo.yFiles.Graph.Events
       editorMode.CreateBendInputMode.Dragging -= InputModeOnDragging;
     }
 
-    private void RegisterContextMenuModeEvents(object sender, RoutedEventArgs routedEventArgs) {
+    private void RegisterContextMenuModeEvents(object sender, RoutedEventArgs args) {
       editorMode.ContextMenuInputMode.PopulateMenu += ContextMenuInputModeOnPopulateMenu;
       viewerMode.ContextMenuInputMode.PopulateMenu += ContextMenuInputModeOnPopulateMenu;
     }
 
-    private void DeregisterContextMenuModeEvents(object sender, RoutedEventArgs routedEventArgs) {
+    private void DeregisterContextMenuModeEvents(object sender, RoutedEventArgs args) {
       editorMode.ContextMenuInputMode.PopulateMenu -= ContextMenuInputModeOnPopulateMenu;
       viewerMode.ContextMenuInputMode.PopulateMenu -= ContextMenuInputModeOnPopulateMenu;
     }
 
-    private void RegisterTapModeEvents(object sender, RoutedEventArgs routedEventArgs) {
-      editorMode.TapInputMode.DoubleTapped += TapInputModeOnDoubleTapped;
-      editorMode.TapInputMode.Tapped += TapInputModeOnTapped;
-      viewerMode.TapInputMode.DoubleTapped += TapInputModeOnDoubleTapped;
-      viewerMode.TapInputMode.Tapped += TapInputModeOnTapped;
+    private void RegisterTextEditorModeEvents(object sender, RoutedEventArgs args) {
+      editorMode.EditLabelInputMode.TextEditorInputMode.EditingCanceled += TextEditorInputModeOnEditingCanceled;
+      editorMode.EditLabelInputMode.TextEditorInputMode.EditingStarted += TextEditorInputModeOnEditingStarted;
+      editorMode.EditLabelInputMode.TextEditorInputMode.TextEdited += TextEditorInputModeOnTextEdited;
     }
 
-    private void DeregisterTapModeEvents(object sender, RoutedEventArgs routedEventArgs) {
-      editorMode.TapInputMode.DoubleTapped -= TapInputModeOnDoubleTapped;
-      editorMode.TapInputMode.Tapped -= TapInputModeOnTapped;
-      viewerMode.TapInputMode.DoubleTapped -= TapInputModeOnDoubleTapped;
-      viewerMode.TapInputMode.Tapped -= TapInputModeOnTapped;
+    private void DeregisterTextEditorModeEvents(object sender, RoutedEventArgs args) {
+      editorMode.EditLabelInputMode.TextEditorInputMode.EditingCanceled -= TextEditorInputModeOnEditingCanceled;
+      editorMode.EditLabelInputMode.TextEditorInputMode.EditingStarted -= TextEditorInputModeOnEditingStarted;
+      editorMode.EditLabelInputMode.TextEditorInputMode.TextEdited -= TextEditorInputModeOnTextEdited;
     }
 
-    private void RegisterTextEditorModeEvents(object sender, RoutedEventArgs routedEventArgs) {
-      editorMode.TextEditorInputMode.EditingCanceled += TextEditorInputModeOnEditingCanceled;
-      editorMode.TextEditorInputMode.EditingStarted += TextEditorInputModeOnEditingStarted;
-      editorMode.TextEditorInputMode.TextEdited += TextEditorInputModeOnTextEdited;
-    }
-
-    private void DeregisterTextEditorModeEvents(object sender, RoutedEventArgs routedEventArgs) {
-      editorMode.TextEditorInputMode.EditingCanceled -= TextEditorInputModeOnEditingCanceled;
-      editorMode.TextEditorInputMode.EditingStarted -= TextEditorInputModeOnEditingStarted;
-      editorMode.TextEditorInputMode.TextEdited -= TextEditorInputModeOnTextEdited;
-    }
-
-    private void RegisterMouseHoverModeEvents(object sender, RoutedEventArgs routedEventArgs) {
-      editorMode.MouseHoverInputMode.QueryToolTip += MouseHoverInputModeOnQueryToolTip;
-      viewerMode.MouseHoverInputMode.QueryToolTip += MouseHoverInputModeOnQueryToolTip;
-    }
-
-    private void DeregisterMouseHoverModeEvents(object sender, RoutedEventArgs routedEventArgs) {
-      editorMode.MouseHoverInputMode.QueryToolTip -= MouseHoverInputModeOnQueryToolTip;
-      viewerMode.MouseHoverInputMode.QueryToolTip -= MouseHoverInputModeOnQueryToolTip;
-    }
-
-    private void RegisterNavigationModeEvents(object sender, RoutedEventArgs routedEventArgs) {
+    private void RegisterNavigationModeEvents(object sender, RoutedEventArgs args) {
       editorMode.NavigationInputMode.GroupCollapsed += NavigationInputModeOnGroupCollapsed;
       editorMode.NavigationInputMode.GroupCollapsing += NavigationInputModeOnGroupCollapsing;
       editorMode.NavigationInputMode.GroupEntered += NavigationInputModeOnGroupEntered;
@@ -654,7 +668,7 @@ namespace Demo.yFiles.Graph.Events
       viewerMode.NavigationInputMode.GroupExpanding += NavigationInputModeOnGroupExpanding;
     }
 
-    private void DeregisterNavigationModeEvents(object sender, RoutedEventArgs routedEventArgs) {
+    private void DeregisterNavigationModeEvents(object sender, RoutedEventArgs args) {
       editorMode.NavigationInputMode.GroupCollapsed -= NavigationInputModeOnGroupCollapsed;
       editorMode.NavigationInputMode.GroupCollapsing -= NavigationInputModeOnGroupCollapsing;
       editorMode.NavigationInputMode.GroupEntered -= NavigationInputModeOnGroupEntered;
@@ -674,39 +688,17 @@ namespace Demo.yFiles.Graph.Events
       viewerMode.NavigationInputMode.GroupExpanding -= NavigationInputModeOnGroupExpanding;
     }
 
-    private void RegisterClickModeEvents(object sender, RoutedEventArgs routedEventArgs) {
+    private void RegisterClickModeEvents(object sender, RoutedEventArgs args) {
       editorMode.ClickInputMode.Clicked += ClickInputModeOnClicked;
-      editorMode.ClickInputMode.DoubleClicked += ClickInputModeOnDoubleClicked;
-      editorMode.ClickInputMode.LeftClicked += ClickInputModeOnLeftClicked;
-      editorMode.ClickInputMode.LeftDoubleClicked += ClickInputModeOnLeftDoubleClicked;
-      editorMode.ClickInputMode.RightClicked += ClickInputModeOnRightClicked;
-      editorMode.ClickInputMode.RightDoubleClicked += ClickInputModeOnRightDoubleClicked;
-
       viewerMode.ClickInputMode.Clicked += ClickInputModeOnClicked;
-      viewerMode.ClickInputMode.DoubleClicked += ClickInputModeOnDoubleClicked;
-      viewerMode.ClickInputMode.LeftClicked += ClickInputModeOnLeftClicked;
-      viewerMode.ClickInputMode.LeftDoubleClicked += ClickInputModeOnLeftDoubleClicked;
-      viewerMode.ClickInputMode.RightClicked += ClickInputModeOnRightClicked;
-      viewerMode.ClickInputMode.RightDoubleClicked += ClickInputModeOnRightDoubleClicked;
     }
 
-    private void DeregisterClickModeEvents(object sender, RoutedEventArgs routedEventArgs) {
+    private void DeregisterClickModeEvents(object sender, RoutedEventArgs args) {
       editorMode.ClickInputMode.Clicked -= ClickInputModeOnClicked;
-      editorMode.ClickInputMode.DoubleClicked -= ClickInputModeOnDoubleClicked;
-      editorMode.ClickInputMode.LeftClicked -= ClickInputModeOnLeftClicked;
-      editorMode.ClickInputMode.LeftDoubleClicked -= ClickInputModeOnLeftDoubleClicked;
-      editorMode.ClickInputMode.RightClicked -= ClickInputModeOnRightClicked;
-      editorMode.ClickInputMode.RightDoubleClicked -= ClickInputModeOnRightDoubleClicked;
-
       viewerMode.ClickInputMode.Clicked -= ClickInputModeOnClicked;
-      viewerMode.ClickInputMode.DoubleClicked -= ClickInputModeOnDoubleClicked;
-      viewerMode.ClickInputMode.LeftClicked -= ClickInputModeOnLeftClicked;
-      viewerMode.ClickInputMode.LeftDoubleClicked -= ClickInputModeOnLeftDoubleClicked;
-      viewerMode.ClickInputMode.RightClicked -= ClickInputModeOnRightClicked;
-      viewerMode.ClickInputMode.RightDoubleClicked -= ClickInputModeOnRightDoubleClicked;
     }
 
-    private void RegisterHandleModeEvents(object sender, RoutedEventArgs routedEventArgs) {
+    private void RegisterHandleModeEvents(object sender, RoutedEventArgs args) {
       editorMode.HandleInputMode.DragCanceled += InputModeOnDragCanceled;
       editorMode.HandleInputMode.DragCanceling += InputModeOnDragCanceling;
       editorMode.HandleInputMode.DragFinished += InputModeOnDragFinished;
@@ -719,7 +711,7 @@ namespace Demo.yFiles.Graph.Events
       editorMode.HandleInputMode.Clicked += InputModeOnClick;
     }
 
-    private void DeregisterHandleModeEvents(object sender, RoutedEventArgs routedEventArgs) {
+    private void DeregisterHandleModeEvents(object sender, RoutedEventArgs args) {
       editorMode.HandleInputMode.DragCanceled -= InputModeOnDragCanceled;
       editorMode.HandleInputMode.DragCanceling -= InputModeOnDragCanceling;
       editorMode.HandleInputMode.DragFinished -= InputModeOnDragFinished;
@@ -732,7 +724,7 @@ namespace Demo.yFiles.Graph.Events
       editorMode.HandleInputMode.Clicked -= InputModeOnClick;
     }
 
-    private void RegisterMoveViewportModeEvents(object sender, RoutedEventArgs routedEventArgs) {
+    private void RegisterMoveViewportModeEvents(object sender, RoutedEventArgs args) {
       editorMode.MoveViewportInputMode.DragCanceled += InputModeOnDragCanceled;
       editorMode.MoveViewportInputMode.DragCanceling += InputModeOnDragCanceling;
       editorMode.MoveViewportInputMode.DragFinished += InputModeOnDragFinished;
@@ -754,7 +746,7 @@ namespace Demo.yFiles.Graph.Events
       viewerMode.MoveViewportInputMode.Dragging += InputModeOnDragging;
     }
 
-    private void DeregisterMoveViewportModeEvents(object sender, RoutedEventArgs routedEventArgs) {
+    private void DeregisterMoveViewportModeEvents(object sender, RoutedEventArgs args) {
       editorMode.MoveViewportInputMode.DragCanceled -= InputModeOnDragCanceled;
       editorMode.MoveViewportInputMode.DragCanceling -= InputModeOnDragCanceling;
       editorMode.MoveViewportInputMode.DragFinished -= InputModeOnDragFinished;
@@ -776,7 +768,7 @@ namespace Demo.yFiles.Graph.Events
       viewerMode.MoveViewportInputMode.Dragging -= InputModeOnDragging;
     }
 
-    private void RegisterCreateEdgeModeEvents(object sender, RoutedEventArgs routedEventArgs) {
+    private void RegisterCreateEdgeModeEvents(object sender, RoutedEventArgs args) {
       editorMode.CreateEdgeInputMode.EdgeCreated += CreateEdgeInputModeOnEdgeCreated;
       editorMode.CreateEdgeInputMode.EdgeCreationStarted += CreateEdgeInputModeOnEdgeCreationStarted;
       editorMode.CreateEdgeInputMode.GestureCanceled += CreateEdgeInputModeOnGestureCanceled;
@@ -788,11 +780,12 @@ namespace Demo.yFiles.Graph.Events
       editorMode.CreateEdgeInputMode.Moved += CreateEdgeInputModeOnMoved;
       editorMode.CreateEdgeInputMode.Moving += CreateEdgeInputModeOnMoving;
       editorMode.CreateEdgeInputMode.PortAdded += CreateEdgeInputModeOnPortAdded;
-      editorMode.CreateEdgeInputMode.SourcePortCandidateChanged += CreateEdgeInputModeOnSourcePortCandidateChanged;
-      editorMode.CreateEdgeInputMode.TargetPortCandidateChanged += CreateEdgeInputModeOnTargetPortCandidateChanged;
+      editorMode.CreateEdgeInputMode.StartPortCandidateChanged += CreateEdgeInputModeOnStartPortCandidateChanged;
+      editorMode.CreateEdgeInputMode.EndPortCandidateChanged += CreateEdgeInputModeOnEndPortCandidateChanged;
+      editorMode.CreateEdgeInputMode.EdgeDirectionReversed += CreateEdgeInputModeOnEdgeDirectionReversed;
     }
 
-    private void DeregisterCreateEdgeModeEvents(object sender, RoutedEventArgs routedEventArgs) {
+    private void DeregisterCreateEdgeModeEvents(object sender, RoutedEventArgs args) {
       editorMode.CreateEdgeInputMode.EdgeCreated -= CreateEdgeInputModeOnEdgeCreated;
       editorMode.CreateEdgeInputMode.EdgeCreationStarted -= CreateEdgeInputModeOnEdgeCreationStarted;
       editorMode.CreateEdgeInputMode.GestureCanceled -= CreateEdgeInputModeOnGestureCanceled;
@@ -804,35 +797,48 @@ namespace Demo.yFiles.Graph.Events
       editorMode.CreateEdgeInputMode.Moved -= CreateEdgeInputModeOnMoved;
       editorMode.CreateEdgeInputMode.Moving -= CreateEdgeInputModeOnMoving;
       editorMode.CreateEdgeInputMode.PortAdded -= CreateEdgeInputModeOnPortAdded;
-      editorMode.CreateEdgeInputMode.SourcePortCandidateChanged -= CreateEdgeInputModeOnSourcePortCandidateChanged;
-      editorMode.CreateEdgeInputMode.TargetPortCandidateChanged -= CreateEdgeInputModeOnTargetPortCandidateChanged;
+      editorMode.CreateEdgeInputMode.StartPortCandidateChanged -= CreateEdgeInputModeOnStartPortCandidateChanged;
+      editorMode.CreateEdgeInputMode.EndPortCandidateChanged -= CreateEdgeInputModeOnEndPortCandidateChanged;
+      editorMode.CreateEdgeInputMode.EdgeDirectionReversed -= CreateEdgeInputModeOnEdgeDirectionReversed;
     }
 
-    private void RegisterSelectionEvents(object sender, RoutedEventArgs routedEventArgs) {
-      graphControl.Selection.ItemSelectionChanged += OnItemSelectionChanged;
+    private void RegisterSelectionEvents(object sender, RoutedEventArgs args) {
+      graphControl.Selection.ItemAdded += SelectionOnItemAdded;
+      graphControl.Selection.ItemRemoved += SelectionOnItemRemoved;
     }
 
-    private void DeregisterSelectionEvents(object sender, RoutedEventArgs routedEventArgs) {
-      graphControl.Selection.ItemSelectionChanged -= OnItemSelectionChanged;
+    private void DeregisterSelectionEvents(object sender, RoutedEventArgs args) {
+      graphControl.Selection.ItemAdded -= SelectionOnItemAdded;
+      graphControl.Selection.ItemRemoved -= SelectionOnItemRemoved;
     }
 
     #endregion
 
     #region InputMode Installing
 
-    private void InstallEditorMode(object sender, RoutedEventArgs routedEventArgs) {
+    private void InstallEditorMode(object sender, RoutedEventArgs args) {
       graphControl.InputMode = editorMode;
     }
 
-    private void InstallViewerMode(object sender, RoutedEventArgs routedEventArgs) {
+    private void InstallViewerMode(object sender, RoutedEventArgs args) {
       graphControl.InputMode = viewerMode;
     }
 
-    private void EnableOrthogonalEdges(object sender, RoutedEventArgs routedEventArgs) {
+    private void EnableOrthogonalEdges(object sender, RoutedEventArgs args) {
       editorMode.OrthogonalEdgeEditingContext.Enabled = true;
     }
 
-    private void DisableOrthogonalEdges(object sender, RoutedEventArgs routedEventArgs) {
+    private void EnableWaitForSecondClick(object sender, RoutedEventArgs args) {
+      editorMode.ClickInputMode.ClickReportingPolicy = ClickReportingPolicy.WaitForDoubleClick;
+      viewerMode.ClickInputMode.ClickReportingPolicy = ClickReportingPolicy.WaitForDoubleClick;
+    }
+
+    private void DisableWaitForSecondClick(object sender, RoutedEventArgs args) {
+      editorMode.ClickInputMode.ClickReportingPolicy = ClickReportingPolicy.Instant;
+      viewerMode.ClickInputMode.ClickReportingPolicy = ClickReportingPolicy.Instant;
+    }
+
+    private void DisableOrthogonalEdges(object sender, RoutedEventArgs args) {
       editorMode.OrthogonalEdgeEditingContext.Enabled = false;
     }
 
@@ -840,119 +846,138 @@ namespace Demo.yFiles.Graph.Events
 
     #region Graph Events
 
-    private void OnDisplaysInvalidated(object sender, EventArgs eventArgs) {
+    private void OnDisplaysInvalidated(object sender, EventArgs args) {
       Log("Displays Invalidated");
     }
 
-    private void OnEdgeStyleChanged(object o, ItemChangedEventArgs<IEdge, IEdgeStyle> args) {
+    private void OnEdgeStyleChanged(object sender, ItemChangedEventArgs<IEdge, IEdgeStyle> args) {
       Log("Edge Style Changed: " + args.Item, "EdgeStyleChanged");
     }
 
-    private void OnEdgePortsChanged(object o, EdgeEventArgs args) {
+    private void OnEdgePortsChanged(object sender, EdgeEventArgs args) {
       Log("Edge Ports Changed: " + args.Item, "EdgePortsChanged");
     }
 
-    private void OnEdgeTagChanged(object o, ItemChangedEventArgs<IEdge, object> args) {
+    private void OnEdgeTagChanged(object sender, ItemChangedEventArgs<IEdge, object> args) {
       Log("Edge Tag Changed: " + args.Item, "EdgeTagChanged");
     }
 
-    private void OnEdgeCreated(object o, ItemEventArgs<IEdge> args) {
+    private void OnEdgeCreated(object sender, ItemEventArgs<IEdge> args) {
       Log("Edge Created: " + args.Item, "EdgeCreated");
     }
 
-    private void OnEdgeRemoved(object o, ItemEventArgs<IEdge> args) {
+    private void OnEdgeRemoved(object sender, ItemEventArgs<IEdge> args) {
       Log("Edge Removed: " + args.Item, "EdgeRemoved");
     }
 
-    private void OnLabelAdded(object o, ItemEventArgs<ILabel> args) {
+    private void OnLabelAdded(object sender, ItemEventArgs<ILabel> args) {
       Log("Label Added: " + args.Item, "LabelAdded");
     }
 
-    private void OnLabelModelParameterChanged(object o, ItemChangedEventArgs<ILabel, ILabelModelParameter> args) {
+    private void OnLabelLayoutParameterChanged(object sender, ItemChangedEventArgs<ILabel, ILabelModelParameter> args) {
       Log("Label Layout Parameter Changed: " + args.Item, "LabelLayoutParameterChanged");
     }
-    private void OnLabelStyleChanged(object o, ItemChangedEventArgs<ILabel, ILabelStyle> args) {
+
+    private void OnLabelStyleChanged(object sender, ItemChangedEventArgs<ILabel, ILabelStyle> args) {
       Log("Label Style Changed: " + args.Item, "LabelStyleChanged");
     }
-    private void OnLabelPreferredSizeChanged(object o, ItemChangedEventArgs<ILabel, SizeD> args) {
-      Log("Label Preferrred Size Changed: " + args.Item, "LabelPreferredSizeChanged");
+
+    private void OnLabelPreferredSizeChanged(object sender, ItemChangedEventArgs<ILabel, SizeD> args) {
+      Log("Label Preferred Size Changed: " + args.Item, "LabelPreferredSizeChanged");
     }
-    private void OnLabelTagChanged(object o, ItemChangedEventArgs<ILabel, object> args) {
+
+    private void OnLabelTagChanged(object sender, ItemChangedEventArgs<ILabel, object> args) {
       Log("Label Tag Changed: " + args.Item, "LabelTagChanged");
     }
-    private void OnLabelTextChanged(object o, ItemChangedEventArgs<ILabel, String> args) {
+
+    private void OnLabelTextChanged(object sender, ItemChangedEventArgs<ILabel, string> args) {
       Log("Label Text Changed: " + args.Item, "LabelTextChanged");
     }
 
-    private void OnLabelRemoved(object o, ItemEventArgs<ILabel> args) {
+    private void OnLabelRemoved(object sender, ItemEventArgs<ILabel> args) {
       Log("Label Removed: " + args.Item, "LabelRemoved");
     }
 
-    private void OnNodeStyleChanged(object o, ItemChangedEventArgs<INode, INodeStyle> args) {
+    private void OnNodeStyleChanged(object sender, ItemChangedEventArgs<INode, INodeStyle> args) {
       Log("Node Style Changed: " + args.Item, "NodeStyleChanged");
     }
 
-    private void OnNodeTagChanged(object o, ItemChangedEventArgs<INode, object> args) {
+    private void OnNodeTagChanged(object sender, ItemChangedEventArgs<INode, object> args) {
       Log("Node Tag Changed: " + args.Item, "NodeTagChanged");
     }
 
-    private void OnNodeCreated(object o, ItemEventArgs<INode> args) {
+    private void OnNodeCreated(object sender, ItemEventArgs<INode> args) {
       Log("Node Created: " + args.Item, "NodeCreated");
     }
 
-    private void OnNodeRemoved(object o, ItemEventArgs<INode> args) {
+    private void OnNodeRemoved(object sender, ItemEventArgs<INode> args) {
       Log("Node Removed: " + args.Item, "NodeRemoved");
     }
 
     private void OnIsGroupNodeChanged(object sender, NodeEventArgs args) {
-      Log("GroupNode Status Changed: " + args.Item, "IsGroupNodeChanged");
+      Log("Group State Changed: " + args.IsGroupNode, "IsGroupNodeChanged");
     }
 
     private void OnParentChanged(object sender, NodeEventArgs args) {
-      Log("Parent Changed: " + args.Item, "ParentChanged");
+      var newParent = graphControl.Graph.GetParent(args.Item);
+      Log("Parent Changed: " + args.Parent + " -> " + newParent, "ParentChanged");
     }
 
-    private void OnPortAdded(object o, ItemEventArgs<IPort> args) {
+    private void OnPortAdded(object sender, ItemEventArgs<IPort> args) {
       Log("Port Added: " + args.Item, "PortAdded");
     }
 
-    private void OnPortLocationParameterChanged(object o, ItemChangedEventArgs<IPort, IPortLocationModelParameter> args) {
+    private void OnPortLocationParameterChanged(
+        object sender,
+        ItemChangedEventArgs<IPort, IPortLocationModelParameter> args) {
       Log("Port Location Parameter Changed: " + args.Item, "PortLocationParameterChanged");
     }
 
-    private void OnPortStyleChanged(object o, ItemChangedEventArgs<IPort, IPortStyle> args) {
+    private void OnPortStyleChanged(object sender, ItemChangedEventArgs<IPort, IPortStyle> args) {
       Log("Port Style Changed: " + args.Item, "PortStyleChanged");
     }
 
-    private void OnPortTagChanged(object o, ItemChangedEventArgs<IPort, object> args) {
+    private void OnPortTagChanged(object sender, ItemChangedEventArgs<IPort, object> args) {
       Log("Port Tag Changed: " + args.Item, "PortTagChanged");
     }
 
-    private void OnPortRemoved(object o, ItemEventArgs<IPort> args) {
+    private void OnPortRemoved(object sender, ItemEventArgs<IPort> args) {
       Log("Port Removed: " + args.Item, "PortRemoved");
     }
 
-    private void OnBendAdded(object o, ItemEventArgs<IBend> args) {
+    private void OnBendAdded(object sender, ItemEventArgs<IBend> args) {
       Log("Bend Added: " + args.Item, "BendAdded");
     }
 
-    private void OnBendLocationChanged(object o, IBend bend, PointD oldLocation) {
+    private void OnBendLocationChanged(object sender, IBend bend, PointD oldLocation) {
       Log("Bend Location Changed: " + bend + "; " + oldLocation, "BendLocationChanged");
     }
 
-    private void OnBendTagChanged(object o, ItemChangedEventArgs<IBend, object> args) {
+    private void OnBendTagChanged(object sender, ItemChangedEventArgs<IBend, object> args) {
       Log("Bend Tag Changed: " + args.Item, "BendTagChanged");
     }
 
-    private void OnBendRemoved(object o, ItemEventArgs<IBend> args) {
+    private void OnBendRemoved(object sender, ItemEventArgs<IBend> args) {
       Log("Bend Removed: " + args.Item, "BendRemoved");
+    }
+
+    private void FoldingOnPropertyChanged(object sender, PropertyChangedEventArgs args) {
+      Log("PropertyChanged: " + args.PropertyName, "PropertyChanged");
+    }
+
+    private void FoldingOnGroupExpanded(object sender, ItemEventArgs<INode> args) {
+      Log("Group Expanded: " + args.Item, "GroupExpanded");
+    }
+
+    private void FoldingOnGroupCollapsed(object sender, ItemEventArgs<INode> args) {
+      Log("Group Collapsed: " + args.Item, "GroupCollapsed");
     }
 
     #endregion
 
     #region Clipboard Events
 
-    private void ClipboardOnGraphCopiedToClipboard(object sender, ItemCopiedEventArgs<IGraph> eventArgs) {
+    private void ClipboardOnGraphCopiedToClipboard(object sender, ItemCopiedEventArgs<IGraph> args) {
       Log("Graph copied to Clipboard");
     }
 
@@ -972,11 +997,11 @@ namespace Demo.yFiles.Graph.Events
       Log("Label " + args.Original + " copied to Clipboard: " + args.Copy);
     }
 
-    private void ClipboardOnObjectCopiedToClipboard(object sender, ItemCopiedEventArgs<Object> args) {
+    private void ClipboardOnObjectCopiedToClipboard(object sender, ItemCopiedEventArgs<object> args) {
       Log("Object " + args.Original + " copied to Clipboard: " + args.Copy);
     }
 
-    private void ClipboardOnGraphCopiedFromClipboard(object sender, ItemCopiedEventArgs<IGraph> eventArgs) {
+    private void ClipboardOnGraphCopiedFromClipboard(object sender, ItemCopiedEventArgs<IGraph> args) {
       Log("Graph copied from Clipboard");
     }
 
@@ -996,11 +1021,11 @@ namespace Demo.yFiles.Graph.Events
       Log("Label " + args.Original + " copied from Clipboard: " + args.Copy);
     }
 
-    private void ClipboardOnObjectCopiedFromClipboard(object sender, ItemCopiedEventArgs<Object> args) {
+    private void ClipboardOnObjectCopiedFromClipboard(object sender, ItemCopiedEventArgs<object> args) {
       Log("Object " + args.Original + " copied from Clipboard: " + args.Copy);
     }
 
-    private void ClipboardOnGraphDuplicated(object sender, ItemCopiedEventArgs<IGraph> eventArgs) {
+    private void ClipboardOnGraphDuplicated(object sender, ItemCopiedEventArgs<IGraph> args) {
       Log("Graph duplicated.");
     }
 
@@ -1020,30 +1045,50 @@ namespace Demo.yFiles.Graph.Events
       Log("Label " + args.Original + " duplicated to: " + args.Copy);
     }
 
-    private void ClipboardOnObjectDuplicated(object sender, ItemCopiedEventArgs<Object> args) {
+    private void ClipboardOnObjectDuplicated(object sender, ItemCopiedEventArgs<object> args) {
       Log("Object " + args.Original + " duplicated to: " + args.Copy);
     }
-    
-    private void ClipboardOnCut(object sender, EventArgs args) {
+
+    private void ClipboardOnItemsCutting(object sender, EventArgs args) {
+      Log("Clipboard operation: Cutting");
+    }
+
+    private void ClipboardOnItemsCut(object sender, EventArgs args) {
       Log("Clipboard operation: Cut");
     }
-    
-    private void ClipboardOnCopy(object sender, EventArgs args) {
-      Log("Clipboard operation: Copy");
+
+    private void ClipboardOnItemsCopying(object sender, EventArgs args) {
+      Log("Clipboard operation: Copying");
     }
 
-    private void ClipboardOnPaste(object sender, EventArgs args) {
-      Log("Clipboard operation: Paste");
+    private void ClipboardOnItemsCopied(object sender, EventArgs args) {
+      Log("Clipboard operation: Copied");
     }
 
-    private void ClipboardOnDuplicate(object sender, EventArgs args) {
-      Log("Clipboard operation: Duplicate");
+    private void ClipboardOnItemsPasting(object sender, EventArgs args) {
+      Log("Clipboard operation: Pasting");
     }
-    
+
+    private void ClipboardOnItemsPasted(object sender, EventArgs args) {
+      Log("Clipboard operation: Pasted");
+    }
+
+    private void ClipboardOnItemsDuplicating(object sender, EventArgs args) {
+      Log("Clipboard operation: Duplicating");
+    }
+
+    private void ClipboardOnItemsDuplicated(object sender, EventArgs args) {
+      Log("Clipboard operation: Duplicated");
+    }
+
     #endregion
-    
+
     #region Undo Events
-    
+
+    private void UndoEngineOnPropertyChanged(object sender, PropertyChangedEventArgs args) {
+      Log("PropertyChanged: " + args.PropertyName, "PropertyChanged");
+    }
+
     private void UndoEngineOnUnitUndone(object sender, EventArgs args) {
       Log("Undo performed");
     }
@@ -1056,111 +1101,81 @@ namespace Demo.yFiles.Graph.Events
 
     #region GraphControl Events
 
-    private void ControlOnCurrentItemChanged(object sender,
-                                             RoutedPropertyChangedEventArgs<IModelItem> routedPropertyChangedEventArgs) {
+    private void ControlOnCurrentItemChanged(
+        object sender,
+        RoutedPropertyChangedEventArgs<IModelItem> routedPropertyChangedEventArgs) {
       Log("GraphControl CurrentItemChanged");
-    }
-
-    private void ControlOnGraphChanged(object sender,
-                                       DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs) {
-      Log("GraphControl GraphChanged");
-    }
-
-    private void ControlOnInputModeChanged(object sender,
-                                           DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs) {
-      Log("GraphControl InputModeChanged");
     }
 
     #endregion
 
     #region GraphControl Key Events
 
-    private void ControlOnCompoundKeyPressed(object sender, CompoundKeyEventArgs args) {
+    private void ControlOnCompoundKeyDown(object sender, CompoundKeyEventArgs args) {
       Log("GraphControl CompoundKeyPressed: " + args.KeyCode, "GraphControlKeyPressed");
     }
 
-    private void ControlOnCompoundKeyReleased(object sender, CompoundKeyEventArgs args) {
+    private void ControlOnCompoundKeyUp(object sender, CompoundKeyEventArgs args) {
       Log("GraphControl CompoundKeyReleased: " + args.KeyCode, "GraphControlKeyReleased");
     }
 
-    private void ControlOnCompoundKeyTyped(object sender, CompoundKeyEventArgs args) {
+    private void ControlOnCompoundKeyTextInput(object sender, CompoundKeyEventArgs args) {
       Log("GraphControl CompoundKeyTyped: " + args.KeyCode, "GraphControlKeyTyped");
     }
 
     #endregion
 
-    #region GraphControl Mouse Events
+    #region GraphControl Pointer Events
 
-    private void ControlOnMouse2DClicked(object sender, Mouse2DEventArgs me) {
-      Log("GraphControl Mouse2DClicked");
+    private void ControlOnPointerClick(object sender, PointerEventArgs me) {
+      Log($"GraphControl PointerClicked ({me.PointerType}, button: {me.ChangedButtons}, ClickCount: {me.ClickCount})");
     }
 
-    private void ControlOnMouse2DDragged(object sender, Mouse2DEventArgs me) {
-      Log("GraphControl Mouse2DDragged");
+    private void ControlOnPointerDrag(object sender, PointerEventArgs me) {
+      Log($"GraphControl PointerDragged ({me.PointerType})");
     }
 
-    private void ControlOnMouse2DEntered(object sender, Mouse2DEventArgs me) {
-      Log("GraphControl Mouse2DEntered");
+    private void ControlOnPointerEntered(object sender, PointerEventArgs me) {
+      Log($"GraphControl PointerEntered ({me.PointerType})");
     }
 
-    private void ControlOnMouse2DExited(object sender, Mouse2DEventArgs me) {
-      Log("GraphControl Mouse2DExited");
+    private void ControlOnPointerLeave(object sender, PointerEventArgs me) {
+      Log($"GraphControl PointerExited ({me.PointerType})");
     }
 
-    private void ControlOnMouse2DLostCapture(object sender, Mouse2DEventArgs me) {
-      Log("GraphControl Mouse2DLostCapture");
+    private void ControlOnLostPointerCapture(object sender, PointerEventArgs me) {
+      Log($"GraphControl PointerLostCapture ({me.PointerType})");
     }
 
-    private void ControlOnMouse2DMoved(object sender, Mouse2DEventArgs me) {
-      Log("GraphControl Mouse2DMoved");
+    private void ControlOnPointerMoved(object sender, PointerEventArgs me) {
+      Log($"GraphControl PointerMoved ({me.PointerType})");
     }
 
-    private void ControlOnMouse2DPressed(object sender, Mouse2DEventArgs me) {
-      Log("GraphControl Mouse2DPressed");
+    private void ControlOnPointerDown(object sender, PointerEventArgs me) {
+      Log($"GraphControl PointerDown ({me.PointerType}, button: {me.ChangedButtons})");
     }
 
-    private void ControlOnMouse2DReleased(object sender, Mouse2DEventArgs me) {
-      Log("GraphControl Mouse2DReleased");
+    private void ControlOnPointerUp(object sender, PointerEventArgs me) {
+      Log($"GraphControl PointerUp ({me.PointerType}, button: {me.ChangedButtons})");
     }
 
-    private void ControlOnMouse2DWheelTurned(object sender, Mouse2DEventArgs me) {
-      Log("GraphControl Mouse2DWheelTurned");
+    private void ControlOnWheel(object sender, PointerEventArgs me) {
+      var direction = me switch {
+        { WheelDeltaY: < 0 } => "🞃",
+        { WheelDeltaY: > 0 } => "🞁",
+        { WheelDeltaX: < 0 } => "🞀",
+        { WheelDeltaX: > 0 } => "🞂",
+        _ => null
+      };
+      Log($"GraphControl Wheel ({direction} {(me.WheelDeltaX != 0 ? me.WheelDeltaX : me.WheelDeltaY)})");
     }
 
-    #endregion
-
-    #region GraphControl Touch Events
-
-    private void ControlOnTouch2DDown(object sender, Touch2DEventArgs te) {
-      Log("GraphControl Touch2DDown");
+    private void ControlOnPointerLongPress(object sender, PointerEventArgs me) {
+      Log($"GraphControl PointerLongPressed ({me.PointerType})");
     }
 
-    private void ControlOnTouch2DEntered(object sender, Touch2DEventArgs te) {
-      Log("GraphControl Touch2DEntered");
-    }
-
-    private void ControlOnTouch2DExited(object sender, Touch2DEventArgs te) {
-      Log("GraphControl Touch2DExited");
-    }
-
-    private void ControlOnTouch2DLongPressed(object sender, Touch2DEventArgs te) {
-      Log("GraphControl Touch2DLongPressed");
-    }
-
-    private void ControlOnTouch2DLostCapture(object sender, Touch2DEventArgs te) {
-      Log("GraphControl Touch2DLostCapture");
-    }
-
-    private void ControlOnTouch2DMoved(object sender, Touch2DEventArgs te) {
-      Log("GraphControl Touch2DMoved");
-    }
-
-    private void ControlOnTouch2DTapped(object sender, Touch2DEventArgs te) {
-      Log("GraphControl Touch2DTapped");
-    }
-
-    private void ControlOnTouch2DUp(object sender, Touch2DEventArgs te) {
-      Log("GraphControl Touch2DUp");
+    private void ControlOnPointerLongRest(object sender, PointerEventArgs me) {
+      Log($"GraphControl PointerLongRest ({me.PointerType})");
     }
 
     #endregion
@@ -1171,11 +1186,11 @@ namespace Demo.yFiles.Graph.Events
       Log("GraphControl PrepareRenderContext");
     }
 
-    private void ControlOnUpdatedVisual(object sender, RoutedEventArgs routedEventArgs) {
+    private void ControlOnUpdatedVisual(object sender, RoutedEventArgs args) {
       Log("GraphControl UpdatedVisual");
     }
 
-    private void ControlOnUpdatingVisual(object sender, RoutedEventArgs routedEventArgs) {
+    private void ControlOnUpdatingVisual(object sender, RoutedEventArgs args) {
       Log("GraphControl UpdatingVisual");
     }
 
@@ -1183,18 +1198,11 @@ namespace Demo.yFiles.Graph.Events
 
     #region GraphControl Navigation Events
 
-    private void ControlOnMouseWheelZoomFactorChanged(object sender,
-                                                      DependencyPropertyChangedEventArgs
-                                                          dependencyPropertyChangedEventArgs) {
-      Log("GraphControl MouseWheelZoomFactorChanged");
-    }
-
-    private void ControlOnViewportChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs) {
+    private void ControlOnViewportChanged(object sender, PropertyChangedEventArgs args) {
       Log("GraphControl ViewportChanged");
     }
 
-    private void ControlOnZoomChanged(object sender,
-                                      DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs) {
+    private void ControlOnZoomChanged(object sender, DependencyPropertyChangedEventArgs args) {
       Log("GraphControl ZoomChanged");
     }
 
@@ -1208,21 +1216,77 @@ namespace Demo.yFiles.Graph.Events
 
     #endregion
 
+    #region ItemDropInputMode Events
+
+    private void ItemDropModeDragDropped(object sender, InputModeEventArgs args) {
+      Log(sender.GetType().Name + " DragDropped", "DragDropped");
+    }
+
+    private void ItemDropModeDragEntered(object sender, InputModeEventArgs args) {
+      Log(sender.GetType().Name + " DragEntered", "DragEntered");
+    }
+
+    private void ItemDropModeDragLeft(object sender, InputModeEventArgs args) {
+      Log(sender.GetType().Name + " DragLeft", "DragLeft");
+    }
+
+    private void ItemDropModeDragOver(object sender, InputModeEventArgs args) {
+      Log(sender.GetType().Name + " DragOver", "DragOver");
+    }
+
+    private void ItemDropModeItemCreated(object sender, InputModeEventArgs args) {
+      Log(sender.GetType().Name + " ItemCreated", "ItemCreated");
+    }
+
+    #endregion
+
+    #region EditLabelInputMode Events
+
+    private void EditLabelInputModeOnQueryLabelAdding(object sender, LabelEditingEventArgs e) {
+      Log("EditLabelInputMode QueryLabelAdding");
+    }
+
+    private void EditLabelInputModeOnLabelAdded(object sender, InputModeItemEventArgs<ILabel> args) {
+      Log("EditLabelInputMode LabelAdded");
+    }
+
+    private void EditLabelInputModeOnLabelDeleted(object sender, InputModeItemEventArgs<ILabel> args) {
+      Log("EditLabelInputMode LabelDeleted");
+    }
+
+    private void EditLabelInputModeOnQueryLabelEditing(object sender, LabelEditingEventArgs e) {
+      Log("EditLabelInputMode QueryLabelEditing");
+    }
+
+    private void EditLabelInputModeOnLabelEdited(object sender, InputModeItemEventArgs<ILabel> args) {
+      Log("EditLabelInputMode LabelEdited");
+    }
+
+    private void EditLabelInputModeOnLabelEditingStarted(object sender, InputModeItemEventArgs<ILabel> args) {
+      Log("EditLabelInputMode LabelEditingStarted");
+    }
+
+    private void EditLabelInputModeOnLabelEditingCanceled(object sender, InputModeItemEventArgs<ILabel> args) {
+      Log("EditLabelInputMode LabelEditingCanceled");
+    }
+
+    private void EditLabelInputModeOnValidateLabelText(object sender, LabelTextValidatingEventArgs args) {
+      Log("EditLabelInputMode ValidateLabelText");
+    }
+
+    #endregion
+
     #region GraphEditorInputMode Events
 
     private void GeimOnCanvasClicked(object sender, ClickEventArgs args) {
       Log("GraphEditorInputMode CanvasClicked");
     }
 
-    private void GeimOnCanvasTapped(object sender, TapEventArgs args) {
-      Log("GraphEditorInputMode CanvasTapped");
-    }
-
-    private void GeimOnDeletedItem(object sender, ItemEventArgs<IModelItem> args) {
+    private void GeimOnDeletedItem(object sender, InputModeItemChangedEventArgs<IModelItem, EventArgs> args) {
       Log("GraphEditorInputMode DeletedItem");
     }
 
-    private void GeimOnDeletedSelection(object sender, SelectionEventArgs<IModelItem> args) {
+    private void GeimOnDeletedSelection(object sender, ItemsEventArgs args) {
       Log("GraphEditorInputMode DeletedSelection");
     }
 
@@ -1231,7 +1295,7 @@ namespace Demo.yFiles.Graph.Events
     }
 
     private void GeimOnItemClicked(object sender, ItemClickedEventArgs<IModelItem> args) {
-      Log("GraphEditorInputMode ItemClicked " + (args.Handled ? "(Handled)" : "(Unhandled)"));
+      Log("GraphEditorInputMode ItemClicked" + (args.Handled ? "(Handled)" : "(Unhandled)"));
     }
 
     private void GeimOnItemDoubleClicked(object sender, ItemClickedEventArgs<IModelItem> args) {
@@ -1254,38 +1318,6 @@ namespace Demo.yFiles.Graph.Events
       Log("GraphEditorInputMode ItemRightDoubleClicked" + (args.Handled ? "(Handled)" : "(Unhandled)"));
     }
 
-    private void GeimOnItemTapped(object sender, ItemTappedEventArgs<IModelItem> args) {
-      Log("GraphEditorInputMode ItemTapped" + (args.Handled ? "(Handled)" : "(Unhandled)"));
-    }
-
-    private void GeimOnItemDoubleTapped(object sender, ItemTappedEventArgs<IModelItem> args) {
-      Log("GraphEditorInputMode ItemDoubleTapped" + (args.Handled ? "(Handled)" : "(Unhandled)"));
-    }
-
-    private void GeimOnLabelAdding(object sender, LabelEditingEventArgs e) {
-      Log("GraphEditorInputMode LabelAdding");
-    }
-
-    private void GeimOnLabelAdded(object sender, ItemEventArgs<ILabel> args) {
-      Log("GraphEditorInputMode LabelAdded");
-    }
-
-    private void GeimOnLabelEditing(object sender, LabelEditingEventArgs e) {
-      Log("GraphEditorInputMode LabelEditing");
-    }
-
-    private void GeimOnLabelTextChanged(object sender, ItemEventArgs<ILabel> args) {
-      Log("GraphEditorInputMode LabelTextChanged");
-    }
-
-    private void GeimOnLabelTextEditingStarted(object sender, ItemEventArgs<ILabel> args) {
-      Log("GraphEditorInputMode LabelTextEditingStarted");
-    }
-
-    private void GeimOnLabelTextEditingCanceled(object sender, ItemEventArgs<ILabel> args) {
-      Log("GraphEditorInputMode LabelTextEditingCanceled");
-    }
-
     private void GeimOnMultiSelectionFinished(object sender, SelectionEventArgs<IModelItem> args) {
       Log("GraphEditorInputMode MultiSelectionFinished");
     }
@@ -1294,144 +1326,136 @@ namespace Demo.yFiles.Graph.Events
       Log("GraphEditorInputMode MultiSelectionStarted");
     }
 
-    private void GeimOnNodeCreated(object sender, ItemEventArgs<INode> args) {
+    private void GeimOnNodeCreated(object sender, InputModeItemEventArgs<INode> args) {
       Log("GraphEditorInputMode NodeCreated");
     }
 
-    private void GeimOnNodeReparented(object sender, NodeEventArgs args) {
+    private void GeimOnNodeReparented(object sender, InputModeItemChangedEventArgs<INode, NodeEventArgs> args) {
       Log("GraphEditorInputMode NodeReparented");
     }
 
-    private void GeimOnEdgePortsChanged(object sender, EdgeEventArgs args) {
-      Log("GraphEditorInputMode Edge " + args.Item + " Ports Changed from " + args.SourcePort + "->" + args.TargetPort + " to "  + args.Item.SourcePort+ "->" + args.Item.TargetPort);
+    private void GeimOnEdgePortsChanged(object sender, InputModeItemChangedEventArgs<IEdge, EdgeEventArgs> args) {
+      var detail = args.Details;
+      Log("GraphEditorInputMode Edge " + args.Item + " Ports Changed from " + detail.SourcePort + "->" +
+          detail.TargetPort + " to " + detail.Item.SourcePort + "->" + detail.Item.TargetPort);
     }
 
     private void GeimOnPopulateItemContextMenu(object sender, PopulateItemContextMenuEventArgs<IModelItem> args) {
-      Log("GraphEditorInputMode PopulateItemContextMenu" + (args.Handled ? "(Handled)" : "(Unhandled)"));
+      var type = GraphItemTypesSupport.GetItemType(args.Item);
+      Log("GraphEditorInputMode PopulateItemContextMenu for " + type + " " +
+          (args.Handled ? "(Handled)" : "(Unhandled)"));
     }
 
     private void GeimOnQueryItemToolTip(object sender, QueryItemToolTipEventArgs<IModelItem> args) {
-      Log("GraphEditorInputMode QueryItemToolTip" + (args.Handled ? "(Handled)" : "(Unhandled)"));
+      var type = GraphItemTypesSupport.GetItemType(args.Item);
+      Log("GraphEditorInputMode QueryItemToolTip for " + type + " " + (args.Handled ? "(Handled)" : "(Unhandled)"));
     }
 
-    private void GeimOnValidateLabelText(object sender, LabelTextValidatingEventArgs args) {
-      Log("GraphEditorInputMode ValidateLabelText");
+    private void GeimOnItemsCopied(object sender, EventArgs e) {
+      Log("GraphEditorInputMode ItemsCopied");
     }
 
-    private void GeimOnElementsCopied(object sender, EventArgs e) {
-      Log("GraphEditorInputMode ElementsCopied");
+    private void GeimOnItemsCut(object sender, EventArgs e) {
+      Log("GraphEditorInputMode ItemsCut");
     }
 
-    private void GeimOnElementsCut(object sender, EventArgs e) {
-      Log("GraphEditorInputMode ElementsCut");
+    private void GeimOnItemsPasted(object sender, EventArgs e) {
+      Log("GraphEditorInputMode ItemsPasted");
     }
 
-    private void GeimOnElementsPasted(object sender, EventArgs e) {
-      Log("GraphEditorInputMode ElementsPasted");
-    }
-
-    private void GeimOnElementsDuplicated(object sender, EventArgs e) {
-      Log("GraphEditorInputMode ElementsDuplicated");
+    private void GeimOnItemsDuplicated(object sender, EventArgs e) {
+      Log("GraphEditorInputMode ItemsDuplicated");
     }
 
     #endregion
 
     #region GraphViewerInputMode Events
 
-    private void GvimOnCanvasClicked(object sender, ClickEventArgs itemInputEventArgs) {
+    private void GvimOnCanvasClicked(object sender, ClickEventArgs args) {
       Log("GraphViewerInputMode CanvasClicked");
     }
 
-    private void GvimOnCanvasTapped(object sender, TapEventArgs tapEventArgs) {
-      Log("GraphViewerInputMode CanvasTapped");
-    }
-
-    private void GvimOnItemClicked(object sender, ItemClickedEventArgs<IModelItem> itemClickedEventArgs) {
+    private void GvimOnItemClicked(object sender, ItemClickedEventArgs<IModelItem> args) {
       Log("GraphViewerInputMode ItemClicked");
     }
 
-    private void GvimOnItemDoubleClicked(object sender, ItemClickedEventArgs<IModelItem> itemClickedEventArgs) {
+    private void GvimOnItemDoubleClicked(object sender, ItemClickedEventArgs<IModelItem> args) {
       Log("GraphViewerInputMode ItemDoubleClicked");
     }
 
-    private void GvimOnItemLeftClicked(object sender, ItemClickedEventArgs<IModelItem> itemClickedEventArgs) {
+    private void GvimOnItemLeftClicked(object sender, ItemClickedEventArgs<IModelItem> args) {
       Log("GraphViewerInputMode ItemLeftClicked");
     }
 
-    private void GvimOnItemLeftDoubleClicked(object sender, ItemClickedEventArgs<IModelItem> itemClickedEventArgs) {
+    private void GvimOnItemLeftDoubleClicked(object sender, ItemClickedEventArgs<IModelItem> args) {
       Log("GraphViewerInputMode ItemLeftDoubleClicked");
     }
 
-    private void GvimOnItemRightClicked(object sender, ItemClickedEventArgs<IModelItem> itemClickedEventArgs) {
+    private void GvimOnItemRightClicked(object sender, ItemClickedEventArgs<IModelItem> args) {
       Log("GraphViewerInputMode ItemRightClicked");
     }
 
-    private void GvimOnItemRightDoubleClicked(object sender, ItemClickedEventArgs<IModelItem> itemClickedEventArgs) {
+    private void GvimOnItemRightDoubleClicked(object sender, ItemClickedEventArgs<IModelItem> args) {
       Log("GraphViewerInputMode ItemRightDoubleClicked");
     }
 
-    private void GvimOnItemTapped(object sender, ItemTappedEventArgs<IModelItem> itemClickedEventArgs) {
-      Log("GraphViewerInputMode ItemTapped");
-    }
-
-    private void GvimOnItemDoubleTapped(object sender, ItemTappedEventArgs<IModelItem> itemClickedEventArgs) {
-      Log("GraphViewerInputMode ItemDoubleTapped");
-    }
-
-    private void GvimOnMultiSelectionFinished(object sender, SelectionEventArgs<IModelItem> eventArgs) {
+    private void GvimOnMultiSelectionFinished(object sender, SelectionEventArgs<IModelItem> args) {
       Log("GraphViewerInputMode MultiSelectionFinished");
     }
 
-    private void GvimOnMultiSelectionStarted(object sender, SelectionEventArgs<IModelItem> eventArgs) {
+    private void GvimOnMultiSelectionStarted(object sender, SelectionEventArgs<IModelItem> args) {
       Log("GraphViewerInputMode MultiSelectionStarted");
     }
 
-    private void GvimOnPopulateItemContextMenu(object sender,
-                                               PopulateItemContextMenuEventArgs<IModelItem>
-                                                   populateItemContextMenuEventArgs) {
+    private void GvimOnPopulateItemContextMenu(
+        object sender,
+        PopulateItemContextMenuEventArgs<IModelItem> populateItemContextMenuEventArgs) {
       Log("GraphViewerInputMode PopulateItemContextMenu");
     }
 
-    private void GvimOnQueryItemToolTip(object sender, QueryItemToolTipEventArgs<IModelItem> queryItemToolTipEventArgs) {
+    private void GvimOnQueryItemToolTip(
+        object sender,
+        QueryItemToolTipEventArgs<IModelItem> queryItemToolTipEventArgs) {
       Log("GraphViewerInputMode QueryItemToolTip");
     }
 
-    private void GvimOnElementsCopied(object sender, EventArgs e) {
-      Log("GraphViewerInputMode ElementsCopied");
+    private void GvimOnItemsCopied(object sender, EventArgs e) {
+      Log("GraphViewerInputMode ItemsCopied");
     }
 
     #endregion
 
     #region Drag Events
 
-    private void InputModeOnDragCanceled(object sender, InputModeEventArgs inputModeEventArgs) {
+    private void InputModeOnDragCanceled(object sender, InputModeEventArgs args) {
       Log(sender.GetType().Name + " DragCanceled", "DragCanceled");
     }
 
-    private void InputModeOnDragCanceling(object sender, InputModeEventArgs inputModeEventArgs) {
+    private void InputModeOnDragCanceling(object sender, InputModeEventArgs args) {
       Log(sender.GetType().Name + " DragCanceling", "DragCanceling");
     }
 
-    private void InputModeOnDragFinished(object sender, InputModeEventArgs inputModeEventArgs) {
+    private void InputModeOnDragFinished(object sender, InputModeEventArgs args) {
       Log(sender.GetType().Name + " DragFinished", "DragFinished");
     }
 
-    private void InputModeOnDragFinishing(object sender, InputModeEventArgs inputModeEventArgs) {
+    private void InputModeOnDragFinishing(object sender, InputModeEventArgs args) {
       Log(sender.GetType().Name + " DragFinishing" + GetAffectedItems(sender), "DragFinishing");
     }
 
-    private void InputModeOnDragged(object sender, InputModeEventArgs inputModeEventArgs) {
+    private void InputModeOnDragged(object sender, InputModeEventArgs args) {
       Log(sender.GetType().Name + " Dragged", "Dragged");
     }
 
-    private void InputModeOnDragging(object sender, InputModeEventArgs inputModeEventArgs) {
+    private void InputModeOnDragging(object sender, InputModeEventArgs args) {
       Log(sender.GetType().Name + " Dragging", "Dragging");
     }
 
-    private void InputModeOnDragStarted(object sender, InputModeEventArgs inputModeEventArgs) {
+    private void InputModeOnDragStarted(object sender, InputModeEventArgs args) {
       Log(sender.GetType().Name + " DragStarted" + GetAffectedItems(sender), "DragStarted");
     }
-    private void InputModeOnClick(object sender, ClickEventArgs clickEventArgs) {
+
+    private void InputModeOnClick(object sender, ClickEventArgs args) {
       Log(sender.GetType().Name + " Clicked Handle", "HandleClicked");
     }
 
@@ -1451,14 +1475,13 @@ namespace Demo.yFiles.Graph.Events
         var bendCount = items.OfType<IBend>().Count();
         var labelCount = items.OfType<ILabel>().Count();
         var portCount = items.OfType<IPort>().Count();
-        return String.Format(" ({0} items: {1} nodes, {2} bends, {3} edges, {4} labels, {5} ports)", items.Count(),
-          nodeCount, bendCount, edgeCount, labelCount, portCount);
-      } else {
-        return "";
+        return string.Format(" ({0} items: {1} nodes, {2} bends, {3} edges, {4} labels, {5} ports)", items.Count(),
+            nodeCount, bendCount, edgeCount, labelCount, portCount);
       }
+      return "";
     }
 
-    private void InputModeOnDragStarting(object sender, InputModeEventArgs inputModeEventArgs) {
+    private void InputModeOnDragStarting(object sender, InputModeEventArgs args) {
       Log(sender.GetType().Name + " DragStarting", "DragStarting");
     }
 
@@ -1467,14 +1490,16 @@ namespace Demo.yFiles.Graph.Events
     #region ItemHoverInputMode Events
 
     private void ItemHoverInputModeOnHoveredItemChanged(object sender, HoveredItemChangedEventArgs args) {
-      Log("HoverInputMode Item changed from " + args.OldItem + " to " + (args.Item != null ? args.Item.ToString() : "null"), "HoveredItemChanged");
+      var oldType = GraphItemTypesSupport.GetItemType(args.OldItem);
+      var newType = GraphItemTypesSupport.GetItemType(args.Item);
+      Log("HoverInputMode Item changed from " + oldType + " to " + newType, "HoveredItemChanged");
     }
 
     #endregion
 
     #region CreateBendInputMode Events
 
-    private void CreateBendInputModeOnBendCreated(object sender, ItemEventArgs<IBend> itemEventArgs) {
+    private void CreateBendInputModeOnBendCreated(object sender, InputModeItemEventArgs<IBend> args) {
       Log("CreateBendInputMode Bend Created");
     }
 
@@ -1482,196 +1507,189 @@ namespace Demo.yFiles.Graph.Events
 
     #region ContextMenuInputMode Events
 
-    private void ContextMenuInputModeOnPopulateMenu(object sender,
-                                                           PopulateMenuEventArgs populateMenuEventArgs) {
+    private void ContextMenuInputModeOnPopulateMenu(object sender, PopulateMenuEventArgs args) {
       Log("ContextMenuInputMode Populate Menu");
-    }
-
-    #endregion
-
-    #region TapInputMode Events
-
-    private void TapInputModeOnDoubleTapped(object sender, TapEventArgs tapEventArgs) {
-      Log("TapInputMode Double Tapped");
-    }
-
-    private void TapInputModeOnTapped(object sender, TapEventArgs tapEventArgs) {
-      Log("TapInputMode Tapped");
     }
 
     #endregion
 
     #region TextEditorInputMode Events
 
-    private void TextEditorInputModeOnEditingCanceled(object sender, EventArgs eventArgs) {
+    private void TextEditorInputModeOnEditingCanceled(object sender, EventArgs args) {
       Log("TextEditorInputMode Editing Canceled");
     }
 
-    private void TextEditorInputModeOnEditingStarted(object sender, EventArgs eventArgs) {
+    private void TextEditorInputModeOnEditingStarted(object sender, EventArgs args) {
       Log("TextEditorInputMode Editing Started");
     }
 
-    private void TextEditorInputModeOnTextEdited(object sender, EventArgs eventArgs) {
+    private void TextEditorInputModeOnTextEdited(object sender, EventArgs args) {
       Log("TextEditorInputMode Text Edited");
     }
 
     #endregion
 
-    #region MouseHoverInputMode Events
+    #region ToolTipInputMode Events
 
-    private void MouseHoverInputModeOnQueryToolTip(object sender, ToolTipQueryEventArgs toolTipQueryEventArgs) {
-      Log("MouseHoverInputMode QueryToolTip");
+    private void ToolTipInputModeOnQueryToolTip(object sender, QueryToolTipEventArgs args) {
+      Log("ToolTipInputMode QueryToolTip");
     }
 
     #endregion
 
     #region ClickInputMode Events
 
-    private void ClickInputModeOnClicked(object sender, ClickEventArgs clickEventArgs) {
-      Log("ClickInputMode Clicked");
-    }
-
-    private void ClickInputModeOnDoubleClicked(object sender, ClickEventArgs clickEventArgs) {
-      Log("ClickInputMode Double Clicked");
-    }
-
-    private void ClickInputModeOnLeftClicked(object sender, ClickEventArgs clickEventArgs) {
-      Log("ClickInputMode Left Clicked");
-    }
-
-    private void ClickInputModeOnLeftDoubleClicked(object sender, ClickEventArgs clickEventArgs) {
-      Log("ClickInputMode Left Double Clicked");
-    }
-
-    private void ClickInputModeOnRightClicked(object sender, ClickEventArgs clickEventArgs) {
-      Log("ClickInputMode Right Clicked");
-    }
-
-    private void ClickInputModeOnRightDoubleClicked(object sender, ClickEventArgs clickEventArgs) {
-      Log("ClickInputMode Right Double Clicked");
+    private void ClickInputModeOnClicked(object sender, ClickEventArgs args) {
+      Log($"ClickInputMode Clicked (buttons: {args.PointerButtons.ToString()}, clicks: {args.ClickCount})");
     }
 
     #endregion
 
     #region NavigationInputMode Events
 
-    private void NavigationInputModeOnGroupCollapsed(object source, ItemEventArgs<INode> evt) {
-      Log("NavigationInputMode Group Collapsed: " + evt.Item, "GroupCollapsed");
+    private void NavigationInputModeOnGroupCollapsed(object source, InputModeItemEventArgs<INode> args) {
+      Log("NavigationInputMode Group Collapsed: " + args.Item, "GroupCollapsed");
     }
 
-    private void NavigationInputModeOnGroupCollapsing(object source, ItemEventArgs<INode> evt) {
-      Log("NavigationInputMode Group Collapsing: " + evt.Item, "Group Collapsing");
+    private void NavigationInputModeOnGroupCollapsing(object source, InputModeItemEventArgs<INode> args) {
+      Log("NavigationInputMode Group Collapsing: " + args.Item, "Group Collapsing");
     }
 
-    private void NavigationInputModeOnGroupEntered(object source, ItemEventArgs<INode> evt) {
-      Log("NavigationInputMode Group Entered: " + evt.Item, "Group Entered");
+    private void NavigationInputModeOnGroupEntered(object source, InputModeItemEventArgs<INode> args) {
+      Log("NavigationInputMode Group Entered: " + args.Item, "Group Entered");
     }
 
-    private void NavigationInputModeOnGroupEntering(object source, ItemEventArgs<INode> evt) {
-      Log("NavigationInputMode Group Entering: " + evt.Item, "Group Entering");
+    private void NavigationInputModeOnGroupEntering(object source, InputModeItemEventArgs<INode> args) {
+      Log("NavigationInputMode Group Entering: " + args.Item, "Group Entering");
     }
 
-    private void NavigationInputModeOnGroupExited(object source, ItemEventArgs<INode> evt) {
-      Log("NavigationInputMode Group Exited: " + evt.Item, "Group Exited");
+    private void NavigationInputModeOnGroupExited(object source, InputModeItemEventArgs<INode> args) {
+      Log("NavigationInputMode Group Exited: " + args.Item, "Group Exited");
     }
 
-    private void NavigationInputModeOnGroupExiting(object source, ItemEventArgs<INode> evt) {
-      Log("NavigationInputMode Group Exiting: " + evt.Item, "Group Exiting");
+    private void NavigationInputModeOnGroupExiting(object source, InputModeItemEventArgs<INode> args) {
+      Log("NavigationInputMode Group Exiting: " + args.Item, "Group Exiting");
     }
 
-    private void NavigationInputModeOnGroupExpanded(object source, ItemEventArgs<INode> evt) {
-      Log("NavigationInputMode Group Expanded: " + evt.Item, "Group Expanded");
+    private void NavigationInputModeOnGroupExpanded(object source, InputModeItemEventArgs<INode> args) {
+      Log("NavigationInputMode Group Expanded: " + args.Item, "Group Expanded");
     }
 
-    private void NavigationInputModeOnGroupExpanding(object source, ItemEventArgs<INode> evt) {
-      Log("NavigationInputMode Group Expanding: " + evt.Item, "Group Expanding");
+    private void NavigationInputModeOnGroupExpanding(object source, InputModeItemEventArgs<INode> args) {
+      Log("NavigationInputMode Group Expanding: " + args.Item, "Group Expanding");
     }
 
     #endregion
 
     #region CreateEdgeInputMode Events
 
-    private void CreateEdgeInputModeOnEdgeCreated(object sender, ItemEventArgs<IEdge> itemEventArgs) {
+    private void CreateEdgeInputModeOnEdgeCreated(object sender, InputModeItemEventArgs<IEdge> args) {
       Log("CreateEdgeInputMode Edge Created");
     }
 
-    private void CreateEdgeInputModeOnEdgeCreationStarted(object sender, ItemEventArgs<IEdge> itemEventArgs) {
+    private void CreateEdgeInputModeOnEdgeCreationStarted(object sender, InputModeItemEventArgs<IEdge> args) {
       Log("CreateEdgeInputMode Edge Creation Started");
     }
 
-    private void CreateEdgeInputModeOnGestureCanceled(object sender, InputModeEventArgs inputModeEventArgs) {
+    private void CreateEdgeInputModeOnGestureCanceled(object sender, InputModeEventArgs args) {
       Log("CreateEdgeInputMode Gesture Canceled");
     }
 
-    private void CreateEdgeInputModeOnGestureCanceling(object sender, InputModeEventArgs inputModeEventArgs) {
+    private void CreateEdgeInputModeOnGestureCanceling(object sender, InputModeEventArgs args) {
       Log("CreateEdgeInputMode Gesture Canceling");
     }
 
-    private void CreateEdgeInputModeOnGestureFinished(object sender, InputModeEventArgs inputModeEventArgs) {
+    private void CreateEdgeInputModeOnGestureFinished(object sender, InputModeEventArgs args) {
       Log("CreateEdgeInputMode Gesture Finished");
     }
 
-    private void CreateEdgeInputModeOnGestureFinishing(object sender, InputModeEventArgs inputModeEventArgs) {
+    private void CreateEdgeInputModeOnGestureFinishing(object sender, InputModeEventArgs args) {
       Log("CreateEdgeInputMode Gesture Finishing");
     }
 
-    private void CreateEdgeInputModeOnGestureStarted(object sender, InputModeEventArgs inputModeEventArgs) {
+    private void CreateEdgeInputModeOnGestureStarted(object sender, InputModeEventArgs args) {
       Log("CreateEdgeInputMode Gesture Started");
     }
 
-    private void CreateEdgeInputModeOnGestureStarting(object sender, InputModeEventArgs inputModeEventArgs) {
+    private void CreateEdgeInputModeOnGestureStarting(object sender, InputModeEventArgs args) {
       Log("CreateEdgeInputMode Gesture Starting");
     }
 
-    private void CreateEdgeInputModeOnMoved(object sender, InputModeEventArgs inputModeEventArgs) {
+    private void CreateEdgeInputModeOnEdgeDirectionReversed(object sender, InputModeEventArgs args) {
+      Log("CreateEdgeInputMode Edge Direction Reversed");
+    }
+
+    private void CreateEdgeInputModeOnMoved(object sender, InputModeEventArgs args) {
       Log("CreateEdgeInputMode Moved");
     }
 
-    private void CreateEdgeInputModeOnMoving(object sender, InputModeEventArgs inputModeEventArgs) {
+    private void CreateEdgeInputModeOnMoving(object sender, InputModeEventArgs args) {
       Log("CreateEdgeInputMode Moving");
     }
 
-    private void CreateEdgeInputModeOnPortAdded(object source, ItemEventArgs<IPort> evt) {
+    private void CreateEdgeInputModeOnPortAdded(object source, InputModeItemEventArgs<IPort> args) {
       Log("CreateEdgeInputMode Port Added");
     }
 
-    private void CreateEdgeInputModeOnSourcePortCandidateChanged(object sender, ItemEventArgs<IPortCandidate> e) {
-      Log("CreateEdgeInputMode Source Port Candidate Changed");
+    private void CreateEdgeInputModeOnStartPortCandidateChanged(
+        object sender,
+        InputModeItemEventArgs<IPortCandidate> args) {
+      Log("CreateEdgeInputMode Start Port Candidate Changed");
     }
 
-    private void CreateEdgeInputModeOnTargetPortCandidateChanged(object sender, ItemEventArgs<IPortCandidate> e) {
-      Log("CreateEdgeInputMode Target Port Candidate Changed");
+    private void CreateEdgeInputModeOnEndPortCandidateChanged(
+        object sender,
+        InputModeItemEventArgs<IPortCandidate> args) {
+      Log("CreateEdgeInputMode End Port Candidate Changed");
     }
 
     #endregion
 
     #region Selection Events
 
-    private void OnItemSelectionChanged(object source, ItemSelectionChangedEventArgs<IModelItem> evt) {
-      if (evt.ItemSelected) {
-        Log("GraphControl Item Selected: " + evt.Item, "ItemSelected");
-      } else {
-        Log("GraphControl Item Deselected: " + evt.Item, "ItemDeselected");
-      }
+    private void SelectionOnItemAdded(object source, ItemEventArgs<IModelItem> args) {
+      Log("GraphControl Item Selected: " + args.Item, "ItemSelected");
+    }
+
+    private void SelectionOnItemRemoved(object source, ItemEventArgs<IModelItem> args) {
+      Log("GraphControl Item Deselected: " + args.Item, "ItemDeselected");
     }
 
     #endregion
 
     #region UI event handlers
 
-    private void ClearButtonClick(object sender, RoutedEventArgs e) {
+    private void ClearButtonClick(object sender, RoutedEventArgs args) {
       ClearLog();
     }
 
-    private void ExitToolStripMenuItemClick(object sender, RoutedEventArgs e) {
+    private void ExitToolStripMenuItemClick(object sender, RoutedEventArgs args) {
       Application.Current.Shutdown();
+    }
+
+    private void OnTemplateMouseDown(object sender, RoutedEventArgs args) {
+      if (args.OriginalSource is FrameworkElement { DataContext: INode node } o) {
+        if ("Label Container".Equals(node.Tag)) {
+          var dao = new DataObject();
+          dao.SetData(typeof(ILabel), node.Labels.First());
+          DragDrop.DoDragDrop(o, dao, DragDropEffects.Link | DragDropEffects.Copy | DragDropEffects.Move);
+        } else if ("Port Container".Equals(node.Tag)) {
+          var dao = new DataObject();
+          dao.SetData(typeof(IPort), node.Ports.First());
+          DragDrop.DoDragDrop(o, dao, DragDropEffects.Link | DragDropEffects.Copy | DragDropEffects.Move);
+        } else {
+          var dao = new DataObject();
+          dao.SetData(typeof(INode), node);
+          DragDrop.DoDragDrop(o, dao, DragDropEffects.Link | DragDropEffects.Copy | DragDropEffects.Move);
+        }
+      }
     }
 
     #endregion
 
     #region Logging
 
-    private readonly ObservableCollection<ILogEntry> messages = new ObservableCollection<ILogEntry>();
+    private readonly System.Collections.ObjectModel.ObservableCollection<ILogEntry> messages = new();
 
     private void Log(string message, string type = null) {
       if (type == null) {
@@ -1711,7 +1729,7 @@ namespace Demo.yFiles.Graph.Events
           latestGroup.RepeatedMessages.Add(m);
         }
         latestGroup.RepeatCount++;
-        for (int i = messages.IndexOf(latestGroup) - 1; i >= 0; i--) {
+        for (var i = messages.IndexOf(latestGroup) - 1; i >= 0; i--) {
           messages.RemoveAt(i);
         }
       }
@@ -1719,8 +1737,8 @@ namespace Demo.yFiles.Graph.Events
 
     private void CreateNewGroup() {
       var ungroupedEvents = messages.TakeWhile(m => m is Message).Cast<Message>().ToList();
-      for (int start = ungroupedEvents.Count - 1; start >= 1; start--) {
-        for (int length = 1; start - 2 * length + 1 >= 0; length++) {
+      for (var start = ungroupedEvents.Count - 1; start >= 1; start--) {
+        for (var length = 1; start - 2 * length + 1 >= 0; length++) {
           var types = ungroupedEvents.GetRange(start - length + 1, length).Select(m => m.Type);
           var preceding = ungroupedEvents.GetRange(start - 2 * length + 1, length);
           var precedingTypes = preceding.Select(m => m.Type);
@@ -1731,7 +1749,7 @@ namespace Demo.yFiles.Graph.Events
               group.RepeatedMessages.Add(m);
             }
             messages.Insert(start + 1, group);
-            for (int i = start; i >= start - 2 * length + 1; i--) {
+            for (var i = start; i >= start - 2 * length + 1; i--) {
               messages.RemoveAt(i);
             }
             return;
@@ -1749,30 +1767,29 @@ namespace Demo.yFiles.Graph.Events
 
   #region Logging classes
 
-  public interface ILogEntry {}
+  public interface ILogEntry { }
 
   public class Message : ILogEntry
   {
     public DateTime TimeStamp { get; set; }
+
     public string Text { get; set; }
+
     public string Type { get; set; }
   }
 
   public class MessageGroup : ILogEntry, INotifyPropertyChanged
   {
-    private readonly ObservableCollection<Message> repeatedMessages = new ObservableCollection<Message>();
     private int repeatCount;
 
     public MessageGroup() {
-      repeatedMessages.CollectionChanged += (sender, args) => OnPropertyChanged("RepeatedMessages");
+      RepeatedMessages.CollectionChanged += (sender, args) => OnPropertyChanged("RepeatedMessages");
     }
 
-    public ObservableCollection<Message> RepeatedMessages {
-      get { return repeatedMessages; }
-    }
+    public System.Collections.ObjectModel.ObservableCollection<Message> RepeatedMessages { get; } = new();
 
     public int RepeatCount {
-      get { return repeatCount; }
+      get => repeatCount;
       set {
         repeatCount = value;
         OnPropertyChanged("RepeatCount");
@@ -1792,7 +1809,7 @@ namespace Demo.yFiles.Graph.Events
   public class EventLogDataTemplateSelector : DataTemplateSelector
   {
     public override DataTemplate SelectTemplate(object item, DependencyObject container) {
-      FrameworkElement element = container as FrameworkElement;
+      var element = container as FrameworkElement;
 
       if (element == null || item == null || !(item is ILogEntry)) {
         return null;
@@ -1809,4 +1826,52 @@ namespace Demo.yFiles.Graph.Events
   }
 
   #endregion
+
+  /// <summary>
+  ///   Creates image representations from graph nodes for the demo's palette list view.
+  /// </summary>
+  [ValueConversion(typeof(INode), typeof(DrawingImage))]
+  public class NodeImageConverter : IValueConverter
+  {
+    private readonly GraphControl graphControl = NewGraphControl();
+
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
+      return value is INode node ? ConvertImpl(node) : null;
+    }
+
+    private object ConvertImpl(INode prototype) {
+      var context = graphControl.CanvasContext;
+      var graph = graphControl.Graph;
+      graph.Clear();
+
+      var node = graph.CreateNode(prototype.Layout.ToRectD(), prototype.Style, prototype.Tag);
+      var bounds = node.Style.Renderer.GetBoundsProvider(node, node.Style).GetBounds(context);
+      foreach (var label in prototype.Labels) {
+        var copy = graph.AddLabel(node, label.Text, label.LayoutParameter, label.Style, label.PreferredSize);
+        bounds += copy.Style.Renderer.GetBoundsProvider(copy, copy.Style).GetBounds(context);
+      }
+      foreach (var port in prototype.Ports) {
+        var copy = graph.AddPort(node, port.LocationParameter, port.Style);
+        bounds += copy.Style.Renderer.GetBoundsProvider(copy, copy.Style).GetBounds(context);
+      }
+      graphControl.FitGraphBounds();
+
+      var cc = new ContextConfigurator(graphControl.ContentBounds);
+      var brush = new VisualBrush(new VisualGroup {
+          Children = { graphControl.ExportContent(cc.CreateRenderContext(graphControl)) }
+      });
+      return new DrawingImage(new GeometryDrawing(brush, null,
+          new RectangleGeometry(new Rect(new Point(0, 0), bounds.ToSize()))));
+    }
+
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
+      throw new NotImplementedException();
+    }
+
+    private static GraphControl NewGraphControl() {
+      var graphControl = new GraphControl();
+      graphControl.AnimatedViewportChanges = ViewportChanges.None;
+      return graphControl;
+    }
+  }
 }

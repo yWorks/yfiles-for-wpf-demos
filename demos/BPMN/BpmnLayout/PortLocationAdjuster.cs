@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -28,63 +28,84 @@
  ***************************************************************************/
 
 using System;
-using yWorks.Algorithms;
-using yWorks.Algorithms.Geometry;
+using yWorks.Geometry;
+using yWorks.Layout.Graph;
+using yWorks.Utils;
 
 namespace yWorks.Layout.Bpmn
 {
   /// <summary>
-  /// A layout stage that adjusts the source and target ports at non-regular shaped nodes
-  /// so that the edges end inside the node.
+  ///   A layout stage that adjusts the source and target ports at non-regularly shaped nodes
+  ///   so that the edges end inside the node.
   /// </summary>
   /// <remarks>
-  /// Only activity nodes are considered to have regular shapes.
+  ///   Only activity nodes are considered to have regular shapes.
   /// </remarks>
   public class PortLocationAdjuster : ILayoutAlgorithm
   {
     /// <summary>
-    /// <see cref="yWorks.Algorithms.IDataProvider"/> key used to store if the ports on a node should be adjusted.
+    ///   <see cref="IMapper{K,V}"/> key used to store if the ports on a node should be adjusted.
     /// </summary>
-    public static readonly NodeDpKey<bool> AffectedNodesDpKey = new NodeDpKey<bool>(typeof(PortLocationAdjuster), "com.yworks.yfiles.bpmn.layout.PortLocationAdjuster.AffectedNodesDpKey");
+    public static readonly NodeDataKey<bool> AffectedNodesDataKey =
+        new("yWorks.Layout.Bpmn.PortLocationAdjuster.AffectedNodesDataKey");
+
+    /// <summary>
+    ///   Represents a small tolerance value used for floating-point comparisons.
+    /// </summary>
+    /// <remarks>
+    ///   <para>
+    ///     The <c>Epsilon</c> constant is used to account for minor inaccuracies in floating-point arithmetic when performing
+    ///     geometric calculations involving line segments. It provides a threshold for determining approximate equality or
+    ///     intersections, helping to mitigate precision issues that can arise from the limitations of floating-point
+    ///     representation.
+    ///   </para>
+    ///   <para>
+    ///     This constant is typically used in methods that involve checking for intersections, containment, or equality of
+    ///     line segments where exact precision is not feasible. The default value of <c>1e-8</c> is chosen to balance
+    ///     precision with practical considerations of computational accuracy.
+    ///   </para>
+    /// </remarks>
+    private const double Epsilon = 1e-8;
 
     /// <inheritdoc/>
-    public void ApplyLayout(LayoutGraph graph) {
-      var affectedNodesDP = graph.GetDataProvider(AffectedNodesDpKey);
+    public virtual void ApplyLayout(LayoutGraph graph) {
+      var affectedNodesDP = graph.Context.GetItemData(AffectedNodesDataKey);
 
-      for (IEdgeCursor ec = graph.GetEdgeCursor(); ec.Ok; ec.Next()) {
-        Edge e = ec.Edge;
-        YPointPath path = graph.GetPath(e);
-        //adjust source point
-        if (affectedNodesDP == null || affectedNodesDP.GetBool(e.Source)) {
-          AdjustPortLocation(graph, e, path, true);
+      foreach (var e in graph.Edges) {
+        // adjust source point
+        if (affectedNodesDP == null || affectedNodesDP[e.Source]) {
+          AdjustPortLocation(e, true);
         }
-        if (affectedNodesDP == null || affectedNodesDP.GetBool(e.Target)) {
-          AdjustPortLocation(graph, e, path, false);
+        if (affectedNodesDP == null || affectedNodesDP[e.Target]) {
+          AdjustPortLocation(e, false);
         }
       }
     }
 
     /// <summary>
-    /// Adjusts the edge end points so they don't end outside the shape of the node they are attached to.
+    ///   Adjusts the edge end points so they don't end outside the shape of the node they are attached to.
     /// </summary>
-    private static void AdjustPortLocation(LayoutGraph graph, Edge e, YPointPath path, bool atSource) {
-      Node node = atSource ? e.Source : e.Target;
-      YPoint pointRel = atSource ? graph.GetSourcePointRel(e) : graph.GetTargetPointRel(e);
+    private static void AdjustPortLocation(Edge e, bool atSource) {
+      var node = atSource ? e.Source : e.Target;
+      var pointRel = atSource ? e.SourcePortOffset : e.TargetPortOffset;
       // get offset from the node center to the end of the shape at the node side the edge connects to
-      LineSegment segment = path.GetLineSegment(atSource ? 0 : path.Length() - 2);
-      double offset = Math.Min(graph.GetWidth(node), graph.GetHeight(node))/2;
-      double offsetX = segment.DeltaX > 0 ^ atSource ? -offset : offset;
-      double offsetY = segment.DeltaY > 0 ^ atSource ? -offset : offset;
+      var points = e.PathPoints.ToArray();
+      var p1 = atSource ? points[0].Location : points[points.Length - 2].Location;
+      var p2 = atSource ? points[1].Location : points[points.Length - 1].Location;
+      var segment = new LineSegment(p1, p2);
+      var offset = Math.Min(node.Layout.Width, node.Layout.Height) / 2;
+      var offsetX = segment.DeltaX > 0 ^ atSource ? -offset : offset;
+      var offsetY = segment.DeltaY > 0 ^ atSource ? -offset : offset;
       // if the edge end point is at the center of this side, we use the calculated offset to put the end point on
       // the node bounds, otherwise we prolong the last segment to the center line of the node so it doesn't end
       // outside the node's shape
-      YPoint newPortLocation = segment.IsHorizontal
-        ? new YPoint(pointRel.Y != 0 ? 0 : offsetX, pointRel.Y)
-        : new YPoint(pointRel.X, pointRel.X != 0 ? 0 : offsetY);
+      var newPortLocation = segment.IsHorizontal(Epsilon)
+          ? new PointD(pointRel.Y != 0 ? 0 : offsetX, pointRel.Y)
+          : new PointD(pointRel.X, pointRel.X != 0 ? 0 : offsetY);
       if (atSource) {
-        graph.SetSourcePointRel(e, newPortLocation);
+        e.SourcePortOffset = newPortLocation;
       } else {
-        graph.SetTargetPointRel(e, newPortLocation);
+        e.TargetPortOffset = newPortLocation;
       }
     }
   }

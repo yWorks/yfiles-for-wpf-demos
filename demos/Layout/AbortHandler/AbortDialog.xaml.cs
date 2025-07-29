@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -28,48 +28,45 @@
  ***************************************************************************/
 
 using System.Windows;
+using yWorks.Layout.Graph;
 
 namespace Demo.yFiles.Layout.AbortHandler
 {
-
-
   /// <summary>
-  /// Interaction logic for AbortDialog.xaml 
+  ///   Interaction logic for AbortDialog.xaml
   /// </summary>
   public partial class AbortDialog : Window
   {
-
     // Whether a stop is already requested.
     private bool stopRequested;
 
-    public AbortDialog()
-    {
+    public AbortDialog() {
       InitializeComponent();
     }
 
     /// <summary>
-    /// The AbortHandler to use.
+    ///   The LayoutAbortController to use.
     /// </summary>
-    public yWorks.Algorithms.AbortHandler AbortHandler { get; set; }
+    public LayoutAbortController LayoutAbortController { get; set; }
 
 
     /// <summary>
-    /// Handles Clicks on the Stop/Abort button.
+    ///   Handles Clicks on the Stop/Abort button.
     /// </summary>
     /// <remarks>
-    /// The first click will schedule a stop request, the second click will cancel the layout immediately.
+    ///   The first click will schedule a stop request, the second click will cancel the layout immediately.
     /// </remarks>
     private void OnStopClicked(object sender, RoutedEventArgs e) {
-      if (this.AbortHandler == null) {
+      if (LayoutAbortController == null) {
         return;
       }
-      
+
       if (stopRequested) {
         // stop was already requested: abort the layout.
         // Calling Cancel() will cause the layout algorithm to throw an AlgorithmAbortedException -
         // this stops the layout immediately. The exception is caught by the LayoutExecutor.
         // The original graph stays unchanged.
-        this.AbortHandler.Cancel();
+        LayoutAbortController.Cancel();
         // close this window
         Close();
       } else {
@@ -82,7 +79,7 @@ namespace Demo.yFiles.Layout.AbortHandler
         // calling Stop() will not stop the layout algorithm immediately
         // instead, a request is scheduled for the layout algorithm to stop
         // when the graph is in a defined state again
-        this.AbortHandler.Stop();
+        LayoutAbortController.Stop();
       }
     }
   }

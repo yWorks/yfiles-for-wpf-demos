@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -32,6 +32,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 using Demo.yFiles.Toolkit;
 using yWorks.Controls;
 using yWorks.Controls.Input;
@@ -43,60 +44,49 @@ using yWorks.Utils;
 namespace Demo.yFiles.Graph.InteractiveClearArea
 {
   /// <summary>
-  /// A demo that shows how to interactively move graph elements within a rectangular area in a given graph
-  /// layout so that the modifications in the graph are minimal. The rectangular area can be freely moved or
-  /// resized.
+  ///   A demo that shows how to interactively move graph elements within a rectangular area in a given graph
+  ///   layout so that the modifications in the graph are minimal. The rectangular area can be freely moved or
+  ///   resized.
   /// </summary>
   public partial class InteractiveClearAreaDemo
   {
     /// <summary>
-    /// Options to control the layout behavior.
+    ///   Options to control the layout behavior.
     /// </summary>
     private readonly LayoutOptions options;
 
     /// <summary>
-    /// The rectangular area that can be freely moved or resized.
+    ///   The rectangular area that can be freely moved or resized.
     /// </summary>
     private MutableRectangle clearRect;
 
     /// <summary>
-    /// The group node we are currently inside.
+    ///   The group node we are currently inside.
     /// </summary>
     private INode groupNode;
 
     /// <summary>
-    /// Performs layout and animation while dragging the rectangle.
+    ///   Performs layout and animation while dragging the rectangle.
     /// </summary>
     private ClearAreaLayoutHelper layoutHelper;
 
     /// <summary>
-    /// A <see cref="IHitTester{T}"/> to determine the group node we are currently hovering.
+    ///   A <see cref="IHitTester"/> to determine the group node we are currently hovering.
     /// </summary>
-    private IHitTester<INode> nodeHitTester;
+    private IHitTester nodeHitTester;
 
     /// <summary>
-    /// A <see cref="ResourceKey"/> that will be used to find the <see cref="DataTemplate"/> for
-    /// drawing the rectangular area.
+    ///   Returns the GraphControl instance used in the form.
     /// </summary>
-    public static readonly ResourceKey ClearRectTemplateKey =
-        new ComponentResourceKey(typeof(RectangleIndicatorInstaller), "ClearRectTemplateKey");
+    private GraphControl GraphControl => graphControl;
 
     /// <summary>
-    /// Returns the GraphControl instance used in the form.
+    ///   Gets the currently registered IGraph instance from the GraphControl.
     /// </summary>
-    private GraphControl GraphControl {
-      get { return graphControl; }
-    }
-
-    /// <summary>
-    /// Gets the currently registered IGraph instance from the GraphControl.
-    /// </summary>
-    private IGraph Graph {
-      get { return GraphControl.Graph; }
-    }
+    private IGraph Graph => GraphControl.Graph;
 
     #region Initialization
-    
+
     public InteractiveClearAreaDemo() {
       InitializeComponent();
       options = new LayoutOptions();
@@ -110,21 +100,17 @@ namespace Demo.yFiles.Graph.InteractiveClearArea
       };
 
       SampleGraphComboBox.ItemsSource = new[] {
-          new NamedEntry("Hierarchic", "hierarchic"),
-          new NamedEntry("Grouping", "grouping"),
-          new NamedEntry("Organic", "organic"),
-          new NamedEntry("Orthogonal", "orthogonal"),
-          new NamedEntry("Circular", "circular"),
-          new NamedEntry("Tree", "tree"),
-          new NamedEntry("Balloon", "balloon"),
-          new NamedEntry("Series-Parallel", "seriesparallel"),
-          new NamedEntry("Components", "components"),
+          new NamedEntry("Hierarchical", "hierarchical"), new NamedEntry("Grouping", "grouping"),
+          new NamedEntry("Organic", "organic"), new NamedEntry("Orthogonal", "orthogonal"),
+          new NamedEntry("Circular", "circular"), new NamedEntry("Tree", "tree"),
+          new NamedEntry("Radial Tree", "radialtree"), new NamedEntry("Series-Parallel", "seriesparallel"),
+          new NamedEntry("Components", "components")
       };
 
       ComponentAssignmentStrategyComboBox.ItemsSource = new[] {
           new NamedEntry("Single", ComponentAssignmentStrategy.Single),
           new NamedEntry("Connected", ComponentAssignmentStrategy.Connected),
-          new NamedEntry("Clustering", ComponentAssignmentStrategy.Clustering),
+          new NamedEntry("Clustering", ComponentAssignmentStrategy.Clustering)
       };
     }
 
@@ -139,8 +125,8 @@ namespace Demo.yFiles.Graph.InteractiveClearArea
     }
 
     /// <summary>
-    /// Registers the <see cref="GraphEditorInputMode"/> as the <see cref="CanvasControl.InputMode"/>
-    /// and initializes the rectangular area so that it is drawn and can be moved and resized.
+    ///   Registers the <see cref="GraphEditorInputMode"/> as the <see cref="CanvasControl.InputMode"/>
+    ///   and initializes the rectangular area so that it is drawn and can be moved and resized.
     /// </summary>
     private void InitializeInputModes() {
       // create a GraphEditorInputMode instance
@@ -153,14 +139,17 @@ namespace Demo.yFiles.Graph.InteractiveClearArea
       clearRect = new MutableRectangle(0, 0, 100, 100);
 
       // visualize it
-      new RectangleIndicatorInstaller(clearRect, ClearRectTemplateKey)
-          .AddCanvasObject(GraphControl.CanvasContext, GraphControl.HighlightGroup, clearRect);
+      var pen = new Pen(new SolidColorBrush(new Color { A = 166, R = 77, G = 121, B = 153 }), 3);
+      var brush = new SolidColorBrush(new Color { A = 166, R = 0, G = 167, B = 255 });
+      var rectangleRenderer = new RectangleRenderer((Pen) pen.GetAsFrozen(), (Brush) brush.GetAsFrozen());
+      var renderTree = GraphControl.RenderTree;
+      renderTree.CreateElement(renderTree.HighlightGroup, clearRect, rectangleRenderer);
 
-      AddClearRectInputModes(editMode);
+      AddClearRectInputModes(GraphControl.InputModeContext, editMode);
     }
 
     /// <summary>
-    /// Enables undo/redo support and initializes the default styles.
+    ///   Enables undo/redo support and initializes the default styles.
     /// </summary>
     protected virtual void InitializeGraph() {
       GraphControl.Graph.SetUndoEngineEnabled(true);
@@ -168,10 +157,13 @@ namespace Demo.yFiles.Graph.InteractiveClearArea
     }
 
     /// <summary>
-    /// Adds the input modes that handle the resizing and movement of the rectangular area.
+    ///   Adds the input modes that handle the resizing and movement of the rectangular area.
     /// </summary>
+    /// <param name="graphControlInputModeContext"></param>
     /// <param name="inputMode"></param>
-    private void AddClearRectInputModes(MultiplexingInputMode inputMode) {
+    private void AddClearRectInputModes(
+        IInputModeContext graphControlInputModeContext,
+        MultiplexingInputMode inputMode) {
       // create handles for interactively resizing the rectangle
       var rectangleHandles = new RectangleReshapeHandleProvider(clearRect) { MinimumSize = new SizeD(10, 10) };
 
@@ -182,19 +174,20 @@ namespace Demo.yFiles.Graph.InteractiveClearArea
       inputMode.Add(handleInputMode);
 
       // now the handles
-      var inputModeContext = Contexts.CreateInputModeContext(handleInputMode);
-      handleInputMode.Handles = new DefaultObservableCollection<IHandle> {
-          rectangleHandles.GetHandle(inputModeContext, HandlePositions.NorthEast),
-          rectangleHandles.GetHandle(inputModeContext, HandlePositions.NorthWest),
-          rectangleHandles.GetHandle(inputModeContext, HandlePositions.SouthEast),
-          rectangleHandles.GetHandle(inputModeContext, HandlePositions.SouthWest),
+      var inputModeContext = new InputModeContext(graphControlInputModeContext);
+      handleInputMode.Handles = new ObservableCollection<IHandle> {
+          rectangleHandles.GetHandle(inputModeContext, HandlePositions.TopRight),
+          rectangleHandles.GetHandle(inputModeContext, HandlePositions.TopLeft),
+          rectangleHandles.GetHandle(inputModeContext, HandlePositions.BottomRight),
+          rectangleHandles.GetHandle(inputModeContext, HandlePositions.BottomLeft)
       };
 
       // create a mode that allows for dragging the rectangle at the sides
       var moveInputMode = new MoveInputMode {
           PositionHandler = new RectanglePositionHandler(clearRect),
           HitTestable = HitTestables.Create((context, location) => clearRect.Contains(location)),
-          Priority = 41
+          Priority = 41,
+          DirectionalConstraintRecognizer = EventRecognizers.Never
       };
 
       // handle dragging the rectangle
@@ -218,17 +211,17 @@ namespace Demo.yFiles.Graph.InteractiveClearArea
     #region Dragging the rectangular area
 
     /// <summary>
-    /// The rectangular area is upon to be moved or resized.
+    ///   The rectangular area is upon to be moved or resized.
     /// </summary>
     private void OnDragStarting(object sender, InputModeEventArgs e) {
-      nodeHitTester = e.Context.Lookup<IHitTester<INode>>();
+      nodeHitTester = e.Context.Lookup<IHitTester>();
       layoutHelper = new ClearAreaLayoutHelper(GraphControl, clearRect, options);
       layoutHelper.InitializeLayout();
     }
 
     /// <summary>
-    /// The rectangular area is currently be moved or resized.
-    /// For each drag a new layout is calculated and applied if the previous one is completed.
+    ///   The rectangular area is currently be moved or resized.
+    ///   For each drag a new layout is calculated and applied if the previous one is completed.
     /// </summary>
     private void OnDragged(object sender, InputModeEventArgs e) {
       if (IsShiftPressed(e)) {
@@ -239,10 +232,10 @@ namespace Demo.yFiles.Graph.InteractiveClearArea
           var hitGroupNode = GetHitGroupNode(e.Context);
           if (hitGroupNode != groupNode) {
             if (groupNode != null) {
-              GraphControl.HighlightIndicatorManager.RemoveHighlight(groupNode);
+              GraphControl.Highlights.Remove(groupNode);
             }
             if (hitGroupNode != null) {
-              GraphControl.HighlightIndicatorManager.AddHighlight(hitGroupNode);
+              GraphControl.Highlights.Add(hitGroupNode);
             }
             groupNode = hitGroupNode;
           }
@@ -250,7 +243,7 @@ namespace Demo.yFiles.Graph.InteractiveClearArea
       } else {
         if (IsShiftChanged(e) && groupNode != null) {
           // now we remove the highlight of the group
-          GraphControl.HighlightIndicatorManager.RemoveHighlight(groupNode);
+          GraphControl.Highlights.Remove(groupNode);
         }
 
         // invoke the layout calculation and animation
@@ -260,8 +253,8 @@ namespace Demo.yFiles.Graph.InteractiveClearArea
     }
 
     /// <summary>
-    /// Moving or resizing the rectangular area has been canceled.
-    /// The state before the gesture must be restored.
+    ///   Moving or resizing the rectangular area has been canceled.
+    ///   The state before the gesture must be restored.
     /// </summary>
     private void OnDragCanceled(object sender, InputModeEventArgs e) {
       layoutHelper.CancelLayout();
@@ -269,8 +262,8 @@ namespace Demo.yFiles.Graph.InteractiveClearArea
     }
 
     /// <summary>
-    /// Moving or resizing the rectangular area has been finished.
-    /// We execute the layout to the final state.
+    ///   Moving or resizing the rectangular area has been finished.
+    ///   We execute the layout to the final state.
     /// </summary>
     private void OnDragFinished(object sender, InputModeEventArgs e) {
       layoutHelper.StopLayout();
@@ -278,26 +271,26 @@ namespace Demo.yFiles.Graph.InteractiveClearArea
     }
 
     /// <summary>
-    /// Determines the group node on that the mouse is currently hovering. If there is no
-    /// group node <code>null</code> is returned.
+    ///   Determines the group node on that the mouse is currently hovering. If there is no
+    ///   group node <code>null</code> is returned.
     /// </summary>
     private INode GetHitGroupNode(IInputModeContext context) {
-      return nodeHitTester.EnumerateHits(context, context.CanvasControl.LastEventLocation)
-                          .FirstOrDefault(n => Graph.IsGroupNode(n));
+      return nodeHitTester.EnumerateHits(context, context.CanvasControl.LastPointerEvent.Location, GraphItemTypes.Node)
+          .Cast<INode>().FirstOrDefault(n => Graph.IsGroupNode(n));
     }
 
     /// <summary>
-    /// Determines whether <see cref="ModifierKeys.Shift"/> is currently is pressed.
+    ///   Determines whether <see cref="ModifierKeys.Shift"/> is currently is pressed.
     /// </summary>
     private static bool IsShiftPressed(InputModeEventArgs e) {
-      return (e.Context.CanvasControl.LastMouse2DEvent.Modifiers & ModifierKeys.Shift) == ModifierKeys.Shift;
+      return (e.Context.CanvasControl.LastPointerEvent.Modifiers & ModifierKeys.Shift) == ModifierKeys.Shift;
     }
 
     /// <summary>
-    /// Determines whether <see cref="ModifierKeys.Shift"/> state has been changed.
+    ///   Determines whether <see cref="ModifierKeys.Shift"/> state has been changed.
     /// </summary>
     private static bool IsShiftChanged(InputModeEventArgs e) {
-      return (e.Context.CanvasControl.LastMouse2DEvent.ChangedModifiers & ModifierKeys.Shift) == ModifierKeys.Shift;
+      return (e.Context.CanvasControl.LastPointerEvent.ChangedModifiers & ModifierKeys.Shift) == ModifierKeys.Shift;
     }
 
     #endregion
@@ -305,27 +298,25 @@ namespace Demo.yFiles.Graph.InteractiveClearArea
     #region User interface event handling
 
     /// <summary>
-    /// Applies a new <see cref="ClearAreaStrategy"/>.
+    ///   Applies a new <see cref="ClearAreaStrategy"/>.
     /// </summary>
     private void ClearAreaStrategyChanged(object sender, SelectionChangedEventArgs e) {
-      var selectedItem = ClearAreaStrategyComboBox.SelectedItem as NamedEntry;
-      if (selectedItem != null) {
+      if (ClearAreaStrategyComboBox.SelectedItem is NamedEntry selectedItem) {
         options.ClearAreaStrategy = (ClearAreaStrategy) selectedItem.Value;
       }
     }
 
     /// <summary>
-    /// Applies a new <see cref="ComponentAssignmentStrategy"/>.
+    ///   Applies a new <see cref="ComponentAssignmentStrategy"/>.
     /// </summary>
     private void ComponentAssignmentStrategyChanged(object sender, SelectionChangedEventArgs e) {
-      var selectedItem = ComponentAssignmentStrategyComboBox.SelectedItem as NamedEntry;
-      if (selectedItem != null) {
+      if (ComponentAssignmentStrategyComboBox.SelectedItem is NamedEntry selectedItem) {
         options.ComponentAssignmentStrategy = (ComponentAssignmentStrategy) selectedItem.Value;
       }
     }
 
     /// <summary>
-    /// Whether or not to allow edges in the rectangular area.
+    ///   Whether or not to allow edges in the rectangular area.
     /// </summary>
     private void ToggleConsiderEdges(object sender, RoutedEventArgs e) {
       if (ConsiderEdgesToggleButton.IsChecked != null) {
@@ -334,11 +325,10 @@ namespace Demo.yFiles.Graph.InteractiveClearArea
     }
 
     /// <summary>
-    /// Loads a new sample graph.
+    ///   Loads a new sample graph.
     /// </summary>
     private void SampleGraphChanged(object sender, SelectionChangedEventArgs e) {
-      var selectedItem = SampleGraphComboBox.SelectedItem as NamedEntry;
-      if (selectedItem != null) {
+      if (SampleGraphComboBox.SelectedItem is NamedEntry selectedItem) {
         GraphControl.ImportFromGraphML("Resources\\" + selectedItem.Value + ".graphml");
         clearRect.Location = GraphControl.ViewPoint + new PointD(50, 50);
         CheckSampleButtonStates();
@@ -346,7 +336,7 @@ namespace Demo.yFiles.Graph.InteractiveClearArea
     }
 
     /// <summary>
-    /// Loads the previous sample graph.
+    ///   Loads the previous sample graph.
     /// </summary>
     private void LoadPreviousSampleGraph(object sender, RoutedEventArgs e) {
       if (SampleGraphComboBox.SelectedIndex <= 0) {
@@ -356,7 +346,7 @@ namespace Demo.yFiles.Graph.InteractiveClearArea
     }
 
     /// <summary>
-    /// Loads the next sample graph.
+    ///   Loads the next sample graph.
     /// </summary>
     private void LoadNextSampleGraph(object sender, RoutedEventArgs e) {
       if (SampleGraphComboBox.SelectedIndex >= SampleGraphComboBox.Items.Count - 1) {
@@ -366,7 +356,7 @@ namespace Demo.yFiles.Graph.InteractiveClearArea
     }
 
     /// <summary>
-    /// Updates the enabled state of the next and previous buttons.
+    ///   Updates the enabled state of the next and previous buttons.
     /// </summary>
     private void CheckSampleButtonStates() {
       var maxReached = SampleGraphComboBox.SelectedIndex == SampleGraphComboBox.Items.Count - 1;
@@ -383,13 +373,13 @@ namespace Demo.yFiles.Graph.InteractiveClearArea
     #endregion
 
     /// <summary>
-    /// Name-value struct for combo box entries.
+    ///   Name-value struct for combo box entries.
     /// </summary>
-    private sealed class NamedEntry
+    private readonly struct NamedEntry
     {
-      public object Value { get; private set; }
+      public object Value { get; }
 
-      private string DisplayName { get; set; }
+      private string DisplayName { get; }
 
       public NamedEntry(string displayName, object value) {
         DisplayName = displayName;
@@ -402,7 +392,7 @@ namespace Demo.yFiles.Graph.InteractiveClearArea
     }
 
     /// <summary>
-    /// Options to control the layout behavior.
+    ///   Options to control the layout behavior.
     /// </summary>
     internal sealed class LayoutOptions
     {

@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -41,22 +41,22 @@ using System.Windows.Input;
 using System.Windows.Media;
 using yWorks.Annotations;
 using yWorks.Controls;
+using yWorks.Controls.Input;
 using yWorks.Graph;
-using yWorks.Graph.Styles;
-using yWorks.Layout.Hierarchic;
 using yWorks.Graph.DataBinding;
 using yWorks.Graph.LabelModels;
+using yWorks.Graph.Styles;
+using yWorks.Layout;
+using yWorks.Layout.Hierarchical;
+using ILookup = yWorks.Utils.ILookup;
 
 namespace Demo.yFiles.DataBinding.InteractiveEdgesGraphSource
 {
   /// <summary>
-  /// This class implements the main logic for this demo.
+  ///   Shows how to use <see cref="AdjacentEdgesGraphSource"/> to build a graph from business data.
+  ///   Each business data item defines a list of ingoing and outgoing edges. The business data contained in
+  ///   these lists defines the source or target node of the edge.
   /// </summary>
-  /// <remarks>
-  /// This demo shows how to use <see cref="AdjacentEdgesGraphSource"/> to build a graph from business data. 
-  /// Each business data item defines a list of ingoing and outgoing edges. The business data contained in 
-  /// these lists defines the source or target node of the edge.
-  /// </remarks>
   public partial class InteractiveEdgesGraphSourceWindow
   {
     private AdjacentEdgesGraphSource graphSource;
@@ -68,22 +68,22 @@ namespace Demo.yFiles.DataBinding.InteractiveEdgesGraphSource
     #region custom commands
 
     public static readonly ICommand AddNodeCommand = new RoutedUICommand("New Class", "AddNode",
-                                                                         typeof(InteractiveEdgesGraphSourceWindow));
+        typeof(InteractiveEdgesGraphSourceWindow));
 
     public static readonly ICommand RemoveNodeCommand = new RoutedUICommand("Delete Class", "RemoveNode",
-                                                                            typeof(InteractiveEdgesGraphSourceWindow));
+        typeof(InteractiveEdgesGraphSourceWindow));
 
     public static readonly ICommand AddEventRegistrationCommand = new RoutedUICommand("Register New Event", "AddInEdge",
-                                                                                      typeof(InteractiveEdgesGraphSourceWindow));
+        typeof(InteractiveEdgesGraphSourceWindow));
 
-    public static readonly ICommand RemoveEventRegistrationCommand = new RoutedUICommand("Delete Registered Event", "RemoveInEdge",
-                                                                                         typeof(InteractiveEdgesGraphSourceWindow));
+    public static readonly ICommand RemoveEventRegistrationCommand = new RoutedUICommand("Delete Registered Event",
+        "RemoveInEdge", typeof(InteractiveEdgesGraphSourceWindow));
 
     public static readonly ICommand AddMethodCallCommand = new RoutedUICommand("New Method Call", "AddOutEdge",
-                                                                               typeof(InteractiveEdgesGraphSourceWindow));
+        typeof(InteractiveEdgesGraphSourceWindow));
 
     public static readonly ICommand RemoveMethodCallCommand = new RoutedUICommand("Delete Method Call", "RemoveOutEdge",
-                                                                                  typeof(InteractiveEdgesGraphSourceWindow));
+        typeof(InteractiveEdgesGraphSourceWindow));
 
     private void RemoveCanExecute(object sender, CanExecuteRoutedEventArgs e) {
       var listBox = e.Parameter as ListBox;
@@ -97,7 +97,7 @@ namespace Demo.yFiles.DataBinding.InteractiveEdgesGraphSource
     }
 
     public async void AddNodeExecuted(object sender, ExecutedRoutedEventArgs e) {
-      CreateNodeDialog createNodeDialog = new CreateNodeDialog();
+      var createNodeDialog = new CreateNodeDialog();
       if (createNodeDialog.ShowDialog() == true) {
         EntityData data;
         switch (createNodeDialog.Type) {
@@ -105,7 +105,8 @@ namespace Demo.yFiles.DataBinding.InteractiveEdgesGraphSource
             data = new ClassData(createNodeDialog.NodeName, createNodeDialog.MethodsList, createNodeDialog.EventsList);
             break;
           case CreateNodeDialog.ItemType.Interface:
-            data = new InterfaceData(createNodeDialog.NodeName, createNodeDialog.MethodsList, createNodeDialog.EventsList);
+            data = new InterfaceData(createNodeDialog.NodeName, createNodeDialog.MethodsList,
+                createNodeDialog.EventsList);
             break;
           default:
             return;
@@ -117,16 +118,17 @@ namespace Demo.yFiles.DataBinding.InteractiveEdgesGraphSource
 
     public async void RemoveNodeExecuted(object sender, ExecutedRoutedEventArgs e) {
       foreach (var item in new ArrayList(nodesSourceListBox.SelectedItems)) {
-        EntityData data = item as EntityData;
+        var data = item as EntityData;
         if (data != null) {
-          ((ObservableCollection<EntityData>)graphSource.NodesSource).Remove(data);
+          ((ObservableCollection<EntityData>) graphSource.NodesSource).Remove(data);
         }
       }
       await ApplyLayout(true);
     }
 
     public async void AddEventRegistrationExecuted(object sender, ExecutedRoutedEventArgs e) {
-      AddConnectionDialog addConnectionDialog = new AddConnectionDialog(graphSource, AddConnectionDialog.CreationMode.EventRegistration);
+      var addConnectionDialog =
+          new AddConnectionDialog(graphSource, AddConnectionDialog.CreationMode.EventRegistration);
       if (addConnectionDialog.ShowDialog() == true) {
         await AddEventRegistration(addConnectionDialog.DataElement, addConnectionDialog.ConnectionName);
       }
@@ -136,7 +138,7 @@ namespace Demo.yFiles.DataBinding.InteractiveEdgesGraphSource
       var currentData = GetCurrentItemData();
       if (currentData != null) {
         foreach (var item in new ArrayList(eventsListBox.SelectedItems)) {
-          EventRegistrationData data = item as EventRegistrationData;
+          var data = item as EventRegistrationData;
           if (data != null) {
             currentData.EventRegistrations.Remove(data);
           }
@@ -146,7 +148,7 @@ namespace Demo.yFiles.DataBinding.InteractiveEdgesGraphSource
     }
 
     public async void AddMethodCallExecuted(object sender, ExecutedRoutedEventArgs e) {
-      AddConnectionDialog addConnectionDialog = new AddConnectionDialog(graphSource, AddConnectionDialog.CreationMode.MethodCall);
+      var addConnectionDialog = new AddConnectionDialog(graphSource, AddConnectionDialog.CreationMode.MethodCall);
       if (addConnectionDialog.ShowDialog() == true) {
         await AddMethodCall(addConnectionDialog.DataElement, addConnectionDialog.ConnectionName);
       }
@@ -156,7 +158,7 @@ namespace Demo.yFiles.DataBinding.InteractiveEdgesGraphSource
       var currentData = GetCurrentItemData();
       if (currentData != null) {
         foreach (var item in new ArrayList(methodsListBox.SelectedItems)) {
-          MethodCallData data = item as MethodCallData;
+          var data = item as MethodCallData;
           if (data != null) {
             currentData.MethodCalls.Remove(data);
           }
@@ -167,19 +169,19 @@ namespace Demo.yFiles.DataBinding.InteractiveEdgesGraphSource
 
     #endregion
 
-    private async void GraphSourceWindow_OnLoaded(object sender, RoutedEventArgs e) {
-      graphSource = ((AdjacentEdgesGraphSource)Application.Current.MainWindow.Resources["GraphSource"]);
+    private async void OnLoaded(object sender, RoutedEventArgs e) {
+      graphSource = (AdjacentEdgesGraphSource) Application.Current.MainWindow.Resources["GraphSource"];
 
       // always show focus indicator
       graphControl.FocusIndicatorManager.ShowFocusPolicy = ShowFocusPolicy.Always;
 
-      graphSource.EdgeDefaults.Labels.LayoutParameter = new FreeEdgeLabelModel().CreateDefaultParameter();
+      graphSource.EdgeDefaults.Labels.LayoutParameter = new FreeEdgeLabelModel().CreateParameter();
 
-      // use custom PolylineEdgeStyleRenderer wrapper that switches the edge color 
+      // use custom PolylineEdgeStyle wrapper that switches the edge color
       // based on the attached business data
-      graphSource.EdgeDefaults.Style = new PolylineEdgeStyle(new MyPolylineEdgeStyleRenderer(graphSource));
-      
-      // create inital business data
+      graphSource.EdgeDefaults.Style = new MyPolylineEdgeStyle(graphSource);
+
+      // create initial business data
       CreateSampleData();
 
       await ApplyLayout(false);
@@ -187,21 +189,22 @@ namespace Demo.yFiles.DataBinding.InteractiveEdgesGraphSource
 
     private void CreateSampleData() {
       // create the sample nodes, defining a set of methods and events
-      var collectionView = new ClassData("CollectionView", 
-        new List<string> {"GetEnumerator()"},
-        new List<string> {"CollectionChanged"});
+      var collectionView = new ClassData("CollectionView", new List<string> { "GetEnumerator()" },
+          new List<string> { "CollectionChanged" });
       var adjacentEdgesGraphSource = new ClassData("AdjacentEdgesGraphSource",
-        new List<string> {"GetBusinessObject()", "GetNode()", "GetGroup()", "GetNode()"},
-        new List<string>());
+          new List<string> { "GetBusinessObject()", "GetNode()", "GetGroup()", "GetNode()" }, new List<string>());
       var iGraph = new InterfaceData("IGraph",
-        new List<string> {"Contains()", "Remove()", "CreateEdge()", "AddLabel()", "CreateNode()"},
-        new List<string> {"NodeRemoved", "NodeCreated"});
-      var iGroupedGraph = new ClassData("IGroupedGraph", 
-        new List<string> {"CreateNode()", "CreateGroupNode()"},
-        new List<string>());
-      var interactiveEdgesGraphSourceWindow = new ClassData("InteractiveEdgesGraphSourceWindow", 
-        new List<string>(),
-        new List<string>());
+          new List<string> {
+              "Contains()",
+              "Remove()",
+              "CreateEdge()",
+              "AddLabel()",
+              "CreateNode()"
+          }, new List<string> { "NodeRemoved", "NodeCreated" });
+      var iGroupedGraph = new ClassData("IGroupedGraph", new List<string> { "CreateNode()", "CreateGroupNode()" },
+          new List<string>());
+      var interactiveEdgesGraphSourceWindow = new ClassData("InteractiveEdgesGraphSourceWindow",
+          new List<string>(), new List<string>());
 
       // add connections between the nodes
       adjacentEdgesGraphSource.EventRegistrations.Add(new EventRegistrationData(collectionView, "CollectionChanged"));
@@ -215,16 +218,20 @@ namespace Demo.yFiles.DataBinding.InteractiveEdgesGraphSource
       iGroupedGraph.MethodCalls.Add(new MethodCallData(iGraph, "CreateNode()"));
       iGroupedGraph.EventRegistrations.Add(new EventRegistrationData(iGraph, "NodeRemoved"));
       iGroupedGraph.EventRegistrations.Add(new EventRegistrationData(iGraph, "NodeCreated"));
-      interactiveEdgesGraphSourceWindow.MethodCalls.Add(new MethodCallData(adjacentEdgesGraphSource, "GetBusinessObject()"));
+      interactiveEdgesGraphSourceWindow.MethodCalls.Add(new MethodCallData(adjacentEdgesGraphSource,
+          "GetBusinessObject()"));
 
-      graphSource.NodesSource = new ObservableCollection<EntityData>
-                                  {
-                                    collectionView, adjacentEdgesGraphSource, iGraph, iGroupedGraph, interactiveEdgesGraphSourceWindow
-                                  };
+      graphSource.NodesSource = new ObservableCollection<EntityData> {
+          collectionView,
+          adjacentEdgesGraphSource,
+          iGraph,
+          iGroupedGraph,
+          interactiveEdgesGraphSourceWindow
+      };
     }
 
     /// <summary>
-    /// Adds a new event registration to the current item
+    ///   Adds a new event registration to the current item
     /// </summary>
     /// <param name="source">The event source</param>
     /// <param name="name">The event name</param>
@@ -237,7 +244,7 @@ namespace Demo.yFiles.DataBinding.InteractiveEdgesGraphSource
     }
 
     /// <summary>
-    /// Adds a new method call to the current item
+    ///   Adds a new method call to the current item
     /// </summary>
     /// <param name="target">The method call target</param>
     /// <param name="name">The method name</param>
@@ -250,44 +257,45 @@ namespace Demo.yFiles.DataBinding.InteractiveEdgesGraphSource
     }
 
     /// <summary>
-    /// Returns the business data object from the current item, or <see langword="null"/> if no current item is set
+    ///   Returns the business data object from the current item, or <see langword="null"/> if no current item is set
     /// </summary>
     private EntityData GetCurrentItemData() {
-      return graphControl.CurrentItem != null ? graphSource.GetBusinessObject(graphControl.CurrentItem) as EntityData : null;
+      return graphControl.CurrentItem != null
+          ? graphSource.GetBusinessObject(graphControl.CurrentItem) as EntityData
+          : null;
     }
 
     /// <summary>
-    /// Applies the layout.
+    ///   Applies the layout.
     /// </summary>
     /// <remarks>
-    /// Uses an <see cref="HierarchicLayout"/>. If single graph
-    /// items are created or removed, the incremental mode of this layout
-    /// algorithm is used to keep most of the current layout of the graph
-    /// unchanged.
+    ///   Uses an <see cref="HierarchicalLayout"/>. If single graph
+    ///   items are created or removed, the incremental mode of this layout
+    ///   algorithm is used to keep most of the current layout of the graph
+    ///   unchanged.
     /// </remarks>
     /// <param name="incremental">if set to <see langword="true"/> [incremental].</param>
     /// <param name="incrementalNodes">The incremental nodes.</param>
     private async Task ApplyLayout(bool incremental, params EntityData[] incrementalNodes) {
-      var layout = new HierarchicLayout {IntegratedEdgeLabeling = true, OrthogonalRouting = true};
-      HierarchicLayoutData layoutData = null;
+      var layout = new HierarchicalLayout { EdgeLabelPlacement = EdgeLabelPlacement.Integrated };
+      var layoutData = layout.CreateLayoutData(graphControl.Graph);
       if (!incremental) {
-        layout.LayoutMode = LayoutMode.FromScratch;
+        layout.FromSketchMode = false;
       } else {
-        layout.LayoutMode = LayoutMode.Incremental;
+        layout.FromSketchMode = true;
 
         if (incrementalNodes.Any()) {
           // we need to add hints for incremental nodes
-          layoutData = new HierarchicLayoutData {
-            IncrementalHints = { IncrementalLayeringNodes = { Source = incrementalNodes.Select(graphSource.GetNode) } }
-          };
+          layoutData.IncrementalNodes.Source = incrementalNodes.Select(graphSource.GetNode);
         }
       }
-      await graphControl.MorphLayout(layout, TimeSpan.FromSeconds(1), layoutData);
+      await graphControl.ApplyLayoutAnimated(layout, TimeSpan.FromSeconds(1), layoutData);
     }
 
     #region UI event handlers
 
     private Point startPoint;
+
     private void OnListMouseDown(object sender, MouseButtonEventArgs e) {
       // remember the mouse position for drag start
       startPoint = e.GetPosition(null);
@@ -297,14 +305,14 @@ namespace Demo.yFiles.DataBinding.InteractiveEdgesGraphSource
     private void CurrentNode_OnMouseLeave(object sender, MouseEventArgs e) {
       // initilialize drag when mouse is dragged out
       if (e.LeftButton == MouseButtonState.Pressed) {
-        FrameworkElement o = e.OriginalSource as FrameworkElement;
+        var o = e.OriginalSource as FrameworkElement;
         if (o != null) {
           var data = o.DataContext as EntityData;
           if (data != null) {
-            DataObject dao = new DataObject();
-            dao.SetData(typeof (EntityData), data);
+            var dao = new DataObject();
+            dao.SetData(typeof(EntityData), data);
             DragDrop.DoDragDrop((FrameworkElement) sender, dao,
-                                DragDropEffects.Link | DragDropEffects.Copy | DragDropEffects.Move);
+                DragDropEffects.Link | DragDropEffects.Copy | DragDropEffects.Move);
           }
         }
       }
@@ -312,25 +320,24 @@ namespace Demo.yFiles.DataBinding.InteractiveEdgesGraphSource
 
     private void OnListMouseMove(object sender, MouseEventArgs e) {
       // Get the current mouse position
-      Point mousePos = e.GetPosition(null);
-      Vector diff = startPoint - mousePos;
+      var mousePos = e.GetPosition(null);
+      var diff = startPoint - mousePos;
 
       if (e.LeftButton == MouseButtonState.Pressed &&
           (Math.Abs(diff.X) > SystemParameters.MinimumHorizontalDragDistance ||
-          Math.Abs(diff.Y) > SystemParameters.MinimumVerticalDragDistance)) {
+              Math.Abs(diff.Y) > SystemParameters.MinimumVerticalDragDistance)) {
         // Get the dragged ListViewItem
-        ListView listView = sender as ListView;
-        ListViewItem listViewItem =
-            FindAnchestor<ListViewItem>((DependencyObject)e.OriginalSource);
+        var listView = sender as ListView;
+        var listViewItem = FindAnchestor<ListViewItem>((DependencyObject) e.OriginalSource);
 
         if (listViewItem == null) {
           return;
         }
 
         // Find the data behind the ListViewItem
-        object data = listViewItem.DataContext;
+        var data = listViewItem.DataContext;
         if (data != null) {
-          DataObject dao = new DataObject();
+          var dao = new DataObject();
           if (listView == nodesSourceListBox) {
             dao.SetData(typeof(EntityData), data);
           } else if (listView == eventsListBox) {
@@ -346,33 +353,32 @@ namespace Demo.yFiles.DataBinding.InteractiveEdgesGraphSource
 
     private void OnListMouseUp(object sender, MouseButtonEventArgs e) {
       // select the ListViewItem on mouse up to keep items from being selected at drag start
-      ListViewItem listViewItem = FindAnchestor<ListViewItem>((DependencyObject)e.OriginalSource);
+      var listViewItem = FindAnchestor<ListViewItem>((DependencyObject) e.OriginalSource);
       if (listViewItem != null) {
         listViewItem.IsSelected = true;
-        ((ListView)sender).Focus();
+        ((ListView) sender).Focus();
       }
     }
 
     /// <summary>
-    /// Called when a dragged item has been dropped over the NodesSource list.
+    ///   Called when a dragged item has been dropped over the NodesSource list.
     /// </summary>
     private async void NodesSourceListBox_OnDrop(object sender, DragEventArgs e) {
-      object draggedData = e.Data.GetData(typeof(EntityData)) ??
-                           e.Data.GetData(typeof(EventRegistrationData)) ??
-                           e.Data.GetData(typeof(MethodCallData));
+      var draggedData = e.Data.GetData(typeof(EntityData)) ??
+          e.Data.GetData(typeof(EventRegistrationData)) ?? e.Data.GetData(typeof(MethodCallData));
       if (draggedData != null) {
         // get the data item
         EntityData entityData = null;
         if (draggedData is EntityData) {
-          entityData = (EntityData)draggedData;
+          entityData = (EntityData) draggedData;
         } else if (draggedData is EventRegistrationData) {
-          entityData = ((EventRegistrationData)draggedData).Source;
+          entityData = ((EventRegistrationData) draggedData).Source;
         } else if (draggedData is MethodCallData) {
-          entityData = ((MethodCallData)draggedData).Target;
+          entityData = ((MethodCallData) draggedData).Target;
         }
         if (entityData != null) {
           // add the data item to the NodesSource
-          ObservableCollection<EntityData> collection = graphSource.NodesSource as ObservableCollection<EntityData>;
+          var collection = graphSource.NodesSource as ObservableCollection<EntityData>;
           if (collection != null && !collection.Contains(entityData)) {
             collection.Add(entityData);
             await ApplyLayout(true, entityData);
@@ -382,7 +388,7 @@ namespace Demo.yFiles.DataBinding.InteractiveEdgesGraphSource
     }
 
     /// <summary>
-    /// Called when a dragged item has been dropped over the Events list.
+    ///   Called when a dragged item has been dropped over the Events list.
     /// </summary>
     private async void EventsListBox_OnDrop(object sender, DragEventArgs e) {
       // only items dragged from NodesSource can be dropped on Events
@@ -390,20 +396,22 @@ namespace Demo.yFiles.DataBinding.InteractiveEdgesGraphSource
     }
 
     /// <summary>
-    /// Called when a dragged item has been dropped over the Methods list.
+    ///   Called when a dragged item has been dropped over the Methods list.
     /// </summary>
     private async void MethodsListBox_OnDrop(object sender, DragEventArgs e) {
       // only items dragged from NodesSource can be dropped on Methods
       await CreateConnection_OnDrop(e, AddConnectionDialog.CreationMode.MethodCall, AddMethodCall);
     }
 
-    private async Task CreateConnection_OnDrop(DragEventArgs e, AddConnectionDialog.CreationMode creationMode,
-                                         CreateConnectionCommand createConnectionCommand) {
-      EntityData draggedData = e.Data.GetData(typeof (EntityData)) as EntityData;
-      EntityData currentData = GetCurrentItemData();
+    private async Task CreateConnection_OnDrop(
+        DragEventArgs e,
+        AddConnectionDialog.CreationMode creationMode,
+        CreateConnectionCommand createConnectionCommand) {
+      var draggedData = e.Data.GetData(typeof(EntityData)) as EntityData;
+      var currentData = GetCurrentItemData();
       if (draggedData != null && currentData != null) {
         // show the dialog to choose which method to add a call to
-        AddConnectionDialog addConnectionDialog = new AddConnectionDialog(graphSource, creationMode);
+        var addConnectionDialog = new AddConnectionDialog(graphSource, creationMode);
         // select the dragged item
         addConnectionDialog.Preselect(draggedData);
         if (addConnectionDialog.ShowDialog() == true) {
@@ -415,17 +423,17 @@ namespace Demo.yFiles.DataBinding.InteractiveEdgesGraphSource
     private delegate Task CreateConnectionCommand(EntityData data, string name);
 
     /// <summary>
-    /// Deletes the dragged data
+    ///   Deletes the dragged data
     /// </summary>
     private async void Trashcan_OnDrop(object sender, DragEventArgs e) {
-      object draggedData = e.Data.GetData(typeof (EntityData)) ??
-                           e.Data.GetData(typeof (EventRegistrationData)) ??
-                           e.Data.GetData(typeof (MethodCallData));
+      var draggedData = e.Data.GetData(typeof(EntityData)) ??
+          e.Data.GetData(typeof(EventRegistrationData)) ?? e.Data.GetData(typeof(MethodCallData));
       if (draggedData != null) {
         var currentData = GetCurrentItemData();
         if (draggedData is EntityData) {
           // node from NodesSource has been dragged
-          ((ObservableCollection<EntityData>)graphSource.NodesSource).Remove((EntityData) draggedData);
+          ((ObservableCollection<EntityData>) graphSource.NodesSource).Remove(
+              (EntityData) draggedData);
         } else if (draggedData is EventRegistrationData) {
           // event registration has been dragged
           currentData.EventRegistrations.Remove((EventRegistrationData) draggedData);
@@ -441,20 +449,20 @@ namespace Demo.yFiles.DataBinding.InteractiveEdgesGraphSource
       switch (e.Key) {
         case Key.Delete:
           if (sender == nodesSourceListBox) {
-            ((RoutedUICommand)RemoveNodeCommand).Execute(null, graphControl);
+            ((RoutedUICommand) RemoveNodeCommand).Execute(null, graphControl);
           } else if (sender == eventsListBox) {
-            ((RoutedUICommand)RemoveEventRegistrationCommand).Execute(null, graphControl);
+            ((RoutedUICommand) RemoveEventRegistrationCommand).Execute(null, graphControl);
           } else if (sender == methodsListBox) {
-            ((RoutedUICommand)RemoveMethodCallCommand).Execute(null, graphControl);
+            ((RoutedUICommand) RemoveMethodCallCommand).Execute(null, graphControl);
           }
           break;
         case Key.Insert:
           if (sender == nodesSourceListBox) {
-            ((RoutedUICommand)AddNodeCommand).Execute(null, graphControl);
+            ((RoutedUICommand) AddNodeCommand).Execute(null, graphControl);
           } else if (sender == eventsListBox) {
-            ((RoutedUICommand)AddEventRegistrationCommand).Execute(null, graphControl);
+            ((RoutedUICommand) AddEventRegistrationCommand).Execute(null, graphControl);
           } else if (sender == methodsListBox) {
-            ((RoutedUICommand)AddMethodCallCommand).Execute(null, graphControl);
+            ((RoutedUICommand) AddMethodCallCommand).Execute(null, graphControl);
           }
           break;
       }
@@ -464,8 +472,7 @@ namespace Demo.yFiles.DataBinding.InteractiveEdgesGraphSource
 
     #region UI helper methods
 
-    private static T FindAnchestor<T>(DependencyObject current)
-      where T : DependencyObject {
+    private static T FindAnchestor<T>(DependencyObject current) where T : DependencyObject {
       do {
         if (current is T) {
           return (T) current;
@@ -475,87 +482,126 @@ namespace Demo.yFiles.DataBinding.InteractiveEdgesGraphSource
       return null;
     }
 
-
     #endregion
-
   }
 
   /// <summary>
-  /// A customized edge style renderer that changes the edge color based on the business data
+  ///   A customized edge style that changes the edge color based on the business data
   /// </summary>
-  internal class MyPolylineEdgeStyleRenderer : PolylineEdgeStyleRenderer
+  internal sealed class MyPolylineEdgeStyle : IEdgeStyle, IEdgeStyleRenderer
   {
     private readonly AdjacentEdgesGraphSource graphSource;
-    private readonly IArrow methodArrow = new Arrow(Colors.DimGray) { Type = ArrowType.Short }.GetAsFrozen();
-    private readonly IArrow eventArrow = new Arrow(Colors.DarkRed) { Type = ArrowType.Short }.GetAsFrozen();
+    private readonly IArrow methodArrow = new Arrow(type : ArrowType.Stealth, brush : Brushes.DimGray);
+    private readonly IArrow eventArrow = new Arrow(type : ArrowType.Stealth, brush : Brushes.DarkRed);
 
-    public MyPolylineEdgeStyleRenderer([NotNull] AdjacentEdgesGraphSource graphSource) {
+    public MyPolylineEdgeStyle([NotNull] AdjacentEdgesGraphSource graphSource) {
       this.graphSource = graphSource;
     }
 
-    protected override Pen GetPen() {
-      var businessObject = graphSource.GetBusinessObject(Edge);
-      if (businessObject is MethodCallData) {
-        // return gray pen for method call edges
-        return Pens.DimGray;
-      } if (businessObject is EventRegistrationData) {
-        // return red pen for event edges
-        return Pens.DarkRed;
-      }
-      return base.GetPen();
+    private readonly PolylineEdgeStyle delegateStyle = new();
+
+    public IEdgeStyleRenderer Renderer => this;
+
+    private IEdgeStyle GetConfiguredStyle(IEdge edge) {
+      delegateStyle.Pen = GetPen(edge);
+      delegateStyle.TargetArrow = GetTargetArrow(edge);
+      return delegateStyle;
     }
 
-    protected override IArrow GetTargetArrow() {
+    private Pen GetPen(IEdge edge) {
+      return graphSource.GetBusinessObject(edge) switch {
+        MethodCallData => Pens.DimGray,
+        EventRegistrationData => Pens.DarkRed,
+        _ => Pens.Black
+      };
+    }
+
+    private IArrow GetTargetArrow(IEdge edge) {
       // return colored arrow
-      var businessObject = graphSource.GetBusinessObject(Edge);
-      if (businessObject is MethodCallData) {
-        return methodArrow;
-      } if (businessObject is EventRegistrationData) {
-        return eventArrow;
-      }
-      return base.GetTargetArrow();
+      return graphSource.GetBusinessObject(edge) switch {
+        MethodCallData => methodArrow,
+        EventRegistrationData => eventArrow,
+        _ => Arrow.None
+      };
+    }
+
+    public IPathGeometry GetPathGeometry(IEdge edge, IEdgeStyle style) {
+      var configuredStyle = GetConfiguredStyle(edge);
+      return configuredStyle.Renderer.GetPathGeometry(edge, configuredStyle);
+    }
+
+    public IVisualCreator GetVisualCreator(IEdge edge, IEdgeStyle style) {
+      var configuredStyle = GetConfiguredStyle(edge);
+      return configuredStyle.Renderer.GetVisualCreator(edge, configuredStyle);
+    }
+
+    public IBoundsProvider GetBoundsProvider(IEdge edge, IEdgeStyle style) {
+      var configuredStyle = GetConfiguredStyle(edge);
+      return configuredStyle.Renderer.GetBoundsProvider(edge, configuredStyle);
+    }
+
+    public IVisibilityTestable GetVisibilityTestable(IEdge edge, IEdgeStyle style) {
+      var configuredStyle = GetConfiguredStyle(edge);
+      return configuredStyle.Renderer.GetVisibilityTestable(edge, configuredStyle);
+    }
+
+    public IHitTestable GetHitTestable(IEdge edge, IEdgeStyle style) {
+      var configuredStyle = GetConfiguredStyle(edge);
+      return configuredStyle.Renderer.GetHitTestable(edge, configuredStyle);
+    }
+
+    public IMarqueeTestable GetMarqueeTestable(IEdge edge, IEdgeStyle style) {
+      var configuredStyle = GetConfiguredStyle(edge);
+      return configuredStyle.Renderer.GetMarqueeTestable(edge, configuredStyle);
+    }
+
+    public ILassoTestable GetLassoTestable(IEdge edge, IEdgeStyle style) {
+      var configuredStyle = GetConfiguredStyle(edge);
+      return configuredStyle.Renderer.GetLassoTestable(edge, configuredStyle);
+    }
+
+    public ILookup GetContext(IEdge edge, IEdgeStyle style) {
+      var configuredStyle = GetConfiguredStyle(edge);
+      return configuredStyle.Renderer.GetContext(edge, configuredStyle);
+    }
+
+    public object Clone() {
+      return MemberwiseClone();
     }
   }
 
   #region Business Data
 
   /// <summary>
-  /// An entity which represents a node.
+  ///   An entity which represents a node.
   /// </summary>
   /// <remarks>Base for <see cref="ClassData"/> and <see cref="InterfaceData"/></remarks>
   public abstract class EntityData
   {
-    private readonly List<string> methods;
-    private readonly List<string> events;
-
     protected EntityData() : this(new List<string>(), new List<string>()) { }
 
     protected EntityData(List<string> methods, List<string> events) {
-      this.methods = methods;
-      this.events = events;
+      Methods = methods;
+      Events = events;
       EventRegistrations = new ObservableCollection<EventRegistrationData>();
       MethodCalls = new ObservableCollection<MethodCallData>();
     }
 
-    public ObservableCollection<EventRegistrationData> EventRegistrations { get; private set; }
+    public ObservableCollection<EventRegistrationData> EventRegistrations { get; }
 
-    public ObservableCollection<MethodCallData> MethodCalls { get; private set; }
+    public ObservableCollection<MethodCallData> MethodCalls { get; }
 
     public string Name { get; protected set; }
 
-    public List<string> Methods {
-      get { return methods; }
-    }
+    public List<string> Methods { get; }
 
-    public List<string> Events {
-      get { return events; }
-    }
+    public List<string> Events { get; }
   }
 
   /// <summary>
-  /// Represents a class.
+  ///   Represents a class.
   /// </summary>
-  public class ClassData : EntityData 
+  public class ClassData : EntityData
   {
     public ClassData(string name, List<string> methods, List<string> events) : base(methods, events) {
       Name = name;
@@ -567,12 +613,12 @@ namespace Demo.yFiles.DataBinding.InteractiveEdgesGraphSource
   }
 
   /// <summary>
-  /// Represents an interface.
+  ///   Represents an interface.
   /// </summary>
   public class InterfaceData : EntityData
   {
     public InterfaceData(string name, List<string> methods, List<string> events) : base(methods, events) {
-        Name = name;
+      Name = name;
     }
 
     public override string ToString() {
@@ -581,7 +627,7 @@ namespace Demo.yFiles.DataBinding.InteractiveEdgesGraphSource
   }
 
   /// <summary>
-  /// Represents a method call.
+  ///   Represents a method call.
   /// </summary>
   public class MethodCallData
   {
@@ -590,13 +636,13 @@ namespace Demo.yFiles.DataBinding.InteractiveEdgesGraphSource
       Name = methodName;
     }
 
-    public EntityData Target { get; private set; }
+    public EntityData Target { get; }
 
     public string Name { get; private set; }
   }
 
   /// <summary>
-  /// Represents an event registration.
+  ///   Represents an event registration.
   /// </summary>
   public class EventRegistrationData
   {
@@ -605,7 +651,7 @@ namespace Demo.yFiles.DataBinding.InteractiveEdgesGraphSource
       Name = eventName;
     }
 
-    public EntityData Source { get; private set; }
+    public EntityData Source { get; }
 
     public string Name { get; private set; }
   }
@@ -621,7 +667,7 @@ namespace Demo.yFiles.DataBinding.InteractiveEdgesGraphSource
     public AdjacentEdgesGraphSource GraphSource { get; set; }
 
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
-      INode node = value as INode;
+      var node = value as INode;
       return node == null ? null : node.Tag;
     }
 

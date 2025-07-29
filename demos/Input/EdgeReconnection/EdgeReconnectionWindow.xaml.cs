@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -36,8 +36,9 @@ using yWorks.Controls;
 using yWorks.Controls.Input;
 using yWorks.Geometry;
 using yWorks.Graph;
-using yWorks.Graph.Styles;
 using yWorks.Graph.PortLocationModels;
+using yWorks.Graph.Styles;
+using yWorks.Utils;
 
 namespace Demo.yFiles.Graph.Input.EdgeReconnection
 {
@@ -47,7 +48,6 @@ namespace Demo.yFiles.Graph.Input.EdgeReconnection
   /// </summary>
   public partial class EdgeReconnectionWindow
   {
-    
     /// <summary>
     ///   Registers a callback function as decorator that provides a custom
     ///   <see cref="IEdgeReconnectionPortCandidateProvider"/> for each node.
@@ -60,33 +60,36 @@ namespace Demo.yFiles.Graph.Input.EdgeReconnection
     private void RegisterEdgeReconnectionPortCandidateProvider() {
       // register our customized link with the chain for the IEdges to provide
       // the custom provider instances dynamically
-      graphControl.Graph.GetDecorator().EdgeDecorator.EdgeReconnectionPortCandidateProviderDecorator.SetFactory(
-        edge => {
-          // obtain the tag from the node
-          object edgeTag = edge.Tag;
-      
-          // check if it is a known tag and choose the respective implementation
-          if (!(edgeTag is Palette)) {
-            return null;
-          } else if (Themes.PaletteRed.Equals(edgeTag)) {
-            return new RedEdgeReconnectionPortCandidateProvider(edge);
-          } else if (Themes.PaletteOrange.Equals(edgeTag)) {
-            return new OrangeEdgeReconnectionPortCandidateProvider(edge);
-          } else if (Themes.PaletteLightblue.Equals(edgeTag)) {
-            return new BlueEdgeReconnectionPortCandidateProvider();
-          } else if (Themes.PaletteGreen.Equals(edgeTag)) {
-            return new GreenEdgeReconnectionPortCandidateProvider();
-          } else {
-            // otherwise revert to default behavior
-            return null;
-          }
-        });
+      graphControl.Graph.GetDecorator().Edges.ReconnectionPortCandidateProvider.AddFactory(edge => {
+        // obtain the tag from the node
+        var edgeTag = edge.Tag;
+
+        // check if it is a known tag and choose the respective implementation
+        if (!(edgeTag is Palette)) {
+          return null;
+        }
+        if (Themes.PaletteRed.Equals(edgeTag)) {
+          return new RedEdgeReconnectionPortCandidateProvider(edge);
+        }
+        if (Themes.PaletteOrange.Equals(edgeTag)) {
+          return new OrangeEdgeReconnectionPortCandidateProvider(edge);
+        }
+        if (Themes.PaletteLightblue.Equals(edgeTag)) {
+          return new BlueEdgeReconnectionPortCandidateProvider();
+        }
+        if (Themes.PaletteGreen.Equals(edgeTag)) {
+          return new GreenEdgeReconnectionPortCandidateProvider();
+        }
+        // otherwise revert to default behavior
+        return null;
+      });
     }
 
     /// <summary>
     ///   An <see cref="IEdgeReconnectionPortCandidateProvider"/> that prevents relocation of the ports.
     /// </summary>
-    public class RedEdgeReconnectionPortCandidateProvider : IEdgeReconnectionPortCandidateProvider {
+    public class RedEdgeReconnectionPortCandidateProvider : IEdgeReconnectionPortCandidateProvider
+    {
       private readonly IEdge edge;
 
       public RedEdgeReconnectionPortCandidateProvider(IEdge edge) {
@@ -98,7 +101,7 @@ namespace Demo.yFiles.Graph.Input.EdgeReconnection
       /// </summary>
       public IEnumerable<IPortCandidate> GetSourcePortCandidates(IInputModeContext context) {
         // add the current port only to the candidates - effectively disabling reconnection
-        return new List<IPortCandidate> { new DefaultPortCandidate(edge.SourcePort) };
+        return new List<IPortCandidate> { new PortCandidate(edge.SourcePort) };
       }
 
       /// <summary>
@@ -114,10 +117,10 @@ namespace Demo.yFiles.Graph.Input.EdgeReconnection
     ///   dynamic <see cref="FreeNodePortLocationModel"/>. It allows moving ports to any
     ///   location inside a green node.
     /// </summary>
-    public class GreenEdgeReconnectionPortCandidateProvider : IEdgeReconnectionPortCandidateProvider {
-
+    public class GreenEdgeReconnectionPortCandidateProvider : IEdgeReconnectionPortCandidateProvider
+    {
       /// <summary>
-      ///   Returns for each green node a candidate with a dynamic <see cref="FreeNodePortLocationModel"/>. 
+      ///   Returns for each green node a candidate with a dynamic <see cref="FreeNodePortLocationModel"/>.
       ///   When the Shift key is pressed, a port can be placed
       ///   anywhere inside that node.
       /// </summary>
@@ -125,12 +128,10 @@ namespace Demo.yFiles.Graph.Input.EdgeReconnection
         var graph = context.GetGraph();
         if (graph == null) {
           return Enumerable.Empty<IPortCandidate>();
-        } else {
-          return 
-            from node in graph.Nodes 
-            where Equals(node.Tag, Themes.PaletteGreen) 
-            select (IPortCandidate)new DefaultPortCandidate(node, FreeNodePortLocationModel.Instance);
         }
+        return from node in graph.Nodes
+               where Equals(node.Tag, Themes.PaletteGreen)
+               select (IPortCandidate) new PortCandidate(node, FreeNodePortLocationModel.Instance);
       }
 
       /// <summary>
@@ -143,7 +144,7 @@ namespace Demo.yFiles.Graph.Input.EdgeReconnection
 
     /// <summary>
     ///   An <see cref="IEdgeReconnectionPortCandidateProvider"/> that allows moving ports to
-    ///   any other orange node, except for the opposite port's node. 
+    ///   any other orange node, except for the opposite port's node.
     /// </summary>
     public class OrangeEdgeReconnectionPortCandidateProvider : IEdgeReconnectionPortCandidateProvider
     {
@@ -158,22 +159,22 @@ namespace Demo.yFiles.Graph.Input.EdgeReconnection
       ///   for the current target node to avoid the creation of self-loops.
       /// </summary>
       public IEnumerable<IPortCandidate> GetSourcePortCandidates(IInputModeContext context) {
-        List<IPortCandidate> result = new List<IPortCandidate>();
+        var result = new List<IPortCandidate>();
         // add the current one as the default
-        result.Add(new DefaultPortCandidate(edge.SourcePort));
+        result.Add(new PortCandidate(edge.SourcePort));
         var graph = context.GetGraph();
         if (graph == null) {
           return result;
-        } 
-        foreach (INode node in graph.Nodes) {
+        }
+        foreach (var node in graph.Nodes) {
           if (node != edge.TargetPort.Owner && Themes.PaletteOrange.Equals(node.Tag)) {
             // use the candidates from the provider - if available
-            IPortCandidateProvider provider = node.Lookup<IPortCandidateProvider>();
+            var provider = node.Lookup<IPortCandidateProvider>();
             // If available, use the candidates from the provider. Otherwise, add a default candidate.
             if (provider != null) {
               result.AddRange(provider.GetTargetPortCandidates(context));
             } else {
-              result.Add(new DefaultPortCandidate(node, FreeNodePortLocationModel.NodeCenterAnchored));
+              result.Add(new PortCandidate(node, FreeNodePortLocationModel.Center));
             }
           }
         }
@@ -185,21 +186,21 @@ namespace Demo.yFiles.Graph.Input.EdgeReconnection
       ///   for the current source node to avoid the creation of self-loops.
       /// </summary>
       public IEnumerable<IPortCandidate> GetTargetPortCandidates(IInputModeContext context) {
-        List<IPortCandidate> result = new List<IPortCandidate>();
+        var result = new List<IPortCandidate>();
         // add the current one as the default
-        result.Add(new DefaultPortCandidate(edge.TargetPort));
+        result.Add(new PortCandidate(edge.TargetPort));
         var graph = context.GetGraph();
         if (graph == null) {
           return result;
         }
-        foreach (INode node in graph.Nodes) {
+        foreach (var node in graph.Nodes) {
           if (node != edge.SourcePort.Owner && Themes.PaletteOrange.Equals(node.Tag)) {
             // If available, use the candidates from the provider. Otherwise, add a default candidate.
-            IPortCandidateProvider provider = node.Lookup<IPortCandidateProvider>();
+            var provider = node.Lookup<IPortCandidateProvider>();
             if (provider != null) {
               result.AddRange(provider.GetTargetPortCandidates(context));
             } else {
-              result.Add(new DefaultPortCandidate(node, FreeNodePortLocationModel.NodeCenterAnchored));
+              result.Add(new PortCandidate(node, FreeNodePortLocationModel.Center));
             }
           }
         }
@@ -214,14 +215,14 @@ namespace Demo.yFiles.Graph.Input.EdgeReconnection
     private class BlueEdgeReconnectionPortCandidateProvider : IEdgeReconnectionPortCandidateProvider
     {
       /// <summary>
-      /// Returns candidates for the locations of all existing ports at all nodes.
+      ///   Returns candidates for the locations of all existing ports at all nodes.
       /// </summary>
       public IEnumerable<IPortCandidate> GetSourcePortCandidates(IInputModeContext context) {
         return GetPortCandidates(context);
       }
 
       /// <summary>
-      /// Returns candidates for the locations of all existing ports at all nodes.
+      ///   Returns candidates for the locations of all existing ports at all nodes.
       /// </summary>
       public IEnumerable<IPortCandidate> GetTargetPortCandidates(IInputModeContext context) {
         return GetPortCandidates(context);
@@ -231,7 +232,7 @@ namespace Demo.yFiles.Graph.Input.EdgeReconnection
       ///   Returns port candidates for all existing ports at all nodes in the graph as alternatives.
       /// </summary>
       /// <param name="context">The context.</param>
-      /// <returns>A sequence of all possible port candidates in <paramref name="context" />'s graph.</returns>
+      /// <returns>A sequence of all possible port candidates in <paramref name="context"/>'s graph.</returns>
       private IEnumerable<IPortCandidate> GetPortCandidates(IInputModeContext context) {
         var graph = context.GetGraph();
 
@@ -239,10 +240,7 @@ namespace Demo.yFiles.Graph.Input.EdgeReconnection
           return Enumerable.Empty<IPortCandidate>();
         }
 
-        return
-          from node in graph.Nodes
-          from port in node.Ports
-          select CreatePortCandidate(node, port);
+        return from node in graph.Nodes from port in node.Ports select CreatePortCandidate(node, port);
       }
 
       /// <summary>
@@ -253,7 +251,6 @@ namespace Demo.yFiles.Graph.Input.EdgeReconnection
       ///   port).
       /// </param>
       /// <param name="port">The port to add the candidate for.</param>
-      /// <returns></returns>
       /// <remarks>
       ///   <para>
       ///     If the node is blue, then the existing port instances will be reused for the port candidates. This has the effect
@@ -268,12 +265,10 @@ namespace Demo.yFiles.Graph.Input.EdgeReconnection
       private IPortCandidate CreatePortCandidate(INode node, IPort port) {
         if (Themes.PaletteLightblue.Equals(node.Tag)) {
           // reuse the existing port - the edge will be connected to the very same port after reconnection
-          return new DefaultPortCandidate(port);
-        } else {
-          // don't reuse the existing ports, but create new ones at the same location
-          return new DefaultPortCandidate(node,
-              FreeNodePortLocationModel.Instance.CreateParameter(node, port.GetLocation()));
+          return new PortCandidate(port);
         }
+        // don't reuse the existing ports, but create new ones at the same location
+        return new PortCandidate(node, FreeNodePortLocationModel.Instance.CreateParameter(node, port.GetLocation()));
       }
     }
 
@@ -284,7 +279,7 @@ namespace Demo.yFiles.Graph.Input.EdgeReconnection
     }
 
     private void OnWindowLoaded(object sender, RoutedEventArgs e) {
-      IGraph graph = graphControl.Graph;
+      var graph = graphControl.Graph;
 
       // Disable automatic cleanup of unconnected ports since some nodes have a predfined set of ports
       graph.NodeDefaults.Ports.AutoCleanUp = false;
@@ -306,12 +301,9 @@ namespace Demo.yFiles.Graph.Input.EdgeReconnection
       graphControl.InputMode = graphEditorInputMode;
 
       // Set a port style that makes the pre-defined ports visible
-      graph.NodeDefaults.Ports.Style = new NodeStylePortStyleAdapter(new ShapeNodeStyle
-      {
-          Shape = ShapeNodeShape.Ellipse,
-          Brush = Brushes.White,
-          Pen = Pens.Black
-      }) { RenderSize = new SizeD(6, 6) };
+      graph.NodeDefaults.Ports.Style = new ShapePortStyle {
+          Shape = ShapeNodeShape.Ellipse, Brush = Brushes.White, Pen = Pens.Black, RenderSize = new SizeD(6, 6)
+      };
 
       RegisterEdgeReconnectionPortCandidateProvider();
 
@@ -328,7 +320,7 @@ namespace Demo.yFiles.Graph.Input.EdgeReconnection
     private void CreateSampleGraph(GraphControl graphControl) {
       var graph = graphControl.Graph;
       graph.SetUndoEngineEnabled(true);
-      
+
       CreateSubgraph(graph, Themes.PaletteRed, 0);
       CreateSubgraph(graph, Themes.PaletteOrange, 200);
       CreateSubgraph(graph, Themes.PaletteGreen, 600);
@@ -339,27 +331,32 @@ namespace Demo.yFiles.Graph.Input.EdgeReconnection
       graph.AddPort(nodes[0], FreeNodePortLocationModel.Instance.CreateParameter(new PointD(1, 0.8)));
 
       var candidateProvider = PortCandidateProviders.FromShapeGeometry(nodes[2], 0, 0.25, 0.5, 0.75);
-      IEnumerable<IPortCandidate> candidates = candidateProvider.GetSourcePortCandidates(graphControl.InputModeContext);
-      foreach (IPortCandidate portCandidate in candidates) {
+      var candidates = candidateProvider.GetSourcePortCandidates(graphControl.InputModeContext);
+      foreach (var portCandidate in candidates) {
         if (portCandidate.Validity != PortCandidateValidity.Dynamic) {
           portCandidate.CreatePort(graphControl.InputModeContext);
         }
       }
       graph.GetUndoEngine().Clear();
+
+      graphControl.FitGraphBounds();
     }
 
     /// <summary>
-    /// Creates the sample graph of the given color.
+    ///   Creates the sample graph of the given color.
     /// </summary>
     private static INode[] CreateSubgraph(IGraph graph, Palette palette, double yOffset) {
-      INode n1 = graph.CreateNode(new RectD(100, 100 + yOffset, 60, 60), DemoStyles.CreateDemoNodeStyle(palette), palette);
-      INode n2 = graph.CreateNode(new RectD(500, 100 + yOffset, 60, 60), DemoStyles.CreateDemoNodeStyle(palette), palette);
-      INode n3 = graph.CreateNode(new RectD(300, 160 + yOffset, 60, 60), DemoStyles.CreateDemoNodeStyle(palette), palette);
+      var n1 = graph.CreateNode(new RectD(100, 100 + yOffset, 60, 60), DemoStyles.CreateDemoNodeStyle(palette),
+          palette);
+      var n2 = graph.CreateNode(new RectD(500, 100 + yOffset, 60, 60), DemoStyles.CreateDemoNodeStyle(palette),
+          palette);
+      var n3 = graph.CreateNode(new RectD(300, 160 + yOffset, 60, 60), DemoStyles.CreateDemoNodeStyle(palette),
+          palette);
 
       graph.CreateEdge(n1, n2, DemoStyles.CreateDemoEdgeStyle(palette, false), palette);
-      return new[]{n1, n2, n3};
+      return new[] { n1, n2, n3 };
     }
 
-    #endregion    
+    #endregion
   }
 }

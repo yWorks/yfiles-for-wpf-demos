@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -37,7 +37,6 @@ using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -52,14 +51,15 @@ using Demo.yFiles.Graph.LargeGraphs.Styles.Fast;
 using Demo.yFiles.Graph.LargeGraphs.Styles.LevelOfDetail;
 using Demo.yFiles.Graph.LargeGraphs.Styles.Selection;
 using Demo.yFiles.Graph.LargeGraphs.Styles.Virtualization;
+using Demo.yFiles.Toolkit;
 using yWorks.Controls;
 using yWorks.Controls.Input;
 using yWorks.Geometry;
 using yWorks.Graph;
-using yWorks.Graph.Styles;
 using yWorks.Graph.LabelModels;
+using yWorks.Graph.Styles;
 using yWorks.GraphML;
-using Demo.yFiles.Toolkit;
+using yWorks.Utils;
 
 namespace Demo.yFiles.Graph.LargeGraphs
 {
@@ -71,31 +71,31 @@ namespace Demo.yFiles.Graph.LargeGraphs
     #region Wrapper styles so that styles are easier to change.
 
     /// <summary>Wrapper style for edge labels.</summary>
-    private readonly WrapperLabelStyle edgeLabelStyle = new WrapperLabelStyle(null);
+    private readonly WrapperLabelStyle edgeLabelStyle = new(null);
 
     /// <summary>Wrapper style for edges.</summary>
-    private readonly WrapperEdgeStyle edgeStyle = new WrapperEdgeStyle(null);
+    private readonly WrapperEdgeStyle edgeStyle = new(null);
 
     /// <summary>Wrapper style for node labels</summary>
-    private readonly WrapperLabelStyle nodeLabelStyle = new WrapperLabelStyle(null);
+    private readonly WrapperLabelStyle nodeLabelStyle = new(null);
 
     /// <summary>Wrapper style for nodes.</summary>
-    private readonly WrapperNodeStyle nodeStyle = new WrapperNodeStyle(null);
+    private readonly WrapperNodeStyle nodeStyle = new(null);
 
     #endregion
 
     /// <summary><see cref="Random"/> instance for various things.</summary>
-    private readonly Random rnd = new Random();
+    private readonly Random rnd = new();
 
     /// <summary>Optimal settings for the sample graphs.</summary>
     private PerformanceSettings[] bestSettings;
 
     /// <summary>
-    ///   Initializes a new instance of the <see cref="LargeGraphsWindow" /> class.
+    ///   Initializes a new instance of the <see cref="LargeGraphsWindow"/> class.
     /// </summary>
     public LargeGraphsWindow() {
       // Fix the wrong culture being used for displaying numbers in the UI.
-      LanguageProperty.OverrideMetadata(typeof (FrameworkElement),
+      LanguageProperty.OverrideMetadata(typeof(FrameworkElement),
           new FrameworkPropertyMetadata(XmlLanguage.GetLanguage(CultureInfo.CurrentCulture.IetfLanguageTag)));
 
       InitializeComponent();
@@ -104,66 +104,66 @@ namespace Demo.yFiles.Graph.LargeGraphs
     #region Dependency properties for binding
 
     /// <summary>
-    ///   Dependency property for <see cref="PerformanceSettings" />.
+    ///   Dependency property for <see cref="PerformanceSettings"/>.
     /// </summary>
     public static readonly DependencyProperty PerformanceSettingsProperty = DependencyProperty.Register(
-        "PerformanceSettings", typeof (PerformanceSettings), typeof (LargeGraphsWindow),
+        "PerformanceSettings", typeof(PerformanceSettings), typeof(LargeGraphsWindow),
         new PropertyMetadata(default(PerformanceSettings)));
 
     /// <summary>
-    ///   Dependency property for <see cref="Fps" />.
+    ///   Dependency property for <see cref="Fps"/>.
     /// </summary>
-    public static readonly DependencyProperty FpsProperty = DependencyProperty.Register(
-        "Fps", typeof (double), typeof (LargeGraphsWindow), new PropertyMetadata(default(double)));
+    public static readonly DependencyProperty FpsProperty = DependencyProperty.Register("Fps", typeof(double),
+        typeof(LargeGraphsWindow), new PropertyMetadata(default(double)));
 
     /// <summary>
-    ///   Dependency property for <see cref="VisualChildren" />.
+    ///   Dependency property for <see cref="VisualChildren"/>.
     /// </summary>
-    public static readonly DependencyProperty VisualChildrenProperty = DependencyProperty.Register(
-        "VisualChildren", typeof (int), typeof (LargeGraphsWindow), new PropertyMetadata(default(int)));
+    public static readonly DependencyProperty VisualChildrenProperty = DependencyProperty.Register("VisualChildren",
+        typeof(int), typeof(LargeGraphsWindow), new PropertyMetadata(default(int)));
 
     /// <summary>
-    ///   Dependency property for <see cref="SelectionCount" />.
+    ///   Dependency property for <see cref="SelectionCount"/>.
     /// </summary>
-    public static readonly DependencyProperty SelectionCountProperty = DependencyProperty.Register(
-        "SelectionCount", typeof (int), typeof (LargeGraphsWindow), new PropertyMetadata(default(int)));
+    public static readonly DependencyProperty SelectionCountProperty = DependencyProperty.Register("SelectionCount",
+        typeof(int), typeof(LargeGraphsWindow), new PropertyMetadata(default(int)));
 
     private Animator animator;
 
     /// <summary>Currently active set of performance settings.</summary>
     public PerformanceSettings PerformanceSettings {
-      get { return (PerformanceSettings) GetValue(PerformanceSettingsProperty); }
-      set { SetValue(PerformanceSettingsProperty, value); }
+      get => (PerformanceSettings) GetValue(PerformanceSettingsProperty);
+      set => SetValue(PerformanceSettingsProperty, value);
     }
 
     /// <summary>Current frames per second</summary>
-    /// <seealso cref="InitializeFpsCounter" />
+    /// <seealso cref="InitializeFpsCounter"/>
     public double Fps {
-      get { return (double) GetValue(FpsProperty); }
-      set { SetValue(FpsProperty, value); }
+      get => (double) GetValue(FpsProperty);
+      set => SetValue(FpsProperty, value);
     }
 
     /// <summary>Current number of items in the visual tree.</summary>
-    /// <seealso cref="InitializeVisualTreeCounter" />
+    /// <seealso cref="InitializeVisualTreeCounter"/>
     public int VisualChildren {
-      get { return (int) GetValue(VisualChildrenProperty); }
-      set { SetValue(VisualChildrenProperty, value); }
+      get => (int) GetValue(VisualChildrenProperty);
+      set => SetValue(VisualChildrenProperty, value);
     }
 
     /// <summary>Current number of items in the visual tree.</summary>
-    /// <seealso cref="InitializeVisualTreeCounter" />
+    /// <seealso cref="InitializeVisualTreeCounter"/>
     public int SelectionCount {
-      get { return (int) GetValue(SelectionCountProperty); }
-      set { SetValue(SelectionCountProperty, value); }
+      get => (int) GetValue(SelectionCountProperty);
+      set => SetValue(SelectionCountProperty, value);
     }
 
     #endregion
 
     /// <summary>
-    ///   Called when the window was initialized.
+    ///   Called when the window is initialized.
     /// </summary>
     /// <param name="source">The source.</param>
-    /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
+    /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     /// <remarks>Most initialization work is done in here.</remarks>
     protected virtual void OnLoaded(object source, EventArgs e) {
       InitializePerformanceSettings();
@@ -186,120 +186,107 @@ namespace Demo.yFiles.Graph.LargeGraphs
 
     /// <summary>Initializes the list of optimal performance settings for the sample graphs.</summary>
     private void InitializePerformanceSettings() {
-      bestSettings = new[]
-      {
-        new PerformanceSettings
-        {
-          VirtualizationDisabled = false,
-          MinimumEdgeLength = 0,
-          EdgeBendThreshold = 0,
-          EdgeLabelVisibilityThreshold = 50,
-          NodeLabelVisibilityThreshold = 20,
-          NodeVirtualizationThreshold = 12,
-          EdgeVirtualizationThreshold = 20,
-          NodeLabelTextThreshold = 40,
-          EdgeLabelTextThreshold = 50,
-          ComplexNodeStyleThreshold = 60,
-        },
-        new PerformanceSettings
-        {
-          VirtualizationDisabled = false,
-          MinimumEdgeLength = 10,
-          EdgeBendThreshold = 50,
-          EdgeLabelVisibilityThreshold = 80,
-          NodeLabelVisibilityThreshold = 20,
-          NodeVirtualizationThreshold = 10,
-          EdgeVirtualizationThreshold = 15,
-          NodeLabelTextThreshold = 40,
-          EdgeLabelTextThreshold = 80,
-          ComplexNodeStyleThreshold = 100,
-        },
-        new PerformanceSettings
-        {
-          DirtyHandlingOptimizationEnabled = true,
-          LabelModelBakingEnabled = true,
-          VirtualizationDisabled = true,
-          MinimumEdgeLength = 10,
-          EdgeBendThreshold = 50,
-          EdgeLabelVisibilityThreshold = 80,
-          NodeLabelVisibilityThreshold = 20,
-          NodeVirtualizationThreshold = 4,
-          EdgeVirtualizationThreshold = 5,
-          NodeLabelTextThreshold = 40,
-          EdgeLabelTextThreshold = 80,
-          ComplexNodeStyleThreshold = 100,
-        },
-        new PerformanceSettings
-        {
-          DirtyHandlingOptimizationEnabled = true,
-          LabelModelBakingEnabled = true,
-          VirtualizationDisabled = true,
-          MinimumEdgeLength = 10,
-          EdgeBendThreshold = 50,
-          EdgeLabelVisibilityThreshold = 80,
-          NodeLabelVisibilityThreshold = 20,
-          NodeVirtualizationThreshold = 3,
-          EdgeVirtualizationThreshold = 4,
-          NodeLabelTextThreshold = 40,
-          EdgeLabelTextThreshold = 80,
-          ComplexNodeStyleThreshold = 100,
-        },
-        new PerformanceSettings
-        {
-          VirtualizationDisabled = false,
-          MinimumEdgeLength = 0,
-          EdgeBendThreshold = 0,
-          EdgeLabelVisibilityThreshold = 50,
-          NodeLabelVisibilityThreshold = 20,
-          NodeVirtualizationThreshold = 10,
-          EdgeVirtualizationThreshold = 18,
-          NodeLabelTextThreshold = 40,
-          EdgeLabelTextThreshold = 50,
-          ComplexNodeStyleThreshold = 60,
-        },
-        new PerformanceSettings
-        {
-          VirtualizationDisabled = false,
-          MinimumEdgeLength = 10,
-          EdgeBendThreshold = 0,
-          EdgeLabelVisibilityThreshold = 50,
-          NodeLabelVisibilityThreshold = 20,
-          NodeVirtualizationThreshold = 2,
-          EdgeVirtualizationThreshold = 4,
-          NodeLabelTextThreshold = 40,
-          EdgeLabelTextThreshold = 50,
-          ComplexNodeStyleThreshold = 60,
-        },
-        new PerformanceSettings
-        {
-          DirtyHandlingOptimizationEnabled = true,
-          LabelModelBakingEnabled = true,
-          VirtualizationDisabled = true,
-          MinimumEdgeLength = 10,
-          EdgeBendThreshold = 0,
-          EdgeLabelVisibilityThreshold = 50,
-          NodeLabelVisibilityThreshold = 20,
-          NodeVirtualizationThreshold = 2,
-          EdgeVirtualizationThreshold = 3,
-          NodeLabelTextThreshold = 40,
-          EdgeLabelTextThreshold = 50,
-          ComplexNodeStyleThreshold = 60,
-        },
-        new PerformanceSettings
-        {
-          DirtyHandlingOptimizationEnabled = true,
-          LabelModelBakingEnabled = true,
-          VirtualizationDisabled = true,
-          MinimumEdgeLength = 10,
-          EdgeBendThreshold = 0,
-          EdgeLabelVisibilityThreshold = 80,
-          NodeLabelVisibilityThreshold = 30,
-          NodeVirtualizationThreshold = 1.2,
-          EdgeVirtualizationThreshold = 1.8,
-          NodeLabelTextThreshold = 40,
-          EdgeLabelTextThreshold = 80,
-          ComplexNodeStyleThreshold = 100,
-        }
+      bestSettings = new[] {
+          new PerformanceSettings {
+              VirtualizationDisabled = false,
+              MinimumEdgeLength = 0,
+              EdgeBendThreshold = 0,
+              EdgeLabelVisibilityThreshold = 50,
+              NodeLabelVisibilityThreshold = 20,
+              NodeVirtualizationThreshold = 12,
+              EdgeVirtualizationThreshold = 20,
+              NodeLabelTextThreshold = 40,
+              EdgeLabelTextThreshold = 50,
+              ComplexNodeStyleThreshold = 60
+          },
+          new PerformanceSettings {
+              VirtualizationDisabled = false,
+              MinimumEdgeLength = 10,
+              EdgeBendThreshold = 50,
+              EdgeLabelVisibilityThreshold = 80,
+              NodeLabelVisibilityThreshold = 20,
+              NodeVirtualizationThreshold = 10,
+              EdgeVirtualizationThreshold = 15,
+              NodeLabelTextThreshold = 40,
+              EdgeLabelTextThreshold = 80,
+              ComplexNodeStyleThreshold = 100
+          },
+          new PerformanceSettings {
+              LabelModelBakingEnabled = true,
+              VirtualizationDisabled = true,
+              MinimumEdgeLength = 10,
+              EdgeBendThreshold = 50,
+              EdgeLabelVisibilityThreshold = 80,
+              NodeLabelVisibilityThreshold = 20,
+              NodeVirtualizationThreshold = 4,
+              EdgeVirtualizationThreshold = 5,
+              NodeLabelTextThreshold = 40,
+              EdgeLabelTextThreshold = 80,
+              ComplexNodeStyleThreshold = 100
+          },
+          new PerformanceSettings {
+              LabelModelBakingEnabled = true,
+              VirtualizationDisabled = true,
+              MinimumEdgeLength = 10,
+              EdgeBendThreshold = 50,
+              EdgeLabelVisibilityThreshold = 80,
+              NodeLabelVisibilityThreshold = 20,
+              NodeVirtualizationThreshold = 3,
+              EdgeVirtualizationThreshold = 4,
+              NodeLabelTextThreshold = 40,
+              EdgeLabelTextThreshold = 80,
+              ComplexNodeStyleThreshold = 100
+          },
+          new PerformanceSettings {
+              VirtualizationDisabled = false,
+              MinimumEdgeLength = 0,
+              EdgeBendThreshold = 0,
+              EdgeLabelVisibilityThreshold = 50,
+              NodeLabelVisibilityThreshold = 20,
+              NodeVirtualizationThreshold = 10,
+              EdgeVirtualizationThreshold = 18,
+              NodeLabelTextThreshold = 40,
+              EdgeLabelTextThreshold = 50,
+              ComplexNodeStyleThreshold = 60
+          },
+          new PerformanceSettings {
+              VirtualizationDisabled = false,
+              MinimumEdgeLength = 10,
+              EdgeBendThreshold = 0,
+              EdgeLabelVisibilityThreshold = 50,
+              NodeLabelVisibilityThreshold = 20,
+              NodeVirtualizationThreshold = 2,
+              EdgeVirtualizationThreshold = 4,
+              NodeLabelTextThreshold = 40,
+              EdgeLabelTextThreshold = 50,
+              ComplexNodeStyleThreshold = 60
+          },
+          new PerformanceSettings {
+              LabelModelBakingEnabled = true,
+              VirtualizationDisabled = true,
+              MinimumEdgeLength = 10,
+              EdgeBendThreshold = 0,
+              EdgeLabelVisibilityThreshold = 50,
+              NodeLabelVisibilityThreshold = 20,
+              NodeVirtualizationThreshold = 2,
+              EdgeVirtualizationThreshold = 3,
+              NodeLabelTextThreshold = 40,
+              EdgeLabelTextThreshold = 50,
+              ComplexNodeStyleThreshold = 60
+          },
+          new PerformanceSettings {
+              LabelModelBakingEnabled = true,
+              VirtualizationDisabled = true,
+              MinimumEdgeLength = 10,
+              EdgeBendThreshold = 0,
+              EdgeLabelVisibilityThreshold = 80,
+              NodeLabelVisibilityThreshold = 30,
+              NodeVirtualizationThreshold = 1.2,
+              EdgeVirtualizationThreshold = 1.8,
+              NodeLabelTextThreshold = 40,
+              EdgeLabelTextThreshold = 80,
+              ComplexNodeStyleThreshold = 100
+          }
       };
 
       // The following settings are common to all configurations.
@@ -312,11 +299,11 @@ namespace Demo.yFiles.Graph.LargeGraphs
     }
 
     /// <summary>
-    ///   Sets up a timer that measures frames per second and updates the <see cref="Fps" /> property.
+    ///   Sets up a timer that measures frames per second and updates the <see cref="Fps"/> property.
     /// </summary>
     private void InitializeFpsCounter() {
       var stopwatch = new Stopwatch();
-      int frames = 0;
+      var frames = 0;
       CompositionTarget.Rendering += delegate { frames++; };
 
       var dt = new DispatcherTimer(DispatcherPriority.Send) { Interval = TimeSpan.FromMilliseconds(300) };
@@ -329,7 +316,7 @@ namespace Demo.yFiles.Graph.LargeGraphs
     }
 
     /// <summary>
-    ///   Sets up a timer that counts the elements in the visual tree and updates the <see cref="VisualChildren" /> property.
+    ///   Sets up a timer that counts the elements in the visual tree and updates the <see cref="VisualChildren"/> property.
     /// </summary>
     private void InitializeVisualTreeCounter() {
       var dt = new DispatcherTimer(DispatcherPriority.Normal) { Interval = TimeSpan.FromMilliseconds(500) };
@@ -338,7 +325,7 @@ namespace Demo.yFiles.Graph.LargeGraphs
     }
 
     /// <summary>
-    ///   Sets up a timer that counts the currently selected elements and updates the <see cref="SelectionCount" /> property.
+    ///   Sets up a timer that counts the currently selected elements and updates the <see cref="SelectionCount"/> property.
     /// </summary>
     private void InitializeSelectionCountUpdater() {
       var dt = new DispatcherTimer(DispatcherPriority.Normal) { Interval = TimeSpan.FromMilliseconds(100) };
@@ -355,38 +342,36 @@ namespace Demo.yFiles.Graph.LargeGraphs
       var files = Directory.GetFiles(path, "*.graphmlz");
 
       var graphInfos = (from file in files
-        let counts = Regex.Match(Path.GetFileNameWithoutExtension(file), @"_(?<nodes>\d+)_(?<edges>\d+)")
-        let nodes = int.Parse(counts.Groups["nodes"].Value, CultureInfo.InvariantCulture)
-        let edges = int.Parse(counts.Groups["edges"].Value, CultureInfo.InvariantCulture)
-        let type = file.Contains("balloon") ? "Tree" : "Hierarchic"
-        let displayName = string.Format("{0}: {1} nodes, {2} edges", type, nodes, edges)
-        select new SampleGraphInfo
-        {
-          Filename = file,
-          DisplayName = displayName,
-          NodeCount = nodes,
-          EdgeCount = edges,
-          Type = type
-        }).OrderBy(i => i.Type).ThenBy(i => i.NodeCount).ToList();
+                        let counts =
+                            Regex.Match(Path.GetFileNameWithoutExtension(file), @"_(?<nodes>\d+)_(?<edges>\d+)")
+                        let nodes = int.Parse(counts.Groups["nodes"].Value, CultureInfo.InvariantCulture)
+                        let edges = int.Parse(counts.Groups["edges"].Value, CultureInfo.InvariantCulture)
+                        let type = file.Contains("radialtree") ? "Tree" : "Hierarchical"
+                        let displayName = string.Format("{0}: {1} nodes, {2} edges", type, nodes, edges)
+                        select new SampleGraphInfo {
+                            Filename = file,
+                            DisplayName = displayName,
+                            NodeCount = nodes,
+                            EdgeCount = edges,
+                            Type = type
+                        }).OrderBy(i => i.Type).ThenBy(i => i.NodeCount).ToList();
 
       graphChooserBox.ItemsSource = graphInfos;
     }
 
     /// <summary>
-    ///   Initializes the input mode for the <see cref="GraphControl" />.
+    ///   Initializes the input mode for the <see cref="GraphControl"/>.
     /// </summary>
     private void InitializeInputMode() {
-      var geim = new GraphEditorInputMode
-      {
-        // These two sub-input modes need to look at all elements in the graph to determine whether they are
-        // responsible for a beginning drag. This slows down initial UI response to marquee selection or panning the
-        // viewport in graphs with a large number of items.
-        // Depending on the exact needs it might be better to enable those only when edges or bends actually need to
-        // be created.
-        // Of course, using a GraphViewerInputMode here sidesteps the problem completely, if no graph editing is
-        // needed.
-        CreateEdgeInputMode = { Enabled = false },
-        CreateBendInputMode = { Enabled = false }
+      var geim = new GraphEditorInputMode {
+          // These two sub-input modes need to look at all elements in the graph to determine whether they are
+          // responsible for a beginning drag. This slows down initial UI response to marquee selection or panning the
+          // viewport in graphs with a large number of items.
+          // Depending on the exact needs it might be better to enable those only when edges or bends actually need to
+          // be created.
+          // Of course, using a GraphViewerInputMode here sidesteps the problem completely, if no graph editing is
+          // needed.
+          CreateEdgeInputMode = { Enabled = false }, CreateBendInputMode = { Enabled = false }
       };
       graphControl.InputMode = geim;
     }
@@ -399,7 +384,7 @@ namespace Demo.yFiles.Graph.LargeGraphs
     ///   Called when the »exit« menu item was selected.
     /// </summary>
     /// <param name="sender">The object that raised the event.</param>
-    /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
+    /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void OnExitClicked(object sender, EventArgs e) {
       Application.Current.Shutdown();
     }
@@ -408,7 +393,7 @@ namespace Demo.yFiles.Graph.LargeGraphs
     ///   Called when the »previous graph« button was clicked.
     /// </summary>
     /// <param name="sender">The object that raised the event.</param>
-    /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
+    /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void OnPreviousButtonClicked(object sender, EventArgs e) {
       graphChooserBox.SelectedIndex--;
     }
@@ -417,7 +402,7 @@ namespace Demo.yFiles.Graph.LargeGraphs
     ///   Called when the »next graph« button was clicked.
     /// </summary>
     /// <param name="sender">The object that raised the event.</param>
-    /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
+    /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void OnNextButtonClicked(object sender, EventArgs e) {
       graphChooserBox.SelectedIndex++;
     }
@@ -426,7 +411,7 @@ namespace Demo.yFiles.Graph.LargeGraphs
     ///   Called when the selected item in the graph chooser combo box has changed.
     /// </summary>
     /// <param name="sender">The object that raised the event.</param>
-    /// <param name="e">The <see cref="SelectionChangedEventArgs" /> instance containing the event data.</param>
+    /// <param name="e">The <see cref="SelectionChangedEventArgs"/> instance containing the event data.</param>
     private async void OnGraphChooserSelectionChanged(object sender, SelectionChangedEventArgs e) {
       var info = graphChooserBox.SelectedValue as SampleGraphInfo;
       if (info == null) {
@@ -437,48 +422,10 @@ namespace Demo.yFiles.Graph.LargeGraphs
     }
 
     /// <summary>
-    ///   Called when the graph control's zoom level changed.
-    /// </summary>
-    /// <param name="sender">The object that raised the event.</param>
-    /// <param name="args">
-    ///   The <see cref="DependencyPropertyChangedEventArgs" /> instance containing the event data.
-    /// </param>
-    /// <remarks>
-    ///   This event handler only has an effect if
-    ///   <see cref="LargeGraphs.PerformanceSettings.DirtyHandlingOptimizationEnabled" /> is set.
-    /// </remarks>
-    private void OnGraphControlZoomChanged(object sender, DependencyPropertyChangedEventArgs args) {
-      var p = PerformanceSettings;
-
-      if (!p.DirtyHandlingOptimizationEnabled) {
-        return;
-      }
-
-      var oldZoom = (double) args.OldValue;
-      var newZoom = (double) args.NewValue;
-
-      // Zoom levels where something changes in the visualization, so we have to invalidate the canvas object.
-      // The same thing can theoretically be done when model items are edited or otherwise changed to support a
-      // changing graph.
-      var zoomLevels = new[]
-      {
-        p.EdgeBendThreshold, p.EdgeLabelVisibilityThreshold, p.NodeLabelVisibilityThreshold, p.EdgeLabelTextThreshold,
-        p.NodeLabelTextThreshold, p.ComplexNodeStyleThreshold, p.EdgeVirtualizationThreshold,
-        p.NodeVirtualizationThreshold
-      }.Select(x => x / 100);
-      if (zoomLevels.Any(l => oldZoom < l && newZoom >= l || newZoom < l && oldZoom >= l)) {
-        // Set the CanvasObject's dirty flag to force an update on next repaint
-        WalkCanvasObjectTree(graphControl.RootGroup, x => x.Dirty = true);
-        // Force the next repaint
-        graphControl.Invalidate();
-      }
-    }
-
-    /// <summary>
     ///   Called when The »Zoom animation« button was clicked.
     /// </summary>
     /// <param name="sender">The object that raised the event.</param>
-    /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+    /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
     private async void OnZoomAnimationClicked(object sender, RoutedEventArgs e) {
       StartAnimation();
       var node = GetRandomNode();
@@ -493,7 +440,7 @@ namespace Demo.yFiles.Graph.LargeGraphs
     ///   Called when the »Pan animation« button was clicked.
     /// </summary>
     /// <param name="sender">The object that raised the event.</param>
-    /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+    /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
     private async void OnPanAnimationClicked(object sender, RoutedEventArgs e) {
       StartAnimation();
       var anim = new CirclePanAnimation(graphControl, 2, TimeSpan.FromSeconds(2));
@@ -505,7 +452,7 @@ namespace Demo.yFiles.Graph.LargeGraphs
     ///   Called when the »Spiral zoom animation« button was clicked.
     /// </summary>
     /// <param name="sender">The object that raised the event.</param>
-    /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+    /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
     private async void OnSpiralZoomAnimationClicked(object sender, RoutedEventArgs e) {
       StartAnimation();
       var node = GetRandomNode();
@@ -519,7 +466,7 @@ namespace Demo.yFiles.Graph.LargeGraphs
     }
 
     /// <summary>
-    /// Called when »Move nodes« button was clicked.
+    ///   Called when »Move nodes« button was clicked.
     /// </summary>
     /// <param name="sender">The object that raised the event.</param>
     /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
@@ -527,11 +474,12 @@ namespace Demo.yFiles.Graph.LargeGraphs
       StartAnimation();
       var selection = graphControl.Selection;
       // If there is nothing selected, just use a random node
-      if (selection.SelectedNodes.Count == 0) {
-        selection.SetSelected(GetRandomNode(), true);
+      if (selection.Nodes.Count == 0) {
+        selection.Add(GetRandomNode());
       }
 
-      var animation = new CircleNodeAnimation(graphControl.Graph, selection.SelectedNodes, graphControl.Viewport.Width / 10, 2, TimeSpan.FromSeconds(2));
+      var animation = new CircleNodeAnimation(graphControl.Graph, selection.Nodes, graphControl.Viewport.Width / 10, 2,
+          TimeSpan.FromSeconds(2));
       await animator.Animate(animation);
       EndAnimation();
     }
@@ -540,7 +488,7 @@ namespace Demo.yFiles.Graph.LargeGraphs
     ///   Called when the »Select nothing« button was clicked..
     /// </summary>
     /// <param name="sender">The object that raised the event.</param>
-    /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+    /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
     private void OnSelectNothingClicked(object sender, RoutedEventArgs e) {
       graphControl.Selection.Clear();
     }
@@ -549,7 +497,7 @@ namespace Demo.yFiles.Graph.LargeGraphs
     ///   Called when the »Select 1000 random nodes« button was clicked.
     /// </summary>
     /// <param name="sender">The object that raised the event.</param>
-    /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+    /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
     private void OnSelect1000NodesClicked(object sender, RoutedEventArgs e) {
       Select1000(graphControl.Graph.Nodes);
     }
@@ -558,7 +506,7 @@ namespace Demo.yFiles.Graph.LargeGraphs
     ///   Called when the »Select 1000 random edges« button was clicked.
     /// </summary>
     /// <param name="sender">The object that raised the event.</param>
-    /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+    /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
     private void OnSelect1000EdgesClicked(object sender, RoutedEventArgs e) {
       Select1000(graphControl.Graph.Edges);
     }
@@ -567,7 +515,7 @@ namespace Demo.yFiles.Graph.LargeGraphs
     ///   Called when the »Select 1000 random labels« button was clicked.
     /// </summary>
     /// <param name="sender">The object that raised the event.</param>
-    /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+    /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
     private void OnSelect1000LabelsClicked(object sender, RoutedEventArgs e) {
       Select1000(graphControl.Graph.Labels);
     }
@@ -576,7 +524,7 @@ namespace Demo.yFiles.Graph.LargeGraphs
     ///   Called when the »Select all nodes« button was clicked.
     /// </summary>
     /// <param name="sender">The object that raised the event.</param>
-    /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+    /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
     private void OnSelectAllNodesClicked(object sender, RoutedEventArgs e) {
       SelectAll(graphControl.Graph.Nodes);
     }
@@ -585,7 +533,7 @@ namespace Demo.yFiles.Graph.LargeGraphs
     ///   Called when the »Select all edges« button was clicked.
     /// </summary>
     /// <param name="sender">The object that raised the event.</param>
-    /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+    /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
     private void OnSelectAllEdgesClicked(object sender, RoutedEventArgs e) {
       SelectAll(graphControl.Graph.Edges);
     }
@@ -594,7 +542,7 @@ namespace Demo.yFiles.Graph.LargeGraphs
     ///   Called when the »Select all labels« button was clicked.
     /// </summary>
     /// <param name="sender">The object that raised the event.</param>
-    /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+    /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
     private void OnSelectAllLabelsClicked(object sender, RoutedEventArgs e) {
       SelectAll(graphControl.Graph.Labels);
     }
@@ -603,24 +551,24 @@ namespace Demo.yFiles.Graph.LargeGraphs
     ///   Called when the »Select everything« button was clicked.
     /// </summary>
     /// <param name="sender">The object that raised the event.</param>
-    /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+    /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
     private void OnSelectEverythingClicked(object sender, RoutedEventArgs e) {
       foreach (var item in graphControl.Graph.Nodes) {
-        graphControl.Selection.SetSelected(item, true);
+        graphControl.Selection.Add(item);
       }
       foreach (var item in graphControl.Graph.Edges) {
-        graphControl.Selection.SetSelected(item, true);
+        graphControl.Selection.Add(item);
       }
       foreach (var item in graphControl.Graph.Labels) {
-        graphControl.Selection.SetSelected(item, true);
+        graphControl.Selection.Add(item);
       }
     }
 
     /// <summary>
-    ///   Called when a property in <see cref="PerformanceSettings" /> changes.
+    ///   Called when a property in <see cref="PerformanceSettings"/> changes.
     /// </summary>
     /// <param name="sender">The object that raised the event.</param>
-    /// <param name="e">The <see cref="PropertyChangedEventArgs" /> instance containing the event data.</param>
+    /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
     /// <remarks>
     ///   This is the main dispatcher for changes in the performance settings. Styles and other settings are updated if needed,
     ///   depending on the property that changed.
@@ -630,7 +578,6 @@ namespace Demo.yFiles.Graph.LargeGraphs
       if (string.IsNullOrEmpty(e.PropertyName)) {
         UpdateStyles();
         UpdateSelectionHandlesSetting();
-        UpdateDirtyHandlingOptimizationSetting(graphControl);
         UpdateLabelModelBakingSetting(graphControl.Graph);
         UpdateOverviewDisabledSetting();
         graphControl.Invalidate();
@@ -657,9 +604,6 @@ namespace Demo.yFiles.Graph.LargeGraphs
           break;
         case "CustomSelectionDecoratorEnabled":
           RefreshSelection();
-          break;
-        case "DirtyHandlingOptimizationEnabled":
-          UpdateDirtyHandlingOptimizationSetting(graphControl);
           break;
         case "LabelModelBakingEnabled":
           UpdateLabelModelBakingSetting(graphControl.Graph);
@@ -689,15 +633,15 @@ namespace Demo.yFiles.Graph.LargeGraphs
     ///   Gets the number of descendants of a given control in the WPF visual tree.
     /// </summary>
     /// <param name="root">The control to get descendants of.</param>
-    /// <returns>The number of descendants of <paramref name="root" /></returns>
-    /// <seealso cref="InitializeVisualTreeCounter" />
+    /// <returns>The number of descendants of <paramref name="root"/></returns>
+    /// <seealso cref="InitializeVisualTreeCounter"/>
     private static int GetDescendantCountInVisualTree(DependencyObject root) {
       if (root == null) {
         return 0;
       }
       var childrenCount = VisualTreeHelper.GetChildrenCount(root);
       var sum = 0;
-      for (int i = 0; i < childrenCount; i++) {
+      for (var i = 0; i < childrenCount; i++) {
         var child = VisualTreeHelper.GetChild(root, i);
         if (child != null) {
           sum += GetDescendantCountInVisualTree(child);
@@ -707,7 +651,7 @@ namespace Demo.yFiles.Graph.LargeGraphs
     }
 
     /// <summary>
-    ///   Loads a graph asynchronously and places it in the <see cref="GraphControl" />.
+    ///   Loads a graph asynchronously and places it in the <see cref="GraphControl"/>.
     /// </summary>
     /// <param name="info">The information.</param>
     /// <remarks>The loading indicator is shown prior to loading and hidden afterwards</remarks>
@@ -748,7 +692,6 @@ namespace Demo.yFiles.Graph.LargeGraphs
       graphLoadingLabel.Visibility = Visibility.Collapsed;
 
       graphControl.Graph = g;
-      UpdateDirtyHandlingOptimizationSetting(graphControl);
       await graphControl.FitGraphBounds();
     }
 
@@ -757,16 +700,16 @@ namespace Demo.yFiles.Graph.LargeGraphs
     /// </summary>
     private void SelectAll(IEnumerable<IModelItem> items) {
       foreach (var item in items) {
-        graphControl.Selection.SetSelected(item, true);
+        graphControl.Selection.Add(item);
       }
     }
 
     /// <summary>
-    ///   Selects 1000 items at random of the given enumarable.
+    ///   Selects 1000 items at random of the given enumerable.
     /// </summary>
     private void Select1000(IEnumerable<IModelItem> items) {
       foreach (var item in items.OrderBy(mi => rnd.Next()).Take(1000)) {
-        graphControl.Selection.SetSelected(item, true);
+        graphControl.Selection.Add(item);
       }
     }
 
@@ -791,10 +734,10 @@ namespace Demo.yFiles.Graph.LargeGraphs
     #region Performance setting helpers
 
     /// <summary>
-    ///   Sets a new <see cref="T:PerformanceSettings" /> instance as the current one.
+    ///   Sets a new <see cref="T:PerformanceSettings"/> instance as the current one.
     /// </summary>
     /// <param name="newSettings">The new settings instance.</param>
-    /// <remarks>Since the instance is mutable, this will assign a copy to <see cref="PerformanceSettings" />.</remarks>
+    /// <remarks>Since the instance is mutable, this will assign a copy to <see cref="PerformanceSettings"/>.</remarks>
     private void UpdatePerformanceSettings(PerformanceSettings newSettings) {
       if (PerformanceSettings != null) {
         PerformanceSettings.PropertyChanged -= OnPerformanceSettingsPropertyChanged;
@@ -821,11 +764,11 @@ namespace Demo.yFiles.Graph.LargeGraphs
     }
 
     /// <summary>
-    ///   Updates the styles according to the values in <see cref="PerformanceSettings" />.
+    ///   Updates the styles according to the values in <see cref="PerformanceSettings"/>.
     /// </summary>
     /// <remarks>
-    ///   See <see cref="LargeGraphs.PerformanceSettings.FastStylesEnabled" /> and
-    ///   <see cref="LargeGraphs.PerformanceSettings.VirtualizationDisabled" /> for a detailed description of the optimizations
+    ///   See <see cref="LargeGraphs.PerformanceSettings.FastStylesEnabled"/> and
+    ///   <see cref="LargeGraphs.PerformanceSettings.VirtualizationDisabled"/> for a detailed description of the optimizations
     ///   involved.
     /// </remarks>
     private void UpdateStyles() {
@@ -837,78 +780,59 @@ namespace Demo.yFiles.Graph.LargeGraphs
 
       if (p.FastStylesEnabled) {
         // Nodes
-        nodeStyle.Style = new LevelOfDetailNodeStyle
-        {
-          Styles =
-          {
-            { 0, DemoStyles.CreateDemoShapeNodeStyle(ShapeNodeShape.Rectangle) },
-            {
-              p.ComplexNodeStyleThreshold / 100 / 2,
-              DemoStyles.CreateDemoNodeStyle()
-            },
-            { p.ComplexNodeStyleThreshold / 100,
-              new RectangleNodeStyle {
-                Corners = Corners.TopLeft | Corners.BottomRight,
-                Pen = new Pen(Themes.PaletteOrange.Stroke, 1.5),
-                Brush = new LinearGradientBrush {
-                  StartPoint= new Point(0, 0),
-                  EndPoint = new Point(0, 1),
-                  GradientStops = {
-                    new GradientStop(((SolidColorBrush) Themes.PaletteOrange.NodeLabelFill).Color, 0),
-                    new GradientStop(((SolidColorBrush) Themes.PaletteOrange.Fill).Color, 1)
-                  }
+        nodeStyle.Style = new LevelOfDetailNodeStyle {
+            Styles = {
+                { 0, DemoStyles.CreateDemoShapeNodeStyle(ShapeNodeShape.Rectangle) },
+                { p.ComplexNodeStyleThreshold / 100 / 2, DemoStyles.CreateDemoNodeStyle() }, {
+                    p.ComplexNodeStyleThreshold / 100,
+                    new RectangleNodeStyle {
+                        Corners = Corners.TopLeft | Corners.BottomRight,
+                        Pen = new Pen(Themes.PaletteOrange.Stroke, 1.5),
+                        Brush = new LinearGradientBrush {
+                            StartPoint = new Point(0, 0),
+                            EndPoint = new Point(0, 1),
+                            GradientStops = {
+                                new GradientStop(((SolidColorBrush) Themes.PaletteOrange.NodeLabelFill).Color, 0),
+                                new GradientStop(((SolidColorBrush) Themes.PaletteOrange.Fill).Color, 1)
+                            }
+                        }
+                    }
                 }
-              }
             }
-          }
         };
         // Edges
-        edgeStyle.Style = new FastEdgeStyle
-        {
-          DrawBendsThreshold = p.EdgeBendThreshold / 100,
-          MinimumEdgeLength = p.MinimumEdgeLength
+        edgeStyle.Style = new FastEdgeStyle {
+            DrawBendsThreshold = p.EdgeBendThreshold / 100, MinimumEdgeLength = p.MinimumEdgeLength
         };
         // Node labels
-        nodeLabelStyle.Style = new LevelOfDetailLabelStyle
-        {
-          Styles =
-          {
-            { 0, VoidLabelStyle.Instance },
-            { p.NodeLabelVisibilityThreshold / 100, new FastLabelStyle(AutoFlipMode.AutoFlip) },
-            { p.NodeLabelTextThreshold / 100, simpleNodeLabelStyle }
-          }
+        nodeLabelStyle.Style = new LevelOfDetailLabelStyle {
+            Styles = {
+                { 0, VoidLabelStyle.Instance },
+                { p.NodeLabelVisibilityThreshold / 100, new FastLabelStyle(AutoFlipMode.AutoFlip) },
+                { p.NodeLabelTextThreshold / 100, simpleNodeLabelStyle }
+            }
         };
         // Edge labels
-        edgeLabelStyle.Style = new LevelOfDetailLabelStyle
-        {
-          Styles =
-          {
-            { 0, VoidLabelStyle.Instance },
-            {
-              p.EdgeLabelVisibilityThreshold / 100,
-              new FastLabelStyle(AutoFlipMode.AutoFlip) { BackgroundBrush = Brushes.White }
-            },
-            { p.EdgeLabelTextThreshold / 100, simpleEdgeLabelStyle }
-          }
+        edgeLabelStyle.Style = new LevelOfDetailLabelStyle {
+            Styles = {
+                { 0, VoidLabelStyle.Instance }, {
+                    p.EdgeLabelVisibilityThreshold / 100,
+                    new FastLabelStyle(AutoFlipMode.AutoFlip) { BackgroundBrush = Brushes.White }
+                },
+                { p.EdgeLabelTextThreshold / 100, simpleEdgeLabelStyle }
+            }
         };
       } else {
         nodeStyle.Style = DemoStyles.CreateDemoNodeStyle();
-        edgeStyle.Style = DemoStyles.CreateDemoEdgeStyle(showTargetArrow: false);
+        edgeStyle.Style = DemoStyles.CreateDemoEdgeStyle(showTargetArrow : false);
         edgeLabelStyle.Style = simpleEdgeLabelStyle;
         nodeLabelStyle.Style = simpleNodeLabelStyle;
       }
 
       // If we disable virtualization we just wrap the style we had so far into a Virtualization*StyleDecorator
       if (p.VirtualizationDisabled) {
-        nodeStyle.Style = new VirtualizationNodeStyleDecorator(p.NodeVirtualizationThreshold / 100,
-            nodeStyle.Style);
-        edgeStyle.Style = new VirtualizationEdgeStyleDecorator(p.EdgeVirtualizationThreshold / 100,
-            edgeStyle.Style);
-      }
-
-      // Set the canvas objects to dirty if dirty optimization is enabled. Otherwise we won't see a change
-      if (p.DirtyHandlingOptimizationEnabled) {
-        WalkCanvasObjectTree(graphControl.RootGroup, x => x.Dirty = true);
+        nodeStyle.Style = new VirtualizationNodeStyleDecorator(p.NodeVirtualizationThreshold / 100, nodeStyle.Style);
+        edgeStyle.Style = new VirtualizationEdgeStyleDecorator(p.EdgeVirtualizationThreshold / 100, edgeStyle.Style);
       }
 
       // Repaint the graph control to update the visuals according to the changed style
@@ -916,52 +840,43 @@ namespace Demo.yFiles.Graph.LargeGraphs
     }
 
     /// <summary>
-    ///   Sets the selection decorators on the given <see cref="IGraph" /> instance.
+    ///   Sets the selection decorators on the given <see cref="IGraph"/> instance.
     /// </summary>
     /// <param name="g">The graph.</param>
     /// <remarks>
     ///   This actually sets the selection decorator implementation by using a custom predicate which simply queries the
-    ///   current <see cref="PerformanceSettings" />. Thus the decoration is always up-to-date; the only thing that's needed
+    ///   current <see cref="PerformanceSettings"/>. Thus the decoration is always up-to-date; the only thing that's needed
     ///   when the setting changes is to re-select all selected items to re-create the respective selection decoration visuals.
     /// </remarks>
     private void SetSelectionDecorators(IGraph g) {
-      var nodeStyleDecorationInstaller = new NodeStyleDecorationInstaller
-      {
-        NodeStyle = new FastNodeSelectionStyle(null, new Pen(Brushes.DarkRed, 4)),
-        ZoomPolicy = StyleDecorationZoomPolicy.WorldCoordinates,
-        Margins = InsetsD.Empty
+      var nodeStyleDecorationRenderer = new NodeStyleIndicatorRenderer {
+          NodeStyle = new FastNodeSelectionStyle(null, new Pen(Brushes.DarkRed, 4)),
+          ZoomPolicy = StyleIndicatorZoomPolicy.WorldCoordinates,
+          Margins = InsetsD.Empty
       };
-      var edgeStyleDecorationInstaller = new EdgeStyleDecorationInstaller
-      {
-        EdgeStyle = new FastEdgeSelectionStyle(new Pen(Brushes.DarkRed, 3)),
-        ZoomPolicy = StyleDecorationZoomPolicy.WorldCoordinates
+      var edgeStyleDecorationRenderer = new EdgeStyleIndicatorRenderer {
+          EdgeStyle = new FastEdgeSelectionStyle(new Pen(Brushes.DarkRed, 3)),
+          ZoomPolicy = StyleIndicatorZoomPolicy.WorldCoordinates
       };
-      var labelStyleDecorationInstaller = new LabelStyleDecorationInstaller
-      {
-        LabelStyle = new FastLabelSelectionStyle(null, new Pen(Brushes.LightGray, 4)),
-        ZoomPolicy = StyleDecorationZoomPolicy.WorldCoordinates,
-        Margins = InsetsD.Empty
+      var labelStyleDecorationRenderer = new LabelStyleIndicatorRenderer {
+          LabelStyle = new FastLabelSelectionStyle(null, new Pen(Brushes.LightGray, 4)),
+          ZoomPolicy = StyleIndicatorZoomPolicy.WorldCoordinates,
+          Margins = InsetsD.Empty
       };
 
       var decorator = g.GetDecorator();
       Predicate<IModelItem> useCustomDecorationPredicate = _ => PerformanceSettings.CustomSelectionDecoratorEnabled;
-      decorator.NodeDecorator.SelectionDecorator.SetImplementation(
-          useCustomDecorationPredicate,
-          nodeStyleDecorationInstaller);
-      decorator.EdgeDecorator.SelectionDecorator.SetImplementation(
-          useCustomDecorationPredicate,
-          edgeStyleDecorationInstaller);
-      decorator.LabelDecorator.SelectionDecorator.SetImplementation(
-          useCustomDecorationPredicate,
-          labelStyleDecorationInstaller);
+      decorator.Nodes.SelectionRenderer.AddConstant(useCustomDecorationPredicate, nodeStyleDecorationRenderer);
+      decorator.Edges.SelectionRenderer.AddConstant(useCustomDecorationPredicate, edgeStyleDecorationRenderer);
+      decorator.Labels.SelectionRenderer.AddConstant(useCustomDecorationPredicate, labelStyleDecorationRenderer);
     }
 
     /// <summary>
     ///   Updates the input mode to reflect the current value of the
-    ///   <see cref="LargeGraphs.PerformanceSettings.SelectionHandlesDisabled" /> setting.
+    ///   <see cref="LargeGraphs.PerformanceSettings.SelectionHandlesDisabled"/> setting.
     /// </summary>
     /// <remarks>
-    ///   See <see cref="LargeGraphs.PerformanceSettings.SelectionHandlesDisabled" /> for a rationale for this
+    ///   See <see cref="LargeGraphs.PerformanceSettings.SelectionHandlesDisabled"/> for a rationale for this
     ///   optimization.
     /// </remarks>
     private void UpdateSelectionHandlesSetting() {
@@ -974,31 +889,31 @@ namespace Demo.yFiles.Graph.LargeGraphs
 
     /// <summary>
     ///   Updates all labels in the graph according to the current value of the
-    ///   <see cref="LargeGraphs.PerformanceSettings.LabelModelBakingEnabled" /> setting.
+    ///   <see cref="LargeGraphs.PerformanceSettings.LabelModelBakingEnabled"/> setting.
     /// </summary>
     /// <remarks>
     ///   <para>
-    ///     See <see cref="LargeGraphs.PerformanceSettings.LabelModelBakingEnabled" /> for a rationale for this optimization.
+    ///     See <see cref="LargeGraphs.PerformanceSettings.LabelModelBakingEnabled"/> for a rationale for this optimization.
     ///   </para>
     ///   <para>
-    ///     When activating this setting, all labels get a <see cref="FreeLabelModel" />. An
-    ///     <see cref="ILabelModelParameterFinder" /> instance from the label model helps finding the correct parameter so that
+    ///     When activating this setting, all labels get a <see cref="FreeLabelModel"/>. An
+    ///     <see cref="ILabelModelParameterFinder"/> instance from the label model helps finding the correct parameter so that
     ///     the labels don't change their positions. When disabling this setting, the same process is used, just in reverse,
     ///     that is, the respective label model for node and edge labels is used and its parameter finder asked for a good
     ///     parameter.
     ///   </para>
     ///   <para>
-    ///     Labels using the <see cref="FreeLabelModel" /> are positioned absolutely in the canvas. Thus they won't move
+    ///     Labels using the <see cref="FreeLabelModel"/> are positioned absolutely in the canvas. Thus they won't move
     ///     when their owners move. If there is no need of getting the last bit of performance out of yFiles,
-    ///     <see cref="FreeNodeLabelModel" /> and <see cref="FreeEdgeLabelModel" /> can be used instead. They are a bit slower
-    ///     than <see cref="FreeLabelModel" />, but have the benefit that they are anchored relative to their owner, creating a
+    ///     <see cref="FreeNodeLabelModel"/> and <see cref="FreeEdgeLabelModel"/> can be used instead. They are a bit slower
+    ///     than <see cref="FreeLabelModel"/>, but have the benefit that they are anchored relative to their owner, creating a
     ///     less jarring experience than labels that just stay where they were when their owner moves.
     ///   </para>
     ///   <para>
     ///     Another option (not shown in this demo) would be to convert between the label models on affected labels prior
     ///     to and after an edit operation, such as moving nodes, adding or moving bends to edges, etc. so that the editing
     ///     experience uses the expensive label models, but all non-affected labels (and after finishing the edit, all labels)
-    ///     use a <see cref="FreeLabelModel" />.
+    ///     use a <see cref="FreeLabelModel"/>.
     ///   </para>
     /// </remarks>
     private void UpdateLabelModelBakingSetting(IGraph graph) {
@@ -1010,9 +925,9 @@ namespace Demo.yFiles.Graph.LargeGraphs
         bakedEdgeLabelModel = FreeLabelModel.Instance;
         bakedPortLabelModel = FreeLabelModel.Instance;
       } else {
-        bakedNodeLabelModel = new InteriorLabelModel();
+        bakedNodeLabelModel = new InteriorNodeLabelModel();
         bakedEdgeLabelModel = new EdgeSegmentLabelModel();
-        bakedPortLabelModel = new ExteriorLabelModel();
+        bakedPortLabelModel = new ExteriorNodeLabelModel();
       }
 
       foreach (var l in graph.Labels) {
@@ -1024,46 +939,12 @@ namespace Demo.yFiles.Graph.LargeGraphs
         } else if (l.Owner is IPort) {
           bakedLabelModel = bakedPortLabelModel;
         }
-        var finder = bakedLabelModel.Lookup<ILabelModelParameterFinder>() ?? DefaultLabelModelParameterFinder.Instance;
-        var param = finder.FindBestParameter(l, bakedLabelModel, l.GetLayout());
-        graph.SetLabelLayoutParameter(l, param);
+        var finder = bakedLabelModel.GetContext(l).Lookup<ILabelModelParameterFinder>();
+        if (finder != null) {
+          var param = finder.FindBestParameter(l.GetLayout());
+          graph.SetLabelLayoutParameter(l, param);
+        }
       }
-    }
-
-    /// <summary>
-    ///   Updates the canvas object descriptors according to the current value of the
-    ///   <see cref="LargeGraphs.PerformanceSettings.DirtyHandlingOptimizationEnabled" /> setting.
-    /// </summary>
-    /// <remarks>
-    ///   See <see cref="LargeGraphs.PerformanceSettings.DirtyHandlingOptimizationEnabled" /> for a detailed description of
-    ///   this optimization.
-    /// </remarks>
-    private void UpdateDirtyHandlingOptimizationSetting(CanvasControl canvas) {
-      ICanvasObjectDescriptor nD;
-      ICanvasObjectDescriptor lD;
-      ICanvasObjectDescriptor eD;
-
-      if (PerformanceSettings.DirtyHandlingOptimizationEnabled) {
-        nD = new MyNodeStyleDescriptor();
-        lD = new MyLabelStyleDescriptor();
-        eD = new MyEdgeStyleDescriptor();
-      } else {
-        nD = GraphModelManager.DefaultNodeDescriptor;
-        lD = GraphModelManager.DefaultLabelDescriptor;
-        eD = GraphModelManager.DefaultEdgeDescriptor;
-      }
-
-      WalkCanvasObjectTree(canvas.RootGroup, delegate(ICanvasObject o) {
-        if (o.UserObject is INode) {
-          o.Descriptor = nD;
-        }
-        if (o.UserObject is IEdge) {
-          o.Descriptor = eD;
-        }
-        if (o.UserObject is ILabel) {
-          o.Descriptor = lD;
-        }
-      });
     }
 
     #endregion
@@ -1079,32 +960,15 @@ namespace Demo.yFiles.Graph.LargeGraphs
     }
 
     /// <summary>
-    ///   Visits every node in the canvas object tree and executes an action on the respective <see cref="ICanvasObject" />.
-    /// </summary>
-    /// <param name="root">The root of the tree.</param>
-    /// <param name="action">The action to execute on each <see cref="ICanvasObject" />.</param>
-    private static void WalkCanvasObjectTree(ICanvasObject root, Action<ICanvasObject> action) {
-      if (root == null) {
-        return;
-      }
-      action(root);
-      // Recurse if the canvas object is a group
-      var group = root as ICanvasObjectGroup;
-      if (group != null) {
-        foreach (var child in group) {
-          WalkCanvasObjectTree(child, action);
-        }
-      }
-    }
-
-    /// <summary>
     ///   De-selects all elements and re-selects them again.
     /// </summary>
     /// <remarks>This is needed to update the visuals for the handles or selection decoration.</remarks>
     private void RefreshSelection() {
-      var oldSelection = graphControl.Selection;
-      graphControl.Selection = new GraphSelection(graphControl.Graph);
-      graphControl.Selection = oldSelection;
+      var oldSelection = graphControl.Selection.ToList();
+      graphControl.Selection.Clear();
+      foreach (var item in oldSelection) {
+        graphControl.Selection.Add(item);
+      }
     }
 
     #endregion
@@ -1113,13 +977,13 @@ namespace Demo.yFiles.Graph.LargeGraphs
   /// <summary>
   ///   Simple class to model the properties of the supplied sample graphs.
   /// </summary>
-  /// <seealso cref="LargeGraphsWindow.InitializeGraphChooserBox" />
+  /// <seealso cref="LargeGraphsWindow.InitializeGraphChooserBox"/>
   public class SampleGraphInfo
   {
     /// <summary>
     ///   Gets or sets the type of the graph.
     /// </summary>
-    /// <remarks>This is either »Tree« or »Hierarchic«.</remarks>
+    /// <remarks>This is either "Tree" or "Hierarchical".</remarks>
     public string Type { get; set; }
 
     /// <summary>
@@ -1153,14 +1017,9 @@ namespace Demo.yFiles.Graph.LargeGraphs
   public class GradientConverter : IValueConverter
   {
     /// <summary>The list of colors</summary>
-    private readonly List<Color> colors = new List<Color>
-    {
-      Colors.LimeGreen,
-      Colors.Orange,
-      Colors.Red
-    };
+    private readonly List<Color> colors = new() { Colors.LimeGreen, Colors.Orange, Colors.Red };
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
       var param = System.Convert.ToSingle(parameter, CultureInfo.InvariantCulture);
       var val = System.Convert.ToSingle(value, CultureInfo.InvariantCulture);
@@ -1169,7 +1028,7 @@ namespace Demo.yFiles.Graph.LargeGraphs
       return new SolidColorBrush(GetInterpolatedColor(val2));
     }
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
       return null; // Unsupported
     }
@@ -1200,12 +1059,11 @@ namespace Demo.yFiles.Graph.LargeGraphs
 
       Func<float, float, float> adj = (a, b) => a + (b - a) * between;
 
-      return new Color
-      {
-        ScA = adj(left.ScA, right.ScA),
-        ScR = adj(left.ScR, right.ScR),
-        ScG = adj(left.ScG, right.ScG),
-        ScB = adj(left.ScB, right.ScB)
+      return new Color {
+          ScA = adj(left.ScA, right.ScA),
+          ScR = adj(left.ScR, right.ScR),
+          ScG = adj(left.ScG, right.ScG),
+          ScB = adj(left.ScB, right.ScB)
       };
     }
   }

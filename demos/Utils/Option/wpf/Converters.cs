@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -54,27 +54,27 @@ using FrameworkElement = System.Windows.Controls.Control;
 namespace Demo.yFiles.Option
 
 {
-//  public class ToStringConverter : IValueConverter
-//  {
-//    public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
-//      if (value == null) {
-//        return "null";
-//      }
-//      return value.ToString();
-//    }
-//
-//    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
-//      throw new NotImplementedException();
-//    }
-//  }
+  //  public class ToStringConverter : IValueConverter
+  //  {
+  //    public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
+  //      if (value == null) {
+  //        return "null";
+  //      }
+  //      return value.ToString();
+  //    }
+  //
+  //    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
+  //      throw new NotImplementedException();
+  //    }
+  //  }
 
   public class TabConverter : IValueConverter
   {
-    public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture) {
-      IEnumerable<IOptionItem> source = value as IEnumerable<IOptionItem>;
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
+      var source = value as IEnumerable<IOptionItem>;
       if (source != null) {
-        ObservableCollection<TabItem> result = new ObservableCollection<TabItem>();
-        foreach (IOptionItem item in source) {
+        var result = new ObservableCollection<TabItem>();
+        foreach (var item in source) {
           result.Add(CreateTabItem(item, culture));
         }
         if (source is INotifyCollectionChanged) {
@@ -86,11 +86,10 @@ namespace Demo.yFiles.Option
     }
 
     internal static TabItem CreateTabItem(IOptionItem item, CultureInfo culture) {
-      return new TabItem()
-               {
-                 Header = new XamlLocalizingConverter().Convert(item, typeof(string), null, culture),
-                 Content = new OptionItemPresenter(){Item = item}
-               };
+      return new TabItem {
+          Header = new XamlLocalizingConverter().Convert(item, typeof(string), null, culture),
+          Content = new OptionItemPresenter { Item = item }
+      };
     }
 
     public class Adapter
@@ -106,28 +105,28 @@ namespace Demo.yFiles.Option
       public void CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
         var tabs = result.Target as ObservableCollection<TabItem>;
         if (tabs == null) {
-          ((INotifyCollectionChanged)sender).CollectionChanged -= CollectionChanged;
+          ((INotifyCollectionChanged) sender).CollectionChanged -= CollectionChanged;
         } else {
           switch (e.Action) {
             case NotifyCollectionChangedAction.Add:
-              int index = e.NewStartingIndex;
+              var index = e.NewStartingIndex;
               foreach (var tabItem in e.NewItems) {
-                tabs.Insert(index++, (CreateTabItem((IOptionItem) tabItem, culture)));
+                tabs.Insert(index++, CreateTabItem((IOptionItem) tabItem, culture));
               }
               break;
             case NotifyCollectionChangedAction.Remove:
-              for (int i = 0; i < e.OldItems.Count; i++ ) {
+              for (var i = 0; i < e.OldItems.Count; i++) {
                 tabs.RemoveAt(e.OldStartingIndex);
               }
               break;
             case NotifyCollectionChangedAction.Replace:
-              for (int i = 0; i < e.OldItems.Count; i++) {
+              for (var i = 0; i < e.OldItems.Count; i++) {
                 tabs[i + e.NewStartingIndex] = CreateTabItem((IOptionItem) e.NewItems[i], culture);
               }
               break;
             case NotifyCollectionChangedAction.Reset:
               tabs.Clear();
-              foreach (var tabItem in (IEnumerable<IOptionItem>)sender) {
+              foreach (var tabItem in (IEnumerable<IOptionItem>) sender) {
                 tabs.Add(CreateTabItem(tabItem, culture));
               }
               break;
@@ -139,66 +138,54 @@ namespace Demo.yFiles.Option
     }
 
 
-    public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture) {
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
       throw new NotImplementedException();
     }
   }
 
   /// <summary>
-  /// A helper class that is used by the <see cref="ItemsControl"/>s used by the option handler 
-  /// implementations.
+  ///   A helper class that is used by the <see cref="ItemsControl"/>s used by the option handler
+  ///   implementations.
   /// </summary>
   /// <remarks>
-  /// This class is public due to XAML visibility requirements.
+  ///   This class is public due to XAML visibility requirements.
   /// </remarks>
   [EditorBrowsable(EditorBrowsableState.Advanced)]
   [Obfuscation(StripAfterObfuscation = false, Exclude = true, ApplyToMembers = true)]
   public class XamlLocalizingConverter : IValueConverter
   {
-    internal static string GetLocalizedString(I18NFactory i18NFactory, string context, string i18nKeyString, string name) {
-      if(i18NFactory == null) {
+    internal static string GetLocalizedString(
+        I18NFactory i18NFactory,
+        string context,
+        string i18nKeyString,
+        string name) {
+      if (i18NFactory == null) {
         return name;
       }
-      string s = i18NFactory.GetString(
-        context, i18nKeyString);
+      var s = i18NFactory.GetString(context, i18nKeyString);
       if (s == i18nKeyString) {
         return name;
-      } else {
-        return s;
       }
-    }
-
-    private IOptionItem optionItem;
-
-    /// <xamlhelper/>
-    public IOptionItem OptionItem {
-      get { return optionItem; }
-      set { optionItem = value; }
-    }
-
-    private string postFix;
-    private string preFix;
-
-    /// <xamlhelper/>
-    public string PostFix {
-      get { return postFix; }
-      set { postFix = value; }
+      return s;
     }
 
     /// <xamlhelper/>
-    public string PreFix {
-      get { return preFix; }
-      set { preFix = value; }
-    }
+    public IOptionItem OptionItem { get; set; }
+
+    /// <xamlhelper/>
+    public string PostFix { get; set; }
+
+    /// <xamlhelper/>
+    public string PreFix { get; set; }
 
     /// <xamlhelper/>
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
-      if (targetType == typeof (string) || targetType == typeof (object)) {
-        IOptionItem item = value as IOptionItem;
-        string stringParam = parameter as string;
+      if (targetType == typeof(string) || targetType == typeof(object)) {
+        var item = value as IOptionItem;
+        var stringParam = parameter as string;
 
-        if (item == null && optionItem != null) {
-          item = optionItem;
+        if (item == null && OptionItem != null) {
+          item = OptionItem;
           stringParam = value != null ? value.ToString() : null;
         }
 
@@ -208,23 +195,20 @@ namespace Demo.yFiles.Option
         }
 
         if (item != null) {
-          OptionHandler handler = GetHandler(item);
+          var handler = GetHandler(item);
           if (handler != null) {
-            string nameOverride = item.Attributes[Handler.OptionItem.DisplaynameAttribute] as string;
+            var nameOverride = item.Attributes[Handler.OptionItem.DisplaynameAttribute] as string;
             if (nameOverride != null && stringParam == null) {
               return handler.I18nFactory.GetString(handler.Name, nameOverride);
             }
 
-            string i18nName = GetI18nName(item);
+            var i18nName = GetI18nName(item);
             if (stringParam != null) {
-              return
-                GetLocalizedString(handler.I18nFactory, handler.Name,
-                                   (preFix ?? string.Empty) + i18nName + (postFix ?? string.Empty) + stringParam, stringParam);
-            } else {
-              return
-                GetLocalizedString(handler.I18nFactory, handler.Name, (preFix ?? string.Empty) + i18nName + (postFix ?? string.Empty),
-                                   item.Name);
+              return GetLocalizedString(handler.I18nFactory, handler.Name,
+                  (PreFix ?? string.Empty) + i18nName + (PostFix ?? string.Empty) + stringParam, stringParam);
             }
+            return GetLocalizedString(handler.I18nFactory, handler.Name,
+                (PreFix ?? string.Empty) + i18nName + (PostFix ?? string.Empty), item.Name);
           }
           return item.Name;
         }
@@ -233,9 +217,9 @@ namespace Demo.yFiles.Option
     }
 
     private static string GetI18nName(IOptionItem item) {
-      string customI18nPrefix = (string) item.Attributes[Handler.OptionItem.CustomI18NPrefix];
-      string i18nName = customI18nPrefix ?? item.Name;
-      IOptionGroup group = item.Owner;
+      var customI18nPrefix = (string) item.Attributes[Handler.OptionItem.CustomI18NPrefix];
+      var i18nName = customI18nPrefix ?? item.Name;
+      var group = item.Owner;
       while (group != null) {
         customI18nPrefix = (string) group.Attributes[Handler.OptionItem.CustomI18NPrefix];
         i18nName = (customI18nPrefix ?? group.Name) + "." + i18nName;
@@ -245,16 +229,16 @@ namespace Demo.yFiles.Option
     }
 
     private static OptionHandler GetHandler(IOptionItem item) {
-      OptionHandler handler = item.Lookup(typeof (OptionHandler)) as OptionHandler;
+      var handler = item.Lookup(typeof(OptionHandler)) as OptionHandler;
       if (handler != null) {
         return handler;
       }
-      IOptionGroup group = item.Owner;
+      var group = item.Owner;
       while (group != null) {
         if (group is OptionHandler) {
           return (OptionHandler) group;
         }
-        handler = group.Lookup(typeof (OptionHandler)) as OptionHandler;
+        handler = group.Lookup(typeof(OptionHandler)) as OptionHandler;
         if (handler != null) {
           return handler;
         }
@@ -279,18 +263,16 @@ namespace Demo.yFiles.Option
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
       if (value is Color) {
         return new SolidColorBrush((Color) value);
-      } else {
-        return null;
       }
+      return null;
     }
 
     /// <xamlhelper/>
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
       if (value is SolidColorBrush) {
         return ((SolidColorBrush) value).Color;
-      } else {
-        return DependencyProperty.UnsetValue;
       }
+      return DependencyProperty.UnsetValue;
     }
   }
 
@@ -303,19 +285,17 @@ namespace Demo.yFiles.Option
     /// <xamlhelper/>
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
       if (value is SolidColorBrush) {
-        return ((SolidColorBrush)value).Color;
-      } else {
-        return DependencyProperty.UnsetValue;
+        return ((SolidColorBrush) value).Color;
       }
+      return DependencyProperty.UnsetValue;
     }
 
     /// <xamlhelper/>
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
       if (value is Color) {
-        return new SolidColorBrush((Color)value);
-      } else {
-        return DependencyProperty.UnsetValue;
+        return new SolidColorBrush((Color) value);
       }
+      return DependencyProperty.UnsetValue;
     }
   }
 
@@ -328,10 +308,9 @@ namespace Demo.yFiles.Option
     /// <xamlhelper/>
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
       if (value is Pen) {
-        return ((Pen)value).Thickness;
-      } else {
-        return DependencyProperty.UnsetValue;
+        return ((Pen) value).Thickness;
       }
+      return DependencyProperty.UnsetValue;
     }
 
     /// <xamlhelper/>
@@ -349,15 +328,14 @@ namespace Demo.yFiles.Option
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
       if (value == OptionItem.ValueUndefined) {
         return DependencyProperty.UnsetValue;
-      } else {
-        return String.Format(culture, "{0:D}", value);
       }
+      return string.Format(culture, "{0:D}", value);
     }
 
     /// <xamlhelper/>
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
       int result;
-      bool b = int.TryParse(value as string, NumberStyles.Number, culture, out result);
+      var b = int.TryParse(value as string, NumberStyles.Number, culture, out result);
       if (!b) {
         return DependencyProperty.UnsetValue;
       }
@@ -367,21 +345,13 @@ namespace Demo.yFiles.Option
     /// <xamlhelper/>
     public override ValidationResult Validate(object value, CultureInfo cultureInfo) {
       int result;
-      bool b = int.TryParse(value as string, NumberStyles.Number, cultureInfo, out result);
+      var b = int.TryParse(value as string, NumberStyles.Number, cultureInfo, out result);
       if (b) {
         return new ValidationResult(true, null);
-      } else {
-        return new ValidationResult(false, null);
       }
+      return new ValidationResult(false, null);
     }
   }
-
-#if SILVERLIGHT
-  public abstract class ValidationRule
-  {
-    public abstract ValidationResult Validate(object value, CultureInfo cultureInfo);
-  }
-#endif
 
   /// <xamlhelper/>
   [EditorBrowsable(EditorBrowsableState.Never)]
@@ -392,15 +362,14 @@ namespace Demo.yFiles.Option
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
       if (value == OptionItem.ValueUndefined) {
         return DependencyProperty.UnsetValue;
-      } else {
-        return String.Format(culture, "{0:F}", value);
       }
+      return string.Format(culture, "{0:F}", value);
     }
 
     /// <xamlhelper/>
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
       double result;
-      bool b = double.TryParse(value as string, NumberStyles.Float | NumberStyles.AllowThousands, culture, out result);
+      var b = double.TryParse(value as string, NumberStyles.Float | NumberStyles.AllowThousands, culture, out result);
       if (!b) {
         return DependencyProperty.UnsetValue;
       }
@@ -410,39 +379,14 @@ namespace Demo.yFiles.Option
     /// <xamlhelper/>
     public override ValidationResult Validate(object value, CultureInfo cultureInfo) {
       double result;
-      bool b =
-        double.TryParse(value as string, NumberStyles.Float | NumberStyles.AllowThousands, cultureInfo, out result);
+      var b = double.TryParse(value as string, NumberStyles.Float | NumberStyles.AllowThousands, cultureInfo,
+          out result);
       if (b) {
         return new ValidationResult(true, null);
-      } else {
-        return new ValidationResult(false, null);
       }
+      return new ValidationResult(false, null);
     }
   }
-
-#if SILVERLIGHT
-  public class ValidationResult
-  {
-    private readonly bool isValid;
-    private readonly object errorContent;
-    public static readonly ValidationResult ValidResult = new ValidationResult(true, null);
-    public static readonly ValidationResult InvalidResult = new ValidationResult(false, null);
-
-    public ValidationResult(bool isValid, object errorContent) {
-      this.isValid = isValid;
-      this.errorContent = errorContent;
-    }
-
-    public bool IsValid {
-      get { return isValid; }
-    }
-
-    public object ErrorContent {
-      get { return errorContent; }
-    }
-  }
-#endif
-
   internal sealed class ColorValueSerializer : ValueSerializer
   {
     private static readonly Dictionary<string, string> colorMap;
@@ -738,7 +682,7 @@ namespace Demo.yFiles.Option
         colorMap["WhiteSmoke"] = "#FFF5F5F5";
         colorMap["Yellow"] = "#FFFFFF00";
         colorMap["YellowGreen"] = "#FF9ACD32";
-        foreach (KeyValuePair<string, string> pair in colorMap) {
+        foreach (var pair in colorMap) {
           invColorMap[pair.Value] = pair.Key;
         }
       }
@@ -764,23 +708,22 @@ namespace Demo.yFiles.Option
       }
       if (Regex.Matches(c, "^#([0-9A-Fa-f]{2}){4}$").Count == 1) {
         return Color.FromArgb(byte.Parse(c.Substring(1, 2), NumberStyles.HexNumber),
-                                    byte.Parse(c.Substring(3, 2), NumberStyles.HexNumber),
-                                    byte.Parse(c.Substring(5, 2), NumberStyles.HexNumber),
-                                    byte.Parse(c.Substring(7, 2), NumberStyles.HexNumber));
-      } else if (Regex.Matches(c, "^#([0-9A-Fa-f]{2}){3}$").Count == 1) {
-        return Color.FromArgb(255,
-                                    byte.Parse(c.Substring(1, 2), NumberStyles.HexNumber),
-                                    byte.Parse(c.Substring(3, 2), NumberStyles.HexNumber),
-                                    byte.Parse(c.Substring(5, 2), NumberStyles.HexNumber));
-      } else {
-        return Colors.Black;
+            byte.Parse(c.Substring(3, 2), NumberStyles.HexNumber),
+            byte.Parse(c.Substring(5, 2), NumberStyles.HexNumber),
+            byte.Parse(c.Substring(7, 2), NumberStyles.HexNumber));
       }
+      if (Regex.Matches(c, "^#([0-9A-Fa-f]{2}){3}$").Count == 1) {
+        return Color.FromArgb(255, byte.Parse(c.Substring(1, 2), NumberStyles.HexNumber),
+            byte.Parse(c.Substring(3, 2), NumberStyles.HexNumber),
+            byte.Parse(c.Substring(5, 2), NumberStyles.HexNumber));
+      }
+      return Colors.Black;
     }
 
     /// <inheritdoc/>
     public override string ConvertToString(object o, IValueSerializerContext context) {
-      Color c = (Color)o;
-      string colorString = string.Format("#{0:X2}{1:X2}{2:X2}{3:X2}", c.A, c.R, c.G, c.B);
+      var c = (Color) o;
+      var colorString = string.Format("#{0:X2}{1:X2}{2:X2}{3:X2}", c.A, c.R, c.G, c.B);
       if (c == Colors.Transparent || c.A == 255) {
         string colorName;
         if (invColorMap.TryGetValue(colorString, out colorName)) {
@@ -791,8 +734,8 @@ namespace Demo.yFiles.Option
     }
 
     internal string ConvertToHexString(object o, IValueSerializerContext context) {
-      Color c = (Color)o;
-      string colorString = string.Format("#{0:X2}{1:X2}{2:X2}{3:X2}", c.A, c.R, c.G, c.B);
+      var c = (Color) o;
+      var colorString = string.Format("#{0:X2}{1:X2}{2:X2}{3:X2}", c.A, c.R, c.G, c.B);
       return colorString;
     }
 
@@ -808,21 +751,20 @@ namespace Demo.yFiles.Option
       if (IsAssignmentCompatible(targetType, typeof(string))) {
         if (value is Color) {
           return new ColorValueSerializer().ConvertToString(value, null);
-        } else {
-          return NO_COLOR;
         }
-      } else {
-        return DependencyProperty.UnsetValue;
+        return NO_COLOR;
       }
+      return DependencyProperty.UnsetValue;
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
       if (IsAssignmentCompatible(targetType, typeof(Color)) && value is string) {
-        if (value.Equals(NO_COLOR)) { return ColorChooser.NullColorObject; }
-        return new ColorValueSerializer().ConvertFromString((string)value, null);
-      } else {
-        return DependencyProperty.UnsetValue;
+        if (value.Equals(NO_COLOR)) {
+          return ColorChooser.NullColorObject;
+        }
+        return new ColorValueSerializer().ConvertFromString((string) value, null);
       }
+      return DependencyProperty.UnsetValue;
     }
 
     private bool IsAssignmentCompatible(Type targetType, Type type) {
@@ -834,20 +776,19 @@ namespace Demo.yFiles.Option
   {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
       {
-        TypeConverter typeConverter = TypeDescriptor.GetConverter(typeof(TSourceType));
+        var typeConverter = TypeDescriptor.GetConverter(typeof(TSourceType));
         if (typeConverter != null && typeConverter.CanConvertTo(typeof(TTargetType))) {
           return typeConverter.ConvertTo(null, culture, value, typeof(TTargetType));
-        } 
-        
+        }
       }
       if (targetType == typeof(string)) {
-        ValueSerializer valueSerializer = ValueSerializer.GetSerializerFor(typeof(TSourceType));
+        var valueSerializer = ValueSerializer.GetSerializerFor(typeof(TSourceType));
         if (valueSerializer != null && valueSerializer.CanConvertToString(value, null)) {
           return valueSerializer.ConvertToString(value, null);
         }
       }
       {
-        TypeConverter typeConverter = TypeDescriptor.GetConverter(typeof(TTargetType));
+        var typeConverter = TypeDescriptor.GetConverter(typeof(TTargetType));
         if (typeConverter != null && typeConverter.CanConvertFrom(typeof(TSourceType))) {
           return typeConverter.ConvertFrom(null, culture, value);
         }
@@ -858,21 +799,21 @@ namespace Demo.yFiles.Option
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
       {
-        TypeConverter typeConverter = TypeDescriptor.GetConverter(typeof(TSourceType));
+        var typeConverter = TypeDescriptor.GetConverter(typeof(TSourceType));
         if (typeConverter != null && typeConverter.CanConvertFrom(typeof(TTargetType))) {
           return typeConverter.ConvertFrom(null, culture, value);
         }
       }
       {
-        TypeConverter typeConverter = TypeDescriptor.GetConverter(typeof(TTargetType));
+        var typeConverter = TypeDescriptor.GetConverter(typeof(TTargetType));
         if (typeConverter != null && typeConverter.CanConvertTo(typeof(TSourceType))) {
           return typeConverter.ConvertTo(null, culture, value, typeof(TSourceType));
         }
       }
       if (value is string) {
-        ValueSerializer valueSerializer = ValueSerializer.GetSerializerFor(typeof(TSourceType));
-        if (valueSerializer != null && valueSerializer.CanConvertFromString((string)value, null)) {
-          return valueSerializer.ConvertFromString((string)value, null);
+        var valueSerializer = ValueSerializer.GetSerializerFor(typeof(TSourceType));
+        if (valueSerializer != null && valueSerializer.CanConvertFromString((string) value, null)) {
+          return valueSerializer.ConvertFromString((string) value, null);
         }
       }
       return DependencyProperty.UnsetValue;
@@ -880,15 +821,15 @@ namespace Demo.yFiles.Option
   }
 
   [Obfuscation(StripAfterObfuscation = false, Exclude = true, ApplyToMembers = true)]
-  public class InsetsDConverter: GenericConverter<InsetsD, string>{}  
-  
+  public class InsetsDConverter : GenericConverter<InsetsD, string> { }
+
   [Obfuscation(StripAfterObfuscation = false, Exclude = true, ApplyToMembers = true)]
-  public class SizeDConverter: GenericConverter<SizeD, string>{}
+  public class SizeDConverter : GenericConverter<SizeD, string> { }
 
 
   [Obfuscation(StripAfterObfuscation = false, Exclude = true, ApplyToMembers = true)]
-  public class PointDConverter : GenericConverter<PointD, string> { }  
-  
+  public class PointDConverter : GenericConverter<PointD, string> { }
+
   [Obfuscation(StripAfterObfuscation = false, Exclude = true, ApplyToMembers = true)]
   public class TypefaceConverter : GenericConverter<Typeface, string> { }
 
@@ -899,15 +840,13 @@ namespace Demo.yFiles.Option
   {
     /// <xamlhelper/>
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
-      if ((targetType == typeof (object) || targetType == typeof (bool))) {
+      if (targetType == typeof(object) || targetType == typeof(bool)) {
         if (value is IOptionItem) {
           return ((IOptionItem) value).Value == OptionItem.ValueUndefined;
-        } else {
-          return value == OptionItem.ValueUndefined;
         }
-      } else {
-        return DependencyProperty.UnsetValue;
+        return value == OptionItem.ValueUndefined;
       }
+      return DependencyProperty.UnsetValue;
     }
 
     /// <xamlhelper/>
@@ -923,15 +862,13 @@ namespace Demo.yFiles.Option
   {
     /// <xamlhelper/>
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
-      if ((targetType == typeof (object) || targetType == typeof (Type))) {
+      if (targetType == typeof(object) || targetType == typeof(Type)) {
         if (value is IOptionItem) {
           return ((IOptionItem) value).Type;
-        } else {
-          return typeof(void);
         }
-      } else {
-        return DependencyProperty.UnsetValue;
+        return typeof(void);
       }
+      return DependencyProperty.UnsetValue;
     }
 
     /// <xamlhelper/>
@@ -949,9 +886,8 @@ namespace Demo.yFiles.Option
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
       if (value is IOptionItem) {
         return ((IOptionItem) value).Attributes[CollectionOptionItem<object>.DOMAIN_ATTRIBUTE];
-      } else {
-        return DependencyProperty.UnsetValue;
       }
+      return DependencyProperty.UnsetValue;
     }
 
     /// <xamlhelper/>
@@ -976,33 +912,30 @@ namespace Demo.yFiles.Option
       }
 
       if (enumType.IsEnum) {
-        Array array = GetValues(enumType);
-        ArrayList list = new ArrayList();
-        foreach (object o in array) {
+        var array = GetValues(enumType);
+        var list = new ArrayList();
+        foreach (var o in array) {
           list.Add(o);
         }
         return list;
-      } else {
-        return DependencyProperty.UnsetValue;
       }
+      return DependencyProperty.UnsetValue;
     }
 
     private Array GetValues(Type enumType) {
-      return (from field in enumType.GetFields()
-              where field.IsLiteral
-              select field.GetValue(enumType)).ToArray();
+      return (from field in enumType.GetFields() where field.IsLiteral select field.GetValue(enumType)).ToArray();
     }
 
     /// <xamlhelper/>
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
       throw new NotImplementedException();
     }
-  }  
+  }
 
   public class ColorDomain : IEnumerable<object>
   {
-    static IList<object> colors;
-    static IList<object> colorsWithNoColor;
+    private static IList<object> colors;
+    private static IList<object> colorsWithNoColor;
 
     static ColorDomain() {
       BuildColors();
@@ -1016,10 +949,10 @@ namespace Demo.yFiles.Option
 
       colorsWithNoColor.Add(ColorChooser.NullColorObject);
 
-      PropertyInfo[] fields = typeof (Brushes).GetProperties(BindingFlags.Public | BindingFlags.Static);
-      foreach (PropertyInfo info in fields) {
-        SolidColorBrush b = info.GetValue(null, null) as SolidColorBrush;
-        if(b != null) {
+      var fields = typeof(Brushes).GetProperties(BindingFlags.Public | BindingFlags.Static);
+      foreach (var info in fields) {
+        var b = info.GetValue(null, null) as SolidColorBrush;
+        if (b != null) {
           colors.Add(b.Color);
           colorsWithNoColor.Add(b.Color);
         }
@@ -1039,7 +972,6 @@ namespace Demo.yFiles.Option
   [Obfuscation(StripAfterObfuscation = false, Exclude = true, ApplyToMembers = true)]
   public class ColorDomainConverter : IValueConverter
   {
-
     private static IList<Color> colors;
 
     static ColorDomainConverter() {
@@ -1048,14 +980,15 @@ namespace Demo.yFiles.Option
 
     private static void BuildColors() {
       colors = new List<Color>();
-      PropertyInfo[] fields = typeof (Brushes).GetProperties(BindingFlags.Public | BindingFlags.Static);
-      foreach (PropertyInfo info in fields) {
-        SolidColorBrush b = info.GetValue(null, null) as SolidColorBrush;
-        if(b != null) {
+      var fields = typeof(Brushes).GetProperties(BindingFlags.Public | BindingFlags.Static);
+      foreach (var info in fields) {
+        var b = info.GetValue(null, null) as SolidColorBrush;
+        if (b != null) {
           colors.Add(b.Color);
         }
       }
     }
+
     /// <xamlhelper/>
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
       Type itemType;
@@ -1069,9 +1002,8 @@ namespace Demo.yFiles.Option
 
       if (itemType == typeof(Color) || typeof(Brush).IsAssignableFrom(itemType)) {
         return colors;
-      } else {
-        return DependencyProperty.UnsetValue;
       }
+      return DependencyProperty.UnsetValue;
     }
 
     /// <xamlhelper/>
@@ -1083,26 +1015,26 @@ namespace Demo.yFiles.Option
   /// <xamlhelper/>
   [EditorBrowsable(EditorBrowsableState.Never)]
   [Obfuscation(StripAfterObfuscation = false, Exclude = true, ApplyToMembers = true)]
-  internal class XamlOptionItemEditorSelector 
+  internal class XamlOptionItemEditorSelector
   {
-    internal static T GetAttribute<T>(IOptionItem item, string attribute, FrameworkElement container) where T:class{
+    internal static T GetAttribute<T>(IOptionItem item, string attribute, FrameworkElement container) where T : class {
       if (item == null) {
         return null;
       }
-      object editorAttribute = attribute != null ? item.Attributes[attribute] : null;
+      var editorAttribute = attribute != null ? item.Attributes[attribute] : null;
       if (editorAttribute != null) {
         if (editorAttribute is T) {
           return editorAttribute as T;
         }
         if (container != null) {
-          T resource = container.TryFindResource(editorAttribute) as T;
+          var resource = container.TryFindResource(editorAttribute) as T;
           if (resource != null) {
             return resource;
           }
         }
         if (editorAttribute is Type) {
           try {
-            object o = Activator.CreateInstance((Type) editorAttribute);
+            var o = Activator.CreateInstance((Type) editorAttribute);
             return (T) o;
           } catch (Exception e) {
             Console.WriteLine(e);
@@ -1116,29 +1048,28 @@ namespace Demo.yFiles.Option
           }
         }
         return null;
-      } else {
-        return null;
       }
+      return null;
     }
 
-    internal static object GetAttribute(Type T, IOptionItem item, string attribute, FrameworkElement container){
+    internal static object GetAttribute(Type T, IOptionItem item, string attribute, FrameworkElement container) {
       if (item == null) {
         return null;
       }
-      object editorAttribute = attribute != null ? item.Attributes[attribute] : null;
+      var editorAttribute = attribute != null ? item.Attributes[attribute] : null;
       if (editorAttribute != null) {
         if (T.IsInstanceOfType(editorAttribute)) {
           return editorAttribute;
         }
         if (container is Control) {
-          object resource = ((Control)container).TryFindResource(editorAttribute);
+          var resource = container.TryFindResource(editorAttribute);
           if (T.IsInstanceOfType(resource)) {
             return resource;
           }
         }
         if (editorAttribute is Type) {
           try {
-            object o = Activator.CreateInstance((Type) editorAttribute);
+            var o = Activator.CreateInstance((Type) editorAttribute);
             if (T.IsInstanceOfType(o)) {
               return o;
             }
@@ -1149,18 +1080,17 @@ namespace Demo.yFiles.Option
         if (editorAttribute is string) {
           try {
             throw new NotSupportedException();
-//            object o = Activator.CreateInstance(null, (string) (editorAttribute)).Unwrap();
-//            if (T.IsInstanceOfType(o)) {
-//              return o;
-//            }
+            //            object o = Activator.CreateInstance(null, (string) (editorAttribute)).Unwrap();
+            //            if (T.IsInstanceOfType(o)) {
+            //              return o;
+            //            }
           } catch (Exception e) {
             Console.WriteLine(e);
           }
         }
         return null;
-      } else {
-        return null;
       }
+      return null;
     }
   }
 
@@ -1170,57 +1100,51 @@ namespace Demo.yFiles.Option
   [Obfuscation(StripAfterObfuscation = false, Exclude = true, ApplyToMembers = true)]
   public class XamlUndefinedNullStringConverter : ValidationRule, IValueConverter
   {
-    [CanBeNull] private IOptionItem optionItem;
-
     /// <xamlhelper/>
     [CanBeNull]
-    public IOptionItem Item {
-      get { return optionItem; }
-      set { optionItem = value; }
-    }
+    public IOptionItem Item { get; set; }
 
     /// <xamlhelper/>
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
       if (value == OptionItem.ValueUndefined) {
         return null;
-      } else {
-        if (value != null) {
-          TypeConverter converter = GetConverter();
-          if (converter != null && converter.CanConvertTo(typeof(string))) {
-            return converter.ConvertTo(null, culture, value, typeof (string));
-          }
-        }
-        return value;
       }
+      if (value != null) {
+        var converter = GetConverter();
+        if (converter != null && converter.CanConvertTo(typeof(string))) {
+          return converter.ConvertTo(null, culture, value, typeof(string));
+        }
+      }
+      return value;
     }
 
     private TypeConverter GetConverter() {
-      return XamlOptionItemEditorSelector.GetAttribute<TypeConverter>(Item, OptionItem.CustomTypeConverterAttribute, null) ?? (Item != null ? TypeDescriptor.GetConverter(Item.Type) : null);
+      return XamlOptionItemEditorSelector.GetAttribute<TypeConverter>(Item, OptionItem.CustomTypeConverterAttribute,
+          null) ?? (Item != null ? TypeDescriptor.GetConverter(Item.Type) : null);
     }
 
     /// <xamlhelper/>
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
       if (value == null) {
         return OptionItem.ValueUndefined;
-      } else {
-        TypeConverter converter = GetConverter();
-        if (converter != null && converter.CanConvertFrom(typeof(string))) {
-          return converter.ConvertFrom(null, culture, value);
-        }
-        return DependencyProperty.UnsetValue;
       }
+      var converter = GetConverter();
+      if (converter != null && converter.CanConvertFrom(typeof(string))) {
+        return converter.ConvertFrom(null, culture, value);
+      }
+      return DependencyProperty.UnsetValue;
     }
 
     /// <xamlhelper/>
     public override ValidationResult Validate(object value, CultureInfo cultureInfo) {
-      TypeConverter converter = GetConverter();
+      var converter = GetConverter();
       if (converter != null && converter.CanConvertFrom(typeof(string))) {
         try {
-          object result = converter.ConvertFrom(null, cultureInfo, value);
+          var result = converter.ConvertFrom(null, cultureInfo, value);
           if (result == null || (Item != null && Item.Type.IsInstanceOfType(result))) {
             return ValidationResult.ValidResult;
           }
-        } catch (Exception) {}
+        } catch (Exception) { }
       }
       return new ValidationResult(false, null);
     }
@@ -1235,25 +1159,23 @@ namespace Demo.yFiles.Option
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
       if (value == OptionItem.ValueUndefined) {
         return null;
-      } else {
-        return value;
       }
+      return value;
     }
 
     /// <xamlhelper/>
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
       if (value == null) {
         return OptionItem.ValueUndefined;
-      } else {
-        return value;
       }
+      return value;
     }
   }
 
-  public class DynamicTemplateConverter: IValueConverter
+  public class DynamicTemplateConverter : IValueConverter
   {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
-      OptionItemPresenter presenter = (OptionItemPresenter) value;
+      var presenter = (OptionItemPresenter) value;
       return presenter.TryFindResource(presenter.Item.Attributes["DynamicContentControl.EditorTemplate"]);
     }
 
@@ -1267,39 +1189,34 @@ namespace Demo.yFiles.Option
   [Obfuscation(StripAfterObfuscation = false, Exclude = true, ApplyToMembers = true)]
   public class OptionItemAttributeConverter : IValueConverter
   {
-    private string attributeName;
-
     /// <xamlhelper/>
     public OptionItemAttributeConverter(string attributeName) {
-      this.attributeName = attributeName;
+      AttributeName = attributeName;
     }
 
     /// <xamlhelper/>
     public OptionItemAttributeConverter() { }
 
     /// <xamlhelper/>
-    public string AttributeName {
-      get { return attributeName; }
-      set { attributeName = value; }
-    }
+    public string AttributeName { get; set; }
 
     /// <xamlhelper/>
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
       if (parameter == null) {
-        parameter = attributeName;
+        parameter = AttributeName;
       }
       if (parameter != null && value is IOptionItem) {
-        string att = parameter is string ? (string) parameter : parameter.ToString();
-        object o = XamlOptionItemEditorSelector.GetAttribute(targetType, ((IOptionItem) value), att, null);
+        var att = parameter is string ? (string) parameter : parameter.ToString();
+        var o = XamlOptionItemEditorSelector.GetAttribute(targetType, (IOptionItem) value, att, null);
         if (o != null && targetType.IsInstanceOfType(o)) {
           return o;
-        } else if (targetType == typeof (string)) {
+        }
+        if (targetType == typeof(string)) {
           return o != null ? o.ToString() : null;
         }
         return DependencyProperty.UnsetValue;
-      } else {
-        return DependencyProperty.UnsetValue;
       }
+      return DependencyProperty.UnsetValue;
     }
 
     /// <xamlhelper/>
@@ -1307,7 +1224,7 @@ namespace Demo.yFiles.Option
       throw new NotImplementedException();
     }
   }
-  
+
   /// <xamlhelper/>
   [EditorBrowsable(EditorBrowsableState.Never)]
   [Obfuscation(StripAfterObfuscation = false, Exclude = true, ApplyToMembers = true)]
@@ -1315,7 +1232,7 @@ namespace Demo.yFiles.Option
   {
     /// <xamlhelper/>
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
-      bool nullAllowed = false;
+      var nullAllowed = false;
       if (value == null && !nullAllowed) {
         return DependencyProperty.UnsetValue;
       }
@@ -1324,15 +1241,15 @@ namespace Demo.yFiles.Option
 
     /// <xamlhelper/>
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
-      bool nullAllowed = false;
-      IOptionItem item = parameter as IOptionItem;
-      if(item != null) {
-        object attribute = item.Attributes[OptionItem.SupportNullValueAttribute];
-        if(attribute != null && attribute is bool) {
+      var nullAllowed = false;
+      var item = parameter as IOptionItem;
+      if (item != null) {
+        var attribute = item.Attributes[OptionItem.SupportNullValueAttribute];
+        if (attribute != null && attribute is bool) {
           nullAllowed = (bool) attribute;
         }
       }
-      if(value == null && !nullAllowed) {
+      if (value == null && !nullAllowed) {
         return DependencyProperty.UnsetValue;
       }
       return value;
@@ -1346,36 +1263,34 @@ namespace Demo.yFiles.Option
   {
     /// <xamlhelper/>
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
-      bool nullAllowed = true;
+      var nullAllowed = true;
       if (value == null) {
         if (!nullAllowed) {
           return DependencyProperty.UnsetValue;
-        } else {
-          return ColorChooser.NullColorObject;
         }
-      }
-      if (value is SolidColorBrush) {
-        return ((SolidColorBrush)value).Color;
-      } else {
         return ColorChooser.NullColorObject;
       }
+      if (value is SolidColorBrush) {
+        return ((SolidColorBrush) value).Color;
+      }
+      return ColorChooser.NullColorObject;
     }
 
     /// <xamlhelper/>
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
-      bool nullAllowed = true;
-      IOptionItem item = parameter as IOptionItem;
+      var nullAllowed = true;
+      var item = parameter as IOptionItem;
       if (item != null) {
-        object attribute = item.Attributes[OptionItem.SupportNullValueAttribute];
+        var attribute = item.Attributes[OptionItem.SupportNullValueAttribute];
         if (attribute != null && attribute is bool) {
-          nullAllowed = (bool)attribute;
+          nullAllowed = (bool) attribute;
         }
       }
       if (value == null && !nullAllowed) {
         return DependencyProperty.UnsetValue;
       }
       if (value is Color) {
-        return new SolidColorBrush((Color)value);
+        return new SolidColorBrush((Color) value);
       }
       return null;
     }
@@ -1386,33 +1301,30 @@ namespace Demo.yFiles.Option
   [Obfuscation(StripAfterObfuscation = false, Exclude = true, ApplyToMembers = true)]
   public class NullFilteringPenConverter : IValueConverter
   {
-
     /// <xamlhelper/>
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
-      bool nullAllowed = true;
+      var nullAllowed = true;
       if (value == null) {
         if (!nullAllowed) {
           return DependencyProperty.UnsetValue;
-        } else {
-          return ColorChooser.NullColorObject;
         }
-      }
-      if (value is Pen) {
-        SolidColorBrush brush = ((Pen) value).Brush as SolidColorBrush;
-        return brush != null ? brush.Color : ColorChooser.NullColorObject;
-      } else {
         return ColorChooser.NullColorObject;
       }
+      if (value is Pen) {
+        var brush = ((Pen) value).Brush as SolidColorBrush;
+        return brush != null ? brush.Color : ColorChooser.NullColorObject;
+      }
+      return ColorChooser.NullColorObject;
     }
 
     /// <xamlhelper/>
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
-      bool nullAllowed = true;
-      IOptionItem item = parameter as IOptionItem;
+      var nullAllowed = true;
+      var item = parameter as IOptionItem;
       if (item != null) {
-        object attribute = item.Attributes[OptionItem.SupportNullValueAttribute];
+        var attribute = item.Attributes[OptionItem.SupportNullValueAttribute];
         if (attribute != null && attribute is bool) {
-          nullAllowed = (bool)attribute;
+          nullAllowed = (bool) attribute;
         }
       }
       if (value == null && !nullAllowed) {
@@ -1430,7 +1342,6 @@ namespace Demo.yFiles.Option
   [Obfuscation(StripAfterObfuscation = false, Exclude = true, ApplyToMembers = true)]
   public class BoolConverter : IValueConverter
   {
-
     /// <xamlhelper/>
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
       return !(bool) value;
@@ -1438,7 +1349,7 @@ namespace Demo.yFiles.Option
 
     /// <xamlhelper/>
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
-      return !(bool)value;
+      return !(bool) value;
     }
   }
 }

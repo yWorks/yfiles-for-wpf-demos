@@ -1,0 +1,684 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--Created by yFiles WPF 3.6.0.0-->
+<graphml xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/3.0" xmlns:y="http://www.yworks.com/xml/yfiles-common/3.0" xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/3.0/xaml" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml.wpf/3.0/ygraphml.xsd " xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://graphml.graphdrawing.org/xmlns">
+  <key id="d0" attr.name="NodeLabels" for="node" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeLabels" />
+  <key id="d1" attr.name="NodeGeometry" for="node" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeGeometry" />
+  <key id="d2" attr.name="UserTags" for="all" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/UserTags" />
+  <key id="d3" attr.name="NodeStyle" for="node" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeStyle" />
+  <key id="d4" attr.name="EdgeLabels" for="edge" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/EdgeLabels" />
+  <key id="d5" attr.name="EdgeGeometry" for="edge" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/EdgeGeometry" />
+  <key id="d6" attr.name="EdgeStyle" for="edge" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/EdgeStyle" />
+  <key id="d7" attr.name="PortLabels" for="port" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/PortLabels" />
+  <key id="d8" attr.name="PortLocationParameter" for="port" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/PortLocationParameter">
+    <default>
+      <x:Static Member="y:FreeNodePortLocationModel.NodeCenterAnchored" />
+    </default>
+  </key>
+  <key id="d9" attr.name="PortStyle" for="port" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/PortStyle">
+    <default>
+      <x:Static Member="y:VoidPortStyle.Instance" />
+    </default>
+  </key>
+  <key id="d10" attr.name="SharedData" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/SharedData" />
+  <data key="d10">
+    <y:SharedData>
+      <ywpf:DefaultLabelStyle x:Key="1" Typeface="Tahoma,Normal,Normal,Normal" />
+      <ywpf:ShapeNodeStyle x:Key="2" Brush="#FFFF6C00" Shape="RoundRectangle">
+        <ywpf:ShapeNodeStyle.Pen>
+          <Pen Brush="#FF662B00" Thickness="1.5" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" />
+        </ywpf:ShapeNodeStyle.Pen>
+      </ywpf:ShapeNodeStyle>
+    </y:SharedData>
+  </data>
+  <graph id="G">
+    <node id="n0">
+      <data key="d0">
+        <x:List>
+          <y:Label LayoutParameter="{x:Static y:InteriorStretchLabelModel.North}" Style="{y:GraphMLReference 1}" PreferredSize="29,15">
+            <y:Label.Text>Panel</y:Label.Text>
+          </y:Label>
+        </x:List>
+      </data>
+      <data key="d1">
+        <y:RectD X="40" Y="60" Width="380" Height="470" />
+      </data>
+      <data key="d3">
+        <ywpf:PanelNodeStyle Color="Moccasin" LabelInsetsColor="Peru" Insets="20" />
+      </data>
+      <graph id="n0:">
+        <node id="n0::n0">
+          <data key="d0">
+            <x:List>
+              <y:Label LayoutParameter="{x:Static y:ExteriorLabelModel.South}" Style="{y:GraphMLReference 1}" PreferredSize="55,15">
+                <y:Label.Text>ShinyPlate</y:Label.Text>
+              </y:Label>
+            </x:List>
+          </data>
+          <data key="d1">
+            <y:RectD X="60" Y="80" Width="70" Height="30" />
+          </data>
+          <data key="d3">
+            <ywpf:ShinyPlateNodeStyle Brush="#FF000000" />
+          </data>
+        </node>
+        <node id="n0::n1">
+          <data key="d0">
+            <x:List>
+              <y:Label LayoutParameter="{x:Static y:ExteriorLabelModel.South}" Style="{y:GraphMLReference 1}" PreferredSize="55,15">
+                <y:Label.Text>ShinyPlate</y:Label.Text>
+              </y:Label>
+            </x:List>
+          </data>
+          <data key="d1">
+            <y:RectD X="150" Y="80" Width="70" Height="30" />
+          </data>
+          <data key="d3">
+            <ywpf:ShinyPlateNodeStyle Brush="#FFFA8072" Pen="Red" Radius="7" DrawShadow="False" Insets="3" />
+          </data>
+        </node>
+        <node id="n0::n2">
+          <data key="d0">
+            <x:List>
+              <y:Label LayoutParameter="{x:Static y:ExteriorLabelModel.South}" Style="{y:GraphMLReference 1}" PreferredSize="29,15">
+                <y:Label.Text>Bevel</y:Label.Text>
+              </y:Label>
+            </x:List>
+          </data>
+          <data key="d1">
+            <y:RectD X="60" Y="140" Width="70" Height="30" />
+          </data>
+          <data key="d3">
+            <ywpf:BevelNodeStyle Inset="3" Radius="10" />
+          </data>
+        </node>
+        <node id="n0::n3">
+          <data key="d0">
+            <x:List>
+              <y:Label LayoutParameter="{x:Static y:ExteriorLabelModel.South}" Style="{y:GraphMLReference 1}" PreferredSize="29,15">
+                <y:Label.Text>Bevel</y:Label.Text>
+              </y:Label>
+            </x:List>
+          </data>
+          <data key="d1">
+            <y:RectD X="150" Y="140" Width="70" Height="30" />
+          </data>
+          <data key="d3">
+            <ywpf:BevelNodeStyle Inset="12" Radius="10" Color="Gold" DrawShadow="True" />
+          </data>
+        </node>
+        <node id="n0::n4">
+          <data key="d0">
+            <x:List>
+              <y:Label LayoutParameter="{x:Static y:ExteriorLabelModel.South}" Style="{y:GraphMLReference 1}" PreferredSize="52,15">
+                <y:Label.Text>Rectangle</y:Label.Text>
+              </y:Label>
+            </x:List>
+          </data>
+          <data key="d1">
+            <y:RectD X="60" Y="200" Width="40" Height="30" />
+          </data>
+          <data key="d3">
+            <ywpf:ShapeNodeStyle Brush="#FFFFA500" KeepIntrinsicAspectRatio="True" />
+          </data>
+        </node>
+        <node id="n0::n5">
+          <data key="d0">
+            <x:List>
+              <y:Label LayoutParameter="{x:Static y:ExteriorLabelModel.South}" Style="{y:GraphMLReference 1}" PreferredSize="86,15">
+                <y:Label.Text>RoundRectangle</y:Label.Text>
+              </y:Label>
+            </x:List>
+          </data>
+          <data key="d1">
+            <y:RectD X="160" Y="200" Width="40" Height="30" />
+          </data>
+          <data key="d3">
+            <ywpf:ShapeNodeStyle Brush="#FFFFA500" Shape="RoundRectangle" KeepIntrinsicAspectRatio="True" />
+          </data>
+        </node>
+        <node id="n0::n6">
+          <data key="d0">
+            <x:List>
+              <y:Label LayoutParameter="{x:Static y:ExteriorLabelModel.South}" Style="{y:GraphMLReference 1}" PreferredSize="34,15">
+                <y:Label.Text>Ellipse</y:Label.Text>
+              </y:Label>
+            </x:List>
+          </data>
+          <data key="d1">
+            <y:RectD X="260" Y="200" Width="40" Height="30" />
+          </data>
+          <data key="d3">
+            <ywpf:ShapeNodeStyle Brush="#FFFFA500" Shape="Ellipse" KeepIntrinsicAspectRatio="True" />
+          </data>
+        </node>
+        <node id="n0::n7">
+          <data key="d0">
+            <x:List>
+              <y:Label LayoutParameter="{x:Static y:ExteriorLabelModel.South}" Style="{y:GraphMLReference 1}" PreferredSize="43,15">
+                <y:Label.Text>Triangle</y:Label.Text>
+              </y:Label>
+            </x:List>
+          </data>
+          <data key="d1">
+            <y:RectD X="360" Y="200" Width="40" Height="30" />
+          </data>
+          <data key="d3">
+            <ywpf:ShapeNodeStyle Brush="#FFFFA500" Shape="Triangle" KeepIntrinsicAspectRatio="True" />
+          </data>
+        </node>
+        <node id="n0::n8">
+          <data key="d0">
+            <x:List>
+              <y:Label LayoutParameter="{x:Static y:ExteriorLabelModel.South}" Style="{y:GraphMLReference 1}" PreferredSize="50,15">
+                <y:Label.Text>Triangle2</y:Label.Text>
+              </y:Label>
+            </x:List>
+          </data>
+          <data key="d1">
+            <y:RectD X="60" Y="270" Width="40" Height="30" />
+          </data>
+          <data key="d3">
+            <ywpf:ShapeNodeStyle Brush="#FFFFA500" Shape="Triangle2" KeepIntrinsicAspectRatio="True" />
+          </data>
+        </node>
+        <node id="n0::n9">
+          <data key="d0">
+            <x:List>
+              <y:Label LayoutParameter="{x:Static y:ExteriorLabelModel.South}" Style="{y:GraphMLReference 1}" PreferredSize="96,15">
+                <y:Label.Text>ShearedRectangle</y:Label.Text>
+              </y:Label>
+            </x:List>
+          </data>
+          <data key="d1">
+            <y:RectD X="160" Y="270" Width="40" Height="30" />
+          </data>
+          <data key="d3">
+            <ywpf:ShapeNodeStyle Brush="#FFFFA500" Shape="ShearedRectangle" KeepIntrinsicAspectRatio="True" />
+          </data>
+        </node>
+        <node id="n0::n10">
+          <data key="d0">
+            <x:List>
+              <y:Label LayoutParameter="{x:Static y:ExteriorLabelModel.South}" Style="{y:GraphMLReference 1}" PreferredSize="102,15">
+                <y:Label.Text>ShearedRectangle2</y:Label.Text>
+              </y:Label>
+            </x:List>
+          </data>
+          <data key="d1">
+            <y:RectD X="260" Y="270" Width="40" Height="30" />
+          </data>
+          <data key="d3">
+            <ywpf:ShapeNodeStyle Brush="#FFFFA500" Shape="ShearedRectangle2" KeepIntrinsicAspectRatio="True" />
+          </data>
+        </node>
+        <node id="n0::n11">
+          <data key="d0">
+            <x:List>
+              <y:Label LayoutParameter="{x:Static y:ExteriorLabelModel.South}" Style="{y:GraphMLReference 1}" PreferredSize="36,15">
+                <y:Label.Text>Trapez</y:Label.Text>
+              </y:Label>
+            </x:List>
+          </data>
+          <data key="d1">
+            <y:RectD X="360" Y="270" Width="40" Height="30" />
+          </data>
+          <data key="d3">
+            <ywpf:ShapeNodeStyle Brush="#FFFFA500" Shape="Trapez" KeepIntrinsicAspectRatio="True" />
+          </data>
+        </node>
+        <node id="n0::n12">
+          <data key="d0">
+            <x:List>
+              <y:Label LayoutParameter="{x:Static y:ExteriorLabelModel.South}" Style="{y:GraphMLReference 1}" PreferredSize="43,15">
+                <y:Label.Text>Trapez2</y:Label.Text>
+              </y:Label>
+            </x:List>
+          </data>
+          <data key="d1">
+            <y:RectD X="60" Y="340" Width="40" Height="30" />
+          </data>
+          <data key="d3">
+            <ywpf:ShapeNodeStyle Brush="#FFFFA500" Shape="Trapez2" KeepIntrinsicAspectRatio="True" />
+          </data>
+        </node>
+        <node id="n0::n13">
+          <data key="d0">
+            <x:List>
+              <y:Label LayoutParameter="{x:Static y:ExteriorLabelModel.South}" Style="{y:GraphMLReference 1}" PreferredSize="28,15">
+                <y:Label.Text>Star5</y:Label.Text>
+              </y:Label>
+            </x:List>
+          </data>
+          <data key="d1">
+            <y:RectD X="160" Y="340" Width="40" Height="30" />
+          </data>
+          <data key="d3">
+            <ywpf:ShapeNodeStyle Brush="#FFFFA500" Shape="Star5" KeepIntrinsicAspectRatio="True" />
+          </data>
+        </node>
+        <node id="n0::n14">
+          <data key="d0">
+            <x:List>
+              <y:Label LayoutParameter="{x:Static y:ExteriorLabelModel.South}" Style="{y:GraphMLReference 1}" PreferredSize="28,15">
+                <y:Label.Text>Star6</y:Label.Text>
+              </y:Label>
+            </x:List>
+          </data>
+          <data key="d1">
+            <y:RectD X="260" Y="340" Width="40" Height="30" />
+          </data>
+          <data key="d3">
+            <ywpf:ShapeNodeStyle Brush="#FFFFA500" Shape="Star6" KeepIntrinsicAspectRatio="True" />
+          </data>
+        </node>
+        <node id="n0::n15">
+          <data key="d0">
+            <x:List>
+              <y:Label LayoutParameter="{x:Static y:ExteriorLabelModel.South}" Style="{y:GraphMLReference 1}" PreferredSize="28,15">
+                <y:Label.Text>Star8</y:Label.Text>
+              </y:Label>
+            </x:List>
+          </data>
+          <data key="d1">
+            <y:RectD X="360" Y="340" Width="40" Height="30" />
+          </data>
+          <data key="d3">
+            <ywpf:ShapeNodeStyle Brush="#FFFFA500" Shape="Star8" KeepIntrinsicAspectRatio="True" />
+          </data>
+        </node>
+        <node id="n0::n16">
+          <data key="d0">
+            <x:List>
+              <y:Label LayoutParameter="{x:Static y:ExteriorLabelModel.South}" Style="{y:GraphMLReference 1}" PreferredSize="48,15">
+                <y:Label.Text>FatArrow</y:Label.Text>
+              </y:Label>
+            </x:List>
+          </data>
+          <data key="d1">
+            <y:RectD X="60" Y="410" Width="40" Height="30" />
+          </data>
+          <data key="d3">
+            <ywpf:ShapeNodeStyle Brush="#FFFFA500" Shape="FatArrow" KeepIntrinsicAspectRatio="True" />
+          </data>
+        </node>
+        <node id="n0::n17">
+          <data key="d0">
+            <x:List>
+              <y:Label LayoutParameter="{x:Static y:ExteriorLabelModel.South}" Style="{y:GraphMLReference 1}" PreferredSize="55,15">
+                <y:Label.Text>FatArrow2</y:Label.Text>
+              </y:Label>
+            </x:List>
+          </data>
+          <data key="d1">
+            <y:RectD X="160" Y="410" Width="40" Height="30" />
+          </data>
+          <data key="d3">
+            <ywpf:ShapeNodeStyle Brush="#FFFFA500" Shape="FatArrow2" KeepIntrinsicAspectRatio="True" />
+          </data>
+        </node>
+        <node id="n0::n18">
+          <data key="d0">
+            <x:List>
+              <y:Label LayoutParameter="{x:Static y:ExteriorLabelModel.South}" Style="{y:GraphMLReference 1}" PreferredSize="48,15">
+                <y:Label.Text>Diamond</y:Label.Text>
+              </y:Label>
+            </x:List>
+          </data>
+          <data key="d1">
+            <y:RectD X="260" Y="410" Width="40" Height="30" />
+          </data>
+          <data key="d3">
+            <ywpf:ShapeNodeStyle Brush="#FFFFA500" Shape="Diamond" KeepIntrinsicAspectRatio="True" />
+          </data>
+        </node>
+        <node id="n0::n19">
+          <data key="d0">
+            <x:List>
+              <y:Label LayoutParameter="{x:Static y:ExteriorLabelModel.South}" Style="{y:GraphMLReference 1}" PreferredSize="45,15">
+                <y:Label.Text>Octagon</y:Label.Text>
+              </y:Label>
+            </x:List>
+          </data>
+          <data key="d1">
+            <y:RectD X="360" Y="410" Width="40" Height="30" />
+          </data>
+          <data key="d3">
+            <ywpf:ShapeNodeStyle Brush="#FFFFA500" Shape="Octagon" KeepIntrinsicAspectRatio="True" />
+          </data>
+        </node>
+        <node id="n0::n20">
+          <data key="d0">
+            <x:List>
+              <y:Label LayoutParameter="{x:Static y:ExteriorLabelModel.South}" Style="{y:GraphMLReference 1}" PreferredSize="47,15">
+                <y:Label.Text>Hexagon</y:Label.Text>
+              </y:Label>
+            </x:List>
+          </data>
+          <data key="d1">
+            <y:RectD X="60" Y="480" Width="40" Height="30" />
+          </data>
+          <data key="d3">
+            <ywpf:ShapeNodeStyle Brush="#FFFFA500" Shape="Hexagon" KeepIntrinsicAspectRatio="True" />
+          </data>
+        </node>
+        <node id="n0::n21">
+          <data key="d0">
+            <x:List>
+              <y:Label LayoutParameter="{x:Static y:ExteriorLabelModel.South}" Style="{y:GraphMLReference 1}" PreferredSize="54,15">
+                <y:Label.Text>Hexagon2</y:Label.Text>
+              </y:Label>
+            </x:List>
+          </data>
+          <data key="d1">
+            <y:RectD X="160" Y="480" Width="40" Height="30" />
+          </data>
+          <data key="d3">
+            <ywpf:ShapeNodeStyle Brush="#FFFFA500" Shape="Hexagon2" KeepIntrinsicAspectRatio="True" />
+          </data>
+        </node>
+        <node id="n0::n22">
+          <data key="d0">
+            <x:List>
+              <y:Label LayoutParameter="{x:Static y:ExteriorLabelModel.South}" Style="{y:GraphMLReference 1}" PreferredSize="43,15">
+                <y:Label.Text>Star5Up</y:Label.Text>
+              </y:Label>
+            </x:List>
+          </data>
+          <data key="d1">
+            <y:RectD X="260" Y="480" Width="40" Height="30" />
+          </data>
+          <data key="d3">
+            <ywpf:ShapeNodeStyle Brush="#FFFFA500" Shape="Star5Up" KeepIntrinsicAspectRatio="True" />
+          </data>
+        </node>
+        <node id="n0::n23">
+          <data key="d0">
+            <x:List>
+              <y:Label LayoutParameter="{x:Static y:ExteriorLabelModel.South}" Style="{y:GraphMLReference 1}" PreferredSize="15,15">
+                <y:Label.Text>Pill</y:Label.Text>
+              </y:Label>
+            </x:List>
+          </data>
+          <data key="d1">
+            <y:RectD X="360" Y="480" Width="40" Height="30" />
+          </data>
+          <data key="d3">
+            <ywpf:ShapeNodeStyle Brush="#FFFFA500" Shape="Pill" KeepIntrinsicAspectRatio="True" />
+          </data>
+        </node>
+      </graph>
+    </node>
+    <node id="n1">
+      <data key="d1">
+        <y:RectD X="447" Y="80" Width="40" Height="40" />
+      </data>
+      <data key="d3">
+        <y:GraphMLReference ResourceKey="2" />
+      </data>
+      <port name="p0" />
+    </node>
+    <node id="n2">
+      <data key="d1">
+        <y:RectD X="547" Y="80" Width="40" Height="40" />
+      </data>
+      <data key="d3">
+        <y:GraphMLReference ResourceKey="2" />
+      </data>
+      <port name="p0" />
+    </node>
+    <node id="n3">
+      <data key="d1">
+        <y:RectD X="447" Y="150" Width="40" Height="40" />
+      </data>
+      <data key="d3">
+        <y:GraphMLReference ResourceKey="2" />
+      </data>
+      <port name="p0" />
+    </node>
+    <node id="n4">
+      <data key="d1">
+        <y:RectD X="547" Y="150" Width="40" Height="40" />
+      </data>
+      <data key="d3">
+        <y:GraphMLReference ResourceKey="2" />
+      </data>
+      <port name="p0" />
+    </node>
+    <node id="n5">
+      <data key="d1">
+        <y:RectD X="447" Y="220" Width="40" Height="40" />
+      </data>
+      <data key="d3">
+        <y:GraphMLReference ResourceKey="2" />
+      </data>
+      <port name="p0" />
+    </node>
+    <node id="n6">
+      <data key="d1">
+        <y:RectD X="547" Y="220" Width="40" Height="40" />
+      </data>
+      <data key="d3">
+        <y:GraphMLReference ResourceKey="2" />
+      </data>
+      <port name="p0" />
+    </node>
+    <node id="n7">
+      <data key="d1">
+        <y:RectD X="447" Y="290" Width="40" Height="40" />
+      </data>
+      <data key="d3">
+        <y:GraphMLReference ResourceKey="2" />
+      </data>
+      <port name="p0" />
+    </node>
+    <node id="n8">
+      <data key="d1">
+        <y:RectD X="547" Y="290" Width="40" Height="40" />
+      </data>
+      <data key="d3">
+        <y:GraphMLReference ResourceKey="2" />
+      </data>
+      <port name="p0" />
+    </node>
+    <node id="n9">
+      <data key="d1">
+        <y:RectD X="447" Y="360" Width="40" Height="40" />
+      </data>
+      <data key="d3">
+        <y:GraphMLReference ResourceKey="2" />
+      </data>
+      <port name="p0" />
+    </node>
+    <node id="n10">
+      <data key="d1">
+        <y:RectD X="547" Y="360" Width="40" Height="40" />
+      </data>
+      <data key="d3">
+        <y:GraphMLReference ResourceKey="2" />
+      </data>
+      <port name="p0" />
+    </node>
+    <node id="n11">
+      <data key="d1">
+        <y:RectD X="447" Y="430" Width="40" Height="40" />
+      </data>
+      <data key="d3">
+        <y:GraphMLReference ResourceKey="2" />
+      </data>
+      <port name="p0" />
+    </node>
+    <node id="n12">
+      <data key="d1">
+        <y:RectD X="547" Y="430" Width="40" Height="40" />
+      </data>
+      <data key="d3">
+        <y:GraphMLReference ResourceKey="2" />
+      </data>
+      <port name="p0" />
+    </node>
+    <node id="n13">
+      <data key="d1">
+        <y:RectD X="447" Y="500" Width="40" Height="40" />
+      </data>
+      <data key="d3">
+        <y:GraphMLReference ResourceKey="2" />
+      </data>
+      <port name="p0" />
+    </node>
+    <node id="n14">
+      <data key="d1">
+        <y:RectD X="547" Y="500" Width="40" Height="40" />
+      </data>
+      <data key="d3">
+        <y:GraphMLReference ResourceKey="2" />
+      </data>
+      <port name="p0" />
+    </node>
+    <node id="n15">
+      <data key="d1">
+        <y:RectD X="447" Y="570" Width="40" Height="40" />
+      </data>
+      <data key="d3">
+        <y:GraphMLReference ResourceKey="2" />
+      </data>
+      <port name="p0" />
+    </node>
+    <node id="n16">
+      <data key="d1">
+        <y:RectD X="547" Y="570" Width="40" Height="40" />
+      </data>
+      <data key="d3">
+        <y:GraphMLReference ResourceKey="2" />
+      </data>
+      <port name="p0" />
+    </node>
+    <edge id="e0" source="n1" target="n2" sourceport="p0" targetport="p0">
+      <data key="d4">
+        <x:List>
+          <y:Label LayoutParameter="{x:Static y:NinePositionsEdgeLabelModel.CenterBelow}" Style="{y:GraphMLReference 1}" PreferredSize="39,15">
+            <y:Label.Text>Default</y:Label.Text>
+          </y:Label>
+        </x:List>
+      </data>
+      <data key="d6">
+        <ywpf:PolylineEdgeStyle>
+          <ywpf:PolylineEdgeStyle.TargetArrow>
+            <ywpf:Arrow Pen="Black" Brush="#FF000000" />
+          </ywpf:PolylineEdgeStyle.TargetArrow>
+        </ywpf:PolylineEdgeStyle>
+      </data>
+    </edge>
+    <edge id="e1" source="n3" target="n4" sourceport="p0" targetport="p0">
+      <data key="d4">
+        <x:List>
+          <y:Label LayoutParameter="{x:Static y:NinePositionsEdgeLabelModel.CenterBelow}" Style="{y:GraphMLReference 1}" PreferredSize="36,15">
+            <y:Label.Text>Simple</y:Label.Text>
+          </y:Label>
+        </x:List>
+      </data>
+      <data key="d6">
+        <ywpf:PolylineEdgeStyle>
+          <ywpf:PolylineEdgeStyle.TargetArrow>
+            <ywpf:Arrow Type="Simple" Pen="Black" Brush="#FF000000" />
+          </ywpf:PolylineEdgeStyle.TargetArrow>
+        </ywpf:PolylineEdgeStyle>
+      </data>
+    </edge>
+    <edge id="e2" source="n5" target="n6" sourceport="p0" targetport="p0">
+      <data key="d4">
+        <x:List>
+          <y:Label LayoutParameter="{x:Static y:NinePositionsEdgeLabelModel.CenterBelow}" Style="{y:GraphMLReference 1}" PreferredSize="29,15">
+            <y:Label.Text>Short</y:Label.Text>
+          </y:Label>
+        </x:List>
+      </data>
+      <data key="d6">
+        <ywpf:PolylineEdgeStyle>
+          <ywpf:PolylineEdgeStyle.TargetArrow>
+            <ywpf:Arrow Type="Short" Pen="Black" Brush="#FF000000" />
+          </ywpf:PolylineEdgeStyle.TargetArrow>
+        </ywpf:PolylineEdgeStyle>
+      </data>
+    </edge>
+    <edge id="e3" source="n7" target="n8" sourceport="p0" targetport="p0">
+      <data key="d4">
+        <x:List>
+          <y:Label LayoutParameter="{x:Static y:NinePositionsEdgeLabelModel.CenterBelow}" Style="{y:GraphMLReference 1}" PreferredSize="48,15">
+            <y:Label.Text>Diamond</y:Label.Text>
+          </y:Label>
+        </x:List>
+      </data>
+      <data key="d6">
+        <ywpf:PolylineEdgeStyle>
+          <ywpf:PolylineEdgeStyle.TargetArrow>
+            <ywpf:Arrow Type="Diamond" Pen="Black" Brush="#FF000000" />
+          </ywpf:PolylineEdgeStyle.TargetArrow>
+        </ywpf:PolylineEdgeStyle>
+      </data>
+    </edge>
+    <edge id="e4" source="n9" target="n10" sourceport="p0" targetport="p0">
+      <data key="d4">
+        <x:List>
+          <y:Label LayoutParameter="{x:Static y:NinePositionsEdgeLabelModel.CenterBelow}" Style="{y:GraphMLReference 1}" PreferredSize="28,15">
+            <y:Label.Text>None</y:Label.Text>
+          </y:Label>
+        </x:List>
+      </data>
+      <data key="d6">
+        <ywpf:PolylineEdgeStyle>
+          <ywpf:PolylineEdgeStyle.TargetArrow>
+            <ywpf:Arrow Type="None" Pen="Black" Brush="#FF000000" />
+          </ywpf:PolylineEdgeStyle.TargetArrow>
+        </ywpf:PolylineEdgeStyle>
+      </data>
+    </edge>
+    <edge id="e5" source="n11" target="n12" sourceport="p0" targetport="p0">
+      <data key="d4">
+        <x:List>
+          <y:Label LayoutParameter="{x:Static y:NinePositionsEdgeLabelModel.CenterBelow}" Style="{y:GraphMLReference 1}" PreferredSize="29,15">
+            <y:Label.Text>Circle</y:Label.Text>
+          </y:Label>
+        </x:List>
+      </data>
+      <data key="d6">
+        <ywpf:PolylineEdgeStyle>
+          <ywpf:PolylineEdgeStyle.TargetArrow>
+            <ywpf:Arrow Type="Circle" Pen="Black" Brush="#FF000000" />
+          </ywpf:PolylineEdgeStyle.TargetArrow>
+        </ywpf:PolylineEdgeStyle>
+      </data>
+    </edge>
+    <edge id="e6" source="n13" target="n14" sourceport="p0" targetport="p0">
+      <data key="d4">
+        <x:List>
+          <y:Label LayoutParameter="{x:Static y:NinePositionsEdgeLabelModel.CenterBelow}" Style="{y:GraphMLReference 1}" PreferredSize="29,15">
+            <y:Label.Text>Cross</y:Label.Text>
+          </y:Label>
+        </x:List>
+      </data>
+      <data key="d6">
+        <ywpf:PolylineEdgeStyle>
+          <ywpf:PolylineEdgeStyle.TargetArrow>
+            <ywpf:Arrow Type="Cross" Pen="Black" Brush="#FF000000" />
+          </ywpf:PolylineEdgeStyle.TargetArrow>
+        </ywpf:PolylineEdgeStyle>
+      </data>
+    </edge>
+    <edge id="e7" source="n15" target="n16" sourceport="p0" targetport="p0">
+      <data key="d4">
+        <x:List>
+          <y:Label LayoutParameter="{x:Static y:NinePositionsEdgeLabelModel.CenterBelow}" Style="{y:GraphMLReference 1}" PreferredSize="43,15">
+            <y:Label.Text>Triangle</y:Label.Text>
+          </y:Label>
+        </x:List>
+      </data>
+      <data key="d6">
+        <ywpf:PolylineEdgeStyle>
+          <ywpf:PolylineEdgeStyle.TargetArrow>
+            <ywpf:Arrow Type="Triangle" Pen="Black" Brush="#FF000000" />
+          </ywpf:PolylineEdgeStyle.TargetArrow>
+        </ywpf:PolylineEdgeStyle>
+      </data>
+    </edge>
+  </graph>
+</graphml>

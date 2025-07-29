@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -48,12 +48,12 @@ namespace Demo.yFiles.Layout.PortCandidateDemo
                        Height = 6,
                        Stroke = Brushes.Black,
                      };
-      visual.SetCanvasArrangeRect(GetBounds(context, port));
+      visual.SetCanvasArrangeRect(GetBounds(context, port).ToRect());
       return visual;
     }
 
     protected override Ellipse UpdateVisual(IRenderContext context, Ellipse oldVisual, IPort port) {
-      oldVisual.SetCanvasArrangeRect(GetBounds(context, port));
+      oldVisual.SetCanvasArrangeRect(GetBounds(context, port).ToRect());
       return oldVisual;
     }
 

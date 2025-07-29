@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -42,9 +42,6 @@ namespace Demo.yFiles.Graph.Viewer
 {
   public class VectorNodeStyle : NodeStyleBase<VisualGroup>
   {
-    public VectorNodeStyle() {
-    }
-
     public string TemplateKey { get; set; }
 
     protected override VisualGroup CreateVisual(IRenderContext context, INode node) {
@@ -59,9 +56,8 @@ namespace Demo.yFiles.Graph.Viewer
         RectD layout = node.Layout.ToRectD();
         ((MatrixTransform)container.Transform).Matrix = new Matrix(layout.Width, 0, 0, layout.Height, layout.X, layout.Y);
         return container;
-      } else {
-        return CreateVisual(context, node);
       }
+      return CreateVisual(context, node);
     }
 
     private void Render(IRenderContext context, VisualGroup container, INode node) {
@@ -74,12 +70,12 @@ namespace Demo.yFiles.Graph.Viewer
         if (child != null) {
           double oldScaleX = 1, oldScaleY = 1;
           ScaleTransform oldTransform = child.RenderTransform as ScaleTransform;
-          
+
           if (oldTransform != null) {
             oldScaleX = oldTransform.ScaleX;
             oldScaleY = oldTransform.ScaleY;
           } else {
-            child.RenderTransform = oldTransform = new ScaleTransform() {ScaleX = 1, ScaleY = 1};
+            child.RenderTransform = oldTransform = new ScaleTransform {ScaleX = 1, ScaleY = 1};
           }
           double width = child.Width;
           double height = child.Height;
@@ -96,8 +92,7 @@ namespace Demo.yFiles.Graph.Viewer
           oldTransform.ScaleX = scaleX;
           oldTransform.ScaleY = scaleY;
         }
-        container.Transform = new MatrixTransform()
-                                {Matrix = new Matrix(layout.Width, 0, 0, layout.Height, layout.X, layout.Y)};
+        container.Transform = new MatrixTransform {Matrix = new Matrix(layout.Width, 0, 0, layout.Height, layout.X, layout.Y)};
       }
     }
   }

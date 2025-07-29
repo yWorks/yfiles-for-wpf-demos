@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -41,14 +41,15 @@ using yWorks.Graph.LabelModels;
 using yWorks.Graph.Styles;
 using yWorks.Layout;
 using yWorks.Layout.Labeling;
+using yWorks.Utils;
 using GroupNodeStyle = Demo.yFiles.Graph.Bpmn.Styles.GroupNodeStyle;
+
 // Just for better readability in code
-using BpmnNM = Demo.yFiles.Graph.Bpmn.BpmnDi.BpmnNamespaceManager;
 
 namespace Demo.yFiles.Graph.Bpmn.BpmnDi
 {
   /// <summary>
-  /// Parser for the BPMN 2.0 abstract syntax.
+  ///   Parser for the BPMN 2.0 abstract syntax.
   /// </summary>
   public class BpmnDiParser
   {
@@ -59,84 +60,84 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
     private BpmnDiagram CurrentDiagram { get; set; }
 
     // maps a process BpmnElement to the BpmnElement that referenced this process in a 'processRef'
-    private Dictionary<BpmnElement, BpmnElement> ProcessRefSource { get; set; }
+    private Dictionary<BpmnElement, BpmnElement> ProcessRefSource { get; }
 
-    private List<BpmnShape> delayedBoundaryEvents = new List<BpmnShape>();
+    private readonly List<BpmnShape> delayedBoundaryEvents = new();
 
     // The master graph
-    private IGraph MasterGraph {
-      get { return view.Manager.MasterGraph; }
-    }
+    private IGraph MasterGraph => view.Manager.MasterGraph;
 
     // The current folding manager and current folding view
-    private FoldingManager Manager {
-      get { return view.Manager; }
-    }
+    private FoldingManager Manager => view.Manager;
 
     private IFoldingView view;
 
 
     /// <summary>
-    /// LabelModel for Nodes with Exterior Label. Provides 32 possible Positions.
+    ///   Parameter of a LabelModel for nodes with exterior labels that provides 32 possible Positions.
     /// </summary>
-    private GenericLabelModel GenericLabelModel { get; set; }
+    private CompositeLabelModel.Parameter CompositeLabelModelParameter { get; set; }
 
     // Flags
 
     /// <summary>
-    /// Flag that sets the rearrangement of Labels. Does not work properly with custom label bounds
+    ///   Flag that sets the rearrangement of Labels. Does not work properly with custom label bounds
     /// </summary>
     private const bool RearrangeLabels = false;
 
     /// <summary>
-    /// Flag that decides if Labels should be parsed, if bpmndi:BPMNLabel XML element is missing
+    ///   Flag that decides if Labels should be parsed, if bpmndi:BPMNLabel XML element is missing
     /// </summary>
     private const bool ParseAllLabels = true;
 
     /// <summary>
-    /// Flag that decides if the folded Diagrams inside a selected diagram should also be parsed
+    ///   Flag that decides if the folded Diagrams inside a selected diagram should also be parsed
     /// </summary>
     private const bool ParseFoldedDiagrams = true;
 
     /// <summary>
-    /// Flag that decides if only top level diagrams can be selected, or all possible Diagrams in the file
+    ///   Flag that decides if only top level diagrams can be selected, or all possible Diagrams in the file
     /// </summary>
     private const bool ShowAllDiagrams = false;
 
     /// <summary>
-    /// Flag, if false, no edges are parsed (Debug)
+    ///   Flag, if false, no edges are parsed (Debug)
     /// </summary>
     private const bool ParseEdges = true;
 
     /// <summary>
-    /// Flag to determine, if external node Labels should be single- or multiline
-    /// Implementation left unfinished, since the right way to do would be overriding the renderer
+    ///   Flag to determine, if external node Labels should be single- or multiline
+    ///   Implementation left unfinished, since the right way to do would be overriding the renderer
     /// </summary>
     private const bool MultiLineExteriorNodeLabels = false;
 
     // Can't use BPMN-Constants here, so we have to add the standard size of message envelopes.
-    private readonly SizeD bpmnMessageSize = new SizeD(20, 14);
+    private readonly SizeD bpmnMessageSize = new(20, 14);
 
-    #region File Parsing 
+    #region File Parsing
 
     /// <summary>
-    /// Constructs a new instance of the parser
+    ///   Constructs a new instance of the parser
     /// </summary>
     public BpmnDiParser() {
-      // Initialize the GenericLabelModel
-      InitGenericLabelModel();
+      // Initialize the CompositeLabelModel
+      InitCompositeLabelModel();
       ProcessRefSource = new Dictionary<BpmnElement, BpmnElement>();
     }
 
     /// <summary>
-    /// Parse a BPMN File and build a graph.
+    ///   Parse a BPMN File and build a graph.
     /// </summary>
     /// <remarks>
-    /// Calls <see cref="Load(yWorks.Graph.IGraph,System.IO.Stream,System.Func{System.Collections.Generic.IEnumerable{string},string})"/>
+    ///   Calls
+    ///   <see cref="Load(yWorks.Graph.IGraph,System.IO.Stream,System.Func{System.Collections.Generic.IEnumerable{string},string})"/>
     /// </remarks>
     /// <param name="graph">The graph to build the diagram in.</param>
     /// <param name="filePath">The path to read the file from.</param>
-    /// <param name="selectDiagramCallback">Callback method which chooses one diagram name from a given list. If no method is provided the first diagram is chosen.</param>
+    /// <param name="selectDiagramCallback">
+    ///   Callback method which chooses one diagram name from a given list. If no method is
+    ///   provided, the first diagram is chosen.
+    /// </param>
     public void Load(IGraph graph, string filePath, Func<IEnumerable<string>, string> selectDiagramCallback = null) {
       Stream stream = new FileStream(filePath, FileMode.Open);
       Load(graph, stream, selectDiagramCallback);
@@ -144,11 +145,14 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
     }
 
     /// <summary>
-    /// Called to parse and build a graph.
+    ///   Called to parse and build a graph.
     /// </summary>
-    /// <param name="graph">The graph Instance build the diagram in.</param>
+    /// <param name="graph">The graph instance to build the diagram in.</param>
     /// <param name="stream">FileStream to get the graph from.</param>
-    /// <param name="selectDiagramCallback">Callback method which chooses one diagram name from a given list. If no method is provided the first diagram is chosen.</param>
+    /// <param name="selectDiagramCallback">
+    ///   Callback method which chooses one diagram name from a given list. If no method is
+    ///   provided, the first diagram is chosen.
+    /// </param>
     public void Load(IGraph graph, Stream stream, Func<IEnumerable<string>, string> selectDiagramCallback = null) {
       // Initialize FoldingManager & View for the Graph
       view = graph.GetFoldingView();
@@ -158,22 +162,18 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
 
       // Initialize the default Layout for folded Group Nodes
       Manager.FolderNodeConverter = new MultiLabelFolderNodeConverter {
-          CopyFirstLabel = true,
-          CopyLabels = true,
-          CloneNodeStyle = true,
-          CloneLabelLayoutParameter = true,
-          LabelStyle = BpmnLabelStyle.NewDefaultInstance()
+          LabelDefaults = { Style = BpmnLabelStyle.NewDefaultInstance(), ShareStyleInstance = false }
       };
 
       // Initialize the Layout for Edges alongside folded Group Nodes
-      Manager.FoldingEdgeConverter = new DefaultFoldingEdgeConverter {
-          CloneEdgeStyle = true,
-          CopyFirstLabel = true,
-          CloneLabelStyle = true,
-          CloneLabelLayoutParameter = true,
+      Manager.FoldingEdgeConverter = new FoldingEdgeConverter {
+          FoldingEdgeDefaults = {
+              CopyLabels = true,
+              Labels = { ShareStyleInstance = false },
+              InitializeOptions = FoldingSynchronizationOptions.Layout
+          },
           ReuseMasterPorts = true,
-          ReuseFolderNodePorts = true,
-          ResetBends = false
+          ReuseFolderNodePorts = true
       };
 
       // Clear previous Graph
@@ -202,51 +202,76 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
     }
 
     /// <summary>
-    ///  Initialize the genericLabelModel
-    /// Using a model with 32 positions (better than ExteriorLabelModel which only has 8) to enable
-    /// more options for customization in the user interface.
+    ///   Initialize the CompositeLabelModelParameter
+    ///   Using a model with 32 positions (better than ExteriorNodeLabelModel which only has 8) to enable
+    ///   more options for customization in the user interface.
     /// </summary>
-    private void InitGenericLabelModel() {
-      var exteriorLabelModel = new ExteriorLabelModel { Insets = new InsetsD(3, 3, 3, 3) };
-      GenericLabelModel = new GenericLabelModel(exteriorLabelModel.CreateParameter(ExteriorLabelModel.Position.South));
-      GenericLabelModel.AddParameter(exteriorLabelModel.CreateParameter(ExteriorLabelModel.Position.SouthEast));
-      GenericLabelModel.AddParameter(exteriorLabelModel.CreateParameter(ExteriorLabelModel.Position.SouthWest));
-      GenericLabelModel.AddParameter(exteriorLabelModel.CreateParameter(ExteriorLabelModel.Position.North));
-      GenericLabelModel.AddParameter(exteriorLabelModel.CreateParameter(ExteriorLabelModel.Position.NorthEast));
-      GenericLabelModel.AddParameter(exteriorLabelModel.CreateParameter(ExteriorLabelModel.Position.NorthWest));
-      GenericLabelModel.AddParameter(exteriorLabelModel.CreateParameter(ExteriorLabelModel.Position.West));
-      GenericLabelModel.AddParameter(exteriorLabelModel.CreateParameter(ExteriorLabelModel.Position.East));
-      // Big Insets
-      exteriorLabelModel = new ExteriorLabelModel { Insets = new InsetsD(18, 18, 18, 18) };
-      GenericLabelModel.AddParameter(exteriorLabelModel.CreateParameter(ExteriorLabelModel.Position.South));
-      GenericLabelModel.AddParameter(exteriorLabelModel.CreateParameter(ExteriorLabelModel.Position.SouthEast));
-      GenericLabelModel.AddParameter(exteriorLabelModel.CreateParameter(ExteriorLabelModel.Position.SouthWest));
-      GenericLabelModel.AddParameter(exteriorLabelModel.CreateParameter(ExteriorLabelModel.Position.North));
-      GenericLabelModel.AddParameter(exteriorLabelModel.CreateParameter(ExteriorLabelModel.Position.NorthEast));
-      GenericLabelModel.AddParameter(exteriorLabelModel.CreateParameter(ExteriorLabelModel.Position.NorthWest));
-      GenericLabelModel.AddParameter(exteriorLabelModel.CreateParameter(ExteriorLabelModel.Position.West));
-      GenericLabelModel.AddParameter(exteriorLabelModel.CreateParameter(ExteriorLabelModel.Position.East));
+    private void InitCompositeLabelModel() {
+      var exteriorNodeLabelModel = new ExteriorNodeLabelModel { Margins = new InsetsD(3, 3, 3, 3) };
+      var compositeLabelModel = new CompositeLabelModel();
+      CompositeLabelModelParameter =
+          compositeLabelModel.AddParameter(
+              exteriorNodeLabelModel.CreateParameter(ExteriorNodeLabelModel.Position.Bottom));
+      compositeLabelModel.AddParameter(
+          exteriorNodeLabelModel.CreateParameter(ExteriorNodeLabelModel.Position.BottomRight));
+      compositeLabelModel.AddParameter(
+          exteriorNodeLabelModel.CreateParameter(ExteriorNodeLabelModel.Position.BottomLeft));
+      compositeLabelModel.AddParameter(exteriorNodeLabelModel.CreateParameter(ExteriorNodeLabelModel.Position.Top));
+      compositeLabelModel.AddParameter(
+          exteriorNodeLabelModel.CreateParameter(ExteriorNodeLabelModel.Position.TopRight));
+      compositeLabelModel.AddParameter(exteriorNodeLabelModel.CreateParameter(ExteriorNodeLabelModel.Position.TopLeft));
+      compositeLabelModel.AddParameter(exteriorNodeLabelModel.CreateParameter(ExteriorNodeLabelModel.Position.Left));
+      compositeLabelModel.AddParameter(exteriorNodeLabelModel.CreateParameter(ExteriorNodeLabelModel.Position.Right));
+      // Big Padding
+      exteriorNodeLabelModel = new ExteriorNodeLabelModel { Margins = new InsetsD(18, 18, 18, 18) };
+      compositeLabelModel.AddParameter(exteriorNodeLabelModel.CreateParameter(ExteriorNodeLabelModel.Position.Bottom));
+      compositeLabelModel.AddParameter(
+          exteriorNodeLabelModel.CreateParameter(ExteriorNodeLabelModel.Position.BottomRight));
+      compositeLabelModel.AddParameter(
+          exteriorNodeLabelModel.CreateParameter(ExteriorNodeLabelModel.Position.BottomLeft));
+      compositeLabelModel.AddParameter(exteriorNodeLabelModel.CreateParameter(ExteriorNodeLabelModel.Position.Top));
+      compositeLabelModel.AddParameter(
+          exteriorNodeLabelModel.CreateParameter(ExteriorNodeLabelModel.Position.TopRight));
+      compositeLabelModel.AddParameter(exteriorNodeLabelModel.CreateParameter(ExteriorNodeLabelModel.Position.TopLeft));
+      compositeLabelModel.AddParameter(exteriorNodeLabelModel.CreateParameter(ExteriorNodeLabelModel.Position.Left));
+      compositeLabelModel.AddParameter(exteriorNodeLabelModel.CreateParameter(ExteriorNodeLabelModel.Position.Right));
 
       // Label Positions between existing exterior positions
       var freeNodeLabelModel = new FreeNodeLabelModel();
       // Small Insets
-      GenericLabelModel.AddParameter(freeNodeLabelModel.CreateParameter(new PointD(0.25, 0), new PointD(-1.5, -3), new PointD(0.75, 1), new PointD(0, 0), 0));
-      GenericLabelModel.AddParameter(freeNodeLabelModel.CreateParameter(new PointD(0.75, 0), new PointD(1.5, -3), new PointD(0.25, 1), new PointD(0, 0), 0));
-      GenericLabelModel.AddParameter(freeNodeLabelModel.CreateParameter(new PointD(1, 0.25), new PointD(3, -1.5), new PointD(0, 0.75), new PointD(0, 0), 0));
-      GenericLabelModel.AddParameter(freeNodeLabelModel.CreateParameter(new PointD(1, 0.75), new PointD(3, 1.5), new PointD(0, 0.25), new PointD(0, 0), 0));
-      GenericLabelModel.AddParameter(freeNodeLabelModel.CreateParameter(new PointD(0.75, 1), new PointD(1.5, 3), new PointD(0.25, 0), new PointD(0, 0), 0));
-      GenericLabelModel.AddParameter(freeNodeLabelModel.CreateParameter(new PointD(0.25, 1), new PointD(-1.5, 3), new PointD(0.75, 0), new PointD(0, 0), 0));
-      GenericLabelModel.AddParameter(freeNodeLabelModel.CreateParameter(new PointD(0, 0.75), new PointD(-3, 1.5), new PointD(1, 0.25), new PointD(0, 0), 0));
-      GenericLabelModel.AddParameter(freeNodeLabelModel.CreateParameter(new PointD(0, 0.25), new PointD(-3, -1.5), new PointD(1, 0.75), new PointD(0, 0), 0));
+      compositeLabelModel.AddParameter(freeNodeLabelModel.CreateParameter(new PointD(0.25, 0), new PointD(-1.5, -3),
+          new PointD(0.75, 1), new PointD(0, 0)));
+      compositeLabelModel.AddParameter(freeNodeLabelModel.CreateParameter(new PointD(0.75, 0), new PointD(1.5, -3),
+          new PointD(0.25, 1), new PointD(0, 0)));
+      compositeLabelModel.AddParameter(freeNodeLabelModel.CreateParameter(new PointD(1, 0.25), new PointD(3, -1.5),
+          new PointD(0, 0.75), new PointD(0, 0)));
+      compositeLabelModel.AddParameter(freeNodeLabelModel.CreateParameter(new PointD(1, 0.75), new PointD(3, 1.5),
+          new PointD(0, 0.25), new PointD(0, 0)));
+      compositeLabelModel.AddParameter(freeNodeLabelModel.CreateParameter(new PointD(0.75, 1), new PointD(1.5, 3),
+          new PointD(0.25, 0), new PointD(0, 0)));
+      compositeLabelModel.AddParameter(freeNodeLabelModel.CreateParameter(new PointD(0.25, 1), new PointD(-1.5, 3),
+          new PointD(0.75, 0), new PointD(0, 0)));
+      compositeLabelModel.AddParameter(freeNodeLabelModel.CreateParameter(new PointD(0, 0.75), new PointD(-3, 1.5),
+          new PointD(1, 0.25), new PointD(0, 0)));
+      compositeLabelModel.AddParameter(freeNodeLabelModel.CreateParameter(new PointD(0, 0.25), new PointD(-3, -1.5),
+          new PointD(1, 0.75), new PointD(0, 0)));
       // Big Insets
-      GenericLabelModel.AddParameter(freeNodeLabelModel.CreateParameter(new PointD(0.25, 0), new PointD(-9, -18), new PointD(0.75, 1), new PointD(0, 0), 0));
-      GenericLabelModel.AddParameter(freeNodeLabelModel.CreateParameter(new PointD(0.75, 0), new PointD(9, -18), new PointD(0.25, 1), new PointD(0, 0), 0));
-      GenericLabelModel.AddParameter(freeNodeLabelModel.CreateParameter(new PointD(1, 0.25), new PointD(18, -9), new PointD(0, 0.75), new PointD(0, 0), 0));
-      GenericLabelModel.AddParameter(freeNodeLabelModel.CreateParameter(new PointD(1, 0.75), new PointD(18, 9), new PointD(0, 0.25), new PointD(0, 0), 0));
-      GenericLabelModel.AddParameter(freeNodeLabelModel.CreateParameter(new PointD(0.75, 1), new PointD(9, 18), new PointD(0.25, 0), new PointD(0, 0), 0));
-      GenericLabelModel.AddParameter(freeNodeLabelModel.CreateParameter(new PointD(0.25, 1), new PointD(-9, 18), new PointD(0.75, 0), new PointD(0, 0), 0));
-      GenericLabelModel.AddParameter(freeNodeLabelModel.CreateParameter(new PointD(0, 0.75), new PointD(-18, 9), new PointD(1, 0.25), new PointD(0, 0), 0));
-      GenericLabelModel.AddParameter(freeNodeLabelModel.CreateParameter(new PointD(0, 0.25), new PointD(-18, -9), new PointD(1, 0.75), new PointD(0, 0), 0));
+      compositeLabelModel.AddParameter(freeNodeLabelModel.CreateParameter(new PointD(0.25, 0), new PointD(-9, -18),
+          new PointD(0.75, 1), new PointD(0, 0)));
+      compositeLabelModel.AddParameter(freeNodeLabelModel.CreateParameter(new PointD(0.75, 0), new PointD(9, -18),
+          new PointD(0.25, 1), new PointD(0, 0)));
+      compositeLabelModel.AddParameter(freeNodeLabelModel.CreateParameter(new PointD(1, 0.25), new PointD(18, -9),
+          new PointD(0, 0.75), new PointD(0, 0)));
+      compositeLabelModel.AddParameter(freeNodeLabelModel.CreateParameter(new PointD(1, 0.75), new PointD(18, 9),
+          new PointD(0, 0.25), new PointD(0, 0)));
+      compositeLabelModel.AddParameter(freeNodeLabelModel.CreateParameter(new PointD(0.75, 1), new PointD(9, 18),
+          new PointD(0.25, 0), new PointD(0, 0)));
+      compositeLabelModel.AddParameter(freeNodeLabelModel.CreateParameter(new PointD(0.25, 1), new PointD(-9, 18),
+          new PointD(0.75, 0), new PointD(0, 0)));
+      compositeLabelModel.AddParameter(freeNodeLabelModel.CreateParameter(new PointD(0, 0.75), new PointD(-18, 9),
+          new PointD(1, 0.25), new PointD(0, 0)));
+      compositeLabelModel.AddParameter(freeNodeLabelModel.CreateParameter(new PointD(0, 0.25), new PointD(-18, -9),
+          new PointD(1, 0.75), new PointD(0, 0)));
     }
 
     #endregion
@@ -254,7 +279,7 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
     #region Building Backbone
 
     /// <summary>
-    /// Builds the first diagram via drawing the individual nodes and edges
+    ///   Builds the first diagram via drawing the individual nodes and edges
     /// </summary>
     /// <param name="diagram">The diagram to draw</param>
     /// <param name="localRoot">The local root node </param>
@@ -287,8 +312,8 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
 
       if (ParseFoldedDiagrams) {
         foreach (var child in diagram.Children) {
-          bool collapsed = !view.IsExpanded(child.Value.Node);
-          INode lastRoot = view.LocalRoot;
+          var collapsed = !view.IsExpanded(child.Value.Node);
+          var lastRoot = view.LocalRoot;
           if (collapsed) {
             view.LocalRoot = child.Value.Node;
           }
@@ -299,13 +324,12 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
         }
       }
 
-      var groupNodes = this.MasterGraph.Nodes.Where(node => node.Style is GroupNodeStyle).ToList();
+      var groupNodes = MasterGraph.Nodes.Where(node => node.Style is GroupNodeStyle).ToList();
       foreach (var groupNode in groupNodes) {
         if (MasterGraph.GetChildren(groupNode).Count == 0) {
-          var newChildren = MasterGraph.GetChildren(MasterGraph.GetParent(groupNode))
-                                       .Where(child => child != groupNode 
-                                                       && groupNode.Layout.Contains(child.Layout.GetTopLeft()) 
-                                                       && groupNode.Layout.Contains(child.Layout.GetBottomRight())).ToList();
+          var newChildren = MasterGraph.GetChildren(MasterGraph.GetParent(groupNode)).Where(child =>
+              child != groupNode && groupNode.Layout.Contains(child.Layout.GetTopLeft()) &&
+              groupNode.Layout.Contains(child.Layout.GetBottomRight())).ToList();
           foreach (var newChild in newChildren) {
             MasterGraph.SetParent(newChild, groupNode);
           }
@@ -314,11 +338,11 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
     }
 
     /// <summary>
-    /// Returns the <see cref="BpmnShape"/> for the <paramref name="element"/> in the context of this <paramref name="plane"/>.
+    ///   Returns the <see cref="BpmnShape"/> for the <paramref name="element"/> in the context of this
+    ///   <paramref name="plane"/>.
     /// </summary>
     /// <param name="element">The element to get the shape for.</param>
     /// <param name="plane">The plane containing the shape for the element.</param>
-    /// <returns></returns>
     private BpmnShape GetShape(BpmnElement element, BpmnPlane plane) {
       BpmnElement referencedElement = null;
       if (element.Name == "participantRef") {
@@ -335,14 +359,14 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
     }
 
     /// <summary>
-    /// Returns whether the <paramref name="shape"/> belongs to this <paramref name="element"/> or <paramref name="referencedElement"/>
-    /// in the context of the <paramref name="plane"/>.
+    ///   Returns whether the <paramref name="shape"/> belongs to this <paramref name="element"/> or
+    ///   <paramref name="referencedElement"/>
+    ///   in the context of the <paramref name="plane"/>.
     /// </summary>
     /// <param name="shape">The shape to check validity for.</param>
     /// <param name="element">The element to check if the shape is valid.</param>
     /// <param name="referencedElement">The element referenced by element.</param>
     /// <param name="plane">The plane containing this shape.</param>
-    /// <returns></returns>
     private bool IsValidShape(BpmnShape shape, BpmnElement element, BpmnElement referencedElement, BpmnPlane plane) {
       if (shape.Element != element && shape.Element != referencedElement) {
         // shape has to be defined for Element or referenced Element
@@ -352,7 +376,8 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
         // there is no ChoreographyActivityShape, so no further checks needed
         return true;
       }
-      if (element.Parent != null && (element.Parent.Name == "choreographyTask" || element.Parent.Name == "subChoreography")) {
+      if (element.Parent != null &&
+          (element.Parent.Name == "choreographyTask" || element.Parent.Name == "subChoreography")) {
         // if a ChoreographyActivityShape is defined, we need to be inside the defined choreographyTask or subChoreography
         var choreoShape = GetShape(element.Parent, plane);
         if (choreoShape != null) {
@@ -363,11 +388,11 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
     }
 
     /// <summary>
-    /// Returns the <see cref="BpmnEdge"/> for the <paramref name="element"/> in the context of this <paramref name="plane"/>.
+    ///   Returns the <see cref="BpmnEdge"/> for the <paramref name="element"/> in the context of this <paramref name="plane"/>
+    ///   .
     /// </summary>
     /// <param name="element">The element to get an BpmnEdge for.</param>
     /// <param name="plane">The plane containing the BpmnEdges.</param>
-    /// <returns></returns>
     private BpmnEdge GetEdge(BpmnElement element, BpmnPlane plane) {
       foreach (var bpmnEdge in plane.ListOfEdges) {
         if (bpmnEdge.Element == element) {
@@ -378,7 +403,7 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
     }
 
     /// <summary>
-    /// Recursively builds BPMN items from <paramref name="element"/> and its descendents.
+    ///   Recursively builds BPMN items from <paramref name="element"/> and its descendents.
     /// </summary>
     /// <param name="element">The element to build an BPMN item for.</param>
     /// <param name="plane">The plane containing the shapes for the current <see cref="BpmnDiagram"/>.</param>
@@ -389,8 +414,8 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
         // build up the Pool structure defined by the laneSet
         BuildPool(element, plane, localRoot);
       } else {
-        BpmnShape bpmnShape = GetShape(element, plane);
-        BpmnEdge bpmnEdge = GetEdge(element, plane);
+        var bpmnShape = GetShape(element, plane);
+        var bpmnEdge = GetEdge(element, plane);
         if (bpmnShape != null) {
           if (element.Parent.Node == null) {
             element.Parent.Node = localRoot;
@@ -409,7 +434,8 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
           }
         }
         // check if all children or only data associations shall be processed
-        var parseOnlyDataAssociations = bpmnShape != null && element.Name == "subProcess" && bpmnShape.IsExpanded == "false";
+        var parseOnlyDataAssociations =
+            bpmnShape != null && element.Name == "subProcess" && bpmnShape.IsExpanded == "false";
         if (parseOnlyDataAssociations) {
           // this is a collapsed subProcess - check if it is linked to its own Diagram
           if (!Document.ElementToDiagram.ContainsKey(element)) {
@@ -418,7 +444,8 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
           }
         }
         foreach (var child in element.Children) {
-          if (!parseOnlyDataAssociations || child.Name == "dataInputAssociation" || child.Name == "dataOutputAssociation") {
+          if (!parseOnlyDataAssociations || child.Name == "dataInputAssociation" ||
+              child.Name == "dataOutputAssociation") {
             BuildElement(child, plane, localRoot, bpmnEdges);
           }
         }
@@ -426,12 +453,11 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
     }
 
     /// <summary>
-    /// Looks up the <see cref="BpmnElement"/> registered by <paramref name="id"/>.
+    ///   Looks up the <see cref="BpmnElement"/> registered by <paramref name="id"/>.
     /// </summary>
     /// <param name="id">The id to look up the element for.</param>
     /// <param name="element">The element to set if one could be found for the given id.</param>
-    /// <returns></returns>
-    private bool TryGetElementForId(String id, out BpmnElement element) {
+    private bool TryGetElementForId(string id, out BpmnElement element) {
       if (Document.Elements.TryGetValue(id, out element)) {
         return true;
       }
@@ -445,48 +471,46 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
     }
 
     /// <summary>
-    /// Uses a labeling algorithm to rearrange the labels to reduce overlaps
+    ///   Uses a labeling algorithm to rearrange the labels to reduce overlaps
     /// </summary>
     private void Rearrange() {
       if (!RearrangeLabels) {
         return;
       }
-      var labelingData = new LabelingData();
-      labelingData.EdgeLabelPreferredPlacement.Delegate = label => {
-        if (string.Equals(label.Text, "yes", StringComparison.InvariantCultureIgnoreCase) ||
-            string.Equals(label.Text, "no", StringComparison.InvariantCultureIgnoreCase)) {
-          return new PreferredPlacementDescriptor {
-              PlaceAlongEdge = LabelPlacements.AtSource,
-              DistanceToEdge = 5,
-              SideOfEdge = LabelPlacements.LeftOfEdge | LabelPlacements.RightOfEdge
-          };
-        }
-        return new PreferredPlacementDescriptor {
-            PlaceAlongEdge = LabelPlacements.AtCenter,
-            DistanceToEdge = 5,
-            SideOfEdge = LabelPlacements.LeftOfEdge | LabelPlacements.RightOfEdge,
-        };
-      };
-      MasterGraph.ApplyLayout(new GenericLabeling {
-          PlaceEdgeLabels = true,
+      var labeling = new GenericLabeling {
+          Scope = LabelingScope.EdgeLabels,
           // This can be turned on, but does not give good results (although using a 32 position model)
-          PlaceNodeLabels = false,
+          // Scope = LabelingScope.All,
+
           // Always keep this false, to keep internal labels in order
           MoveInternalNodeLabels = false,
-          OptimizationStrategy = OptimizationStrategy.PreferredPlacement,
 
           // Set additional preferences here
-          ReduceAmbiguity = true,
-          AutoFlipping = false,
-          EdgeGroupOverlapAllowed = false,
-          ReduceLabelOverlaps = true,
-          RemoveNodeOverlaps = true,
-          RemoveEdgeOverlaps = true
-      }, labelingData);
+          ReduceLabelOverlaps = true
+      };
+      labeling.DefaultNodeLabelingCosts.AmbiguousPlacementCost = 1.0;
+      labeling.DefaultEdgeLabelingCosts.AmbiguousPlacementCost = 1.0;
+      var labelingData = labeling.CreateLayoutData(MasterGraph);
+      labelingData.EdgeLabelPreferredPlacements.MapperFunction = label => {
+        if (string.Equals(label.Text, "yes", StringComparison.InvariantCultureIgnoreCase) ||
+            string.Equals(label.Text, "no", StringComparison.InvariantCultureIgnoreCase)) {
+          return new EdgeLabelPreferredPlacement {
+              PlacementAlongEdge = LabelAlongEdgePlacements.AtSource,
+              DistanceToEdge = 5,
+              EdgeSide = LabelEdgeSides.LeftOfEdge | LabelEdgeSides.RightOfEdge
+          };
+        }
+        return new EdgeLabelPreferredPlacement {
+            PlacementAlongEdge = LabelAlongEdgePlacements.AtCenter,
+            DistanceToEdge = 5,
+            EdgeSide = LabelEdgeSides.LeftOfEdge | LabelEdgeSides.RightOfEdge
+        };
+      };
+      MasterGraph.ApplyLayout(labeling, labelingData);
     }
 
     /// <summary>
-    /// Creates an <see cref="INode"/> on the graph
+    ///   Creates an <see cref="INode"/> on the graph
     /// </summary>
     /// <param name="shape">The <see cref="BpmnShape"/> to draw. </param>
     /// <param name="originalElement">The original element the shape shall be applied for.</param>
@@ -556,7 +580,7 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
           }
           break;
 
-        // Activities - Ad-Hoc Sub-Process 
+        // Activities - Ad-Hoc Sub-Process
         case BpmnDiConstants.AdHocSubProcessElement:
           if (shape.GetAttribute(BpmnDiConstants.TriggeredByEventAttribute) == "true") {
             BuildSubProcessNode(shape, bounds, ActivityType.EventSubProcess);
@@ -575,7 +599,7 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
           BuildSubProcessNode(shape, bounds, ActivityType.CallActivity);
           break;
 
-        //Events
+        // Events
         case BpmnDiConstants.StartEventElement:
           if (shape.GetAttribute(BpmnDiConstants.IsInterruptingAttribute) == "true") {
             BuildEventNode(shape, bounds, EventCharacteristic.SubProcessInterrupting);
@@ -632,7 +656,7 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
           BuildChoreographyNode(shape, bounds);
           break;
 
-        // Participants 
+        // Participants
         case BpmnDiConstants.ParticipantElement:
           var parent = originalElement.Parent;
           // If the participant is not part of a choreography node, create a node
@@ -646,7 +670,7 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
         case "participantRef":
 
           break;
-        // Text Annotations 
+        // Text Annotations
         case BpmnDiConstants.TextAnnotationElement:
           BuildTextAnnotationNode(shape, bounds);
           break;
@@ -694,7 +718,7 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
     }
 
     /// <summary>
-    /// Creates an <see cref="IEdge"/> on the graph
+    ///   Creates an <see cref="IEdge"/> on the graph
     /// </summary>
     /// <param name="edge">The <see cref="BpmnEdge"/> to draw. </param>
     private void BuildEdge(BpmnEdge edge) {
@@ -703,7 +727,8 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
       IEdge iEdge = null;
       switch (element.Name) {
         case BpmnDiConstants.SequenceFlowElement:
-          if (element.GetChild(BpmnDiConstants.ConditionExpressionElement) != null && !(source.Name.EndsWith(BpmnDiConstants.GatewaySuffix))) {
+          if (element.GetChild(BpmnDiConstants.ConditionExpressionElement) != null &&
+              !source.Name.EndsWith(BpmnDiConstants.GatewaySuffix)) {
             iEdge = BuildDefaultEdge(edge, EdgeType.ConditionalFlow);
           } else if (source != null && source.GetValue("default") == element.Id) {
             iEdge = BuildDefaultEdge(edge, EdgeType.DefaultFlow);
@@ -753,8 +778,8 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
     }
 
     /// <summary>
-    /// Callback to add some of the <see cref="BpmnShape"/> or <see cref="BpmnElement"/>
-    /// data to the <see cref="ITagOwner.Tag"/> of <paramref name="iNode"/>.
+    ///   Callback to add some of the <see cref="BpmnShape"/> or <see cref="BpmnElement"/>
+    ///   data to the <see cref="ITagOwner.Tag"/> of <paramref name="iNode"/>.
     /// </summary>
     /// <param name="shape">The bpmn shape used to create the node.</param>
     /// <param name="iNode">The node whose tag shall be filled.</param>
@@ -770,8 +795,8 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
     }
 
     /// <summary>
-    /// Callback to add some of the <see cref="BpmnEdge"/> or <see cref="BpmnElement"/>
-    /// data to the <see cref="ITagOwner.Tag"/> of <paramref name="iEdge"/>.
+    ///   Callback to add some of the <see cref="BpmnEdge"/> or <see cref="BpmnElement"/>
+    ///   data to the <see cref="ITagOwner.Tag"/> of <paramref name="iEdge"/>.
     /// </summary>
     /// <param name="edge">The bpmn edge used to create the edge.</param>
     /// <param name="iEdge">The edge whose tag shall be filled.</param>
@@ -800,18 +825,18 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
       // dataAssociations point to invisible children of activities, therefore, the INode has to be linked there
       element.SetINodeInputOutput(node);
 
-      //Add Style
+      // Add Style
       var gatewayStyle = new GatewayNodeStyle { Type = type };
       MasterGraph.SetStyle(node, gatewayStyle);
 
-      //Add Label
+      // Add Label
       var label = AddNodeLabel(node, shape);
       if (shape.HasLabelPosition()) {
         SetFixedBoundsLabelStyle(label, shape.LabelBounds);
       } else {
         SetExternalLabelStyle(label);
         if (shape.HasLabelSize()) {
-          MasterGraph.SetLabelPreferredSize(label, shape.LabelBounds.Size);
+          MasterGraph.SetLabelPreferredSize(label, shape.LabelBounds.GetSize());
         }
       }
     }
@@ -826,7 +851,7 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
       // dataAssociations point to invisible children of activities, therefore, the INode has to be linked there
       element.SetINodeInputOutput(node);
 
-      //Add Style
+      // Add Style
       var activityStyle = new ActivityNodeStyle {
           Compensation = shape.GetAttribute("isForCompensation") == "true",
           LoopCharacteristic = element.GetLoopCharacteristics(),
@@ -836,7 +861,7 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
 
       MasterGraph.SetStyle(node, activityStyle);
 
-      //Add Label
+      // Add Label
       var label = AddNodeLabel(node, shape);
       SetInternalLabelStyle(label);
     }
@@ -906,7 +931,7 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
       } else {
         SetExternalLabelStyle(label);
         if (shape.HasLabelSize()) {
-          MasterGraph.SetLabelPreferredSize(label, shape.LabelBounds.Size);
+          MasterGraph.SetLabelPreferredSize(label, shape.LabelBounds.GetSize());
         }
       }
     }
@@ -925,8 +950,8 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
         throw new ArgumentException("Shape with no parent", "shape");
       }
       if (parent.Node == null) {
-        if (!this.delayedBoundaryEvents.Contains(shape)) {
-          this.delayedBoundaryEvents.Add(shape);
+        if (!delayedBoundaryEvents.Contains(shape)) {
+          delayedBoundaryEvents.Add(shape);
         }
         Document.Messages.Add("The node for boundaryEvent " + shape.Id + " was not (yet) created!");
         return;
@@ -934,11 +959,11 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
 
       var element = shape.Element;
 
-      // dataAssociations point to invisible children of Tasks, therefore, the INode has to be linked there 
+      // dataAssociations point to invisible children of Tasks, therefore, the INode has to be linked there
       element.SetINodeInputOutput(parent.Node);
 
-      var port = MasterGraph.AddPort(parent.Node,
-          new PointD(shape.X + shape.Width / 2, shape.Y + shape.Height / 2), portStyle);
+      var port = MasterGraph.AddPort(parent.Node, new PointD(shape.X + shape.Width / 2, shape.Y + shape.Height / 2),
+          portStyle);
       element.Port = port;
       element.Node = parent.Node;
       var label = AddNodeLabel(port, shape);
@@ -946,9 +971,9 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
       if (shape.HasLabelPosition()) {
         SetFixedBoundsLabelStyle(label, shape.LabelBounds);
       } else {
-        MasterGraph.SetStyle(label, new DefaultLabelStyle());
+        MasterGraph.SetStyle(label, new LabelStyle());
         if (shape.HasLabelSize()) {
-          MasterGraph.SetLabelPreferredSize(label, shape.LabelBounds.Size);
+          MasterGraph.SetLabelPreferredSize(label, shape.LabelBounds.GetSize());
         } else {
           var outsideModel = new InsideOutsidePortLabelModel { Distance = 10 };
           MasterGraph.SetLabelLayoutParameter(label, outsideModel.CreateOutsideParameter());
@@ -964,7 +989,7 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
 
       element.Node = node;
 
-      // dataAssociations point to invisible children of Tasks, therefore, the INode has to be linked there 
+      // dataAssociations point to invisible children of Tasks, therefore, the INode has to be linked there
       element.SetINodeInputOutput(node);
 
       // Add Style
@@ -978,7 +1003,7 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
       } else {
         SetExternalLabelStyle(label);
         if (shape.HasLabelSize()) {
-          MasterGraph.SetLabelPreferredSize(label, shape.LabelBounds.Size);
+          MasterGraph.SetLabelPreferredSize(label, shape.LabelBounds.GetSize());
         }
       }
     }
@@ -990,13 +1015,12 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
       SetParent(node, element.Parent.Node);
       element.Node = node;
 
-      // dataAssociations point to invisible children of Tasks, therefore, the INode has to be linked there 
+      // dataAssociations point to invisible children of Tasks, therefore, the INode has to be linked there
       element.SetINodeInputOutput(node);
 
-      var choreographyStyle =
-          new ChoreographyNodeStyle { LoopCharacteristic = element.GetLoopCharacteristics() };
+      var choreographyStyle = new ChoreographyNodeStyle { LoopCharacteristic = element.GetLoopCharacteristics() };
 
-      //Get Loop Characteristics
+      // Get Loop Characteristics
       element.TopParticipants = 0;
       element.BottomParticipants = 0;
       var label = AddNodeLabel(node, shape);
@@ -1022,7 +1046,7 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
       SetParent(node, element.Parent.Node);
       element.Node = node;
 
-      // dataAssociations point to invisible children of Tasks, therefore, the INode has to be linked there 
+      // dataAssociations point to invisible children of Tasks, therefore, the INode has to be linked there
       element.SetINodeInputOutput(node);
 
       var objectStyle = new DataObjectNodeStyle { Type = type, Collection = isCollection };
@@ -1036,7 +1060,7 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
       } else {
         SetExternalLabelStyle(label);
         if (shape.HasLabelSize()) {
-          MasterGraph.SetLabelPreferredSize(label, shape.LabelBounds.Size);
+          MasterGraph.SetLabelPreferredSize(label, shape.LabelBounds.GetSize());
         }
       }
     }
@@ -1046,7 +1070,8 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
       var element = shape.Element;
       var processRef = element.Process;
       BpmnElement processElement = null;
-      if (processRef == null || !TryGetElementForId(processRef, out processElement) || processElement.GetChild("laneSet") == null) {
+      if (processRef == null || !TryGetElementForId(processRef, out processElement) ||
+          processElement.GetChild("laneSet") == null) {
         // not connected to a process so we need our own node
 
         var node = MasterGraph.CreateNode(bounds);
@@ -1056,7 +1081,7 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
           processElement.Node = node;
         }
 
-        // dataAssociations point to invisible children of Tasks, therefore, the INode has to be linked there 
+        // dataAssociations point to invisible children of Tasks, therefore, the INode has to be linked there
         element.SetINodeInputOutput(node);
 
         var partStyle = CreateTable(shape);
@@ -1085,7 +1110,7 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
       var node = choreography.Node;
       var top = false;
       var index = 0;
-      var choreographyNodeStyle = ((ChoreographyNodeStyle) node.Style);
+      var choreographyNodeStyle = (ChoreographyNodeStyle) node.Style;
       var multipleInstance = false;
       var element = shape.Element;
 
@@ -1098,37 +1123,42 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
       var label = AddParticipantLabel(node, shape);
       switch (shape.PartBandKind) {
         case ParticipantBandKind.TopInitiating:
-          if (shape.IsMessageVisible)
+          if (shape.IsMessageVisible) {
             choreographyNodeStyle.InitiatingMessage = true;
+          }
           choreographyNodeStyle.InitiatingAtTop = true;
           choreographyNodeStyle.TopParticipants.Add(participant);
           top = true;
           index = choreography.TopParticipants++;
           break;
         case ParticipantBandKind.TopNonInitiating:
-          if (shape.IsMessageVisible)
+          if (shape.IsMessageVisible) {
             choreographyNodeStyle.ResponseMessage = true;
+          }
           choreographyNodeStyle.TopParticipants.Add(participant);
           top = true;
           index = choreography.TopParticipants++;
           break;
         case ParticipantBandKind.BottomInitiating:
-          if (shape.IsMessageVisible)
+          if (shape.IsMessageVisible) {
             choreographyNodeStyle.InitiatingMessage = true;
+          }
           choreographyNodeStyle.InitiatingAtTop = false;
           choreographyNodeStyle.BottomParticipants.Add(participant);
           index = choreography.BottomParticipants++;
           break;
         case ParticipantBandKind.BottomNonInitiating:
-          if (shape.IsMessageVisible)
+          if (shape.IsMessageVisible) {
             choreographyNodeStyle.ResponseMessage = true;
+          }
           choreographyNodeStyle.BottomParticipants.Add(participant);
           index = choreography.BottomParticipants++;
           break;
         case ParticipantBandKind.MiddleInitiating:
           // This shouldn't happen under strict conformance
-          if (shape.IsMessageVisible)
+          if (shape.IsMessageVisible) {
             choreographyNodeStyle.InitiatingMessage = true;
+          }
           if (choreography.TopParticipants < choreography.BottomParticipants) {
             top = true;
             index = choreography.TopParticipants++;
@@ -1141,8 +1171,9 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
           }
           break;
         case ParticipantBandKind.MiddleNonInitiating:
-          if (shape.IsMessageVisible)
+          if (shape.IsMessageVisible) {
             choreographyNodeStyle.ResponseMessage = true;
+          }
           if (choreography.TopParticipants < choreography.BottomParticipants) {
             top = true;
             index = choreography.TopParticipants++;
@@ -1171,12 +1202,8 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
             if (messageFlow.Source == element.Id) {
               var message = messageFlow.Label ?? "";
               label = MasterGraph.AddLabel(node, message, null, null, null, shape.LabelStyle);
-              if (top) {
-                parameter = ChoreographyLabelModel.NorthMessage;
-              } else {
-                parameter = ChoreographyLabelModel.SouthMessage;
-              }
-              MasterGraph.SetLabelLayoutParameter(label, parameter);
+              var messageParameter = top ? ChoreographyLabelModel.TopMessage : ChoreographyLabelModel.BottomMessage;
+              MasterGraph.SetLabelLayoutParameter(label, messageParameter);
               defaultLabelStyle = SetCustomLabelStyle(label);
               MasterGraph.SetStyle(label, defaultLabelStyle);
               break;
@@ -1229,7 +1256,7 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
       SetParent(node, element.Parent.Node);
       element.Node = node;
 
-      // dataAssociations point to invisible children of Tasks, therefore, the INode has to be linked there 
+      // dataAssociations point to invisible children of Tasks, therefore, the INode has to be linked there
       element.SetINodeInputOutput(node);
 
       // Add Style
@@ -1243,7 +1270,7 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
       } else {
         SetExternalLabelStyle(label);
         if (shape.HasLabelSize()) {
-          MasterGraph.SetLabelPreferredSize(label, shape.LabelBounds.Size);
+          MasterGraph.SetLabelPreferredSize(label, shape.LabelBounds.GetSize());
         }
       }
     }
@@ -1355,7 +1382,7 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
         } else {
           SetEdgeLabelStyle(label);
           if (edge.HasLabelSize()) {
-            MasterGraph.SetLabelPreferredSize(label, edge.LabelBounds.Size);
+            MasterGraph.SetLabelPreferredSize(label, edge.LabelBounds.GetSize());
           }
         }
       }
@@ -1366,10 +1393,10 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
       ILabelModelParameter parameter = null;
       if (label.Owner is INode) {
         var model = new FreeNodeLabelModel();
-        parameter = model.FindBestParameter(label, model, new OrientedRectangle(bounds));
+        parameter = model.FindBestParameter(label, new OrientedRectangle(bounds));
       } else {
         var model = new FreeEdgeLabelModel();
-        parameter = model.FindBestParameter(label, model, new OrientedRectangle(bounds));
+        parameter = model.FindBestParameter(label, new OrientedRectangle(bounds));
       }
       MasterGraph.SetLabelLayoutParameter(label, parameter);
       var defaultLabelStyle = SetCustomLabelStyle(label);
@@ -1379,8 +1406,8 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
 
     // Sets label style for tasks (Centered)
     private void SetInternalLabelStyle(ILabel label) {
-      var model = new InteriorStretchLabelModel { Insets = new InsetsD(3, 3, 3, 3) };
-      MasterGraph.SetLabelLayoutParameter(label, model.CreateParameter(InteriorStretchLabelModel.Position.Center));
+      var model = new StretchNodeLabelModel { Padding = new InsetsD(3, 3, 3, 3) };
+      MasterGraph.SetLabelLayoutParameter(label, model.CreateParameter(StretchNodeLabelModel.Position.Center));
       var defaultLabelStyle = SetCustomLabelStyle(label);
       defaultLabelStyle.TextAlignment = TextAlignment.Center;
       defaultLabelStyle.VerticalTextAlignment = VerticalAlignment.Center;
@@ -1390,7 +1417,7 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
 
     // Sets label style nodes that have an external label (South of the node)
     private void SetExternalLabelStyle(ILabel label) {
-      MasterGraph.SetLabelLayoutParameter(label, GenericLabelModel.CreateDefaultParameter());
+      MasterGraph.SetLabelLayoutParameter(label, CompositeLabelModelParameter);
       var defaultLabelStyle = SetCustomLabelStyle(label);
       defaultLabelStyle.TextAlignment = TextAlignment.Center;
       defaultLabelStyle.VerticalTextAlignment = VerticalAlignment.Center;
@@ -1422,8 +1449,8 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
 
     // Sets label style for SubProcesses (Upper left corner)
     private void SetSubProcessLabelStyle(ILabel label) {
-      var model = new InteriorStretchLabelModel { Insets = new InsetsD(3, 3, 3, 3) };
-      MasterGraph.SetLabelLayoutParameter(label, model.CreateParameter(InteriorStretchLabelModel.Position.North));
+      var model = new StretchNodeLabelModel { Padding = new InsetsD(3, 3, 3, 3) };
+      MasterGraph.SetLabelLayoutParameter(label, model.CreateParameter(StretchNodeLabelModel.Position.Top));
       var defaultLabelStyle = SetCustomLabelStyle(label);
       defaultLabelStyle.TextAlignment = TextAlignment.Left;
       defaultLabelStyle.VerticalTextAlignment = VerticalAlignment.Top;
@@ -1432,22 +1459,18 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
 
     // Sets label style for Groups (Upper boundary)
     private void SetGroupLabelStyle(ILabel label) {
-      var model = new InteriorStretchLabelModel { Insets = new InsetsD(3, 3, 3, 3) };
-      MasterGraph.SetLabelLayoutParameter(label, model.CreateParameter(InteriorStretchLabelModel.Position.North));
+      var model = new StretchNodeLabelModel { Padding = new InsetsD(3, 3, 3, 3) };
+      MasterGraph.SetLabelLayoutParameter(label, model.CreateParameter(StretchNodeLabelModel.Position.Top));
       var defaultLabelStyle = SetCustomLabelStyle(label);
       defaultLabelStyle.TextAlignment = TextAlignment.Center;
       MasterGraph.SetStyle(label, defaultLabelStyle);
     }
 
-    // Sets edge label style 
+    // Sets edge label style
     private void SetEdgeLabelStyle(ILabel label) {
       if (label != null) {
-        var model = new EdgePathLabelModel {
-            Offset = 7,
-            SideOfEdge = EdgeSides.AboveEdge,
-            AutoRotation = false
-        };
-        MasterGraph.SetLabelLayoutParameter(label, model.CreateDefaultParameter());
+        var model = new EdgePathLabelModel { Offset = 7, SideOfEdge = EdgeSides.AboveEdge, AutoRotation = false };
+        MasterGraph.SetLabelLayoutParameter(label, model.CreateRatioParameter(0.5, EdgeSides.AboveEdge));
         var defaultLabelStyle = SetCustomLabelStyle(label);
         defaultLabelStyle.TextAlignment = TextAlignment.Center;
         MasterGraph.SetStyle(label, defaultLabelStyle);
@@ -1455,7 +1478,7 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
     }
 
     // Sets custom style elements
-    private DefaultLabelStyle SetCustomLabelStyle(ILabel label) {
+    private LabelStyle SetCustomLabelStyle(ILabel label) {
       var styleName = (string) label.Tag;
       return CurrentDiagram.GetStyle(styleName);
     }
@@ -1473,11 +1496,11 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
 
       // Check, if source and target were correctly parsed
       if (sourceVar == null) {
-        Document.Messages.Add("Edge " + (id) + " has no valid Source.");
+        Document.Messages.Add("Edge " + id + " has no valid Source.");
         return null;
       }
       if (targetVar == null) {
-        Document.Messages.Add("Edge " + (id) + " has no valid Target.");
+        Document.Messages.Add("Edge " + id + " has no valid Target.");
         return null;
       }
 
@@ -1497,7 +1520,7 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
         waypoints.Remove(source);
         waypoints.Remove(target);
       }
-      
+
       IPort sourcePort = null;
       IPort targetPort = null;
 
@@ -1540,11 +1563,11 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
 
       // Test if one of the ports is still null, notify user and carry on.
       if (sourcePort == null) {
-        Document.Messages.Add("Edge " + (id) + " has no valid Source.");
+        Document.Messages.Add("Edge " + id + " has no valid Source.");
         return null;
       }
       if (targetPort == null) {
-        Document.Messages.Add("Edge " + (id) + " has no valid Target.");
+        Document.Messages.Add("Edge " + id + " has no valid Target.");
         return null;
       }
 
@@ -1572,11 +1595,11 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
 
       // Check, if source and target were correctly parsed
       if (sourceVar == null) {
-        Document.Messages.Add("Edge " + (id) + " has no valid Source.");
+        Document.Messages.Add("Edge " + id + " has no valid Source.");
         return null;
       }
       if (targetVar == null) {
-        Document.Messages.Add("Edge " + (id) + " has no valid Target.");
+        Document.Messages.Add("Edge " + id + " has no valid Target.");
         return null;
       }
 
@@ -1598,8 +1621,12 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
       }
 
       // Get source & target port
-      var sourcePort = sourceVar.Name == BpmnDiConstants.BoundaryEventElement ? sourceVar.Port : MasterGraph.AddPort(sourceNode, source);
-      var targetPort = targetVar.Name == BpmnDiConstants.BoundaryEventElement ? targetVar.Port : MasterGraph.AddPort(targetNode, target);
+      var sourcePort = sourceVar.Name == BpmnDiConstants.BoundaryEventElement
+          ? sourceVar.Port
+          : MasterGraph.AddPort(sourceNode, source);
+      var targetPort = targetVar.Name == BpmnDiConstants.BoundaryEventElement
+          ? targetVar.Port
+          : MasterGraph.AddPort(targetNode, target);
 
       var iEdge = MasterGraph.CreateEdge(sourcePort, targetPort);
       foreach (var point in waypoints) {
@@ -1612,20 +1639,14 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
         case MessageVisibleKind.Initiating:
           var messageLabel = MasterGraph.AddLabel(iEdge, "");
           MasterGraph.SetStyle(messageLabel, new MessageLabelStyle { IsInitiating = true });
-          var model = new EdgeSegmentLabelModel() {
-              SideOfEdge = EdgeSides.OnEdge,
-              AutoRotation = false
-          };
+          var model = new EdgeSegmentLabelModel { SideOfEdge = EdgeSides.OnEdge, AutoRotation = false };
           MasterGraph.SetLabelPreferredSize(messageLabel, bpmnMessageSize);
           MasterGraph.SetLabelLayoutParameter(messageLabel, model.CreateParameterFromCenter());
           break;
         case MessageVisibleKind.NonInitiating:
           messageLabel = MasterGraph.AddLabel(iEdge, "");
           MasterGraph.SetStyle(messageLabel, new MessageLabelStyle { IsInitiating = false });
-          model = new EdgeSegmentLabelModel() {
-              SideOfEdge = EdgeSides.OnEdge,
-              AutoRotation = false
-          };
+          model = new EdgeSegmentLabelModel { SideOfEdge = EdgeSides.OnEdge, AutoRotation = false };
           MasterGraph.SetLabelPreferredSize(messageLabel, bpmnMessageSize);
           MasterGraph.SetLabelLayoutParameter(messageLabel, model.CreateParameterFromCenter());
           break;
@@ -1650,7 +1671,7 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
         parent = parent.Parent;
       }
 
-      RectD layout = RectD.Empty;
+      var layout = RectD.Empty;
       bool? isHorizontal = null;
       var multipleInstance = false;
 
@@ -1661,7 +1682,8 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
         if (tableShape == null && ProcessRefSource.TryGetValue(parent, out processRefSource)) {
           tableShape = GetShape(processRefSource, plane);
           if (processRefSource.HasChild(BpmnDiConstants.ParticipantMultiplicityElement)) {
-            if (int.Parse(processRefSource.GetChildAttribute(BpmnDiConstants.ParticipantMultiplicityElement, "maximum")) > 1) {
+            if (int.Parse(
+                processRefSource.GetChildAttribute(BpmnDiConstants.ParticipantMultiplicityElement, "maximum")) > 1) {
               multipleInstance = true;
             }
           }
@@ -1675,7 +1697,7 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
           isHorizontal = tableShape.IsHorizontal;
         }
       }
-      var calculateRect = layout.IsEmpty;
+      var calculateRect = layout.IsEmpty();
       if (calculateRect || isHorizontal == null) {
         // check the child lanes for their shapes
         foreach (var lane in element.GetChildren("lane")) {
@@ -1693,7 +1715,7 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
       // fallback
       var definedHorizontal = isHorizontal ?? false;
       INode node = null;
-      if (!layout.IsEmpty) {
+      if (!layout.IsEmpty()) {
         ITable table;
         if (parent != null && parent.Table != null) {
           table = parent.Table;
@@ -1708,18 +1730,17 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
 
           // create dummy stripe for the direction where no lanes are defined
           if (definedHorizontal) {
-            var col = table.CreateColumn(layout.Width - table.RowDefaults.Insets.Left);
+            var col = table.CreateColumn(layout.Width - table.RowDefaults.Padding.Left);
             col.Tag = new PointD(layout.X, layout.Y);
           } else {
-            var row = table.CreateRow(layout.Height - table.ColumnDefaults.Insets.Top);
+            var row = table.CreateRow(layout.Height - table.ColumnDefaults.Padding.Top);
             row.Tag = new PointD(layout.X, layout.Y);
           }
         }
 
-        IStripe parentStripe = definedHorizontal
-            ? table.RootRow.ChildRows.Any()
-                ? table.RootRow.ChildRows.First()
-                : (IStripe) table.RootRow
+        var parentStripe = definedHorizontal
+            ?
+            table.RootRow.ChildRows.Any() ? table.RootRow.ChildRows.First() : (IStripe) table.RootRow
             : table.RootColumn.ChildColumns.Any()
                 ? table.RootColumn.ChildColumns.First()
                 : table.RootColumn;
@@ -1734,12 +1755,12 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
 
         AddChildLanes(element, table, parentStripe, plane, node, definedHorizontal);
 
-        // Resize the root row/column after adding a colum/row with insets
+        // Resize the root row/column after adding a colum/row with padding
         if (definedHorizontal) {
-          var max = table.RootRow.GetLeaves().Select(s => s.Layout.X - table.Layout.X + s.Insets.Left).Max();
+          var max = table.RootRow.GetLeaves().Select(s => s.Layout.X - table.Layout.X + s.Padding.Left).Max();
           table.SetSize(table.RootColumn.ChildColumns.First(), node.Layout.Width - max);
         } else {
-          var max = table.RootColumn.GetLeaves().Select(s => s.Layout.Y - table.Layout.Y + s.Insets.Top).Max();
+          var max = table.RootColumn.GetLeaves().Select(s => s.Layout.Y - table.Layout.Y + s.Padding.Top).Max();
           table.SetSize(table.RootRow.ChildRows.First(), node.Layout.Height - max);
         }
 
@@ -1748,18 +1769,23 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
          * resize the node
          */
         if (node.Layout.Width != table.Layout.Width) {
-          MasterGraph.SetNodeLayout(node, new RectD(node.Layout.X, node.Layout.Y,
-              table.Layout.Width, node.Layout.Height));
+          MasterGraph.SetNodeLayout(node,
+              new RectD(node.Layout.X, node.Layout.Y, table.Layout.Width, node.Layout.Height));
         }
         if (node.Layout.Height != table.Layout.Height) {
-          MasterGraph.SetNodeLayout(node, new RectD(node.Layout.X, node.Layout.Y,
-              node.Layout.Width, table.Layout.Height));
+          MasterGraph.SetNodeLayout(node,
+              new RectD(node.Layout.X, node.Layout.Y, node.Layout.Width, table.Layout.Height));
         }
       }
       return node;
     }
 
-    private void AddChildLanes(BpmnElement element, ITable table, IStripe parentStripe, BpmnPlane plane, INode node,
+    private void AddChildLanes(
+        BpmnElement element,
+        ITable table,
+        IStripe parentStripe,
+        BpmnPlane plane,
+        INode node,
         bool isHorizontal) {
       foreach (var lane in element.GetChildren(BpmnDiConstants.LaneElement)) {
         var laneShape = GetShape(lane, plane);
@@ -1789,9 +1815,8 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
       element.Node = node;
       if (isHorizontal) {
         var parentRow = parentStripe as IRow;
-        //getIndex
-        var index = parentRow.ChildRows.Count(siblingRow =>
-            ((PointD) siblingRow.Tag).Y < shape.Y);
+        // getIndex
+        var index = parentRow.ChildRows.Count(siblingRow => ((PointD) siblingRow.Tag).Y < shape.Y);
 
         var row = table.CreateRow(parentRow, shape.Height, null, null, null, null, index);
         row.Tag = new PointD(shape.X, shape.Y);
@@ -1800,9 +1825,8 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
         return row;
       } else {
         var parentCol = parentStripe as IColumn;
-        //getIndex
-        var index = parentCol.ChildColumns.Count(siblingCol =>
-            ((PointD) siblingCol.Tag).X < shape.X);
+        // getIndex
+        var index = parentCol.ChildColumns.Count(siblingCol => ((PointD) siblingCol.Tag).X < shape.X);
 
         var col = table.CreateColumn(parentCol, shape.Width, null, null, null, null, index);
         col.Tag = new PointD(shape.X, shape.Y);
@@ -1817,8 +1841,8 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
       var table = poolNodeStyle.TableNodeStyle.Table;
 
       // Create first row & column
-      var col = table.CreateColumn(shape.Width - table.RowDefaults.Insets.Left);
-      var row = table.CreateRow(shape.Height - table.ColumnDefaults.Insets.Top);
+      var col = table.CreateColumn(shape.Width - table.RowDefaults.Padding.Left);
+      var row = table.CreateRow(shape.Height - table.ColumnDefaults.Padding.Top);
 
       var location = new PointD(shape.X, shape.Y);
       row.Tag = location;
@@ -1831,13 +1855,13 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
       var table = partStyle.TableNodeStyle.Table;
 
       if (isHorizontal) {
-        table.ColumnDefaults.Insets = new InsetsD();
+        table.ColumnDefaults.Padding = new InsetsD();
       } else {
-        table.RowDefaults.Insets = new InsetsD();
+        table.RowDefaults.Padding = new InsetsD();
       }
 
-      // Set table insets to 0
-      table.Insets = new InsetsD();
+      // Set table padding to 0
+      table.Padding = new InsetsD();
 
       return partStyle;
     }

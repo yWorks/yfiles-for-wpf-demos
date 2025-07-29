@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -35,7 +35,7 @@ using yWorks.Graph.LabelModels;
 namespace Demo.yFiles.Graph.Input.HandleProvider
 {
   /// <summary>
-  /// A custom <see cref="IHandleProvider"/> implementation that returns 
+  /// A custom <see cref="IHandleProvider"/> implementation that returns
   /// a <see cref="LabelResizeHandle"/> for each label which can be resized
   /// and a <see cref="LabelRotateHandle"/> for each label which can be rotated.
   /// </summary>
@@ -57,16 +57,16 @@ namespace Demo.yFiles.Graph.Input.HandleProvider
       // return a list of the available handles
       var handles = new List<IHandle>();
       var labelModel = label.LayoutParameter.Model;
-      if ((labelModel is InteriorStretchLabelModel)) {
-        //Some label models are not resizable at all - don't provide any handles
+      if (labelModel is StretchNodeLabelModel) {
+        // Some label models are not resizable at all - don't provide any handles
       } else if (labelModel is FreeEdgeLabelModel || labelModel is FreeNodeLabelModel || labelModel is FreeLabelModel) {
-        //These models support resizing in one direction
+        // These models support resizing in one direction
         handles.Add(new LabelResizeHandle(label, false));
-        //They also support rotation
+        // They also support rotation
         handles.Add(new LabelRotateHandle(label, context));
       } else {
-        //For all other models, we assume the *center* needs to stay the same
-        //This requires that the label must be resized symmetrically in both directions
+        // For all other models, we assume the *center* needs to stay the same
+        // This requires that the label must be resized symmetrically in both directions
         handles.Add(new LabelResizeHandle(label, true));
       }
       return handles;

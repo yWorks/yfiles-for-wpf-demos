@@ -1,6 +1,6 @@
 <!-- ************************************************************************ -->
-<!-- This demo file is part of yFiles WPF 3.6.                           -->
-<!-- Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
+<!-- This demo file is part of yFiles WPF 4.0.                           -->
+<!-- Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
 <!-- 72070 Tuebingen, Germany. All rights reserved.                           -->
 <!--                                                                          -->
 <!-- yFiles demo files exhibit yFiles WPF functionalities. Any redistribution  -->
@@ -26,7 +26,7 @@
 <!-- ************************************************************************ -->
 <Window x:Class="Demo.yFiles.Graph.VisualStateManager.VSMDemo"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/3.0/xaml"
+    xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/4.0/xaml"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
     LayoutUpdated="OnLayoutUpdated" Style="{StaticResource DemoWindow}" mc:Ignorable="d" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" d:DesignHeight="372" d:DesignWidth="700" Title="Demo.yFiles.Graph.VisualStateManager">
     <HeaderedContentControl Style="{StaticResource DemoStyle}">
@@ -76,7 +76,10 @@
                     <ToolBar Width="{Binding ActualWidth, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ToolBarTray}}}" Height="Auto" Name="toolBar">
                         <Button Command="Open" CommandTarget="{Binding ElementName=graphControl}"/>
                         <Button Command="Save" CommandTarget="{Binding ElementName=graphControl}"/>
-                        <Button Command="{x:Static ywpf:GraphControl.FitGraphBoundsCommand}" CommandTarget="{Binding ElementName=graphControl}"/>
+                        <Separator />
+                        <Button Command="IncreaseZoom" CommandTarget="{Binding ElementName=graphControl}"/>
+                        <Button Command="DecreaseZoom" CommandTarget="{Binding ElementName=graphControl}"/>
+                        <Button Command="{x:Static ywpf:GraphCommands.FitGraphBounds}" CommandTarget="{Binding ElementName=graphControl}"/>
                     </ToolBar>
                 </ToolBarTray>
             </StackPanel>

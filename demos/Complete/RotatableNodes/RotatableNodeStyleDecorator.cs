@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -31,6 +31,7 @@ using System;
 using System.ComponentModel;
 using System.Windows.Markup;
 using System.Windows.Media;
+using Demo.yFiles.Toolkit;
 using yWorks.Controls;
 using yWorks.Controls.Input;
 using yWorks.Geometry;
@@ -41,39 +42,39 @@ using yWorks.GraphML;
 namespace Demo.yFiles.Complete.RotatableNodes
 {
   /// <summary>
-  /// A node style that displays another wrapped style rotated by a specified rotation angle.
+  ///   A node style that displays another wrapped style rotated by a specified rotation angle.
   /// </summary>
   /// <remarks>
-  /// The angle is stored in this decorator to keep the tag free for user data. Hence, this decorator should not be
-  /// shared between nodes if they can have different angles.
+  ///   The angle is stored in this decorator to keep the tag free for user data. Hence, this decorator should not be
+  ///   shared between nodes if they can have different angles.
   /// </remarks>
   public class RotatableNodeStyleDecorator : NodeStyleBase<VisualGroup>, IMarkupExtensionConverter
   {
-    private readonly Matrix2D matrix = new Matrix2D();
+    private readonly Matrix2D matrix = new();
     private PointD matrixCenter = PointD.Origin;
     private double matrixAngle;
 
-    private readonly Matrix2D inverseMatrix = new Matrix2D();
+    private readonly Matrix2D inverseMatrix = new();
     private PointD inverseMatrixCenter = PointD.Origin;
     private double inverseMatrixAngle;
 
-    private readonly CachingOrientedRectangle rotatedLayout = new CachingOrientedRectangle();
+    private readonly CachingOrientedRectangle rotatedLayout = new();
 
     /// <summary>
-    /// The wrapped style.
+    ///   The wrapped style.
     /// </summary>
     public INodeStyle Wrapped { get; set; }
 
     /// <summary>
-    /// The rotation angle.
+    ///   The rotation angle.
     /// </summary>
     public double Angle {
-      get { return rotatedLayout.Angle; }
-      set { rotatedLayout.Angle = value; }
+      get => rotatedLayout.Angle;
+      set => rotatedLayout.Angle = value;
     }
 
     /// <summary>
-    /// Creates a new instance with a wrapped node style and an angle.
+    ///   Creates a new instance with a wrapped node style and an angle.
     /// </summary>
     public RotatableNodeStyleDecorator(INodeStyle wrapped = null, double angle = 0) {
       Wrapped = wrapped ?? new ShapeNodeStyle();
@@ -81,13 +82,13 @@ namespace Demo.yFiles.Complete.RotatableNodes
     }
 
     /// <summary>
-    /// Creates a visual which rotates the visualization of the wrapped style.
+    ///   Creates a visual which rotates the visualization of the wrapped style.
     /// </summary>
     protected override VisualGroup CreateVisual(IRenderContext context, INode node) {
       var visual = Wrapped.Renderer.GetVisualCreator(node, Wrapped).CreateVisual(context);
       var container = new VisualGroup();
       var center = node.Layout.GetCenter();
-      container.RenderTransform = new RotateTransform(-Angle, center.X, center.Y);
+      container.RenderTransform = new RotateTransform(Angle, center.X, center.Y);
       container.Add(visual);
       container.SetRenderDataCache(new RotateRenderData(Wrapped, Angle, center));
       context.RegisterForChildrenIfNecessary(container, DisposeChildren);
@@ -103,7 +104,7 @@ namespace Demo.yFiles.Complete.RotatableNodes
     }
 
     /// <summary>
-    /// Updates a visual which rotates the visualization of the wrapped style.
+    ///   Updates a visual that rotates the visualization of the wrapped style.
     /// </summary>
     protected override VisualGroup UpdateVisual(IRenderContext context, VisualGroup oldVisual, INode node) {
       if (oldVisual.Children == null || oldVisual.Children.Count != 1) {
@@ -116,7 +117,7 @@ namespace Demo.yFiles.Complete.RotatableNodes
       var newWrappedStyle = Wrapped;
       var creator = newWrappedStyle.Renderer.GetVisualCreator(node, newWrappedStyle);
 
-      Visual oldWrappedVisual = oldVisual.Children[0];
+      var oldWrappedVisual = oldVisual.Children[0];
       Visual newWrappedVisual;
       if (newWrappedStyle != oldWrappedStyle) {
         newWrappedVisual = creator != null ? creator.CreateVisual(context) : null;
@@ -132,10 +133,10 @@ namespace Demo.yFiles.Complete.RotatableNodes
 
       var center = node.Layout.GetCenter();
       if (newWrappedStyle != oldWrappedStyle || cache.Angle != Angle || !cache.Center.Equals(center)) {
-        var transform = (RotateTransform)oldVisual.RenderTransform;
+        var transform = (RotateTransform) oldVisual.RenderTransform;
         transform.CenterX = center.X;
         transform.CenterY = center.Y;
-        transform.Angle = -Angle;
+        transform.Angle = Angle;
         oldVisual.SetRenderDataCache(new RotateRenderData(newWrappedStyle, Angle, center));
       }
 
@@ -143,7 +144,7 @@ namespace Demo.yFiles.Complete.RotatableNodes
     }
 
     /// <summary>
-    /// Returns bounds based on the size provided by the wrapped style and the location and rotation of the node.
+    ///   Returns bounds based on the size provided by the wrapped style and the location and rotation of the node.
     /// </summary>
     protected override RectD GetBounds(ICanvasContext context, INode node) {
       var nodeOrientedRect = GetRotatedLayout(node);
@@ -152,22 +153,23 @@ namespace Demo.yFiles.Complete.RotatableNodes
       var wrappedBounds = Wrapped.Renderer.GetBoundsProvider(node, Wrapped).GetBounds(context);
 
       var orientedRectangle = new OrientedRectangle(0, 0, wrappedBounds.Width, wrappedBounds.Height,
-        nodeOrientedRect.UpX, nodeOrientedRect.UpY);
+          nodeOrientedRect.UpX, nodeOrientedRect.UpY);
       orientedRectangle.SetCenter(node.Layout.GetCenter());
 
       return orientedRectangle.GetBounds();
     }
 
     /// <summary>
-    /// Returns the intersection point of the node's rotated bounds and the segment between the inner and outer point or
-    /// <see langword="null"/> if there is no intersection.
+    ///   Returns the intersection point of the node's rotated bounds and the segment between the inner and outer point or
+    ///   <see langword="null"/> if there is no intersection.
     /// </summary>
     protected override PointD? GetIntersection(INode node, PointD inner, PointD outer) {
       var rotatedInner = GetRotatedPoint(inner, node, false);
       var rotatedOuter = GetRotatedPoint(outer, node, false);
 
-      var rotatedIntersection = Wrapped.Renderer.GetShapeGeometry(node, Wrapped).GetIntersection(rotatedInner, rotatedOuter);
-      return rotatedIntersection.HasValue ? (PointD?) GetRotatedPoint(rotatedIntersection.Value, node, true) : null;
+      var rotatedIntersection =
+          Wrapped.Renderer.GetShapeGeometry(node, Wrapped).GetIntersection(rotatedInner, rotatedOuter);
+      return rotatedIntersection.HasValue ? GetRotatedPoint(rotatedIntersection.Value, node, true) : null;
     }
 
     protected override bool IsInside(INode node, PointD location) {
@@ -175,7 +177,7 @@ namespace Demo.yFiles.Complete.RotatableNodes
     }
 
     /// <summary>
-    /// Returns the outline of the node's rotated shape.
+    ///   Returns the outline of the node's rotated shape.
     /// </summary>
     protected override GeneralPath GetOutline(INode node) {
       var outline = Wrapped.Renderer.GetShapeGeometry(node, Wrapped).GetOutline();
@@ -190,7 +192,7 @@ namespace Demo.yFiles.Complete.RotatableNodes
     }
 
     /// <summary>
-    /// Returns whether or not the given location is inside the rotated node.
+    ///   Returns whether or not the given location is inside the rotated node.
     /// </summary>
     protected override bool IsHit(IInputModeContext context, PointD location, INode node) {
       // rotated the point like the node, that is by the angle around the node center
@@ -199,7 +201,7 @@ namespace Demo.yFiles.Complete.RotatableNodes
     }
 
     /// <summary>
-    /// Returns whether or not the given node is inside the rectangle.
+    ///   Returns whether or not the given node is inside the rectangle.
     /// </summary>
     protected override bool IsInBox(IInputModeContext context, RectD rectangle, INode node) {
       var nodeOrientedRect = GetRotatedLayout(node);
@@ -207,26 +209,26 @@ namespace Demo.yFiles.Complete.RotatableNodes
       // Create an oriented rectangle with the size of the wrapped bounds and the location and rotation of the node
       var wrappedBounds = Wrapped.Renderer.GetBoundsProvider(node, Wrapped).GetBounds(context);
       var orientedRectangle = new OrientedRectangle(0, 0, wrappedBounds.Width, wrappedBounds.Height,
-        nodeOrientedRect.UpX, nodeOrientedRect.UpY);
+          nodeOrientedRect.UpX, nodeOrientedRect.UpY);
       orientedRectangle.SetCenter(node.Layout.GetCenter());
 
       return rectangle.Intersects(orientedRectangle, 0.01);
     }
 
     /// <summary>
-    /// Returns whether or not the node is currently visible.
+    ///   Returns whether or not the node is currently visible.
     /// </summary>
     protected override bool IsVisible(ICanvasContext context, RectD rectangle, INode node) {
-      return Wrapped.Renderer.GetVisibilityTestable(node, Wrapped).IsVisible(context, rectangle) 
-        || GetBounds(context, node).Intersects(rectangle);
+      return Wrapped.Renderer.GetVisibilityTestable(node, Wrapped).IsVisible(context, rectangle) ||
+          GetBounds(context, node).Intersects(rectangle);
     }
 
     /// <summary>
-    /// Returns customized helpers that consider the node rotation for resizing and rotating gestures, highlight 
-    /// indicators, and clipboard operations.
+    ///   Returns customized helpers that consider the node rotation for resizing and rotating gestures, highlighting
+    ///   indicators, and clipboard operations.
     /// </summary>
     /// <remarks>
-    /// Other lookup calls will be delegated to the lookup of the wrapped node style.
+    ///   Other lookup calls will be delegated to the lookup of the wrapped node style.
     /// </remarks>
     protected override object Lookup(INode node, Type type) {
       // Custom reshape handles that rotate with the node
@@ -238,16 +240,22 @@ namespace Demo.yFiles.Complete.RotatableNodes
         return new NodeRotateHandleProvider(node);
       }
       // Selection decoration
-      if (type == typeof(ISelectionIndicatorInstaller)) {
-        return new RotatableNodeIndicatorInstaller(RotatableNodeIndicatorInstaller.NodeSelectionTemplateKey);
+      if (type == typeof(ISelectionRenderer)) {
+        return new OrientedRectangleRenderer<INode>(n => GetLayout(n).GetEnlarged(new InsetsD(4))) {
+            Pen = new Pen(Brushes.Orange, 4)
+        };
       }
       // Focus decoration
-      if (type == typeof(IFocusIndicatorInstaller)) {
-        return new RotatableNodeIndicatorInstaller(OrientedRectangleIndicatorInstaller.FocusTemplateKey);
+      if (type == typeof(IFocusRenderer)) {
+        return new OrientedRectangleRenderer<INode>(n => GetLayout(n).GetEnlarged(new InsetsD(1))) {
+            Pen = new Pen(Brushes.Black, 1) {DashStyle = DashStyles.Dash}
+        };
       }
       // Highlight decoration
-      if (type == typeof(IHighlightIndicatorInstaller)) {
-        return new RotatableNodeIndicatorInstaller(OrientedRectangleIndicatorInstaller.HighlightTemplateKey);
+      if (type == typeof(IHighlightRenderer)) {
+        return new OrientedRectangleRenderer<INode>(n => GetLayout(n).GetEnlarged(new InsetsD(2))) {
+            Pen = new Pen(Brushes.Tomato, 1) {DashStyle = DashStyles.Dash}
+        };
       }
       // Clipboard helper that clones the style instance when pasting rotated nodes
       if (type == typeof(IClipboardHelper)) {
@@ -257,15 +265,22 @@ namespace Demo.yFiles.Complete.RotatableNodes
       return base.Lookup(node, type) ?? Wrapped.Renderer.GetContext(node, Wrapped).Lookup(type);
     }
 
+    private static IOrientedRectangle GetLayout(INode node) {
+      if (node.Style is RotatableNodeStyleDecorator styleWrapper) {
+        return styleWrapper.GetRotatedLayout(node);
+      }
+      return new OrientedRectangle(node.Layout);
+    }
+
     /// <summary>
-    /// Creates a copy of this node style decorator.
+    ///   Creates a copy of this node style decorator.
     /// </summary>
     public override object Clone() {
       return new RotatableNodeStyleDecorator(Wrapped, Angle);
     }
 
     /// <summary>
-    /// Returns the rotated bounds of the node.
+    ///   Returns the rotated bounds of the node.
     /// </summary>
     public CachingOrientedRectangle GetRotatedLayout(INode node) {
       rotatedLayout.UpdateCache(node.Layout.ToRectD());
@@ -273,7 +288,7 @@ namespace Demo.yFiles.Complete.RotatableNodes
     }
 
     /// <summary>
-    /// Returns the rotated point.
+    ///   Returns the rotated point.
     /// </summary>
     public PointD GetRotatedPoint(PointD point, INode node, bool inverse) {
       var matrix = inverse ? GetInverseRotationMatrix(node) : GetRotationMatrix(node);
@@ -281,13 +296,13 @@ namespace Demo.yFiles.Complete.RotatableNodes
     }
 
     /// <summary>
-    /// Returns the rotation matrix for the given node and the current angle.
+    ///   Returns the rotation matrix for the given node and the current angle.
     /// </summary>
     private Matrix2D GetRotationMatrix(INode node) {
       var center = node.Layout.GetCenter();
-      if (!(center.Equals(matrixCenter)) || Angle != matrixAngle) {
+      if (!center.Equals(matrixCenter) || Angle != matrixAngle) {
         matrix.Reset();
-        matrix.Rotate(CachingOrientedRectangle.ToRadians(Angle), center);
+        matrix.Rotate(CachingOrientedRectangle.ToRadians(-Angle), center);
         matrixCenter = center;
         matrixAngle = Angle;
       }
@@ -295,13 +310,13 @@ namespace Demo.yFiles.Complete.RotatableNodes
     }
 
     /// <summary>
-    /// Returns the inverse rotation matrix for the given node and the current angle.
+    ///   Returns the inverse rotation matrix for the given node and the current angle.
     /// </summary>
     private Matrix2D GetInverseRotationMatrix(INode node) {
       var center = node.Layout.GetCenter();
-      if (!(center.Equals(inverseMatrixCenter)) || Angle != inverseMatrixAngle) {
+      if (!center.Equals(inverseMatrixCenter) || Angle != inverseMatrixAngle) {
         inverseMatrix.Reset();
-        inverseMatrix.Rotate(CachingOrientedRectangle.ToRadians(-Angle), center);
+        inverseMatrix.Rotate(CachingOrientedRectangle.ToRadians(Angle), center);
         inverseMatrixCenter = center;
         inverseMatrixAngle = Angle;
       }
@@ -309,7 +324,7 @@ namespace Demo.yFiles.Complete.RotatableNodes
     }
 
     /// <summary>
-    /// Returns that this style can be converted.
+    ///   Returns whether this style can be converted.
     /// </summary>
     /// <param name="context">The current write context.</param>
     /// <param name="value">The object to convert.</param>
@@ -318,25 +333,23 @@ namespace Demo.yFiles.Complete.RotatableNodes
     }
 
     /// <summary>
-    /// Converts this style using <see cref="RotatableNodeStyleDecoratorExtension"/>.
+    ///   Converts this style using <see cref="RotatableNodeStyleDecoratorExtension"/>.
     /// </summary>
     /// <param name="context">The current write context.</param>
     /// <param name="value">The object to convert.</param>
     public MarkupExtension Convert(IWriteContext context, object value) {
       var decorator = value as RotatableNodeStyleDecorator;
-      var extension = new RotatableNodeStyleDecoratorExtension {
-        Wrapped = decorator.Wrapped, Angle = decorator.Angle
-      };
+      var extension = new RotatableNodeStyleDecoratorExtension { Wrapped = decorator.Wrapped, Angle = decorator.Angle };
       return extension;
     }
 
-    struct RotateRenderData
+    private readonly struct RotateRenderData
     {
-      public INodeStyle WrappedStyle { get; private set; }
+      public INodeStyle WrappedStyle { get; }
 
-      public double Angle { get; private set; }
+      public double Angle { get; }
 
-      public PointD Center { get; private set; }
+      public PointD Center { get; }
 
       public RotateRenderData(INodeStyle wrapped, double angle, PointD center) : this() {
         WrappedStyle = wrapped;
@@ -347,19 +360,19 @@ namespace Demo.yFiles.Complete.RotatableNodes
   }
 
   /// <summary>
-  /// Markup extension that helps (de-)serializing a <see cref="RotatableNodeStyleDecorator"/>.
+  ///   Markup extension that helps (de-)serializing a <see cref="RotatableNodeStyleDecorator"/>.
   /// </summary>
   [ContentProperty("Wrapped")]
   public class RotatableNodeStyleDecoratorExtension : MarkupExtension
   {
     /// <summary>
-    /// The rotation angle.
+    ///   The rotation angle.
     /// </summary>
     [DefaultValue(0)]
     public double Angle { get; set; }
 
     /// <summary>
-    /// The wrapped style.
+    ///   The wrapped style.
     /// </summary>
     public INodeStyle Wrapped { get; set; }
 

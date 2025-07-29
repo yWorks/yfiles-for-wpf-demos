@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -28,42 +28,46 @@
  ***************************************************************************/
 
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
-using yWorks.Algorithms;
-using yWorks.Layout;
 using yWorks.Controls;
 using yWorks.Graph;
 using yWorks.Graph.LabelModels;
+using yWorks.Layout;
+using yWorks.Layout.Graph;
 
 namespace Demo.yFiles.Layout.Configurations
 {
   /// <summary>
-  /// Abstract base class for configurations that can be displayed in an option editor.
+  ///   Abstract base class for configurations that can be displayed in an option editor.
   /// </summary>
   /// <remarks>
-  /// Subclasses at least have to implement the method <see cref="CreateConfiguredLayout"/> so
-  /// the <see cref="Apply"/> method can be called to run the returned layout algorithm and apply the
-  /// layout result to the graph in the passed <see cref="GraphControl"/>.
+  ///   Subclasses at least have to implement the method <see cref="CreateConfiguredLayout"/> so
+  ///   the <see cref="Apply"/> method can be called to run the returned layout algorithm and apply the
+  ///   layout result to the graph in the passed <see cref="GraphControl"/>.
   /// </remarks>
   public abstract class LayoutConfiguration
   {
     /// <summary>
-    /// A guard to prevent running multiple layout calculations at the same time.
+    ///   A guard to prevent running multiple layout calculations at the same time.
     /// </summary>
     private bool layoutRunning;
 
     /// <summary>
-    /// Applies this configuration to the given <see cref="GraphControl"/>.
+    ///   Applies this configuration to the given <see cref="GraphControl"/>.
     /// </summary>
     /// <remarks>
-    /// This is the main method of this class. Typically, it calls <see cref="CreateConfiguredLayout"/> to create and
-    /// configure a layout and <see cref="CreateConfiguredLayoutData"/> to get a suitable <see cref="LayoutData"/> instance
-    /// for the layout.
+    ///   This is the main method of this class. Typically, it calls <see cref="CreateConfiguredLayout"/> to create and
+    ///   configure a layout and <see cref="CreateConfiguredLayoutData"/> to get a suitable
+    ///   <see cref="LayoutData{TNode,TEdge,TNodeLabel,TEdgeLabel}"/> instance
+    ///   for the layout.
     /// </remarks>
     /// <param name="graphControl">The <c>GraphControl</c> to apply the configuration on.</param>
-    /// <param name="doneHandler">A callback that is called after the configuration is applied. Can be <see langword="null"/></param>
+    /// <param name="doneHandler">
+    ///   A callback that is called after the configuration is applied. Can be <see langword="null"/>
+    /// </param>
     public virtual async Task Apply(GraphControl graphControl, Action doneHandler) {
       if (layoutRunning) {
         await graphControl.Dispatcher.BeginInvoke(DispatcherPriority.Background, doneHandler);
@@ -80,14 +84,12 @@ namespace Demo.yFiles.Layout.Configurations
 
       // configure the LayoutExecutor
       var layoutExecutor = new LayoutExecutor(graphControl, new MinimumNodeSizeStage(layout)) {
-          Duration = TimeSpan.FromSeconds(0.75),
-          AnimateViewport = true,
-          EasedAnimation = true,
-          PortAdjustmentPolicy = PortAdjustmentPolicy.Lengthen
+          AnimationDuration = TimeSpan.FromSeconds(0.75),
+          PortAdjustmentPolicies = { Constant = PortAdjustmentPolicy.Lengthen }
       };
 
       // set the cancel duration for the layout computation to 20s
-      layoutExecutor.AbortHandler.CancelDuration = TimeSpan.FromSeconds(20);
+      layoutExecutor.LayoutAbortController.CancelDuration = TimeSpan.FromSeconds(20);
 
       // set the layout data to the LayoutExecutor
       if (layoutData != null) {
@@ -102,154 +104,172 @@ namespace Demo.yFiles.Layout.Configurations
         MessageBox.Show(
             "The layout computation has been canceled because the maximum configured runtime of 20 seconds has been exceeded.");
       } catch (Exception e) {
-        MessageBox.Show(
-            "Running the layout has encountered an error: " + e.Message);
+        MessageBox.Show("Running the layout has encountered an error: " + e.Message);
       } finally {
         PostProcess(graphControl);
-        // clean up mapperRegistry
-        graphControl.Graph.MapperRegistry.RemoveMapper(
-            LayoutGraphAdapter.EdgeLabelLayoutPreferredPlacementDescriptorDpKey
-        );
         doneHandler();
       }
     }
 
     /// <summary>
-    /// Creates and configures a layout algorithm.
+    ///   Creates and configures a layout algorithm.
     /// </summary>
     /// <param name="graphControl">The <see cref="GraphControl"/> to apply the configuration on.</param>
     /// <returns>The configured layout.</returns>
     protected abstract ILayoutAlgorithm CreateConfiguredLayout(GraphControl graphControl);
 
     /// <summary>
-    /// Called by <see cref="Apply"/> to create the layout data of the configuration.
+    ///   Called by <see cref="Apply"/> to create the layout data of the configuration.
     /// </summary>
     /// <remarks>
-    /// This method is typically overridden to provide item-specific configuration of a layout algorithm.
+    ///   This method is typically overridden to provide item-specific configuration of a layout algorithm.
     /// </remarks>
     /// <param name="graphControl">The <see cref="GraphControl"/> to apply the configuration on.</param>
     /// <param name="layout">The layout algorithm to run.</param>
-    /// <returns>A layout-specific <see cref="LayoutData"/> instance or <see langword="null"/>.</returns>
-    protected virtual LayoutData CreateConfiguredLayoutData(GraphControl graphControl, ILayoutAlgorithm layout) {
+    /// <returns>
+    ///   A layout-specific <see cref="LayoutData{TNode,TEdge,TNodeLabel,TEdgeLabel}"/> instance or
+    ///   <see langword="null"/>.
+    /// </returns>
+    protected virtual LayoutData<INode, IEdge, ILabel, ILabel> CreateConfiguredLayoutData(
+        GraphControl graphControl,
+        ILayoutAlgorithm layout) {
       return null;
     }
 
     /// <summary>
-    /// Called by <see cref="Apply"/> after the layout animation is done. This method is typically overridden to
-    /// remove mappers from the mapper registry of the graph.
+    ///   Called by <see cref="Apply"/> after the layout animation is done.
     /// </summary>
-    protected virtual void PostProcess(GraphControl graphControl) {}
+    protected virtual void PostProcess(GraphControl graphControl) { }
 
     /// <summary>
-    /// Adds a mapper with a <see cref="PreferredPlacementDescriptor"/> that matches the given settings to the mapper
-    /// registry of the given graph. In addition, sets the label model of all edge labels to free since that model
-    /// can realizes any label placement calculated by a layout algorithm.
+    ///   Creates a layout data for <see cref="SubgraphLayoutStage"/> that is based on the
+    ///   <see cref="GraphControl.Selection"/> model of the given graph control.
     /// </summary>
-    public LayoutData CreateLabelingLayoutData(
-        IGraph graph, EnumLabelPlacementAlongEdge placeAlongEdge, EnumLabelPlacementSideOfEdge sideOfEdge,
-        EnumLabelPlacementOrientation orientation, double distanceToEdge) {
-      var descriptor = CreatePreferredPlacementDescriptor(
-          placeAlongEdge,
-          sideOfEdge,
-          orientation,
-          distanceToEdge
-      );
+    /// <remarks>
+    ///   <para>
+    ///     If a node, edge, or label is <see cref="IObservableCollection{T}.Contains">selected</see> in the given
+    ///     graph control's model, then it will be part of the subgraph items in the respective property
+    ///     of <see cref="SubgraphLayoutStageData{TNode,TEdge,TNodeLabel,TEdgeLabel}"/>.
+    ///   </para>
+    /// </remarks>
+    /// <param name="graphControl">The graph control to create the data for</param>
+    /// <returns>
+    ///   A layout data instance for <see cref="SubgraphLayoutStage"/> where items that are actually
+    ///   selected in the given graph control are part of the subgraph
+    /// </returns>
+    public SubgraphLayoutStageData<INode, IEdge, ILabel, ILabel> CreateSubgraphLayoutData(GraphControl graphControl) {
+      return new SubgraphLayoutStageData<INode, IEdge, ILabel, ILabel> {
+          SubgraphNodes = { Source = graphControl.Selection.Nodes },
+          SubgraphEdges = { Source = graphControl.Selection.Edges },
+          SubgraphNodeLabels = { Source = graphControl.Selection.Labels.Where(l => l.Owner is INode) },
+          SubgraphEdgeLabels = { Source = graphControl.Selection.Labels.Where(l => l.Owner is IEdge) }
+      };
+    }
+
+    /// <summary>
+    ///   Adds a mapper with an <see cref="EdgeLabelPreferredPlacement"/> that matches the given settings to the mapper
+    ///   registry of the given graph. In addition, sets the label model of all edge labels to free since that model
+    ///   can realize any label placement calculated by a layout algorithm.
+    /// </summary>
+    public LayoutData<INode, IEdge, ILabel, ILabel> CreateLabelingLayoutData(
+        IGraph graph,
+        EnumLabelPlacementAlongEdge placeAlongEdge,
+        EnumLabelPlacementSideOfEdge sideOfEdge,
+        EnumLabelPlacementOrientation orientation,
+        double distanceToEdge) {
+      var preferredPlacement =
+          CreatePreferredPlacementDescriptor(placeAlongEdge, sideOfEdge, orientation, distanceToEdge);
 
       // change to a free edge label model to support integrated edge labeling
       var model = new FreeEdgeLabelModel();
 
       foreach (var label in graph.GetEdgeLabels()) {
-        if (!(label.LayoutParameter.Model  is FreeEdgeLabelModel)) {
-          graph.SetLabelLayoutParameter(label, model.FindBestParameter(label, model, label.GetLayout()));
+        if (!(label.LayoutParameter.Model is FreeEdgeLabelModel)) {
+          graph.SetLabelLayoutParameter(label, model.FindBestParameter(label, label.GetLayout()));
         }
       }
 
-      var layoutData = new GenericLayoutData();
-      layoutData.AddItemMapping(LayoutGraphAdapter.EdgeLabelLayoutPreferredPlacementDescriptorDpKey,
-          new ItemMapping<ILabel, PreferredPlacementDescriptor>(label => descriptor));
+      var layoutData = new GenericLayoutData<INode, IEdge, ILabel, ILabel>();
+      layoutData.AddItemMapping(EdgeLabelPreferredPlacement.EdgeLabelPreferredPlacementDataKey).Constant =
+          preferredPlacement;
 
       return layoutData;
     }
 
     /// <summary>
-    /// Creates a new <see cref="PreferredPlacementDescriptor"/> that matches the given settings.
+    ///   Creates a new <see cref="EdgeLabelPreferredPlacement"/> that matches the given settings.
     /// </summary>
-    public PreferredPlacementDescriptor CreatePreferredPlacementDescriptor(
-        EnumLabelPlacementAlongEdge placeAlongEdge, EnumLabelPlacementSideOfEdge sideOfEdge,
-        EnumLabelPlacementOrientation orientation, double distanceToEdge) {
-      var descriptor = new PreferredPlacementDescriptor();
+    public EdgeLabelPreferredPlacement CreatePreferredPlacementDescriptor(
+        EnumLabelPlacementAlongEdge placeAlongEdge,
+        EnumLabelPlacementSideOfEdge sideOfEdge,
+        EnumLabelPlacementOrientation orientation,
+        double distanceToEdge) {
+      var preferredPlacement = new EdgeLabelPreferredPlacement();
 
-      switch(sideOfEdge) {
+      switch (sideOfEdge) {
         case EnumLabelPlacementSideOfEdge.Anywhere:
-          descriptor.SideOfEdge = LabelPlacements.Anywhere;
+          preferredPlacement.EdgeSide = LabelEdgeSides.Anywhere;
           break;
         case EnumLabelPlacementSideOfEdge.OnEdge:
-          descriptor.SideOfEdge = LabelPlacements.OnEdge;
+          preferredPlacement.EdgeSide = LabelEdgeSides.OnEdge;
           break;
         case EnumLabelPlacementSideOfEdge.Left:
-          descriptor.SideOfEdge = LabelPlacements.LeftOfEdge;
+          preferredPlacement.EdgeSide = LabelEdgeSides.LeftOfEdge;
           break;
         case EnumLabelPlacementSideOfEdge.Right:
-          descriptor.SideOfEdge = LabelPlacements.RightOfEdge;
+          preferredPlacement.EdgeSide = LabelEdgeSides.RightOfEdge;
           break;
         case EnumLabelPlacementSideOfEdge.LeftOrRight:
-          descriptor.SideOfEdge = LabelPlacements.LeftOfEdge | LabelPlacements.RightOfEdge;
+          preferredPlacement.EdgeSide = LabelEdgeSides.LeftOfEdge | LabelEdgeSides.RightOfEdge;
           break;
       }
 
-      switch(placeAlongEdge) {
+      switch (placeAlongEdge) {
         case EnumLabelPlacementAlongEdge.Anywhere:
-          descriptor.PlaceAlongEdge = LabelPlacements.Anywhere;
+          preferredPlacement.PlacementAlongEdge = LabelAlongEdgePlacements.Anywhere;
           break;
         case EnumLabelPlacementAlongEdge.AtSourcePort:
-          descriptor.PlaceAlongEdge = LabelPlacements.AtSourcePort;
+          preferredPlacement.PlacementAlongEdge = LabelAlongEdgePlacements.AtSourcePort;
           break;
         case EnumLabelPlacementAlongEdge.AtTargetPort:
-          descriptor.PlaceAlongEdge = LabelPlacements.AtTargetPort;
+          preferredPlacement.PlacementAlongEdge = LabelAlongEdgePlacements.AtTargetPort;
           break;
         case EnumLabelPlacementAlongEdge.AtSource:
-          descriptor.PlaceAlongEdge = LabelPlacements.AtSource;
+          preferredPlacement.PlacementAlongEdge = LabelAlongEdgePlacements.AtSource;
           break;
         case EnumLabelPlacementAlongEdge.AtTarget:
-          descriptor.PlaceAlongEdge = LabelPlacements.AtTarget;
+          preferredPlacement.PlacementAlongEdge = LabelAlongEdgePlacements.AtTarget;
           break;
         case EnumLabelPlacementAlongEdge.Centered:
-          descriptor.PlaceAlongEdge = LabelPlacements.AtCenter;
+          preferredPlacement.PlacementAlongEdge = LabelAlongEdgePlacements.AtCenter;
           break;
       }
 
-      switch(orientation) {
+      switch (orientation) {
         case EnumLabelPlacementOrientation.Parallel:
-          descriptor.Angle = 0.0d;
-          descriptor.AngleReference = LabelAngleReferences.RelativeToEdgeFlow;
+          preferredPlacement.Angle = 0.0d;
+          preferredPlacement.AngleReference = LabelAngleReferences.RelativeToEdgeFlow;
           break;
         case EnumLabelPlacementOrientation.Orthogonal:
-          descriptor.Angle = Math.PI/2;
-          descriptor.AngleReference = LabelAngleReferences.RelativeToEdgeFlow;
+          preferredPlacement.Angle = Math.PI / 2;
+          preferredPlacement.AngleReference = LabelAngleReferences.RelativeToEdgeFlow;
           break;
         case EnumLabelPlacementOrientation.Horizontal:
-          descriptor.Angle = 0.0d;
-          descriptor.AngleReference = LabelAngleReferences.Absolute;
+          preferredPlacement.Angle = 0.0d;
+          preferredPlacement.AngleReference = LabelAngleReferences.Absolute;
           break;
         case EnumLabelPlacementOrientation.Vertical:
-          descriptor.Angle = Math.PI/2;
-          descriptor.AngleReference = LabelAngleReferences.Absolute;
+          preferredPlacement.Angle = Math.PI / 2;
+          preferredPlacement.AngleReference = LabelAngleReferences.Absolute;
           break;
       }
 
-      descriptor.DistanceToEdge = distanceToEdge;
-      return descriptor;
-    }
-    
-    public enum EdgeLabeling
-    {
-      None,
-      Integrated,
-      Generic
+      preferredPlacement.DistanceToEdge = distanceToEdge;
+      return preferredPlacement;
     }
 
     /// <summary>
-    /// Specifies constants for the preferred placement along an edge used by layout configurations.
+    ///   Specifies constants for the preferred placement along an edge used by layout configurations.
     /// </summary>
     public enum EnumLabelPlacementAlongEdge
     {
@@ -262,7 +282,7 @@ namespace Demo.yFiles.Layout.Configurations
     }
 
     /// <summary>
-    /// Specifies constants for the preferred placement at a side of an edge used by layout configurations.
+    ///   Specifies constants for the preferred placement at a side of an edge used by layout configurations.
     /// </summary>
     public enum EnumLabelPlacementSideOfEdge
     {
@@ -274,7 +294,7 @@ namespace Demo.yFiles.Layout.Configurations
     }
 
     /// <summary>
-    /// Specifies constants for the orientation of an edge label used by layout configurations.
+    ///   Specifies constants for the orientation of an edge label used by layout configurations.
     /// </summary>
     public enum EnumLabelPlacementOrientation
     {
@@ -282,18 +302,6 @@ namespace Demo.yFiles.Layout.Configurations
       Orthogonal,
       Horizontal,
       Vertical
-    }
-
-    /// <summary>
-    /// Specifies constants for the labeling policy of a node label used by layout configurations.
-    /// </summary>
-    public enum EnumNodeLabelingPolicies
-    {
-      None,
-      Horizontal,
-      RaylikeLeaves,
-      ConsiderCurrentPosition,
-      Raylike
     }
   }
 }

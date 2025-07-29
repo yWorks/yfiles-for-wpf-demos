@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -37,34 +37,34 @@ namespace Demo.yFiles.Graph.LargeGraphs.Styles.LevelOfDetail
   ///   Immutable container for maintaining a list of zoom level / style pairs for use in level-of-detail styles.
   /// </summary>
   /// <typeparam name="T">
-  ///   Either <see cref="INodeStyle" />, <see cref="IEdgeStyle" />, or <see cref="ILabelStyle" />. This
+  ///   Either <see cref="INodeStyle"/>, <see cref="IEdgeStyle"/>, or <see cref="ILabelStyle"/>. This
   ///   type parameter is not constrained as there is no suitable base interface for the aforementioned style interfaces.
   /// </typeparam>
   /// <remarks>
   ///   Styles need to be added to this container in ascending order of their zoom levels. This container cannot be
-  ///   empty when it's used; <see cref="GetStyle" /> and <see cref="HasSameStyle" /> require at least one style to work
+  ///   empty when it's used; <see cref="GetStyle"/> and <see cref="HasSameStyle"/> require at least one style to work
   ///   correctly.
   /// </remarks>
   /// <example>
   ///   <para>
-  ///     This class implements <see cref="IEnumerable{T}" /> and offers an <see cref="Add" /> method, thus it can be
+  ///     This class implements <see cref="IEnumerable{T}"/> and offers an <see cref="Add"/> method, thus it can be
   ///     used with collection initializers:
   ///   </para>
   ///   <code>
   ///     new LevelOfDetailStyleContainer&lt;INodeStyle> {
   ///       { 0, VoidNodeStyle.Instance },
   ///       { 0.2, new ShapeNodeStyle(ShapeNodeShape.Rectangle, null, Brushes.CornflowerBlue) },
-  ///       { 1.5, new ShinyPlateNodeStyle(Brushes.CornflowerBlue) }
+  ///       { 1.5, new RectangleNodeStyle(Brushes.CornflowerBlue) }
   ///     }
   ///   </code>
   /// </example>
   public class LevelOfDetailStyleContainer<T> : IEnumerable<T>
   {
     /// <summary>The list of styles.</summary>
-    private readonly List<T> styles = new List<T>();
+    private readonly List<T> styles = new();
 
     /// <summary>The list of zoom levels for the styles.</summary>
-    private readonly List<double> zoomLevels = new List<double>();
+    private readonly List<double> zoomLevels = new();
 
     /// <summary>
     ///   Adds the given zoom level / style pair.
@@ -92,7 +92,7 @@ namespace Demo.yFiles.Graph.LargeGraphs.Styles.LevelOfDetail
     /// <param name="z1">The first zoom level.</param>
     /// <param name="z2">The second zoom level.</param>
     /// <returns>
-    ///   <see langword="true" /> if both zoom levels would fall into the same style »bucket«, <see langword="false" />
+    ///   <see langword="true"/> if both zoom levels would fall into the same style "bucket", <see langword="false"/>
     ///   otherwise.
     /// </returns>
     public bool HasSameStyle(double z1, double z2) {
@@ -109,7 +109,7 @@ namespace Demo.yFiles.Graph.LargeGraphs.Styles.LevelOfDetail
         return 0;
       }
 
-      for (int i = 1; i < zoomLevels.Count; i++) {
+      for (var i = 1; i < zoomLevels.Count; i++) {
         if (zoomLevels[i] > zoomLevel) {
           return i - 1;
         }
@@ -120,12 +120,12 @@ namespace Demo.yFiles.Graph.LargeGraphs.Styles.LevelOfDetail
 
     #region IEnumerable
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     public IEnumerator<T> GetEnumerator() {
       return styles.GetEnumerator();
     }
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     IEnumerator IEnumerable.GetEnumerator() {
       return styles.GetEnumerator();
     }

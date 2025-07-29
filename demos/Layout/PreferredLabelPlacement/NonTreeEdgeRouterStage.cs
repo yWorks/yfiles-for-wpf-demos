@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -27,83 +27,54 @@
  ** 
  ***************************************************************************/
 
-using yWorks.Algorithms;
-using yWorks.Algorithms.Util;
+using System;
 using yWorks.Layout;
+using yWorks.Layout.Graph;
 using yWorks.Layout.Labeling;
 using yWorks.Layout.Router;
-using yWorks.Layout.Router.Polyline;
 using yWorks.Layout.Tree;
-using EdgeRoutingStyle = yWorks.Layout.Router.Polyline.EdgeRoutingStyle;
 
 namespace Demo.yFiles.Layout.PreferredLabelPlacement
 {
-  /// <summary>As our demo graph is no tree, we need a 
-  /// <see cref="TreeReductionStage"/>.</summary>
+  /// <summary>
+  ///   As our demo graph is no tree, we need a
+  ///   <see cref="TreeReductionStage"/>.
+  /// </summary>
   /// <remarks>
-  /// To layout the non-tree edges and labels we combine an 
-  /// <see cref="EdgeRouter"/> for the edges with the 
-  /// <see cref="GreedyMISLabeling"/> labeling algorithm for the labels
+  ///   To layout the non-tree edges and labels we combine an
+  ///   <see cref="EdgeRouter"/> for the edges with the
+  ///   <see cref="GreedyMISLabeling"/> labeling algorithm for the labels
   /// </remarks>
   internal class NonTreeEdgeRouterStage : LayoutStageBase
   {
     private readonly EdgeRouter nonTreeEdgeRouter;
-    private readonly LabelingBase nonTreeEdgeLabelLayout;
+    private readonly GenericLabeling nonTreeEdgeLabelLayout;
 
     public NonTreeEdgeRouterStage() {
-      var polylineRouter = new EdgeRouter
-      {
-        Rerouting = true
-      };
-      polylineRouter.DefaultEdgeLayoutDescriptor.PenaltySettings.BendPenalty = 3;
-      polylineRouter.DefaultEdgeLayoutDescriptor.PenaltySettings.EdgeCrossingPenalty = 5;
-      polylineRouter.DefaultEdgeLayoutDescriptor.RoutingStyle = EdgeRoutingStyle.Octilinear;
-      this.nonTreeEdgeRouter = polylineRouter;
-      this.nonTreeEdgeLabelLayout = CreateFastLabeling();
+      var polylineRouter = new EdgeRouter { Rerouting = true };
+      polylineRouter.DefaultEdgeDescriptor.EdgeRouterCosts.BendCost = 3;
+      polylineRouter.DefaultEdgeDescriptor.EdgeRouterCosts.EdgeCrossingCost = 5;
+      polylineRouter.DefaultEdgeDescriptor.RoutingStyle = RoutingStyle.Octilinear;
+      nonTreeEdgeRouter = polylineRouter;
+      nonTreeEdgeLabelLayout = CreateFastLabeling();
     }
 
     /// <inheritdoc/>
-    public override void ApplyLayout(LayoutGraph graph) {
+    protected override void ApplyLayoutImpl(LayoutGraph graph) {
       // first layout the non-tree edges
-      nonTreeEdgeRouter.Scope = Scope.RouteAffectedEdges;
       nonTreeEdgeRouter.ApplyLayout(graph);
 
       // the tree reduction stage only prepares a data provider to mark the non-tree edges but we need
       // a provider to mark the labels of all non-tree edges:
-      // for t
-      var nonTreeEdgeDp = graph.GetDataProvider(LayoutKeys.AffectedEdgesDpKey);
-      graph.AddDataProvider("nonTreeLabels", new NonTeeEdgesDataProvider(graph, nonTreeEdgeDp));
-      
-      nonTreeEdgeLabelLayout.AffectedLabelsDpKey = "nonTreeLabels";
-      nonTreeEdgeLabelLayout.ApplyLayout(graph);
-      
-      graph.RemoveDataProvider("nonTreeLabels");
+
+      var nonTreeEdgeDp = graph.Context.GetItemData(LayoutKeys.RouteEdgesDataKey);
+      var labelingData = nonTreeEdgeLabelLayout.CreateLayoutData(graph);
+      labelingData.Scope.EdgeLabels.Predicate = edgeLabel => nonTreeEdgeDp[edgeLabel.Owner];
+      graph.ApplyLayout(nonTreeEdgeLabelLayout, labelingData);
     }
 
-    internal static LabelingBase CreateFastLabeling() {
-      return new GenericLabeling()
-               {
-                 MaximumDuration = 0,
-                 OptimizationStrategy = OptimizationStrategy.Balanced,
-                 PlaceEdgeLabels = true,
-                 PlaceNodeLabels = false
-               };
-    }
-
-    private sealed class NonTeeEdgesDataProvider : DataProviderAdapter
-    {
-      private readonly LayoutGraph graph;
-      private readonly IDataProvider nonTreeEdgeDp;
-
-      public NonTeeEdgesDataProvider(LayoutGraph graph, IDataProvider nonTreeEdgeDp) {
-        this.graph = graph;
-        this.nonTreeEdgeDp = nonTreeEdgeDp;
-      }
-
-      /// <inheritdoc/>
-      public override bool GetBool(object dataHolder) {
-        return nonTreeEdgeDp.GetBool(graph.GetOwner((IEdgeLabelLayout) dataHolder));
-      }
+    internal static GenericLabeling CreateFastLabeling() {
+      return new GenericLabeling { StopDuration = TimeSpan.Zero, Scope = LabelingScope.EdgeLabels };
     }
   }
 }

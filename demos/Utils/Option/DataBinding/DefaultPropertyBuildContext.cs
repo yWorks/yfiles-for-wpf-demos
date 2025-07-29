@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -29,7 +29,7 @@
 
 using System;
 using System.Collections;
-using yWorks.Graph;
+using yWorks.Utils;
 
 namespace Demo.yFiles.Option.DataBinding
 {
@@ -40,56 +40,73 @@ namespace Demo.yFiles.Option.DataBinding
     private readonly string prefix = string.Empty;
     private readonly GetInstanceDelegate<TSubject> getInstance;
     private readonly SetInstanceDelegate<TSubject> setInstance;
-    private readonly AssignmentPolicy policy = AssignmentPolicy.Default;
-    private readonly IContextLookup contextLookup;
+    private readonly ContextLookupDelegate contextLookup;
 
-    internal DefaultPropertyBuildContext(ILookup innerLookup, IContextLookup contextLookup, IPropertyMap map, TSubject subject) {
+    internal DefaultPropertyBuildContext(
+        ILookup innerLookup,
+        ContextLookupDelegate contextLookup,
+        IPropertyMap map,
+        TSubject subject) {
       this.innerLookup = innerLookup;
       this.contextLookup = contextLookup;
       this.map = map;
-      this.getInstance = delegate() { return subject; };
-      this.setInstance = delegate { };
+      getInstance = delegate { return subject; };
+      setInstance = delegate { };
     }
 
-    protected DefaultPropertyBuildContext(ILookup innerLookup, IContextLookup contextLookup, string prefix, IPropertyMap map, GetInstanceDelegate<TSubject> getInstance, SetInstanceDelegate<TSubject> setInstance, AssignmentPolicy policy) {
+    protected DefaultPropertyBuildContext(
+        ILookup innerLookup,
+        ContextLookupDelegate contextLookup,
+        string prefix,
+        IPropertyMap map,
+        GetInstanceDelegate<TSubject> getInstance,
+        SetInstanceDelegate<TSubject> setInstance,
+        AssignmentPolicy policy) {
       this.innerLookup = innerLookup;
       this.map = map;
       this.prefix = prefix;
       this.getInstance = getInstance;
       this.setInstance = setInstance;
-      this.policy = policy;
+      Policy = policy;
       this.contextLookup = contextLookup;
     }
 
     #region IPropertyBuildContext Members
 
-    public AssignmentPolicy Policy {
-      get { return policy; }
-    }
+    public AssignmentPolicy Policy { get; } = AssignmentPolicy.Default;
 
     #endregion
 
     #region IPropertyBuildContext Members
 
-    public virtual IPropertyItem AddEntry(string virtualPropertyName, IValueGetter getter, IValueSetter setter,
-                                          IEqualityComparer comparer) {
-      return map.AddEntry(DefaultOptionBuilderContext<object>.CreatePrefix(this.prefix, virtualPropertyName), getter, setter, comparer);
+    public virtual IPropertyItem AddEntry(
+        string virtualPropertyName,
+        IValueGetter getter,
+        IValueSetter setter,
+        IEqualityComparer comparer) {
+      return map.AddEntry(DefaultOptionBuilderContext<object>.CreatePrefix(prefix, virtualPropertyName), getter, setter,
+          comparer);
     }
 
 
-    public IPropertyItem AddEntry<TValue>(string virtualPropertyName, ValueGetterDelegate<TValue> getter,
-                                          ValueSetterDelegate<TValue> setter, IEqualityComparer comparer) {
-      return AddEntry(virtualPropertyName, new DelegateGetter<TValue>(getter), new DelegateSetter<TValue>(setter), comparer);
+    public IPropertyItem AddEntry<TValue>(
+        string virtualPropertyName,
+        ValueGetterDelegate<TValue> getter,
+        ValueSetterDelegate<TValue> setter,
+        IEqualityComparer comparer) {
+      return AddEntry(virtualPropertyName, new DelegateGetter<TValue>(getter), new DelegateSetter<TValue>(setter),
+          comparer);
     }
 
-    public IPropertyItem AddEntry<TValue>(string virtualPropertyName, ValueGetterDelegate<TValue> getter,
-                                          ValueSetterDelegate<TValue> setter) {
-      return AddEntry(virtualPropertyName, new DelegateGetter<TValue>(getter), new DelegateSetter<TValue>(setter), null);
+    public IPropertyItem AddEntry<TValue>(
+        string virtualPropertyName,
+        ValueGetterDelegate<TValue> getter,
+        ValueSetterDelegate<TValue> setter) {
+      return AddEntry(virtualPropertyName, new DelegateGetter<TValue>(getter), new DelegateSetter<TValue>(setter),
+          null);
     }
 
-    public TSubject CurrentInstance {
-      get { return getInstance(); }
-    }
+    public TSubject CurrentInstance => getInstance();
 
     public virtual void SetNewInstance(TSubject newInstance) {
       setInstance(newInstance);
@@ -102,7 +119,7 @@ namespace Demo.yFiles.Option.DataBinding
     #endregion
 
     public IPropertyMapBuilder GetPropertyMapBuilder(object subject) {
-      IPropertyMapBuilder builder = contextLookup.Lookup(subject, typeof (IPropertyMapBuilder)) as IPropertyMapBuilder;
+      var builder = contextLookup.Invoke(subject, typeof(IPropertyMapBuilder)) as IPropertyMapBuilder;
       if (builder != null) {
         return builder;
       }
@@ -117,60 +134,74 @@ namespace Demo.yFiles.Option.DataBinding
 
     public IPropertyMapBuilder GetPropertyMapBuilder(Type type, object subject) {
       if (subject == null) {
-        IPropertyMapBuilder builder = contextLookup.Lookup(type, typeof(IPropertyMapBuilder)) as IPropertyMapBuilder;
+        var builder = contextLookup.Invoke(type, typeof(IPropertyMapBuilder)) as IPropertyMapBuilder;
         if (builder != null) {
           return builder;
         }
         return GetBuilder(type);
-      } else {
-        return GetPropertyMapBuilder(subject);
       }
+      return GetPropertyMapBuilder(subject);
     }
 
     private IPropertyMapBuilder GetBuilder(Type type) {
-//      if (typeof(Brush).IsAssignableFrom(type)) {
-//        return new DefaultBrushPropertyMapBuilder();
-//      }
-//      if (type == typeof(Pen)) {
-//        return new DefaultPenPropertyMapBuilder();
-//      }
-//      if(type == typeof(StringFormat)) {
-//        return new StringFormatPropertyMapBuilder();
-//      }
+      //      if (typeof(Brush).IsAssignableFrom(type)) {
+      //        return new DefaultBrushPropertyMapBuilder();
+      //      }
+      //      if (type == typeof(Pen)) {
+      //        return new DefaultPenPropertyMapBuilder();
+      //      }
+      //      if(type == typeof(StringFormat)) {
+      //        return new StringFormatPropertyMapBuilder();
+      //      }
       return ReflectionHelper.GetPropertyBuilderFromAttribute(type);
     }
 
-    public IPropertyBuildContext<TChild> CreateChildContext<TChild>(string name, GetInstanceDelegate<TChild> getHandler,
-                                                                            SetInstanceDelegate<TChild> setHandler,
-                                                                            AssignmentPolicy policy) where TChild:class{
-      return new DecoratedBuildContext<TChild>(innerLookup, contextLookup, DefaultOptionBuilderContext<object>.CreatePrefix(this.prefix, name), map, getHandler, setHandler, policy);
+    public IPropertyBuildContext<TChild> CreateChildContext<TChild>(
+        string name,
+        GetInstanceDelegate<TChild> getHandler,
+        SetInstanceDelegate<TChild> setHandler,
+        AssignmentPolicy policy) where TChild : class {
+      return new DecoratedBuildContext<TChild>(innerLookup, contextLookup,
+          DefaultOptionBuilderContext<object>.CreatePrefix(prefix, name), map, getHandler, setHandler, policy);
     }
 
     public object Lookup(Type type) {
       return innerLookup.Lookup(type);
     }
 
-    private class DecoratedBuildContext<TInnerSubject> : DefaultPropertyBuildContext<TInnerSubject> where TInnerSubject :class
+    private class DecoratedBuildContext<TInnerSubject> : DefaultPropertyBuildContext<TInnerSubject>
+        where TInnerSubject : class
     {
+      internal DecoratedBuildContext(
+          ILookup lookup,
+          ContextLookupDelegate innerLookup,
+          string prefix,
+          IPropertyMap map,
+          GetInstanceDelegate<TInnerSubject> getHandler,
+          SetInstanceDelegate<TInnerSubject> setHandler,
+          AssignmentPolicy policy) : base(lookup, innerLookup, prefix, map, getHandler, setHandler, policy) { }
 
-      internal DecoratedBuildContext(ILookup lookup, IContextLookup innerLookup, string prefix, IPropertyMap map, GetInstanceDelegate<TInnerSubject> getHandler, SetInstanceDelegate<TInnerSubject> setHandler, AssignmentPolicy policy)
-        : base(lookup, innerLookup, prefix, map, getHandler, setHandler, policy) {
-      }
-
-      public override IPropertyItem AddEntry(string virtualPropertyName, IValueGetter getter, IValueSetter setter,
-                                             IEqualityComparer comparer) {
+      public override IPropertyItem AddEntry(
+          string virtualPropertyName,
+          IValueGetter getter,
+          IValueSetter setter,
+          IEqualityComparer comparer) {
         setter = new DecoratedSetter(setter, getInstance, setInstance, null);
         return base.AddEntry(virtualPropertyName, getter, setter, comparer);
       }
 
-      internal class DecoratedSetter : IValueSetter 
+      internal class DecoratedSetter : IValueSetter
       {
         private readonly IValueSetter setter;
         private readonly GetInstanceDelegate<TInnerSubject> getTargetHandler;
         private readonly SetInstanceDelegate<TInnerSubject> newInstanceSetter;
         private readonly Func<TInnerSubject, TInnerSubject> cloner;
 
-        public DecoratedSetter(IValueSetter setter, GetInstanceDelegate<TInnerSubject> getTargetHandler, SetInstanceDelegate<TInnerSubject> newInstanceSetter, Func<TInnerSubject, TInnerSubject> cloner) {
+        public DecoratedSetter(
+            IValueSetter setter,
+            GetInstanceDelegate<TInnerSubject> getTargetHandler,
+            SetInstanceDelegate<TInnerSubject> newInstanceSetter,
+            Func<TInnerSubject, TInnerSubject> cloner) {
           this.setter = setter;
           this.cloner = cloner;
           this.getTargetHandler = getTargetHandler;
@@ -181,7 +212,7 @@ namespace Demo.yFiles.Option.DataBinding
           if (cloner != null && newInstanceSetter != null) {
             TInnerSubject currentValue;
             currentValue = getTargetHandler();
-            TInnerSubject newSubject = cloner(currentValue);
+            var newSubject = cloner(currentValue);
             if (!ReferenceEquals(newSubject, currentValue)) {
               newInstanceSetter(newSubject);
             }
@@ -196,6 +227,5 @@ namespace Demo.yFiles.Option.DataBinding
         }
       }
     }
-
   }
 }

@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -30,124 +30,122 @@
 using System;
 using System.Reflection;
 using System.Windows;
-using System.Windows.Controls;
+using System.Windows.Interop;
 using Demo.yFiles.Option.Handler;
-using Demo.yFiles.Option.View;
 
 namespace Demo.yFiles.Option.Editor
 {
   /// <summary>
-  /// Convenience class that wraps an <see cref="EditorControl"/> instance and adds some buttons.
+  ///   Convenience class that wraps an <see cref="EditorControl"/> instance and adds some buttons.
   /// </summary>
-  public partial class EditorForm 
+  public partial class EditorForm
   {
     public EditorForm() {
       InitializeComponent();
     }
 
     /// <summary>
-    /// Return whether the Editor is in auto commit state
+    ///   Return whether the Editor is in auto commit state
     /// </summary>
     public bool IsAutoCommit {
-      get { return editorControl.IsAutoCommit; }
-      set { editorControl.IsAutoCommit = value; }
+      get => editorControl.IsAutoCommit;
+      set => editorControl.IsAutoCommit = value;
     }
 
     /// <summary>
-    /// Dependency property for the <see cref="ShowAdoptButton"/> property.
+    ///   Dependency property for the <see cref="ShowAdoptButton"/> property.
     /// </summary>
-    public static readonly DependencyProperty ShowAdoptButtonProperty = DependencyProperty.Register("ShowAdoptButton", typeof (bool), typeof (EditorForm),
-                                                                                      new PropertyMetadata(
-                                                                                        false, AdoptChanged));
+    public static readonly DependencyProperty ShowAdoptButtonProperty = DependencyProperty.Register("ShowAdoptButton",
+        typeof(bool), typeof(EditorForm), new PropertyMetadata(false, AdoptChanged));
+
     private static void AdoptChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
-      ((EditorForm)d).adoptButton.Visibility = (bool)e.NewValue ? Visibility.Visible : Visibility.Collapsed;
+      ((EditorForm) d).adoptButton.Visibility = (bool) e.NewValue ? Visibility.Visible : Visibility.Collapsed;
     }
 
     private static void ApplyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
-      ((EditorForm)d).applyButton.Visibility = (bool)e.NewValue ? Visibility.Visible : Visibility.Collapsed;
+      ((EditorForm) d).applyButton.Visibility = (bool) e.NewValue ? Visibility.Visible : Visibility.Collapsed;
     }
 
     private static void ResetChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
-      ((EditorForm)d).resetButton.Visibility = (bool)e.NewValue ? Visibility.Visible : Visibility.Collapsed;
+      ((EditorForm) d).resetButton.Visibility = (bool) e.NewValue ? Visibility.Visible : Visibility.Collapsed;
     }
 
     /// <summary>
-    /// Return whether the Editor should show an adopt button.
+    ///   Return whether the Editor should show an adopt button.
     /// </summary>
     /// <remarks>Default is <see langword="false"/></remarks>
     /// <seealso cref="ShowAdoptButtonProperty"/>
     public bool ShowAdoptButton {
-      get { return (bool) GetValue(ShowAdoptButtonProperty); }
-      set { SetValue(ShowAdoptButtonProperty, value); }
+      get => (bool) GetValue(ShowAdoptButtonProperty);
+      set => SetValue(ShowAdoptButtonProperty, value);
     }
 
     /// <summary>
-    /// Dependency property for the <see cref="OptionHandler"/> property.
+    ///   Dependency property for the <see cref="OptionHandler"/> property.
     /// </summary>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
-    public static readonly DependencyProperty OptionHandlerProperty =
-      DependencyProperty.Register("OptionHandler", typeof(OptionHandler), typeof(EditorForm),
-                                  new FrameworkPropertyMetadata(null));
+    public static readonly DependencyProperty OptionHandlerProperty = DependencyProperty.Register("OptionHandler",
+        typeof(OptionHandler), typeof(EditorForm), new FrameworkPropertyMetadata(null));
 
     /// <summary>
-    /// Convenience property that will automatically create a <see cref="View"/> for the given
-    /// option handler.
+    ///   Convenience property that will automatically create a <see cref="View"/> for the given
+    ///   option handler.
     /// </summary>
     /// <value>The option handler to display in this editor.</value>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     public OptionHandler OptionHandler {
-      get { return (OptionHandler)GetValue(OptionHandlerProperty); }
-      set { SetValue(OptionHandlerProperty, value); }
+      get => (OptionHandler) GetValue(OptionHandlerProperty);
+      set => SetValue(OptionHandlerProperty, value);
     }
 
 
     /// <summary>
-    /// Dependency property for the <see cref="ShowApplyButton"/> property.
+    ///   Dependency property for the <see cref="ShowApplyButton"/> property.
     /// </summary>
-    public static readonly DependencyProperty ShowApplyButtonProperty = DependencyProperty.Register("ShowApplyButton", typeof (bool), typeof (EditorForm),
-                                                                                      new PropertyMetadata(false, ApplyChanged));
+    public static readonly DependencyProperty ShowApplyButtonProperty = DependencyProperty.Register("ShowApplyButton",
+        typeof(bool), typeof(EditorForm), new PropertyMetadata(false, ApplyChanged));
 
     /// <summary>
-    /// Return whether the Editor should show an apply button for non-modal dialogs.
+    ///   Return whether the Editor should show an apply button for non-modal dialogs.
     /// </summary>
     /// <remarks>Default is <see langword="false"/></remarks>
     public bool ShowApplyButton {
-      get { return (bool) GetValue(ShowApplyButtonProperty); }
-      set { SetValue(ShowApplyButtonProperty, value); }
+      get => (bool) GetValue(ShowApplyButtonProperty);
+      set => SetValue(ShowApplyButtonProperty, value);
     }
 
 
     /// <summary>
-    /// Dependency property for the <see cref="ShowResetButton"/> property.
+    ///   Dependency property for the <see cref="ShowResetButton"/> property.
     /// </summary>
-    public static readonly DependencyProperty ShowResetButtonProperty =
-      DependencyProperty.Register("ShowResetButton", typeof (bool), typeof (EditorForm), new PropertyMetadata(true, ResetChanged));
-    
+    public static readonly DependencyProperty ShowResetButtonProperty = DependencyProperty.Register("ShowResetButton",
+        typeof(bool), typeof(EditorForm), new PropertyMetadata(true, ResetChanged));
+
     /// <summary>
-    /// Return whether the Editor should show a reset button.
+    ///   Return whether the Editor should show a reset button.
     /// </summary>
     /// <remarks>Default is <see langword="true"/></remarks>
     public bool ShowResetButton {
-      get { return (bool) GetValue(ShowResetButtonProperty); }
-      set { SetValue(ShowResetButtonProperty, value); }
+      get => (bool) GetValue(ShowResetButtonProperty);
+      set => SetValue(ShowResetButtonProperty, value);
     }
 
     /// <summary>
-    /// Return whether the Editor is in auto adopt state
+    ///   Return whether the Editor is in auto-adopt state
     /// </summary>
     public bool IsAutoAdopt {
-      get { return editorControl.IsAutoAdopt; }
-      set { editorControl.IsAutoAdopt = value; }
+      get => editorControl.IsAutoAdopt;
+      set => editorControl.IsAutoAdopt = value;
     }
 
     #region event listeners
 
     private void okButton_Click(object sender, EventArgs e) {
-      if (System.Windows.Interop.ComponentDispatcher.IsThreadModal) {
+      if (ComponentDispatcher.IsThreadModal) {
         DialogResult = true;
       }
       OnValuesCommitted(this, EventArgs.Empty);
-      this.Close();
+      Close();
     }
 
     private void applyButton_Click(object sender, EventArgs e) {
@@ -159,25 +157,25 @@ namespace Demo.yFiles.Option.Editor
     }
 
     /// <summary>
-    /// This method is called when values have been adopted in the form.
+    ///   This method is called when values have been updated in the form.
     /// </summary>
     /// <param name="form"></param>
     /// <param name="args"></param>
     protected virtual void OnValuesAdopted(object form, EventArgs args) {
-      //delegate operation to active view
+      // delegate operation to active view
       editorControl.AdoptValues();
-      if(ValuesAdopted != null) {
+      if (ValuesAdopted != null) {
         ValuesAdopted(form, args);
       }
     }
 
     /// <summary>
-    /// This method is called when values have been committed by the form.
+    ///   This method is called when values have been committed by the form.
     /// </summary>
     /// <param name="form"></param>
     /// <param name="args"></param>
     protected virtual void OnValuesCommitted(object form, EventArgs args) {
-      //delegate operation to active view
+      // delegate operation to active view
       editorControl.CommitValues();
       if (ValuesCommitted != null) {
         ValuesCommitted(form, args);
@@ -185,11 +183,11 @@ namespace Demo.yFiles.Option.Editor
     }
 
     private void cancelButton_Click(object sender, EventArgs e) {
-      //don't commit
-      if (System.Windows.Interop.ComponentDispatcher.IsThreadModal) {
+      // don't commit
+      if (ComponentDispatcher.IsThreadModal) {
         DialogResult = false;
       }
-      this.Close();
+      Close();
     }
 
     private void resetButton_Click(object sender, EventArgs e) {
@@ -199,12 +197,12 @@ namespace Demo.yFiles.Option.Editor
     #endregion
 
     /// <summary>
-    /// This events is fired when values have been adopted by the form.
+    ///   This events is fired when values have been adopted by the form.
     /// </summary>
     public event EventHandler ValuesAdopted;
 
     /// <summary>
-    /// This events is fired when values have been committed by the form.
+    ///   This events is fired when values have been committed by the form.
     /// </summary>
     public event EventHandler ValuesCommitted;
   }

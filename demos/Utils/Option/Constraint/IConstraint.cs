@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -28,26 +28,28 @@
  ***************************************************************************/
 
 using System;
-using System.ComponentModel;
 using Demo.yFiles.Option.Handler;
 using Demo.yFiles.Option.View;
 
 namespace Demo.yFiles.Option.Constraint
 {
   /// <summary>
-  /// Interface for installable constraints.
+  ///   Interface for installable constraints.
   /// </summary>
-  /// <remarks>An installable constraint for an <see cref="OptionHandler"/>
-  /// can be set by a <see cref="ConstraintManager"/> instance to support
-  /// constraints on associated editors for the OptionHandler. A Constraint is defined
-  /// for the handler instance, i.e. acts on the OptionItems and Groups defined there.
-  /// The <see cref="ConstraintManager"/> ensures by calling <see cref="InstallInView"/>
-  /// that the Constraint is correctly installed and disposed
-  /// for a <see cref="IModelView"/> instance (which is usually implicitly created
-  /// by creating a graphical editor). 
-  /// <note>Since correctly implementing <see cref="InstallInView"/> is not trivial,
-  /// users are strongly advised to use implementation classes like 
-  /// <see cref="ConditionActionConstraint"/> instead.</note>
+  /// <remarks>
+  ///   An installable constraint for an <see cref="OptionHandler"/>
+  ///   can be set by a <see cref="ConstraintManager"/> instance to support
+  ///   constraints on associated editors for the OptionHandler. A Constraint is defined
+  ///   for the handler instance, i.e. acts on the OptionItems and Groups defined there.
+  ///   The <see cref="ConstraintManager"/> ensures by calling <see cref="InstallInView"/>
+  ///   that the Constraint is correctly installed and disposed
+  ///   for an <see cref="IModelView"/> instance (which is usually implicitly created
+  ///   by creating a graphical editor).
+  ///   <note>
+  ///     Since correctly implementing <see cref="InstallInView"/> is not trivial,
+  ///     users are strongly advised to use implementation classes like
+  ///     <see cref="ConditionActionConstraint"/> instead.
+  ///   </note>
   /// </remarks>
   /// <seealso cref="OptionHandler"/>
   /// <seealso cref="IModelView"/>
@@ -56,15 +58,19 @@ namespace Demo.yFiles.Option.Constraint
   public interface IConstraint : IDisposable
   {
     /// <summary>
-    /// Install the constraint into the given <paramref name="view"/>
+    ///   Install the constraint into the given <paramref name="view"/>.
     /// </summary>
-    /// <remarks>This method creates a copy of the constraint that is correctly
-    /// configured to act on the <paramref name="view"/> items that correspond to the
-    /// items defined on the <see cref="OptionHandler"/> where the <see cref="ConstraintManager"/>
-    /// this instance belongs to is installed.</remarks>
+    /// <remarks>
+    ///   This method creates a copy of the constraint that is correctly
+    ///   configured to act on the <paramref name="view"/> items that correspond to the
+    ///   items defined on the <see cref="OptionHandler"/> where the <see cref="ConstraintManager"/>
+    ///   this instance belongs to is installed.
+    /// </remarks>
     /// <param name="view">The view where this constraint will be installed.</param>
-    /// <returns>A copy of this constraint that is configured to work on the 
-    /// given <paramref name="view"/>.</returns>
+    /// <returns>
+    ///   A copy of this constraint that is configured to work on the
+    ///   given <paramref name="view"/>.
+    /// </returns>
     IConstraint InstallInView(IModelView view);
   }
 }

@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -33,17 +33,17 @@ using System.ComponentModel;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Data;
-using System.Xml;
-using yWorks.Graph;
-using UITypeEditor = System.Windows.DataTemplate;
+using yWorks.Utils;
 
 namespace Demo.yFiles.Option.Handler
 {
   /// <summary>
-  /// Abstract implementation of interface <see cref="OptionItem"/> that handles general objects.
+  ///   Abstract implementation of interface <see cref="OptionItem"/> that handles general objects.
   /// </summary>
-  /// <remarks>For specialized handling/validation etc. of custom types, this class must
-  /// be extended by custom implementations</remarks>
+  /// <remarks>
+  ///   For specialized handling/validation etc. of custom types, this class must
+  ///   be extended by custom implementations
+  /// </remarks>
   [Obfuscation(StripAfterObfuscation = false, Exclude = true, ApplyToMembers = false)]
   public class OptionItem : IOptionItem
   {
@@ -52,35 +52,37 @@ namespace Demo.yFiles.Option.Handler
     private string name;
     private object _value;
     private bool enabled = true;
-    private IOptionGroup _owner;
     private readonly IDictionary<string, object> attributes;
-    private readonly IMapper<string, object> attributesMapper;
 
     /// <summary>
-    /// Attribute key that controls this option item supports the "no value" concept. 
+    ///   Attribute key that controls this option item supports the "no value" concept.
     /// </summary>
-    /// <remarks>If this is set to <see langword="false"/>,
-    /// attempts to set a <see langword="null"/> <see cref="Value"/> will be rejected. If set to
-    /// <see langword="true"/>, UI editors will automatically contain a wrapper that
-    /// allows to specify an "empty" value.</remarks>
+    /// <remarks>
+    ///   If this is set to <see langword="false"/>,
+    ///   attempts to set a <see langword="null"/> <see cref="Value"/> will be rejected. If set to
+    ///   <see langword="true"/>, UI editors will automatically contain a wrapper that
+    ///   allows to specify an "empty" value.
+    /// </remarks>
     /// <seealso cref="IOptionItem.Attributes"/>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     public const string SupportNullValueAttribute = "OptionItem.SUPPORT_NULL_VALUE_ATTRIBUTE";
 
     /// <summary>
-    /// Attribute key that controls this option item supports the "undefined value" concept. 
+    ///   Attribute key that controls this option item supports the "undefined value" concept.
     /// </summary>
-    /// <remarks>If set to <see langword="true"/>, UI editors will correctly handle
-    /// when an undefined value (set with <see cref="SetUndefined"/> or by setting the <see cref="Value"/>
-    /// to <see cref="ValueUndefined"/>) on an item. This is mainly useful for
-    /// items that encapsulate a multiple selection of actual objects.</remarks>
+    /// <remarks>
+    ///   If set to <see langword="true"/>, UI editors will correctly handle
+    ///   when an undefined value (set with <see cref="SetUndefined"/> or by setting the <see cref="Value"/>
+    ///   to <see cref="ValueUndefined"/>) on an item. This is mainly useful for
+    ///   items that encapsulate a multiple selection of actual objects.
+    /// </remarks>
     /// <seealso cref="IOptionItem.Attributes"/>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     public const string SupportUndefinedValueAttribute = "OptionItem.SUPPORT_UNDEFINED_VALUE_ATTRIBUTE";
 
     /// <summary>
-    /// An optional string that can be used as the description in a 
-    /// view.
+    ///   An optional string that can be used as the description in a
+    ///   view.
     /// </summary>
     /// <remarks>This value will not be localized.</remarks>
     /// <seealso cref="IOptionItem.Attributes"/>
@@ -88,7 +90,7 @@ namespace Demo.yFiles.Option.Handler
     public const string DescriptionAttribute = "OptionItem.DESCRIPTION_ATTRIBUTE";
 
     /// <summary>
-    /// An alternative label for UI editors that will be used instead of the name.
+    ///   An alternative label for UI editors that will be used instead of the name.
     /// </summary>
     /// <remarks>This value will not be localized.</remarks>
     /// <seealso cref="IOptionItem.Attributes"/>
@@ -96,7 +98,7 @@ namespace Demo.yFiles.Option.Handler
     public const string DisplaynameAttribute = "OptionItem.DISPLAYNAME_ATTRIBUTE";
 
     /// <summary>
-    /// Holds the default value for the item.
+    ///   Holds the default value for the item.
     /// </summary>
     /// <remarks>This value will not be localized.</remarks>
     /// <seealso cref="IOptionItem.Attributes"/>
@@ -104,83 +106,93 @@ namespace Demo.yFiles.Option.Handler
     public const string DefaultValueAttribute = "OptionItem.DEFAULT_VALUE_ATTRIBUTE";
 
     /// <summary>
-    /// A custom representation string for <see langword="null"/> values in UI editors.
+    ///   A custom representation string for <see langword="null"/> values in UI editors.
     /// </summary>
     /// <remarks>If not specified, a default value will be used (currently <c>(null))</c></remarks>
     /// <seealso cref="IOptionItem.Attributes"/>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     public const string NullValueStringAttribute = "OptionItem.NULL_VALUE_STRING_ATTRIBUTE";
 
-    //add overrides for editors and/or converters
+    // add overrides for editors and/or converters
 
     /// <summary>
-    /// Allows to specify an alternative <see cref="TypeConverter"/> for UI editors.
+    ///   Allows to specify an alternative <see cref="TypeConverter"/> for UI editors.
     /// </summary>
-    /// <remarks>You can either set an existing <see cref="TypeConverter"/> instance or
-    /// the type of your custom converter here.</remarks>
+    /// <remarks>
+    ///   You can either set an existing <see cref="TypeConverter"/> instance or
+    ///   the type of your custom converter here.
+    /// </remarks>
     /// <seealso cref="IOptionItem.Attributes"/>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     public const string CustomTypeConverterAttribute = "OptionItem.CUSTOM_CONVERTER_ATTRIBUTE";
-    
+
     /// <summary>
-    /// Allows to specify an alternative <see cref="IValueConverter"/> for UI editors.
+    ///   Allows to specify an alternative <see cref="IValueConverter"/> for UI editors.
     /// </summary>
-    /// <remarks>You can either set an existing <see cref="IValueConverter"/> instance or
-    /// the type of your custom converter here.</remarks>
+    /// <remarks>
+    ///   You can either set an existing <see cref="IValueConverter"/> instance or
+    ///   the type of your custom converter here.
+    /// </remarks>
     /// <seealso cref="IOptionItem.Attributes"/>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     public const string CustomValueConverterAttribute = "OptionItem.CUSTOM_VALUE_CONVERTER_ATTRIBUTE";
 
     /// <summary>
-    /// Allows to specify an alternative <see cref="DataTemplate"/> for the content
-    /// of editors in the views.
+    ///   Allows to specify an alternative <see cref="DataTemplate"/> for the content
+    ///   of editors in the views.
     /// </summary>
-    /// <remarks>The DataTemplate will be used for the items in a <see cref="IOptionItem"/>
-    /// or <see cref="CollectionOptionItem{T}"/> to render the various items to choose from.
-    /// The value of this attribute may be either a DataTemplate instance, the 
-    /// <see cref="FrameworkElement.FindResource">resource identifier</see> that points to a <see cref="DataTemplate"/>,
-    /// a Type that can be instanciated to a DataTemplate or a fully qualified name of a DataTemplate class.</remarks>
+    /// <remarks>
+    ///   The DataTemplate will be used for the items in a <see cref="IOptionItem"/>
+    ///   or <see cref="CollectionOptionItem{T}"/> to render the various items to choose from.
+    ///   The value of this attribute may be either a DataTemplate instance, the
+    ///   <see cref="FrameworkElement.FindResource">resource identifier</see> that points to a <see cref="DataTemplate"/>,
+    ///   a Type that can be instanciated to a DataTemplate or a fully qualified name of a DataTemplate class.
+    /// </remarks>
     /// <seealso cref="IOptionItem.Attributes"/>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     public const string ItemTemplateAttribute = "OptionItem.ITEM_TEMPLATE_ATTRIBUTE";
 
     /// <summary>
-    /// Allows to specify an alternative <see cref="DataTemplate"/> for UI editors in
-    /// a table editor like view.
+    ///   Allows to specify an alternative <see cref="DataTemplate"/> for UI editors in
+    ///   a table editor like view.
     /// </summary>
-    /// <remarks>The DataTemplate needs to use an <see cref="IOptionItem"/> as the
-    /// <see cref="DataTemplate.DataType"/> and needs to bind to the <see cref="IOptionItem.Value"/>
-    /// for the value that needs to be edited.
-    /// The value of this attribute may be either a DataTemplate instance, the 
-    /// <see cref="FrameworkElement.FindResource">resource identifier</see> that points to a <see cref="DataTemplate"/>,
-    /// a Type that can be instanciated to a DataTemplate or a fully qualified name of a DataTemplate class.</remarks>
+    /// <remarks>
+    ///   The DataTemplate needs to use an <see cref="IOptionItem"/> as the
+    ///   <see cref="DataTemplate.DataType"/> and needs to bind to the <see cref="IOptionItem.Value"/>
+    ///   for the value that needs to be edited.
+    ///   The value of this attribute may be either a DataTemplate instance, the
+    ///   <see cref="FrameworkElement.FindResource">resource identifier</see> that points to a <see cref="DataTemplate"/>,
+    ///   a Type that can be instanciated to a DataTemplate or a fully qualified name of a DataTemplate class.
+    /// </remarks>
     /// <seealso cref="IOptionItem.Attributes"/>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     public const string CustomTableitemEditor = "OptionItem.CUSTOM_TABLEITEM_EDITOR";
 
     /// <summary>
-    /// Allows to specify an alternative <see cref="DataTemplate"/> for UI editors in
-    /// a dialog like view.
+    ///   Allows to specify an alternative <see cref="DataTemplate"/> for UI editors in
+    ///   a dialog like view.
     /// </summary>
-    /// <remarks>The DataTemplate needs to use an <see cref="IOptionItem"/> as the
-    /// <see cref="DataTemplate.DataType"/> and needs to bind to the <see cref="IOptionItem.Value"/>
-    /// for the value that needs to be edited.
-    /// The value of this attribute may be either a DataTemplate instance, the 
-    /// <see cref="FrameworkElement.FindResource">resource identifier</see> that points to a <see cref="DataTemplate"/>,
-    /// a Type that can be instanciated to a DataTemplate or a fully qualified name of a DataTemplate class.</remarks>
+    /// <remarks>
+    ///   The DataTemplate needs to use an <see cref="IOptionItem"/> as the
+    ///   <see cref="DataTemplate.DataType"/> and needs to bind to the <see cref="IOptionItem.Value"/>
+    ///   for the value that needs to be edited.
+    ///   The value of this attribute may be either a DataTemplate instance, the
+    ///   <see cref="FrameworkElement.FindResource">resource identifier</see> that points to a <see cref="DataTemplate"/>,
+    ///   a Type that can be instanciated to a DataTemplate or a fully qualified name of a DataTemplate class.
+    /// </remarks>
     /// <seealso cref="IOptionItem.Attributes"/>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     public const string CustomDialogitemEditor = "OptionItem.CUSTOM_DIALOGITEM_EDITOR";
 
     /// <summary>
-    /// Allows to specify an alternative internationalization prefix for the localization of this item.
+    ///   Allows to specify an alternative internationalization prefix for the localization of this item.
     /// </summary>
     /// <seealso cref="IOptionItem.Attributes"/>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     public const string CustomI18NPrefix = "OptionItem.I18N_PREFIX";
 
     /// <summary>
-    /// Singleton instance for a object that marks an <c>undefined</c> value.
+    ///   Singleton instance for a object that marks an <c>undefined</c> value.
     /// </summary>
     /// <seealso cref="SetUndefined"/>
     /// <seealso cref="SupportUndefinedValueAttribute"/>
@@ -188,7 +200,7 @@ namespace Demo.yFiles.Option.Handler
     public static readonly object ValueUndefined = new UndefinedValueType();
 
     /// <summary>
-    /// Allows to specify an alternative object that plays the role of <see langword="null"/> e.g. for value types.
+    ///   Allows to specify an alternative object that plays the role of <see langword="null"/> e.g. for value types.
     /// </summary>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     public const string NullValueObject = "OptionItem.NULL_VALUE_OBJECT";
@@ -197,10 +209,10 @@ namespace Demo.yFiles.Option.Handler
 
     #region constructors
 
-    public OptionItem() : this(String.Empty) { }
+    public OptionItem() : this(string.Empty) { }
 
     /// <summary>
-    /// Create new ObjectOptionItem with given name and no initial value set.
+    ///   Create a new ObjectOptionItem with the given name and no initial value set.
     /// </summary>
     /// <remarks>The option is enabled by default.</remarks>
     /// <param name="name">The canonical (non-localized) name of the option</param>
@@ -210,69 +222,63 @@ namespace Demo.yFiles.Option.Handler
       }
       this.name = name;
       attributes = new Dictionary<string, object>();
-      attributesMapper = new DictionaryMapper<string, object>(attributes);
-      //by default, null values and undefined values are supported
+      Attributes = new DictionaryMapper<string, object>(attributes);
+      // by default, null values and undefined values are supported
       attributes[SupportNullValueAttribute] = true;
       attributes[SupportUndefinedValueAttribute] = true;
       attributes[NullValueStringAttribute] = "(null)";
       Value = null;
-      lookup = Lookups.CreateDictionaryLookup(dictionary);
     }
 
     /// <summary>
-    /// Create new ObjectOptionItem with given name and initial value.
+    ///   Create a new ObjectOptionItem with the given name and initial value.
     /// </summary>
     /// <remarks>The option is enabled by default.</remarks>
     /// <param name="name">The canonical (non-localized) name of the option</param>
     /// <param name="initialValue">The initial value for this item.</param>
-    protected OptionItem(string name, object initialValue)
-      : this(name) {
+    protected OptionItem(string name, object initialValue) : this(name) {
       Value = initialValue;
     }
 
     /// <summary>
-    /// Create new ObjectOptionItem with given name and no initial value set.
+    ///   Create a new ObjectOptionItem with the given name and no initial value set.
     /// </summary>
     /// <remarks>The option is enabled by default.</remarks>
     /// <param name="name">The canonical (non-localized) name of the option</param>
     /// <param name="attributes">An optional map of attributes for the item</param>
     protected OptionItem(string name, IDictionary<string, object> attributes) {
-      if (String.IsNullOrEmpty(name)) {
+      if (string.IsNullOrEmpty(name)) {
         throw new ArgumentNullException("name", "Name must not be null or empty");
       }
       this.name = name;
       this.attributes = attributes;
       Value = null;
-      lookup = Lookups.CreateDictionaryLookup(dictionary);
     }
 
     /// <summary>
-    /// Create new ObjectOptionItem with given name and initial value.
+    ///   Create a new ObjectOptionItem with the given name and initial value.
     /// </summary>
     /// <remarks>The option is enabled by default.</remarks>
     /// <param name="name">The canonical (non-localized) name of the option</param>
     /// <param name="initialValue">The initial value for this item.</param>
     /// <param name="attributes">An optional map of attributes for the item</param>
-    protected OptionItem(string name, object initialValue, IDictionary<string, object> attributes)
-      : this(name, attributes) {
+    protected OptionItem(string name, object initialValue, IDictionary<string, object> attributes) : this(name,
+        attributes) {
       Value = initialValue;
     }
 
     #endregion
 
     /// <summary>
-    /// Get or set the owning group of an item
+    ///   Get or set the owning group of an item.
     /// </summary>
-    public virtual IOptionGroup Owner {
-      get { return _owner; }
-      set { _owner = value; }
-    }
+    public virtual IOptionGroup Owner { get; set; }
 
     private Type type = typeof(object);
 
     /// <inheritdoc/>
     public Type Type {
-      get { return type; }
+      get => type;
       set {
         if (type != value) {
           type = value;
@@ -283,7 +289,7 @@ namespace Demo.yFiles.Option.Handler
 
     /// <inheritdoc/>
     public string Name {
-      get { return name; }
+      get => name;
       set {
         if (name != value) {
           name = value;
@@ -294,9 +300,7 @@ namespace Demo.yFiles.Option.Handler
 
     /// <inheritdoc/>
     public virtual bool Enabled {
-      get {
-        return enabled;
-      }
+      get => enabled;
       set {
         if (enabled != value) {
           enabled = value;
@@ -306,7 +310,7 @@ namespace Demo.yFiles.Option.Handler
     }
 
     /// <summary>
-    /// Raises the <see cref="PropertyChanged"/> event.
+    ///   Raises the <see cref="PropertyChanged"/> event.
     /// </summary>
     /// <param name="args">The <see cref="System.ComponentModel.PropertyChangedEventArgs"/> instance containing the event data.</param>
     protected virtual void OnPropertyChanged(PropertyChangedEventArgs args) {
@@ -315,90 +319,84 @@ namespace Demo.yFiles.Option.Handler
       }
     }
 
-//    internal bool SuppressEvents {
-//      get {
-//        OptionGroup owner = _owner as OptionGroup;
-//        if (owner == null) {
-//          return suppressEvents;
-//        } else {
-//          return owner.SuppressEvents && suppressEvents;
-//        }
-//      }
-//      set { suppressEvents = value; }
-//    }
+    //    internal bool SuppressEvents {
+    //      get {
+    //        OptionGroup owner = _owner as OptionGroup;
+    //        if (owner == null) {
+    //          return suppressEvents;
+    //        } else {
+    //          return owner.SuppressEvents && suppressEvents;
+    //        }
+    //      }
+    //      set { suppressEvents = value; }
+    //    }
 
     /// <summary>
-    /// Get or set the value of this item.
+    ///   Get or set the value of this item.
     /// </summary>
     /// <remarks>When a new value is set, a <see cref="PropertyChanged"/> event is fired.</remarks>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     public virtual object Value {
-      get {
-        return _value;
-      }
+      get => _value;
       set {
         //todo: check whether equals is appropriate?
-        if (value == ValueUndefined &&
-            !(bool) Attributes[SupportUndefinedValueAttribute])  {
+        if (value == ValueUndefined && !(bool) Attributes[SupportUndefinedValueAttribute]) {
           throw new ArgumentException("Undefined value is not supported for this OptionItem");
         }
         //TODO - SL - reenable - combobox.SelectedItem passes a null value the very first time
-//        if (value == null && !(bool)GetAttribute(SupportNullValueAttribute)) {
-//          throw new ArgumentException("Null value is not supported for this OptionItem");
-//        }
+        //        if (value == null && !(bool)GetAttribute(SupportNullValueAttribute)) {
+        //          throw new ArgumentException("Null value is not supported for this OptionItem");
+        //        }
         if (!Equals(_value, value)) {
           //          Trace.WriteLine("Setting new value for " + _name + " to: " + value);
-          object oldValue = _value;
+          var oldValue = _value;
           _value = value;
           OnValueChanged(this, oldValue, value);
         }
       }
     }
 
-    public IMapper<string, object> Attributes {
-      get { return attributesMapper; }
-    }
+    public IMapper<string, object> Attributes { get; }
 
     /// <summary>
-    /// Convenience method that allows to check whether an OptionItem has an undefined Value
+    ///   Convenience method that allows to check whether an OptionItem has an undefined Value
     /// </summary>
-    public bool IsUndefined {
-      get { return _value == ValueUndefined; }
-    }
+    public bool IsUndefined => _value == ValueUndefined;
 
     /// <summary>
-    /// Convenience method to set the item state to an undefined value.
+    ///   Convenience method to set the item state to an undefined value.
     /// </summary>
-    /// <remarks>This is an atomic operation that overwrites the item's value with an
-    /// <see cref="ValueUndefined"/> token</remarks>
+    /// <remarks>
+    ///   This is an atomic operation that overwrites the item's value with an
+    ///   <see cref="ValueUndefined"/> token
+    /// </remarks>
     public void SetUndefined() {
       Value = ValueUndefined;
     }
 
     /// <inheritdoc/>
     public IList<string> GetAttributeKeys() {
-      return (new List<string>(attributes.Keys)).AsReadOnly();
+      return new List<string>(attributes.Keys).AsReadOnly();
     }
 
     #region IOptionItem Members
 
     ///<inheritdoc/>
     public void SetLookup(Type t, object impl) {
-      dictionary[t] = impl;
+      lookupDictionary[t] = impl;
     }
 
-    private readonly Dictionary<Type, object> dictionary = new Dictionary<Type, object>();
-    private readonly ILookup lookup;
+    private readonly Dictionary<Type, object> lookupDictionary = new();
 
-    private static readonly PropertyChangedEventArgs enabledPCEA = new PropertyChangedEventArgs("Enabled");
-    private static readonly PropertyChangedEventArgs valuePCEA = new PropertyChangedEventArgs("Value");
+    private static readonly PropertyChangedEventArgs enabledPCEA = new("Enabled");
+    private static readonly PropertyChangedEventArgs valuePCEA = new("Value");
 
     #endregion
 
     #region INotifyPropertyChanged Members
 
     /// <summary>
-    /// This event gets fired (only) whenever the <see cref="Value"/> property is changed.
+    ///   This event gets fired (only) whenever the <see cref="Value"/> property is changed.
     /// </summary>
     public event PropertyChangedEventHandler PropertyChanged;
 
@@ -414,24 +412,28 @@ namespace Demo.yFiles.Option.Handler
     #region undefined value support
 
     /// <summary>
-    /// Type for objects that can be used as markers for undefined values
+    ///   Type for objects that can be used as markers for undefined values
     /// </summary>
     internal sealed class UndefinedValueType : IEquatable<UndefinedValueType>
     {
-      ///<summary>
-      ///Determines whether the specified <see cref="T:System.Object"></see> is equal to the current <see cref="T:System.Object"></see>.
-      ///</summary>
-      ///
-      ///<returns>
-      ///true if the specified <see cref="T:System.Object"></see> is equal to the current <see cref="T:System.Object"></see>; otherwise, false.
-      ///</returns>
-      ///
-      ///<param name="obj">The <see cref="T:System.Object"></see> to compare with the current <see cref="T:System.Object"></see>. </param><filterpriority>2</filterpriority>
+      /// <summary>
+      ///   Determines whether the specified <see cref="T:System.Object"></see> is equal to the current
+      ///   <see cref="T:System.Object"></see>.
+      /// </summary>
+      /// <returns>
+      ///   true if the specified <see cref="T:System.Object"></see> is equal to the current <see cref="T:System.Object"></see>;
+      ///   otherwise, false.
+      /// </returns>
+      /// <param name="obj">
+      ///   The <see cref="T:System.Object"></see> to compare with the current <see cref="T:System.Object"></see>
+      ///   .
+      /// </param>
+      /// <filterpriority>2</filterpriority>
       public override bool Equals(object obj) {
         if (obj == null) {
           return false;
         }
-        //there can only be one undefined token in the whole framework
+        // there can only be one undefined token in the whole framework
         if (ReferenceEquals(this, null)) {
           return false;
         }
@@ -443,43 +445,40 @@ namespace Demo.yFiles.Option.Handler
       }
 
       /// <summary>
-      /// Override of equality operator
+      ///   Override of equality operator
       /// </summary>
       /// <param name="left"></param>
       /// <param name="right"></param>
-      /// <returns></returns>
-      public static bool operator ==(Object left, UndefinedValueType right) {
-        //delegate to Equals method
+      public static bool operator ==(object left, UndefinedValueType right) {
+        // delegate to Equals method
         return !ReferenceEquals(left, null) && left.Equals(right);
       }
 
       /// <summary>
-      /// Override of inequality operator
+      ///   Override of inequality operator
       /// </summary>
       /// <param name="left"></param>
       /// <param name="right"></param>
-      /// <returns></returns>
-      public static bool operator !=(Object left, UndefinedValueType right) {
+      public static bool operator !=(object left, UndefinedValueType right) {
         return !(left == right);
       }
 
-      public static bool operator ==(UndefinedValueType left, Object right) {
-        //delegate to Equals method
+      public static bool operator ==(UndefinedValueType left, object right) {
+        // delegate to Equals method
         return !ReferenceEquals(left, null) && left.Equals(right);
       }
 
-      public static bool operator !=(UndefinedValueType left, Object right) {
+      public static bool operator !=(UndefinedValueType left, object right) {
         return !(left == right);
       }
 
-      ///<summary>
-      ///Returns a <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
-      ///</summary>
-      ///
-      ///<returns>
-      ///A <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
-      ///</returns> 
-      ///<filterpriority>2</filterpriority>
+      /// <summary>
+      ///   Returns a <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+      /// </summary>
+      /// <returns>
+      ///   A <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+      /// </returns>
+      /// <filterpriority>2</filterpriority>
       public override string ToString() {
         return "Undefined";
       }
@@ -495,6 +494,7 @@ namespace Demo.yFiles.Option.Handler
         return 0;
       }
     }
+
     #endregion
 
     #region ILookup Members
@@ -504,11 +504,13 @@ namespace Demo.yFiles.Option.Handler
       if (type == typeof(IOptionItem)) {
         return this;
       }
-      object o = lookup.Lookup(type);
-      if (o == null && Owner != null) {
+      if (lookupDictionary.TryGetValue(type, out var o)) {
+        return o;
+      } else if (Owner != null) {
         return Owner.Lookup(type);
+      } else {
+        return null;
       }
-      return o;
     }
 
     #endregion

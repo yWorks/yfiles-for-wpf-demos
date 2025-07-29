@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -32,17 +32,16 @@ using Demo.yFiles.Option.View;
 namespace Demo.yFiles.Option.Constraint
 {
   /// <summary>
-  /// Implementation of interface <see cref="IConstraint"/> that wires a single source <see cref="ICondition"/>
-  /// and a single target <see cref="IAction"/> together.
+  ///   Implementation of interface <see cref="IConstraint"/> that wires a single source <see cref="ICondition"/>
+  ///   and a single target <see cref="IAction"/> together.
   /// </summary>
-  /// <remarks></remarks>
   public class ConditionActionConstraint : IConstraint
   {
-    private ICondition sourceCondition;
-    private IAction targetAction;
+    private readonly ICondition sourceCondition;
+    private readonly IAction targetAction;
 
     /// <summary>
-    /// Create a new instance for the given source and target objects
+    ///   Create a new instance for the given source and target objects
     /// </summary>
     /// <param name="sourceCondition">The source condition</param>
     /// <param name="targetAction">The target action</param>
@@ -54,22 +53,22 @@ namespace Demo.yFiles.Option.Constraint
     #region IConstraint Members
 
     /// <summary>
-    /// This implementation creates copies of the source condition and the target action configured
-    /// for <paramref name="view"/>, and registeres the target copy as a listener for the source copy's
-    /// <see cref="ICondition.ConditionTriggered"/> event.
+    ///   This implementation creates copies of the source condition and the target action configured
+    ///   for <paramref name="view"/>, and registers the target copy as a listener for the source copy's
+    ///   <see cref="ICondition.ConditionTriggered"/> event.
     /// </summary>
     /// <param name="view">The view where to install this constraint.</param>
     /// <returns>A correctly configured copy of the original constraint</returns>
     public IConstraint InstallInView(IModelView view) {
-      ICondition newSrc = sourceCondition.InstallInView(view);
-      IAction newAction = targetAction.InstallInView(view);
+      var newSrc = sourceCondition.InstallInView(view);
+      var newAction = targetAction.InstallInView(view);
 
       if (newSrc != null && newAction != null) {
-        //for now, just wire condition and action together
+        // for now, just wire condition and action together
         newSrc.ConditionTriggered += newAction.PerformAction;
-        //force value check!
+        // force value check!
         newSrc.SourceValueChangedHandler(null, null);
-        //return new holder instance...
+        // return new holder instance...
         return new ConditionActionConstraint(newSrc, newAction);
       }
       return null;
@@ -77,12 +76,12 @@ namespace Demo.yFiles.Option.Constraint
 
     #endregion
 
-    ///<summary>
-    ///Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-    ///</summary>
-    ///<filterpriority>2</filterpriority>
+    /// <summary>
+    ///   Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    /// <filterpriority>2</filterpriority>
     public void Dispose() {
-      //disconnect source and target
+      // disconnect source and target
       sourceCondition.ConditionTriggered -= targetAction.PerformAction;
       sourceCondition.Dispose();
       targetAction.Dispose();

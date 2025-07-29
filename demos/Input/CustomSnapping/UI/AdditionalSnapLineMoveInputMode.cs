@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -28,7 +28,6 @@
  ***************************************************************************/
 
 using System.Linq;
-using yWorks.Controls;
 using yWorks.Controls.Input;
 using yWorks.Geometry;
 
@@ -46,7 +45,7 @@ namespace Demo.yFiles.Graph.Input.CustomSnapping.UI
     /// <summary>
     /// Creates a new instance.
     /// </summary>
-    /// <param name="window">The <see cref="CustomSnappingWindow"/> the 
+    /// <param name="window">The <see cref="CustomSnappingWindow"/> the
     /// <see cref="CustomSnappingWindow.AdditionalSnapLineVisualCreators"/> can be received from.</param>
     public AdditionalSnapLineMoveInputMode(CustomSnappingWindow window) {
       this.window = window;
@@ -149,7 +148,7 @@ namespace Demo.yFiles.Graph.Input.CustomSnapping.UI
     /// </summary>
     /// <remarks>
     /// This method may be called more than once after an initial <see cref="IDragHandler.InitializeDrag"/>
-    /// and will the final call will be followed by either one 
+    /// and will the final call will be followed by either one
     /// <see cref="IDragHandler.DragFinished"/> or one <see cref="IDragHandler.CancelDrag"/> call.
     /// </remarks>
     /// <param name="context">The context to retrieve information about the drag from.</param>

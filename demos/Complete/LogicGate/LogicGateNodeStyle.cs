@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -55,7 +55,7 @@ namespace Demo.yFiles.Layout.LogicGate
     /// The type of the logic gate this style should represent.
     /// </value>
     public LogicGateType GateType { get; set; }
-    
+
     static LogicGateNodeStyle() {
       // path for AND nodes
       AndOutlinePath = new GeneralPath();
@@ -116,7 +116,7 @@ namespace Demo.yFiles.Layout.LogicGate
       // Render the node
       Render(context, node, visual);
       // set the location
-      visual.SetCanvasArrangeRect(node.Layout.ToRectD());
+      visual.SetCanvasArrangeRect(node.Layout.ToRect());
       return visual;
     }
 
@@ -124,11 +124,10 @@ namespace Demo.yFiles.Layout.LogicGate
       var oldType = oldVisual.GetRenderDataCache<LogicGateType>();
       if (oldType != GateType) {
         return CreateVisual(context, node);
-      } else {
-        // update the location
-        oldVisual.SetCanvasArrangeRect(node.Layout.ToRectD());
-        return oldVisual;
       }
+      // update the location
+      oldVisual.SetCanvasArrangeRect(node.Layout.ToRect());
+      return oldVisual;
     }
 
     protected override GeneralPath GetOutline(INode node) {
@@ -150,37 +149,36 @@ namespace Demo.yFiles.Layout.LogicGate
       double h = node.Layout.Height;
       LogicGateType type = GateType;
 
+      var strokeBrush = Brushes.Black;
+      const int strokeThickness = 3;
       if (type == LogicGateType.Not) {
-        var inPortLine = new Line
-                           {
-                             X1 = 0,
-                             X2 = 0.1*w,
-                             Y1 = 0.5*h,
-                             Y2 = 0.5*h,
-                             Stroke = Brushes.Black,
-                             StrokeThickness = 3
-                           };
+        var inPortLine = new Line {
+            X1 = 0,
+            X2 = 0.1 * w,
+            Y1 = 0.5 * h,
+            Y2 = 0.5 * h,
+            Stroke = strokeBrush,
+            StrokeThickness = strokeThickness
+        };
         container.Children.Add(inPortLine);
       } else {
         // in port lines
-        container.Children.Add(new Line
-                                 {
-                                   X1 = 0,
-                                   X2 = 0.3*w,
-                                   Y1 = 5,
-                                   Y2 = 5,
-                                   Stroke = Brushes.Black,
-                                   StrokeThickness = 3
-                                 });
-        container.Children.Add(new Line
-                                 {
-                                   X1 = 0,
-                                   X2 = 0.3*w,
-                                   Y1 = 25,
-                                   Y2 = 25,
-                                   Stroke = Brushes.Black,
-                                   StrokeThickness = 3
-                                 });
+        container.Children.Add(new Line {
+            X1 = 0,
+            X2 = 0.3 * w,
+            Y1 = 5,
+            Y2 = 5,
+            Stroke = strokeBrush,
+            StrokeThickness = strokeThickness
+        });
+        container.Children.Add(new Line {
+            X1 = 0,
+            X2 = 0.3 * w,
+            Y1 = 25,
+            Y2 = 25,
+            Stroke = strokeBrush,
+            StrokeThickness = strokeThickness
+        });
       }
 
       var outline = GetNodeOutlinePath();
@@ -192,28 +190,25 @@ namespace Demo.yFiles.Layout.LogicGate
 
       container.Children.Add(path);
 
-
       if (type == LogicGateType.And || type == LogicGateType.Or) {
-        var outPortLine = new Line
-                            {
-                              X1 = 0.8*w,
-                              X2 = w,
-                              Y1 = 0.5*h,
-                              Y2 = 0.5*h,
-                              Stroke = Brushes.Black,
-                              StrokeThickness = 3
-                            };
+        var outPortLine = new Line {
+            X1 = 0.8 * w,
+            X2 = w,
+            Y1 = 0.5 * h,
+            Y2 = 0.5 * h,
+            Stroke = strokeBrush,
+            StrokeThickness = strokeThickness
+        };
         container.Children.Add(outPortLine);
       } else {
-        var outPortLine = new Line
-                            {
-                              X1 = 0.9*w,
-                              X2 = w,
-                              Y1 = 0.5*h,
-                              Y2 = 0.5*h,
-                              Stroke = Brushes.Black,
-                              StrokeThickness = 3
-                            };
+        var outPortLine = new Line {
+            X1 = 0.9 * w,
+            X2 = w,
+            Y1 = 0.5 * h,
+            Y2 = 0.5 * h,
+            Stroke = strokeBrush,
+            StrokeThickness = strokeThickness
+        };
         container.Children.Add(outPortLine);
       }
     }

@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -36,31 +36,34 @@ using yWorks.Controls.Input;
 using yWorks.Geometry;
 using yWorks.Graph;
 using yWorks.Layout;
-using yWorks.Layout.Hierarchic;
+using yWorks.Layout.Hierarchical;
 using yWorks.Layout.Tree;
-using yWorks.Utils;
 
 namespace Demo.yFiles.Layout.MixedLayout
 {
   /// <summary>
-  /// This demo shows how to use the recursive group layout to apply different layouts to the contents of group nodes.
+  ///   This demo shows how to use the recursive group layout to apply different layouts to the contents of group nodes.
   /// </summary>
-  /// <remarks>The demo shows the following two use cases:
-  /// <list type="bullet">
-  /// <item>Table Sample: demonstrates how to realize a table node structure, i.e., each group node in the drawing represents a
-  /// table and the nodes within the groups the table rows. Edges are connected to specific rows.
-  /// The rows are sorted according to their y-coordinate in the initial drawing.
-  /// </item>
-  /// <item>
-  /// Three-Tier Sample: demonstrates how to use the recursive group layout to realize different layouts of elements
-  /// assigned to different tiers. Each group node can be assigned to the left, right or middle tier (depending on the
-  /// group node label). All group nodes labeled "left" are placed on the left side. Their content is drawn using a
-  /// <see cref="TreeLayout"/> with layout orientation left-to-right. Analogously, all group nodes labeled "right" are placed on the
-  /// right side. Their content is drawn using a <see cref="TreeLayout"/> with layout orientation right-to-left. Elements not assigned
-  /// to "left" or "right" group nodes are always lay out in the middle using the <see cref="HierarchicLayout"/> with layout
-  /// orientation left-to-right. Note that group nodes not labeled "left" or "right" are handled non-recursive.
-  /// </item>
-  /// </list>
+  /// <remarks>
+  ///   The demo shows the following two use cases:
+  ///   <list type="bullet">
+  ///     <item>
+  ///       Table Sample: demonstrates how to realize a table node structure, i.e., each group node in the drawing represents
+  ///       a table and the nodes within the groups the table rows. Edges are connected to specific rows.
+  ///       The rows are sorted according to their y-coordinate in the initial drawing.
+  ///     </item>
+  ///     <item>
+  ///       Three-Tier Sample: demonstrates how to use the recursive group layout to realize different layouts of elements
+  ///       assigned to different tiers. Each group node can be assigned to the left, right, or middle tier (depending on the
+  ///       group node label). All group nodes labeled "left" are placed on the left side. Their content is drawn using a
+  ///       <see cref="TreeLayout"/> with layout orientation left-to-right. Analogously, all group nodes labeled "right" are
+  ///       placed on the
+  ///       right side. Their content is drawn using a <see cref="TreeLayout"/> with layout orientation right-to-left.
+  ///       Elements not assigned
+  ///       to "left" or "right" group nodes are always laid out in the middle using the <see cref="HierarchicalLayout"/> with
+  ///       layout orientation left-to-right. Note that group nodes not labeled "left" or "right" are handled non-recursively.
+  ///     </item>
+  ///   </list>
   /// </remarks>
   public partial class MixedLayoutDemo
   {
@@ -81,44 +84,43 @@ namespace Demo.yFiles.Layout.MixedLayout
     }
 
     private void InitializeGraphDefaults() {
-      FoldingManager fm = new FoldingManager();
+      var fm = new FoldingManager();
       graphControl.Graph = fm.CreateFoldingView().Graph;
-      var folderNodeConverter = fm.FolderNodeConverter as DefaultFolderNodeConverter;
-      if (folderNodeConverter != null) {
-        folderNodeConverter.CopyFirstLabel = true;
-        folderNodeConverter.FolderNodeSize = new SizeD(80, 60);
+      if (fm.FolderNodeConverter is FolderNodeConverter folderNodeConverter) {
+        folderNodeConverter.FolderNodeDefaults.CopyLabels = true;
+        folderNodeConverter.FolderNodeDefaults.Size = new SizeD(80, 60);
       }
 
-      IGraph graph = graphControl.Graph;
+      var graph = graphControl.Graph;
 
       graphControl.NavigationCommandsEnabled = true;
 
-      //Create graph
+      // Create graph
       graph.NodeDefaults.Size = new SizeD(60, 30);
 
       DemoStyles.InitDemoStyles(graph);
     }
 
     private void InitializeInputModes() {
-      var graphEditorInputMode = new GraphEditorInputMode
-                                   {
-                                     ShowHandleItems = GraphItemTypes.None,
-                                     NavigationInputMode = {AutoGroupNodeAlignmentPolicy = NodeAlignmentPolicy.TopLeft}
-                                   };
+      var graphEditorInputMode = new GraphEditorInputMode {
+          ShowHandleItems = GraphItemTypes.None,
+          NavigationInputMode = { AutoGroupNodeAlignmentPolicy = NodeAlignmentPolicy.TopLeft }
+      };
       graphEditorInputMode.NavigationInputMode.GroupCollapsed += NavigationInputModeGroupStateToggled;
       graphEditorInputMode.NavigationInputMode.GroupExpanded += NavigationInputModeGroupStateToggled;
       graphControl.InputMode = graphEditorInputMode;
     }
 
-    private async void NavigationInputModeGroupStateToggled(object source, ItemEventArgs<INode> evt) {
+    private async void NavigationInputModeGroupStateToggled(object source, InputModeItemEventArgs<INode> evt) {
       // run a new layout after expanding/collapsing a group node
       await RunLayout();
     }
 
     private void ReadSampleGraph(string baseName) {
       graphControl.ImportFromGraphML("Resources\\" + baseName + ".graphml");
-      //Adjust size and style from the first leaf in the loaded graph
-      var firstLeaf = graphControl.Graph.GetGroupingSupport().GetDescendants(null).FirstOrDefault(node => !graphControl.Graph.IsGroupNode(node));
+      // Adjust size and style from the first leaf in the loaded graph
+      var firstLeaf = graphControl.Graph.GetGroupingSupport().GetDescendants(null)
+          .FirstOrDefault(node => !graphControl.Graph.IsGroupNode(node));
       if (firstLeaf != null) {
         graphControl.Graph.NodeDefaults.Size = firstLeaf.Layout.GetSize();
         graphControl.Graph.NodeDefaults.Style = firstLeaf.Style;
@@ -141,11 +143,11 @@ namespace Demo.yFiles.Layout.MixedLayout
 
     #region Layout configuration
 
-    ///<summary>
-    /// Runs either the table or the three tiers layout depending on the selected scenario.
-    ///</summary>
+    /// <summary>
+    ///   Runs either the table or the three tiers layout depending on the selected scenario.
+    /// </summary>
     private async Task RunLayout() {
-      object selectedLayout = scenarioComboBox.SelectedItem;
+      var selectedLayout = scenarioComboBox.SelectedItem;
       DisableButtons();
 
       if ((string) selectedLayout == TableSample) {
@@ -169,27 +171,25 @@ namespace Demo.yFiles.Layout.MixedLayout
       runLayoutButton.IsEnabled = true;
     }
 
-    ///<summary>
-    /// Run a new table layout.
-    ///</summary>
+    /// <summary>
+    ///   Run a new table layout.
+    /// </summary>
     private async Task RunTableLayout() {
       await RunLayout(new TableLayout(useSketchCheckBox.IsChecked.Value), TableLayout.LayoutData);
     }
 
-    ///<summary>
-    /// Run a new three tier layout.
-    ///</summary>
+    /// <summary>
+    ///   Run a new three tier layout.
+    /// </summary>
     private async Task RunThreeTierLayout() {
       var threeTierLayout = new ThreeTierLayout(useSketchCheckBox.IsChecked.Value);
-      var layoutData = new ThreeTierLayout.LayoutData(graphControl.Graph, useSketchCheckBox.IsChecked.Value);
+      var layoutData = ThreeTierLayout.CreateLayoutData(graphControl.Graph, useSketchCheckBox.IsChecked.Value);
       await RunLayout(threeTierLayout, layoutData);
     }
 
-    private async Task RunLayout(ILayoutAlgorithm layout, LayoutData layoutData) {
+    private async Task RunLayout(ILayoutAlgorithm layout, LayoutData<INode, IEdge, ILabel, ILabel> layoutData) {
       var executor = new LayoutExecutor(graphControl, layout) {
-        LayoutData = layoutData,
-        Duration = TimeSpan.FromMilliseconds(500),
-        AnimateViewport = true
+          LayoutData = layoutData, AnimationDuration = TimeSpan.FromMilliseconds(500), AnimateViewport = true
       };
       try {
         await executor.Start();

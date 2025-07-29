@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -32,13 +32,14 @@ using yWorks.Controls;
 using yWorks.Controls.Input;
 using yWorks.Geometry;
 using yWorks.Graph;
+using yWorks.Utils;
 
 namespace Demo.yFiles.Graph.RelocateSubtree
 {
   /// <summary>
   /// An <see cref="IPositionHandler"/> that moves a node and its subtree.
   /// </summary>
-  internal class SubtreePositionHandler : IPositionHandler {
+  internal sealed class SubtreePositionHandler : IPositionHandler {
 
     /// <summary>
     /// Compound handler for all elements of the subgraph.
@@ -76,7 +77,7 @@ namespace Demo.yFiles.Graph.RelocateSubtree
     public IPoint Location {
       get { return nodePositionHandler.Location; }
     }
-    
+
     #region Drag handling
 
     /// <summary>
@@ -117,13 +118,12 @@ namespace Demo.yFiles.Graph.RelocateSubtree
 
     #endregion
 
-    #region Position Handler for Subtree 
+    #region Position Handler for Subtree
 
     /// <summary>
     /// Creates an <see cref="IPositionHandler"/> that moves the whole subtree.
     /// </summary>
     /// <param name="subtree">The nodes and edges of the subtree.</param>
-    /// <returns></returns>
     private static IPositionHandler CreateCompositeHandler(Subtree subtree) {
       var positionHandlers = new List<IPositionHandler>();
       foreach (var node in subtree.Nodes) {
@@ -134,10 +134,7 @@ namespace Demo.yFiles.Graph.RelocateSubtree
         }
       }
       foreach (var edge in subtree.Edges) {
-        var positionHandler = edge.Lookup<IPositionHandler>();
-        if (positionHandler != null) {
-          positionHandlers.Add(positionHandler);
-        }
+        positionHandlers.Add(new EdgePositionHandler(edge));
       }
       return PositionHandlers.Combine(positionHandlers);
     }

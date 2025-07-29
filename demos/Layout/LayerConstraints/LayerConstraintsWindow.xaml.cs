@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -40,25 +40,26 @@ using yWorks.Controls;
 using yWorks.Controls.Input;
 using yWorks.Geometry;
 using yWorks.Graph;
-using yWorks.Graph.Styles;
-using yWorks.Layout.Hierarchic;
 using yWorks.Graph.LabelModels;
+using yWorks.Graph.Styles;
+using yWorks.Layout;
+using yWorks.Layout.Hierarchical;
 
 [assembly :
-  XmlnsDefinition("http://www.yworks.com/yfilesWPF/2.2/demos/LayerConstraintsWindow",
-    "Demo.yFiles.Layout.LayerConstraints")]
+    XmlnsDefinition("http://www.yworks.com/yfilesWPF/2.2/demos/LayerConstraintsWindow",
+        "Demo.yFiles.Layout.LayerConstraints")]
 [assembly : XmlnsPrefix("http://www.yworks.com/yfilesWPF/2.2/demos/LayerConstraintsWindow", "demo")]
 
 namespace Demo.yFiles.Layout.LayerConstraints
 {
   /// <summary>
-  /// This demo shows how to use layer constraints with the <see cref="HierarchicLayout"/> to
-  /// restrict the node layering.
+  ///   This demo shows how to use layer constraints with the <see cref="HierarchicalLayout"/> to
+  ///   restrict the node layering.
   /// </summary>
   public partial class LayerConstraintsWindow
   {
     /// <summary>
-    /// Create a new instance of this class.
+    ///   Create a new instance of this class.
     /// </summary>
     public LayerConstraintsWindow() {
       InitializeComponent();
@@ -67,18 +68,18 @@ namespace Demo.yFiles.Layout.LayerConstraints
     #region Initialization
 
     /// <summary>
-    /// The default style
+    ///   The default style
     /// </summary>
-    private readonly NodeControlNodeStyle defaultStyle = new NodeControlNodeStyle("ConstraintNodeControlStyle") { StyleTag = Colors.Blue };
+    private readonly NodeControlNodeStyle defaultStyle = new("ConstraintNodeControlStyle") { StyleTag = Colors.Blue };
 
     /// <summary>
-    /// Used to create new <see cref="LayerConstraintsInfo"/> objects with random weight that are randomly enabled/disabled.
+    ///   Used to create new <see cref="LayerConstraintsInfo"/> objects with random weight that are randomly enabled/disabled.
     /// </summary>
-    private readonly Random rand = new Random();
+    private readonly Random rand = new();
 
     /// <summary>
-    /// Called upon loading of the form.
-    /// This method initializes the graph and the input mode.
+    ///   Called upon loading of the form.
+    ///   This method initializes the graph and the input mode.
     /// </summary>
     /// <seealso cref="InitializeInputModes"/>
     /// <seealso cref="InitializeGraph"/>
@@ -91,31 +92,29 @@ namespace Demo.yFiles.Layout.LayerConstraints
     }
 
     /// <summary>
-    /// Initializes the graph instance setting default styles
-    /// and creating a small sample graph.
+    ///   Initializes the graph instance setting default styles
+    ///   and creating a small sample graph.
     /// </summary>
     protected virtual async Task InitializeGraph() {
-      IGraph graph = graphControl.Graph;
+      var graph = graphControl.Graph;
 
       // set the style as the default for all new nodes
       graph.NodeDefaults.Style = defaultStyle;
       // let the node decide how much space it needs and make sure it doesn't get any smaller.
-      graph.NodeDefaults.Size = defaultStyle.GetPreferredSize(graphControl.CreateRenderContext(), new SimpleNode {Tag = new LayerConstraintsInfo()});
+      graph.NodeDefaults.Size = defaultStyle.GetPreferredSize(graphControl.CreateRenderContext(),
+          new SimpleNode { Tag = new LayerConstraintsInfo() });
       defaultStyle.MinimumSize = graph.NodeDefaults.Size;
 
       // create a simple label style
-      DefaultLabelStyle labelStyle = new DefaultLabelStyle
-                                      {
-                                        Typeface = new Typeface("Arial"),
-                                        BackgroundBrush = Brushes.White,
-                                        AutoFlip = true
-                                      };
+      var labelStyle = new LabelStyle {
+          Typeface = new Typeface("Arial"), BackgroundBrush = Brushes.White, AutoFlip = true
+      };
 
       // set the style as the default for all new node labels
       graph.NodeDefaults.Labels.Style = labelStyle;
       graph.EdgeDefaults.Labels.Style = labelStyle;
 
-      graph.EdgeDefaults.Labels.LayoutParameter = new EdgeSegmentLabelModel().CreateDefaultParameter();
+      graph.EdgeDefaults.Labels.LayoutParameter = new EdgeSegmentLabelModel().CreateParameterFromSource(0);
 
       // create the graph and perform a layout operation
       CreateNewGraph();
@@ -123,70 +122,52 @@ namespace Demo.yFiles.Layout.LayerConstraints
     }
 
     /// <summary>
-    /// Calls <see cref="CreateEditorMode"/> and registers
-    /// the result as the <see cref="CanvasControl.InputMode"/>.
+    ///   Calls <see cref="CreateEditorMode"/> and registers
+    ///   the result as the <see cref="CanvasControl.InputMode"/>.
     /// </summary>
     protected virtual void InitializeInputModes() {
       graphControl.InputMode = CreateEditorMode();
     }
 
     /// <summary>
-    /// Creates the default input mode for the <see cref="GraphControl"/>,
-    /// a <see cref="GraphEditorInputMode"/>.
+    ///   Creates the default input mode for the <see cref="GraphControl"/>,
+    ///   a <see cref="GraphEditorInputMode"/>.
     /// </summary>
     /// <remarks>
-    /// The control uses a custom node creation callback that creates business objects for newly
-    /// created nodes.
+    ///   The control uses a custom node creation callback that creates business objects for newly
+    ///   created nodes.
     /// </remarks>
     /// <returns>a new <see cref="GraphEditorInputMode"/> instance</returns>
     protected virtual IInputMode CreateEditorMode() {
-      var mode = new GraphEditorInputMode {NodeCreator = CreateNodeCallback};
+      var mode = new GraphEditorInputMode { NodeCreator = CreateNodeCallback };
       // only allow numeric values to be specified as label text
-      mode.ValidateLabelText += delegate(object sender, LabelTextValidatingEventArgs labelTextValidatingEventArgs) {
-                                  labelTextValidatingEventArgs.NewText = labelTextValidatingEventArgs.NewText.Trim();
-                                  if (labelTextValidatingEventArgs.NewText.Length == 0) {
-                                    return;
-                                  }
-                                  double result;
-                                  if (
-                                    !Double.TryParse(labelTextValidatingEventArgs.NewText, NumberStyles.Float,
-                                                     Thread.CurrentThread.CurrentUICulture, out result)) {
-                                    // only allow numbers between 0 and 100
-                                    if (result <= 100 && result >= 0) {
-                                      labelTextValidatingEventArgs.Cancel = true;
-                                    }
-                                  }
-                                };
+      mode.EditLabelInputMode.ValidateLabelText += delegate(
+          object sender,
+          LabelTextValidatingEventArgs labelTextValidatingEventArgs) {
+        labelTextValidatingEventArgs.NewText = labelTextValidatingEventArgs.NewText.Trim();
+        if (labelTextValidatingEventArgs.NewText.Length == 0) {
+          return;
+        }
+        double result;
+        if (!double.TryParse(labelTextValidatingEventArgs.NewText, NumberStyles.Float,
+            Thread.CurrentThread.CurrentUICulture, out result)) {
+          // only allow numbers between 0 and 100
+          if (result <= 100 && result >= 0) {
+            labelTextValidatingEventArgs.Cancel = true;
+          }
+        }
+      };
       return mode;
     }
 
     /// <summary>
-    /// Callback that actually creates the node and its business object
+    ///   Callback that actually creates the node and its business object
     /// </summary>
     private INode CreateNodeCallback(IInputModeContext context, IGraph graph, PointD location, INode parent) {
-      RectD newBounds = RectD.FromCenter(location, graph.NodeDefaults.Size);
+      var newBounds = RectD.FromCenter(location, graph.NodeDefaults.Size);
       var node = graph.CreateNode(newBounds);
-      node.Tag = new LayerConstraintsInfo
-      {
-        Value = rand.Next(0, 7),
-        Constraints = rand.NextDouble() < 0.9
-      };
+      node.Tag = new LayerConstraintsInfo { Value = rand.Next(0, 7), Constraints = rand.NextDouble() < 0.9 };
       return node;
-    }
-
-    /// <summary>
-    /// Calculates the weight of an edge by translating its (first) label into an int.
-    /// It will return 0 if the label is not a correctly formatted double.
-    /// </summary>
-    /// <param name="edge"></param>
-    /// <returns></returns>
-    private int GetEdgeWeight(IEdge edge) {
-      // if edge has at least one label...
-      if (edge.Labels.Count > 0) {
-        // return its value
-        return (int) Convert.ToDouble(edge.Labels[0].Text, CultureInfo.CurrentUICulture);
-      }
-      return 1;
     }
 
     #endregion
@@ -194,21 +175,21 @@ namespace Demo.yFiles.Layout.LayerConstraints
     #region Event handler implementation
 
     /// <summary>
-    /// Exits the demo.
+    ///   Exits the demo.
     /// </summary>
     private void ExitMenuItemClick(object sender, EventArgs e) {
       Application.Current.Shutdown();
     }
 
     /// <summary>
-    /// Formats the current graph.
+    ///   Formats the current graph.
     /// </summary>
     private async void OnLayoutClick(object sender, EventArgs e) {
       await DoLayout();
     }
 
     /// <summary>
-    /// Creates a new graph and formats it.
+    ///   Creates a new graph and formats it.
     /// </summary>
     private async void OnNewGraphClick(object sender, RoutedEventArgs e) {
       CreateNewGraph();
@@ -216,7 +197,7 @@ namespace Demo.yFiles.Layout.LayerConstraints
     }
 
     /// <summary>
-    /// Disables all constraints on the nodes.
+    ///   Disables all constraints on the nodes.
     /// </summary>
     private void OnDisableConstraints(object sender, RoutedEventArgs e) {
       foreach (var node in graphControl.Graph.Nodes) {
@@ -228,7 +209,7 @@ namespace Demo.yFiles.Layout.LayerConstraints
     }
 
     /// <summary>
-    /// Enables all constraints on the nodes.
+    ///   Enables all constraints on the nodes.
     /// </summary>
     private void OnEnableConstraints(object sender, RoutedEventArgs e) {
       foreach (var node in graphControl.Graph.Nodes) {
@@ -246,22 +227,21 @@ namespace Demo.yFiles.Layout.LayerConstraints
     #region Create a random graph
 
     /// <summary>
-    /// Clears the existing graph and creates a new random graph
+    ///   Clears the existing graph and creates a new random graph
     /// </summary>
     private void CreateNewGraph() {
       // remove all nodes and edges from the graph
       graphControl.Graph.Clear();
 
       // create a new random graph
-      new RandomGraphGenerator
-        {
+      new RandomGraphGenerator {
           AllowCycles = true,
           AllowMultipleEdges = false,
           AllowSelfLoops = false,
           EdgeCount = 25,
           NodeCount = 20,
           NodeCreator = graph => CreateNodeCallback(null, graph, PointD.Origin, null)
-        }.Generate(graphControl.Graph);
+      }.Generate(graphControl.Graph);
 
       // center the graph to prevent the initial layout fading in from the top left corner
       graphControl.FitGraphBounds();
@@ -274,21 +254,17 @@ namespace Demo.yFiles.Layout.LayerConstraints
       layoutButton.IsEnabled = false;
 
       // create a new layout algorithm
-      var hl = new HierarchicLayout
-                  {
-                    OrthogonalRouting = true,
-                    FromScratchLayeringStrategy = LayeringStrategy.HierarchicalTopmost,
-                    IntegratedEdgeLabeling = true
-                  };
+      var hl = new HierarchicalLayout {
+          FromScratchLayeringStrategy = LayeringStrategy.HierarchicalTopmost,
+          EdgeLabelPlacement = EdgeLabelPlacement.Integrated
+      };
 
       // and layout data for it
-      var hlData = new HierarchicLayoutData {
-        ConstraintIncrementalLayererAdditionalEdgeWeights = { Delegate = GetEdgeWeight }
-      };
+      var hlData = hl.CreateLayoutData(graphControl.Graph);
 
       // we provide the LayerConstraintData.Values directly as IComparable instead of using the Add* methods on LayerConstraintData
       var layerConstraintData = hlData.LayerConstraints;
-      layerConstraintData.NodeComparables.Delegate = node => {  
+      layerConstraintData.NodeComparables.MapperFunction = node => {
         var data = node.Tag as LayerConstraintsInfo;
         if (data != null && data.Constraints) {
           // the node shall be constrained so we use its Value as comparable
@@ -318,7 +294,7 @@ namespace Demo.yFiles.Layout.LayerConstraints
       }
 
       // perform the layout operation
-      await graphControl.MorphLayout(hl, TimeSpan.FromSeconds(1), hlData);
+      await graphControl.ApplyLayoutAnimated(hl, TimeSpan.FromSeconds(1), hlData);
       // code is executed once the layout operation is finished
       // enable button again
       layoutButton.IsEnabled = true;
@@ -330,35 +306,34 @@ namespace Demo.yFiles.Layout.LayerConstraints
   #region Business logic
 
   /// <summary>
-  /// A business object that represents the weight (through property "Value") of the node and whether or not
-  /// its weight should be taken into account as a layer constraint.
+  ///   A business object that represents the weight (through property "Value") of the node and whether or not
+  ///   its weight should be taken into account as a layer constraint.
   /// </summary>
   public class LayerConstraintsInfo : INotifyPropertyChanged
   {
     /// <summary>
-    /// The weight of the object. An object with a lower number will be layered in a higher layer.
+    ///   The weight of the object. An object with a lower number will be layered in a higher layer.
     /// </summary>
     /// <remarks>
-    /// The number 0 means the node should be the in the first, 7 means it should be the last layer.
+    ///   The number 0 means the node should be the in the first, 7 means it should be the last layer.
     /// </remarks>
     private int value;
 
     // property changed support - needed for databinding to the Control Style
-    private static readonly PropertyChangedEventArgs ValueChangedArgs = new PropertyChangedEventArgs("Value");
+    private static readonly PropertyChangedEventArgs ValueChangedArgs = new("Value");
 
-    private static readonly PropertyChangedEventArgs ConstraintsChangedEventArgs =
-      new PropertyChangedEventArgs("Constraints");
+    private static readonly PropertyChangedEventArgs ConstraintsChangedEventArgs = new("Constraints");
 
     /// <summary>
-    /// The weight of the object. An object with a lower number will be layered in a higher layer.
+    ///   The weight of the object. An object with a lower number will be layered in a higher layer.
     /// </summary>
     /// <remarks>
-    /// The number 0 means the node should be the in the first, 7 means it should be the last layer.
+    ///   The number 0 means the node should be in the first layer, 7 means it should be the last layer.
     /// </remarks>
     public int Value {
-      get { return value; }
+      get => value;
       set {
-        int oldVal = this.value;
+        var oldVal = this.value;
         this.value = value;
         if (oldVal != value && PropertyChanged != null) {
           PropertyChanged(this, ValueChangedArgs);
@@ -369,11 +344,11 @@ namespace Demo.yFiles.Layout.LayerConstraints
     private bool constraints;
 
     /// <summary>
-    /// Describes whether or not the constraint is active. If <see langword="true"/>, the constraint will be
-    /// taken into account by the layout algorithm.
+    ///   Describes whether or not the constraint is active. If <see langword="true"/>, the constraint will be
+    ///   taken into account by the layout algorithm.
     /// </summary>
     public bool Constraints {
-      get { return constraints; }
+      get => constraints;
       set {
         if (constraints != value) {
           constraints = value;
@@ -396,14 +371,14 @@ namespace Demo.yFiles.Layout.LayerConstraints
   #region Converter implementations
 
   /// <summary>
-  /// This converter translates an integer between 0 and 7 into a string that represents
-  /// an appropriate description of the number.
+  ///   This converter translates an integer between 0 and 7 into a string that represents
+  ///   an appropriate description of the number.
   /// </summary>
   /// <remarks>
-  /// The numbers 0 and 7 are represented by the strings "First" and "Last", every other number is
-  /// represented by itself (converted to string).
+  ///   The numbers 0 and 7 are represented by the strings "First" and "Last", every other number is
+  ///   represented by itself (converted to string).
   /// </remarks>
-  [ValueConversion(typeof (int), typeof (string))]
+  [ValueConversion(typeof(int), typeof(string))]
   public class ConstraintsConverter : IValueConverter
   {
     #region Implementation of IValueConverter
@@ -427,10 +402,10 @@ namespace Demo.yFiles.Layout.LayerConstraints
   }
 
   /// <summary>
-  /// This converter translates an integer between 0 and 7 into a Brush that can be used to paint
-  /// a background. It works in combination with <see cref="ForegroundColorConverter"/>.
+  ///   This converter translates an integer between 0 and 7 into a Brush that can be used to paint
+  ///   a background. It works in combination with <see cref="ForegroundColorConverter"/>.
   /// </summary>
-  [ValueConversion(typeof (int), typeof (Brush))]
+  [ValueConversion(typeof(int), typeof(Brush))]
   public class BackgroundColorConverter : IValueConverter
   {
     #region Implementation of IValueConverter
@@ -442,8 +417,8 @@ namespace Demo.yFiles.Layout.LayerConstraints
         case 7:
           return Brushes.White;
         default:
-          int v = (int) value;
-          return new SolidColorBrush(Color.FromRgb((byte) ((v*255)/7), (byte) ((v*255)/7), 255));
+          var v = (int) value;
+          return new SolidColorBrush(Color.FromRgb((byte) (v * 255 / 7), (byte) (v * 255 / 7), 255));
       }
     }
 
@@ -455,10 +430,10 @@ namespace Demo.yFiles.Layout.LayerConstraints
   }
 
   /// <summary>
-  /// This converter translates an integer between 0 and 7 into a Brush that can be used to paint
-  /// a text. It works in combination with <see cref="BackgroundColorConverter"/>.
+  ///   This converter translates an integer between 0 and 7 into a Brush that can be used to paint
+  ///   text. It works in combination with <see cref="BackgroundColorConverter"/>.
   /// </summary>
-  [ValueConversion(typeof (int), typeof (Brush))]
+  [ValueConversion(typeof(int), typeof(Brush))]
   public class ForegroundColorConverter : IValueConverter
   {
     #region Implementation of IValueConverter
@@ -475,10 +450,10 @@ namespace Demo.yFiles.Layout.LayerConstraints
   }
 
   /// <summary>
-  /// This converter maps a boolean value to a Visibility where <see langword="true"/> is converted to visible
-  /// and <see langword="false"/> is converted to hidden (thus the object still reserves the space its needs).
+  ///   This converter maps a boolean value to a Visibility where <see langword="true"/> is converted to visible
+  ///   and <see langword="false"/> is converted to hidden (thus the object still reserves the space it needs).
   /// </summary>
-  [ValueConversion(typeof (bool), typeof (Visibility))]
+  [ValueConversion(typeof(bool), typeof(Visibility))]
   public class BoolToVisibilityConverter : IValueConverter
   {
     #region Implementation of IValueConverter

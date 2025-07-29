@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -73,14 +73,14 @@ namespace Demo.yFiles.Complete.IsometricDrawing.Model
     /// The geometry of the node.
     /// </summary>
     public Geometry Geometry { get; set; }
-    
+
     /// <summary>
     /// The text that should be used as label.
     /// </summary>
     public string Label { get; set; }
 
     /// <summary>
-    /// The <see cref="Id"/> of the parent group node. 
+    /// The <see cref="Id"/> of the parent group node.
     /// </summary>
     public string Group { get; set; }
   }

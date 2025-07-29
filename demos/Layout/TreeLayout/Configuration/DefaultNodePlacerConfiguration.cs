@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -33,50 +33,40 @@ using yWorks.Layout.Tree;
 namespace Demo.yFiles.Layout.Tree.Configuration
 {
   /// <summary>
-  /// Configuration handler for <see cref="SimpleNodePlacer"/>
+  ///   Configuration handler for <see cref="SimpleSubtreePlacer"/>
   /// </summary>
-  /// <remarks>This implementation maps directly to <see cref="DefaultNodePlacer"/> properties.</remarks>
-  public sealed class DefaultNodePlacerConfiguration : INodePlacerConfiguration
+  /// <remarks>This implementation maps directly to <see cref="SingleLayerSubtreePlacer"/> properties.</remarks>
+  public sealed class
+      SingleLayerSubtreePlacerConfiguration : RotatableSubtreePlacerConfigurationBase<SingleLayerSubtreePlacer>
   {
-    public DefaultNodePlacerConfiguration() {
-      AdoptSettings(new DefaultNodePlacer());
+    public SingleLayerSubtreePlacerConfiguration() {
+      AdoptSettings(new SingleLayerSubtreePlacer());
     }
-
-    [OptionItemAttribute(Name = "OptionItem.Index", Value = 4)]
-    public RootAlignment RootAlignment { get; set; }
-
-    [OptionItemAttribute(Name = "OptionItem.Index", Value = 3)]
-    public double VerticalDistance { get; set; }
-
-    [OptionItemAttribute(Name = "OptionItem.Index", Value = 2)]
-    public double HorizontalDistance { get; set; }
 
     [OptionItemAttribute(Name = "OptionItem.Index", Value = 1)]
-    public RoutingStyle RoutingStyle { get; set; }
+    public SingleLayerSubtreePlacerRootAlignment RootAlignment { get; set; }
 
-    [OptionItemAttribute(Name = "OptionItem.Index", Value = 0)]
-    public ChildPlacement ChildPlacement { get; set; }
+    [OptionItemAttribute(Name = "OptionItem.Index", Value = 2)]
+    public SingleLayerSubtreePlacerRoutingStyle RoutingStyle { get; set; }
 
-    #region INodePlacerConfiguration Members
+    #region ISubtreePlacerConfiguration Members
 
-    public INodePlacer CreateNodePlacer() {
-      return new DefaultNodePlacer
-               {
-                 ChildPlacement = ChildPlacement,
-                 RoutingStyle = RoutingStyle,
-                 HorizontalDistance = HorizontalDistance,
-                 VerticalDistance = VerticalDistance,
-                 RootAlignment = RootAlignment,
-               };
+    public override void AdoptSettings(SingleLayerSubtreePlacer nodePlacer) {
+      Transform = nodePlacer.Transformation;
+      RoutingStyle = nodePlacer.EdgeRoutingStyle;
+      Spacing = nodePlacer.HorizontalDistance;
+      RootAlignment = nodePlacer.RootAlignment;
     }
 
-    public void AdoptSettings(INodePlacer nodePlacer) {
-      var dnp = (DefaultNodePlacer) nodePlacer;
-      ChildPlacement = dnp.ChildPlacement;
-      RoutingStyle = dnp.RoutingStyle;
-      HorizontalDistance = dnp.HorizontalDistance;
-      VerticalDistance = dnp.VerticalDistance;
-      RootAlignment = dnp.RootAlignment;
+    protected override SingleLayerSubtreePlacer CreatePlacerCore() {
+      return new SingleLayerSubtreePlacer { Transformation = Transform };
+    }
+
+    protected override void ConfigurePlacer(SingleLayerSubtreePlacer placer) {
+      placer.EdgeRoutingStyle = RoutingStyle;
+      placer.HorizontalDistance = Spacing;
+      placer.VerticalDistance = Spacing;
+      placer.RootAlignment = RootAlignment;
     }
 
     #endregion

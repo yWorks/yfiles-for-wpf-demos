@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -32,31 +32,27 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using Demo.yFiles.Graph.TableNodeStyle.Style;
-using yWorks.Controls.Input;
 using yWorks.Geometry;
 using yWorks.Graph;
-using yWorks.Graph.Styles;
 using yWorks.Graph.LabelModels;
+using yWorks.Graph.Styles;
 
 namespace Demo.yFiles.Graph.TableNodeStyle
 {
   /// <summary>
-  /// Demo that shows how to create custom visualizations for table styles.
+  ///   Demo that shows how to create custom visualizations for table styles.
   /// </summary>
   public partial class TableNodeStyleWindow : Window
   {
     public TableNodeStyleWindow() {
       InitializeComponent();
-      graphControl.InputMode = new GraphViewerInputMode();
     }
 
-    public IGraph Graph {
-      get { return graphControl.Graph; }
-    }
+    public IGraph Graph => graphControl.Graph;
 
     /// <summary>
-    /// Called upon loading of the form.
-    /// This method initializes the graph and the input mode.
+    ///   Called upon loading of the form.
+    ///   This method initializes the graph and the input mode.
     /// </summary>
     protected virtual void OnLoaded(object src, RoutedEventArgs e) {
       // initialize the graph
@@ -66,7 +62,7 @@ namespace Demo.yFiles.Graph.TableNodeStyle
       sampleFilesComboBox.Items.Add("StripeControl Style");
       sampleFilesComboBox.SelectedIndex = 0;
     }
-    
+
     private void sampleFilesComboBox_SelectedIndexChanged(object sender, SelectionChangedEventArgs e) {
       switch (sampleFilesComboBox.SelectedIndex) {
         case 0:
@@ -78,169 +74,158 @@ namespace Demo.yFiles.Graph.TableNodeStyle
         case 2:
           CreateStripeControlSampleTable();
           break;
-        default:
-          break;
       }
     }
 
 
     /// <summary>
-    /// Creates a sample file that uses an alternating stripe style
+    ///   Creates a sample file that uses an alternating stripe style
     /// </summary>
     private void CreateAlternatingSampleTable() {
-      var table = new Table {Insets = new InsetsD(5, 30, 5, 5)};
-      //Declare the defaults for the columns
+      var table = new Table { Padding = new InsetsD(5, 30, 5, 5) };
+      // Declare the defaults for the columns
       table.ColumnDefaults.MinimumSize = table.ColumnDefaults.Size = 200;
-      table.ColumnDefaults.Labels.Style = new DefaultLabelStyle() { TextAlignment = TextAlignment.Center, VerticalTextAlignment = VerticalAlignment.Center};
-      table.ColumnDefaults.Insets = new InsetsD(5, 30, 5, 0);
-      table.ColumnDefaults.Style = new AlternatingStripeStyle
-                                     {
-                                       EvenStripeDescriptor =
-                                         new StripeDescriptor
-                                           {
-                                             BackgroundBrush = new SolidColorBrush(Color.FromArgb(255, 153, 164, 187)),
-                                             InsetBrush = new SolidColorBrush(Color.FromArgb(255, 204, 196, 168))
-                                           },
-                                       OddStripeDescriptor =
-                                         new StripeDescriptor
-                                           {
-                                             BackgroundBrush = new SolidColorBrush(Color.FromArgb(255, 139, 162, 220)),
-                                             InsetBrush = new SolidColorBrush(Color.FromArgb(255, 186, 194, 212))
-                                           }
-                                     };
-      for (int i = 0; i < 4; ++i) {
-        //Create four columns
-        IColumn column = table.CreateColumn();
+      table.ColumnDefaults.Labels.Style = new LabelStyle {
+          TextAlignment = TextAlignment.Center, VerticalTextAlignment = VerticalAlignment.Center
+      };
+      table.ColumnDefaults.Padding = new InsetsD(5, 30, 5, 0);
+      table.ColumnDefaults.Style = new AlternatingStripeStyle {
+          EvenStripeDescriptor =
+              new StripeDescriptor {
+                  BackgroundBrush = new SolidColorBrush(Color.FromArgb(255, 153, 164, 187)),
+                  InsetBrush = new SolidColorBrush(Color.FromArgb(255, 204, 196, 168))
+              },
+          OddStripeDescriptor = new StripeDescriptor {
+              BackgroundBrush = new SolidColorBrush(Color.FromArgb(255, 139, 162, 220)),
+              InsetBrush = new SolidColorBrush(Color.FromArgb(255, 186, 194, 212))
+          }
+      };
+      for (var i = 0; i < 4; ++i) {
+        // Create four columns
+        var column = table.CreateColumn();
         table.AddLabel(column, "Lane " + i);
       }
-      //Create a single row
-      table.CreateRow(table.RootRow, 300, null, InsetsD.Empty, new NodeStyleStripeStyleAdapter(new ShapeNodeStyle {Brush = Brushes.Transparent}));
+      // Create a single row
+      table.CreateRow(table.RootRow, 300, null, InsetsD.Empty,
+          new NodeStyleStripeStyleAdapter(new ShapeNodeStyle { Brush = Brushes.Transparent }));
 
-      //Create a single node and bind the table to this node
+      // Create a single node and bind the table to this node
       Graph.Clear();
       Graph.CreateGroupNode(null, table.Layout.ToRectD(),
-                       new yWorks.Graph.Styles.TableNodeStyle(table)
-                         {
-                           BackgroundStyle =
-                             new ShapeNodeStyle
-                               {Brush = new SolidColorBrush(Color.FromArgb(255, 248, 236, 201))}
-                         }, null);
+          new yWorks.Graph.Styles.TableNodeStyle(table) {
+              BackgroundStyle = new ShapeNodeStyle { Brush = new SolidColorBrush(Color.FromArgb(255, 248, 236, 201)) }
+          });
       graphControl.FitGraphBounds();
     }
 
     /// <summary>
-    /// Creates a sample that uses an BPMN stripe style
+    ///   Creates a sample that uses an BPMN stripe style
     /// </summary>
-    /// <remarks>Since this is a rather complex graph which really needs an automatic layout, load it from a graphml resource instead.</remarks>
+    /// <remarks>
+    ///   Since this is a rather complex graph which really needs an automatic layout, load it from a graphml resource
+    ///   instead.
+    /// </remarks>
     private void CreateBPMNSampleTable() {
       graphControl.ImportFromGraphML("Resources\\BPMN-Style.graphml");
     }
 
     /// <summary>
-    /// Creates a sample file that uses an StripeControl style for the stripes
+    ///   Creates a sample file that uses an StripeControl style for the stripes
     /// </summary>
     /// <remarks>This sample also shows how to created nested stripes</remarks>
     private void CreateStripeControlSampleTable() {
-      var table = new Table {Insets = new InsetsD(0, 30, 0, 0)};
-      //Declare the defaults for the columns
+      var table = new Table { Padding = new InsetsD(0, 30, 0, 0) };
+      // Declare the defaults for the columns
       table.ColumnDefaults.MinimumSize = table.ColumnDefaults.Size = 500;
-      table.ColumnDefaults.Insets = new InsetsD(5, 30, 5, 30);
-      table.ColumnDefaults.Labels.Style = new DefaultLabelStyle() { TextAlignment = TextAlignment.Center, VerticalTextAlignment = VerticalAlignment.Center};
-      table.ColumnDefaults.Style = new StripeControlStripeStyle("ColumnStyle")
-      {
-        StyleTag =
-          new StripeDescriptor
-          {
-            BackgroundBrush = Brushes.Transparent,
-            InsetBrush = new SolidColorBrush(Color.FromRgb(113, 146, 178))
+      table.ColumnDefaults.Padding = new InsetsD(5, 30, 5, 30);
+      table.ColumnDefaults.Labels.Style = new LabelStyle {
+          TextAlignment = TextAlignment.Center, VerticalTextAlignment = VerticalAlignment.Center
+      };
+      table.ColumnDefaults.Style = new StripeControlStripeStyle("ColumnStyle") {
+          StyleTag = new StripeDescriptor {
+              BackgroundBrush = Brushes.Transparent, InsetBrush = new SolidColorBrush(Color.FromRgb(113, 146, 178))
           }
       };
 
-      for (int i = 0; i < 2; ++i) {
-        //Create three columns
-        IColumn column = table.CreateColumn();
+      for (var i = 0; i < 2; ++i) {
+        // Create three columns
+        var column = table.CreateColumn();
         table.AddLabel(column, "Milestone " + i);
       }
-      //Declare the defaults for the rows
+      // Declare the defaults for the rows
       table.RowDefaults.MinimumSize = 50;
-      table.RowDefaults.Insets = new InsetsD(30, 0, 0, 0);
-      table.RowDefaults.Labels.Style = new DefaultLabelStyle() { TextAlignment = TextAlignment.Center, VerticalTextAlignment = VerticalAlignment.Center};
-      table.RowDefaults.Style = new StripeControlStripeStyle("RowStyle")
-      {
-        StyleTag = new StripeDescriptor
-        {
-          BackgroundBrush = new SolidColorBrush(Color.FromRgb(171, 200, 226)),
-          InsetBrush = new SolidColorBrush(Color.FromRgb(240, 248, 255))
-        }
+      table.RowDefaults.Padding = new InsetsD(30, 0, 0, 0);
+      table.RowDefaults.Labels.Style = new LabelStyle {
+          TextAlignment = TextAlignment.Center, VerticalTextAlignment = VerticalAlignment.Center
       };
-      var rootRowStyle = new StripeControlStripeStyle("RowStyle")
-      {
-        StyleTag = new StripeDescriptor
-        {
-          BackgroundBrush = new SolidColorBrush(Color.FromRgb(113, 146, 178)),
-          InsetBrush = new SolidColorBrush(Color.FromRgb(113, 146, 178))
-        }
+      table.RowDefaults.Style = new StripeControlStripeStyle("RowStyle") {
+          StyleTag = new StripeDescriptor {
+              BackgroundBrush = new SolidColorBrush(Color.FromRgb(171, 200, 226)),
+              InsetBrush = new SolidColorBrush(Color.FromRgb(240, 248, 255))
+          }
       };
-      var nestedStyle1 = new StripeControlStripeStyle("RowStyle")
-      {
-        StyleTag = new StripeDescriptor
-        {
-          BackgroundBrush = new SolidColorBrush(Color.FromRgb(196, 215, 237)),
-          InsetBrush = new SolidColorBrush(Color.FromRgb(196, 215, 237))
-        }
+      var rootRowStyle = new StripeControlStripeStyle("RowStyle") {
+          StyleTag = new StripeDescriptor {
+              BackgroundBrush = new SolidColorBrush(Color.FromRgb(113, 146, 178)),
+              InsetBrush = new SolidColorBrush(Color.FromRgb(113, 146, 178))
+          }
       };
-      IRow row_1 = table.CreateRow();
+      var nestedStyle1 = new StripeControlStripeStyle("RowStyle") {
+          StyleTag = new StripeDescriptor {
+              BackgroundBrush = new SolidColorBrush(Color.FromRgb(196, 215, 237)),
+              InsetBrush = new SolidColorBrush(Color.FromRgb(196, 215, 237))
+          }
+      };
+      var row_1 = table.CreateRow();
       table.SetStyle(row_1, rootRowStyle);
-      table.SetStripeInsets(row_1, new InsetsD(30, 30, 0, 30));
+      table.SetStripePadding(row_1, new InsetsD(30, 30, 0, 30));
 
       table.AddLabel(row_1, "Lane 1");
-      //Nested rows for the first lane, level 1
-      IRow row_1_1 = table.CreateRow(row_1, 150);
+      // Nested rows for the first lane, level 1
+      var row_1_1 = table.CreateRow(row_1, 150);
       table.SetStyle(row_1_1, nestedStyle1);
       table.AddLabel(row_1_1, "Lane 1.1");
 
-      //Nested rows for the first lane, level 2
-      IRow row_1_1_1 = table.CreateRow(row_1_1, 150);
+      // Nested rows for the first lane, level 2
+      var row_1_1_1 = table.CreateRow(row_1_1, 150);
       table.AddLabel(row_1_1_1, "Lane 1.1.1");
 
-      IRow row_1_1_2 = table.CreateRow(row_1_1, 70);
+      var row_1_1_2 = table.CreateRow(row_1_1, 70);
       table.AddLabel(row_1_1_2, "Lane 1.1.2");
 
-      IRow row_1_1_3 = table.CreateRow(row_1_1, 70);
+      var row_1_1_3 = table.CreateRow(row_1_1, 70);
       table.AddLabel(row_1_1_3, "Lane 1.1.3");
 
-      //Another nested row on the first level
-      IRow row_1_2 = table.CreateRow(row_1, 200);
+      // Another nested row on the first level
+      var row_1_2 = table.CreateRow(row_1, 200);
       table.AddLabel(row_1_2, "Lane 1.2");
 
-      IRow row_2 = table.CreateRow();
+      var row_2 = table.CreateRow();
       table.SetStyle(row_2, rootRowStyle);
       table.AddLabel(row_2, "Lane 2");
-      //Another nested row on the first level
-      IRow row_2_1 = table.CreateRow(row_2, 150);
+      // Another nested row on the first level
+      var row_2_1 = table.CreateRow(row_2, 150);
       table.AddLabel(row_2_1, "Lane 2.2");
-      //Another nested row on the first level
-      IRow row_2_2 = table.CreateRow(row_2, 150);
+      // Another nested row on the first level
+      var row_2_2 = table.CreateRow(row_2, 150);
       table.AddLabel(row_2_2, "Lane 2.2");
 
-      //Create a single node and bind the table to this node
+      // Create a single node and bind the table to this node
       Graph.Clear();
       var node = Graph.CreateGroupNode(null, table.Layout.ToRectD(),
-                                    new yWorks.Graph.Styles.TableNodeStyle(table)
-                                      {
-                                        BackgroundStyle =
-                                          new ShapeNodeStyle {Brush = new SolidColorBrush(Color.FromRgb(236, 245, 255))},
-                                        TableRenderingOrder = TableRenderingOrder.RowsFirst
-                                      });
-      Graph.AddLabel(node, "Pool 1", InteriorLabelModel.North);
+          new yWorks.Graph.Styles.TableNodeStyle(table) {
+              BackgroundStyle = new ShapeNodeStyle { Brush = new SolidColorBrush(Color.FromRgb(236, 245, 255)) },
+              TableRenderingOrder = TableRenderingOrder.RowsFirst
+          });
+      Graph.AddLabel(node, "Pool 1", InteriorNodeLabelModel.Top);
       graphControl.FitGraphBounds();
     }
 
     /// <summary>
-    /// Exit the demo
+    ///   Exit the demo
     /// </summary>
     /// <param name="sender"></param>
-    /// <param name="e"></param>            
+    /// <param name="e"></param>
     private void ExitMenuItem_Click(object sender, EventArgs e) {
       Application.Current.Shutdown();
     }

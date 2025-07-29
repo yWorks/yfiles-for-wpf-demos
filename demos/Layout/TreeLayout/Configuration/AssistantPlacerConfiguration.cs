@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -36,121 +36,112 @@ using yWorks.Layout.Tree;
 namespace Demo.yFiles.Layout.Tree.Configuration
 {
   /// <summary>
-  /// Configuration handler for <see cref="AssistantNodePlacer"/>
+  ///   Configuration handler for <see cref="AssistantSubtreePlacer"/>
   /// </summary>
   /// <remarks>This implementation provides the possibility to change and configure the child handler, too</remarks>
-  public sealed class AssistantPlacerConfiguration : RotatableNodePlacerConfigurationBase<AssistantNodePlacer>
+  public sealed class AssistantPlacerConfiguration : RotatableSubtreePlacerConfigurationBase<AssistantSubtreePlacer>
   {
     /// <summary>
-    /// Symbolic enumeration for the valid child placer types 
+    ///   Symbolic enumeration for the valid child placer types
     /// </summary>
-    /// <remarks>This is a subset of all valid placer configurations (especially, <see cref="AssistantPlacerConfiguration"/> is excluded.</remarks>
-    public enum ChildNodePlacerTypes
+    /// <remarks>
+    ///   This is a subset of all valid placer configurations (especially, <see cref="AssistantPlacerConfiguration"/> is
+    ///   excluded).
+    /// </remarks>
+    public enum ChildSubtreePlacerTypes
     {
-      DefaultNodePlacer,
-      SimpleNodePlacer,
+      SingleLayerSubtreePlacer,
       BusPlacer,
-      DoubleLinePlacer,
+      DoubleLayerPlacer,
       LeftRightPlacer,
-      ARNodePlacer
+      ARSubtreePlacer
     }
 
     public AssistantPlacerConfiguration() {
-      AdoptSettings(new AssistantNodePlacer());
+      AdoptSettings(new AssistantSubtreePlacer());
     }
 
     [OptionItemAttribute(Name = "OptionItem.Index", Value = 0)]
     public override double Spacing { get; set; }
 
-    private INodePlacerConfiguration childNodePlacerCfg;
-
-    [OptionItemAttribute(Name = OptionItem.CustomDialogitemEditor, Value = "NestedChildNodePlacer.OptionItemPresenter")]
+    [OptionItemAttribute(Name = OptionItem.CustomDialogitemEditor, Value = "NestedChildSubtreePlacer.OptionItemPresenter")]
     [OptionItemAttribute(Name = "OptionItem.Index", Value = 2)]
     [Description("Child Placer")]
-    public INodePlacerConfiguration ChildNodePlacer {
-      get { return childNodePlacerCfg; }
-      set { childNodePlacerCfg = value; }
-    }
+    public ISubtreePlacerConfiguration ChildSubtreePlacer { get; set; }
 
-    private ChildNodePlacerTypes type;
+    private ChildSubtreePlacerTypes type;
 
     [OptionItemAttribute(Name = "OptionItem.Index", Value = 1)]
-    public ChildNodePlacerTypes Type {
-      get { return type; }
+    public ChildSubtreePlacerTypes Type {
+      get => type;
       set {
         if (type != value) {
           type = value;
-          childNodePlacerCfg = UpdateChildPlacer();
+          ChildSubtreePlacer = UpdateChildPlacer();
         }
       }
     }
 
     /// <summary>
-    /// Update the child placer configuration when the child placer type has been changed
+    ///   Update the child placer configuration when the child placer type has been changed
     /// </summary>
-    /// <returns></returns>
-    private INodePlacerConfiguration UpdateChildPlacer() {
+    private ISubtreePlacerConfiguration UpdateChildPlacer() {
       switch (Type) {
-        case ChildNodePlacerTypes.DefaultNodePlacer:
-          return NodePlacerConfigurations.DefaultNodePlacer.Configuration;
-        case ChildNodePlacerTypes.SimpleNodePlacer:
-          return NodePlacerConfigurations.SimpleNodePlacer.Configuration;
-        case ChildNodePlacerTypes.BusPlacer:
-          return NodePlacerConfigurations.BusPlacer.Configuration;
-        case ChildNodePlacerTypes.DoubleLinePlacer:
-          return NodePlacerConfigurations.DoubleLinePlacer.Configuration;
-        case ChildNodePlacerTypes.LeftRightPlacer:
-          return NodePlacerConfigurations.LeftRightPlacer.Configuration;
-        case ChildNodePlacerTypes.ARNodePlacer:
-          return NodePlacerConfigurations.ARNodePlacer.Configuration;
+        case ChildSubtreePlacerTypes.SingleLayerSubtreePlacer:
+          return SubtreePlacerConfigurations.SingleLayerSubtreePlacer.Configuration;
+        case ChildSubtreePlacerTypes.BusPlacer:
+          return SubtreePlacerConfigurations.BusPlacer.Configuration;
+        case ChildSubtreePlacerTypes.DoubleLayerPlacer:
+          return SubtreePlacerConfigurations.DoubleLayerPlacer.Configuration;
+        case ChildSubtreePlacerTypes.LeftRightPlacer:
+          return SubtreePlacerConfigurations.LeftRightPlacer.Configuration;
+        case ChildSubtreePlacerTypes.ARSubtreePlacer:
+          return SubtreePlacerConfigurations.ArSubtreePlacer.Configuration;
         default:
           throw new ArgumentOutOfRangeException();
       }
     }
 
-    #region INodePlacerConfiguration Members
+    #region ISubtreePlacerConfiguration Members
 
-    protected override void ConfigurePlacer(AssistantNodePlacer placer) {
-      base.ConfigurePlacer(placer);
-      placer.ChildNodePlacer = ChildNodePlacer.CreateNodePlacer();
+    protected override void ConfigurePlacer(AssistantSubtreePlacer placer) {
+      placer.Spacing = Spacing;
+      placer.ChildSubtreePlacer = ChildSubtreePlacer.CreateSubtreePlacer();
     }
 
-    protected override AssistantNodePlacer CreatePlacerCore() {
-      return new AssistantNodePlacer(ModificationMatrix);
+    protected override AssistantSubtreePlacer CreatePlacerCore() {
+      return new AssistantSubtreePlacer { Transformation = Transform };
     }
 
-    public override void AdoptSettings(INodePlacer nodePlacer) {
-      base.AdoptSettings(nodePlacer);
-      var dnp = (AssistantNodePlacer) nodePlacer;
-      //Configure the child placer configuration handler
-      //Create a default configuration
-      INodePlacer childNodePlacer = dnp.ChildNodePlacer;
-      if (childNodePlacer is DefaultNodePlacer) {
-        childNodePlacerCfg = new DefaultNodePlacerConfiguration();
-        Type = ChildNodePlacerTypes.DefaultNodePlacer;
+
+    public override void AdoptSettings(AssistantSubtreePlacer subtreePlacer) {
+      Spacing = subtreePlacer.Spacing;
+      Transform = subtreePlacer.Transformation;
+      // Configure the child placer configuration handler
+      // Create a default configuration
+      var childSubtreePlacer = subtreePlacer.ChildSubtreePlacer;
+      if (childSubtreePlacer is SingleLayerSubtreePlacer) {
+        ChildSubtreePlacer = new SingleLayerSubtreePlacerConfiguration();
+        Type = ChildSubtreePlacerTypes.SingleLayerSubtreePlacer;
       }
-      if (childNodePlacer is SimpleNodePlacer) {
-        childNodePlacerCfg = new SimpleNodePlacerConfiguration();
-        Type = ChildNodePlacerTypes.SimpleNodePlacer;
+      if (childSubtreePlacer is BusSubtreePlacer) {
+        ChildSubtreePlacer = new BusPlacerConfiguration();
+        Type = ChildSubtreePlacerTypes.BusPlacer;
       }
-      if (childNodePlacer is BusNodePlacer) {
-        childNodePlacerCfg = new BusPlacerConfiguration();
-        Type = ChildNodePlacerTypes.BusPlacer;
+      if (childSubtreePlacer is DoubleLayerSubtreePlacer) {
+        ChildSubtreePlacer = new DoubleLayerPlacerConfiguration();
+        Type = ChildSubtreePlacerTypes.DoubleLayerPlacer;
       }
-      if (childNodePlacer is DoubleLineNodePlacer) {
-        childNodePlacerCfg = new DoubleLinePlacerConfiguration();
-        Type = ChildNodePlacerTypes.DoubleLinePlacer;
+      if (childSubtreePlacer is AspectRatioSubtreePlacer) {
+        ChildSubtreePlacer = new ARSubtreePlacerConfiguration();
+        Type = ChildSubtreePlacerTypes.ARSubtreePlacer;
       }
-      if (childNodePlacer is AspectRatioNodePlacer) {
-        childNodePlacerCfg = new ARNodePlacerConfiguration();
-        Type = ChildNodePlacerTypes.ARNodePlacer;
+      if (childSubtreePlacer is LeftRightSubtreePlacer) {
+        ChildSubtreePlacer = new LeftRightPlacerConfiguration();
+        Type = ChildSubtreePlacerTypes.LeftRightPlacer;
       }
-      if (childNodePlacer is LeftRightNodePlacer) {
-        childNodePlacerCfg = new LeftRightPlacerConfiguration();
-        Type = ChildNodePlacerTypes.LeftRightPlacer;
-      }
-      //And adopt the current values
-      childNodePlacerCfg.AdoptSettings(childNodePlacer);
+      // And adopt the current values
+      ChildSubtreePlacer.AdoptSettings(childSubtreePlacer);
     }
 
     #endregion

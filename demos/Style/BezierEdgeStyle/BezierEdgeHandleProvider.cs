@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -31,11 +31,12 @@ using System.Collections.Generic;
 using System.Linq;
 using yWorks.Controls.Input;
 using yWorks.Graph;
+using yWorks.Utils;
 
 namespace Demo.yFiles.Graph.BezierEdgeStyle {
 
   /// <summary>
-  /// Custom implementation for bezier edges that always shows all handles for the control points
+  /// Custom implementation for Bezier edges that always shows all handles for the control points
   /// </summary>
   /// <remarks>
   /// This makes it possible to start manipulating the control points immediately without having to select them first

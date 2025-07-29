@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -29,33 +29,33 @@
 
 using System;
 using System.ComponentModel;
-using System.Linq;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Markup;
 using System.Windows.Media;
 using Demo.yFiles.Graph.Bpmn.Util;
-using yWorks.Controls.Input;
 using yWorks.Annotations;
 using yWorks.Controls;
+using yWorks.Controls.Input;
 using yWorks.Geometry;
 using yWorks.Graph;
+using yWorks.Graph.LabelModels;
 using yWorks.Graph.Styles;
 using yWorks.GraphML;
-using yWorks.Graph.LabelModels;
 
 namespace Demo.yFiles.Graph.Bpmn.Styles
 {
   /// <summary>
-  /// An <see cref="INodeStyle"/> implementation representing a Pool according to the BPMN.
+  ///   An <see cref="INodeStyle"/> implementation representing a Pool according to the BPMN.
   /// </summary>
   /// <remarks>
-  /// The main visualization is delegated to <see cref="TableNodeStyle"/>.
+  ///   The main visualization is delegated to <see cref="TableNodeStyle"/>.
   /// </remarks>
   [Obfuscation(StripAfterObfuscation = false, Exclude = true, ApplyToMembers = false)]
   [ContentProperty("TableNodeStyle")]
-  [SingletonSerialization]
-  public class PoolNodeStyle : NodeStyleBase<VisualGroup> {
+  [GraphML(SingletonContainers = new[] { typeof(PoolNodeStyle) })]
+  public class PoolNodeStyle : NodeStyleBase<VisualGroup>
+  {
     private IIcon multipleInstanceIcon;
 
     private static TableNodeStyle CreateDefaultTableNodeStyle(bool vertical) {
@@ -65,73 +65,71 @@ namespace Demo.yFiles.Graph.Bpmn.Styles
 
       // we'd like to use a special stripe style
       var alternatingLeafStripeStyle = new AlternatingLeafStripeStyle {
-        EvenLeafDescriptor = new StripeDescriptor {
-          BackgroundBrush = BpmnConstants.DefaultPoolNodeEvenLeafBackground,
-          InsetBrush = BpmnConstants.DefaultPoolNodeEvenLeafInset
-        },
-        OddLeafDescriptor = new StripeDescriptor {
-          BackgroundBrush = BpmnConstants.DefaultPoolNodeOddLeafBackground,
-          InsetBrush = BpmnConstants.DefaultPoolNodeOddLeafInset
-        },
-        ParentDescriptor = new StripeDescriptor {
-          BackgroundBrush = BpmnConstants.DefaultPoolNodeParentBackground,
-          InsetBrush = BpmnConstants.DefaultPoolNodeParentInset
-        }
+          EvenLeafDescriptor =
+              new StripeDescriptor {
+                  BackgroundBrush = BpmnConstants.DefaultPoolNodeEvenLeafBackground,
+                  InsetBrush = BpmnConstants.DefaultPoolNodeEvenLeafInset
+              },
+          OddLeafDescriptor =
+              new StripeDescriptor {
+                  BackgroundBrush = BpmnConstants.DefaultPoolNodeOddLeafBackground,
+                  InsetBrush = BpmnConstants.DefaultPoolNodeOddLeafInset
+              },
+          ParentDescriptor = new StripeDescriptor {
+              BackgroundBrush = BpmnConstants.DefaultPoolNodeParentBackground,
+              InsetBrush = BpmnConstants.DefaultPoolNodeParentInset
+          }
       };
       if (vertical) {
-        table.Insets = new InsetsD(0, 20, 0, 0);
+        table.Padding = new InsetsD(0, 20, 0, 0);
 
         // set the column defaults
-        table.ColumnDefaults.Insets = new InsetsD(0, 20, 0, 0);
-        table.ColumnDefaults.Labels.Style = new DefaultLabelStyle {
-          VerticalTextAlignment = VerticalAlignment.Center,
-          TextAlignment = TextAlignment.Center
+        table.ColumnDefaults.Padding = new InsetsD(0, 20, 0, 0);
+        table.ColumnDefaults.Labels.Style = new LabelStyle {
+            VerticalTextAlignment = VerticalAlignment.Center, TextAlignment = TextAlignment.Center
         };
-        table.ColumnDefaults.Labels.LayoutParameter = StretchStripeLabelModel.North;
+        table.ColumnDefaults.Labels.LayoutParameter = StretchStripeLabelModel.Top;
         table.ColumnDefaults.Style = alternatingLeafStripeStyle;
         table.ColumnDefaults.MinimumSize = 50;
         tns.TableRenderingOrder = TableRenderingOrder.ColumnsFirst;
       } else {
-        table.Insets = new InsetsD(20, 0, 0, 0);
+        table.Padding = new InsetsD(20, 0, 0, 0);
 
         // set the row defaults
-        table.RowDefaults.Insets = new InsetsD(20, 0, 0, 0);
-        table.RowDefaults.Labels.Style = new DefaultLabelStyle {
-          VerticalTextAlignment = VerticalAlignment.Center,
-          TextAlignment = TextAlignment.Center
+        table.RowDefaults.Padding = new InsetsD(20, 0, 0, 0);
+        table.RowDefaults.Labels.Style = new LabelStyle {
+            VerticalTextAlignment = VerticalAlignment.Center, TextAlignment = TextAlignment.Center
         };
-        table.RowDefaults.Labels.LayoutParameter = StretchStripeLabelModel.West;
+        table.RowDefaults.Labels.LayoutParameter = StretchStripeLabelModel.Left;
         table.RowDefaults.Style = alternatingLeafStripeStyle;
         table.RowDefaults.MinimumSize = 50;
         tns.TableRenderingOrder = TableRenderingOrder.RowsFirst;
       }
 
-      tns.BackgroundStyle = new ShapeNodeStyle {
-        Brush = BpmnConstants.DefaultPoolNodeBackground
-      };
+      tns.BackgroundStyle = new ShapeNodeStyle { Brush = BpmnConstants.DefaultPoolNodeBackground };
       tns.Table = table;
       return tns;
     }
 
     /// <summary>
-    /// Gets or sets if this pool represents a multiple instance participant.
+    ///   Gets or sets if this pool represents a multiple instance participant.
     /// </summary>
     [DefaultValue(false)]
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     public bool MultipleInstance { get; set; }
 
     [DefaultValue(false)]
-    private bool Vertical { get; set; }
+    private bool Vertical { get; }
 
     private Brush iconColor = BpmnConstants.DefaultIconColor;
 
     /// <summary>
-    /// Gets or sets the color for the icon.
+    ///   Gets or sets the color for the icon.
     /// </summary>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     [DefaultValue(typeof(BpmnConstants), "DefaultIconColor")]
     public Brush IconColor {
-      get { return iconColor; }
+      get => iconColor;
       set {
         if (iconColor != value) {
           iconColor = value;
@@ -149,24 +147,22 @@ namespace Demo.yFiles.Graph.Bpmn.Styles
     private TableNodeStyle tableNodeStyle;
 
     /// <summary>
-    /// Gets or sets the <see cref="TableNodeStyle"/> the visualization is delegated to.
+    ///   Gets or sets the <see cref="TableNodeStyle"/> that the visualization is delegated to.
     /// </summary>
     [NotNull]
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     public TableNodeStyle TableNodeStyle {
-      get {
-        return tableNodeStyle ?? (tableNodeStyle = CreateDefaultTableNodeStyle(Vertical));
-      }
-      set { tableNodeStyle = value; }
+      get => tableNodeStyle ?? (tableNodeStyle = CreateDefaultTableNodeStyle(Vertical));
+      set => tableNodeStyle = value;
     }
 
     /// <summary>
-    /// Creates a new instance for a horizontal pool.
+    ///   Creates a new instance for a horizontal pool.
     /// </summary>
     public PoolNodeStyle() : this(false) { }
 
     /// <summary>
-    /// Creates a new instance.
+    ///   Creates a new instance.
     /// </summary>
     /// <param name="vertical">Whether the style represents a vertical pool.</param>
     public PoolNodeStyle(bool vertical) {
@@ -177,7 +173,7 @@ namespace Demo.yFiles.Graph.Bpmn.Styles
     ///<inheritdoc/>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     public override object Clone() {
-      PoolNodeStyle clone = new PoolNodeStyle {
+      var clone = new PoolNodeStyle {
           MultipleInstance = MultipleInstance,
           TableNodeStyle = (TableNodeStyle) TableNodeStyle.Clone(),
           IconColor = IconColor
@@ -198,13 +194,14 @@ namespace Demo.yFiles.Graph.Bpmn.Styles
 
     ///<inheritdoc/>
     protected override VisualGroup UpdateVisual(IRenderContext context, VisualGroup oldVisual, INode node) {
-      VisualGroup container = oldVisual;
+      var container = oldVisual;
       if (container == null || container.Children.Count == 0) {
         return CreateVisual(context, node);
       }
 
       var oldTableVisual = container.Children[0];
-      var newTableVisual = TableNodeStyle.Renderer.GetVisualCreator(node, TableNodeStyle).UpdateVisual(context, oldTableVisual);
+      var newTableVisual = TableNodeStyle.Renderer.GetVisualCreator(node, TableNodeStyle)
+          .UpdateVisual(context, oldTableVisual);
       if (oldTableVisual != newTableVisual) {
         container.Children.Remove(oldTableVisual);
         container.Children.Insert(0, newTableVisual);
@@ -229,7 +226,7 @@ namespace Demo.yFiles.Graph.Bpmn.Styles
 
     ///<inheritdoc/>
     protected override object Lookup(INode item, Type type) {
-      if (type == typeof (IEditLabelHelper)) {
+      if (type == typeof(IEditLabelHelper)) {
         return new PoolNodeEditLabelHelper(this);
       }
       return TableNodeStyle.Renderer.GetContext(item, TableNodeStyle).Lookup(type);
@@ -246,10 +243,9 @@ namespace Demo.yFiles.Graph.Bpmn.Styles
 
       protected override ILabelModelParameter GetLabelParameter(IInputModeContext context, ILabelOwner owner) {
         if (style.TableNodeStyle.TableRenderingOrder == TableRenderingOrder.ColumnsFirst) {
-          return PoolHeaderLabelModel.North;
-        } else {
-          return PoolHeaderLabelModel.West;
+          return PoolHeaderLabelModel.Top;
         }
+        return PoolHeaderLabelModel.Left;
       }
     }
   }

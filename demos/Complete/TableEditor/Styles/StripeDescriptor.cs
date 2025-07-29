@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -116,7 +116,7 @@ namespace Demo.yFiles.Graph.TableEditor.Style
 
     public override int GetHashCode() {
       unchecked {
-        int result = (backgroundBrush != null ? backgroundBrush.GetHashCode() : 0);
+        int result = backgroundBrush != null ? backgroundBrush.GetHashCode() : 0;
         result = (result * 397) ^ (insetBrush != null ? insetBrush.GetHashCode() : 0);
         result = (result * 397) ^ (borderBrush != null ? borderBrush.GetHashCode() : 0);
         result = (result * 397) ^ borderThickness.GetHashCode();

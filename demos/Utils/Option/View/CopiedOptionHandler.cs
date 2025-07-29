@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -29,12 +29,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Reflection;
 using Demo.yFiles.Option.Handler;
-using yWorks.Graph;
+using yWorks.Utils;
 
 namespace Demo.yFiles.Option.View
 {
@@ -46,59 +45,51 @@ namespace Demo.yFiles.Option.View
     private ILookup lookup;
     private bool enabled;
     private object value;
-    private IOptionGroup group;
     private readonly object initialValue;
     private readonly bool initialEnabled;
 
-    private bool autoAdopt;
-    private bool autoCommit;
     private WeakListener listener;
     private DelegatingMapper delegatingMapper;
-    private static readonly PropertyChangedEventArgs valuePCEA = new PropertyChangedEventArgs("Value");
-    private static readonly PropertyChangedEventArgs enabledPCEA = new PropertyChangedEventArgs("Enabled");
+    private static readonly PropertyChangedEventArgs valuePCEA = new("Value");
+    private static readonly PropertyChangedEventArgs enabledPCEA = new("Enabled");
 
-    internal bool AutoAdopt {
-      get { return autoAdopt; }
-      set { autoAdopt = value; }
-    }
+    internal bool AutoAdopt { get; set; }
 
-    internal bool AutoCommit {
-      get { return autoCommit; }
-      set { autoCommit = value; }
-    }
+    internal bool AutoCommit { get; set; }
 
     public CopiedOptionItem(IOptionItem delegateItem, IOptionGroup group) {
       this.delegateItem = delegateItem;
       dictionaryOverride = new Dictionary<string, object>();
       lookup = delegateItem;
-      this.enabled = this.initialEnabled = delegateItem.Enabled;
-      this.value = this.initialValue = delegateItem.Value;
-      this.group = group;
+      enabled = initialEnabled = delegateItem.Enabled;
+      value = initialValue = delegateItem.Value;
+      Owner = group;
       listener = new WeakListener(this, delegateItem);
     }
 
-    internal class WeakListener 
+    internal class WeakListener
     {
       public WeakListener(CopiedOptionItem item, IOptionItem optionItem) {
-        this.Target = item;
-        optionItem.PropertyChanged += new PropertyChangedEventHandler(delegateItem_PropertyChanged);
+        Target = item;
+        optionItem.PropertyChanged += delegateItem_PropertyChanged;
       }
 
       private WeakReference target;
+
       protected object Target {
-        get { return target.Target; }
-        set { target = new WeakReference(value); }
+        get => target.Target;
+        set => target = new WeakReference(value);
       }
 
       private void delegateItem_PropertyChanged(object sender, PropertyChangedEventArgs e) {
-        CopiedOptionItem item = GetItem(sender);
+        var item = GetItem(sender);
         if (item != null) {
           item.delegateItem_PropertyChanged(sender, e);
         }
       }
 
       private CopiedOptionItem GetItem(object source) {
-        CopiedOptionItem item = Target as CopiedOptionItem;
+        var item = Target as CopiedOptionItem;
         if (item == null) {
           Disconnect(source);
         } else {
@@ -112,7 +103,7 @@ namespace Demo.yFiles.Option.View
       }
 
       internal void Disconnect(object source) {
-        ((IOptionItem)source).PropertyChanged -= delegateItem_PropertyChanged;
+        ((IOptionItem) source).PropertyChanged -= delegateItem_PropertyChanged;
       }
     }
 
@@ -133,11 +124,11 @@ namespace Demo.yFiles.Option.View
     }
 
     protected CopiedOptionHandler GetOptionHandler() {
-      CopiedOptionGroup group = (CopiedOptionGroup) (this as CopiedOptionGroup ?? Owner);
+      var group = (CopiedOptionGroup) (this as CopiedOptionGroup ?? Owner);
       while (group != null && !(group is CopiedOptionHandler)) {
         group = group.Owner as CopiedOptionGroup;
       }
-      return (CopiedOptionHandler)group;
+      return (CopiedOptionHandler) group;
     }
 
     public virtual void Dispose() {
@@ -150,12 +141,12 @@ namespace Demo.yFiles.Option.View
         delegateItem = null;
         lookup = null;
         dictionaryOverride = null;
-        group = null;
+        Owner = null;
       }
     }
 
     public bool Enabled {
-      get { return enabled && (group == null || group.Enabled); }
+      get => enabled && (Owner == null || Owner.Enabled);
       set {
         if (enabled != value) {
           enabled = value;
@@ -171,16 +162,12 @@ namespace Demo.yFiles.Option.View
       }
     }
 
-    protected virtual void OnDisabled() {
-      
-    }
+    protected virtual void OnDisabled() { }
 
-    protected virtual void OnEnabled() {
-      
-    }
+    protected virtual void OnEnabled() { }
 
     protected internal virtual void OnParentDisabled() {
-      if (this.enabled) {
+      if (enabled) {
         if (PropertyChanged != null) {
           OnPropertyChanged(enabledPCEA);
         }
@@ -189,7 +176,7 @@ namespace Demo.yFiles.Option.View
     }
 
     protected internal virtual void OnParentEnabled() {
-      if (this.enabled) {
+      if (enabled) {
         if (PropertyChanged != null) {
           OnPropertyChanged(enabledPCEA);
         }
@@ -197,27 +184,23 @@ namespace Demo.yFiles.Option.View
       }
     }
 
-    public string Name {
-      get { return delegateItem != null ? delegateItem.Name : string.Empty; }
-    }
+    public string Name => delegateItem != null ? delegateItem.Name : string.Empty;
 
-    public Type Type {
-      get { return delegateItem != null ? delegateItem.Type : typeof (object); }
-    }
+    public Type Type => delegateItem != null ? delegateItem.Type : typeof(object);
 
     public object Value {
-      get { return value; }
+      get => value;
       set {
         if (this.value != value) {
           if (PropertyChanged != null) {
             this.value = value;
             OnPropertyChanged(valuePCEA);
-            if (autoCommit && delegateItem != null) {
+            if (AutoCommit && delegateItem != null) {
               delegateItem.Value = this.value;
             }
           } else {
             this.value = value;
-            if (autoCommit && delegateItem != null) {
+            if (AutoCommit && delegateItem != null) {
               delegateItem.Value = this.value;
             }
           }
@@ -231,10 +214,7 @@ namespace Demo.yFiles.Option.View
       }
     }
 
-    public IOptionGroup Owner {
-      get { return group; }
-      set { group = value; }
-    }
+    public IOptionGroup Owner { get; set; }
 
     public IMapper<string, object> Attributes {
       get {
@@ -256,17 +236,19 @@ namespace Demo.yFiles.Option.View
       public object this[string key] {
         get {
           object value;
-          if (copiedOptionItem.dictionaryOverride != null && copiedOptionItem.dictionaryOverride.TryGetValue(key, out value)) {
+          if (copiedOptionItem.dictionaryOverride != null &&
+              copiedOptionItem.dictionaryOverride.TryGetValue(key, out value)) {
             return value;
           }
           return copiedOptionItem.delegateItem != null ? copiedOptionItem.delegateItem.Attributes[key] : null;
         }
         set {
-
           if (copiedOptionItem.dictionaryOverride != null) {
             copiedOptionItem.dictionaryOverride[key] = value;
           } else {
-            if (copiedOptionItem.delegateItem != null) copiedOptionItem.delegateItem.Attributes[key] = value;
+            if (copiedOptionItem.delegateItem != null) {
+              copiedOptionItem.delegateItem.Attributes[key] = value;
+            }
           }
         }
       }
@@ -275,25 +257,25 @@ namespace Demo.yFiles.Option.View
     public event PropertyChangedEventHandler PropertyChanged;
 
     public virtual object Lookup(Type type) {
-      if (type == typeof (IOptionItem)) {
+      if (type == typeof(IOptionItem)) {
         return this;
-      } else if (type == typeof (IOptionGroup)) {
-        return Owner;
-      } else {
-        return lookup.Lookup(type);
       }
+      if (type == typeof(IOptionGroup)) {
+        return Owner;
+      }
+      return lookup.Lookup(type);
     }
 
     public void AdoptValue() {
-      IOptionItem item = delegateItem;
+      var item = delegateItem;
       if (item != null) {
-        this.Value = delegateItem.Value;
-        this.Enabled = delegateItem.Enabled;
+        Value = delegateItem.Value;
+        Enabled = delegateItem.Enabled;
       }
     }
 
     public void CommitValue() {
-      IOptionItem item = delegateItem;
+      var item = delegateItem;
       if (item != null) {
         item.Value = value;
         item.Enabled = enabled;
@@ -301,14 +283,15 @@ namespace Demo.yFiles.Option.View
     }
 
     public void Reset() {
-      this.Value = initialValue;
-      this.Enabled = initialEnabled;
+      Value = initialValue;
+      Enabled = initialEnabled;
     }
   }
 
   [Obfuscation(StripAfterObfuscation = false, Exclude = true, ApplyToMembers = false)]
-  internal class CopiedOptionGroup : CopiedOptionItem, IOptionGroup {
-    internal ObservableCollection<IOptionItem> items = new ObservableCollection<IOptionItem>();
+  internal class CopiedOptionGroup : CopiedOptionItem, IOptionGroup
+  {
+    internal System.Collections.ObjectModel.ObservableCollection<IOptionItem> items = new();
     private IOptionGroup groupDelegate;
     private WeakGroupListener listener;
 
@@ -319,27 +302,28 @@ namespace Demo.yFiles.Option.View
     }
 
     protected void Init(IOptionGroup delegateItem) {
-      this.groupDelegate = delegateItem;
+      groupDelegate = delegateItem;
       listener = new WeakGroupListener(this, groupDelegate);
       foreach (var item in delegateItem.Items) {
-        this.items.Add(CreateCopy(item));
+        items.Add(CreateCopy(item));
       }
     }
 
-    internal class WeakGroupListener {
+    internal class WeakGroupListener
+    {
       private readonly WeakReference reference;
 
       public WeakGroupListener(CopiedOptionGroup group, IOptionGroup optionGroup) {
-        this.reference = new WeakReference(group);
-        optionGroup.Items.CollectionChanged += new NotifyCollectionChangedEventHandler(Items_CollectionChanged);
+        reference = new WeakReference(group);
+        optionGroup.Items.CollectionChanged += Items_CollectionChanged;
       }
 
-      protected object Target { get { return reference.Target; } }
+      protected object Target => reference.Target;
 
-      void Items_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
-        CopiedOptionGroup group = Target as CopiedOptionGroup;
+      private void Items_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
+        var group = Target as CopiedOptionGroup;
         if (group == null || group.GetOptionHandler() == null) {
-          ((INotifyCollectionChanged)sender).CollectionChanged -= Items_CollectionChanged;
+          ((INotifyCollectionChanged) sender).CollectionChanged -= Items_CollectionChanged;
         }
 
         if (group != null) {
@@ -353,25 +337,23 @@ namespace Demo.yFiles.Option.View
     }
 
 
-    public ObservableCollection<IOptionItem> Items {
-      get { return items; }
-    }
+    public System.Collections.ObjectModel.ObservableCollection<IOptionItem> Items => items;
 
 
     protected override void OnDisabled() {
       base.OnDisabled();
-      foreach (IOptionItem item in items) {
+      foreach (var item in items) {
         if (item is CopiedOptionItem) {
-          ((CopiedOptionItem)item).OnParentDisabled();
+          ((CopiedOptionItem) item).OnParentDisabled();
         }
       }
     }
 
     protected override void OnEnabled() {
       base.OnEnabled();
-      foreach (IOptionItem item in items) {
+      foreach (var item in items) {
         if (item is CopiedOptionItem) {
-          ((CopiedOptionItem)item).OnParentEnabled();
+          ((CopiedOptionItem) item).OnParentEnabled();
         }
       }
     }
@@ -379,31 +361,31 @@ namespace Demo.yFiles.Option.View
     internal void Items_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
       switch (e.Action) {
         case NotifyCollectionChangedAction.Add:
-          int index = e.NewStartingIndex;
+          var index = e.NewStartingIndex;
           foreach (var newItem in e.NewItems) {
             items.Insert(index++, CreateCopy((IOptionItem) newItem));
           }
           break;
         case NotifyCollectionChangedAction.Remove:
-          for (int i = 0; i < e.OldItems.Count; i++) {
+          for (var i = 0; i < e.OldItems.Count; i++) {
             var optionItem = items[e.OldStartingIndex];
             items.RemoveAt(e.OldStartingIndex);
             ((CopiedOptionItem) optionItem).Dispose();
           }
           break;
         case NotifyCollectionChangedAction.Replace:
-          for (int i = 0; i < e.OldItems.Count; i++) {
+          for (var i = 0; i < e.OldItems.Count; i++) {
             var optionItem = items[e.OldStartingIndex + 1];
-            ((CopiedOptionItem)optionItem).Dispose();
-            items[e.OldStartingIndex + 1] = CreateCopy((IOptionItem)e.NewItems[i]);
+            ((CopiedOptionItem) optionItem).Dispose();
+            items[e.OldStartingIndex + 1] = CreateCopy((IOptionItem) e.NewItems[i]);
           }
           break;
         case NotifyCollectionChangedAction.Reset:
           foreach (var o in items) {
-            ((CopiedOptionItem)o).Dispose();
+            ((CopiedOptionItem) o).Dispose();
           }
           items.Clear();
-          foreach (var i in ((IEnumerable<IOptionItem>)sender)) {
+          foreach (var i in (IEnumerable<IOptionItem>) sender) {
             items.Add(CreateCopy(i));
           }
           break;
@@ -426,25 +408,25 @@ namespace Demo.yFiles.Option.View
     }
   }
 
-  internal class CopiedOptionHandler : CopiedOptionGroup, IModelView, IDisposable {
+  internal class CopiedOptionHandler : CopiedOptionGroup, IModelView, IDisposable
+  {
     private bool isAutoAdopt;
     private bool isAutoCommit;
-    private OptionHandler handler;
     private readonly Dictionary<IOptionItem, CopiedOptionItem> mapping;
 
-    public CopiedOptionHandler(OptionHandler handler) : base(handler){
-      this.handler = handler;
+    public CopiedOptionHandler(OptionHandler handler) : base(handler) {
+      Handler = handler;
       mapping = new Dictionary<IOptionItem, CopiedOptionItem>();
-      base.Init(handler);
+      Init(handler);
       mapping[handler] = this;
       handler.AddView(this);
     }
 
     public override void Dispose() {
-      if (handler != null) {
-        handler.RemoveView(this);
+      if (Handler != null) {
+        Handler.RemoveView(this);
         mapping.Clear();
-        handler = null;
+        Handler = null;
         base.Dispose();
       }
     }
@@ -452,7 +434,7 @@ namespace Demo.yFiles.Option.View
     internal CopiedOptionItem CreateCopy(CopiedOptionGroup newParent, IOptionItem itemToCopy) {
       CopiedOptionItem newItem;
       if (itemToCopy is IOptionGroup) {
-        CopiedOptionGroup copiedGroup = new CopiedOptionGroup(itemToCopy as IOptionGroup, newParent);
+        var copiedGroup = new CopiedOptionGroup(itemToCopy as IOptionGroup, newParent);
         newItem = copiedGroup;
       } else {
         newItem = new CopiedOptionItem(itemToCopy, newParent);
@@ -464,24 +446,24 @@ namespace Demo.yFiles.Option.View
     }
 
     public void AdoptValues() {
-      List<CopiedOptionItem> items = GetItems();
-      foreach (CopiedOptionItem item in items) {
+      var items = GetItems();
+      foreach (var item in items) {
         item.AdoptValue();
       }
     }
 
     private List<CopiedOptionItem> GetItems() {
-      List<CopiedOptionItem> items = new List<CopiedOptionItem>();
-      List<CopiedOptionItem> queue = new List<CopiedOptionItem>();
-      queue.Add(mapping[handler]);
-      
+      var items = new List<CopiedOptionItem>();
+      var queue = new List<CopiedOptionItem>();
+      queue.Add(mapping[Handler]);
+
       while (queue.Count > 0) {
-        CopiedOptionItem item = queue[0];
+        var item = queue[0];
         queue.RemoveAt(0);
         if (item != null) {
           items.Add(item);
           if (item is IOptionGroup) {
-            foreach (IOptionItem optionItem in ((IOptionGroup)item).Items) {
+            foreach (var optionItem in ((IOptionGroup) item).Items) {
               if (optionItem is CopiedOptionItem) {
                 queue.Add((CopiedOptionItem) optionItem);
               }
@@ -493,17 +475,17 @@ namespace Demo.yFiles.Option.View
     }
 
     public void CommitValues() {
-      foreach (CopiedOptionItem item in GetItems()) {
+      foreach (var item in GetItems()) {
         item.CommitValue();
       }
     }
 
     public bool IsAutoAdopt {
-      get { return isAutoAdopt; }
+      get => isAutoAdopt;
       set {
-        if(isAutoAdopt != value) {
+        if (isAutoAdopt != value) {
           isAutoAdopt = value;
-          foreach (CopiedOptionItem item in GetItems()) {
+          foreach (var item in GetItems()) {
             item.AutoAdopt = value;
           }
         }
@@ -511,20 +493,18 @@ namespace Demo.yFiles.Option.View
     }
 
     public bool IsAutoCommit {
-      get { return isAutoCommit; }
+      get => isAutoCommit;
       set {
         if (isAutoCommit != value) {
           isAutoCommit = value;
-          foreach (CopiedOptionItem item in GetItems()) {
+          foreach (var item in GetItems()) {
             item.AutoCommit = value;
           }
         }
       }
     }
 
-    public OptionHandler Handler {
-      get { return handler; }
-    }
+    public OptionHandler Handler { get; private set; }
 
     public IOptionItem GetViewItem(IOptionItem item) {
       CopiedOptionItem result;
@@ -533,23 +513,23 @@ namespace Demo.yFiles.Option.View
     }
 
     public void ResetValues() {
-      foreach (CopiedOptionItem item in GetItems()) {
+      foreach (var item in GetItems()) {
         item.Reset();
       }
     }
 
     public void ResetValue(IOptionItem item) {
       if (GetItems().Contains(item as CopiedOptionItem)) {
-        ((CopiedOptionItem)item).Reset();
+        ((CopiedOptionItem) item).Reset();
       }
     }
 
     public override object Lookup(Type type) {
       if (type == typeof(OptionHandler)) {
-        return handler;
+        return Handler;
       }
-      if (handler != null) {
-        return handler.Lookup(type);
+      if (Handler != null) {
+        return Handler.Lookup(type);
       }
       return null;
     }

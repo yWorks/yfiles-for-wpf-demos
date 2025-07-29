@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -29,36 +29,30 @@
 
 using System;
 using System.Linq;
-using System.Windows;
+using System.Windows.Media;
 using Demo.yFiles.Toolkit;
 using yWorks.Controls;
 using yWorks.Controls.Input;
 using yWorks.Geometry;
 using yWorks.Graph;
 using yWorks.Graph.Styles;
+using yWorks.Utils;
 
 namespace Demo.yFiles.Graph.MarqueeClearArea
 {
   /// <summary>
-  /// A demo that shows how to interactively move graph elements within a marquee rectangle in a given graph
-  /// layout so that the modifications in the graph are minimal.
+  ///   A demo that shows how to interactively move graph elements within a marquee rectangle in a given graph
+  ///   layout so that the modifications in the graph are minimal.
   /// </summary>
   public partial class MarqueeClearAreaDemo
   {
     /// <summary>
-    /// Performs layout and animation while dragging the marquee.
+    ///   Performs layout and animation while dragging the marquee.
     /// </summary>
     private ClearAreaLayoutHelper layoutHelper;
 
-    /// <summary>
-    /// A <see cref="ResourceKey"/> that will be used to find the <see cref="DataTemplate"/> for
-    /// drawing the marquee.
-    /// </summary>
-    public static readonly ResourceKey ClearRectTemplateKey =
-        new ComponentResourceKey(typeof(RectangleIndicatorInstaller), "ClearRectTemplateKey");
-
     #region Initialization
-    
+
     public MarqueeClearAreaDemo() {
       InitializeComponent();
     }
@@ -69,31 +63,44 @@ namespace Demo.yFiles.Graph.MarqueeClearArea
     }
 
     /// <summary>
-    /// Registers the <see cref="GraphEditorInputMode"/> as the <see cref="CanvasControl.InputMode"/>
-    /// and initializes the marquee input mode that clears the area of the marquee rectangle.
+    ///   Registers the <see cref="GraphEditorInputMode"/> as the <see cref="CanvasControl.InputMode"/>
+    ///   and initializes the marquee input mode that clears the area of the marquee rectangle.
     /// </summary>
     private void InitializeInputModes() {
       // enable undo/redo support
       GraphControl.Graph.SetUndoEngineEnabled(true);
-      
+
       // create an input mode to edit graphs
       var editMode = new GraphEditorInputMode();
 
       // create an input mode to clear the area of a marquee rectangle
       // using the right mouse button
       var marqueeClearInputMode = new MarqueeSelectionInputMode {
-          PressedRecognizer = MouseEventRecognizers.RightPressed,
-          DraggedRecognizer = MouseEventRecognizers.RightDragged,
-          ReleasedRecognizer = MouseEventRecognizers.RightReleased,
-          CancelRecognizer = KeyEventRecognizers.EscapePressed.Or(MouseEventRecognizers.LostCaptureDuringDrag),
-          Template = GraphControl.FindResource(ClearRectTemplateKey) as DataTemplate
+          BeginRecognizer = (_, arg) => arg is PointerEventArgs {
+              EventType: PointerEventType.Down, PointerType: PointerType.Mouse,
+              ChangedButtons: PointerButtons.MouseRight
+          },
+          MoveRecognizer = (_, arg) => arg is PointerEventArgs {
+              EventType: PointerEventType.Drag, PointerType: PointerType.Mouse,
+              Buttons: PointerButtons.MouseRight
+          },
+          FinishRecognizer = (_, arg) => arg is PointerEventArgs {
+              EventType: PointerEventType.Up, PointerType: PointerType.Mouse,
+              ChangedButtons: PointerButtons.MouseRight
+          },
+          CancelRecognizer = EventRecognizers.EscapeDown.Or((_, arg) => arg is PointerEventArgs {
+              EventType: PointerEventType.DragCaptureLost, PointerType: PointerType.Mouse
+          }),
+          // use a red indicator rectangle to distinguish it from the marquee selection
+          MarqueeRenderer = new RectangleRenderer((Pen) new Pen(Brushes.DarkRed, 2).GetAsFrozen(),
+              (Brush) new SolidColorBrush(new Color { A = 170, R = 255, G = 0, B = 0 }).GetAsFrozen())
       };
       // handle dragging the marquee
       marqueeClearInputMode.DragStarting += OnDragStarting;
       marqueeClearInputMode.Dragged += OnDragged;
       marqueeClearInputMode.DragCanceled += OnDragCanceled;
       marqueeClearInputMode.DragFinished += OnDragFinished;
-      // add this mode to the edit mode 
+      // add this mode to the edit mode
       editMode.Add(marqueeClearInputMode);
 
       // and install the edit mode into the canvas
@@ -101,14 +108,14 @@ namespace Demo.yFiles.Graph.MarqueeClearArea
     }
 
     /// <summary>
-    /// Initializes styles and loads a sample graph.
+    ///   Initializes styles and loads a sample graph.
     /// </summary>
     protected virtual void InitializeGraph() {
       DemoStyles.InitDemoStyles(GraphControl.Graph);
       // The content area of the group nodes should not be hit transparent in this demo,
       // since we also want to allow the marquee rectangle within group nodes.
       ((GroupNodeStyle) GraphControl.Graph.GroupNodeDefaults.Style).HitTransparentContentArea = false;
-      
+
       GraphControl.ImportFromGraphML("Resources\\grouping.graphml");
     }
 
@@ -117,22 +124,19 @@ namespace Demo.yFiles.Graph.MarqueeClearArea
     #region Dragging the marquee rectangle
 
     /// <summary>
-    /// The marquee rectangle is upon to be dragged.
+    ///   The marquee rectangle is upon to be dragged.
     /// </summary>
     private void OnDragStarting(object sender, MarqueeSelectionEventArgs e) {
-      var hitGroupNode = GetHitGroupNode(e.Context, e.Context.CanvasControl.LastEventLocation);
-      layoutHelper = new ClearAreaLayoutHelper(GraphControl) {
-          ClearRectangle = e.Rectangle,
-          GroupNode = hitGroupNode
-      };
+      var hitGroupNode = GetHitGroupNode(e.Context, e.Context.CanvasControl.LastPointerEvent.Location);
+      layoutHelper = new ClearAreaLayoutHelper(GraphControl) { ClearRectangle = e.Rectangle, GroupNode = hitGroupNode };
       layoutHelper.InitializeLayout();
     }
 
     /// <summary>
-    /// The marquee rectangle is currently dragged.
+    ///   The marquee rectangle is currently dragged.
     /// </summary>
     /// <remarks>
-    /// For each drag a new layout is calculated and applied if the previous one is completed.
+    ///   For each drag a new layout is calculated and applied if the previous one is completed.
     /// </remarks>
     private void OnDragged(object sender, MarqueeSelectionEventArgs e) {
       layoutHelper.ClearRectangle = e.Rectangle;
@@ -140,8 +144,8 @@ namespace Demo.yFiles.Graph.MarqueeClearArea
     }
 
     /// <summary>
-    /// Dragging the marquee rectangle has been canceled so
-    /// the state before the gesture must be restored.
+    ///   Dragging the marquee rectangle has been canceled so
+    ///   the state before the gesture must be restored.
     /// </summary>
     private void OnDragCanceled(object sender, MarqueeSelectionEventArgs e) {
       layoutHelper.ClearRectangle = e.Rectangle;
@@ -149,27 +153,25 @@ namespace Demo.yFiles.Graph.MarqueeClearArea
     }
 
     /// <summary>
-    /// Dragging the marquee rectangle has been finished so
-    /// we execute the layout with the final rectangle.
+    ///   Dragging the marquee rectangle has been finished so
+    ///   we execute the layout with the final rectangle.
     /// </summary>
     private void OnDragFinished(object sender, MarqueeSelectionEventArgs e) {
       layoutHelper.ClearRectangle = e.Rectangle;
       layoutHelper.StopLayout();
     }
-    
+
     /// <summary>
-    /// Returns the group node at the given location.
+    ///   Returns the group node at the given location.
     /// </summary>
     /// <remarks>
-    /// If there is no group node, <code>null</code> is returned.
+    ///   If there is no group node, <code>null</code> is returned.
     /// </remarks>
     private INode GetHitGroupNode(IInputModeContext context, PointD location) {
-      return context.Lookup<IHitTester<INode>>()
-                    .EnumerateHits(context, location)
-                    .FirstOrDefault(n => GraphControl.Graph.IsGroupNode(n));
+      return context.Lookup<IHitTester>().EnumerateHits(context, location, GraphItemTypes.Node).Cast<INode>()
+          .FirstOrDefault(n => GraphControl.Graph.IsGroupNode(n));
     }
 
     #endregion
-
   }
 }

@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -104,7 +104,7 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
     /// <summary>
     /// The default label style for this diagram instance
     /// </summary>
-    public DefaultLabelStyle DefaultStyle { get; set; }
+    public LabelStyle DefaultStyle { get; set; }
 
     /// <summary>
     /// Adds a plane to this diagram. Only happens once, but is caught elsewhere
@@ -126,15 +126,15 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
     /// Returns the given Style, or the default style, in case it does nor exist
     /// </summary>
     /// <param name="style">The id (name) of the style to get</param>
-    public DefaultLabelStyle GetStyle(string style) {
+    public LabelStyle GetStyle(string style) {
       if (style == null) {
-        return (DefaultLabelStyle) DefaultStyle.Clone();
+        return (LabelStyle) DefaultStyle.Clone();
       }
       BpmnLabelStyle retStyle;
       if (Styles.TryGetValue(style, out retStyle)) {
-        return (DefaultLabelStyle) retStyle.GetStyle().Clone();
+        return (LabelStyle) retStyle.GetStyle().Clone();
       }
-      return (DefaultLabelStyle) DefaultStyle.Clone();
+      return (LabelStyle) DefaultStyle.Clone();
     }
 
     /// <summary>

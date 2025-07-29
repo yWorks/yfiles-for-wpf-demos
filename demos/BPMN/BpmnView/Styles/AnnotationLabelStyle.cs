@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -35,54 +35,47 @@ using yWorks.Controls;
 using yWorks.Controls.Input;
 using yWorks.Geometry;
 using yWorks.Graph;
-using yWorks.Graph.Styles;
 using yWorks.Graph.LabelModels;
 using yWorks.Graph.PortLocationModels;
+using yWorks.Graph.Styles;
+using yWorks.Utils;
 
-namespace Demo.yFiles.Graph.Bpmn.Styles {
-
+namespace Demo.yFiles.Graph.Bpmn.Styles
+{
   /// <summary>
-  /// A label style for annotations according to the BPMN.
+  ///   A label style for annotations according to the BPMN.
   /// </summary>
   [Obfuscation(StripAfterObfuscation = false, Exclude = true, ApplyToMembers = false)]
-  public class AnnotationLabelStyle : ILabelStyle {
-
+  public sealed class AnnotationLabelStyle : ILabelStyle
+  {
     #region Initialize static fields
 
-    private static readonly AnnotationLabelStyleRenderer renderer = new AnnotationLabelStyleRenderer();
-    private readonly BpmnEdgeStyle connectorStyle = new BpmnEdgeStyle { Type = EdgeType.Association };
-    private static readonly DefaultLabelStyle textStyle = new DefaultLabelStyle();
-    private readonly AnnotationNodeStyle leftAnnotationStyle = new AnnotationNodeStyle { Left = true };
-    private readonly AnnotationNodeStyle rightAnnotationStyle = new AnnotationNodeStyle { Left = false };
+    private static readonly AnnotationLabelStyleRenderer renderer = new();
+    private readonly BpmnEdgeStyle connectorStyle = new() { Type = EdgeType.Association };
+    private static readonly LabelStyle textStyle = new();
+    private readonly AnnotationNodeStyle leftAnnotationStyle = new() { Left = true };
+    private readonly AnnotationNodeStyle rightAnnotationStyle = new() { Left = false };
 
     #endregion
 
     #region Properties
 
-    private double insets = 5.0;
-
     /// <summary>
-    /// Gets or sets the insets around the text.
+    ///   Gets or sets the padding around the text.
     /// </summary>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     [DefaultValue(5.0)]
-    public double Insets {
-      get { return insets; }
-      set { insets = value; }
-    }
+    public double Padding { get; set; } = 5.0;
 
-    private ConnectedIconLabelStyle delegateStyle;
-    internal ConnectedIconLabelStyle DelegateStyle {
-      get { return delegateStyle; }
-    }
+    internal ConnectedIconLabelStyle DelegateStyle { get; }
 
     /// <summary>
-    /// Gets or sets the background color of the annotation.
+    ///   Gets or sets the background color of the annotation.
     /// </summary>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     [DefaultValue(typeof(BpmnConstants), "AnnotationDefaultBackground")]
     public Brush Background {
-      get { return leftAnnotationStyle.Background; }
+      get => leftAnnotationStyle.Background;
       set {
         if (leftAnnotationStyle.Background != value) {
           leftAnnotationStyle.Background = value;
@@ -92,15 +85,15 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
     }
 
     /// <summary>
-    /// Gets or sets the outline color of the annotation.
+    ///   Gets or sets the outline color of the annotation.
     /// </summary>
     /// <remarks>
-    /// This also influences the color of the line to the annotated element.
+    ///   This also influences the color of the line to the annotated element.
     /// </remarks>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     [DefaultValue(typeof(BpmnConstants), "AnnotationDefaultOutline")]
     public Brush Outline {
-      get { return leftAnnotationStyle.Outline; }
+      get => leftAnnotationStyle.Outline;
       set {
         if (leftAnnotationStyle.Outline != value) {
           leftAnnotationStyle.Outline = value;
@@ -113,103 +106,106 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
     #endregion
 
     /// <summary>
-    /// Creates a new instance.
+    ///   Creates a new instance.
     /// </summary>
     public AnnotationLabelStyle() {
-      delegateStyle = new ConnectedIconLabelStyle {
-        IconStyle = leftAnnotationStyle,
-        TextStyle = textStyle,
-        TextPlacement = InteriorLabelModel.Center,
-        ConnectorStyle = connectorStyle,
-        LabelConnectorLocation = FreeNodePortLocationModel.NodeLeftAnchored,
-        NodeConnectorLocation = FreeNodePortLocationModel.NodeCenterAnchored
+      DelegateStyle = new ConnectedIconLabelStyle {
+          IconStyle = leftAnnotationStyle,
+          TextStyle = textStyle,
+          TextPlacement = InteriorNodeLabelModel.Center,
+          ConnectorStyle = connectorStyle,
+          LabelConnectorLocation = FreeNodePortLocationModel.Left,
+          NodeConnectorLocation = FreeNodePortLocationModel.Center
       };
     }
 
     /// <inheritdoc/>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     public object Clone() {
-      return new AnnotationLabelStyle {
-          Insets = Insets,
-          Background = Background,
-          Outline = Outline,
-      };
+      return new AnnotationLabelStyle { Padding = Padding, Background = Background, Outline = Outline };
     }
 
     /// <inheritdoc/>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
-    public ILabelStyleRenderer Renderer { get { return renderer; } }
+    public ILabelStyleRenderer Renderer => renderer;
 
     #region Renderer Class
 
     /// <summary>
-    /// An <see cref="ILabelStyleRenderer"/> implementation used by <see cref="AnnotationLabelStyle"/>.
+    ///   An <see cref="ILabelStyleRenderer"/> implementation used by <see cref="AnnotationLabelStyle"/>.
     /// </summary>
-    private sealed class AnnotationLabelStyleRenderer : ILabelStyleRenderer, IVisualCreator {
-
+    private sealed class AnnotationLabelStyleRenderer : ILabelStyleRenderer, IVisualCreator
+    {
       private ILabel label;
       private ILabelStyle labelStyle;
       private bool left;
-      private double insets;
+      private double padding;
 
-      private ILabelStyle GetCurrentStyle(ILabel item, ILabelStyle style) {
+      private ILabelStyle GetCurrentStyle(ILabel label, ILabelStyle style) {
         var annotationLabelStyle = style as AnnotationLabelStyle;
-        var nodeOwner = item.Owner as INode;
+        var nodeOwner = label.Owner as INode;
         if (annotationLabelStyle == null || nodeOwner == null) {
           return VoidLabelStyle.Instance;
         }
 
-        left = item.GetLayout().GetCenter().X > nodeOwner.Layout.GetCenter().X;
-        insets = annotationLabelStyle.Insets;
+        left = label.GetLayout().GetCenter().X > nodeOwner.Layout.GetCenter().X;
+        padding = annotationLabelStyle.Padding;
 
         var delegateStyle = annotationLabelStyle.DelegateStyle;
-        delegateStyle.IconStyle = left ? annotationLabelStyle.leftAnnotationStyle : annotationLabelStyle.rightAnnotationStyle;
-        delegateStyle.LabelConnectorLocation = left ? FreeNodePortLocationModel.NodeLeftAnchored : FreeNodePortLocationModel.NodeRightAnchored;
+        delegateStyle.IconStyle =
+            left ? annotationLabelStyle.leftAnnotationStyle : annotationLabelStyle.rightAnnotationStyle;
+        delegateStyle.LabelConnectorLocation = left ? FreeNodePortLocationModel.Left : FreeNodePortLocationModel.Right;
         return delegateStyle;
       }
 
       /// <inheritdoc/>
-      public IVisualCreator GetVisualCreator(ILabel item, ILabelStyle style) {
-        label = item;
+      public IVisualCreator GetVisualCreator(ILabel label, ILabelStyle style) {
+        this.label = label;
         labelStyle = style;
         return this;
       }
 
       /// <inheritdoc/>
-      public IBoundsProvider GetBoundsProvider(ILabel item, ILabelStyle style) {
-        var delegateStyle = GetCurrentStyle(item, style);
-        return delegateStyle.Renderer.GetBoundsProvider(item, delegateStyle);
+      public IBoundsProvider GetBoundsProvider(ILabel label, ILabelStyle style) {
+        var delegateStyle = GetCurrentStyle(label, style);
+        return delegateStyle.Renderer.GetBoundsProvider(label, delegateStyle);
       }
 
       /// <inheritdoc/>
-      public IVisibilityTestable GetVisibilityTestable(ILabel item, ILabelStyle style) {
-        var delegateStyle = GetCurrentStyle(item, style);
-        return delegateStyle.Renderer.GetVisibilityTestable(item, delegateStyle);
+      public IVisibilityTestable GetVisibilityTestable(ILabel label, ILabelStyle style) {
+        var delegateStyle = GetCurrentStyle(label, style);
+        return delegateStyle.Renderer.GetVisibilityTestable(label, delegateStyle);
       }
 
       /// <inheritdoc/>
-      public IHitTestable GetHitTestable(ILabel item, ILabelStyle style) {
-        var delegateStyle = GetCurrentStyle(item, style);
-        return delegateStyle.Renderer.GetHitTestable(item, delegateStyle);
+      public IHitTestable GetHitTestable(ILabel label, ILabelStyle style) {
+        var delegateStyle = GetCurrentStyle(label, style);
+        return delegateStyle.Renderer.GetHitTestable(label, delegateStyle);
       }
 
       /// <inheritdoc/>
-      public IMarqueeTestable GetMarqueeTestable(ILabel item, ILabelStyle style) {
-        var delegateStyle = GetCurrentStyle(item, style);
-        return delegateStyle.Renderer.GetMarqueeTestable(item, delegateStyle);
+      public IMarqueeTestable GetMarqueeTestable(ILabel label, ILabelStyle style) {
+        var delegateStyle = GetCurrentStyle(label, style);
+        return delegateStyle.Renderer.GetMarqueeTestable(label, delegateStyle);
       }
 
       /// <inheritdoc/>
-      public ILookup GetContext(ILabel item, ILabelStyle style) {
-        var delegateStyle = GetCurrentStyle(item, style);
-        return delegateStyle.Renderer.GetContext(item, delegateStyle);
+      public ILassoTestable GetLassoTestable(ILabel label, ILabelStyle style) {
+        var delegateStyle = GetCurrentStyle(label, style);
+        return delegateStyle.Renderer.GetLassoTestable(label, delegateStyle);
+      }
+
+      /// <inheritdoc/>
+      public ILookup GetContext(ILabel label, ILabelStyle style) {
+        var delegateStyle = GetCurrentStyle(label, style);
+        return delegateStyle.Renderer.GetContext(label, delegateStyle);
       }
 
       /// <inheritdoc/>
       public SizeD GetPreferredSize(ILabel label, ILabelStyle style) {
         var preferredTextSize = textStyle.Renderer.GetPreferredSize(label, textStyle);
-        var insets = ((AnnotationLabelStyle) style).Insets;
-        return new SizeD(2 * insets + preferredTextSize.Width, 2 * insets + preferredTextSize.Height);
+        var padding = ((AnnotationLabelStyle) style).Padding;
+        return new SizeD(2 * padding + preferredTextSize.Width, 2 * padding + preferredTextSize.Height);
       }
 
       /// <inheritdoc/>
@@ -232,7 +228,8 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
           return CreateVisual(context);
         }
         var oldDelegateVisual = container.Children[0];
-        var newDelegateVisual = delegateStyle.Renderer.GetVisualCreator(label, delegateStyle).UpdateVisual(context, oldDelegateVisual);
+        var newDelegateVisual = delegateStyle.Renderer.GetVisualCreator(label, delegateStyle)
+            .UpdateVisual(context, oldDelegateVisual);
         if (oldDelegateVisual != newDelegateVisual) {
           container.Children[0] = newDelegateVisual;
         }
@@ -240,33 +237,27 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
       }
 
       private RenderData CreateRenderData() {
-        return new RenderData {
-          Left = left,
-          Insets = insets
-        };
+        return new RenderData { Left = left, Padding = padding };
       }
 
 #pragma warning disable 659 // we never yield this class and we are the only ones to call Equals, so we don't need GetHashCode()
-      sealed class RenderData
+      private sealed class RenderData
       {
         public bool Left { private get; set; }
-        public double Insets { private get; set; }
+
+        public double Padding { private get; set; }
 
         public override bool Equals(object obj) {
           var other = obj as RenderData;
           if (other == null) {
             return false;
           }
-          return Left == other.Left && Insets == other.Insets;
+          return Left == other.Left && Padding == other.Padding;
         }
       }
     }
 #pragma warning restore 659
 
     #endregion
-
   }
 }
-
-
-

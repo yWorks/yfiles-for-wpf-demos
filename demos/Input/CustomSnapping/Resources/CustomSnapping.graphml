@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--Created by yFiles WPF 2.2-->
-<graphml xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/3.0" xmlns:y="http://www.yworks.com/xml/yfiles-common/3.0" xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/3.0/xaml" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml.wpf/2.0/ygraphml.xsd " xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://graphml.graphdrawing.org/xmlns">
+<graphml xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/3.0" xmlns:y="http://www.yworks.com/xml/yfiles-common/3.0"  xmlns:yx="http://www.yworks.com/xml/yfiles-common/4.0" xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/4.0/xaml" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml.wpf/2.0/ygraphml.xsd " xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://graphml.graphdrawing.org/xmlns">
   <key id="d0" for="all" attr.name="UserTags" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/UserTags" />
   <key id="d1" for="node" attr.name="NodeLabels" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeLabels" />
   <key id="d2" for="node" attr.name="NodeGeometry" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeGeometry" />
@@ -51,7 +51,7 @@
             <y:Label.Text><![CDATA[This node label has an extra extended super long text
 so you can see how nodes snap all along its border.]]></y:Label.Text>
             <y:Label.LayoutParameter>
-              <y:RatioAnchoredLabelModelParameter LayoutRatio="0.5,0" LayoutOffset="0,-25" LabelRatio="0.5,0.5" />
+              <yx:FreeNodeLabelModelParameter LayoutRatio="0.5,0" LayoutOffset="0,-25" LabelRatio="0.5,0.5" />
             </y:Label.LayoutParameter>
           </y:Label>
         </x:List>
@@ -85,11 +85,11 @@ so you can see how nodes snap all along its border.]]></y:Label.Text>
 to this edge label as long as
 it is orthogonal.]]></y:Label.Text>
             <y:Label.LayoutParameter>
-              <y:SmartEdgeLabelModelParameter SegmentIndex="2" Distance="9">
-                <y:SmartEdgeLabelModelParameter.Model>
-                  <y:SmartEdgeLabelModel />
-                </y:SmartEdgeLabelModelParameter.Model>
-              </y:SmartEdgeLabelModelParameter>
+              <yx:SmartEdgeLabelModelParameter SegmentIndex="2" Distance="9">
+                <yx:SmartEdgeLabelModelParameter.Model>
+                  <yx:SmartEdgeLabelModel />
+                </yx:SmartEdgeLabelModelParameter.Model>
+              </yx:SmartEdgeLabelModelParameter>
             </y:Label.LayoutParameter>
           </y:Label>
         </x:List>

@@ -1,6 +1,6 @@
 <!-- ************************************************************************ -->
-<!-- This demo file is part of yFiles WPF 3.6.                           -->
-<!-- Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
+<!-- This demo file is part of yFiles WPF 4.0.                           -->
+<!-- Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
 <!-- 72070 Tuebingen, Germany. All rights reserved.                           -->
 <!--                                                                          -->
 <!-- yFiles demo files exhibit yFiles WPF functionalities. Any redistribution  -->
@@ -27,7 +27,7 @@
 <Window x:Class="Demo.yFiles.Algorithms.GraphAnalysis.GraphAnalysisWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/3.0/xaml"
+        xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/4.0/xaml"
         xmlns:System="clr-namespace:System;assembly=mscorlib"
         xmlns:GraphAnalysis="clr-namespace:Demo.yFiles.Algorithms.GraphAnalysis"
         Title="Demo.yFiles.Algorithms.GraphAnalysis" Height="800"
@@ -104,17 +104,19 @@
           <Separator />
           <Button Command="IncreaseZoom" CommandTarget="{Binding ElementName=graphControl}" />
           <Button Command="DecreaseZoom" CommandTarget="{Binding ElementName=graphControl}" />
-          <Button Command="{x:Static ywpf:GraphControl.FitGraphBoundsCommand}"
+          <Button Command="{x:Static ywpf:GraphCommands.FitGraphBounds}"
                   CommandTarget="{Binding ElementName=graphControl}" />
           <Separator />
           <Button Command="Undo" CommandTarget="{Binding ElementName=graphControl}" />
           <Button Command="Redo" CommandTarget="{Binding ElementName=graphControl}" />
           <Separator />
-          <Button x:Name="previousButton" Content="{StaticResource ArrowLeftIcon}" ContentTemplate="{StaticResource ImageButtonContentTemplate}" ToolTip="Previous sample" Click="PreviousSample"/>
-          <ComboBox x:Name="sampleComboBox" SelectionChanged="OnSampleChanged" DisplayMemberPath="DisplayName" SelectedItem="{Binding RelativeSource={RelativeSource AncestorType=GraphAnalysis:GraphAnalysisWindow}, Path=CurrentSample}"/>
-                    <Button x:Name="nextButton" Content="{StaticResource ArrowRightIcon}" ContentTemplate="{StaticResource ImageButtonContentTemplate}" ToolTip="Next sample" Click="NextSample"/>
+          <Button x:Name="previousSampleButton" Content="{StaticResource ArrowLeftIcon}" ContentTemplate="{StaticResource ImageButtonContentTemplate}" ToolTip="Previous sample" Click="PreviousSample"/>
+          <ComboBox x:Name="sampleComboBox" Width="255" SelectionChanged="OnSampleChanged" DisplayMemberPath="DisplayName" SelectedItem="{Binding RelativeSource={RelativeSource AncestorType=GraphAnalysis:GraphAnalysisWindow}, Path=CurrentSample}"/>
+          <Button x:Name="nextSampleButton" Content="{StaticResource ArrowRightIcon}" ContentTemplate="{StaticResource ImageButtonContentTemplate}" ToolTip="Next sample" Click="NextSample"/>
           <Separator />
-          <ComboBox x:Name="algorithmComboBox" SelectionChanged="OnAlgorithmChanged" DisplayMemberPath="DisplayName" SelectedValuePath="Configuration" SelectedValue="{Binding RelativeSource={RelativeSource AncestorType=GraphAnalysis:GraphAnalysisWindow}, Path=CurrentConfig}"/>
+          <Button x:Name="previousAlgorithmButton" Content="{StaticResource ArrowLeftIcon}" ContentTemplate="{StaticResource ImageButtonContentTemplate}" ToolTip="Previous algorithm" Click="PreviousAlgorithm"/>
+          <ComboBox x:Name="algorithmComboBox" Width="270" SelectionChanged="OnAlgorithmChanged" DisplayMemberPath="DisplayName" SelectedValuePath="Configuration" SelectedValue="{Binding RelativeSource={RelativeSource AncestorType=GraphAnalysis:GraphAnalysisWindow}, Path=CurrentConfig}"/>
+          <Button x:Name="nextAlgorithmButton" Content="{StaticResource ArrowRightIcon}" ContentTemplate="{StaticResource ImageButtonContentTemplate}" ToolTip="Next algorithm" Click="NextAlgorithm"/>
           <Separator />
           <Button x:Name="generateEdgeLabelsButton" Click="GenerateEdgeLabels">Generate Edge Labels</Button>
           <Button x:Name="removeEdgeLabelsButton" Click="RemoveEdgeLabels">Delete All Edge Labels</Button>

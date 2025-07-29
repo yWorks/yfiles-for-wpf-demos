@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -81,21 +81,21 @@ namespace Demo.yFiles.Algorithms.GraphAnalysis
 
       switch (algorithmType) {
         case CentralityMode.Weight: {
-          var result = new WeightCentrality {Weights = {Delegate = GetEdgeWeight}, ConsiderOutgoingEdges = true, ConsiderIncomingEdges = true}.Run(graph);
+          var result = new WeightCentrality {Weights = {MapperFunction = GetEdgeWeight}, ConsiderOutgoingEdges = true, ConsiderIncomingEdges = true}.Run(graph);
           maximumNodeCentrality = result.MaximumNodeCentrality;
           minimumNodeCentrality = result.MinimumNodeCentrality;
           normalizedNodeCentrality = result.NormalizedNodeCentrality;
           break;
         }
         case CentralityMode.Graph: {
-          var result = new GraphCentrality {Weights = {Delegate = GetEdgeWeight}, Directed = Directed}.Run(graph);
+          var result = new GraphCentrality {Weights = {MapperFunction = GetEdgeWeight}, Directed = Directed}.Run(graph);
           maximumNodeCentrality = result.MaximumNodeCentrality;
           minimumNodeCentrality = result.MinimumNodeCentrality;
           normalizedNodeCentrality = result.NormalizedNodeCentrality;
           break;
         }
         case CentralityMode.NodeEdgeBetweenness: {
-          var result = new BetweennessCentrality {Directed = Directed, Weights = {Delegate = GetEdgeWeight}}.Run(graph);
+          var result = new BetweennessCentrality {Directed = Directed, Weights = {MapperFunction = GetEdgeWeight}}.Run(graph);
           maximumNodeCentrality = result.MaximumNodeCentrality;
           minimumNodeCentrality = result.MinimumNodeCentrality;
           normalizedNodeCentrality = result.NormalizedNodeCentrality;
@@ -107,7 +107,7 @@ namespace Demo.yFiles.Algorithms.GraphAnalysis
           break;
         }
         case CentralityMode.Closeness: {
-          var result = new ClosenessCentrality { Directed = Directed, Weights = {Delegate = GetEdgeWeight}}.Run(graph);
+          var result = new ClosenessCentrality { Directed = Directed, Weights = {MapperFunction = GetEdgeWeight}}.Run(graph);
           maximumNodeCentrality = result.MaximumNodeCentrality;
           minimumNodeCentrality = result.MinimumNodeCentrality;
           normalizedNodeCentrality = result.NormalizedNodeCentrality;
@@ -122,7 +122,7 @@ namespace Demo.yFiles.Algorithms.GraphAnalysis
           break;
         }
       }
-      
+
       var min = minimumNodeCentrality / maximumNodeCentrality;
       var diff = 1 - min;
 
@@ -131,7 +131,7 @@ namespace Demo.yFiles.Algorithms.GraphAnalysis
       var colorNumber = 50;
 
       normalizedNodeCentrality.ForEach((node, centralityId) => {
-        var textLabelStyle = new DefaultLabelStyle { TextBrush = Brushes.White };
+        var textLabelStyle = new LabelStyle { TextBrush = Brushes.White };
 
         var centrality = Math.Round(centralityId * 100.0) / 100;
         node.Tag = centrality;
@@ -148,8 +148,7 @@ namespace Demo.yFiles.Algorithms.GraphAnalysis
           var index = Math.Max(0, Math.Min(colorNumber, (int) Math.Floor((centralityId - min) * colorScale)));
           graph.SetStyle(node, GetMarkedNodeStyle(index, colorNumber));
           // adjust size
-          var sizeScale = (mostCentralValue - leastCentralValue) / diff;
-          var size = leastCentralValue + (centralityId - min) * sizeScale;
+          var size = Math.Floor(leastCentralValue + centralityId * (mostCentralValue - leastCentralValue));
           graph.SetNodeLayout(node, new RectD(node.Layout.X, node.Layout.Y, size, size));
         }
       });
@@ -163,7 +162,6 @@ namespace Demo.yFiles.Algorithms.GraphAnalysis
     /// </remarks>
     /// <param name="value">The value to get the color for.</param>
     /// <param name="maxValue">The maximum value. The closer value is to maxValue the darker is the resulting node style.</param>
-    /// <returns></returns>
     private INodeStyle GetMarkedNodeStyle(int value, int maxValue) {
       var colors = GenerateColors(true, maxValue);
       return new ShapeNodeStyle {
@@ -203,7 +201,7 @@ namespace Demo.yFiles.Algorithms.GraphAnalysis
     /// The centrality can be computed for directed and undirected graphs. This algorithm also supports edge weights.
     /// </remarks>
     NodeEdgeBetweenness,
-    /// <summary> 
+    /// <summary>
     /// Computes the (shortest path) distances of a node to all other nodes in the graph using <see cref="ClosenessCentrality"/>.
     /// </summary>
     /// <remarks>

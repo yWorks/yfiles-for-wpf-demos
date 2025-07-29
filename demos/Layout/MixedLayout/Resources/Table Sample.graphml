@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--Created by yFiles WPF 3.5-->
-<graphml xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/3.0" xmlns:y="http://www.yworks.com/xml/yfiles-common/3.0" xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/3.0/xaml" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml.wpf/3.0/ygraphml.xsd " xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://graphml.graphdrawing.org/xmlns">
+<graphml xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/3.0" xmlns:y="http://www.yworks.com/xml/yfiles-common/3.0"  xmlns:yx="http://www.yworks.com/xml/yfiles-common/4.0" xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/4.0/xaml" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml.wpf/3.0/ygraphml.xsd " xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://graphml.graphdrawing.org/xmlns">
   <key id="d0" attr.type="boolean" attr.name="Expanded" for="node" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/folding/Expanded">
     <default>true</default>
   </key>
@@ -22,21 +22,21 @@
   <key id="d12" attr.name="SharedData" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/SharedData" />
   <data key="d12">
     <y:SharedData>
-      <y:InteriorLabelModelParameter x:Key="2" Position="Center">
-        <y:InteriorLabelModelParameter.Model>
-          <y:InteriorLabelModel />
-        </y:InteriorLabelModelParameter.Model>
-      </y:InteriorLabelModelParameter>
+      <yx:InteriorNodeLabelModelParameter x:Key="2" Position="Center">
+        <yx:InteriorNodeLabelModelParameter.Model>
+          <yx:InteriorNodeLabelModel />
+        </yx:InteriorNodeLabelModelParameter.Model>
+      </yx:InteriorNodeLabelModelParameter>
       <ywpf:RectangleNodeStyle x:Key="3" CornerSize="3.5" Brush="#FFFF6C00">
         <ywpf:RectangleNodeStyle.Pen>
           <Pen Brush="#FF662B00" Thickness="1.5" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" p11:Freeze="true" xmlns:p11="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options" />
         </ywpf:RectangleNodeStyle.Pen>
       </ywpf:RectangleNodeStyle>
-      <y:GroupNodeLabelModelParameter x:Key="4" PlaceOnTab="False">
-        <y:GroupNodeLabelModelParameter.Model>
-          <y:GroupNodeLabelModel />
-        </y:GroupNodeLabelModelParameter.Model>
-      </y:GroupNodeLabelModelParameter>
+      <yx:GroupNodeLabelModelParameter x:Key="4" PlaceOnTab="False">
+        <yx:GroupNodeLabelModelParameter.Model>
+          <yx:GroupNodeLabelModel />
+        </yx:GroupNodeLabelModelParameter.Model>
+      </yx:GroupNodeLabelModelParameter>
       <Pen Brush="#FF0B7189" Thickness="2" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" p8:Freeze="true" x:Key="6" xmlns:p8="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options" />
     </y:SharedData>
   </data>
@@ -53,7 +53,7 @@
         <y:RectD X="87" Y="259.04" Width="118" Height="140" />
       </data>
       <data key="d4">
-        <ywpf:GroupNodeStyle TabWidth="30" TabHeight="20" TabInset="3" TabPosition="TopTrailing" GroupIcon="Minus" IconForegroundBrush="#FF0B7189" IconOffset="2" HitTransparentContentArea="True" TabBackgroundBrush="#FF0B7189" TabBrush="#FF9DC6D0" Pen="{y:GraphMLReference 6}" />
+        <ywpf:GroupNodeStyle TabWidth="30" TabHeight="20" TabPadding="3" TabPosition="TopTrailing" GroupIcon="Minus" IconForegroundBrush="#FF0B7189" IconOffset="2" HitTransparentContentArea="True" TabBackgroundBrush="#FF0B7189" TabBrush="#FF9DC6D0" Pen="{y:GraphMLReference 6}" />
       </data>
       <graph id="n0:">
         <node id="n0::n0">
@@ -117,7 +117,7 @@
         <y:RectD X="67" Y="475.03999999999996" Width="120" Height="164" />
       </data>
       <data key="d4">
-        <ywpf:GroupNodeStyle TabWidth="30" TabHeight="20" TabInset="3" TabPosition="TopTrailing" GroupIcon="Minus" IconForegroundBrush="#FF0B7189" IconOffset="2" HitTransparentContentArea="True" TabBackgroundBrush="#FF0B7189" TabBrush="#FF9DC6D0" Pen="{y:GraphMLReference 6}" />
+        <ywpf:GroupNodeStyle TabWidth="30" TabHeight="20" TabPadding="3" TabPosition="TopTrailing" GroupIcon="Minus" IconForegroundBrush="#FF0B7189" IconOffset="2" HitTransparentContentArea="True" TabBackgroundBrush="#FF0B7189" TabBrush="#FF9DC6D0" Pen="{y:GraphMLReference 6}" />
       </data>
       <graph id="n1:">
         <node id="n1::n0">
@@ -196,7 +196,7 @@
         <y:RectD X="312" Y="364.04" Width="115" Height="251.99999999999994" />
       </data>
       <data key="d4">
-        <ywpf:GroupNodeStyle TabWidth="30" TabHeight="20" TabInset="3" TabPosition="TopTrailing" GroupIcon="Minus" IconForegroundBrush="#FF0B7189" IconOffset="2" HitTransparentContentArea="True" TabBackgroundBrush="#FF0B7189" TabBrush="#FF9DC6D0" Pen="{y:GraphMLReference 6}" />
+        <ywpf:GroupNodeStyle TabWidth="30" TabHeight="20" TabPadding="3" TabPosition="TopTrailing" GroupIcon="Minus" IconForegroundBrush="#FF0B7189" IconOffset="2" HitTransparentContentArea="True" TabBackgroundBrush="#FF0B7189" TabBrush="#FF9DC6D0" Pen="{y:GraphMLReference 6}" />
       </data>
       <graph id="n2:">
         <node id="n2::n0">
@@ -292,7 +292,7 @@
         <y:RectD X="563" Y="440.04" Width="134" Height="220.99999999999994" />
       </data>
       <data key="d4">
-        <ywpf:GroupNodeStyle TabWidth="30" TabHeight="20" TabInset="3" TabPosition="TopTrailing" GroupIcon="Minus" IconForegroundBrush="#FF0B7189" IconOffset="2" HitTransparentContentArea="True" TabBackgroundBrush="#FF0B7189" TabBrush="#FF9DC6D0" Pen="{y:GraphMLReference 6}" />
+        <ywpf:GroupNodeStyle TabWidth="30" TabHeight="20" TabPadding="3" TabPosition="TopTrailing" GroupIcon="Minus" IconForegroundBrush="#FF0B7189" IconOffset="2" HitTransparentContentArea="True" TabBackgroundBrush="#FF0B7189" TabBrush="#FF9DC6D0" Pen="{y:GraphMLReference 6}" />
       </data>
       <graph id="n3:">
         <node id="n3::n0">

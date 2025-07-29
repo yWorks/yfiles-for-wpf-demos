@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -34,16 +34,17 @@ using yWorks.Controls;
 using yWorks.Controls.Input;
 using yWorks.Geometry;
 using yWorks.Graph;
+using yWorks.Utils;
 
 namespace Demo.yFiles.Graph.OverlapAvoidingEditor
 {
   /// <summary>
-  /// A demo that shows how to interactively edit graphs without creating overlaps.
+  ///   A demo that shows how to interactively edit graphs without creating overlaps.
   /// </summary>
   public partial class OverlapAvoidingEditorDemo
   {
     #region Initialization
-    
+
     public OverlapAvoidingEditorDemo() {
       InitializeComponent();
     }
@@ -55,49 +56,43 @@ namespace Demo.yFiles.Graph.OverlapAvoidingEditor
     }
 
     /// <summary>
-    /// Modifies the <see cref="GraphModelManager"/> so that certain edges are hidden.
+    ///   Modifies the <see cref="GraphModelManager"/> so that certain edges are hidden.
     /// </summary>
     /// <param name="manager">The GraphModelManager to modify.</param>
     private void ConfigureModelManager(GraphModelManager manager) {
-      manager.EdgeDescriptor = new HidingEdgeDescriptor(manager.EdgeDescriptor);
+      manager.EdgeRenderer = new HidingEdgeRenderer(manager.EdgeRenderer);
     }
 
     /// <summary>
-    /// Registers the <see cref="GraphEditorInputMode"/> as the <see cref="CanvasControl.InputMode"/>
-    /// and configures input gestures to avoid overlaps.
+    ///   Registers the <see cref="GraphEditorInputMode"/> as the <see cref="CanvasControl.InputMode"/>
+    ///   and configures input gestures to avoid overlaps.
     /// </summary>
     private void InitializeInputModes() {
       var graph = GraphControl.Graph;
-      
+
       // create a GraphEditorInputMode instance
-      var editMode = new GraphEditorInputMode();
+      var editMode = new GraphEditorInputMode { MoveUnselectedItemsInputMode = { Enabled = false } };
       GraphControl.InputMode = editMode;
 
-      // enable interactive re-parenting
-      editMode.AllowGroupingOperations = true;
-      
       // enable single selection
       new SingleSelectionSupport(editMode).Enable();
 
-      // enable orthogonal edge editing
-      editMode.OrthogonalEdgeEditingContext = new OrthogonalEdgeEditingContext();
-
       // use a position handler that avoids overlapping,
       // but only apply it to the selected node and not to the children of groups
-      graph.GetDecorator().NodeDecorator.PositionHandlerDecorator.SetFactory(
-          node => node == GraphControl.Selection.SelectedNodes.FirstOrDefault(),
-          node => {
+      graph.GetDecorator().Nodes.PositionHandler.AddFactory(
+          node => node == GraphControl.Selection.Nodes.FirstOrDefault(), node => {
             // Lookup the node position handler that only handles the location of the node itself
             var defaultPositionHandler = DefaultGraph.DefaultNodeLookup.Lookup<IPositionHandler>(node);
-            // wrap it in a GroupingNodePositionHandler that moves all child nodes but doesn't update the 
+            // wrap it in a GroupingNodePositionHandler that moves all child nodes but doesn't update the
             // parent group node bounds
-            var handler = new GroupingNodePositionHandler(node, defaultPositionHandler) { AdjustParentNodeLayout = false };
+            var handler =
+                new GroupingNodePositionHandler(node, defaultPositionHandler) { AdjustParentNodeLayout = false };
             // wrap it in a NonOverlapPositionHandler that removes overlaps during and after the move gesture
             return new NonOverlapPositionHandler(node, handler);
           });
 
       // use a reshape handler that avoids overlapping
-      graph.GetDecorator().NodeDecorator.ReshapeHandlerDecorator.SetFactory(node => {
+      graph.GetDecorator().Nodes.ReshapeHandler.AddFactory(node => {
         // Lookup the node reshape handler that only reshapes the node itself (and not its parent group node)
         var defaultReshapeHandler = DefaultGraph.DefaultNodeLookup.Lookup<IReshapeHandler>(node);
         // wrap it in a NonOverlapReshapeHandler that removes overlaps during and after the resize gesture
@@ -106,11 +101,10 @@ namespace Demo.yFiles.Graph.OverlapAvoidingEditor
 
       // set a size constraint provider for a minimum node size for all nodes not already providing their own one
       var minimumSize = new SizeD(5, 5);
-      var sizeConstraintProviderDecorator = graph.GetDecorator().NodeDecorator.SizeConstraintProviderDecorator;
-      sizeConstraintProviderDecorator.DecorateNulls = true;
-      sizeConstraintProviderDecorator.SetImplementationWrapper((node, provider) => 
+      var sizeConstraintProviderDecorator = graph.GetDecorator().Nodes.SizeConstraintProvider;
+      sizeConstraintProviderDecorator.AddWrapperFactory((node, provider) =>
           provider ?? new NodeSizeConstraintProvider(minimumSize, SizeD.Infinite));
-      
+
       // avoid overlapping when creating, pasting or duplicating nodes
       editMode.NodeCreated += (sender, args) => MakeSpace(args.Item);
       GraphControl.Clipboard.FromClipboardCopier.NodeCopied += (sender, args) => MakeSpace(args.Copy);
@@ -118,21 +112,21 @@ namespace Demo.yFiles.Graph.OverlapAvoidingEditor
     }
 
     /// <summary>
-    /// Makes space for a new node.
+    ///   Makes space for a new node.
     /// </summary>
     private void MakeSpace(INode node) {
       new LayoutHelper(GraphControl, node).LayoutImmediately();
     }
 
     /// <summary>
-    /// Initializes styles and loads a sample graph.
+    ///   Initializes styles and loads a sample graph.
     /// </summary>
     protected virtual void InitializeGraph() {
-      DemoStyles.InitDemoStyles(GraphControl.Graph);
+      // enable orthogonal edge editing
+      DemoStyles.InitDemoStyles(GraphControl.Graph, orthogonalEdgeEditing : true);
       GraphControl.ImportFromGraphML("Resources\\grouping.graphml");
     }
 
     #endregion
-    
   }
 }

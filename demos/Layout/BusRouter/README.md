@@ -1,3 +1,3 @@
 # BusRouter
 
-This Demo shows how to use a BusRouter as layout.
+This demo shows how to create bus-style edge paths with EdgeRouter.

@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -28,121 +28,110 @@
  ***************************************************************************/
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Globalization;
-using System.IO;
 using System.Reflection;
-using System.Runtime.Serialization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Markup;
-using System.Windows.Media;
-using System.Xml;
-using yWorks.Graph;
+using yWorks.Utils;
 
 namespace Demo.yFiles.Option.Handler
 {
   /// <summary>
-  /// Option item that can have a list of valid entries for the item's value
+  ///   Option item that can have a list of valid entries for the item's value
   /// </summary>
   /// <typeparam name="T">The type of the entries.</typeparam>
   public class CollectionOptionItem<T> : OptionItem
   {
-    private ICollection<T> _domain;
-
     /// <summary>
-    /// If <see langword="true"/>, values that are not in the list of valid values are rejected.
+    ///   If <see langword="true"/>, values that are not in the list of valid values are rejected.
     /// </summary>
     public const string USE_ONLY_DOMAIN_ATTRIBUTE = "CollectionOptionItem.USE_ONLY_DOMAIN_ATTRIBUTE";
 
     /// <summary>
-    /// If <see langword="true"/>, values that are not in the list of valid values are rejected.
+    ///   If <see langword="true"/>, values that are not in the list of valid values are rejected.
     /// </summary>
     public const string DOMAIN_ATTRIBUTE = "CollectionOptionItem.DOMAIN_ATTRIBUTE";
 
     /// <summary>
-    /// If set to an instance, a type, or a fully qualified classname of
-    /// a <see cref="DataTemplate"/> this one can be used to display the possible values in the UI.
+    ///   If set to an instance, a type, or a fully qualified classname of
+    ///   a <see cref="DataTemplate"/> this one can be used to display the possible values in the UI.
     /// </summary>
     public const string ITEM_TEMPLATE_DISPLAY_ATTRIBUTE = "CollectionOptionItem.ITEM_TEMPLATE_DISPLAY_ATTRIBUTE";
 
     /// <summary>
-    /// If set to an instance, a type, or a fully qualified classname of
-    /// a <see cref="DataTemplate"/> this one can be used to edit a value in the UI.
+    ///   If set to an instance, a type, or a fully qualified classname of
+    ///   a <see cref="DataTemplate"/> this one can be used to edit a value in the UI.
     /// </summary>
     public const string ITEM_TEMPLATE_EDIT_ATTRIBUTE = "CollectionOptionItem.ITEM_TEMPLATE_EDIT_ATTRIBUTE";
 
     /// <summary>
-    /// Create a new instance with the given name and an undefined initial value.
+    ///   Create a new instance with the given name and an undefined initial value.
     /// </summary>
     /// <param name="name">The name of the item</param>
     /// <param name="domain">The list of valid values</param>
-    public CollectionOptionItem(string name, ICollection<T> domain)
-      : base(name) {
-      Type = typeof (ICollection<T>);
-      _domain = domain;
-      IEnumerator<T> enumerator = domain.GetEnumerator();
+    public CollectionOptionItem(string name, ICollection<T> domain) : base(name) {
+      Type = typeof(ICollection<T>);
+      Domain = domain;
+      var enumerator = domain.GetEnumerator();
       if (enumerator.MoveNext()) {
         Value = enumerator.Current;
       }
-      //by default, both types are not supported
+      // by default, both types are not supported
       Attributes[SupportNullValueAttribute] = false;
       Attributes[SupportUndefinedValueAttribute] = true;
       Attributes[USE_ONLY_DOMAIN_ATTRIBUTE] = true;
-      Attributes[DOMAIN_ATTRIBUTE] = _domain;
+      Attributes[DOMAIN_ATTRIBUTE] = Domain;
       AddLocalizingTemplate();
       Attributes[CustomDialogitemEditor] = "Domain.OptionItemPresenter";
     }
 
     private void AddLocalizingTemplate() {
-      XamlLocalizingConverter converter = new XamlLocalizingConverter();
+      var converter = new XamlLocalizingConverter();
       converter.OptionItem = this;
-      Attributes[OptionItem.ItemTemplateAttribute] = CreateTemplate(converter);
+      Attributes[ItemTemplateAttribute] = CreateTemplate(converter);
       // to keep a strong reference to the converter instance....
       Attributes["ITEM_TEMPLATE_DISPLAY_ATTRIBUTE_ConverterInstance"] = converter;
       converter.PostFix = ".VALUE.";
     }
 
     private DataTemplate CreateTemplate(IValueConverter converter) {
-      DataTemplate dt = new DataTemplate();
+      var dt = new DataTemplate();
       var textBlockFactory = new FrameworkElementFactory(typeof(TextBlock));
-      textBlockFactory.SetBinding(TextBlock.TextProperty, new Binding(){Converter = converter});
+      textBlockFactory.SetBinding(TextBlock.TextProperty, new Binding { Converter = converter });
       dt.VisualTree = textBlockFactory;
       return dt;
-//      var id = DynamicValueConverter.Register(converter);
-//      Assembly assembly = typeof(DynamicValueConverter).Assembly;
-//      var assemblyName = new AssemblyName(assembly.FullName);
-//      string xaml = "<DataTemplate xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' " +
-//                    "xmlns:UI='clr-namespace:yWorks.Option.Handler;assembly=" + assemblyName.Name + "'>" +
-//                    "<TextBlock><TextBlock.Text>" +
-//                    "<Binding>" +
-//                    "<Binding.Converter>" +
-//                    "<UI:DynamicValueConverter ConverterId='"+id+"'/>" +
-//                    "</Binding.Converter>" +
-//                    "</Binding>" +
-//                    "</TextBlock.Text></TextBlock>" +
-//                    "</DataTemplate>";
-//      var result = (DataTemplate)XamlReader.Load(new XmlTextReader(new StringReader(xaml)));
-//      return result;
+      //      var id = DynamicValueConverter.Register(converter);
+      //      Assembly assembly = typeof(DynamicValueConverter).Assembly;
+      //      var assemblyName = new AssemblyName(assembly.FullName);
+      //      string xaml = "<DataTemplate xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' " +
+      //                    "xmlns:UI='clr-namespace:yWorks.Option.Handler;assembly=" + assemblyName.Name + "'>" +
+      //                    "<TextBlock><TextBlock.Text>" +
+      //                    "<Binding>" +
+      //                    "<Binding.Converter>" +
+      //                    "<UI:DynamicValueConverter ConverterId='"+id+"'/>" +
+      //                    "</Binding.Converter>" +
+      //                    "</Binding>" +
+      //                    "</TextBlock.Text></TextBlock>" +
+      //                    "</DataTemplate>";
+      //      var result = (DataTemplate)XamlReader.Load(new XmlTextReader(new StringReader(xaml)));
+      //      return result;
     }
 
 
     /// <summary>
-    /// Create a new instance with the given name.
+    ///   Create a new instance with the given name.
     /// </summary>
     /// <param name="name">The name of the item</param>
     /// <param name="domain">The list of valid values</param>
     /// <param name="value">The initial value for this item</param>
-    public CollectionOptionItem(string name, ICollection<T> domain, object value)
-      : base(name) {
-      _domain = domain;
+    public CollectionOptionItem(string name, ICollection<T> domain, object value) : base(name) {
+      Domain = domain;
       Attributes[SupportNullValueAttribute] = false;
       Attributes[SupportUndefinedValueAttribute] = true;
       Attributes[USE_ONLY_DOMAIN_ATTRIBUTE] = true;
-      Attributes[DOMAIN_ATTRIBUTE] = _domain;
+      Attributes[DOMAIN_ATTRIBUTE] = Domain;
       Attributes[CustomDialogitemEditor] = "Domain.OptionItemPresenter";
       AddLocalizingTemplate();
       Value = value;
@@ -150,32 +139,28 @@ namespace Demo.yFiles.Option.Handler
 
 
     /// <summary>
-    /// Gets the domain this item is working on.
+    ///   Gets the domain this item is working on.
     /// </summary>
     /// <value>The domain.</value>
-    public ICollection<T> Domain {
-      get { return _domain; }
-    }
+    public ICollection<T> Domain { get; }
 
     /// <summary>
-    /// Gets the type of the entries.
+    ///   Gets the type of the entries.
     /// </summary>
     /// <value>The type of the entries.</value>
-    public Type EntryType {
-      get { return typeof (T); }
-    }
+    public Type EntryType => typeof(T);
 
     /// <summary>
-    /// Get or set the value of this item.
+    ///   Get or set the value of this item.
     /// </summary>
     //[TypeConverter(typeof(ListTypeConverter))]
     public override object Value {
-      get { return base.Value; }
+      get => base.Value;
       set {
         if (value is T) {
-          object attr = Attributes[USE_ONLY_DOMAIN_ATTRIBUTE];
+          var attr = Attributes[USE_ONLY_DOMAIN_ATTRIBUTE];
           if (attr != null && attr is bool && (bool) attr) {
-            if (_domain.Contains((T) value)) {
+            if (Domain.Contains((T) value)) {
               base.Value = value;
             } else {
               throw new ArgumentException("Value " + value + " not in value domain");
@@ -186,10 +171,10 @@ namespace Demo.yFiles.Option.Handler
         } else if (value == null || value.Equals(ValueUndefined)) {
           base.Value = value;
         }
-          //else if (value == VALUE_UNDEFINED && (bool)GetAttribute(SUPPORT_UNDEFINED_VALUE_ATTRIBUTE))
-          //{
-          //    base.Value = value;
-          //}
+        //else if (value == VALUE_UNDEFINED && (bool)GetAttribute(SUPPORT_UNDEFINED_VALUE_ATTRIBUTE))
+        //{
+        //    base.Value = value;
+        //}
         else {
           throw new ArgumentException("Value " + value + " has invalid type");
         }
@@ -204,7 +189,7 @@ namespace Demo.yFiles.Option.Handler
 
     private static int idCounter;
 
-    private static readonly DictionaryMapper<int, WeakReference> staticLookup = new DictionaryMapper<int, WeakReference>();
+    private static readonly DictionaryMapper<int, WeakReference> staticLookup = new();
     private IValueConverter converter;
 
     internal static int Register(IValueConverter converter) {
@@ -215,15 +200,15 @@ namespace Demo.yFiles.Option.Handler
 
     [Obfuscation(Exclude = true, StripAfterObfuscation = false)]
     public int ConverterId {
-      get { return id; }
+      get => id;
       set {
         id = value;
-        WeakReference weakReference = staticLookup[id];
+        var weakReference = staticLookup[id];
         if (weakReference.Target != null) {
-          this.converter = weakReference.Target as IValueConverter;
+          converter = weakReference.Target as IValueConverter;
         } else {
           staticLookup.RemoveValue(id);
-          this.converter = null;
+          converter = null;
         }
       }
     }
@@ -231,17 +216,15 @@ namespace Demo.yFiles.Option.Handler
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
       if (converter != null) {
         return converter.Convert(value, targetType, parameter, culture);
-      } else {
-        throw new NotSupportedException();
       }
+      throw new NotSupportedException();
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
       if (converter != null) {
         return converter.ConvertBack(value, targetType, parameter, culture);
-      } else {
-        throw new NotSupportedException();
       }
+      throw new NotSupportedException();
     }
   }
 }

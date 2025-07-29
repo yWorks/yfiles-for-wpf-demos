@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -29,48 +29,42 @@
 
 using System;
 using System.Collections.Generic;
-using Demo.yFiles.Option.DataBinding;
 using yWorks.Graph;
+using yWorks.Utils;
 
 namespace Demo.yFiles.Option.DataBinding
 {
   /// <summary>
-  /// A simple abstract implementation of <see cref="ISelectionProvider{T}"/>
-  /// that provides a couple of convenience methods and default implementations where applicable.
+  ///   A simple abstract implementation of <see cref="ISelectionProvider{T}"/>
+  ///   that provides a couple of convenience methods and default implementations where applicable.
   /// </summary>
   /// <typeparam name="T">The type of the items in the provider.</typeparam>
   public abstract class SelectionProviderBase<T> : ISelectionProvider<T>
   {
     /// <summary>
-    /// Whether there is currently an update in progress.
+    ///   Whether there is currently an update in progress.
     /// </summary>
     /// <see cref="BeginValueUpdate"/>
     /// <see cref="EndValueUpdate"/>
-    public bool InUpdate {
-      get { return inUpdateCounter > 0; }
-    }
+    public bool InUpdate => inUpdateCounter > 0;
 
     private int inUpdateCounter;
-    private ILookup innerLookup =Lookups.Empty;
-    private ICompoundEdit currentEdit = null;
+    private ICompoundEdit currentEdit;
 
     /// <inheritdoc/>
     public abstract ICollection<IPropertyItemDescriptor<T>> Selection { get; }
 
     /// <summary>
-    /// Gets or sets the <see cref="ILookup"/> implementation that is used
-    /// to resolve calls to <see cref="Lookup"/>.
+    ///   Gets or sets the <see cref="InnerContextLookup"/> implementation that is used
+    ///   to resolve calls to <see cref="Lookup"/>.
     /// </summary>
-    public ILookup InnerLookup {
-      get { return innerLookup; }
-      set { innerLookup = value; }
-    }
+    public IContextLookup InnerContextLookup { get; set; } = Lookups.EmptyContextLookup;
 
     /// <inheritdoc/>
     public abstract void UpdatePropertyViews();
 
     /// <summary>
-    /// Needs to be implemented by subclasses in order to update the property maps.
+    ///   Needs to be implemented by subclasses in order to update the property maps.
     /// </summary>
     protected abstract void UpdateProperties();
 
@@ -81,12 +75,13 @@ namespace Demo.yFiles.Option.DataBinding
 
     /// <inheritdoc/>
     public event EventHandler SelectedItemsChanged;
+
     /// <inheritdoc/>
     public event EventHandler PropertyItemsChanged;
 
     /// <summary>
-    /// Can be called to trigger <see cref="SelectedItemsChanged"/>
-    /// but will not do so if <see cref="InUpdate"/>.
+    ///   Can be called to trigger <see cref="SelectedItemsChanged"/>
+    ///   but will not do so if <see cref="InUpdate"/>.
     /// </summary>
     protected virtual void OnSelectionContentUpdated() {
       if (inUpdateCounter == 0) {
@@ -97,21 +92,21 @@ namespace Demo.yFiles.Option.DataBinding
     }
 
     /// <summary>
-    /// Modifies <see cref="InUpdate"/> if applicable.
+    ///   Modifies <see cref="InUpdate"/> if applicable.
     /// </summary>
     public virtual void BeginValueUpdate() {
       inUpdateCounter++;
-      var graph = InnerLookup.Lookup<IGraph>();
-      if(graph != null && currentEdit == null) {
+      var graph = InnerContextLookup.Lookup<IGraph>(this);
+      if (graph != null && currentEdit == null) {
         currentEdit = graph.BeginEdit("Property Changed", "PropertyChanged");
       }
     }
 
     /// <summary>
-    /// Modifies <see cref="InUpdate"/> if applicable.
+    ///   Modifies <see cref="InUpdate"/> if applicable.
     /// </summary>
     public void EndValueUpdate() {
-      if(currentEdit != null) {
+      if (currentEdit != null) {
         currentEdit.Commit();
         currentEdit = null;
       }
@@ -119,9 +114,9 @@ namespace Demo.yFiles.Option.DataBinding
     }
 
     /// <summary>
-    /// Called by <see cref="UpdateSelectedItems"/>
-    /// triggers the <see cref="PropertyItemsChanged"/> event
-    /// and calls <see cref="UpdateProperties"/>.
+    ///   Called by <see cref="UpdateSelectedItems"/>
+    ///   triggers the <see cref="PropertyItemsChanged"/> event
+    ///   and calls <see cref="UpdateProperties"/>.
     /// </summary>
     protected virtual void OnSelectedItemsUpdated() {
       inUpdateCounter++;
@@ -130,8 +125,7 @@ namespace Demo.yFiles.Option.DataBinding
         if (PropertyItemsChanged != null) {
           PropertyItemsChanged(this, EventArgs.Empty);
         }
-        //make sure our properties are up to date
-        
+        // make sure our properties are up to date
       } finally {
         inUpdateCounter--;
       }
@@ -142,10 +136,10 @@ namespace Demo.yFiles.Option.DataBinding
     #endregion
 
     /// <summary>
-    /// Uses <see cref="InnerLookup"/> to satisfy requests.
+    ///   Uses <see cref="InnerContextLookup"/> to satisfy requests.
     /// </summary>
     public virtual object Lookup(Type type) {
-      return innerLookup.Lookup(type);
+      return InnerContextLookup.Lookup(this, type);
     }
   }
 }

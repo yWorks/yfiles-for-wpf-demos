@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -35,157 +35,115 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
-using System.Windows.Input;
-using yWorks.Algorithms.Geometry;
+using Demo.yFiles.DataBinding.DataSetBinding.Properties;
 using yWorks.Controls;
+using yWorks.Geometry;
 using yWorks.Graph;
-using yWorks.Layout;
 using yWorks.Layout.Tree;
 
 namespace Demo.yFiles.DataBinding.DataSetBinding
 {
   /// <summary>
-  /// Interaction logic for GraphSourceDemoWindow.xaml
+  ///   Shows how to bind a <see cref="yWorks.Graph.DataBinding.TreeSource"/> to a
+  ///   <see cref="System.Data.DataSet"/>.
   /// </summary>
   public partial class DataSetBindingWindow : Window
   {
-    #region LayoutCommand triggered by the "Fit Contents" button
-
-    static DataSetBindingWindow()
-    {
-      CommandManager.RegisterClassCommandBinding(
-        typeof(DataSetBindingWindow), new CommandBinding(LayoutCommand, OnLayoutCommandExecuted));
-    }
-
-    public static readonly RoutedCommand LayoutCommand = new RoutedCommand();
-
-    private static async void OnLayoutCommandExecuted(object sender, ExecutedRoutedEventArgs e) {
-      DataSetBindingWindow graphSourceDemoWindow = sender as DataSetBindingWindow;
-      if (graphSourceDemoWindow != null) {
-        await DoLayout(graphSourceDemoWindow.graphControl);
-        e.Handled = true;
-      }
-    }
-
-    #endregion
-
-    public DataSetBindingWindow()
-    {
+    public DataSetBindingWindow() {
       InitializeComponent();
     }
 
-    private async void Window_Loaded(object sender, RoutedEventArgs e) {
+    private async void OnLoaded(object sender, RoutedEventArgs e) {
       await DoLayout(graphControl);
     }
 
     /// <summary>
-    /// Does an animated tree layout of the graph displayed by a graph control guided by the aspect ratio
-    /// of the graph control.
+    ///   Does an animated tree layout of the graph displayed by a graph control guided by the aspect ratio
+    ///   of the graph control.
     /// </summary>
-    /// <param name="graphControl">the graph control</param>
-    public static async Task DoLayout(GraphControl graphControl)
-    {
-      if (graphControl == null || graphControl.Graph == null)
-      {
+    /// <param name="graphControl">The graph control</param>
+    public static async Task DoLayout(GraphControl graphControl) {
+      if (graphControl == null) {
         return;
       }
-      var layout = new AspectRatioTreeLayout();
-      System.Windows.Size size = graphControl.InnerSize;
-      double ratio = size.Width / (1.0 * size.Height);
-      layout.AspectRatio = ratio;
-      ((ComponentLayout)layout.ComponentLayout).PreferredSize =
-        new YDimension(graphControl.InnerSize.Width, graphControl.InnerSize.Height);
+      var size = graphControl.InnerSize;
+      var ratio = size.Width / size.Height;
+      var layout = new TreeLayout {
+          DefaultSubtreePlacer = new AspectRatioSubtreePlacer { AspectRatio = ratio },
+          ComponentLayout = { PreferredSize = new SizeD(graphControl.InnerSize.Width, graphControl.InnerSize.Height) }
+      };
 
-      await graphControl.MorphLayout(layout, TimeSpan.FromMilliseconds(500), null);
+      await graphControl.ApplyLayoutAnimated(layout, TimeSpan.FromMilliseconds(500));
     }
   }
 
   /// <summary>
-  /// This class constructs a DataSet containing the business objects from the resources.
-  /// These business objects are the Contacts in this example.
+  ///   This class constructs a <see cref="System.Data.DataSet"/> containing the business objects from the resources.
+  ///   These business objects are the Contacts in this example.
   /// </summary>
-  public class EmployeeRepository
+  public sealed class EmployeeRepository
   {
-    private readonly DataView nodesSource;
-    public DataView NodesSource
-    {
-      get { return nodesSource; }
-    }
+    public DataView NodesSource { get; }
 
-    public EmployeeRepository()
-    {
+    public EmployeeRepository() {
       // Construct a DataSet using the schema and the XML data from the resources.
-      DataSet adventureWorksEmployees = new DataSet("AdventureWorksEmployees");
-      string schema = Properties.Resources.AdventureWorksEmployeesSchema;
-      StringReader schemaReader = new StringReader(schema);
+      var adventureWorksEmployees = new DataSet("AdventureWorksEmployees");
+      var schema = Resources.AdventureWorksEmployeesSchema;
+      var schemaReader = new StringReader(schema);
       adventureWorksEmployees.ReadXmlSchema(schemaReader);
-      string data = Properties.Resources.AdventureWorksEmployees;
-      StringReader dataReader = new StringReader(data);
+      var data = Resources.AdventureWorksEmployees;
+      var dataReader = new StringReader(data);
       adventureWorksEmployees.ReadXml(dataReader);
 
       // Set the NodesSource property to a data view on the Contact table.
-      DataTable contactTable = adventureWorksEmployees.Tables["Contact"];
-      nodesSource = contactTable.AsDataView();
+      var contactTable = adventureWorksEmployees.Tables["Contact"];
+      NodesSource = contactTable.AsDataView();
     }
   }
 
-  public class EmployeeContactConverter : IValueConverter
+  public sealed class EmployeeContactConverter : IValueConverter
   {
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-    {
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
       // Convert a collection of Employees to a collection of the corresponding Contacts.
-      DataView employees = value as DataView;
-      if (employees != null && employees.Count > 0)
-      {
+      if (value is DataView { Count: > 0 } employees) {
         employees.Sort = "ContactID";
-        DataTable contactTable = employees.Table.DataSet.Tables["Contact"];
+        var contactTable = employees.Table.DataSet.Tables["Contact"];
         return contactTable.AsEnumerable().Where(row => employees.Find(row["ContactID"]) > -1).AsDataView();
       }
       return null;
     }
 
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-    {
-      throw new System.NotImplementedException();
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
+      throw new NotImplementedException();
     }
   }
 
   /// <summary>
-  /// This class is used by the TreeSource to avoid duplicate nodes.
+  ///   This class is used by the TreeSource to avoid duplicate nodes.
   /// </summary>
   /// <remarks>
-  /// A tree source uses the business objects provided by its NodesSource property
-  /// to construct the nodes of the graph. Moreover, for each business object for which
-  /// a node is constructed the ChildBinding property is used to look for further
-  /// node sources to add child nodes and to create the edges. In principle, you could
-  /// set the NodeSources property to a collection which contains just the CEO, but you do not
-  /// have to. The tree source keeps track of the node sources for which nodes have already
-  /// been constructed. Therefore, it needs to decide whether two node sources are equal.
-  /// Since the DataSet does not return identical instances of Contact rows, if you
-  /// iterate over the table or follow the relations, the following comparer is in fact needed
-  /// in this example.
+  ///   A tree source uses the business objects provided by its NodesSource property
+  ///   to construct the nodes of the graph. Moreover, for each business object for which
+  ///   a node is constructed, the ChildBinding property is used to look for further
+  ///   node sources to add child nodes and to create the edges. In principle, you could
+  ///   set the NodeSources property to a collection which contains just the CEO, but you do not
+  ///   have to. The tree source keeps track of the node sources for which nodes have already
+  ///   been constructed. Therefore, it needs to decide whether two node sources are equal.
+  ///   Since the DataSet does not return identical instances of Contact rows, if you
+  ///   iterate over the table or follow the relations, the following comparer is in fact needed
+  ///   in this example.
   /// </remarks>
-  public class ContactComparer : IEqualityComparer<object>
+  public sealed class ContactComparer : IEqualityComparer<object>
   {
-    public new bool Equals(object x, object y)
-    {
-      DataRowView xobj = x as DataRowView;
-      DataRowView yobj = y as DataRowView;
-      if (xobj == null || yobj == null)
-      {
-        return xobj == null && yobj == null;
-      }
-      return xobj.Row.Field<int>("ContactID").Equals(yobj.Row.Field<int>("ContactID"));
+    public new bool Equals(object x, object y) {
+      return x is DataRowView view1 && y is DataRowView view2
+          ? view1.Row.Field<int>("ContactID").Equals(view2.Row.Field<int>("ContactID"))
+          : x == y;
+
     }
 
-    public int GetHashCode(object x)
-    {
-      DataRowView xobj = x as DataRowView;
-      if (xobj == null)
-      {
-        return 0;
-      }
-      return xobj.Row.Field<int>("ContactID");
+    public int GetHashCode(object o) {
+      return o is DataRowView view ? view.Row.Field<int>("ContactID") : 0;
     }
   }
 }

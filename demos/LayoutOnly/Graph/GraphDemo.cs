@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -28,116 +28,111 @@
  ***************************************************************************/
 
 using System;
-using yWorks.Algorithms;
+using yWorks.Layout.Graph;
 
 namespace Demo.Base.Graph
 {
   /// <summary>
-  /// Demonstrates how to use the directed graph data type Graph.
+  ///   Demonstrates how to use the directed graph data type Graph.
   /// </summary>
   public class GraphDemo
   {
     public static void Main() {
-      //instantiates an empty graph
-      yWorks.Algorithms.Graph graph = new yWorks.Algorithms.Graph();
+      // instantiates an empty graph
+      var graph = new LayoutGraph();
 
-      //create a temporary node array for fast lookup
-      Node[] tmpNodes = new Node[5];
+      // create a temporary node array for fast lookup
+      var tmpNodes = new Node[5];
 
-      //create some nodes in the graph and store references in the array
-      for (int i = 0; i < 5; i++) {
+      // create some nodes in the graph and store references in the array
+      for (var i = 0; i < 5; i++) {
         tmpNodes[i] = graph.CreateNode();
       }
 
-      //create some edges in the graph
-      for (int i = 0; i < 5; i++) {
-        for (int j = i + 1; j < 5; j++) {
-          //create an edge from node at index i to node at index j
+      // create some edges in the graph
+      for (var i = 0; i < 5; i++) {
+        for (var j = i + 1; j < 5; j++) {
+          // create an edge from node at index i to node at index j
           graph.CreateEdge(tmpNodes[i], tmpNodes[j]);
         }
       }
 
-
-      //output the nodes of the graph 
+      // output the nodes of the graph
       Console.WriteLine("The nodes of the graph");
-      for (INodeCursor nc = graph.GetNodeCursor(); nc.Ok; nc.Next()) {
-        Node node = nc.Node;
+      foreach (var node in graph.Nodes) {
         Console.WriteLine(node);
         Console.WriteLine("in edges #" + node.InDegree);
-        for (IEdgeCursor ec = node.GetInEdgeCursor(); ec.Ok; ec.Next()) {
-          Console.WriteLine(ec.Edge);
+        foreach (var inEdge in node.InEdges) {
+          Console.WriteLine(inEdge);
         }
         Console.WriteLine("out edges #" + node.OutDegree);
-        for (IEdgeCursor ec = node.GetOutEdgeCursor(); ec.Ok; ec.Next()) {
-          Console.WriteLine(ec.Edge);
+        foreach (var outEdge in node.OutEdges) {
+          Console.WriteLine(outEdge);
         }
       }
 
-
-      //output the edges of the graph 
+      // output the edges of the graph
       Console.WriteLine("\nThe edges of the graph");
-      for (IEdgeCursor ec = graph.GetEdgeCursor(); ec.Ok; ec.Next()) {
-        Console.WriteLine(ec.Edge);
+      foreach (var edge in graph.Edges) {
+        Console.WriteLine(edge);
       }
 
-      //reverse edges that have consecutive neighbors in graph
-      //reversing means switching source and target node
-      for (IEdgeCursor ec = graph.GetEdgeCursor(); ec.Ok; ec.Next()) {
-        if (Math.Abs(ec.Edge.Source.Index - ec.Edge.Target.Index) == 1) {
-          graph.ReverseEdge(ec.Edge);
+      // reverse edges that have consecutive neighbors in graph
+      // reversing means switching source and target node
+      foreach (var edge in graph.Edges) {
+        if (Math.Abs(edge.Source.Index - edge.Target.Index) == 1) {
+          graph.ReverseEdge(edge);
         }
       }
 
       Console.WriteLine("\nthe edges of the graph after some edge reversal");
-      for (IEdgeCursor ec = graph.GetEdgeCursor(); ec.Ok; ec.Next()) {
-        Console.WriteLine(ec.Edge);
+      foreach (var edge in graph.Edges) {
+        Console.WriteLine(edge);
       }
 
       ///////////////////////////////////////////////////////////////////////////
       // Node- and EdgeMap handling   ///////////////////////////////////////////
       ///////////////////////////////////////////////////////////////////////////
 
-      //create a nodemap for the graph
-      INodeMap nodeMap = graph.CreateNodeMap();
+      // create a nodemap for the graph
+      var nodeMap = graph.CreateNodeDataMap<string>();
       foreach (var node in graph.Nodes) {
-        //associate descriptive String to the node via a nodemap 
-        nodeMap.Set(node, "this is node " + node.Index);
+        // associate descriptive String to the node via a nodemap
+        nodeMap[node] = "this is node " + node.Index;
       }
 
-      //create an edgemap for the graph
-      IEdgeMap edgeMap = graph.CreateEdgeMap();
+      // create an edgemap for the graph
+      var edgeMap = graph.CreateEdgeDataMap<string>();
       foreach (var edge in graph.Edges) {
-        //associate descriptive String to the edge via an edgemap
-        edgeMap.Set(edge, "this is edge [" +
-                          nodeMap.Get(edge.Source) + "," +
-                          nodeMap.Get(edge.Target) + "]");
+        // associate descriptive String to the edge via an edgemap
+        edgeMap[edge] = "this is edge [" + nodeMap[edge.Source] + "," + nodeMap[edge.Target] + "]";
       }
 
-      //output the nodemap values of the nodes
+      // output the nodemap values of the nodes
       Console.WriteLine("\nThe node map values of the graph");
       foreach (var node in graph.Nodes) {
-        Console.WriteLine(nodeMap.Get(node));
+        Console.WriteLine(nodeMap[node]);
       }
 
-      //output the edges of the graph 
+      // output the edges of the graph
       Console.WriteLine("\nThe edge map values of the graph");
       foreach (var edge in graph.Edges) {
-        Console.WriteLine(edgeMap.Get(edge));
+        Console.WriteLine(edgeMap[edge]);
       }
 
-      //cleanup unneeded node and edge maps again (free resources)
-      graph.DisposeNodeMap(nodeMap);
-      graph.DisposeEdgeMap(edgeMap);
+      // cleanup unneeded node and edge maps again (free resources)
+      graph.DisposeDataMap(nodeMap);
+      graph.DisposeDataMap(edgeMap);
 
       ///////////////////////////////////////////////////////////////////////////
       // removing elements from the graph  //////////////////////////////////////
       ///////////////////////////////////////////////////////////////////////////
 
-      for (INodeCursor nc = graph.GetNodeCursor(); nc.Ok; nc.Next()) {
-        //remove node that has a edge degree > 2
-        if (nc.Node.Degree > 2) {
-          //removed the node and all of its adjacent edges from the graph
-          graph.RemoveNode(nc.Node);
+      foreach (var node in graph.Nodes) {
+        // remove node that has a edge degree > 2
+        if (node.Degree > 2) {
+          // removed the node and all of its adjacent edges from the graph
+          graph.Remove(node);
         }
       }
       Console.WriteLine("\ngraph after some node removal");

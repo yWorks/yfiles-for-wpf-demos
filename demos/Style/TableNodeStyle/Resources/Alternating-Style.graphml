@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--Created by yFiles WPF 2.1-->
-<graphml xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/3.0" xmlns:y="http://www.yworks.com/xml/yfiles-common/3.0" xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/3.0/xaml" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml.wpf/2.0/ygraphml.xsd " xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://graphml.graphdrawing.org/xmlns">
+<!--Created by yFiles WPF 4.0-->
+<graphml xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/3.0" xmlns:y="http://www.yworks.com/xml/yfiles-common/3.0"  xmlns:yx="http://www.yworks.com/xml/yfiles-common/4.0" xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/4.0/xaml" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml.wpf/2.0/ygraphml.xsd " xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://graphml.graphdrawing.org/xmlns">
   <key id="d0" for="all" attr.name="UserTags" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/UserTags" />
   <key id="d1" for="node" attr.name="NodeLabels" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeLabels" />
   <key id="d2" for="node" attr.name="NodeGeometry" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeGeometry" />
@@ -29,8 +29,8 @@
           <style:StripeDescriptor BackgroundBrush="#FF8BA2DC" InsetBrush="#FFBAC2D4" />
         </style:AlternatingStripeStyle.OddStripeDescriptor>
       </style:AlternatingStripeStyle>
-      <y:StretchStripeLabelModelParameter x:Key="2" Position="North"/>
-      <ywpf:DefaultLabelStyle x:Key="3" Typeface="{y:GraphMLReference 4}"  TextAlignment="Center" VerticalTextAlignment="Center"/>
+      <yx:StretchStripeLabelModelParameter x:Key="2" Position="Top"/>
+      <ywpf:LabelStyle x:Key="3" Typeface="{y:GraphMLReference 4}"  TextAlignment="Center" VerticalTextAlignment="Center"/>
       <ywpf:Typeface x:Key="4" />
     </y:SharedData>
   </data>
@@ -45,54 +45,54 @@
             <ywpf:ShapeNodeStyle Brush="#FFF8ECC9" />
           </ywpf:TableNodeStyle.BackgroundStyle>
           <ywpf:TableNodeStyle.Table>
-            <y:Table Insets="5,30,5,5">
-              <y:Table.Rows>
-                <y:Row MinimumSize="50" Size="300">
-                  <y:Row.Style>
+            <yx:Table Padding="5,30,5,5">
+              <yx:Table.Rows>
+                <yx:Row MinimumSize="50" Size="300">
+                  <yx:Row.Style>
                     <ywpf:ShapeNodeStyle Brush="#00FFFFFF" />
-                  </y:Row.Style>
-                </y:Row>
-              </y:Table.Rows>
-              <y:Table.Columns>
-                <y:Column Style="{y:GraphMLReference 1}" MinimumSize="200" Size="200" Insets="5,30,5,0">
-                  <y:Column.Labels>
+                  </yx:Row.Style>
+                </yx:Row>
+              </yx:Table.Rows>
+              <yx:Table.Columns>
+                <yx:Column Style="{y:GraphMLReference 1}" MinimumSize="200" Size="200" Padding="5,30,5,0">
+                  <yx:Column.Labels>
                     <y:Label LayoutParameter="{y:GraphMLReference 2}" Style="{y:GraphMLReference 3}" PreferredSize="37,14">
                       <y:Label.Text><![CDATA[Lane 1]]></y:Label.Text>
                     </y:Label>
-                  </y:Column.Labels>
-                </y:Column>
-                <y:Column Style="{y:GraphMLReference 1}" MinimumSize="200" Size="200" Insets="5,30,5,0">
-                  <y:Column.Labels>
+                  </yx:Column.Labels>
+                </yx:Column>
+                <yx:Column Style="{y:GraphMLReference 1}" MinimumSize="200" Size="200" Padding="5,30,5,0">
+                  <yx:Column.Labels>
                     <y:Label LayoutParameter="{y:GraphMLReference 2}" Style="{y:GraphMLReference 3}" PreferredSize="37,14">
                       <y:Label.Text><![CDATA[Lane 2]]></y:Label.Text>
                     </y:Label>
-                  </y:Column.Labels>
-                </y:Column>
-                <y:Column Style="{y:GraphMLReference 1}" MinimumSize="200" Size="200" Insets="5,30,5,0">
-                  <y:Column.Labels>
+                  </yx:Column.Labels>
+                </yx:Column>
+                <yx:Column Style="{y:GraphMLReference 1}" MinimumSize="200" Size="200" Padding="5,30,5,0">
+                  <yx:Column.Labels>
                     <y:Label LayoutParameter="{y:GraphMLReference 2}" Style="{y:GraphMLReference 3}" PreferredSize="37,14">
                       <y:Label.Text><![CDATA[Lane 3]]></y:Label.Text>
                     </y:Label>
-                  </y:Column.Labels>
-                </y:Column>
-                <y:Column Style="{y:GraphMLReference 1}" MinimumSize="200" Size="200" Insets="5,30,5,0">
-                  <y:Column.Labels>
+                  </yx:Column.Labels>
+                </yx:Column>
+                <yx:Column Style="{y:GraphMLReference 1}" MinimumSize="200" Size="200" Padding="5,30,5,0">
+                  <yx:Column.Labels>
                     <y:Label LayoutParameter="{y:GraphMLReference 2}" Style="{y:GraphMLReference 3}" PreferredSize="37,14">
                       <y:Label.Text><![CDATA[Lane 3]]></y:Label.Text>
                     </y:Label>
-                  </y:Column.Labels>
-                </y:Column>
-              </y:Table.Columns>
-            </y:Table>
+                  </yx:Column.Labels>
+                </yx:Column>
+              </yx:Table.Columns>
+            </yx:Table>
           </ywpf:TableNodeStyle.Table>
         </ywpf:TableNodeStyle>
       </data>
       <data key="d1">
         <x:List>
-          <y:Label LayoutParameter="{x:Static ywpf:InteriorLabelModel.North}" PreferredSize="25,14">
+          <y:Label LayoutParameter="{x:Static ywpf:InteriorNodeLabelModel.Top}" PreferredSize="25,14">
             <y:Label.Text>Pool</y:Label.Text>
             <y:Label.Style>
-              <ywpf:DefaultLabelStyle Typeface="{y:GraphMLReference 4}" />
+              <ywpf:LabelStyle Typeface="{y:GraphMLReference 4}" />
             </y:Label.Style>
           </y:Label>
         </x:List>

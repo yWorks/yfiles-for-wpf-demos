@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -31,37 +31,37 @@ using System;
 using System.Collections.Generic;
 using System.Windows;
 
-namespace Demo.yFiles.Toolkit.OptionHandler {
-
+namespace Demo.yFiles.Toolkit.OptionHandler
+{
   /// <summary>
-  /// A data holder for a single configuration option
+  ///   A data holder for a single configuration option
   /// </summary>
   /// <remarks>
-  /// The <see cref="ConfigConverter"/> scanns a configuration object in its <see cref="ConfigConverter.Convert"/> method
-  /// and creates <see cref="Option"/> items for the public fields and properties of this object.
+  ///   The <see cref="ConfigConverter"/> scans a configuration object in its <see cref="ConfigConverter.Convert"/> method
+  ///   and creates <see cref="Option"/> items for the public fields and properties of this object.
   /// </remarks>
-  public class Option {
-
+  public class Option
+  {
     /// <summary>
-    /// The internally used name of this option.
+    ///   The internally used name of this option.
     /// </summary>
     public string Name { get; set; }
 
     /// <summary>
-    /// The displayed label of this option.
+    ///   The displayed label of this option.
     /// </summary>
     public string Label { get; set; }
 
     /// <summary>
-    /// The default value this option has.
+    ///   The default value this option has.
     /// </summary>
     public object DefaultValue { get; set; }
 
     /// <summary>
-    /// The current value of the field or property in the scanned configuration object.
+    ///   The current value of the field or property in the scanned configuration object.
     /// </summary>
     /// <remarks>
-    /// Note that this property is read from and written to the configuration object this option was created for.
+    ///   Note that this property is read from and written to the configuration object this option was created for.
     /// </remarks>
     public object Value {
       get {
@@ -73,64 +73,57 @@ namespace Demo.yFiles.Toolkit.OptionHandler {
       set {
         if (Setter != null) {
           Setter(value);
-        }    
+        }
       }
     }
 
     /// <summary>
-    /// The <see cref="Type"/> of this option.
+    ///   The <see cref="Type"/> of this option.
     /// </summary>
     public Type ValueType { get; set; }
 
     /// <summary>
-    /// The type of the ui component that shall be used to represent this option.
+    ///   The type of the UI component that shall be used to represent this option.
     /// </summary>
     public ComponentTypes ComponentType { get; set; }
 
     /// <summary>
-    /// A list of the available enum values for this option.
+    ///   A list of the available enum values for this option.
     /// </summary>
     public IList<EnumValue> EnumValues { get; set; }
 
     /// <summary>
-    /// The <see cref="MinMaxAttribute"/> containing the minimum and maximum value for this option.
+    ///   The <see cref="MinMaxAttribute"/> containing the minimum and maximum values for this option.
     /// </summary>
     public MinMaxAttribute MinMax { get; set; }
 
     /// <summary>
-    /// A utility method that returns whether this option should currently be disabled.
+    ///   A utility method that returns whether this option should currently be disabled.
     /// </summary>
     public Func<bool> CheckDisabled { get; set; }
 
-    public bool IsEnabled {
-      get { return CheckDisabled == null || !CheckDisabled(); }
-    }
+    public bool IsEnabled => CheckDisabled == null || !CheckDisabled();
 
     /// <summary>
-    /// A utility method that returns whether this option should currently be hidden.
+    ///   A utility method that returns whether this option should currently be hidden.
     /// </summary>
     public Func<bool> CheckHidden { get; set; }
 
-    public Visibility Visibility {
-      get {
-        return CheckHidden == null || !CheckHidden() ? Visibility.Visible : Visibility.Collapsed;
-      }
-    }
+    public Visibility Visibility => CheckHidden == null || !CheckHidden() ? Visibility.Visible : Visibility.Collapsed;
 
     #region internal properties
 
     internal Func<object> Getter { get; set; }
-    
+
     internal Action<object> Setter { get; set; }
 
     #endregion
 
     /// <summary>
-    /// Resets the <see cref="Value"/> to the <see cref="DefaultValue"/>
+    ///   Resets the <see cref="Value"/> to the <see cref="DefaultValue"/>.
     /// </summary>
     public virtual void Reset() {
       Value = DefaultValue;
     }
-
   }
 }

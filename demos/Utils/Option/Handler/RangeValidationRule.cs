@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -33,7 +33,7 @@ using System.Windows.Controls;
 
 namespace Demo.yFiles.Option.Handler
 {
-  public class RangeValidationRule<T> : ValidationRule where T :IComparable<T>
+  public class RangeValidationRule<T> : ValidationRule where T : IComparable<T>
   {
     private readonly T minValue;
     private readonly T maxValue;
@@ -45,7 +45,7 @@ namespace Demo.yFiles.Option.Handler
 
     public override ValidationResult Validate(object value, CultureInfo cultureInfo) {
       if (value is T) {
-        T v = (T) value;
+        var v = (T) value;
         if (v.CompareTo(minValue) < 0) {
           return new ValidationResult(false, "<" + minValue);
         }

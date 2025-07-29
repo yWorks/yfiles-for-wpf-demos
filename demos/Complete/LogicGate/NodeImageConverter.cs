@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -62,19 +62,18 @@ namespace Demo.yFiles.Layout.LogicGate
           graphControl.Graph.AddLabel(node, label.Text, label.LayoutParameter, label.Style, label.PreferredSize, label.Tag);
         }
         graphControl.FitGraphBounds();
-        ContextConfigurator cc = new ContextConfigurator(graphControl.ContentRect);
-        
+        ContextConfigurator cc = new ContextConfigurator(graphControl.ContentBounds);
+
         var renderContext = cc.CreateRenderContext(graphControl);
         Transform transform = cc.CreateWorldToIntermediateTransform();
-        System.Windows.Media.Geometry clip = cc.CreateClip();
+        Geometry clip = cc.CreateClip();
 
         var visualContent = graphControl.ExportContent(renderContext);
-        VisualGroup container = new VisualGroup() { Transform = transform, Clip = clip, Children = { visualContent } };
+        VisualGroup container = new VisualGroup { Transform = transform, Clip = clip, Children = { visualContent } };
         VisualBrush brush = new VisualBrush(container);
         return new DrawingImage(new GeometryDrawing(brush, null, new RectangleGeometry(new Rect(0, 0, size.Width, size.Height))));
-      } else {
-        return null;
       }
+      return null;
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {

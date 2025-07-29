@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -28,18 +28,20 @@
  ***************************************************************************/
 
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Windows.Controls;
+using System.Windows.Media;
 using yWorks.Analysis;
 using yWorks.Controls;
 using yWorks.Controls.Input;
 using yWorks.Graph;
-using Paths = yWorks.Analysis.Paths;
+using yWorks.Graph.Styles;
 
 namespace Demo.yFiles.Algorithms.GraphAnalysis
 {
   /// <summary>
-  /// Configuration which solves several path problems.
+  /// Configuration that solves several path problems.
   /// </summary>
   public class PathsConfig : AlgorithmConfiguration
   {
@@ -49,18 +51,13 @@ namespace Demo.yFiles.Algorithms.GraphAnalysis
 
     public PathsConfig(PathsMode algorithmType) {
       this.algorithmType = algorithmType;
+      Directed = algorithmType == PathsMode.KShortestPaths;
     }
 
-    public override bool SupportsDirectedAndUndirected {
-      get { return true; }
-    }
+    public override bool SupportsDirectedAndUndirected => algorithmType != PathsMode.KShortestPaths;
 
-    public override bool SupportsWeights {
-      get {
-        return algorithmType == PathsMode.ShortestPaths ||
-               algorithmType == PathsMode.SingleSource;
-      }
-    }
+    public override bool SupportsWeights =>
+        algorithmType == PathsMode.ShortestPaths || algorithmType == PathsMode.SingleSource;
 
     public override void RunAlgorithm(IGraph graph) {
       // reset the graph to remove all previous markings
@@ -79,7 +76,10 @@ namespace Demo.yFiles.Algorithms.GraphAnalysis
         // apply one of the path algorithms
         switch (algorithmType) {
           case PathsMode.ShortestPaths:
-            CalculateShortestPath(markedSources, markedTargets, graph);
+            CalculateShortestPaths(markedSources, markedTargets, graph);
+            break;
+          case PathsMode.KShortestPaths:
+            CalculateKShortestPaths(markedSources, markedTargets, graph);
             break;
           case PathsMode.AllPaths:
             CalculateAllPaths(markedSources[0], markedTargets[0], graph);
@@ -92,19 +92,19 @@ namespace Demo.yFiles.Algorithms.GraphAnalysis
             CalculateSingleSource(graph, markedSources[0]);
             break;
           default:
-            CalculateShortestPath(markedSources, markedTargets, graph);
+            CalculateShortestPaths(markedSources, markedTargets, graph);
             break;
         }
       }
     }
 
-    private void CalculateShortestPath(List<INode> sources, List<INode> targets, IGraph graph) {
+    private void CalculateShortestPaths(List<INode> sources, List<INode> targets, IGraph graph) {
       if (sources != null && targets != null) {
 
         // run algorithm
         var result = new AllPairsShortestPaths {
             Directed = Directed,
-            Costs = {Delegate = GetEdgeWeight},
+            Costs = {MapperFunction = GetEdgeWeight},
             Sources = {Source = sources},
             Sinks = {Source = targets}
         }.Run(graph);
@@ -114,12 +114,47 @@ namespace Demo.yFiles.Algorithms.GraphAnalysis
       }
     }
 
+    private void CalculateKShortestPaths(List<INode> sources, List<INode> targets, IGraph graph) {
+      // make sure there are sources and targets
+      if (sources == null || targets == null || (sources.Count == 0 && targets.Count == 0)) {
+        return;
+      }
+
+      // run k-shortest path algorithm to obtain the k shortest paths
+      var result = new KShortestPaths {
+          Costs = { MapperFunction = GetEdgeWeight },
+          K = 3,
+          SimplePaths = true,
+          Sink = { Item = targets[0] },
+          Source = { Item = sources[0] }
+      }.Run(graph);
+
+      AddKShortestPathLabels(result, graph);
+
+      // mark the resulting paths
+      MarkPaths(result.Paths, sources, targets);
+    }
+
+    private static void AddKShortestPathLabels(KShortestPaths.Result result, IGraph graph) {
+      var textLabelStyle = new LabelStyle { TextBrush = Brushes.White };
+      for (var pathIndex = 0; pathIndex < result.Paths.Count; pathIndex++) {
+        var path = result.Paths[pathIndex];
+        foreach (var node in path.Nodes) {
+          // add the path ranking as node label
+          if (node.Labels.Count == 0) {
+            graph.AddLabel(node, (pathIndex + 1).ToString(CultureInfo.InvariantCulture), style : textLabelStyle,
+                tag : "ShortestPath");
+          }
+        }
+      }
+    }
+
     private void CalculateAllPaths(INode source, INode target, IGraph graph) {
       if (source != null && target != null) {
 
         // run algorithm
         var result = new Paths {
-          Directed = this.Directed,
+          Directed = Directed,
           StartNodes = {Item = source},
           EndNodes = {Item = target}
         }.Run(graph);
@@ -143,7 +178,7 @@ namespace Demo.yFiles.Algorithms.GraphAnalysis
           Source = {Item = source},
           Sinks = {Source = graph.Nodes},
           Directed = Directed,
-          Costs = {Delegate = GetEdgeWeight}
+          Costs = {MapperFunction = GetEdgeWeight}
       }.Run(graph);
 
       // add a gradient to indicate the distance of the nodes to the source
@@ -152,7 +187,7 @@ namespace Demo.yFiles.Algorithms.GraphAnalysis
       if (maxDistance > 0) {
         foreach (var node in graph.Nodes) {
           var relativeDistance = result.Distances[node] / maxDistance;
-          double? gradientValue = double.IsInfinity(relativeDistance) ? (double?) null : relativeDistance;
+          double? gradientValue = double.IsInfinity(relativeDistance) ? null : relativeDistance;
           node.Tag = new Tag {GradientValue = gradientValue};
           var edgeToNode = result.Predecessors[node];
           if (edgeToNode != null) {
@@ -231,7 +266,7 @@ namespace Demo.yFiles.Algorithms.GraphAnalysis
         if (item != null) {
           UpdateSelection(item, graphComponent);
         }
-        var selectedNodes = graphComponent.Selection.SelectedNodes;
+        var selectedNodes = graphComponent.Selection.Nodes;
         if (selectedNodes.Count > 0) {
           var markAsSource = new MenuItem {Header = "Mark as Source"};
           markAsSource.Click += (sender, eventArgs) => {
@@ -269,9 +304,9 @@ namespace Demo.yFiles.Algorithms.GraphAnalysis
     private void UpdateSelection(INode node, GraphControl graphControl) {
       if (node == null) {
         graphControl.Selection.Clear();
-      } else if (!graphControl.Selection.IsSelected(node)) {
+      } else if (!graphControl.Selection.Contains(node)) {
         graphControl.Selection.Clear();
-        graphControl.Selection.SetSelected(node, true);
+        graphControl.Selection.Add(node);
         graphControl.CurrentItem = node;
       }
     }
@@ -292,9 +327,13 @@ namespace Demo.yFiles.Algorithms.GraphAnalysis
   public enum PathsMode
   {
     /// <summary>
-    /// Calculates the shortest path between one or more source nodes and one or more target nodes.
+    /// Calculates the shortest paths between one or more source nodes and one or more target nodes.
     /// </summary>
     ShortestPaths,
+    /// <summary>
+    /// Calculates the k-shortest paths between one or more source nodes and one or more target nodes.
+    /// </summary>
+    KShortestPaths,
     /// <summary>
     /// Calculates all paths between a source and a target node.
     /// </summary>

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+Ôªø<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="OptionHandlerI18N_ADOPTBUTTON_TEXT" xml:space="preserve">
-    <value>‹bernehmen</value>
+    <value>√úbernehmen</value>
   </data>
   <data name="OptionHandlerI18N_APPLYBUTTON_TEXT" xml:space="preserve">
     <value>Anwenden</value>
@@ -127,7 +127,7 @@
     <value>Abbrechen</value>
   </data>
   <data name="OptionHandlerI18N_CLOSEBUTTON_TEXT" xml:space="preserve">
-    <value>Schlieﬂen</value>
+    <value>Schlie√üen</value>
   </data>
   <data name="OptionHandlerI18N_HELPBUTTON_TEXT" xml:space="preserve">
     <value>Hilfe</value>
@@ -139,7 +139,7 @@
     <value>OK</value>
   </data>
   <data name="OptionHandlerI18N_RESETBUTTON_TEXT" xml:space="preserve">
-    <value>Zur¸cksetzen</value>
+    <value>Zur√ºcksetzen</value>
   </data>
   <data name="OptionHandlerI18N_UNDEFINED" xml:space="preserve">
     <value>(Undefiniert)</value>

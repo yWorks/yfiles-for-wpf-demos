@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -30,22 +30,20 @@
 using System;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Threading;
+using System.Windows.Shapes;
 using yWorks.Controls;
 using yWorks.Controls.Input;
 using yWorks.Geometry;
 using yWorks.Graph;
 using yWorks.Graph.Styles;
-using Size = System.Windows.Size;
 
 namespace Demo.yFiles.Graph.SimpleCustomStyle
 {
   /// <summary>
-  /// This class is an example for a custom style based on the <see cref="LabelStyleBase{TVisual}"/>.
+  /// This class is an example of a custom style based on the <see cref="LabelStyleBase{TVisual}"/>.
   /// The typeface for the label text can be set. The label text is drawn with black letters inside a blue rounded rectangle.
-  /// Also there is a customized button displayed in the label at certain zoom levels that enables editing of the label text.
+  /// Also, there is a customized button displayed in the label at certain zoom levels that enables editing of the label text.
   /// </summary>
   public class MySimpleLabelStyle : LabelStyleBase<VisualGroup>
   {
@@ -94,13 +92,13 @@ namespace Demo.yFiles.Graph.SimpleCustomStyle
     /// Re-renders the label using the old visual for performance reasons.
     /// </summary>
     protected override VisualGroup UpdateVisual(IRenderContext context, VisualGroup oldVisual, ILabel label) {
-      // get the data with which the oldvisual was created
+      // get the data with which the old visual was created
       RenderDataCache oldCache = oldVisual.GetRenderDataCache<RenderDataCache>();
       // get the data for the new visual
       RenderDataCache newCache = CreateRenderDataCache(context, label, Typeface);
       var labelLayout = label.GetLayout();
       if (!oldCache.Equals(newCache)) {
-        // someting changed - re-render the visual
+        // something changed - re-render the visual
         oldVisual.Children.Clear();
         Render(context, label, oldVisual, labelLayout, newCache);
       }
@@ -127,7 +125,7 @@ namespace Demo.yFiles.Graph.SimpleCustomStyle
       container.SetRenderDataCache(cache);
 
       // background rectangle
-      System.Windows.Shapes.Rectangle rect = new System.Windows.Shapes.Rectangle
+      Rectangle rect = new Rectangle
       {
         Width = labelLayout.Width,
         Height = labelLayout.Height,
@@ -156,7 +154,7 @@ namespace Demo.yFiles.Graph.SimpleCustomStyle
       double textPositionLeft = cache.ButtonVisibility == Visibility.Visible
                                   ? HorizontalInset
                                   : (labelLayout.Width - textBlock.DesiredSize.Width) / 2;
-      
+
       textBlock.SetCanvasArrangeRect(new Rect(textPositionLeft,
                                               (labelLayout.Height - textBlock.DesiredSize.Height) / 2,
                                               textBlock.DesiredSize.Width,
@@ -203,13 +201,12 @@ namespace Demo.yFiles.Graph.SimpleCustomStyle
       // first measure
       tb.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
       if (tb.IsMeasureValid) {
-        // then use the desired size - plus rounding and insets, as well as space for button
+        // then use the desired size - plus rounding and padding, as well as space for button
         return new SizeD(
-          Math.Ceiling(0.5d + tb.DesiredSize.Width) + HorizontalInset * 3 + ButtonSize, 
+          Math.Ceiling(0.5d + tb.DesiredSize.Width) + HorizontalInset * 3 + ButtonSize,
           2 * VerticalInset + Math.Max(ButtonSize, Math.Ceiling(0.5d + tb.DesiredSize.Height)));
-      } else {
-        return new SizeD(HorizontalInset * 3 + ButtonSize + 50, VerticalInset * 2 + ButtonSize);
       }
+      return new SizeD(HorizontalInset * 3 + ButtonSize + 50, VerticalInset * 2 + ButtonSize);
     }
 
     /// <summary>

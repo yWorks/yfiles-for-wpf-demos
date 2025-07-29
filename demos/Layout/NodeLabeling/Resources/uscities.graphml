@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <!--Created by yFiles WPF 2.1-->
-<graphml xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/3.0" xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/3.0/xaml" xmlns:y="http://www.yworks.com/xml/yfiles-common/3.0" xmlns:demo="http://www.yworks.com/yfilesWPF/2.2/demos/NodeLabelingWindow" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml.wpf/2.0/ygraphml.xsd " xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://graphml.graphdrawing.org/xmlns">
+<graphml xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/3.0" xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/4.0/xaml" xmlns:y="http://www.yworks.com/xml/yfiles-common/3.0"  xmlns:yx="http://www.yworks.com/xml/yfiles-common/4.0" xmlns:demo="http://www.yworks.com/yfilesWPF/2.2/demos/NodeLabelingWindow" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml.wpf/2.0/ygraphml.xsd " xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://graphml.graphdrawing.org/xmlns">
   <key id="d0" for="all" attr.name="UserTags" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/UserTags" />
   <key id="d1" for="node" attr.name="NodeLabels" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeLabels" />
   <key id="d2" for="node" attr.name="NodeGeometry" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeGeometry" />
@@ -10,13 +10,6 @@
         <x:List>
           <y:Label>
             <y:Label.Text>Miami</y:Label.Text>
-            <y:Label.LayoutParameter>
-              <y:SandwichParameter Position="North">
-                <y:SandwichParameter.Model>
-                  <y:SandwichLabelModel />
-                </y:SandwichParameter.Model>
-              </y:SandwichParameter>
-            </y:Label.LayoutParameter>
           </y:Label>
         </x:List>
       </data>
@@ -29,13 +22,6 @@
         <x:List>
           <y:Label>
             <y:Label.Text>San Diego</y:Label.Text>
-            <y:Label.LayoutParameter>
-              <y:SandwichParameter Position="North">
-                <y:SandwichParameter.Model>
-                  <y:SandwichLabelModel />
-                </y:SandwichParameter.Model>
-              </y:SandwichParameter>
-            </y:Label.LayoutParameter>
           </y:Label>
         </x:List>
       </data>
@@ -48,13 +34,6 @@
         <x:List>
           <y:Label>
             <y:Label.Text>Santa Barbara</y:Label.Text>
-            <y:Label.LayoutParameter>
-              <y:SandwichParameter Position="North">
-                <y:SandwichParameter.Model>
-                  <y:SandwichLabelModel />
-                </y:SandwichParameter.Model>
-              </y:SandwichParameter>
-            </y:Label.LayoutParameter>
           </y:Label>
         </x:List>
       </data>
@@ -67,13 +46,6 @@
         <x:List>
           <y:Label>
             <y:Label.Text>Los Angeles</y:Label.Text>
-            <y:Label.LayoutParameter>
-              <y:SandwichParameter Position="North">
-                <y:SandwichParameter.Model>
-                  <y:SandwichLabelModel />
-                </y:SandwichParameter.Model>
-              </y:SandwichParameter>
-            </y:Label.LayoutParameter>
           </y:Label>
         </x:List>
       </data>
@@ -86,13 +58,6 @@
         <x:List>
           <y:Label>
             <y:Label.Text>Monterey</y:Label.Text>
-            <y:Label.LayoutParameter>
-              <y:SandwichParameter Position="North">
-                <y:SandwichParameter.Model>
-                  <y:SandwichLabelModel />
-                </y:SandwichParameter.Model>
-              </y:SandwichParameter>
-            </y:Label.LayoutParameter>
           </y:Label>
         </x:List>
       </data>
@@ -105,13 +70,6 @@
         <x:List>
           <y:Label>
             <y:Label.Text>San Francisco</y:Label.Text>
-            <y:Label.LayoutParameter>
-              <y:SandwichParameter Position="North">
-                <y:SandwichParameter.Model>
-                  <y:SandwichLabelModel />
-                </y:SandwichParameter.Model>
-              </y:SandwichParameter>
-            </y:Label.LayoutParameter>
           </y:Label>
         </x:List>
       </data>
@@ -124,13 +82,6 @@
         <x:List>
           <y:Label>
             <y:Label.Text>Las Vegas</y:Label.Text>
-            <y:Label.LayoutParameter>
-              <y:SandwichParameter Position="North">
-                <y:SandwichParameter.Model>
-                  <y:SandwichLabelModel />
-                </y:SandwichParameter.Model>
-              </y:SandwichParameter>
-            </y:Label.LayoutParameter>
           </y:Label>
         </x:List>
       </data>
@@ -143,13 +94,6 @@
         <x:List>
           <y:Label>
             <y:Label.Text>Phoenix</y:Label.Text>
-            <y:Label.LayoutParameter>
-              <y:SandwichParameter Position="North">
-                <y:SandwichParameter.Model>
-                  <y:SandwichLabelModel />
-                </y:SandwichParameter.Model>
-              </y:SandwichParameter>
-            </y:Label.LayoutParameter>
           </y:Label>
         </x:List>
       </data>
@@ -162,13 +106,6 @@
         <x:List>
           <y:Label>
             <y:Label.Text>Portland</y:Label.Text>
-            <y:Label.LayoutParameter>
-              <y:SandwichParameter Position="North">
-                <y:SandwichParameter.Model>
-                  <y:SandwichLabelModel />
-                </y:SandwichParameter.Model>
-              </y:SandwichParameter>
-            </y:Label.LayoutParameter>
           </y:Label>
         </x:List>
       </data>
@@ -181,13 +118,6 @@
         <x:List>
           <y:Label>
             <y:Label.Text>Seattle</y:Label.Text>
-            <y:Label.LayoutParameter>
-              <y:SandwichParameter Position="North">
-                <y:SandwichParameter.Model>
-                  <y:SandwichLabelModel />
-                </y:SandwichParameter.Model>
-              </y:SandwichParameter>
-            </y:Label.LayoutParameter>
           </y:Label>
         </x:List>
       </data>
@@ -200,13 +130,6 @@
         <x:List>
           <y:Label>
             <y:Label.Text>Houston</y:Label.Text>
-            <y:Label.LayoutParameter>
-              <y:SandwichParameter Position="North">
-                <y:SandwichParameter.Model>
-                  <y:SandwichLabelModel />
-                </y:SandwichParameter.Model>
-              </y:SandwichParameter>
-            </y:Label.LayoutParameter>
           </y:Label>
         </x:List>
       </data>
@@ -219,13 +142,6 @@
         <x:List>
           <y:Label>
             <y:Label.Text>Dallas</y:Label.Text>
-            <y:Label.LayoutParameter>
-              <y:SandwichParameter Position="North">
-                <y:SandwichParameter.Model>
-                  <y:SandwichLabelModel />
-                </y:SandwichParameter.Model>
-              </y:SandwichParameter>
-            </y:Label.LayoutParameter>
           </y:Label>
         </x:List>
       </data>
@@ -238,13 +154,6 @@
         <x:List>
           <y:Label>
             <y:Label.Text>Santa Fe</y:Label.Text>
-            <y:Label.LayoutParameter>
-              <y:SandwichParameter Position="North">
-                <y:SandwichParameter.Model>
-                  <y:SandwichLabelModel />
-                </y:SandwichParameter.Model>
-              </y:SandwichParameter>
-            </y:Label.LayoutParameter>
           </y:Label>
         </x:List>
       </data>
@@ -257,13 +166,6 @@
         <x:List>
           <y:Label>
             <y:Label.Text>New Orleans</y:Label.Text>
-            <y:Label.LayoutParameter>
-              <y:SandwichParameter Position="North">
-                <y:SandwichParameter.Model>
-                  <y:SandwichLabelModel />
-                </y:SandwichParameter.Model>
-              </y:SandwichParameter>
-            </y:Label.LayoutParameter>
           </y:Label>
         </x:List>
       </data>
@@ -276,13 +178,6 @@
         <x:List>
           <y:Label>
             <y:Label.Text>Fort Lauderdale</y:Label.Text>
-            <y:Label.LayoutParameter>
-              <y:SandwichParameter Position="North">
-                <y:SandwichParameter.Model>
-                  <y:SandwichLabelModel />
-                </y:SandwichParameter.Model>
-              </y:SandwichParameter>
-            </y:Label.LayoutParameter>
           </y:Label>
         </x:List>
       </data>
@@ -295,13 +190,6 @@
         <x:List>
           <y:Label>
             <y:Label.Text>Fort Myers</y:Label.Text>
-            <y:Label.LayoutParameter>
-              <y:SandwichParameter Position="North">
-                <y:SandwichParameter.Model>
-                  <y:SandwichLabelModel />
-                </y:SandwichParameter.Model>
-              </y:SandwichParameter>
-            </y:Label.LayoutParameter>
           </y:Label>
         </x:List>
       </data>
@@ -314,13 +202,6 @@
         <x:List>
           <y:Label>
             <y:Label.Text>Orlando</y:Label.Text>
-            <y:Label.LayoutParameter>
-              <y:SandwichParameter Position="North">
-                <y:SandwichParameter.Model>
-                  <y:SandwichLabelModel />
-                </y:SandwichParameter.Model>
-              </y:SandwichParameter>
-            </y:Label.LayoutParameter>
           </y:Label>
         </x:List>
       </data>
@@ -333,13 +214,6 @@
         <x:List>
           <y:Label>
             <y:Label.Text>Charleston</y:Label.Text>
-            <y:Label.LayoutParameter>
-              <y:SandwichParameter Position="North">
-                <y:SandwichParameter.Model>
-                  <y:SandwichLabelModel />
-                </y:SandwichParameter.Model>
-              </y:SandwichParameter>
-            </y:Label.LayoutParameter>
           </y:Label>
         </x:List>
       </data>
@@ -352,13 +226,6 @@
         <x:List>
           <y:Label>
             <y:Label.Text>Atlanta</y:Label.Text>
-            <y:Label.LayoutParameter>
-              <y:SandwichParameter Position="North">
-                <y:SandwichParameter.Model>
-                  <y:SandwichLabelModel />
-                </y:SandwichParameter.Model>
-              </y:SandwichParameter>
-            </y:Label.LayoutParameter>
           </y:Label>
         </x:List>
       </data>
@@ -371,13 +238,6 @@
         <x:List>
           <y:Label>
             <y:Label.Text>Memphis</y:Label.Text>
-            <y:Label.LayoutParameter>
-              <y:SandwichParameter Position="North">
-                <y:SandwichParameter.Model>
-                  <y:SandwichLabelModel />
-                </y:SandwichParameter.Model>
-              </y:SandwichParameter>
-            </y:Label.LayoutParameter>
           </y:Label>
         </x:List>
       </data>
@@ -390,13 +250,6 @@
         <x:List>
           <y:Label>
             <y:Label.Text>Denver</y:Label.Text>
-            <y:Label.LayoutParameter>
-              <y:SandwichParameter Position="North">
-                <y:SandwichParameter.Model>
-                  <y:SandwichLabelModel />
-                </y:SandwichParameter.Model>
-              </y:SandwichParameter>
-            </y:Label.LayoutParameter>
           </y:Label>
         </x:List>
       </data>
@@ -409,13 +262,6 @@
         <x:List>
           <y:Label>
             <y:Label.Text>Salt Lake City</y:Label.Text>
-            <y:Label.LayoutParameter>
-              <y:SandwichParameter Position="North">
-                <y:SandwichParameter.Model>
-                  <y:SandwichLabelModel />
-                </y:SandwichParameter.Model>
-              </y:SandwichParameter>
-            </y:Label.LayoutParameter>
           </y:Label>
         </x:List>
       </data>
@@ -428,13 +274,6 @@
         <x:List>
           <y:Label>
             <y:Label.Text>Palm Springs</y:Label.Text>
-            <y:Label.LayoutParameter>
-              <y:SandwichParameter Position="North">
-                <y:SandwichParameter.Model>
-                  <y:SandwichLabelModel />
-                </y:SandwichParameter.Model>
-              </y:SandwichParameter>
-            </y:Label.LayoutParameter>
           </y:Label>
         </x:List>
       </data>
@@ -447,13 +286,6 @@
         <x:List>
           <y:Label>
             <y:Label.Text>Jackson</y:Label.Text>
-            <y:Label.LayoutParameter>
-              <y:SandwichParameter Position="North">
-                <y:SandwichParameter.Model>
-                  <y:SandwichLabelModel />
-                </y:SandwichParameter.Model>
-              </y:SandwichParameter>
-            </y:Label.LayoutParameter>
           </y:Label>
         </x:List>
       </data>
@@ -466,13 +298,6 @@
         <x:List>
           <y:Label>
             <y:Label.Text>Minneapolis</y:Label.Text>
-            <y:Label.LayoutParameter>
-              <y:SandwichParameter Position="North">
-                <y:SandwichParameter.Model>
-                  <y:SandwichLabelModel />
-                </y:SandwichParameter.Model>
-              </y:SandwichParameter>
-            </y:Label.LayoutParameter>
           </y:Label>
         </x:List>
       </data>
@@ -485,13 +310,6 @@
         <x:List>
           <y:Label>
             <y:Label.Text>Chicago</y:Label.Text>
-            <y:Label.LayoutParameter>
-              <y:SandwichParameter Position="North">
-                <y:SandwichParameter.Model>
-                  <y:SandwichLabelModel />
-                </y:SandwichParameter.Model>
-              </y:SandwichParameter>
-            </y:Label.LayoutParameter>
           </y:Label>
         </x:List>
       </data>
@@ -504,13 +322,6 @@
         <x:List>
           <y:Label>
             <y:Label.Text>Detroit</y:Label.Text>
-            <y:Label.LayoutParameter>
-              <y:SandwichParameter Position="North">
-                <y:SandwichParameter.Model>
-                  <y:SandwichLabelModel />
-                </y:SandwichParameter.Model>
-              </y:SandwichParameter>
-            </y:Label.LayoutParameter>
           </y:Label>
         </x:List>
       </data>
@@ -523,13 +334,6 @@
         <x:List>
           <y:Label>
             <y:Label.Text>Washington</y:Label.Text>
-            <y:Label.LayoutParameter>
-              <y:SandwichParameter Position="North">
-                <y:SandwichParameter.Model>
-                  <y:SandwichLabelModel />
-                </y:SandwichParameter.Model>
-              </y:SandwichParameter>
-            </y:Label.LayoutParameter>
           </y:Label>
         </x:List>
       </data>
@@ -542,13 +346,6 @@
         <x:List>
           <y:Label>
             <y:Label.Text>Philadelphia</y:Label.Text>
-            <y:Label.LayoutParameter>
-              <y:SandwichParameter Position="North">
-                <y:SandwichParameter.Model>
-                  <y:SandwichLabelModel />
-                </y:SandwichParameter.Model>
-              </y:SandwichParameter>
-            </y:Label.LayoutParameter>
           </y:Label>
         </x:List>
       </data>
@@ -561,13 +358,6 @@
         <x:List>
           <y:Label>
             <y:Label.Text>New York</y:Label.Text>
-            <y:Label.LayoutParameter>
-              <y:SandwichParameter Position="North">
-                <y:SandwichParameter.Model>
-                  <y:SandwichLabelModel />
-                </y:SandwichParameter.Model>
-              </y:SandwichParameter>
-            </y:Label.LayoutParameter>
           </y:Label>
         </x:List>
       </data>
@@ -580,13 +370,6 @@
         <x:List>
           <y:Label>
             <y:Label.Text>Boston</y:Label.Text>
-            <y:Label.LayoutParameter>
-              <y:SandwichParameter Position="North">
-                <y:SandwichParameter.Model>
-                  <y:SandwichLabelModel />
-                </y:SandwichParameter.Model>
-              </y:SandwichParameter>
-            </y:Label.LayoutParameter>
           </y:Label>
         </x:List>
       </data>
@@ -599,13 +382,6 @@
         <x:List>
           <y:Label>
             <y:Label.Text>San Antonio</y:Label.Text>
-            <y:Label.LayoutParameter>
-              <y:SandwichParameter Position="North">
-                <y:SandwichParameter.Model>
-                  <y:SandwichLabelModel />
-                </y:SandwichParameter.Model>
-              </y:SandwichParameter>
-            </y:Label.LayoutParameter>
           </y:Label>
         </x:List>
       </data>
@@ -618,13 +394,6 @@
         <x:List>
           <y:Label>
             <y:Label.Text>Austin</y:Label.Text>
-            <y:Label.LayoutParameter>
-              <y:SandwichParameter Position="North">
-                <y:SandwichParameter.Model>
-                  <y:SandwichLabelModel />
-                </y:SandwichParameter.Model>
-              </y:SandwichParameter>
-            </y:Label.LayoutParameter>
           </y:Label>
         </x:List>
       </data>
@@ -637,13 +406,6 @@
         <x:List>
           <y:Label>
             <y:Label.Text>Atlantic City</y:Label.Text>
-            <y:Label.LayoutParameter>
-              <y:SandwichParameter Position="North">
-                <y:SandwichParameter.Model>
-                  <y:SandwichLabelModel />
-                </y:SandwichParameter.Model>
-              </y:SandwichParameter>
-            </y:Label.LayoutParameter>
           </y:Label>
         </x:List>
       </data>
@@ -656,13 +418,6 @@
         <x:List>
           <y:Label>
             <y:Label.Text>Cincinnati</y:Label.Text>
-            <y:Label.LayoutParameter>
-              <y:SandwichParameter Position="North">
-                <y:SandwichParameter.Model>
-                  <y:SandwichLabelModel />
-                </y:SandwichParameter.Model>
-              </y:SandwichParameter>
-            </y:Label.LayoutParameter>
           </y:Label>
         </x:List>
       </data>
@@ -675,13 +430,6 @@
         <x:List>
           <y:Label>
             <y:Label.Text>Kansas City</y:Label.Text>
-            <y:Label.LayoutParameter>
-              <y:SandwichParameter Position="North">
-                <y:SandwichParameter.Model>
-                  <y:SandwichLabelModel />
-                </y:SandwichParameter.Model>
-              </y:SandwichParameter>
-            </y:Label.LayoutParameter>
           </y:Label>
         </x:List>
       </data>

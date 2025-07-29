@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -28,7 +28,6 @@
  ***************************************************************************/
 
 using System.Windows;
-using System.Windows.Media;
 using Demo.yFiles.Toolkit;
 using yWorks.Controls.Input;
 using yWorks.Geometry;
@@ -54,7 +53,6 @@ namespace Demo.yFiles.Graph.Input.ReparentHandler
       // Create a default editor input mode and configure it
       GraphEditorInputMode graphEditorInputMode = new GraphEditorInputMode
       {
-        AllowGroupingOperations = true,
         AllowGroupSelection = false,
         AllowClipboardOperations = false
       };
@@ -71,7 +69,7 @@ namespace Demo.yFiles.Graph.Input.ReparentHandler
       graphEditorInputMode.AllowGroupSelection = false;
       // and enable the undo feature.
       graph.SetUndoEngineEnabled(true);
-      
+
       DemoStyles.InitDemoStyles(graph);
 
       // Finally, set the input mode to the graph control.
@@ -80,6 +78,8 @@ namespace Demo.yFiles.Graph.Input.ReparentHandler
       CreateSampleGraph(graph);
       // reset the Undo queue so the initial graph creation cannot be undone
       graph.GetUndoEngine().Clear();
+
+      graphControl.FitGraphBounds();
     }
 
     #endregion
@@ -93,7 +93,7 @@ namespace Demo.yFiles.Graph.Input.ReparentHandler
       /// <summary>
       /// In general, this method determines whether the current gesture that
       /// can be determined through the context is a reparent gesture. In this
-      /// case, it returns true, if the base implementation returns true or if the
+      /// case, it returns <see langword="true"/>, if the base implementation returns <see langword="true"/> or if the
       /// current node is green.
       /// </summary>
       /// <param name="context">The context that provides information about the
@@ -152,7 +152,7 @@ namespace Demo.yFiles.Graph.Input.ReparentHandler
     /// <summary>
     /// Creates the sample graph of this demo.
     /// </summary>
-    private static void CreateSampleGraph(IGraph graph) {
+    private void CreateSampleGraph(IGraph graph) {
       // Create some group nodes
       var group1 = CreateGroupNode(graph, 100, 100, Themes.PaletteLightblue, "Only Blue Children");
       var group2 = CreateGroupNode(graph, 160, 130, Themes.PaletteLightblue, "Only Blue Children");
@@ -171,7 +171,7 @@ namespace Demo.yFiles.Graph.Input.ReparentHandler
       graph.GroupNodes(group1, new[] { blueNode, group2 });
       graph.GroupNodes(greenGroup, new[] {greenNode});
 
-      // Ensure that the outer blue group completely contains its inner group 
+      // Ensure that the outer blue group completely contains its inner group
       graph.SetNodeLayout(group1, new RectD(100, 100, 200, 150));
 
       // Uncomment the following line to adjust the layout of the outer blue group automatically

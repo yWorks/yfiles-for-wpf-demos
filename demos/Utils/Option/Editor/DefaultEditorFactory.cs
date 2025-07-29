@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -30,52 +30,55 @@
 using System.ComponentModel;
 using System.Windows.Controls;
 using Demo.yFiles.Option.Handler;
-using Demo.yFiles.Option.View;
 
 namespace Demo.yFiles.Option.Editor
 {
   /// <summary>
-  /// Create a dialog representation of an <see cref="OptionHandler"/> instance.
+  ///   Create a dialog representation of an <see cref="OptionHandler"/> instance.
   /// </summary>
-  /// <remarks>Each <see cref="IOptionItem"/> in the handler is normally
-  /// represented as a child control in the dialog. Nested <see cref="OptionGroup"/>s are shown
-  /// as tab pages on the first level and nested <see cref="GroupBox"/>es on deeper levels.  
-  /// This control can use the <see cref="TypeConverter"/> mechanism to display and edit values
-  /// as strings, however controls can be completely specified at runtime with
-  ///  <see cref="OptionItem.CustomTypeConverterAttribute"/>
-  /// and <see cref="OptionItem.CustomDialogitemEditor"/> attributes on the item level.
-  /// If <see cref="OptionItem.SupportNullValueAttribute"/> is set to <see langword="true"/>,
-  /// an automatic wrapper is created for the item editor and/or the TypeConverter that allows
-  /// to explicitly state that "No value" should be set for this item (may differ from setting a <see langword="null"/>
-  /// value for the item, which is usually not supported by the core converters and editors.)
-  /// If <see cref="OptionItem.SupportUndefinedValueAttribute"/> is set to <see langword="true"/>,
-  /// there is also automatic support for displaying so-called <c>undefined</c> values,
-  /// which may result from conflicting source values if the editor tries to show
-  /// values from multiple instances at once. Undefined values can't be entered in the editor, and
-  /// editing an item will clear the <c>undefined</c> state for the item, however
-  /// canceling the edit will leave the <c>undefined</c> state intact.</remarks>
-  public class DefaultEditorFactory 
+  /// <remarks>
+  ///   Each <see cref="IOptionItem"/> in the handler is normally
+  ///   represented as a child control in the dialog. Nested <see cref="OptionGroup"/>s are shown
+  ///   as tab pages on the first level and nested <see cref="GroupBox"/>es on deeper levels.
+  ///   This control can use the <see cref="TypeConverter"/> mechanism to display and edit values
+  ///   as strings, however controls can be completely specified at runtime with
+  ///   <see cref="OptionItem.CustomTypeConverterAttribute"/>
+  ///   and <see cref="OptionItem.CustomDialogitemEditor"/> attributes on the item level.
+  ///   If <see cref="OptionItem.SupportNullValueAttribute"/> is set to <see langword="true"/>,
+  ///   an automatic wrapper is created for the item editor and/or the TypeConverter that allows
+  ///   to explicitly state that "No value" should be set for this item (may differ from setting a <see langword="null"/>
+  ///   value for the item, which is usually not supported by the core converters and editors.)
+  ///   If <see cref="OptionItem.SupportUndefinedValueAttribute"/> is set to <see langword="true"/>,
+  ///   there is also automatic support for displaying so-called <c>undefined</c> values,
+  ///   which may result from conflicting source values if the editor tries to show
+  ///   values from multiple instances at once. Undefined values can't be entered in the editor, and
+  ///   editing an item will clear the <c>undefined</c> state for the item, however
+  ///   canceling the edit will leave the <c>undefined</c> state intact.
+  /// </remarks>
+  public class DefaultEditorFactory
   {
+    /// <summary>
+    ///   Attribute key for display-related settings that can be used on an
+    ///   <see cref="IOptionItem"/> as
+    ///   attribute key for <see cref="IOptionItem.Attributes"/>.
+    /// </summary>
+    /// <remarks>
+    ///   This key is used to change the appearance of a dialog view created with this factory.
+    ///   The framework expects to find bitwise combinations from values in
+    ///   <see cref="Demo.yFiles.Option.Editor.DefaultEditorFactory.RenderingHints"/>
+    ///   there, other values are silently ignored.
+    /// </remarks>
+    public const string RenderingHintsAttribute = "DefaultEditorFactory.RenderingHintsAttribute";
 
     /// <summary>
-    /// Attribute key for display-related settings that can be used on an 
-    /// <see cref="IOptionItem"/> as
-    /// attribute key for <see cref="IOptionItem.Attributes"/>.
-    /// </summary>
-    /// <remarks>This key is used to change the appearance of a dialog view created with this factory.
-    /// The framework expects to find bitwise combinations from values in <see cref="Demo.yFiles.Option.Editor.DefaultEditorFactory.RenderingHints"/>
-    /// there, other values are silently ignored.</remarks>
-    public const string RenderingHintsAttribute = "DefaultEditorFactory.RenderingHintsAttribute";
-   
-    /// <summary>
-    /// Enum that provides item rendering hints.
+    ///   Enum that provides item rendering hints.
     /// </summary>
     public enum RenderingHints
     {
       /// <summary>
-      /// If set on an <see cref="IOptionGroup"/>, the item will not be shown as a group,
-      /// but its children will be visible as children of the item's owner. This can be used
-      /// to enforce logical structuring of a handler without actually displaying a lot of nested groups.
+      ///   If set on an <see cref="IOptionGroup"/>, the item will not be shown as a group,
+      ///   but its children will be visible as children of the item's owner. This can be used
+      ///   to enforce logical structuring of a handler without actually displaying a lot of nested groups.
       /// </summary>
       Invisible = 1
     }

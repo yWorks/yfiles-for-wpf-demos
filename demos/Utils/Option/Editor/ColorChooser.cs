@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -39,7 +39,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Xml;
-using yWorks.Utils;
 
 namespace Demo.yFiles.Option.Editor
 {
@@ -52,13 +51,13 @@ namespace Demo.yFiles.Option.Editor
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
       double factor;
       if (parameter is string) {
-        factor = XmlConvert.ToDouble((string)parameter);
+        factor = XmlConvert.ToDouble((string) parameter);
       } else if (parameter is double) {
         factor = (double) parameter;
       } else {
         factor = 1;
       }
-      return ((double) value)*factor;
+      return (double) value * factor;
     }
 
     /// <xamlhelper/>
@@ -79,7 +78,7 @@ namespace Demo.yFiles.Option.Editor
 
     /// <xamlhelper/>
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
-      return 1 - (double)value;
+      return 1 - (double) value;
     }
   }
 
@@ -91,35 +90,35 @@ namespace Demo.yFiles.Option.Editor
     /// <xamlhelper/>
     protected override void OnClick() {
       base.OnClick();
-      System.Windows.Controls.Primitives.Popup p = Popup;
+      var p = Popup;
       if (p != null) {
         p.Closed -= p_Closed;
         if (p.PlacementTarget == null) {
           p.PlacementTarget = this;
-          p.PlacementRectangle = new Rect(0,0, ActualWidth, ActualHeight);
+          p.PlacementRectangle = new Rect(0, 0, ActualWidth, ActualHeight);
         }
         p.Closed += p_Closed;
         p.IsOpen = true;
       }
     }
 
-    void p_Closed(object sender, EventArgs e) {
+    private void p_Closed(object sender, EventArgs e) {
       // thats a hack - well, who told you to use PopupButton anyway?
       try {
-        ((ColorChooser)Popup.Child).GetBindingExpression(ColorChooser.ColorProperty).UpdateSource();
-      } catch (Exception) {}
+        ((ColorChooser) Popup.Child).GetBindingExpression(ColorChooser.ColorProperty).UpdateSource();
+      } catch (Exception) { }
     }
 
     /// <xamlhelper/>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     public static readonly DependencyProperty PopupProperty =
-      DependencyProperty.Register("Popup", typeof (Popup), typeof (PopupButton));
+        DependencyProperty.Register("Popup", typeof(Popup), typeof(PopupButton));
 
     /// <xamlhelper/>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     public Popup Popup {
-      get { return (Popup) GetValue(PopupProperty); }
-      set { SetValue(PopupProperty, value); }
+      get => (Popup) GetValue(PopupProperty);
+      set => SetValue(PopupProperty, value);
     }
   }
 
@@ -131,16 +130,15 @@ namespace Demo.yFiles.Option.Editor
     /// <xamlhelper/>
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
       if (targetType == typeof(string)) {
-        Color c = (Color) value;
-        return String.Format(culture, "#{0:X2}{1:X2}{2:X2}{3:X2}", c.A, c.R, c.G, c.B);
-      } else {
-        return null;
+        var c = (Color) value;
+        return string.Format(culture, "#{0:X2}{1:X2}{2:X2}{3:X2}", c.A, c.R, c.G, c.B);
       }
+      return null;
     }
 
     /// <xamlhelper/>
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
-      string s = value.ToString().Trim();
+      var s = value.ToString().Trim();
       try {
         return new ColorConverter().Convert(s, typeof(Color), null, culture);
       } catch (NotSupportedException) {
@@ -155,13 +153,11 @@ namespace Demo.yFiles.Option.Editor
           s = s.Substring(1);
         }
         int result;
-        if (Int32.TryParse(s, NumberStyles.AllowHexSpecifier, culture, out result)) {
-          return
-            Color.FromArgb((byte)((result & 0xff000000) >> 24), (byte)((result & 0x00ff0000) >> 16),
-                           (byte)((result & 0x0000ff00) >> 8), (byte)(result & 0x000000ff));
-        } else {
-          return DependencyProperty.UnsetValue;
+        if (int.TryParse(s, NumberStyles.AllowHexSpecifier, culture, out result)) {
+          return Color.FromArgb((byte) ((result & 0xff000000) >> 24), (byte) ((result & 0x00ff0000) >> 16),
+              (byte) ((result & 0x0000ff00) >> 8), (byte) (result & 0x000000ff));
         }
+        return DependencyProperty.UnsetValue;
       }
     }
   }
@@ -173,28 +169,29 @@ namespace Demo.yFiles.Option.Editor
   {
     /// <xamlhelper/>
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
-      double[] coefficients = HsbRangeImageSourceConverter.GetCoefficients(parameter);
-      double h = (double) value;
-      int iw = 32;
-      int ih = 32;
-      WriteableBitmap image = new WriteableBitmap(iw, ih, 92, 92, PixelFormats.Pbgra32, null);
-      byte[] pixels = new byte[iw*ih*4];
-      int i = 0;
-      for (int y= 0; y < ih; y++) {
-        double dy = y/((double)(ih - 1));
-        for (int x = 0; x < iw; x++) {
-          double dx = x / ((double)(iw - 1));
-          Color color = ColorHelper.FromHSB(dx * coefficients[0] + dy * coefficients[1] + h * coefficients[2] + coefficients[3],
-                                             dx * coefficients[4] + dy * coefficients[5] + h * coefficients[6] + coefficients[7],
-                                             dx * coefficients[8] + dy * coefficients[9] + h * coefficients[10] + coefficients[11],
-                                             dx * coefficients[12] + dy * coefficients[13] + h * coefficients[14] + coefficients[15]);
+      var coefficients = HsbRangeImageSourceConverter.GetCoefficients(parameter);
+      var h = (double) value;
+      var iw = 32;
+      var ih = 32;
+      var image = new WriteableBitmap(iw, ih, 92, 92, PixelFormats.Pbgra32, null);
+      var pixels = new byte[iw * ih * 4];
+      var i = 0;
+      for (var y = 0; y < ih; y++) {
+        var dy = y / (double) (ih - 1);
+        for (var x = 0; x < iw; x++) {
+          var dx = x / (double) (iw - 1);
+          var color = ColorHelper.FromHSB(
+              dx * coefficients[0] + dy * coefficients[1] + h * coefficients[2] + coefficients[3],
+              dx * coefficients[4] + dy * coefficients[5] + h * coefficients[6] + coefficients[7],
+              dx * coefficients[8] + dy * coefficients[9] + h * coefficients[10] + coefficients[11],
+              dx * coefficients[12] + dy * coefficients[13] + h * coefficients[14] + coefficients[15]);
           pixels[i++] = color.B;
           pixels[i++] = color.G;
           pixels[i++] = color.R;
           pixels[i++] = 255;
         }
       }
-      image.WritePixels(new Int32Rect(0, 0, iw, ih), pixels, iw*4 , 0);
+      image.WritePixels(new Int32Rect(0, 0, iw, ih), pixels, iw * 4, 0);
       return image;
     }
 
@@ -209,59 +206,59 @@ namespace Demo.yFiles.Option.Editor
   [Obfuscation(StripAfterObfuscation = false, Exclude = true, ApplyToMembers = false)]
   public class HsbRangeImageSourceConverter : IValueConverter
   {
-
     /// <xamlhelper/>
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
-      double[] coefficients = GetCoefficients(parameter);
-      double h = (double) value;
-      int iw = 1;
-      int ih = 32;
-      WriteableBitmap image = new WriteableBitmap(iw, ih, 92, 92, PixelFormats.Pbgra32, null);
-      byte[] pixels = new byte[iw*ih*4];
+      var coefficients = GetCoefficients(parameter);
+      var h = (double) value;
+      var iw = 1;
+      var ih = 32;
+      var image = new WriteableBitmap(iw, ih, 92, 92, PixelFormats.Pbgra32, null);
+      var pixels = new byte[iw * ih * 4];
       {
-        int i = 0;
-        for (int y= 0; y < ih; y++) {
-          double dy = 1.0d - (y/((double)(ih - 1)));
+        var i = 0;
+        for (var y = 0; y < ih; y++) {
+          var dy = 1.0d - (y / (double) (ih - 1));
           double dx = 1;
-          Color color = ColorHelper.FromHSB(dx * coefficients[0] + dy * coefficients[1] + h*coefficients[2] + coefficients[3], 
-                                             dx * coefficients[4] + dy * coefficients[5] + h*coefficients[6] + coefficients[7],
-                                             dx * coefficients[8] + dy * coefficients[9] + h * coefficients[10] + coefficients[11],
-                                             dx * coefficients[12] + dy * coefficients[13] + h*coefficients[14] + coefficients[15]);
+          var color = ColorHelper.FromHSB(
+              dx * coefficients[0] + dy * coefficients[1] + h * coefficients[2] + coefficients[3],
+              dx * coefficients[4] + dy * coefficients[5] + h * coefficients[6] + coefficients[7],
+              dx * coefficients[8] + dy * coefficients[9] + h * coefficients[10] + coefficients[11],
+              dx * coefficients[12] + dy * coefficients[13] + h * coefficients[14] + coefficients[15]);
           pixels[i++] = color.B;
           pixels[i++] = color.G;
           pixels[i++] = color.R;
           pixels[i++] = color.A;
         }
       }
-      image.WritePixels(new Int32Rect(0, 0, iw, ih), pixels, iw*4 , 0);
+      image.WritePixels(new Int32Rect(0, 0, iw, ih), pixels, iw * 4, 0);
       return image;
     }
 
     internal static double[] GetCoefficients(object parameter) {
-      string pattern = parameter as string;
-      double[] coefficients = new double[16];
+      var pattern = parameter as string;
+      var coefficients = new double[16];
       if (pattern != null) {
-        string[] items = pattern.Split(new char[]{';'});
-        for (int i = 0; i < 4; i++ ) {
-          string s = items[i].Trim().ToLower();
+        var items = pattern.Split(';');
+        for (var i = 0; i < 4; i++) {
+          var s = items[i].Trim().ToLower();
           if (s.Equals("x")) {
-            coefficients[i*4] = 1;
+            coefficients[i * 4] = 1;
           } else if (s.Equals("y")) {
-            coefficients[i*4 + 1] = 1;
+            coefficients[i * 4 + 1] = 1;
           } else if (s.Equals("v")) {
-            coefficients[i*4 + 2] = 1;
+            coefficients[i * 4 + 2] = 1;
           } else if (s.Equals("-x")) {
-            coefficients[i*4] = -1;
-            coefficients[i*4 + 3] = 1;
+            coefficients[i * 4] = -1;
+            coefficients[i * 4 + 3] = 1;
           } else if (s.Equals("-y")) {
-            coefficients[i*4 + 1] = -1;
+            coefficients[i * 4 + 1] = -1;
             coefficients[i * 4 + 3] = 1;
           } else if (s.Equals("-v")) {
-            coefficients[i*4 + 2] = -1;
+            coefficients[i * 4 + 2] = -1;
             coefficients[i * 4 + 3] = 1;
           } else {
-            double d = XmlConvert.ToDouble(s);
-            coefficients[i*4 + 3] = d;
+            var d = XmlConvert.ToDouble(s);
+            coefficients[i * 4 + 3] = d;
           }
         }
       } else {
@@ -286,24 +283,28 @@ namespace Demo.yFiles.Option.Editor
   {
     /// <xamlhelper/>
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
-      double[] coefficients = HsbRangeImageSourceConverter.GetCoefficients(parameter);
-      double h = (double) value;
-      int iw = 32;
-      int ih = 32;
-      WriteableBitmap image = new WriteableBitmap(iw, ih, 92, 92, PixelFormats.Pbgra32, null);
-      byte[] pixels = new byte[iw*ih*4];
-      int i = 0;
-      for (int y= 0; y < ih; y++) {
-        double dy = y/((double)(ih - 1));
-        for (int x = 0; x < iw; x++) {
-          double dx = x / ((double)(iw - 1));
-          pixels[i++] = (byte)((dx * coefficients[8] + dy * coefficients[9] + h * coefficients[10] + coefficients[11]) * 255);
-          pixels[i++] = (byte)((dx * coefficients[4] + dy * coefficients[5] + h * coefficients[6] + coefficients[7]) * 255);
-          pixels[i++] = (byte)((dx * coefficients[0] + dy * coefficients[1] + h * coefficients[2] + coefficients[3]) * 255);
-          pixels[i++] = (byte)((dx * coefficients[12] + dy * coefficients[13] + h*coefficients[14] + coefficients[15]) * 255);
+      var coefficients = HsbRangeImageSourceConverter.GetCoefficients(parameter);
+      var h = (double) value;
+      var iw = 32;
+      var ih = 32;
+      var image = new WriteableBitmap(iw, ih, 92, 92, PixelFormats.Pbgra32, null);
+      var pixels = new byte[iw * ih * 4];
+      var i = 0;
+      for (var y = 0; y < ih; y++) {
+        var dy = y / (double) (ih - 1);
+        for (var x = 0; x < iw; x++) {
+          var dx = x / (double) (iw - 1);
+          pixels[i++] =
+              (byte) ((dx * coefficients[8] + dy * coefficients[9] + h * coefficients[10] + coefficients[11]) * 255);
+          pixels[i++] = (byte) ((dx * coefficients[4] + dy * coefficients[5] + h * coefficients[6] + coefficients[7]) *
+              255);
+          pixels[i++] = (byte) ((dx * coefficients[0] + dy * coefficients[1] + h * coefficients[2] + coefficients[3]) *
+              255);
+          pixels[i++] =
+              (byte) ((dx * coefficients[12] + dy * coefficients[13] + h * coefficients[14] + coefficients[15]) * 255);
         }
       }
-      image.WritePixels(new Int32Rect(0, 0, iw, ih), pixels, iw*4 , 0);
+      image.WritePixels(new Int32Rect(0, 0, iw, ih), pixels, iw * 4, 0);
       return image;
     }
 
@@ -320,28 +321,28 @@ namespace Demo.yFiles.Option.Editor
   {
     /// <xamlhelper/>
     public MyThumb() {
-      this.DragDelta += new DragDeltaEventHandler(MyThumb_DragDelta);
+      DragDelta += MyThumb_DragDelta;
     }
 
-    void MyThumb_DragDelta(object sender, DragDeltaEventArgs e) {
-      System.Windows.Controls.Canvas canvas = Parent as System.Windows.Controls.Canvas;
+    private void MyThumb_DragDelta(object sender, DragDeltaEventArgs e) {
+      var canvas = Parent as Canvas;
       if (canvas != null) {
-        double w = canvas.ActualWidth;
-        double h = canvas.ActualWidth;
-        double top = System.Windows.Controls.Canvas.GetTop(this);
+        var w = canvas.ActualWidth;
+        var h = canvas.ActualWidth;
+        var top = Canvas.GetTop(this);
         if (double.IsNaN(top)) {
           top = 0;
         }
-        top += this.ActualHeight*0.5d;
-        double newVal = (top + e.VerticalChange)/h;
+        top += ActualHeight * 0.5d;
+        var newVal = (top + e.VerticalChange) / h;
         newVal = Math.Max(0, Math.Min(1, newVal));
         SetValue(YProperty, newVal);
-        double left = System.Windows.Controls.Canvas.GetLeft(this);
+        var left = Canvas.GetLeft(this);
         if (double.IsNaN(left)) {
           left = 0;
         }
-        left += this.ActualWidth*0.5d;
-        double newX = (left + e.HorizontalChange) / w;
+        left += ActualWidth * 0.5d;
+        var newX = (left + e.HorizontalChange) / w;
         newX = Math.Max(0, Math.Min(1, newX));
         SetValue(XProperty, newX);
         Focus();
@@ -351,21 +352,21 @@ namespace Demo.yFiles.Option.Editor
     /// <xamlhelper/>
     protected override void OnRenderSizeChanged(SizeChangedInfo sizeInfo) {
       base.OnRenderSizeChanged(sizeInfo);
-      System.Windows.Controls.Canvas canvas = this.Parent as System.Windows.Controls.Canvas;
+      var canvas = Parent as Canvas;
       if (canvas != null) {
         if (handler == null) {
-          handler = new System.Windows.Input.MouseButtonEventHandler(canvas_MouseDown);
+          handler = canvas_MouseDown;
           canvas.MouseDown += handler;
         }
-        System.Windows.Controls.Canvas.SetLeft(this, X * canvas.ActualWidth - this.ActualWidth * 0.5d);
-        System.Windows.Controls.Canvas.SetTop(this, Y * canvas.ActualHeight - this.ActualHeight * 0.5d);
+        Canvas.SetLeft(this, X * canvas.ActualWidth - ActualWidth * 0.5d);
+        Canvas.SetTop(this, Y * canvas.ActualHeight - ActualHeight * 0.5d);
       }
     }
 
-    void canvas_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e) {
-      System.Windows.Controls.Canvas canvas = this.Parent as System.Windows.Controls.Canvas;
+    private void canvas_MouseDown(object sender, MouseButtonEventArgs e) {
+      var canvas = Parent as Canvas;
       if (canvas != null) {
-        Point point = e.GetPosition(canvas);
+        var point = e.GetPosition(canvas);
         SetValue(XProperty, point.X / canvas.ActualWidth);
         SetValue(YProperty, point.Y / canvas.ActualHeight);
       }
@@ -373,31 +374,32 @@ namespace Demo.yFiles.Option.Editor
 
     /// <xamlhelper/>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
-    public static readonly DependencyProperty XProperty =
-      DependencyProperty.Register("X", typeof (double), typeof (MyThumb),
-                                  new FrameworkPropertyMetadata(0.0d, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault,
-                                                                XPropertyChangedCallback, CoerceValueCallback));
+    public static readonly DependencyProperty XProperty = DependencyProperty.Register("X", typeof(double),
+        typeof(MyThumb),
+        new FrameworkPropertyMetadata(0.0d, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault,
+            XPropertyChangedCallback, CoerceValueCallback));
 
     /// <xamlhelper/>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
-    public static readonly DependencyProperty YProperty =
-      DependencyProperty.Register("Y", typeof (double), typeof (MyThumb),
-                                  new FrameworkPropertyMetadata(0.0d, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault,
-                                                                YPropertyChangedCallback, CoerceValueCallback));
+    public static readonly DependencyProperty YProperty = DependencyProperty.Register("Y", typeof(double),
+        typeof(MyThumb),
+        new FrameworkPropertyMetadata(0.0d, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault,
+            YPropertyChangedCallback, CoerceValueCallback));
 
     private MouseButtonEventHandler handler;
 
     /// <xamlhelper/>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     public double X {
-      get { return (double) GetValue(XProperty); }
-      set { SetValue(XProperty, value); }
+      get => (double) GetValue(XProperty);
+      set => SetValue(XProperty, value);
     }
+
     /// <xamlhelper/>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     public double Y {
-      get { return (double) GetValue(YProperty); }
-      set { SetValue(YProperty, value); }
+      get => (double) GetValue(YProperty);
+      set => SetValue(YProperty, value);
     }
 
     private static object CoerceValueCallback(DependencyObject d, object baseValue) {
@@ -405,22 +407,21 @@ namespace Demo.yFiles.Option.Editor
     }
 
     private static void XPropertyChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e) {
-      MyThumb thumb = (MyThumb) d;
-      System.Windows.Controls.Canvas canvas = thumb.Parent as System.Windows.Controls.Canvas;
+      var thumb = (MyThumb) d;
+      var canvas = thumb.Parent as Canvas;
       if (canvas != null) {
-        double val = (double) e.NewValue;
-        System.Windows.Controls.Canvas.SetLeft(thumb, val * canvas.ActualWidth - thumb.ActualWidth*0.5d);
+        var val = (double) e.NewValue;
+        Canvas.SetLeft(thumb, val * canvas.ActualWidth - thumb.ActualWidth * 0.5d);
       }
-
     }
-    private static void YPropertyChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e) {
-      MyThumb thumb = (MyThumb) d;
-      System.Windows.Controls.Canvas canvas = thumb.Parent as System.Windows.Controls.Canvas;
-      if (canvas != null) {
-        double val = (double) e.NewValue;
-        System.Windows.Controls.Canvas.SetTop(thumb, val * canvas.ActualHeight - thumb.ActualHeight*0.5d);
-      }
 
+    private static void YPropertyChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+      var thumb = (MyThumb) d;
+      var canvas = thumb.Parent as Canvas;
+      if (canvas != null) {
+        var val = (double) e.NewValue;
+        Canvas.SetTop(thumb, val * canvas.ActualHeight - thumb.ActualHeight * 0.5d);
+      }
     }
   }
 
@@ -429,50 +430,48 @@ namespace Demo.yFiles.Option.Editor
   [Obfuscation(StripAfterObfuscation = false, Exclude = true, ApplyToMembers = false)]
   public class ColorChooser : Control
   {
-
     static ColorChooser() {
-      DefaultStyleKeyProperty.OverrideMetadata(typeof(ColorChooser), new FrameworkPropertyMetadata(typeof(ColorChooser)));
+      DefaultStyleKeyProperty.OverrideMetadata(typeof(ColorChooser),
+          new FrameworkPropertyMetadata(typeof(ColorChooser)));
     }
 
     /// <xamlhelper/>
     public ColorChooser() { }
 
     /// <summary>
-    /// Identifies the ColorChanged routed event.
+    ///   Identifies the ColorChanged routed event.
     /// </summary>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
-    public static readonly RoutedEvent ColorChangedEvent = EventManager.RegisterRoutedEvent(
-        "ColorChanged", RoutingStrategy.Bubble,
-        typeof(RoutedPropertyChangedEventHandler<Color>), typeof(ColorChooser));
+    public static readonly RoutedEvent ColorChangedEvent = EventManager.RegisterRoutedEvent("ColorChanged",
+        RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<Color>), typeof(ColorChooser));
 
     /// <summary>
-    /// Identifies the ValueChanged routed event.
+    ///   Identifies the ValueChanged routed event.
     /// </summary>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
-    public static readonly RoutedEvent ValueChangedEvent = EventManager.RegisterRoutedEvent(
-        "ValueChanged", RoutingStrategy.Bubble,
-        typeof(RoutedPropertyChangedEventHandler<object>), typeof(ColorChooser));
+    public static readonly RoutedEvent ValueChangedEvent = EventManager.RegisterRoutedEvent("ValueChanged",
+        RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<object>), typeof(ColorChooser));
 
     /// <summary>
-    /// Occurs when the Color property changes.
+    ///   Occurs when the Color property changes.
     /// </summary>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     public event RoutedPropertyChangedEventHandler<Color> ColorChanged {
-      add { AddHandler(ColorChangedEvent, value); }
-      remove { RemoveHandler(ColorChangedEvent, value); }
+      add => AddHandler(ColorChangedEvent, value);
+      remove => RemoveHandler(ColorChangedEvent, value);
     }
 
     /// <summary>
-    /// Occurs when the Color property changes.
+    ///   Occurs when the Color property changes.
     /// </summary>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     public event RoutedPropertyChangedEventHandler<object> ValueChanged {
-      add { AddHandler(ValueChangedEvent, value); }
-      remove { RemoveHandler(ValueChangedEvent, value); }
+      add => AddHandler(ValueChangedEvent, value);
+      remove => RemoveHandler(ValueChangedEvent, value);
     }
 
     /// <summary>
-    /// Raises the ColorChanged event.
+    ///   Raises the ColorChanged event.
     /// </summary>
     /// <param name="args">Arguments associated with the ValueChanged event.</param>
     protected virtual void OnColorChanged(RoutedPropertyChangedEventArgs<Color> args) {
@@ -480,7 +479,7 @@ namespace Demo.yFiles.Option.Editor
     }
 
     /// <summary>
-    /// Raises the ValueChanged event.
+    ///   Raises the ValueChanged event.
     /// </summary>
     /// <param name="args">Arguments associated with the ValueChanged event.</param>
     protected virtual void OnValueChanged(RoutedPropertyChangedEventArgs<object> args) {
@@ -489,7 +488,7 @@ namespace Demo.yFiles.Option.Editor
 
 
     private static object CoerceColorValue(DependencyObject d0, object baseValue) {
-      double d = baseValue is double ? (double)baseValue : 0.0;
+      var d = baseValue is double ? (double) baseValue : 0.0;
       if (d > 1) {
         return 1;
       }
@@ -504,7 +503,7 @@ namespace Demo.yFiles.Option.Editor
         return;
       }
 
-      Color color = Color.FromArgb((byte)(255 * Alpha), (byte)(255 * Red), (byte)(255 * Green), (byte)(255 * Blue));
+      var color = Color.FromArgb((byte) (255 * Alpha), (byte) (255 * Red), (byte) (255 * Green), (byte) (255 * Blue));
       SetValue(ColorProperty, color);
     }
 
@@ -512,8 +511,8 @@ namespace Demo.yFiles.Option.Editor
       if (updateInProgress) {
         return;
       }
-      Color c = Color;
-      c.A = (byte) (255*Alpha);
+      var c = Color;
+      c.A = (byte) (255 * Alpha);
       updateInProgress = true;
       try {
         SetValue(ColorProperty, c);
@@ -528,7 +527,7 @@ namespace Demo.yFiles.Option.Editor
       }
       updateInProgress = true;
       try {
-        Color value = ColorHelper.FromHSB(Hue, Saturation, Brightness, Alpha);
+        var value = ColorHelper.FromHSB(Hue, Saturation, Brightness, Alpha);
         SetValue(ColorProperty, value);
         Red = value.R / 255.0d;
         Green = value.G / 255.0d;
@@ -540,24 +539,24 @@ namespace Demo.yFiles.Option.Editor
 
     /// <xamlhelper/>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
-    public static readonly DependencyProperty NoColorAllowedProperty =
-      DependencyProperty.Register("NoColorAllowed", typeof(bool), typeof(ColorChooser),
-                                          new FrameworkPropertyMetadata(true, FrameworkPropertyMetadataOptions.AffectsRender | FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+    public static readonly DependencyProperty NoColorAllowedProperty = DependencyProperty.Register("NoColorAllowed",
+        typeof(bool), typeof(ColorChooser),
+        new FrameworkPropertyMetadata(true,
+            FrameworkPropertyMetadataOptions.AffectsRender | FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 
     /// <xamlhelper/>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     public bool NoColorAllowed {
-      get { return (bool)GetValue(NoColorAllowedProperty); }
-      set {
-        SetValue(NoColorAllowedProperty, (bool)value);
-      }
+      get => (bool) GetValue(NoColorAllowedProperty);
+      set => SetValue(NoColorAllowedProperty, value);
     }
 
     /// <xamlhelper/>
-    [Obfuscation(StripAfterObfuscation = false, Exclude = true)] 
-    private static readonly DependencyPropertyKey IsNullPropertyKey =
-      DependencyProperty.RegisterReadOnly("IsNull", typeof(bool), typeof(ColorChooser),
-                                          new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.AffectsRender | FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+    [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
+    private static readonly DependencyPropertyKey IsNullPropertyKey = DependencyProperty.RegisterReadOnly("IsNull",
+        typeof(bool), typeof(ColorChooser),
+        new FrameworkPropertyMetadata(false,
+            FrameworkPropertyMetadataOptions.AffectsRender | FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     public static readonly DependencyProperty IsNullProperty = IsNullPropertyKey.DependencyProperty;
@@ -565,61 +564,58 @@ namespace Demo.yFiles.Option.Editor
     /// <xamlhelper/>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     public bool IsNull {
-      get { return (bool)GetValue(IsNullProperty); }
-      private set {
-        SetValue(IsNullPropertyKey, value);
-      }
+      get => (bool) GetValue(IsNullProperty);
+      private set => SetValue(IsNullPropertyKey, value);
     }
 
     /// <xamlhelper/>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
-    public static readonly DependencyProperty ValueProperty =
-      DependencyProperty.Register("Value", typeof(object), typeof(ColorChooser),
-                                          new FrameworkPropertyMetadata(Colors.Black, FrameworkPropertyMetadataOptions.AffectsRender | FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnValueChanged));
+    public static readonly DependencyProperty ValueProperty = DependencyProperty.Register("Value", typeof(object),
+        typeof(ColorChooser),
+        new FrameworkPropertyMetadata(Colors.Black,
+            FrameworkPropertyMetadataOptions.AffectsRender | FrameworkPropertyMetadataOptions.BindsTwoWayByDefault,
+            OnValueChanged));
 
     private static void OnValueChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
-      ColorChooser c = d as ColorChooser;
+      var c = d as ColorChooser;
       if (d != null) {
         c.IsNull = e.NewValue is Color ? false : true;
-        c.Color = c.IsNull ? Colors.Transparent : (Color)e.NewValue;
+        c.Color = c.IsNull ? Colors.Transparent : (Color) e.NewValue;
       }
 
-      RoutedPropertyChangedEventArgs<object> ea = new RoutedPropertyChangedEventArgs<object>(
-        e.OldValue, e.NewValue, ValueChangedEvent);
+      var ea = new RoutedPropertyChangedEventArgs<object>(e.OldValue, e.NewValue, ValueChangedEvent);
       c.OnValueChanged(ea);
     }
 
     /// <xamlhelper/>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     public object Value {
-      get { return GetValue(ValueProperty); }
-      set {
-        SetValue(ValueProperty, value);
-      }
+      get => GetValue(ValueProperty);
+      set => SetValue(ValueProperty, value);
     }
 
     /// <xamlhelper/>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
-    public static readonly DependencyProperty ColorProperty =
-      DependencyProperty.Register("Color", typeof(Color), typeof(ColorChooser),
-                                          new FrameworkPropertyMetadata(Colors.Black, FrameworkPropertyMetadataOptions.AffectsRender | FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnColorChanged));
+    public static readonly DependencyProperty ColorProperty = DependencyProperty.Register("Color", typeof(Color),
+        typeof(ColorChooser),
+        new FrameworkPropertyMetadata(Colors.Black,
+            FrameworkPropertyMetadataOptions.AffectsRender | FrameworkPropertyMetadataOptions.BindsTwoWayByDefault,
+            OnColorChanged));
 
     private static void OnColorChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
-      ColorChooser c = d as ColorChooser;
+      var c = d as ColorChooser;
       if (c != null) {
-        c.SetColor((Color)e.NewValue);
+        c.SetColor((Color) e.NewValue);
 
-        RoutedPropertyChangedEventArgs<Color> ea = new RoutedPropertyChangedEventArgs<Color>(
-    (Color)e.OldValue, (Color)e.NewValue, ColorChangedEvent);
+        var ea = new RoutedPropertyChangedEventArgs<Color>((Color) e.OldValue, (Color) e.NewValue, ColorChangedEvent);
         c.OnColorChanged(ea);
-
       }
     }
 
     /// <xamlhelper/>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     public Color Color {
-      get { return (Color)GetValue(ColorProperty); }
+      get => (Color) GetValue(ColorProperty);
       set {
         SetColor(value);
         SetValue(ColorProperty, value);
@@ -629,35 +625,36 @@ namespace Demo.yFiles.Option.Editor
     private void SetColor(Color value) {
       if (updateInProgress) {
         return;
-      } else {
-        updateInProgress = true;
-        try {
-          Red = value.R / 255.0d;
-          Green = value.G / 255.0d;
-          Blue = value.B / 255.0d;
-          Alpha = value.A / 255.0d;
-          var colorValues = ColorHelper.ToHSB(value);
-          double hue = colorValues[0];
-          double saturation = colorValues[1];
-          double brightness = colorValues[2];
-          Hue = hue;
-          Saturation = saturation;
-          Brightness = brightness;
-        } finally {
-          updateInProgress = false;
-        }
+      }
+      updateInProgress = true;
+      try {
+        Red = value.R / 255.0d;
+        Green = value.G / 255.0d;
+        Blue = value.B / 255.0d;
+        Alpha = value.A / 255.0d;
+        var colorValues = ColorHelper.ToHSB(value);
+        var hue = colorValues[0];
+        var saturation = colorValues[1];
+        var brightness = colorValues[2];
+        Hue = hue;
+        Saturation = saturation;
+        Brightness = brightness;
+      } finally {
+        updateInProgress = false;
       }
     }
 
     /// <xamlhelper/>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
-    public static readonly DependencyProperty RedProperty =
-      DependencyProperty.Register("Red", typeof(double), typeof(ColorChooser), new FrameworkPropertyMetadata(0.0d, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault | FrameworkPropertyMetadataOptions.AffectsRender, OnRedChanged, CoerceColorValue),
-                                  ValidateColorRange);
+    public static readonly DependencyProperty RedProperty = DependencyProperty.Register("Red", typeof(double),
+        typeof(ColorChooser),
+        new FrameworkPropertyMetadata(0.0d,
+            FrameworkPropertyMetadataOptions.BindsTwoWayByDefault | FrameworkPropertyMetadataOptions.AffectsRender,
+            OnRedChanged, CoerceColorValue), ValidateColorRange);
 
 
     private static void OnRedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
-      ColorChooser c = d as ColorChooser;
+      var c = d as ColorChooser;
       if (c != null) {
         c.UpdateRGBColor();
       }
@@ -666,18 +663,20 @@ namespace Demo.yFiles.Option.Editor
     /// <xamlhelper/>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     public double Red {
-      get { return (double)GetValue(RedProperty); }
-      set { SetValue(RedProperty, value); }
+      get => (double) GetValue(RedProperty);
+      set => SetValue(RedProperty, value);
     }
 
     /// <xamlhelper/>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
-    public static readonly DependencyProperty GreenProperty =
-      DependencyProperty.Register("Green", typeof(double), typeof(ColorChooser),
-                                  new FrameworkPropertyMetadata(0.0d, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault | FrameworkPropertyMetadataOptions.AffectsRender, OnGreenChanged), ValidateColorRange);
+    public static readonly DependencyProperty GreenProperty = DependencyProperty.Register("Green", typeof(double),
+        typeof(ColorChooser),
+        new FrameworkPropertyMetadata(0.0d,
+            FrameworkPropertyMetadataOptions.BindsTwoWayByDefault | FrameworkPropertyMetadataOptions.AffectsRender,
+            OnGreenChanged), ValidateColorRange);
 
     private static void OnGreenChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
-      ColorChooser c = d as ColorChooser;
+      var c = d as ColorChooser;
       if (c != null) {
         c.UpdateRGBColor();
       }
@@ -686,18 +685,20 @@ namespace Demo.yFiles.Option.Editor
     /// <xamlhelper/>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     public double Green {
-      get { return (double)GetValue(GreenProperty); }
-      set { SetValue(GreenProperty, value); }
+      get => (double) GetValue(GreenProperty);
+      set => SetValue(GreenProperty, value);
     }
 
     /// <xamlhelper/>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
-    public static readonly DependencyProperty BlueProperty =
-      DependencyProperty.Register("Blue", typeof(double), typeof(ColorChooser), new FrameworkPropertyMetadata(0.0d, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault | FrameworkPropertyMetadataOptions.AffectsRender, OnBlueChanged, CoerceColorValue),
-                                  ValidateColorRange);
+    public static readonly DependencyProperty BlueProperty = DependencyProperty.Register("Blue", typeof(double),
+        typeof(ColorChooser),
+        new FrameworkPropertyMetadata(0.0d,
+            FrameworkPropertyMetadataOptions.BindsTwoWayByDefault | FrameworkPropertyMetadataOptions.AffectsRender,
+            OnBlueChanged, CoerceColorValue), ValidateColorRange);
 
     private static void OnBlueChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
-      ColorChooser c = d as ColorChooser;
+      var c = d as ColorChooser;
       if (c != null) {
         c.UpdateRGBColor();
       }
@@ -706,19 +707,21 @@ namespace Demo.yFiles.Option.Editor
     /// <xamlhelper/>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     public double Blue {
-      get { return (double)GetValue(BlueProperty); }
-      set { SetValue(BlueProperty, value); }
+      get => (double) GetValue(BlueProperty);
+      set => SetValue(BlueProperty, value);
     }
 
     /// <xamlhelper/>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
-    public static readonly DependencyProperty HueProperty =
-      DependencyProperty.Register("Hue", typeof(double), typeof(ColorChooser), new FrameworkPropertyMetadata(0.0d, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault | FrameworkPropertyMetadataOptions.AffectsRender, OnHSVChanged, CoerceColorValue),
-                                  ValidateColorRange);
+    public static readonly DependencyProperty HueProperty = DependencyProperty.Register("Hue", typeof(double),
+        typeof(ColorChooser),
+        new FrameworkPropertyMetadata(0.0d,
+            FrameworkPropertyMetadataOptions.BindsTwoWayByDefault | FrameworkPropertyMetadataOptions.AffectsRender,
+            OnHSVChanged, CoerceColorValue), ValidateColorRange);
 
 
     private static void OnHSVChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
-      ColorChooser c = d as ColorChooser;
+      var c = d as ColorChooser;
       if (c != null) {
         c.UpdateHSBColor();
       }
@@ -727,46 +730,52 @@ namespace Demo.yFiles.Option.Editor
     /// <xamlhelper/>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     public double Hue {
-      get { return (double)GetValue(HueProperty); }
-      set { SetValue(HueProperty, value); }
+      get => (double) GetValue(HueProperty);
+      set => SetValue(HueProperty, value);
     }
 
     /// <xamlhelper/>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
-    public static readonly DependencyProperty SaturationProperty =
-      DependencyProperty.Register("Saturation", typeof(double), typeof(ColorChooser),
-                                  new FrameworkPropertyMetadata(0.0d, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault | FrameworkPropertyMetadataOptions.AffectsRender, OnHSVChanged), ValidateColorRange);
+    public static readonly DependencyProperty SaturationProperty = DependencyProperty.Register("Saturation",
+        typeof(double), typeof(ColorChooser),
+        new FrameworkPropertyMetadata(0.0d,
+            FrameworkPropertyMetadataOptions.BindsTwoWayByDefault | FrameworkPropertyMetadataOptions.AffectsRender,
+            OnHSVChanged), ValidateColorRange);
 
     /// <xamlhelper/>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     public double Saturation {
-      get { return (double)GetValue(SaturationProperty); }
-      set { SetValue(SaturationProperty, value); }
+      get => (double) GetValue(SaturationProperty);
+      set => SetValue(SaturationProperty, value);
     }
 
     /// <xamlhelper/>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
-    public static readonly DependencyProperty BrightnessProperty =
-      DependencyProperty.Register("Brightness", typeof(double), typeof(ColorChooser), new FrameworkPropertyMetadata(0.0d, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault | FrameworkPropertyMetadataOptions.AffectsRender, OnHSVChanged, CoerceColorValue),
-                                  ValidateColorRange);
+    public static readonly DependencyProperty BrightnessProperty = DependencyProperty.Register("Brightness",
+        typeof(double), typeof(ColorChooser),
+        new FrameworkPropertyMetadata(0.0d,
+            FrameworkPropertyMetadataOptions.BindsTwoWayByDefault | FrameworkPropertyMetadataOptions.AffectsRender,
+            OnHSVChanged, CoerceColorValue), ValidateColorRange);
 
     /// <xamlhelper/>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     public double Brightness {
-      get { return (double)GetValue(BrightnessProperty); }
-      set { SetValue(BrightnessProperty, value); }
+      get => (double) GetValue(BrightnessProperty);
+      set => SetValue(BrightnessProperty, value);
     }
 
     /// <xamlhelper/>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
-    public static readonly DependencyProperty AlphaProperty =
-      DependencyProperty.Register("Alpha", typeof(double), typeof(ColorChooser), new FrameworkPropertyMetadata(1.0d, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault | FrameworkPropertyMetadataOptions.AffectsRender, OnAlphaChanged, CoerceColorValue),
-                                  ValidateColorRange);
+    public static readonly DependencyProperty AlphaProperty = DependencyProperty.Register("Alpha", typeof(double),
+        typeof(ColorChooser),
+        new FrameworkPropertyMetadata(1.0d,
+            FrameworkPropertyMetadataOptions.BindsTwoWayByDefault | FrameworkPropertyMetadataOptions.AffectsRender,
+            OnAlphaChanged, CoerceColorValue), ValidateColorRange);
 
-    private bool updateInProgress = false;
+    private bool updateInProgress;
 
     private static void OnAlphaChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
-      ColorChooser c = d as ColorChooser;
+      var c = d as ColorChooser;
       if (c != null) {
         c.UpdateAlpha();
       }
@@ -775,15 +784,15 @@ namespace Demo.yFiles.Option.Editor
     /// <xamlhelper/>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     public double Alpha {
-      get { return (double)GetValue(AlphaProperty); }
-      set { SetValue(AlphaProperty, value); }
+      get => (double) GetValue(AlphaProperty);
+      set => SetValue(AlphaProperty, value);
     }
 
     private static bool ValidateColorRange(object value) {
-      return value is double && ((double)value) >= 0.0d && ((double)value) <= 1.0d;
+      return value is double && (double) value >= 0.0d && (double) value <= 1.0d;
     }
 
 
-    public static readonly object NullColorObject = new object();
+    public static readonly object NullColorObject = new();
   }
 }

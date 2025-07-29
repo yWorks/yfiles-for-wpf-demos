@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -45,8 +45,8 @@ namespace Demo.yFiles.Graph.OverlapAvoidingEditor
   {
     private readonly GraphEditorInputMode mode;
     private readonly GraphControl graphControl;
-    
-    // dummy bindings for the extend selection commands
+
+    // custom bindings for the extend selection commands that do nothing
     private readonly CommandBinding extendSelectionLeftBinding = new EmptyCommandBinding(ComponentCommands.ExtendSelectionLeft);
     private readonly CommandBinding extendSelectionRightBinding = new EmptyCommandBinding(ComponentCommands.ExtendSelectionRight);
     private readonly CommandBinding extendSelectionUpBinding = new EmptyCommandBinding(ComponentCommands.ExtendSelectionUp);
@@ -55,20 +55,20 @@ namespace Demo.yFiles.Graph.OverlapAvoidingEditor
     private readonly CommandBinding customToggleSelectionBinding;
 
     /// <summary>
-    /// Initializes a SingleSelectionSupport instance. 
+    /// Initializes a SingleSelectionSupport instance.
     /// </summary>
     /// <param name="mode">The <see cref="GraphEditorInputMode">input mode</see> whose selection behavior is to be changed.</param>
     public SingleSelectionSupport(GraphEditorInputMode mode) {
       this.mode = mode;
-      this.graphControl = mode.GraphControl;
+      graphControl = mode.GraphControl;
 
       // initialize command binding
-      customToggleSelectionBinding = new CommandBinding(GraphCommands.ToggleItemSelection,
-          ToggleItemSelectionExecuted, ToggleItemSelectionCanExecute);
+      customToggleSelectionBinding = new CommandBinding(
+          GraphCommands.ToggleItemSelection, ToggleItemSelectionExecuted, ToggleItemSelectionCanExecute);
     }
 
     /// <summary>
-    /// Enables single selection mode. 
+    /// Enables single selection mode.
     /// </summary>
     public void Enable() {
       // disable marquee selection
@@ -85,7 +85,7 @@ namespace Demo.yFiles.Graph.OverlapAvoidingEditor
       mode.NavigationInputMode.AvailableCommands.Remove(ComponentCommands.ExtendSelectionDown);
       mode.NavigationInputMode.AvailableCommands.Remove(ComponentCommands.ExtendSelectionRight);
 
-      // add dummy command bindings that do nothing in order to prevent WPF default behavior
+      // add command bindings that do nothing to prevent WPF default behavior
       graphControl.CommandBindings.Add(extendSelectionLeftBinding);
       graphControl.CommandBindings.Add(extendSelectionRightBinding);
       graphControl.CommandBindings.Add(extendSelectionUpBinding);
@@ -94,10 +94,10 @@ namespace Demo.yFiles.Graph.OverlapAvoidingEditor
       // add custom binding for toggle item selection
       graphControl.CommandBindings.Add(customToggleSelectionBinding);
 
-      //Disable selection of (possibly multiple) items
+      // Disable selection of (possibly multiple) items
       mode.PasteSelectableItems = GraphItemTypes.None;
 
-      //Also clear the selection - even though the setup works when more than one item is selected, it looks a bit strange
+      // Also clear the selection - even though the setup works when more than one item is selected, it looks a bit strange
       graphControl.Selection.Clear();
     }
 
@@ -105,29 +105,30 @@ namespace Demo.yFiles.Graph.OverlapAvoidingEditor
 
     private void ToggleItemSelectionCanExecute(object sender, CanExecuteRoutedEventArgs e) {
       // if we have an item, the command can be executed
-      var modelItem = (e.Parameter as IModelItem) ?? graphControl.CurrentItem;
+      var modelItem = e.Parameter as IModelItem ?? graphControl.CurrentItem;
       e.CanExecute = modelItem != null;
       e.Handled = true;
     }
 
     /// <summary>
-    /// Custom command handler that allows toggling the selection state of an item 
+    /// Custom command handler that allows toggling the selection state of an item
     /// respecting the single selection policy.
     /// </summary>
     private void ToggleItemSelectionExecuted(object sender, ExecutedRoutedEventArgs e) {
       // get the item
-      var modelItem = (e.Parameter as IModelItem) ?? graphControl.CurrentItem;
+      var modelItem = e.Parameter as IModelItem ?? graphControl.CurrentItem;
       var inputMode = (GraphEditorInputMode) graphControl.InputMode;
 
       // check if it allowed to be selected
-      if (modelItem != null && graphControl.Graph.Contains(modelItem) && inputMode.SelectableItems.Is(modelItem)) {
-        var isSelected = inputMode.GraphSelection.IsSelected(modelItem);
+      var graphSelection = inputMode.GraphSelection;
+      if (modelItem != null && graphSelection != null && graphControl.Graph.Contains(modelItem) && inputMode.SelectableItems.Is(modelItem)) {
+        var isSelected = graphSelection.Contains(modelItem);
         if (isSelected) {
           // the item is selected and needs to be unselected - just clear the selection
-          inputMode.GraphSelection.Clear();
+          graphSelection.Clear();
         } else {
           // the items is unselected - unselect all other items and select the currentItem
-          inputMode.GraphSelection.Clear();
+          graphSelection.Clear();
           inputMode.SetSelected(modelItem, true);
         }
         e.Handled = true;
@@ -138,12 +139,12 @@ namespace Demo.yFiles.Graph.OverlapAvoidingEditor
 
 
     /// <summary>
-    /// Dummy <see cref="CommandBinding"/> that never allows to execute the command.
+    /// <see cref="CommandBinding"/> that never allows to execute the command.
     /// </summary>
     private sealed class EmptyCommandBinding : CommandBinding
     {
       public EmptyCommandBinding(ICommand command) : base(command, OnExecutedHandler, OnCanExecuteHandler) {
-        this.Command = command;
+        Command = command;
       }
 
       private static void OnCanExecuteHandler(object sender, CanExecuteRoutedEventArgs args) {
@@ -152,7 +153,7 @@ namespace Demo.yFiles.Graph.OverlapAvoidingEditor
       }
 
       private static void OnExecutedHandler(object sender, ExecutedRoutedEventArgs args) {
-        // do nothing 
+        // do nothing
       }
     }
   }

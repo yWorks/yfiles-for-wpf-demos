@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -41,30 +41,30 @@ using yWorks.Graph.Styles;
 namespace Demo.yFiles.Complete.IsometricDrawing
 {
   /// <summary>
-  /// A node style that visualizes group nodes in an isometric fashion.
+  ///   A node style that visualizes group nodes in an isometric fashion.
   /// </summary>
   public class IsometricGroupNodeStyle : NodeStyleBase<VisualGroup>
   {
-    private static readonly SolidColorBrush HeaderBrush = new SolidColorBrush(Color.FromArgb(255, 153, 204, 255)); 
-    
-    public static readonly Pen BorderPen = new Pen(new SolidColorBrush(Color.FromArgb(255, 153, 204, 255)), 1);
+    private static readonly SolidColorBrush HeaderBrush = new(Color.FromArgb(255, 153, 204, 255));
+
+    public static readonly Pen BorderPen = new(new SolidColorBrush(Color.FromArgb(255, 153, 204, 255)), 1);
 
     /// <summary>
-    /// The insets between the group node bounds and its children.
+    ///   The padding between the group node bounds and its children.
     /// </summary>
-    private const double Insets = 20;
-    
+    private const double Padding = 20;
+
     /// <summary>
-    /// The height of a group node header.
+    ///   The height of a group node header.
     /// </summary>
     public const double HeaderHeight = 18;
 
-    private readonly IsometricNodeStyle wrapped = new IsometricNodeStyle();
+    private readonly IsometricNodeStyle wrapped = new();
 
     protected override VisualGroup CreateVisual(IRenderContext context, INode node) {
       var container = new VisualGroup();
       // delegate the main rendering to the wrapped IsometricNodeStyle
-      container.Add(this.wrapped.Renderer.GetVisualCreator(node, wrapped).CreateVisual(context));
+      container.Add(wrapped.Renderer.GetVisualCreator(node, wrapped).CreateVisual(context));
       // add a header
       container.Add(RenderHeader(node, new Rectangle { Fill = HeaderBrush }));
       return container;
@@ -75,16 +75,16 @@ namespace Demo.yFiles.Complete.IsometricDrawing
         var wrappedVisual = container.Children[0];
         var headerRect = container.Children[1] as Rectangle;
         if (headerRect != null) {
-          this.wrapped.Renderer.GetVisualCreator(node, wrapped).UpdateVisual(context, wrappedVisual);
+          wrapped.Renderer.GetVisualCreator(node, wrapped).UpdateVisual(context, wrappedVisual);
           RenderHeader(node, headerRect);
           return container;
         }
       }
-      return this.CreateVisual(context, node);
+      return CreateVisual(context, node);
     }
 
     /// <summary>
-    /// Updates a rectangle that fills the header in which a label can be placed. 
+    ///   Updates a rectangle that fills the header in which a label can be placed.
     /// </summary>
     /// <param name="node">The group node.</param>
     /// <param name="header">The visual to update.</param>
@@ -104,9 +104,9 @@ namespace Demo.yFiles.Complete.IsometricDrawing
 
       var oldCache = header.GetRenderDataCache<HeaderRenderData>();
       var newCache = new HeaderRenderData {
-          AnchorX = anchorX, AnchorY = anchorY, Width = width, HeaderHeight = headerHeight
+          anchorX = anchorX, anchorY = anchorY, width = width, headerHeight = headerHeight
       };
-      
+
       if (!newCache.Equals(oldCache)) {
         header.SetRenderDataCache(newCache);
         header.SetCanvasArrangeRect(new Rect(anchorX, anchorY - headerHeight, width, headerHeight));
@@ -115,18 +115,19 @@ namespace Demo.yFiles.Complete.IsometricDrawing
     }
 
     /// <summary>
-    /// The render data class for the group node header.
+    ///   The render data class for the group node header.
     /// </summary>
     private sealed class HeaderRenderData
     {
-      public double AnchorX;
-      public double AnchorY;
+      public double anchorX;
+      public double anchorY;
 
-      public double HeaderHeight;
-      public double Width;
+      public double headerHeight;
+      public double width;
 
       private bool Equals(HeaderRenderData other) {
-        return other.AnchorX == AnchorX && other.AnchorY == AnchorY && other.Width == Width && other.HeaderHeight == HeaderHeight;
+        return other.anchorX == anchorX && other.anchorY == anchorY && other.width == width &&
+            other.headerHeight == headerHeight;
       }
 
       public override bool Equals(object obj) {
@@ -136,7 +137,7 @@ namespace Demo.yFiles.Complete.IsometricDrawing
         if (obj.GetType() != typeof(HeaderRenderData)) {
           return false;
         }
-        return Equals((HeaderRenderData)obj);
+        return Equals((HeaderRenderData) obj);
       }
     }
 
@@ -165,30 +166,34 @@ namespace Demo.yFiles.Complete.IsometricDrawing
     protected override GeneralPath GetOutline(INode node) {
       return wrapped.Renderer.GetShapeGeometry(node, wrapped).GetOutline();
     }
-    
+
     #endregion
 
     protected override object Lookup(INode node, Type type) {
-      if (type == typeof(INodeInsetsProvider)) {
-        // use a group node insets provider that considers the header and the insets
-        return GroupNodeInsetsProvider.Instance;
+      if (type == typeof(IGroupPaddingProvider)) {
+        // use a group node padding provider that considers the header and the padding
+        return new CustomGroupPaddingProvider(node);
       }
       return base.Lookup(node, type);
     }
 
     /// <summary>
-    /// A group node insets provider that considers the header and the insets.
+    ///   A group node padding provider that considers the header and the padding.
     /// </summary>
-    sealed class GroupNodeInsetsProvider : INodeInsetsProvider
+    private sealed class CustomGroupPaddingProvider : IGroupPaddingProvider
     {
-      internal static readonly GroupNodeInsetsProvider Instance = new GroupNodeInsetsProvider();
-      
-      public InsetsD GetInsets(INode node) {
+      private readonly INode node;
+
+      public CustomGroupPaddingProvider(INode node) {
+        this.node = node;
+      }
+
+      public InsetsD GetPadding() {
         var headerHeight = HeaderHeight;
         if (node.Labels.Count > 0) {
           headerHeight = Math.Max(headerHeight, node.Labels[0].GetLayout().Height);
         }
-        return new InsetsD(Insets, Insets, Insets, Insets + headerHeight);
+        return new InsetsD(Padding, Padding, Padding, Padding + headerHeight);
       }
     }
   }

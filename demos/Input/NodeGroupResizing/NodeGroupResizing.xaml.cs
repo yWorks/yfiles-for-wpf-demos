@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -29,25 +29,21 @@
 
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
 using Demo.yFiles.Toolkit;
-using yWorks.Controls;
 using yWorks.Controls.Input;
 using yWorks.Geometry;
 using yWorks.Graph;
-using yWorks.Graph.LabelModels;
-using yWorks.Graph.Styles;
 
 namespace Demo.yFiles.Graph.Input.NodeGroupResizing
 {
   /// <summary>
-  /// Shows how to reshape a group of nodes as one unit.
+  ///   Shows how to reshape a group of nodes as one unit.
   /// </summary>
   /// <remarks>
-  /// A custom <see cref="IInputMode"/> implementation is used to create handles for the unit and custom
-  /// <see cref="IReshapeHandler"/> implementations include the logic to either
-  /// <see cref="NodeGroupResizing.ResizeMode.Resize">move and resize</see> or just
-  /// <see cref="NodeGroupResizing.ResizeMode.Scale">move</see> the nodes.
+  ///   A custom <see cref="IInputMode"/> implementation is used to create handles for the unit and custom
+  ///   <see cref="IReshapeHandler"/> implementations include the logic to either
+  ///   <see cref="NodeGroupResizing.ResizeMode.Resize">move and resize</see> or just
+  ///   <see cref="NodeGroupResizing.ResizeMode.Scale">move</see> the nodes.
   /// </remarks>
   public partial class NodeGroupResizingWindow
   {
@@ -61,33 +57,20 @@ namespace Demo.yFiles.Graph.Input.NodeGroupResizing
       // enable undo engine
       graphControl.Graph.SetUndoEngineEnabled(true);
 
-      // prepare orthogonal edge editing
-      graphEditorInputMode.OrthogonalEdgeEditingContext = new OrthogonalEdgeEditingContext { Enabled = false };
-
-      // allow grouping operations
-      graphEditorInputMode.AllowGroupingOperations = true;
-
-      // prepare snapping
-      graphEditorInputMode.SnapContext = new GraphSnapContext { Enabled = false };
-
       // set minimum and maximum sizes for all non-group nodes (group nodes should be able to grow larger so they can
       // contain arbitrary numbers of nodes)
       var sizeConstraintProvider = new NodeSizeConstraintProvider(new SizeD(10, 10), new SizeD(100, 100));
-      graphControl.Graph
-                  .GetDecorator()
-                  .NodeDecorator
-                  .SizeConstraintProviderDecorator
-                  .SetFactory(node => !graphControl.Graph.IsGroupNode(node), node => sizeConstraintProvider);
+      graphControl.Graph.GetDecorator().Nodes.SizeConstraintProvider
+          .AddFactory(node => !graphControl.Graph.IsGroupNode(node), node => sizeConstraintProvider);
 
       // add a custom input mode to the GraphEditorInputMode that shows a single set of handles when multiple nodes are selected
       nodeGroupResizingInputMode = new NodeGroupResizingInputMode {
-          Margins = new InsetsD(10), 
-          Mode = NodeGroupResizing.ResizeMode.Resize
+          Margins = new InsetsD(10), Mode = NodeGroupResizing.ResizeMode.Resize
       };
       graphEditorInputMode.Add(nodeGroupResizingInputMode);
 
       // set style defaults
-      DemoStyles.InitDemoStyles(graphControl.Graph);
+      DemoStyles.InitDemoStyles(graphControl.Graph, orthogonalEdgeEditing : true);
 
       // load sample graph
       graphControl.ImportFromGraphML("Resources/sampleGraph.graphml");

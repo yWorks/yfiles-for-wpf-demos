@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -27,9 +27,11 @@
  ** 
  ***************************************************************************/
 
+using System.ComponentModel;
 using System.Reflection;
 using Demo.yFiles.Toolkit.OptionHandler;
 using yWorks.Controls;
+using yWorks.Graph;
 using yWorks.Layout;
 using yWorks.Layout.Grid;
 using yWorks.Layout.Tabular;
@@ -48,10 +50,10 @@ namespace Demo.yFiles.Layout.Configurations
       ColumnCountItem = 12;
       HorizontalAlignmentItem = EnumHorizontalAlignments.Center;
       VerticalAlignmentItem = EnumVerticalAlignments.Center;
-      ConsiderNodeLabelsItem = layout.ConsiderNodeLabels;
+      NodeLabelingItem = layout.NodeLabelPlacement;
       MinimumRowHeightItem = 0;
       MinimumColumnWidthItem = 0;
-      CellInsetsItem = 5;
+      CellPaddingItem = 5;
     }
 
     protected override ILayoutAlgorithm CreateConfiguredLayout(GraphControl graphControl) {
@@ -59,26 +61,28 @@ namespace Demo.yFiles.Layout.Configurations
 
       switch (LayoutPolicyItem) {
         case EnumLayoutPolicies.AutoSize:
-          layout.LayoutPolicy = LayoutPolicy.AutoSize;
+          layout.LayoutMode = TabularLayoutMode.AutoSize;
           break;
         case EnumLayoutPolicies.FixedTableSize:
         case EnumLayoutPolicies.SingleRow:
         case EnumLayoutPolicies.SingleColumn:
-          layout.LayoutPolicy = LayoutPolicy.FixedSize;
+          layout.LayoutMode = TabularLayoutMode.FixedSize;
           break;
         case EnumLayoutPolicies.FromSketch:
-          layout.LayoutPolicy = LayoutPolicy.FromSketch;
+          layout.LayoutMode = TabularLayoutMode.FromSketch;
           break;
       }
 
-      layout.ConsiderNodeLabels = ConsiderNodeLabelsItem;
+      layout.NodeLabelPlacement = NodeLabelingItem;
 
       return layout;
     }
 
-    protected override LayoutData CreateConfiguredLayoutData(GraphControl graphControl, ILayoutAlgorithm layout) {
-      var layoutData = new TabularLayoutData();
-      var nodeLayoutDescriptor = new NodeLayoutDescriptor();
+    protected override LayoutData<INode, IEdge, ILabel, ILabel> CreateConfiguredLayoutData(
+        GraphControl graphControl,
+        ILayoutAlgorithm layout) {
+      var layoutData = new TabularLayoutData<INode, IEdge, ILabel, ILabel>();
+      var nodeLayoutDescriptor = new TabularLayoutNodeDescriptor();
       switch (HorizontalAlignmentItem) {
         case EnumHorizontalAlignments.Center:
           nodeLayoutDescriptor.HorizontalAlignment = 0.5;
@@ -103,45 +107,47 @@ namespace Demo.yFiles.Layout.Configurations
       }
 
       var nodeCount = graphControl.Graph.Nodes.Count;
-      PartitionGrid partitionGrid;
+      LayoutGrid layoutGrid;
       switch (LayoutPolicyItem) {
         case EnumLayoutPolicies.FixedTableSize:
           var rowCount = RowCountItem;
           var columnCount = ColumnCountItem;
           if (rowCount * columnCount >= nodeCount) {
-            partitionGrid = new PartitionGrid(rowCount, columnCount);
+            layoutGrid = new LayoutGrid(rowCount, columnCount);
           } else {
-            // make sure partitionGrid has enough cells for all nodes
-            partitionGrid = new PartitionGrid(nodeCount / columnCount, columnCount);
+            // make sure layoutGrid has enough cells for all nodes
+            layoutGrid = new LayoutGrid(nodeCount / columnCount, columnCount);
           }
           break;
         case EnumLayoutPolicies.SingleRow:
-          partitionGrid = new PartitionGrid(1, nodeCount);
+          layoutGrid = new LayoutGrid(1, nodeCount);
           break;
         case EnumLayoutPolicies.SingleColumn:
-          partitionGrid = new PartitionGrid(nodeCount, 1);
+          layoutGrid = new LayoutGrid(nodeCount, 1);
           break;
         default:
-          partitionGrid = new PartitionGrid(1, 1);
+          layoutGrid = new LayoutGrid(1, 1);
           break;
       }
 
       var minimumRowHeight = MinimumRowHeightItem;
       var minimumColumnWidth = MinimumColumnWidthItem;
-      var cellInsets = CellInsetsItem;
-      foreach (RowDescriptor row in partitionGrid.Rows) {
+      var cellPadding = CellPaddingItem;
+      foreach (var row in layoutGrid.Rows) {
         row.MinimumHeight = minimumRowHeight;
-        row.TopInset = cellInsets;
-        row.BottomInset = cellInsets;
+        row.TopPadding = cellPadding;
+        row.BottomPadding = cellPadding;
       }
-      foreach (ColumnDescriptor column in partitionGrid.Columns) {
+      foreach (var column in layoutGrid.Columns) {
         column.MinimumWidth = minimumColumnWidth;
-        column.LeftInset = cellInsets;
-        column.RightInset = cellInsets;
+        column.LeftPadding = cellPadding;
+        column.RightPadding = cellPadding;
       }
 
-      layoutData.NodeLayoutDescriptors.Constant = nodeLayoutDescriptor;
-      layoutData.PartitionGridData = new PartitionGridData {Grid = partitionGrid};
+      layoutData.NodeDescriptors.Constant = nodeLayoutDescriptor;
+      layoutData.LayoutGridData.Grid = layoutGrid;
+      layoutData.LayoutGridData.LayoutGridCellDescriptors.MapperFunction =
+          _ => layoutGrid.CreateDynamicCellDescriptor();
 
       return layoutData;
     }
@@ -158,13 +164,10 @@ namespace Demo.yFiles.Layout.Configurations
 
     [OptionGroup("DescriptionGroup", 10)]
     [ComponentType(ComponentTypes.FormattedText)]
-    public string DescriptionText {
-      get {
-        return "<Paragraph>The tabular layout style arranges the nodes in rows and columns. This is a" +
-               " very simple layout which is useful when nodes should be placed under/next to each other.</Paragraph>" +
-               "<Paragraph>Edges are ignored in this layout style. Their bends are removed.</Paragraph>";
-      }
-    }
+    public string DescriptionText =>
+        "<Paragraph>The tabular layout style arranges the nodes in rows and columns. This is a" +
+        " very simple layout which is useful when nodes should be placed under/next to each other.</Paragraph>" +
+        "<Paragraph>Edges are ignored in this layout style. Their bends are removed.</Paragraph>";
 
     [Label("Layout Mode")]
     [OptionGroup("GeneralGroup", 10)]
@@ -181,9 +184,7 @@ namespace Demo.yFiles.Layout.Configurations
     [ComponentType(ComponentTypes.Slider)]
     public int RowCountItem { get; set; }
 
-    public bool ShouldDisableRowCountItem {
-      get { return LayoutPolicyItem != EnumLayoutPolicies.FixedTableSize; }
-    }
+    public bool ShouldDisableRowCountItem => LayoutPolicyItem != EnumLayoutPolicies.FixedTableSize;
 
     [Label("Column Count")]
     [OptionGroup("GeneralGroup", 30)]
@@ -191,13 +192,15 @@ namespace Demo.yFiles.Layout.Configurations
     [ComponentType(ComponentTypes.Slider)]
     public int ColumnCountItem { get; set; }
 
-    public bool ShouldDisableColumnCountItem {
-      get { return LayoutPolicyItem != EnumLayoutPolicies.FixedTableSize; }
-    }
+    public bool ShouldDisableColumnCountItem => LayoutPolicyItem != EnumLayoutPolicies.FixedTableSize;
 
-    [Label("Consider Node Labels")]
+    [Label("Node Labeling")]
     [OptionGroup("GeneralGroup", 40)]
-    public bool ConsiderNodeLabelsItem { get; set; }
+    [DefaultValue(NodeLabelPlacement.Consider)]
+    [EnumValue("Consider", NodeLabelPlacement.Consider)]
+    [EnumValue("Generic", NodeLabelPlacement.Generic)]
+    [EnumValue("Ignore", NodeLabelPlacement.Ignore)]
+    public NodeLabelPlacement NodeLabelingItem { get; set; }
 
     [Label("Horizontal Alignment")]
     [OptionGroup("GeneralGroup", 50)]
@@ -213,11 +216,11 @@ namespace Demo.yFiles.Layout.Configurations
     [EnumValue("Bottom", EnumVerticalAlignments.Bottom)]
     public EnumVerticalAlignments VerticalAlignmentItem { get; set; }
 
-    [Label("Cell Insets (all sides)")]
+    [Label("Cell Padding (all sides)")]
     [OptionGroup("GeneralGroup", 70)]
     [MinMax(Min = 0, Max = 50, Step = 1)]
     [ComponentType(ComponentTypes.Slider)]
-    public double CellInsetsItem { get; set; }
+    public double CellPaddingItem { get; set; }
 
     [Label("Minimum Row Height")]
     [OptionGroup("GeneralGroup", 80)]
@@ -231,16 +234,27 @@ namespace Demo.yFiles.Layout.Configurations
     [ComponentType(ComponentTypes.Slider)]
     public double MinimumColumnWidthItem { get; set; }
 
-    public enum EnumLayoutPolicies {
-      AutoSize, SingleRow, SingleColumn, FixedTableSize, FromSketch
+    public enum EnumLayoutPolicies
+    {
+      AutoSize,
+      SingleRow,
+      SingleColumn,
+      FixedTableSize,
+      FromSketch
     }
 
-    public enum EnumHorizontalAlignments {
-      Left, Center, Right
+    public enum EnumHorizontalAlignments
+    {
+      Left,
+      Center,
+      Right
     }
 
-    public enum EnumVerticalAlignments {
-      Top, Center, Bottom
+    public enum EnumVerticalAlignments
+    {
+      Top,
+      Center,
+      Bottom
     }
   }
 }

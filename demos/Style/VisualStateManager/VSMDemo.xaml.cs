@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -34,6 +34,7 @@ using yWorks.Controls.Input;
 using yWorks.Geometry;
 using yWorks.Graph;
 using yWorks.Graph.Styles;
+using yWorks.Utils;
 
 namespace Demo.yFiles.Graph.VisualStateManager
 {
@@ -75,13 +76,22 @@ namespace Demo.yFiles.Graph.VisualStateManager
       // avoid double registration
       LayoutUpdated -= OnLayoutUpdated;
 
-      // disable all default adorners - the style visualize these states themselves
+      // disable all default state indicators - the control styles visualize these states themselves ...
       graphControl.HighlightIndicatorManager.Enabled = false;
       graphControl.SelectionIndicatorManager.Enabled = false;
       graphControl.FocusIndicatorManager.Enabled = false;
 
+      // ... however, with the default indicators disabled, selection and highlight changes no longer result in
+      // automatic UpdateVisual calls for the item styles, but UpdateVisual is necessary for the styles to be
+      // able to change the item visualization in response to item state changes
+      // in short, it is necessary to explicitly trigger UpdateVisual in response to selection and highlight changes now
+      EventHandler<ItemEventArgs<IModelItem>> scheduleUpdateVisual = (_, _) => graphControl.Invalidate();
+      graphControl.Selection.ItemAdded += scheduleUpdateVisual;
+      graphControl.Selection.ItemRemoved += scheduleUpdateVisual;
+      graphControl.Highlights.ItemAdded += scheduleUpdateVisual;
+      graphControl.Highlights.ItemRemoved += scheduleUpdateVisual;
 
-      // Initialize input mode for navigation
+      // initialize input mode for navigation
       InitializeInputModes();
       // initialize default style instances.
       InitializeStyles();
@@ -119,13 +129,12 @@ namespace Demo.yFiles.Graph.VisualStateManager
       var product  = targetPort.Owner.Tag as Product;
       if (customer != null && product != null) {
         var edge = graph.CreateEdge(sourcePort, targetPort, edgeStyle);
-        var relation = new Relation() {Customer = customer, Product = product};
+        var relation = new Relation {Customer = customer, Product = product};
         var label = graph.AddLabel(edge, relation.ToString());
         label.Tag = relation;
         return edge;
-      } else {
-        return null;
       }
+      return null;
     }
 
     /// <summary>
@@ -145,11 +154,11 @@ namespace Demo.yFiles.Graph.VisualStateManager
     /// Initializes the styles.
     /// </summary>
     protected virtual void InitializeStyles() {
-      customerNodeStyle = new VSMNodeControlNodeStyle() { StyleResourceKey = "CustomerNodeTemplate" };
-      productNodeStyle = new VSMNodeControlNodeStyle() { StyleResourceKey = "ProductNodeTemplate" };
-      labelStyle = new VSMLabelControlLabelStyle() { StyleResourceKey = "LabelTemplate" };
-      edgeStyle = new VSMEdgeSegmentControlEdgeStyle() { StyleResourceKey = "EdgeSegmentTemplate", SegmentThickness = 5, PathStyle = new PolylineEdgeStyle {Pen = new Pen(Brushes.Black, 5)} };
-      portStyle = new VSMPortControlPortStyle() { StyleResourceKey = "PortTemplate", RenderSize = new SizeD(5, 5) };
+      customerNodeStyle = new VSMNodeControlNodeStyle { StyleResourceKey = "CustomerNodeTemplate" };
+      productNodeStyle = new VSMNodeControlNodeStyle { StyleResourceKey = "ProductNodeTemplate" };
+      labelStyle = new VSMLabelControlLabelStyle { StyleResourceKey = "LabelTemplate" };
+      edgeStyle = new VSMEdgeSegmentControlEdgeStyle { StyleResourceKey = "EdgeSegmentTemplate", SegmentThickness = 5, PathStyle = new PolylineEdgeStyle {Pen = new Pen(Brushes.Black, 5)} };
+      portStyle = new VSMPortControlPortStyle { StyleResourceKey = "PortTemplate", RenderSize = new SizeD(5, 5) };
 
       // set an initial default size for all nodes
       Graph.NodeDefaults.Size = new SizeD(150, 80);
@@ -167,7 +176,7 @@ namespace Demo.yFiles.Graph.VisualStateManager
     }
 
     /// <summary>
-    /// Creates a simple model - this method is not used in this demo - instead the graph is loaded from 
+    /// Creates a simple model - this method is not used in this demo - instead the graph is loaded from
     /// the included GraphML file.
     /// </summary>
     private void CreateModel() {
@@ -206,8 +215,8 @@ namespace Demo.yFiles.Graph.VisualStateManager
 
       var products = new[]
                        {
-                         new Product("Donut Maker", 8971, true), 
-                         new Product("Snow Boots", 8972, true), 
+                         new Product("Donut Maker", 8971, true),
+                         new Product("Snow Boots", 8972, true),
                          new Product("Cowboy Hat", 8973, false),
                        };
 
@@ -243,7 +252,7 @@ namespace Demo.yFiles.Graph.VisualStateManager
     }
 
     /// <summary>
-    /// Gets the currently registered IGraph instance from the GraphControl.
+    /// Gets the currently registered <see cref="IGraph"/> instance from the GraphControl.
     /// </summary>
     public IGraph Graph {
       get { return graphControl.Graph; }

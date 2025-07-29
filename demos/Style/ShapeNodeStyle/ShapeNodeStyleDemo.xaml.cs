@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -28,7 +28,6 @@
  ***************************************************************************/
 
 using System;
-using System.Linq;
 using System.Windows;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
@@ -42,12 +41,12 @@ using yWorks.Graph.Styles;
 namespace Demo.yFiles.Graph.ShapeNodes
 {
   /// <summary>
-  /// Shows the shapes that are available for <see cref="ShapeNodeStyle"/>.
+  ///   Shows the shapes that are available for <see cref="ShapeNodeStyle"/>.
   /// </summary>
   public partial class ShapeNodeStyleDemo
   {
     /// <summary>
-    /// Initializes the demo.
+    ///   Initializes the demo.
     /// </summary>
     public ShapeNodeStyleDemo() {
       InitializeComponent();
@@ -58,64 +57,57 @@ namespace Demo.yFiles.Graph.ShapeNodes
 
     private void InitializeStyleDefaults() {
       var graph = graphControl.Graph;
-      
+
       // All node labels share the same style and label model parameter
       var labelPalette = Themes.Palette58;
-      graph.NodeDefaults.Labels.Style = new DefaultLabelStyle {
+      graph.NodeDefaults.Labels.Style = new LabelStyle {
           Shape = LabelShape.RoundRectangle,
           BackgroundBrush = labelPalette.NodeLabelFill,
           TextBrush = labelPalette.Text,
           VerticalTextAlignment = VerticalAlignment.Center,
           TextAlignment = TextAlignment.Center,
-          Insets = new InsetsD(4, 2, 4, 1),
+          Padding = new InsetsD(4, 2, 4, 1),
           TextSize = 24
       };
       graph.NodeDefaults.Labels.LayoutParameter = FreeNodeLabelModel.Instance.CreateParameter(
-          new PointD(0.5, 0),
-          new PointD(0, -50),
-          new PointD(0.5, 0.5)
-      );
+          new PointD(0.5, 0), new PointD(0, -50), new PointD(0.5, 0.5));
 
       // Edges share the same style as well, they are not important in this demo
       var edgePalette = Themes.Palette56;
       graph.EdgeDefaults.Style = new PolylineEdgeStyle {
           Pen = new Pen(edgePalette.Stroke, 1.5),
-          TargetArrow = new Arrow { Type = ArrowType.Triangle, Brush = edgePalette.Stroke }
+          TargetArrow = new Arrow(type : ArrowType.Triangle, brush : edgePalette.Stroke)
       };
     }
 
     /// <summary>
-    /// Creates a sample graph with all the shapes that are available for <see cref="ShapeNodeStyle"/>.
+    ///   Creates a sample graph with all the shapes that are available for <see cref="ShapeNodeStyle"/>.
     /// </summary>
     private void CreateSampleNodes() {
       // Create the various shape samples
-      ShapeNodeShape[] rectangularShapes = {
-          ShapeNodeShape.Rectangle, ShapeNodeShape.RoundRectangle, ShapeNodeShape.Pill
+      ShapeNodeShape[] rectangularAndEllipseShapes = {
+          ShapeNodeShape.Rectangle, ShapeNodeShape.Diamond, ShapeNodeShape.RoundRectangle, ShapeNodeShape.Pill,
+          ShapeNodeShape.Ellipse
       };
-      ShapeNodeShape[] ellipticalShapes = { ShapeNodeShape.Ellipse };
-      ShapeNodeShape[] skewedShapes = {
-          ShapeNodeShape.Diamond, ShapeNodeShape.ShearedRectangle, ShapeNodeShape.ShearedRectangle2,
-          ShapeNodeShape.Trapez, ShapeNodeShape.Trapez2
+      ShapeNodeShape[] triangleShapes = {
+          ShapeNodeShape.Triangle, ShapeNodeShape.TrianglePointingDown, ShapeNodeShape.TrianglePointingLeft,
+          ShapeNodeShape.TrianglePointingRight
       };
-      ShapeNodeShape[] arrowShapes = { ShapeNodeShape.FatArrow, ShapeNodeShape.FatArrow2 };
       ShapeNodeShape[] polygonalShapes = {
-          ShapeNodeShape.Triangle, ShapeNodeShape.Triangle2, ShapeNodeShape.Hexagon, ShapeNodeShape.Hexagon2,
-          ShapeNodeShape.Octagon
+          ShapeNodeShape.Pentagon, ShapeNodeShape.Hexagon, ShapeNodeShape.HexagonStanding, ShapeNodeShape.Octagon,
+          ShapeNodeShape.OctagonStanding
       };
-      ShapeNodeShape[] starShapes = {
-          ShapeNodeShape.Star5, ShapeNodeShape.Star5Up, ShapeNodeShape.Star6, ShapeNodeShape.Star8
-      };
+      ShapeNodeShape[] starShapes = { ShapeNodeShape.Star5, ShapeNodeShape.Star6, ShapeNodeShape.Star8 };
 
-      CreateShapeSamples(rectangularShapes, 0);
-      CreateShapeSamples(ellipticalShapes.Concat(arrowShapes).ToArray(), 1);
-      CreateShapeSamples(skewedShapes, 2);
-      CreateShapeSamples(polygonalShapes, 3);
-      CreateShapeSamples(starShapes, 4);
+      CreateShapeSamples(rectangularAndEllipseShapes, 0);
+      CreateShapeSamples(triangleShapes, 1);
+      CreateShapeSamples(polygonalShapes, 2);
+      CreateShapeSamples(starShapes, 3);
     }
 
     private void CreateShapeSamples(ShapeNodeShape[] shapes, int column) {
       var graph = graphControl.Graph;
-      
+
       const int size1 = 45;
       const int size2 = 90;
 
@@ -123,26 +115,23 @@ namespace Demo.yFiles.Graph.ShapeNodes
       var fill1 = Themes.Palette54.Fill;
       var fill2 = Themes.Palette56.Fill;
       var fill3 = Themes.Palette510.Fill;
-      var stroke1 = Themes.Palette54.Stroke;
-      var stroke2 = Themes.Palette56.Stroke;
-      var stroke3 = Themes.Palette510.Stroke;
+      var pen1 = (Pen) new Pen(Themes.Palette54.Stroke, 1).GetAsFrozen();
+      var pen2 = (Pen) new Pen(Themes.Palette56.Stroke, 1).GetAsFrozen();
+      var pen3 = (Pen) new Pen(Themes.Palette510.Stroke, 1).GetAsFrozen();
 
       for (var i = 0; i < shapes.Length; i++) {
         // Create a green node with aspect ratio 1:1
         var n1 = graph.CreateNode(new RectD(column * 350 - size1 / 2, i * 200 - size1 / 2, size1, size1),
-            new ShapeNodeStyle { Shape = shapes[i], Brush = fill1, Pen = new Pen(stroke1, 1) }
-        );
+            new ShapeNodeStyle { Shape = shapes[i], Brush = fill1, Pen = pen1 });
 
         // Create a blue node with aspect ratio 2:1
         var n2 = graph.CreateNode(new RectD(column * 350 + 100 - size2 / 2, i * 200 - size1 / 2, size2, size1),
-            new ShapeNodeStyle { Shape = shapes[i], Brush = fill2, Pen = new Pen(stroke2, 1) }
-        );
+            new ShapeNodeStyle { Shape = shapes[i], Brush = fill2, Pen = pen2 });
         graph.AddLabel(n2, Enum.GetName(typeof(ShapeNodeShape), shapes[i]));
 
         // Create a yellow node with aspect ratio 1:2
         var n3 = graph.CreateNode(new RectD(column * 350 + 200 - size1 / 2, i * 200 - size2 / 2, size1, size2),
-            new ShapeNodeStyle { Shape = shapes[i], Brush = fill3, Pen = new Pen(stroke3, 1) }
-        );
+            new ShapeNodeStyle { Shape = shapes[i], Brush = fill3, Pen = pen3 });
 
         graph.CreateEdge(n1, n2);
         graph.CreateEdge(n2, n3);
@@ -150,7 +139,7 @@ namespace Demo.yFiles.Graph.ShapeNodes
     }
 
     /// <summary>
-    /// Restricts user interaction.
+    ///   Restricts user interaction.
     /// </summary>
     private void InitializeInputMode() {
       graphControl.InputMode = new GraphEditorInputMode {
@@ -159,15 +148,15 @@ namespace Demo.yFiles.Graph.ShapeNodes
           AllowCreateBend = false,
           AllowCreateEdge = false,
           AllowCreateNode = false,
-          AllowAddLabel = false,
-          AllowEditLabel = false,
+          EditLabelInputMode = { Enabled = false },
           DeletableItems = GraphItemTypes.None,
-          MovableItems = GraphItemTypes.Node
+          MovableSelectedItems = GraphItemTypes.Node,
+          MovableUnselectedItems = GraphItemTypes.Node
       };
     }
 
     /// <summary>
-    /// Center the sample graph in the visible area.
+    ///   Center the sample graph in the visible area.
     /// </summary>
     private void OnLoaded(object source, EventArgs e) {
       // center the sample graph in the visible area

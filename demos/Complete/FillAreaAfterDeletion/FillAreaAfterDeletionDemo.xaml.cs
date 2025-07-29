@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -28,66 +28,59 @@
  ***************************************************************************/
 
 using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
 using Demo.yFiles.Toolkit;
 using yWorks.Controls;
 using yWorks.Controls.Input;
 using yWorks.Geometry;
 using yWorks.Graph;
-using yWorks.Graph.Styles;
 using yWorks.Layout;
 using yWorks.Layout.Partial;
 
 namespace Demo.yFiles.Graph.FillAreaAfterDeletion
 {
   /// <summary>
-  /// A demo that shows how to fill free space after deleting nodes.
+  ///   A demo that shows how to fill free space after deleting nodes.
   /// </summary>
   public partial class FillAreaAfterDeletionDemo
   {
     /// <summary>
-    /// Layouts the graph after some nodes have been deleted. 
+    ///   Layouts the graph after some nodes have been deleted.
     /// </summary>
     private LayoutExecutor executor;
 
     /// <summary>
-    /// Returns the GraphControl instance used in the form.
+    ///   Returns the GraphControl instance used in the form.
     /// </summary>
-    private GraphControl GraphControl {
-      get { return graphControl; }
-    }
+    private GraphControl GraphControl => graphControl;
 
     #region Initialization
 
     /// <summary>
-    /// Wires up the UI components and initializes the layout options.
+    ///   Wires up the UI components and initializes the layout options.
     /// </summary>
     public FillAreaAfterDeletionDemo() {
       InitializeComponent();
 
       SampleGraphComboBox.ItemsSource = new[] {
-          new NamedEntry("Hierarchic", "hierarchic"),
-          new NamedEntry("Grouping", "grouping"),
-          new NamedEntry("Organic", "organic"),
-          new NamedEntry("Orthogonal", "orthogonal"),
-          new NamedEntry("Circular", "circular"),
-          new NamedEntry("Tree", "tree"),
-          new NamedEntry("Balloon", "balloon"),
-          new NamedEntry("Series-Parallel", "seriesparallel"),
-          new NamedEntry("Components", "components"),
+          new NamedEntry("Hierarchical", "hierarchical"), new NamedEntry("Grouping", "grouping"),
+          new NamedEntry("Organic", "organic"), new NamedEntry("Orthogonal", "orthogonal"),
+          new NamedEntry("Circular", "circular"), new NamedEntry("Tree", "tree"),
+          new NamedEntry("Radial Tree", "radialtree"), new NamedEntry("Series-Parallel", "seriesparallel"),
+          new NamedEntry("Components", "components")
       };
 
       ComponentAssignmentStrategyComboBox.ItemsSource = new[] {
           new NamedEntry("Single", ComponentAssignmentStrategy.Single),
           new NamedEntry("Connected", ComponentAssignmentStrategy.Connected),
-          new NamedEntry("Clustering", ComponentAssignmentStrategy.Clustering),
+          new NamedEntry("Clustering", ComponentAssignmentStrategy.Clustering)
       };
     }
 
     /// <summary>
-    /// Initializes the graph and the input mode.
+    ///   Initializes the graph and the input mode.
     /// </summary>
     private void OnLoad(object sender, EventArgs e) {
       InitializeInputModes();
@@ -98,8 +91,8 @@ namespace Demo.yFiles.Graph.FillAreaAfterDeletion
     }
 
     /// <summary>
-    /// Initializes the <see cref="GraphEditorInputMode"/> as the <see cref="CanvasControl.InputMode"/>
-    /// and registers handlers which are called when selected nodes are deleted.
+    ///   Initializes the <see cref="GraphEditorInputMode"/> as the <see cref="CanvasControl.InputMode"/>
+    ///   and registers handlers which are called when selected nodes are deleted.
     /// </summary>
     private void InitializeInputModes() {
       // create a GraphEditorInputMode instance and install the edit mode into the canvas.
@@ -112,54 +105,43 @@ namespace Demo.yFiles.Graph.FillAreaAfterDeletion
     }
 
     /// <summary>
-    /// Prepares the <see cref="LayoutExecutor"/> that is called after the selection is deleted.
+    ///   Prepares the <see cref="LayoutExecutor"/> that is called after the selection is deleted.
     /// </summary>
     private void OnDeletingSelection(object sender, SelectionEventArgs<IModelItem> e) {
       // configure the layout that will fill free space
       var layout = new FillAreaLayout {
-          ComponentAssignmentStrategy = ComponentAssignmentStrategy,
-          Area = GetBounds(e.Selection).ToYRectangle()
+          ComponentAssignmentStrategy = ComponentAssignmentStrategy, Area = GetBounds(e.Selection)
       };
 
       // configure the LayoutExecutor that will perform the layout and morph the result
-      executor = new LayoutExecutor(GraphControl, layout) {
-          Duration = TimeSpan.FromMilliseconds(100)
-      };
+      executor = new LayoutExecutor(GraphControl, layout) { AnimationDuration = TimeSpan.FromMilliseconds(100) };
     }
 
     /// <summary>
-    /// Calls the prepared <see cref="LayoutExecutor"/>.
+    ///   Calls the prepared <see cref="LayoutExecutor"/>.
     /// </summary>
-    private void OnDeletedSelection(object sender, SelectionEventArgs<IModelItem> e) {
+    private void OnDeletedSelection(object sender, ItemsEventArgs e) {
       executor.Start();
     }
 
     /// <summary>
-    /// The bounds including the nodes of the selection.
+    ///   The bounds including the nodes of the selection.
     /// </summary>
-    public RectD GetBounds(ISelectionModel<IModelItem> selection) {
+    public RectD GetBounds(IEnumerable<IModelItem> selection) {
       var bounds = RectD.Empty;
       foreach (var item in selection) {
-        var node = item as INode;
-        if (node != null) {
+        if (item is INode node) {
           bounds += node.Layout.ToRectD();
-        } else {
-          var edge = item as IEdge;
-          if (edge != null) {
-            if (edge.SourcePort != null) {
-              bounds += edge.SourcePort.GetLocation();
-            }
-            if (edge.TargetPort != null) {
-              bounds += edge.TargetPort.GetLocation();
-            }
-          }
+        } else if (item is IEdge edge) {
+          bounds += edge.SourcePort.GetLocation();
+          bounds += edge.TargetPort.GetLocation();
         }
       }
       return bounds;
     }
 
     /// <summary>
-    /// Initializes styles and loads a sample graph.
+    ///   Initializes styles and loads a sample graph.
     /// </summary>
     protected virtual void InitializeGraph() {
       DemoStyles.InitDemoStyles(GraphControl.Graph);
@@ -170,27 +152,23 @@ namespace Demo.yFiles.Graph.FillAreaAfterDeletion
     #region User interface event handling
 
     /// <summary>
-    /// Gets the <see cref="ComponentAssignmentStrategy"/> selected by the user.
+    ///   Gets the <see cref="ComponentAssignmentStrategy"/> selected by the user.
     /// </summary>
-    private ComponentAssignmentStrategy ComponentAssignmentStrategy {
-      get {
-        return (ComponentAssignmentStrategy) ((NamedEntry) ComponentAssignmentStrategyComboBox.SelectedItem).Value;
-      }
-    }
+    private ComponentAssignmentStrategy ComponentAssignmentStrategy =>
+        (ComponentAssignmentStrategy) ((NamedEntry) ComponentAssignmentStrategyComboBox.SelectedItem).Value;
 
     /// <summary>
-    /// Loads a new sample graph.
+    ///   Loads a new sample graph.
     /// </summary>
     private void SampleGraphChanged(object sender, SelectionChangedEventArgs e) {
-      var selectedItem = SampleGraphComboBox.SelectedItem as NamedEntry;
-      if (selectedItem != null) {
+      if (SampleGraphComboBox.SelectedItem is NamedEntry selectedItem) {
         GraphControl.ImportFromGraphML("Resources\\" + selectedItem.Value + ".graphml");
         CheckSampleButtonStates();
       }
     }
 
     /// <summary>
-    /// Loads the previous sample graph.
+    ///   Loads the previous sample graph.
     /// </summary>
     private void LoadPreviousSampleGraph(object sender, RoutedEventArgs e) {
       if (SampleGraphComboBox.SelectedIndex <= 0) {
@@ -200,7 +178,7 @@ namespace Demo.yFiles.Graph.FillAreaAfterDeletion
     }
 
     /// <summary>
-    /// Loads the next sample graph.
+    ///   Loads the next sample graph.
     /// </summary>
     private void LoadNextSampleGraph(object sender, RoutedEventArgs e) {
       if (SampleGraphComboBox.SelectedIndex >= SampleGraphComboBox.Items.Count - 1) {
@@ -210,7 +188,7 @@ namespace Demo.yFiles.Graph.FillAreaAfterDeletion
     }
 
     /// <summary>
-    /// Updates the enabled state of the next and previous buttons.
+    ///   Updates the enabled state of the next and previous buttons.
     /// </summary>
     private void CheckSampleButtonStates() {
       var maxReached = SampleGraphComboBox.SelectedIndex == SampleGraphComboBox.Items.Count - 1;
@@ -222,12 +200,13 @@ namespace Demo.yFiles.Graph.FillAreaAfterDeletion
     #endregion
 
     /// <summary>
-    /// Name-value struct for combo box entries.
+    ///   Name-value struct for combo box entries.
     /// </summary>
-    private sealed class NamedEntry
+    private readonly struct NamedEntry
     {
-      public object Value { get; private set; }
-      private string DisplayName { get; set; }
+      public object Value { get; }
+
+      private string DisplayName { get; }
 
       public NamedEntry(string displayName, object value) {
         DisplayName = displayName;

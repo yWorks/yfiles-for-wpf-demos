@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -37,7 +37,6 @@ using yWorks.Controls;
 using yWorks.Geometry;
 using yWorks.Graph;
 using yWorks.Graph.Styles;
-using Point = System.Windows.Point;
 
 namespace Demo.yFiles.Graph.LargeGraphs.Styles.Fast
 {
@@ -46,7 +45,7 @@ namespace Demo.yFiles.Graph.LargeGraphs.Styles.Fast
   /// </summary>
   /// <remarks>
   ///   <para>
-  ///     Unlike <see cref="LevelOfDetailLabelStyle" /> this style doesn't keep full fidelity of the visualization. Instead
+  ///     Unlike <see cref="LevelOfDetailLabelStyle" />, this style doesn't keep full fidelity of the visualization. Instead,
   ///     it approximates the label's appearance by drawing just a broken line where words are. The intention is to not
   ///     render text at zoom levels where it wouldn't be legible at all. However, using this style for very small zoom
   ///     levels is still not recommended. Using a <see cref="VoidLabelStyle" /> that uses a <see cref="FastEdgeStyle" />
@@ -68,7 +67,7 @@ namespace Demo.yFiles.Graph.LargeGraphs.Styles.Fast
 
     /// <summary>
     ///   Gets or sets a value indicating whether the label automatically flips depending on the orientation so that it stays
-    ///   upright even when rotated upside-down.
+    ///   upright even when rotated upside down.
     /// </summary>
     public bool AutoFlip { get; set; }
 
@@ -143,8 +142,8 @@ namespace Demo.yFiles.Graph.LargeGraphs.Styles.Fast
     ///   accurately enough that the switch from a text label to a fast label is almost imperceptible.
     /// </remarks>
     private StreamGeometry CreateGeometry(IOrientedRectangle layout, string text) {
-      var origin = layout.GetAnchorLocation();
-      var up = layout.GetUp();
+      var origin = layout.GetAnchor();
+      var up = layout.GetUpVector();
       var right = new PointD(-up.Y, up.X);
 
       if (AutoFlip && up.Y > 0) {
@@ -165,12 +164,12 @@ namespace Demo.yFiles.Graph.LargeGraphs.Styles.Fast
       using (var ctx = geometry.Open()) {
         // Fill – only drawn when a brush was set
         if (BackgroundBrush != null) {
-          ctx.BeginFigure(origin, true, false);
-          ctx.PolyLineTo(new Point[]
+          ctx.BeginFigure(origin.ToPoint(), true, false);
+          ctx.PolyLineTo(new[]
           {
-            origin + right * layout.Width,
-            origin + right * layout.Width + up * layout.Height,
-            origin + up * layout.Height
+            (origin + right * layout.Width).ToPoint(),
+            (origin + right * layout.Width + up * layout.Height).ToPoint(),
+            (origin + up * layout.Height).ToPoint()
           }, false, false);
         }
 
@@ -184,8 +183,8 @@ namespace Demo.yFiles.Graph.LargeGraphs.Styles.Fast
             var wordLength = word.Length * sizePerLetter;
             var targetPoint = currentPoint + right * wordLength;
 
-            ctx.BeginFigure(currentPoint, false, false);
-            ctx.LineTo(targetPoint, true, false);
+            ctx.BeginFigure(currentPoint.ToPoint(), false, false);
+            ctx.LineTo(targetPoint.ToPoint(), true, false);
 
             currentPoint = targetPoint + right * sizePerLetter;
           }
@@ -206,7 +205,7 @@ namespace Demo.yFiles.Graph.LargeGraphs.Styles.Fast
     private static bool AreEqual(IOrientedRectangle rect1, IOrientedRectangle rect2) {
       // ReSharper disable CompareOfFloatsByEqualityOperator
       return rect1.AnchorX == rect2.AnchorX &&
-             rect1.AnchorY == rect2.AnchorY &
+             rect1.AnchorY == rect2.AnchorY &&
              rect1.UpX == rect2.UpX &&
              rect1.UpY == rect2.UpY &&
              rect1.Width == rect2.Width &&
@@ -228,7 +227,7 @@ namespace Demo.yFiles.Graph.LargeGraphs.Styles.Fast
     DontFlip = 0,
 
     /// <summary>
-    ///   Automatically flip the label depending on its orientation so that text is not upside-down.
+    ///   Automatically flip the label depending on its orientation so that text is not upside down.
     /// </summary>
     AutoFlip = 1
   }

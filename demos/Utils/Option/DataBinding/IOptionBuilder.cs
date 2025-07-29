@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -32,45 +32,45 @@ using Demo.yFiles.Option.Handler;
 
 namespace Demo.yFiles.Option.DataBinding
 {
-
   /// <summary>
-  /// Interface for classes that can provide an <see cref="OptionHandler"/> presentation of a given set of properties.
+  ///   Interface for classes that can provide an <see cref="OptionHandler"/> presentation of a given set of properties.
   /// </summary>
-  /// <remarks>Usually, instances of this class can be retrieved through an object's lookup or, alternatively, by an 
-  /// <see cref="OptionBuilderAttribute"/> that is applied to the type in question.
+  /// <remarks>
+  ///   Usually, instances of this class can be retrieved through an object's lookup or, alternatively, by an
+  ///   <see cref="OptionBuilderAttribute"/> that is applied to the type in question.
   /// </remarks>
   public interface IOptionBuilder
   {
     /// <summary>
-    /// Adds new option items to the given <paramref name="context"/>.
+    ///   Adds new option items to the given <paramref name="context"/>.
     /// </summary>
-    /// <remarks>The actual items should be added with the help of the <see cref="IOptionBuilderContext.BindItem(IOptionItem,string)"/>
-    /// method that creates all necessary binding between the item and the underlying selection.</remarks>
+    /// <remarks>
+    ///   The actual items should be added with the help of the
+    ///   <see cref="IOptionBuilderContext.BindItem(IOptionItem,string)"/>
+    ///   method that creates all necessary binding between the item and the underlying selection.
+    /// </remarks>
     void AddItems(IOptionBuilderContext context, Type subjectType, object subject);
   }
 
   /// <summary>
-  /// When this attribute is set to a type or property, the framework will use the given type to create a new <see cref="IOptionBuilder"/> instance.
+  ///   When this attribute is set to a type or property, the framework will use the given type to create a new
+  ///   <see cref="IOptionBuilder"/> instance.
   /// </summary>
   /// <remarks>Specifying a builder in an object's lookup or related places will override this attribute.</remarks>
-  [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface | AttributeTargets.Property, Inherited = true)]
-  public class OptionBuilderAttribute: Attribute
+  [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface | AttributeTargets.Property)]
+  public class OptionBuilderAttribute : Attribute
   {
-    private readonly Type optionBuilderType;
-
     /// <summary>
-    /// Creates a new attribute that specifies that the given builder type should be used by default for the target type.
+    ///   Creates a new attribute that specifies that the given builder type should be used by default for the target type.
     /// </summary>
     /// <param name="optionBuilderType">The type of the builder to use.</param>
     public OptionBuilderAttribute(Type optionBuilderType) {
-      this.optionBuilderType = optionBuilderType;
+      OptionBuilderType = optionBuilderType;
     }
 
     /// <summary>
-    /// Gets the type of builder to use for the attribute target.
+    ///   Gets the type of builder to use for the attribute target.
     /// </summary>
-    public Type OptionBuilderType {
-      get { return optionBuilderType; }
-    }
+    public Type OptionBuilderType { get; }
   }
 }

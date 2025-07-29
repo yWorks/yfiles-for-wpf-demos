@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -33,16 +33,15 @@ using yWorks.Annotations;
 using yWorks.Controls;
 using yWorks.Geometry;
 using yWorks.Graph;
-using yWorks.Graph.Styles;
 using yWorks.Graph.PortLocationModels;
-using yWorks.Utils;
+using yWorks.Graph.Styles;
 
 namespace Demo.yFiles.Layout.NodeLabeling
 {
   [ContentProperty("InnerLabelStyle")]
   public class CityLabelStyle : LabelStyleBase<VisualGroup>
   {
-    public CityLabelStyle() : this(new DefaultLabelStyle()) {}
+    public CityLabelStyle() : this(new LabelStyle()) { }
 
     public CityLabelStyle([NotNull] ILabelStyle innerLabelStyle) {
       if (innerLabelStyle == null) {
@@ -50,7 +49,7 @@ namespace Demo.yFiles.Layout.NodeLabeling
       }
       InnerLabelStyle = innerLabelStyle;
       ConnectorEdgeStyle = new PolylineEdgeStyle();
-      OwnerPortLocation = LabelPortLocation = FreeNodePortLocationModel.NodeCenterAnchored;
+      OwnerPortLocation = LabelPortLocation = FreeNodePortLocationModel.Center;
     }
 
     [NotNull]
@@ -66,13 +65,13 @@ namespace Demo.yFiles.Layout.NodeLabeling
     public IPortLocationModelParameter LabelPortLocation { get; set; }
 
     protected override VisualGroup CreateVisual(IRenderContext context, ILabel label) {
-      VisualGroup container = new VisualGroup();
+      var container = new VisualGroup();
 
       var connectorEdge = CreateConnectorEdge(label);
-      
+
       // create the connecting edge visual
-      var connectorVisual =
-        ConnectorEdgeStyle.Renderer.GetVisualCreator(connectorEdge, ConnectorEdgeStyle).CreateVisual(context);
+      var connectorVisual = ConnectorEdgeStyle.Renderer.GetVisualCreator(connectorEdge, ConnectorEdgeStyle)
+          .CreateVisual(context);
 
       // and add it to the container
       container.Add(connectorVisual);
@@ -80,7 +79,7 @@ namespace Demo.yFiles.Layout.NodeLabeling
       // as well as the label's own core visualization
       var labelVisual = InnerLabelStyle.Renderer.GetVisualCreator(label, InnerLabelStyle).CreateVisual(context);
       container.Add(labelVisual);
-      
+
       return container;
     }
 
@@ -88,14 +87,15 @@ namespace Demo.yFiles.Layout.NodeLabeling
       var connectorEdge = CreateConnectorEdge(label);
 
       // create the connecting edge visual
-      var connectorVisual =
-        ConnectorEdgeStyle.Renderer.GetVisualCreator(connectorEdge, ConnectorEdgeStyle).UpdateVisual(context, container.Children[0]);
+      var connectorVisual = ConnectorEdgeStyle.Renderer.GetVisualCreator(connectorEdge, ConnectorEdgeStyle)
+          .UpdateVisual(context, container.Children[0]);
 
       // and udpate it in the container
       container.Children[0] = connectorVisual;
 
       // as well as the label's own visualization
-      var labelVisual = InnerLabelStyle.Renderer.GetVisualCreator(label, InnerLabelStyle).UpdateVisual(context, container.Children[1]);
+      var labelVisual = InnerLabelStyle.Renderer.GetVisualCreator(label, InnerLabelStyle)
+          .UpdateVisual(context, container.Children[1]);
       container.Children[1] = labelVisual;
 
       return container;
@@ -106,7 +106,7 @@ namespace Demo.yFiles.Layout.NodeLabeling
     }
 
     /// <summary>
-    /// Overrides base implementation to ensure visibility of the connecting dummy edge.
+    ///   Overrides base implementation to ensure visibility of the connecting dummy edge.
     /// </summary>
     protected override bool IsVisible(ICanvasContext context, RectD rectangle, ILabel label) {
       if (InnerLabelStyle.Renderer.GetVisibilityTestable(label, InnerLabelStyle).IsVisible(context, rectangle)) {
@@ -116,20 +116,21 @@ namespace Demo.yFiles.Layout.NodeLabeling
       var connectorEdge = CreateConnectorEdge(label);
 
       // check the connecting edge visual
-      return ConnectorEdgeStyle.Renderer.GetVisibilityTestable(connectorEdge, ConnectorEdgeStyle).IsVisible(context, rectangle);
+      return ConnectorEdgeStyle.Renderer.GetVisibilityTestable(connectorEdge, ConnectorEdgeStyle)
+          .IsVisible(context, rectangle);
     }
 
     /// <summary>
-    /// Creates the dummy connector edge for the given label.
+    ///   Creates the dummy connector edge for the given label.
     /// </summary>
     private IEdge CreateConnectorEdge(ILabel label) {
       // create a dummy node at the location of the label
       var labelNodeDummy = new SimpleNode { Layout = label.GetLayout().GetBounds(), Style = new ShapeNodeStyle() };
-      labelNodeDummy.Ports = new ListEnumerable<IPort>(new[] { new SimplePort(labelNodeDummy, LabelPortLocation) });
+      labelNodeDummy.Ports = new[] { new SimplePort(labelNodeDummy, LabelPortLocation) };
 
       // create a connecting edge between the dummy node and the owner of the label
       return new SimpleEdge(new SimplePort(labelNodeDummy, OwnerPortLocation),
-                            new SimplePort((IPortOwner)label.Owner, OwnerPortLocation)) { Style = ConnectorEdgeStyle };
+          new SimplePort((IPortOwner) label.Owner, OwnerPortLocation)) { Style = ConnectorEdgeStyle };
     }
   }
 }

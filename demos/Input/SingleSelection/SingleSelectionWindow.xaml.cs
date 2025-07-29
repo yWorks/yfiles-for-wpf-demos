@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -45,12 +45,12 @@ namespace Demo.yFiles.Graph.Input.SingleSelection
   /// </summary>
   public partial class SingleSelectionWindow
   {
-    // the previously set multiselection recognizer
+    // the previously set multi-selection recognizer
     private EventRecognizer oldMultiSelectionRecognizer;
-    //the previously set select pasted items
+    // the previously set select pasted items
     private GraphItemTypes oldPasteItems;
 
-    // dummy bindings for the extend selection commands
+    // custom bindings for the extend selection commands that do nothing
     private readonly CommandBinding extendSelectionLeftBinding = new EmptyCommandBinding(ComponentCommands.ExtendSelectionLeft);
     private readonly CommandBinding extendSelectionRightBinding = new EmptyCommandBinding(ComponentCommands.ExtendSelectionRight);
     private readonly CommandBinding extendSelectionUpBinding = new EmptyCommandBinding(ComponentCommands.ExtendSelectionUp);
@@ -63,8 +63,8 @@ namespace Demo.yFiles.Graph.Input.SingleSelection
     public SingleSelectionWindow() {
       InitializeComponent();
       // initialize command binding
-      customToggleSelectionBinding = new CommandBinding(GraphCommands.ToggleItemSelection,
-                                                        ToggleItemSelectionExecuted, ToggleItemSelectionCanExecute);
+      customToggleSelectionBinding = new CommandBinding(
+          GraphCommands.ToggleItemSelection, ToggleItemSelectionExecuted, ToggleItemSelectionCanExecute);
     }
 
     private void OnWindowLoaded(object sender, RoutedEventArgs e) {
@@ -73,7 +73,7 @@ namespace Demo.yFiles.Graph.Input.SingleSelection
       oldPasteItems = graphEditorInputMode.PasteSelectableItems;
 
       EnableSingleSelection(true);
-      
+
       DemoStyles.InitDemoStyles(graphControl.Graph);
 
       LoadGraph();
@@ -102,7 +102,7 @@ namespace Demo.yFiles.Graph.Input.SingleSelection
         mode.NavigationInputMode.AvailableCommands.Remove(ComponentCommands.ExtendSelectionDown);
         mode.NavigationInputMode.AvailableCommands.Remove(ComponentCommands.ExtendSelectionRight);
 
-        // add dummy command bindings that do nothing in order to prevent WPF default behavior
+        // add command bindings that do nothing to prevent WPF default behavior
         graphControl.CommandBindings.Add(extendSelectionLeftBinding);
         graphControl.CommandBindings.Add(extendSelectionRightBinding);
         graphControl.CommandBindings.Add(extendSelectionUpBinding);
@@ -110,12 +110,12 @@ namespace Demo.yFiles.Graph.Input.SingleSelection
 
         // add custom binding for toggle item selection
         graphControl.CommandBindings.Add(customToggleSelectionBinding);
-        
-        //Disable selection of (possibly multiple) items
+
+        // Disable selection of (possibly multiple) items
         oldPasteItems = mode.PasteSelectableItems;
         mode.PasteSelectableItems = GraphItemTypes.None;
 
-        //Also clear the selection - even though the setup works when more than one item is selected, it looks a bit strange
+        // Also clear the selection - even though the setup works when more than one item is selected, it looks a bit strange
         graphControl.Selection.Clear();
       } else {
         // restore old settings
@@ -146,25 +146,25 @@ namespace Demo.yFiles.Graph.Input.SingleSelection
 
     private void ToggleItemSelectionCanExecute(object sender, CanExecuteRoutedEventArgs e) {
       // if we have an item, the command can be executed
-      var modelItem = (e.Parameter as IModelItem) ?? graphControl.CurrentItem;
+      var modelItem = e.Parameter as IModelItem ?? graphControl.CurrentItem;
       e.CanExecute = modelItem != null;
       e.Handled = true;
     }
 
     /// <summary>
-    /// Custom command handler that allows toggling the selection state of an item 
+    /// Custom command handler that allows toggling the selection state of an item
     /// respecting the single selection policy.
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
     private void ToggleItemSelectionExecuted(object sender, ExecutedRoutedEventArgs e) {
       // get the item
-      var modelItem = (e.Parameter as IModelItem) ?? graphControl.CurrentItem;
+      var modelItem = e.Parameter as IModelItem ?? graphControl.CurrentItem;
       var inputMode = (GraphEditorInputMode) graphControl.InputMode;
 
       // check if it allowed to be selected
       if (modelItem != null && graphControl.Graph.Contains(modelItem) && inputMode.SelectableItems.Is(modelItem)) {
-        var isSelected = inputMode.GraphSelection.IsSelected(modelItem);
+        var isSelected = inputMode.GraphSelection.Contains(modelItem);
         if (isSelected) {
           // the item is selected and needs to be unselected - just clear the selection
           inputMode.GraphSelection.Clear();
@@ -174,8 +174,6 @@ namespace Demo.yFiles.Graph.Input.SingleSelection
           inputMode.SetSelected(modelItem, true);
         }
         e.Handled = true;
-        return;
-      } else {
         return;
       }
     }
@@ -192,12 +190,12 @@ namespace Demo.yFiles.Graph.Input.SingleSelection
     }
 
     /// <summary>
-    /// Dummy <see cref="CommandBinding"/> that never allows to execute the command
+    /// <see cref="CommandBinding"/> that never allows to execute the command
     /// </summary>
     private class EmptyCommandBinding : CommandBinding {
 
       public EmptyCommandBinding(ICommand command) : base(command, OnExecutedHandler, OnCanExecuteHandler) {
-        this.Command = command;
+        Command = command;
       }
 
       private static void OnCanExecuteHandler(object sender, CanExecuteRoutedEventArgs args) {
@@ -205,8 +203,8 @@ namespace Demo.yFiles.Graph.Input.SingleSelection
         args.Handled = true;
       }
 
-      private static void OnExecutedHandler(object sender, ExecutedRoutedEventArgs args) { 
-        // do nothing 
+      private static void OnExecutedHandler(object sender, ExecutedRoutedEventArgs args) {
+        // do nothing
       }
     }
   }

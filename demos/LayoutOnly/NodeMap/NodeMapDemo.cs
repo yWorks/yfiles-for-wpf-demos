@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -29,126 +29,94 @@
 
 using System;
 using System.Collections.Generic;
-using yWorks.Algorithms;
-using yWorks.Algorithms.Util;
+using yWorks.Layout.Graph;
 
 namespace Demo.Base.NodeMap
 {
   /// <summary>
-  /// This class compares the performance of different 
-  /// mechanisms to bind extra data to the nodes of a graph.
-  /// In scenarios where the indices of the nodes do not change
-  /// while the extra node data is needed, it is best to use array based
-  /// mechanisms that use the index of a node to access the data.
-  /// In scenarios where the indices of the nodes will change
-  /// while the extra node data is needed, it is necessary to
-  /// use node maps that do not depend on the indices of the nodes
-  /// (see {@link Node#index()}) or Map implementations like Dictionary
-  /// provided by the collections framework.
+  ///   This class compares the performance of different
+  ///   mechanisms to bind extra data to the nodes of a graph.
+  ///   In scenarios where the indices of the nodes do not change
+  ///   while the extra node data is needed, it is best to use array-based
+  ///   mechanisms that use the index of a node to access the data.
+  ///   In scenarios where the indices of the nodes will change
+  ///   while the extra node data is needed, it is necessary to
+  ///   use node maps that do not depend on the indices of the nodes
+  ///   (see {@link Node#index()}) or Map implementations like Dictionary
+  ///   provided by the collections framework.
   /// </summary>
   public class NodeMapDemo
   {
-    private static readonly Timer t1 = new Timer();
-    private static readonly Timer t2 = new Timer();
-    private static readonly Timer t3 = new Timer();
-    private static readonly Timer t4 = new Timer();
-    private static readonly Timer t5 = new Timer();
-    private static readonly Timer t6 = new Timer();
+    private static readonly Timer t1 = new();
+    private static readonly Timer t2 = new();
+    private static readonly Timer t3 = new();
+    private static readonly Timer t4 = new();
 
     public static void Main() {
-      Graph graph = new Graph();
+      var graph = LayoutGraph.CreateStructureGraph();
 
       const int nodes = 30000;
       const int loops = 10;
 
       const int outerLoops = 20;
 
-      for (int i = 0; i < nodes; i++) {
+      for (var i = 0; i < nodes; i++) {
         graph.CreateNode();
       }
 
-      for (int loop = 0; loop < outerLoops; loop++) {
+      for (var loop = 0; loop < outerLoops; loop++) {
         Console.Write(".");
 
         t1.Start();
-        INodeMap map = graph.CreateNodeMap();
-        for (int i = 0; i < loops; i++) {
-          for (INodeCursor nc = graph.GetNodeCursor(); nc.Ok; nc.Next()) {
-            Node v = nc.Node;
-            map.SetInt(v, i);
-            i = map.GetInt(v);
+        var map = graph.CreateNodeDataMap<int>();
+        for (var i = 0; i < loops; i++) {
+          foreach (var v in graph.Nodes) {
+            map[v] = i;
+            i = map[v];
           }
         }
-        graph.DisposeNodeMap(map);
+        graph.DisposeDataMap(map);
         t1.Stop();
 
-
         t2.Start();
-        map = Maps.CreateIndexNodeMap(new int[graph.N]);
-        for (int i = 0; i < loops; i++) {
-          for (INodeCursor nc = graph.GetNodeCursor(); nc.Ok; nc.Next()) {
-            Node v = nc.Node;
-            map.SetInt(v, i);
-            map.GetInt(v);
+        var array = new int[graph.Nodes.Count];
+        for (var i = 0; i < loops; i++) {
+          foreach (var v in graph.Nodes) {
+            var vid = v.Index;
+            array[vid] = i;
+            i = array[vid];
           }
         }
         t2.Stop();
 
-
         t3.Start();
-        map = Maps.CreateHashedNodeMap();
-        for (int i = 0; i < loops; i++) {
-          for (INodeCursor nc = graph.GetNodeCursor(); nc.Ok; nc.Next()) {
-            Node v = nc.Node;
-            map.SetInt(v, i);
-            i = map.GetInt(v);
+        IDictionary<Node, int>
+            dictionary = new Dictionary<Node, int>(2 * graph.Nodes.Count + 1); // use map with good initial size
+        for (var i = 0; i < loops; i++) {
+          foreach (var v in graph.Nodes) {
+            dictionary[v] = i;
+            i = dictionary[v];
           }
         }
         t3.Stop();
 
         t4.Start();
-        int[] array = new int[graph.N];
-        for (int i = 0; i < loops; i++) {
-          for (INodeCursor nc = graph.GetNodeCursor(); nc.Ok; nc.Next()) {
-            int vid = nc.Node.Index;
-            array[vid] = i;
-            i = array[vid];
-          }
-        }
-        t4.Stop();
-
-
-        t5.Start();
-        IDictionary<Node, int> dictionary = new Dictionary<Node, int>(2*graph.N + 1); //use map with good initial size
-        for (int i = 0; i < loops; i++) {
-          for (INodeCursor nc = graph.GetNodeCursor(); nc.Ok; nc.Next()) {
-            Node v = nc.Node;
-            dictionary[v] = i;
-            i = dictionary[v];
-          }
-        }
-        t5.Stop();
-
-        t6.Start();
-        IDictionary<Node, object> objectDictionary = new Dictionary<Node, object>(2*graph.N + 1);
-          //use map with good initial size
-        for (int i = 0; i < loops; i++) {
-          for (INodeCursor nc = graph.GetNodeCursor(); nc.Ok; nc.Next()) {
-            Node v = nc.Node;
+        IDictionary<Node, object> objectDictionary = new Dictionary<Node, object>(2 * graph.Nodes.Count + 1);
+        // use map with good initial size
+        for (var i = 0; i < loops; i++) {
+          foreach (var v in graph.Nodes) {
             objectDictionary[v] = i;
             i = (int) objectDictionary[v];
           }
         }
-        t6.Stop();
+        t4.Stop();
       }
 
       Console.WriteLine("");
       Console.WriteLine("TIME:  standard NodeMap  : " + t1);
-      Console.WriteLine("TIME:  index    NodeMap  : " + t2);
-      Console.WriteLine("TIME:  hashed   NodeMap  : " + t3);
-      Console.WriteLine("TIME:  plain array       : " + t4);
-      Console.WriteLine("TIME:  Dictionary        : " + t5);
-      Console.WriteLine("TIME:  object Dictionary : " + t6);
+      Console.WriteLine("TIME:  plain array       : " + t2);
+      Console.WriteLine("TIME:  Dictionary        : " + t3);
+      Console.WriteLine("TIME:  object Dictionary : " + t4);
 
       Console.WriteLine("\nPress key to end demo.");
       Console.ReadKey();

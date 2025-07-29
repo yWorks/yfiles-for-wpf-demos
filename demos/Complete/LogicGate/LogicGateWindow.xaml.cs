@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -43,21 +43,24 @@ using yWorks.Graph.LabelModels;
 using yWorks.Graph.PortLocationModels;
 using yWorks.Graph.Styles;
 using yWorks.Layout;
-using yWorks.Layout.Hierarchic;
-using yWorks.Layout.Router.Polyline;
+using yWorks.Layout.Hierarchical;
+using yWorks.Layout.Router;
+using yWorks.Utils;
 
-[assembly : XmlnsDefinition("http://www.yworks.com/yfilesWPF/2.2/demos/LogicGateWindow", "Demo.yFiles.Layout.LogicGate")]
+[assembly :
+    XmlnsDefinition("http://www.yworks.com/yfilesWPF/2.2/demos/LogicGateWindow", "Demo.yFiles.Layout.LogicGate")]
 [assembly : XmlnsPrefix("http://www.yworks.com/yfilesWPF/2.2/demos/LogicGateWindow", "demo")]
 
 namespace Demo.yFiles.Layout.LogicGate
 {
   /// <summary>
-  /// This demo shows how ports can be used in a read-world example by modeling wires, inputs, and outputs of digital logic elements.
+  ///   This demo shows how ports can be used in a real-world example by modeling wires, inputs, and outputs of digital logic
+  ///   elements.
   /// </summary>
   public partial class LogicGateWindow
   {
     /// <summary>
-    /// Create a new instance of this class.
+    ///   Create a new instance of this class.
     /// </summary>
     public LogicGateWindow() {
       InitializeComponent();
@@ -70,24 +73,24 @@ namespace Demo.yFiles.Layout.LogicGate
     #region Initialization
 
     /// <summary>
-    /// The default style
+    ///   The default style
     /// </summary>
-    private readonly LogicGateNodeStyle defaultStyle = new LogicGateNodeStyle();
+    private readonly LogicGateNodeStyle defaultStyle = new();
 
     /// <summary>
-    /// The orthogonal edge router
+    ///   The orthogonal edge router
     /// </summary>
-    private ILayoutAlgorithm orthogonalEdgeRouter;
+    private EdgeRouter orthogonalEdgeRouter;
 
-    private LayoutData oerData;
+    private EdgeRouterData<INode, IEdge, ILabel, ILabel> oerData;
 
-    private ILayoutAlgorithm hl;
+    private HierarchicalLayout hl;
 
-    private LayoutData hlData;
+    private HierarchicalLayoutData<INode, IEdge, IModelItem, ILabel, ILabel> hlData;
 
     /// <summary>
-    /// Called upon loading of the form.
-    /// This method initializes the graph and the input mode.
+    ///   Called upon loading of the form.
+    ///   This method initializes the graph and the input mode.
     /// </summary>
     /// <seealso cref="InitializeInputModes"/>
     /// <seealso cref="InitializeGraph"/>
@@ -100,34 +103,36 @@ namespace Demo.yFiles.Layout.LogicGate
     }
 
     /// <summary>
-    /// Initializes the graph instance setting default styles
-    /// and creating a small sample graph.
+    ///   Initializes the graph instance setting default styles
+    ///   and creating a small sample graph.
     /// </summary>
     protected virtual async Task InitializeGraph() {
-      IGraph graph = graphControl.Graph;
+      var graph = graphControl.Graph;
 
       // set the default style for all new nodes
       graph.NodeDefaults.Style = defaultStyle;
       graph.NodeDefaults.Size = new SizeD(50, 30);
 
       // set the default style for all new node labels
-      graph.NodeDefaults.Labels.Style = new DefaultLabelStyle {Typeface = new Typeface("Arial")};
+      graph.NodeDefaults.Labels.Style = new LabelStyle { Typeface = new Typeface("Arial") };
 
-      // set the default style for all new edge labels
+      // set the default style for all new edges and enable orthogonal edge creation and editing
       graph.EdgeDefaults.Style = new PolylineEdgeStyle {
-                                     SourceArrow = new Arrow {Type = ArrowType.None},
-                                     TargetArrow = new Arrow {Type = ArrowType.None},
-                                     Pen = new Pen(Brushes.Black, 3) { EndLineCap = PenLineCap.Square, StartLineCap = PenLineCap.Square}
-                                   };
+          SourceArrow = Arrow.None,
+          TargetArrow = Arrow.None,
+          Pen = new Pen(Brushes.Black, 3) { EndLineCap = PenLineCap.Square, StartLineCap = PenLineCap.Square },
+          OrthogonalEditing = true
+      };
 
       // disable edge cropping
-      graph.GetDecorator().PortDecorator.EdgePathCropperDecorator.HideImplementation();
+      graph.GetDecorator().Ports.EdgePathCropper.Hide();
 
       // don't delete ports a removed edge was connected to
       graph.NodeDefaults.Ports.AutoCleanUp = false;
 
       // set a custom port candidate provider
-      graphControl.Graph.GetDecorator().NodeDecorator.PortCandidateProviderDecorator.SetImplementation(new DescriptorDependentPortCandidateProvider());
+      graphControl.Graph.GetDecorator().Nodes.PortCandidateProvider
+          .AddConstant(new DescriptorDependentPortCandidateProvider());
 
       // read initial graph from embedded resource
       graphControl.ImportFromGraphML("Resources\\defaultGraph.graphml");
@@ -137,83 +142,83 @@ namespace Demo.yFiles.Layout.LogicGate
     }
 
     /// <summary>
-    /// Calls <see cref="CreateEditorMode"/> and registers
-    /// the result as the <see cref="CanvasControl.InputMode"/>.
+    ///   Calls <see cref="CreateEditorMode"/> and registers
+    ///   the result as the <see cref="CanvasControl.InputMode"/>.
     /// </summary>
     protected virtual void InitializeInputModes() {
       graphControl.InputMode = CreateEditorMode();
     }
 
     /// <summary>
-    /// Creates the default input mode for the GraphControl,
-    /// a <see cref="GraphEditorInputMode"/>.
+    ///   Creates the default input mode for the GraphControl,
+    ///   a <see cref="GraphEditorInputMode"/>.
     /// </summary>
     /// <remarks>
-    /// The control uses a custom node creation callback that creates business objects for newly
-    /// created nodes.
+    ///   The control uses a custom node creation callback that creates business objects for newly
+    ///   created nodes.
     /// </remarks>
     /// <returns>a new GraphEditorInputMode instance</returns>
     protected virtual IInputMode CreateEditorMode() {
-      var mode = new GraphEditorInputMode
-               {
-                 // don't allow nodes to be created using a mouse click
-                 AllowCreateNode = false,
-                 // don't allow bends to be created using a mouse drag on an edge
-                 AllowCreateBend = false,
-                 // disable node resizing
-                 ShowHandleItems = GraphItemTypes.Bend | GraphItemTypes.Edge,
-                 // enable orthogonal edge creation and editing
-                 OrthogonalEdgeEditingContext = new OrthogonalEdgeEditingContext(),
-                 // enable drag and drop
-                 NodeDropInputMode = { Enabled = true },
-                 // disable moving labels
-                 MoveLabelInputMode = { Enabled = false },
-                 // enable snapping for easier orthogonal edge editing
-                 SnapContext = new GraphSnapContext { Enabled = true },
-                 CreateEdgeInputMode = {
-                     // only allow starting an edge creation over a valid port candidate
-                     StartOverCandidateOnly = true,
-                     // show all port candidates when hovering over a node
-                     ShowPortCandidates = ShowPortCandidates.All
-                 }
-               };
+      var mode = new GraphEditorInputMode {
+          // don't allow nodes to be created using a mouse click
+          AllowCreateNode = false,
+          // don't allow bends to be created using a mouse drag on an edge
+          AllowCreateBend = false,
+          // disable node resizing
+          ShowHandleItems = GraphItemTypes.Bend | GraphItemTypes.Edge,
+          // enable drag and drop
+          NodeDropInputMode = { Enabled = true },
+          // disable moving labels
+          MovableSelectedItems = GraphItemTypes.All & ~GraphItemTypes.Label,
+          MovableUnselectedItems = GraphItemTypes.All & ~GraphItemTypes.Label,
+          // enable snapping for easier orthogonal edge editing
+          SnapContext = new GraphSnapContext { Enabled = true },
+          CreateEdgeInputMode = {
+              // only allow starting an edge creation over a valid port candidate
+              StartOverCandidateOnly = true,
+              // show all port candidates when hovering over a node
+              ShowPortCandidates = ShowPortCandidates.All
+          }
+      };
       // wrap the original node creator so it copies the ports and labels from the dragged node
       var originalNodeCreator = mode.NodeDropInputMode.ItemCreator;
-      mode.NodeDropInputMode.ItemCreator =
-        (context, graph, draggedNode, dropTarget, layout) => {
-          if (draggedNode != null) {
-            var newNode = originalNodeCreator(context, graph, new SimpleNode { Style = draggedNode.Style, Layout = draggedNode.Layout }, dropTarget, layout);
-            // copy the ports
-            foreach (var port in draggedNode.Ports) {
-              var descriptor = (PortDescriptor) port.Tag;
-              var portStyle = new NodeStylePortStyleAdapter(new ShapeNodeStyle {
+      mode.NodeDropInputMode.ItemCreator = (context, graph, draggedNode, dropTarget, layout) => {
+        if (draggedNode != null) {
+          var newNode = originalNodeCreator(context, graph,
+              new SimpleNode { Style = draggedNode.Style, Layout = draggedNode.Layout }, dropTarget, layout);
+          // copy the ports
+          foreach (var port in draggedNode.Ports) {
+            var descriptor = (PortDescriptor) port.Tag;
+            var portStyle = new ShapePortStyle {
                 Brush = descriptor.EdgeDirection == EdgeDirection.In ? Brushes.Green : Brushes.DodgerBlue,
                 Pen = null,
-                Shape = ShapeNodeShape.Rectangle
-              }) { RenderSize = new SizeD(5, 5) };
-              var newPort = graph.AddPort(newNode, port.LocationParameter, portStyle, port.Tag);
-              // create the port labels
-              var parameter = new InsideOutsidePortLabelModel().CreateOutsideParameter();
-              graph.AddLabel(newPort, descriptor.LabelText, parameter, tag: descriptor);
-            }
-            // copy the labels
-            foreach (var label in draggedNode.Labels) {
-              graph.AddLabel(newNode, label.Text, label.LayoutParameter, label.Style, tag: label.Tag);
-            }
-            return newNode;
+                Shape = ShapeNodeShape.Rectangle,
+                RenderSize = new SizeD(5, 5)
+            };
+            var newPort = graph.AddPort(newNode, port.LocationParameter, portStyle, port.Tag);
+            // create the port labels
+            var parameter = new InsideOutsidePortLabelModel().CreateOutsideParameter();
+            graph.AddLabel(newPort, descriptor.LabelText, parameter, tag : descriptor);
           }
-          // fallback
-          return originalNodeCreator(context, graph, draggedNode, dropTarget, layout);
-        };
+          // copy the labels
+          foreach (var label in draggedNode.Labels) {
+            graph.AddLabel(newNode, label.Text, label.LayoutParameter, label.Style, tag : label.Tag);
+          }
+          return newNode;
+        }
+        // fallback
+        return originalNodeCreator(context, graph, draggedNode, dropTarget, layout);
+      };
 
       mode.CreateEdgeInputMode.EdgeCreated += (sender, args) => {
-        var sourcePortLabel = args.SourcePort.Labels.FirstOrDefault();
-        var targetPortLabel = args.TargetPort.Labels.FirstOrDefault();
+        var edge = args.Item;
+        var sourcePortLabel = edge.SourcePort.Labels.FirstOrDefault();
+        var targetPortLabel = edge.TargetPort.Labels.FirstOrDefault();
         if (sourcePortLabel != null) {
-          ReplaceLabelModel(args.SourcePort, sourcePortLabel);
+          ReplaceLabelModel(edge.SourcePort, sourcePortLabel);
         }
         if (targetPortLabel != null) {
-          ReplaceLabelModel(args.TargetPort, targetPortLabel);
+          ReplaceLabelModel(edge.TargetPort, targetPortLabel);
         }
       };
 
@@ -222,11 +227,11 @@ namespace Demo.yFiles.Layout.LogicGate
         var targetPortLabel = args.TargetPort.Labels.FirstOrDefault();
         if (sourcePortLabel != null && !graphControl.Graph.EdgesAt(args.SourcePort).Any()) {
           graphControl.Graph.SetLabelLayoutParameter(sourcePortLabel,
-            new InsideOutsidePortLabelModel().CreateOutsideParameter());
+              new InsideOutsidePortLabelModel().CreateOutsideParameter());
         }
         if (targetPortLabel != null && !graphControl.Graph.EdgesAt(args.TargetPort).Any()) {
           graphControl.Graph.SetLabelLayoutParameter(targetPortLabel,
-            new InsideOutsidePortLabelModel().CreateOutsideParameter());
+              new InsideOutsidePortLabelModel().CreateOutsideParameter());
         }
       };
 
@@ -239,44 +244,40 @@ namespace Demo.yFiles.Layout.LogicGate
     }
 
     /// <summary>
-    /// Initializes the layout algorithm and its layout data.
+    ///   Initializes the layout algorithm and its layout data.
     /// </summary>
     private void InitializeLayout() {
-      orthogonalEdgeRouter = new EdgeRouter {
-        ConsiderNodeLabels = true
-      };
+      orthogonalEdgeRouter = new EdgeRouter { NodeLabelPlacement = EdgeRouterNodeLabelPlacement.Consider };
 
-      hl = new HierarchicLayout {
-        OrthogonalRouting = true,
-        LayoutOrientation = LayoutOrientation.LeftToRight,
-        ConsiderNodeLabels = true
+      hl = new HierarchicalLayout {
+          LayoutOrientation = LayoutOrientation.LeftToRight, NodeLabelPlacement = NodeLabelPlacement.Consider
       };
 
       // outgoing edges must be routed to the right of the node
-      // we use the same value for all edges, which is a strong port constraint that forces
-      // the edge to leave at the east (right) side
-      var east = PortConstraint.Create(PortSide.East, true);
+      // we use the same value for all edges, which is a fixed port candidate that forces
+      // the edge to leave on the right side
+      var right = new EdgePortCandidates().AddFixedCandidate(PortSides.Right);
       // incoming edges must be routed to the left of the node
-      // we use the same value for all edges, which is a strong port constraint that forces
-        // the edge to enter at the west (left) side
-      var west = PortConstraint.Create(PortSide.West, true);
+      // we use the same value for all edges, which is a fixed port candidate that forces
+      // the edge to enter on the left side
+      var left = new EdgePortCandidates().AddFixedCandidate(PortSides.Left);
 
-      MapperDelegate<IEdge, PortConstraint> sourceDelegate = edge => ((PortDescriptor) edge.SourcePort.Tag).X == 0 ? west : east;
-      MapperDelegate<IEdge, PortConstraint> targetDelegate = edge => ((PortDescriptor) edge.TargetPort.Tag).X == 0 ? west : east;
-      oerData = new EdgeRouterData {
-        SourcePortConstraints = { Delegate = sourceDelegate},
-        TargetPortConstraints = { Delegate = targetDelegate }
-      };
+      DataGetter<IEdge, EdgePortCandidates> sourceDelegate =
+          edge => ((PortDescriptor) edge.SourcePort.Tag).X == 0 ? left : right;
+      DataGetter<IEdge, EdgePortCandidates> targetDelegate =
+          edge => ((PortDescriptor) edge.TargetPort.Tag).X == 0 ? left : right;
+      oerData = orthogonalEdgeRouter.CreateLayoutData(graphControl.Graph);
+      oerData.Ports.SourcePortCandidates.MapperFunction = sourceDelegate;
+      oerData.Ports.TargetPortCandidates.MapperFunction = targetDelegate;
 
-      hlData = new HierarchicLayoutData {
-        SourcePortConstraints = { Delegate = sourceDelegate },
-        TargetPortConstraints = { Delegate = targetDelegate }
-      };
+      hlData = hl.CreateLayoutData(graphControl.Graph);
+      hlData.Ports.SourcePortCandidates.MapperFunction = sourceDelegate;
+      hlData.Ports.TargetPortCandidates.MapperFunction = targetDelegate;
     }
 
 
     /// <summary>
-    /// Fill the node list that acts as a source for nodes.
+    ///   Fill the node list that acts as a source for nodes.
     /// </summary>
     private void PopulateNodesList() {
       // Create a new Graph in which the palette nodes live and copy all relevant settings
@@ -301,23 +302,22 @@ namespace Demo.yFiles.Layout.LogicGate
     }
 
     /// <summary>
-    /// Creates a node of the specified type.
+    ///   Creates a node of the specified type.
     /// </summary>
     /// <remarks>
-    /// The method will specify the ports that the node should have based on its type.
+    ///   The method will specify the ports that the node should have based on its type.
     /// </remarks>
     private void CreateNode(IGraph graph, PointD location, LogicGateType type, string label, SizeD? size = null) {
-      RectD newBounds = RectD.FromCenter(location, graph.NodeDefaults.Size);
+      var newBounds = RectD.FromCenter(location, graph.NodeDefaults.Size);
       INode node;
       if (type >= LogicGateType.Timer) {
-        node = graph.CreateNode(RectD.FromCenter(location, (SizeD)size), new ShapeNodeStyle {
-          Pen = new Pen(Brushes.Black, 2)
-        });
+        node = graph.CreateNode(RectD.FromCenter(location, (SizeD) size),
+            new ShapeNodeStyle { Pen = new Pen(Brushes.Black, 2) });
       } else {
         node = graph.CreateNode(newBounds, new LogicGateNodeStyle { GateType = type });
       }
 
-      graph.AddLabel(node, label, InteriorLabelModel.Center);
+      graph.AddLabel(node, label, InteriorNodeLabelModel.Center);
 
       var portDescriptors = PortDescriptor.CreatePortDescriptors(type);
 
@@ -326,7 +326,7 @@ namespace Demo.yFiles.Layout.LogicGate
 
       // add ports for all descriptors using the descriptor as the tag of the port
       foreach (var descriptor in portDescriptors) {
-        // use the descriptor's location as offset 
+        // use the descriptor's location as offset
         var portLocationModelParameter = model.CreateParameter(PointD.Origin, new PointD(descriptor.X, descriptor.Y));
         graph.AddPort(node, portLocationModelParameter, tag : descriptor);
       }
@@ -337,14 +337,14 @@ namespace Demo.yFiles.Layout.LogicGate
     #region Event handler implementation
 
     /// <summary>
-    /// Exits the demo.
+    ///   Exits the demo.
     /// </summary>
     private void ExitMenuItemClick(object sender, EventArgs e) {
       Application.Current.Shutdown();
     }
 
     /// <summary>
-    /// Formats the current graph.
+    ///   Formats the current graph.
     /// </summary>
     private async void OnHLLayoutClick(object sender, EventArgs e) {
       await ApplyLayout(hl, hlData, true);
@@ -355,17 +355,17 @@ namespace Demo.yFiles.Layout.LogicGate
     }
 
     /// <summary>
-    /// Initializes drag and drop behavior on the node list to the left
+    ///   Initializes drag and drop behavior on the node list to the left
     /// </summary>
     private void OnTemplateMouseDown(object sender, RoutedEventArgs e) {
       // Initialize the information for a drag&drop from the node style list.
-      FrameworkElement o = e.OriginalSource as FrameworkElement;
+      var o = e.OriginalSource as FrameworkElement;
       if (o != null) {
         if (o.DataContext is INode) {
           var node = o.DataContext as INode;
 
-          DataObject dao = new DataObject();
-          dao.SetData(typeof (INode), node);
+          var dao = new DataObject();
+          dao.SetData(typeof(INode), node);
           DragDrop.DoDragDrop(o, dao, DragDropEffects.Link | DragDropEffects.Copy | DragDropEffects.Move);
         }
       }
@@ -376,17 +376,18 @@ namespace Demo.yFiles.Layout.LogicGate
     #region Graph creation and layout
 
     /// <summary>
-    /// Perform the layout operation
+    ///   Perform the layout operation
     /// </summary>
-    private async Task ApplyLayout(ILayoutAlgorithm layout, LayoutData layoutData, bool animateViewport) {
+    private async Task ApplyLayout(
+        ILayoutAlgorithm layout,
+        LayoutData<INode, IEdge, ILabel, ILabel> layoutData,
+        bool animateViewport) {
       // layout starting, disable button
       hlLayoutButton.IsEnabled = false;
       orthoEdgeRouterButton.IsEnabled = false;
       // do the layout
       var executor = new LayoutExecutor(graphControl, layout) {
-          LayoutData = layoutData,
-          Duration = TimeSpan.FromSeconds(1),
-          AnimateViewport = animateViewport
+          LayoutData = layoutData, AnimationDuration = TimeSpan.FromSeconds(1), AnimateViewport = animateViewport
       };
       await executor.Start();
 
@@ -408,13 +409,13 @@ namespace Demo.yFiles.Layout.LogicGate
   #region PortCandidateProvider implementation
 
   /// <summary>
-  /// <see cref="IPortCandidateProvider"/> implementation. Provides all available ports with the specified
-  /// edge direction.
+  ///   <see cref="IPortCandidateProvider"/> implementation. Provides all available ports with the specified
+  ///   edge direction.
   /// </summary>
   public class DescriptorDependentPortCandidateProvider : IPortCandidateProvider
   {
     /// <summary>
-    /// not queried
+    ///   not queried
     /// </summary>
     /// <returns>no elements</returns>
     public IEnumerable<IPortCandidate> GetSourcePortCandidates(IInputModeContext context, IPortCandidate target) {
@@ -434,7 +435,7 @@ namespace Demo.yFiles.Layout.LogicGate
     }
 
     /// <summary>
-    /// Returns the suitable candidates based on the specified <see cref="EdgeDirection"/>.
+    ///   Returns the suitable candidates based on the specified <see cref="EdgeDirection"/>.
     /// </summary>
     private IEnumerable<IPortCandidate> GetCandidatesForDirection(EdgeDirection direction, IInputModeContext context) {
       // If EdgeDirectionPolicy.DetermineFromPortCandidates is used, CreateEdgeInputMode queries GetSourcePortCandidates
@@ -443,18 +444,17 @@ namespace Demo.yFiles.Layout.LogicGate
       // should only return the *valid* port candidates of a port as otherwise for each port a valid as well as an invalid
       // candidate is returned.
       var provideAllCandidates = true;
-      var ceim = context.ParentInputMode as CreateEdgeInputMode;
-      if (ceim != null) {
+      if (context.InputMode is CreateEdgeInputMode ceim) {
         // check the edge direction policy as well as whether candidates are collected for starting or ending the edge creation
-        provideAllCandidates = ceim.EdgeDirectionPolicy != EdgeDirectionPolicy.DetermineFromPortCandidates
-                               || ceim.IsCreationInProgress;
+        provideAllCandidates = ceim.EdgeDirectionPolicy != EdgeDirectionPolicy.DetermineFromPortCandidates ||
+            ceim.IsCreationInProgress;
       }
 
       var candidates = new List<IPortCandidate>();
       // iterate over all available ports
       foreach (var port in context.GetGraph().Ports) {
         // create a port candidate, invalidate it (so it is visible but not usable)
-        var candidate = new DefaultPortCandidate(port) {Validity = PortCandidateValidity.Invalid};
+        var candidate = new PortCandidate(port) { Validity = PortCandidateValidity.Invalid };
         // get the port descriptor
         var portDescriptor = port.Tag as PortDescriptor;
         // make the candidate valid if the direction is the same as the one supplied
@@ -476,7 +476,7 @@ namespace Demo.yFiles.Layout.LogicGate
   #region Business logic
 
   /// <summary>
-  /// Specifies the type of a logical gate node.
+  ///   Specifies the type of a logical gate node.
   /// </summary>
   public enum LogicGateType
   {

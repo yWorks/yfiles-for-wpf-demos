@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -41,7 +41,7 @@ using yWorks.Graph.Styles;
 namespace Demo.yFiles.Complete.IsometricDrawing
 {
   /// <summary>
-  /// A node style that visualizes the node as block in an isometric fashion.
+  /// A node style that visualizes the node as a block in an isometric fashion.
   /// </summary>
   public class IsometricNodeStyle : NodeStyleBase<VisualGroup>
   {
@@ -52,21 +52,21 @@ namespace Demo.yFiles.Complete.IsometricDrawing
     /// <returns>A darker shade fill of the <paramref name="fill"/>.</returns>
     public static SolidColorBrush Darker(SolidColorBrush fill) {
       var oldColor = fill.Color;
-      var factor = 0.7f;
+      const float factor = 0.7f;
       var newColor = oldColor * factor;
       return new SolidColorBrush(Color.FromArgb(oldColor.A, newColor.R, newColor.G, newColor.B));
     }
-    
+
     /// <summary>
     /// Calculates a vector in world coordinates whose transformation by the <paramref name="projection"/> results
-    /// in the vector (0, -1).
+    /// in the vector <c>(0, -1)</c>.
     /// </summary>
     /// <param name="projection">The projection to consider.</param>
-    /// <returns>The vector in world coordinates that gets transformed to the vector (0, -1).</returns>
-    public static PointD CalculateHeightVector(Transform projection) {
-      return projection.Inverse.Transform(new Point(0d, -1d));
+    /// <returns>The vector in world coordinates that gets transformed to the vector <c>(0, -1)</c>.</returns>
+    public static Vector CalculateHeightVector(Transform projection) {
+      return (Vector) projection.Inverse.Transform(new Point(0d, -1d));
     }
-    
+
     #region Create/UpdateVisual
 
     protected override VisualGroup CreateVisual(IRenderContext context, INode node) {
@@ -82,27 +82,27 @@ namespace Demo.yFiles.Complete.IsometricDrawing
     /// </summary>
     private sealed class NodeRenderData
     {
-      public readonly double X;
-      public readonly double Y;
-      public readonly double Width;
-      public readonly double Depth;
-      public readonly double Height;
-      public readonly Color Color;
-      public readonly Transform Projection;
+      private readonly double x;
+      private readonly double y;
+      private readonly double width;
+      private readonly double depth;
+      private readonly double height;
+      private readonly Color color;
+      private readonly Transform projection;
 
       public NodeRenderData(double x, double y, double width, double depth, double height, Color color, Transform projection) {
-        X = x;
-        Y = y;
-        Width = width;
-        Depth = depth;
-        Height = height;
-        Color = color;
-        Projection = projection;
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.depth = depth;
+        this.height = height;
+        this.color = color;
+        this.projection = projection;
       }
 
       private bool Equals(NodeRenderData other) {
-        return other.X == X && other.Y == Y && other.Width == Width && other.Height == Height &&
-               other.Depth == Depth && other.Color == Color && other.Projection == Projection;
+        return other.x == x && other.y == y && other.width == width && other.height == height &&
+               other.depth == depth && other.color == color && other.projection == projection;
       }
 
       public override bool Equals(object obj) {
@@ -124,10 +124,10 @@ namespace Demo.yFiles.Complete.IsometricDrawing
 
       var oldCache = faces.GetRenderDataCache<NodeRenderData>();
       var newCache = new NodeRenderData(layout.X, layout.Y, layout.Width, layout.Height, height, nodeData.Color, context.Projection);
-      
+
       if (!newCache.Equals(oldCache)) {
         faces.SetRenderDataCache(newCache);
-        
+
         var corners = CalculateCorners(context.Projection, layout.X, layout.Y, layout.Width, layout.Height, height);
         SolidColorBrush topBrush = null;
         SolidColorBrush leftBrush = null;
@@ -141,7 +141,7 @@ namespace Demo.yFiles.Complete.IsometricDrawing
             rightBrush = Darker(leftBrush);
           }
         }
-        
+
         if (height == 0 && faces.Children.Count > 1) {
           while (faces.Children.Count > 1) {
             faces.Children.RemoveAt(faces.Children.Count - 1);
@@ -149,8 +149,8 @@ namespace Demo.yFiles.Complete.IsometricDrawing
         } else if (height > 0) {
           // check which of the left, right, back and front faces are visible using the current projection
           var upVector = CalculateHeightVector(context.Projection);
-          var useLeft = upVector.X > 0; 
-          var useBack = upVector.Y > 0; 
+          var useLeft = upVector.X > 0;
+          var useBack = upVector.Y > 0;
 
           var leftFacePath = useLeft ? GetLeftFacePath(corners) : GetRightFacePath(corners);
           var rightFacePath = useBack ? GetBackFacePath(corners) : GetFrontFacePath(corners);
@@ -172,9 +172,9 @@ namespace Demo.yFiles.Complete.IsometricDrawing
       }
       return faces;
     }
-    
+
     #endregion
-    
+
     #region Face Path Factories
 
     /// <summary>
@@ -283,7 +283,7 @@ namespace Demo.yFiles.Complete.IsometricDrawing
       path.Close();
       return path;
     }
-    
+
     /// <summary>
     /// Creates a <see cref="GeneralPath"/> that describes the face on the back side of the block.
     /// </summary>
@@ -310,8 +310,8 @@ namespace Demo.yFiles.Complete.IsometricDrawing
       path.Close();
       return path;
     }
-    
-    // Indices for the corners of the bounding box.
+
+    // Indices for the corners of the bounds.
     private const int LowTopLeftX = 0;
     private const int LowTopLeftY = 1;
     private const int LowTopRightX = 2;
@@ -362,10 +362,10 @@ namespace Demo.yFiles.Complete.IsometricDrawing
       }
       var corners = CalculateCorners(context.CanvasControl.Projection, layout.X, layout.Y, layout.Width, layout.Height, nodeData.Geometry.Height);
 
-      double minX = Double.MaxValue;
-      double minY = Double.MaxValue;
-      double maxX = Double.MinValue;
-      double maxY = Double.MinValue;
+      double minX = double.MaxValue;
+      double minY = double.MaxValue;
+      double maxX = double.MinValue;
+      double maxY = double.MinValue;
       for (var i = 0; i < corners.Length; i += 2) {
         minX = Math.Min(minX, corners[i]);
         maxX = Math.Max(maxX, corners[i]);

@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -48,7 +48,7 @@ namespace Demo.yFiles.Algorithms.GraphAnalysis
         graph.SetStyle(edge, graph.EdgeDefaults.Style);
       }
       // calculate the spanning tree
-      var result = new SpanningTree {Costs = {Delegate = GetEdgeWeight}}.Run(graph);
+      var result = new SpanningTree {Costs = {MapperFunction = GetEdgeWeight}}.Run(graph);
       // highlight the tree nodes and edges
       var nodes = new HashSet<INode>();
       var color = GenerateColors(false)[0];

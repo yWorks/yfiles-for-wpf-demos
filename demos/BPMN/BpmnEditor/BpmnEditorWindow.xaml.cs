@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -41,6 +41,7 @@ using System.Windows.Media;
 using Demo.yFiles.Graph.Bpmn.BpmnDi;
 using Demo.yFiles.Graph.Bpmn.Layout;
 using Demo.yFiles.Graph.Bpmn.Styles;
+using Microsoft.Win32;
 using yWorks.Controls;
 using yWorks.Controls.Input;
 using yWorks.Geometry;
@@ -50,77 +51,75 @@ using yWorks.Graph.PortLocationModels;
 using yWorks.Graph.Styles;
 using yWorks.Layout;
 using yWorks.Layout.Bpmn;
-using Application = System.Windows.Application;
-using CheckBox = System.Windows.Controls.CheckBox;
-using ComboBox = System.Windows.Controls.ComboBox;
-using HorizontalAlignment = System.Windows.HorizontalAlignment;
-using Label = System.Windows.Controls.Label;
-using MenuItem = System.Windows.Controls.MenuItem;
-using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
+using yWorks.Utils;
+using EdgeSides = yWorks.Graph.LabelModels.EdgeSides;
 using GroupNodeStyle = Demo.yFiles.Graph.Bpmn.Styles.GroupNodeStyle;
+using LayoutOrientation = yWorks.Layout.Bpmn.LayoutOrientation;
 
 namespace Demo.yFiles.Graph.Bpmn.Editor
 {
   /// <summary>
-  /// This demo shows how an editor for business process diagrams can be created using yFiles WPF.
+  ///   This demo shows how an editor for business process diagrams can be created using yFiles WPF.
   /// </summary>
   /// <remarks>
-  /// The visualization and business logic is based on the BPMN 2.0 specification but isn't meant to
-  /// implement all aspects of the specification but to demonstrate what techniques offered by
-  /// yFiles WPF can be used to create such an editor:
-  /// <list type="bullet">
-  ///   <item>
-  ///     <description>Custom NodeStyles</description>
-  ///   </item>
-  ///   <item>
-  ///     <description>Custom EdgeStyle with custom Arrows</description>
-  ///   </item>
-  ///   <item>
-  ///     <description>
-  ///     Usage of group node insets: Group nodes make use of the <see cref="INodeInsetsProvider" /> interface to define
-  ///     what insets they want to have. These insets are used e.g. during the layout.
-  ///     </description>
-  ///   </item>
-  ///   <item>
-  ///     <description>
-  ///     Node creation via Drag'n'Drop: Like in the DragNDrop demo it is shown how a drag'n'drop mechanism can be used by
-  ///     the user to generate nodes with different default styles.
-  ///     </description>
-  ///   </item>
-  ///   <item>
-  ///     <description>
-  ///     Usage of a PortCandidateProvider: The BPMN specification regulates what type of relations are allowed between what
-  ///     type of diagram elements. How the creation of an edge as well as the relation of one of its ports can be restricted
-  ///     to follow this specification is demonstrated using PortCandidateProvider.
-  ///     </description>
-  ///   </item>
-  ///   <item>
-  ///     <description>
-  ///     Usage of Tables: This demo showcases how table nodes can be used for visualization and interaction. It is
-  ///     demonstrated how the layout can be made aware of the table nodes.
-  ///     </description>
-  ///   </item>
-  ///    <item>
-  ///     <description>
-  ///     Usage of custom import formats: This demo provides a function to import files using the BPMN Diagram Interchange file
-  ///     format into the graph interface.
-  ///     </description>
-  ///   </item>
-  ///   <item>
-  ///     <description>
-  ///     Usage of Folding: Like the folding demo, this demo shows, how folding can be used to hide sub-graphs in a folded group node.
-  ///     It also provides a function, to showcase the sub-graph in a separate window.
-  ///     </description>
-  ///   </item>
-  /// </list>
+  ///   The visualization and business logic is based on the BPMN 2.0 specification but isn't meant to
+  ///   implement all aspects of the specification but to demonstrate what techniques offered by
+  ///   yFiles WPF can be used to create such an editor:
+  ///   <list type="bullet">
+  ///     <item>
+  ///       <description>Custom <see cref="INodeStyle">node styles</see></description>
+  ///     </item>
+  ///     <item>
+  ///       <description>
+  ///         Custom <see cref="IEdgeStyle">edge styles</see> with custom <see cref="IArrow">arrows</see>
+  ///       </description>
+  ///     </item>
+  ///     <item>
+  ///       <description>
+  ///         Usage of group node padding: Group nodes make use of the <see cref="IGroupPaddingProvider"/> interface to
+  ///         define what padding they want to have. This padding is used e.g. during the layout.
+  ///       </description>
+  ///     </item>
+  ///     <item>
+  ///       <description>
+  ///         Node creation via Drag'n'Drop: Like in the DragNDrop demo it is shown how a drag'n'drop mechanism can be used
+  ///         by the user to generate nodes with different default styles.
+  ///       </description>
+  ///     </item>
+  ///     <item>
+  ///       <description>
+  ///         Usage of an <see cref="IPortCandidateProvider"/>: The BPMN specification regulates what type of relations are allowed between
+  ///         what type of diagram elements. How the creation of an edge as well as the relation of one of its ports can be
+  ///         restricted to follow this specification is demonstrated using <see cref="IPortCandidateProvider"/>.
+  ///       </description>
+  ///     </item>
+  ///     <item>
+  ///       <description>
+  ///         Usage of <see cref="ITable"/>: This demo showcases how table nodes can be used for visualization and interaction. It is
+  ///         demonstrated how the layout can be made aware of the table nodes.
+  ///       </description>
+  ///     </item>
+  ///     <item>
+  ///       <description>
+  ///         Usage of custom import formats: This demo provides a function to import files using the BPMN Diagram
+  ///         Interchange file format into the graph interface.
+  ///       </description>
+  ///     </item>
+  ///     <item>
+  ///       <description>
+  ///         Usage of Folding: Like the folding demo, this demo shows how folding can be used to hide subgraphs in a
+  ///         folded group node. It also provides a function, to showcase the subgraph in a separate window.
+  ///       </description>
+  ///     </item>
+  ///   </list>
   /// </remarks>
   public partial class BpmnEditorWindow
   {
     private TableEditorInputMode tableEditorInputMode;
     private FoldingManager foldingManager;
-    
+
     #region Initialization
-    
+
     public BpmnEditorWindow() {
       InitializeComponent();
     }
@@ -133,87 +132,74 @@ namespace Demo.yFiles.Graph.Bpmn.Editor
       InitializePropertyPanel();
       sampleGraphComboBox.SelectedIndex = 0;
     }
-    
-    /// <summary>
-    /// Defines the command that is used by the Window to <see cref="ShowContents">show the contents</see>
-    /// of a group node in a separate window.
-    /// </summary>
-    public static readonly ICommand ShowContentsCommand = new RoutedUICommand("Show Contents", "ShowContents", typeof(BpmnEditorWindow));
 
     /// <summary>
-    /// Creates the default input mode for the GraphControl,
-    /// a <see cref="GraphEditorInputMode" />.
+    ///   Defines the command that is used by the Window to <see cref="ShowContents">show the contents</see>
+    ///   of a group node in a separate window.
+    /// </summary>
+    public static readonly ICommand ShowContentsCommand =
+        new RoutedUICommand("Show Contents", "ShowContents", typeof(BpmnEditorWindow));
+
+    /// <summary>
+    ///   Creates the default input mode for the GraphControl,
+    ///   a <see cref="GraphEditorInputMode"/>.
     /// </summary>
     /// <remarks>
-    /// It will enable the drag'n'drop behavior and set the <see cref="tableEditorInputMode" />.
+    ///   It will enable the drag'n'drop behavior and set the <see cref="tableEditorInputMode"/>.
     /// </remarks>
     protected virtual void InitializeInputModes() {
-      GraphEditorInputMode geim = new GraphEditorInputMode
-      {
-        // enable grouping operations
-        AllowGroupingOperations = true,
-        // We want orthogonal edge creation and editing
-        OrthogonalEdgeEditingContext = new OrthogonalEdgeEditingContext(),
-        // dropping nodes from the palette
-        NodeDropInputMode = new MyNodeDropInputMode
-        {
-          Enabled = true,
-          // We identify the group nodes during a drag by either a custom tag or if they have a table associated.
-          IsGroupNodePredicate =
-            draggedNode => draggedNode.Lookup<ITable>() != null || (string) draggedNode.Tag == "GroupNode"
-        },
-        // don't allow node creation (except for context menu and drag'n'drop)
-        AllowCreateNode = false,
-        // Alter the ClickHitTestOrder so ports are tested before nodes
-        ClickHitTestOrder = new[]
-        {
-          GraphItemTypes.Bend, GraphItemTypes.EdgeLabel, GraphItemTypes.Edge,
-          GraphItemTypes.Port, GraphItemTypes.Node, GraphItemTypes.NodeLabel
-        },
-        // Alter the DoubleClickHitTestOrder so labels are tested first
-        DoubleClickHitTestOrder = new[]
-        {
-            GraphItemTypes.Label, GraphItemTypes.All
-        },
-        // Enable snapping
-        SnapContext = new GraphSnapContext
-        {
-          EdgeToEdgeDistance = 10,
-          NodeToEdgeDistance = 15,
-          NodeToNodeDistance = 20,
-          SnapBendsToSnapLines = true
-        },
-        // tables shall not become child nodes but reparenting for other nodes is always enabled
-        ReparentNodeHandler =
-          new NoTableReparentNodeHandler { ReparentRecognizer = EventRecognizers.Always },
-        // we use a default MoveViewportInputMode that allows us to drag the viewport without pressing 'SHIFT'
-        MoveViewportInputMode = new MoveViewportInputMode(),
-        // disable marquee selection so the MoveViewportInputMode can work without modifiers
-        MarqueeSelectionInputMode = { Enabled = false },  
-        // AutoRemoving empty labels destroys choreographys, if the Labels are empty
-        AutoRemoveEmptyLabels = false,
-        NavigationInputMode = {
-            AutoGroupNodeAlignmentPolicy = NodeAlignmentPolicy.BottomCenter
-        }
+      var geim = new GraphEditorInputMode {
+          // dropping nodes from the palette
+          NodeDropInputMode = new MyNodeDropInputMode {
+              Enabled = true,
+              // We identify the group nodes during a drag by either a custom tag or if they have a table associated.
+              IsGroupNodePredicate = draggedNode =>
+                  draggedNode.Lookup<ITable>() != null || (string) draggedNode.Tag == "GroupNode"
+          },
+          // don't allow node creation (except for context menu and drag'n'drop)
+          AllowCreateNode = false,
+          // Alter the ClickHitTestOrder so ports are tested before nodes
+          ClickHitTestOrder = new[] {
+              GraphItemTypes.Bend, GraphItemTypes.EdgeLabel, GraphItemTypes.Edge, GraphItemTypes.Port,
+              GraphItemTypes.Node, GraphItemTypes.NodeLabel
+          },
+          // Alter the DoubleClickHitTestOrder so labels are tested first
+          DoubleClickHitTestOrder = new[] { GraphItemTypes.Label, GraphItemTypes.All },
+          // Enable snapping
+          SnapContext = new GraphSnapContext {
+              SnappableItems = SnappableItems.Node | SnappableItems.Edge | SnappableItems.Label,
+              EdgeDistance = 10,
+              NodeToEdgeDistance = 15,
+              NodeDistance = 20
+          },
+          // tables shall not become child nodes but reparenting for other nodes is always enabled
+          ReparentNodeHandler = new NoTableReparentNodeHandler { ReparentRecognizer = EventRecognizers.Always },
+          // we use a default MoveViewportInputMode that allows us to drag the viewport without pressing 'SHIFT'
+          // we also increase the priority value so all other input modes are preferred over MoveViewportInputMode
+          // i.e. this change ensures that a mouse (pointer) drag gesture only moves the viewport (pans) if the
+          // gesture starts on empty space
+          MoveViewportInputMode = new MoveViewportInputMode { Priority = 600 },
+          // disable marquee selection so the MoveViewportInputMode can work without modifiers
+          MarqueeSelectionInputMode = { Enabled = false },
+          // automatically removing empty labels destroys choreography nodes
+          EditLabelInputMode = { AutoRemoveEmptyLabels = false },
+          NavigationInputMode = { AutoGroupNodeAlignmentPolicy = NodeAlignmentPolicy.BottomCenter }
       };
-      // increase the priority value of the MoveViewportInputMode so other input modes are still preferred.
-      geim.MoveViewportInputMode.Priority = 110;
 
       // Create a new TEIM instance which also allows drag and drop
-      tableEditorInputMode = new TableEditorInputMode
-      {
-        // Enable drag & drop of stripes
-        StripeDropInputMode = { Enabled = true },
-        // Maximal level for both reparent and drag and drop is 2
-        ReparentStripeHandler = new ReparentStripeHandler { MaxColumnLevel = 2, MaxRowLevel = 2 },
-        Priority = geim.HandleInputMode.Priority + 1
+      tableEditorInputMode = new TableEditorInputMode {
+          // Enable drag & drop of stripes
+          StripeDropInputMode = { Enabled = true },
+          // Maximal level for both reparent and drag and drop is 2
+          ReparentStripeHandler = new ReparentStripeHandler { MaxColumnLevel = 2, MaxRowLevel = 2 },
+          Priority = geim.HandleInputMode.Priority + 1
       };
       // Add to GEIM - we set the priority higher than for the handle input mode so that handles win if both gestures are possible
       geim.Add(tableEditorInputMode);
 
       // add our context menu
       geim.PopulateItemContextMenu += OnPopulateItemContextMenu;
-      
+
       // add double click event handler
       geim.ItemLeftDoubleClicked += OnLeftDoubleClick;
 
@@ -228,37 +214,33 @@ namespace Demo.yFiles.Graph.Bpmn.Editor
     }
 
     /// <summary>
-    /// Event, if there was a double click on an Item
+    ///   Event, if there was a double click on an Item
     /// </summary>
     private void OnLeftDoubleClick(object sender, ItemClickedEventArgs<IModelItem> e) {
       if (e.Handled) {
         return;
       }
 
-      var label = e.Item as ILabel;
-      if (label != null) {
-        ((GraphEditorInputMode) graphControl.InputMode).EditLabel(label);
-        e.Handled = true;
-        return;
-      }
-      
-      var node = e.Item as INode;
-      if (node != null && node.Labels.Count > 0) {
-        ((GraphEditorInputMode) graphControl.InputMode).EditLabel(node.Labels.First());
+      if (e.Item is ILabel label) {
+        ((GraphEditorInputMode) graphControl.InputMode).StartLabelEditing(label);
         e.Handled = true;
         return;
       }
 
-      var port = e.Item as IPort;
-      if (port != null && port.Labels.Count > 0) {
-        ((GraphEditorInputMode) graphControl.InputMode).EditLabel(port.Labels.First());
+      if (e.Item is INode node && node.Labels.Count > 0) {
+        ((GraphEditorInputMode) graphControl.InputMode).StartLabelEditing(node.Labels.First());
         e.Handled = true;
         return;
       }
-      
-      var edge = e.Item as IEdge;
-      if (edge != null && edge.Labels.Count > 0) {
-        ((GraphEditorInputMode) graphControl.InputMode).EditLabel(edge.Labels.First());
+
+      if (e.Item is IPort port && port.Labels.Count > 0) {
+        ((GraphEditorInputMode) graphControl.InputMode).StartLabelEditing(port.Labels.First());
+        e.Handled = true;
+        return;
+      }
+
+      if (e.Item is IEdge edge && edge.Labels.Count > 0) {
+        ((GraphEditorInputMode) graphControl.InputMode).StartLabelEditing(edge.Labels.First());
         e.Handled = true;
         return;
       }
@@ -266,10 +248,10 @@ namespace Demo.yFiles.Graph.Bpmn.Editor
     }
 
     /// <summary>
-    /// Initializes support for the property editor panel.
+    ///   Initializes support for the property editor panel.
     /// </summary>
     /// <remarks>
-    /// The contents of that panel are re-created each time the selection changes, based on the then-current selection.
+    ///   The contents of that panel are re-created each time the selection changes, based on the then-current selection.
     /// </remarks>
     private void InitializePropertyPanel() {
       var geim = (GraphEditorInputMode) graphControl.InputMode;
@@ -277,56 +259,47 @@ namespace Demo.yFiles.Graph.Bpmn.Editor
     }
 
     private static Label CreateHintLabel(string text) {
-      return new Label
-      {
-        Content = text,
-        HorizontalContentAlignment = HorizontalAlignment.Center,
-        FontWeight = FontWeights.Normal,
-        FontStyle = FontStyles.Italic
+      return new Label {
+          Content = text,
+          HorizontalContentAlignment = HorizontalAlignment.Center,
+          FontWeight = FontWeights.Normal,
+          FontStyle = FontStyles.Italic
       };
     }
 
     private static object GetStyle(IModelItem item) {
-      var node = item as INode;
-      if (node != null) {
+      if (item is INode node) {
         return node.Style;
       }
-      var edge = item as IEdge;
-      if (edge != null) {
+      if (item is IEdge edge) {
         return edge.Style;
       }
-      var port = item as IPort;
-      if (port != null) {
+      if (item is IPort port) {
         return port.Style;
       }
-      var label = item as ILabel;
-      if (label != null) {
+      if (item is ILabel label) {
         return label.Style;
       }
       return null;
     }
 
     private static void ApplyStyleProperty(PropertyInfo p, IModelItem item, object value, GraphControl graphControl) {
-      var node = item as INode;
-      if (node != null) {
+      if (item is INode node) {
         var newStyle = node.Style.Clone();
         p.SetValue(newStyle, value, null);
         graphControl.Graph.SetStyle(node, (INodeStyle) newStyle);
       }
-      var edge = item as IEdge;
-      if (edge != null) {
+      if (item is IEdge edge) {
         var newStyle = edge.Style.Clone();
         p.SetValue(newStyle, value, null);
         graphControl.Graph.SetStyle(edge, (IEdgeStyle) newStyle);
       }
-      var port = item as IPort;
-      if (port != null) {
+      if (item is IPort port) {
         var newStyle = port.Style.Clone();
         p.SetValue(newStyle, value, null);
         graphControl.Graph.SetStyle(port, (IPortStyle) newStyle);
       }
-      var label = item as ILabel;
-      if (label != null) {
+      if (item is ILabel label) {
         var newStyle = label.Style.Clone();
         p.SetValue(newStyle, value, null);
         graphControl.Graph.SetStyle(label, (ILabelStyle) newStyle);
@@ -335,7 +308,7 @@ namespace Demo.yFiles.Graph.Bpmn.Editor
     }
 
     /// <summary>
-    /// Initializes the graph defaults.
+    ///   Initializes the graph defaults.
     /// </summary>
     private void InitializeGraph() {
       foldingManager = new FoldingManager();
@@ -345,43 +318,44 @@ namespace Demo.yFiles.Graph.Bpmn.Editor
       // Ports should not be removed when an attached edge is deleted
       graph.NodeDefaults.Ports.AutoCleanUp = false;
       // Folding edges should use existing ports
-      ((DefaultFoldingEdgeConverter) foldingManager.FoldingEdgeConverter).ReuseMasterPorts = true;
-      ((DefaultFoldingEdgeConverter) foldingManager.FoldingEdgeConverter).ReuseFolderNodePorts = true;
+      var foldingEdgeConverter = (FoldingEdgeConverter) foldingManager.FoldingEdgeConverter;
+      foldingEdgeConverter.ReuseMasterPorts = true;
+      foldingEdgeConverter.ReuseFolderNodePorts = true;
 
       // Set default styles and label model parameter
       //foldingView.GroupedGraph.GroupNodeDefaults.Style = new GroupNodeStyle();
       graph.EdgeDefaults.Style = new BpmnEdgeStyle { Type = EdgeType.SequenceFlow };
       graph.EdgeDefaults.ShareStyleInstance = false;
-      graph.EdgeDefaults.Labels.LayoutParameter = new EdgeSegmentLabelModel(10, 0, 0, true, EdgeSides.AboveEdge).CreateDefaultParameter();
-      // For nodes we use a CompositeLabelModel that combines label placements inside and outside of the node
+      graph.EdgeDefaults.Labels.LayoutParameter =
+          new EdgeSegmentLabelModel(10, 0, 0, true, EdgeSides.AboveEdge).CreateParameterFromSource(0, 0.5,
+              EdgeSides.AboveEdge);
+      // For nodes, we use a CompositeLabelModel that combines label placements inside and outside of the node
       var compositeLabelModel = new CompositeLabelModel();
-      compositeLabelModel.LabelModels.Add(new InteriorLabelModel());
-      compositeLabelModel.LabelModels.Add(new ExteriorLabelModel { Insets = new InsetsD(10) });
-      graph.NodeDefaults.Labels.LayoutParameter = compositeLabelModel.CreateDefaultParameter();
+      compositeLabelModel.AddModel(new ExteriorNodeLabelModel { Margins = new InsetsD(10) });
+      var interiorNodeLabelModel = new InteriorNodeLabelModel();
+      var defaultParameter =
+          compositeLabelModel.AddModel(interiorNodeLabelModel.CreateParameter(InteriorNodeLabelModel.Position.Center));
+      graph.NodeDefaults.Labels.LayoutParameter = defaultParameter;
       graph.NodeDefaults.Labels.Style = BpmnLabelStyle.NewDefaultInstance();
 
       // use a specialized port candidate provider
-      foldingManager.MasterGraph.GetDecorator().NodeDecorator.PortCandidateProviderDecorator.SetFactory(
-          node => (node.Style is BpmnNodeStyle || node.Style is GroupNodeStyle),
+      var portCandidateProvider = foldingManager.MasterGraph.GetDecorator().Nodes.PortCandidateProvider;
+      portCandidateProvider.AddFactory(node => node.Style is BpmnNodeStyle || node.Style is GroupNodeStyle,
           node => new BpmnPortCandidateProvider(node));
       // Pools only have a dynamic PortCandidate
-      foldingManager.MasterGraph.GetDecorator().NodeDecorator.PortCandidateProviderDecorator.SetFactory(
-          node => (node.Style is PoolNodeStyle),
-          node => PortCandidateProviders.FromCandidates(new DefaultPortCandidate(node) { Validity = PortCandidateValidity.Dynamic }));
-
-      // allow reconnecting of edges
-      foldingManager.MasterGraph.GetDecorator()
-        .EdgeDecorator.EdgeReconnectionPortCandidateProviderDecorator.SetImplementation(
-          EdgeReconnectionPortCandidateProviders.AllNodeCandidates);
+      portCandidateProvider.AddFactory(node => node.Style is PoolNodeStyle,
+          node => PortCandidateProviders.FromCandidates(new PortCandidate(node) {
+              Validity = PortCandidateValidity.Dynamic
+          }));
 
       // enable undo operations
       foldingManager.MasterGraph.SetUndoEngineEnabled(true);
-      //Use the undo support from the graph also for all future table instances
+      // Use the undo support from the graph also for all future table instances
       Table.InstallStaticUndoSupport(foldingManager.MasterGraph);
     }
 
     /// <summary>
-    /// Sets up context menu support for graph items.
+    ///   Sets up context menu support for graph items.
     /// </summary>
     private void InitializeContextMenu() {
       var geim = (GraphEditorInputMode) graphControl.InputMode;
@@ -391,7 +365,7 @@ namespace Demo.yFiles.Graph.Bpmn.Editor
     }
 
     /// <summary>
-    /// Populates the context menu for the given situation.
+    ///   Populates the context menu for the given situation.
     /// </summary>
     private void OnPopulateItemContextMenu(object sender, PopulateItemContextMenuEventArgs<IModelItem> e) {
       if (e.Handled) {
@@ -400,32 +374,29 @@ namespace Demo.yFiles.Graph.Bpmn.Editor
 
       var items = e.Menu.Items;
 
-      var node = e.Item as INode;
-      if (node != null) {
+      if (e.Item is INode node) {
         // If it is not a text annotation itself...
-        var textAnnotationStyle = node.Style as AnnotationNodeStyle;
-        if (textAnnotationStyle == null) {  
+        if (node.Style is not AnnotationNodeStyle textAnnotationStyle) {
           // ... offer to add a text annotation node
           AddMenuItem(items, "Add text annotation", (o, args) => {
-            var annotationNode = graphControl.Graph.CreateNode(new PointD(node.Layout.X, node.Layout.Y-50));
+            var annotationNode = graphControl.Graph.CreateNode(new PointD(node.Layout.X, node.Layout.Y - 50));
             graphControl.Graph.SetStyle(annotationNode, new AnnotationNodeStyle());
             // including a connecting edge
-            graphControl.Graph.CreateEdge(node, annotationNode, new BpmnEdgeStyle{Type = EdgeType.Association});
-            var newLabel = graphControl.Graph.AddLabel(annotationNode, "", 
-                new InteriorStretchLabelModel{Insets = new InsetsD(3, 3, 3, 3)}.CreateParameter(InteriorStretchLabelModel.Position.Center));
+            graphControl.Graph.CreateEdge(node, annotationNode, new BpmnEdgeStyle { Type = EdgeType.Association });
+            var newLabel = graphControl.Graph.AddLabel(annotationNode, "",
+                new StretchNodeLabelModel { Padding = new InsetsD(3, 3, 3, 3) }.CreateParameter(StretchNodeLabelModel
+                    .Position.Center));
             // and start to edit the label
-            ((GraphEditorInputMode) graphControl.InputMode).EditLabel(newLabel);
+            ((GraphEditorInputMode) graphControl.InputMode).StartLabelEditing(newLabel);
           });
         } else {
           // If it is a text annotation node, allow toggling the direction
-          AddMenuItem(items, "Toggle direction", (o, args) => {
-            textAnnotationStyle.Left = !textAnnotationStyle.Left;
-          });
+          AddMenuItem(items, "Toggle direction",
+              (o, args) => { textAnnotationStyle.Left = !textAnnotationStyle.Left; });
         }
-        
-       // If it is an Choreography node...
-        var choreographyNodeStyle = node.Style as ChoreographyNodeStyle;
-        if (choreographyNodeStyle != null) {
+
+        // If it is a Choreography node...
+        if (node.Style is ChoreographyNodeStyle choreographyNodeStyle) {
           items.Add(new Separator());
           // ... check if a participant was right-clicked
           var participant = choreographyNodeStyle.GetParticipant(node, e.QueryLocation);
@@ -447,12 +418,11 @@ namespace Demo.yFiles.Graph.Bpmn.Editor
               var parameter = choreographyNodeStyle.GetParticipantParameters(participant);
               var label = GetLabelFromParameter(node.Labels, parameter);
               if (label == null) {
-                parameter = choreographyNodeStyle.GetParticipantParameters(participant);
                 label = graphControl.Graph.AddLabel(node, "");
                 graphControl.Graph.SetLabelLayoutParameter(label, parameter);
                 graphControl.Graph.SetStyle(label, BpmnLabelStyle.NewDefaultInstance());
               }
-              ((GraphEditorInputMode) graphControl.InputMode).EditLabel(label);
+              ((GraphEditorInputMode) graphControl.InputMode).StartLabelEditing(label);
             });
           } else {
             // if no participant was clicked, a new one can be added to the top or bottom participants
@@ -463,7 +433,7 @@ namespace Demo.yFiles.Graph.Bpmn.Editor
               var newLabel = graphControl.Graph.AddLabel(node, "");
               graphControl.Graph.SetLabelLayoutParameter(newLabel, parameter);
               graphControl.Graph.SetStyle(newLabel, BpmnLabelStyle.NewDefaultInstance());
-              ((GraphEditorInputMode) graphControl.InputMode).EditLabel(newLabel);
+              ((GraphEditorInputMode) graphControl.InputMode).StartLabelEditing(newLabel);
             });
             AddMenuItem(items, "Add Participant at Bottom", (o, args) => {
               participant = new Participant();
@@ -472,11 +442,12 @@ namespace Demo.yFiles.Graph.Bpmn.Editor
               var newLabel = graphControl.Graph.AddLabel(node, "");
               graphControl.Graph.SetLabelLayoutParameter(newLabel, parameter);
               graphControl.Graph.SetStyle(newLabel, BpmnLabelStyle.NewDefaultInstance());
-              ((GraphEditorInputMode) graphControl.InputMode).EditLabel(newLabel);
+              ((GraphEditorInputMode) graphControl.InputMode).StartLabelEditing(newLabel);
             });
             AddMenuItem(items, "Edit Label", (o, args) => {
-              ILabel taskNameBandLabel = null;
-              if (node.Labels.Count <= 0 || GetLabelFromParameter(node.Labels, ChoreographyLabelModel.TaskNameBand) == null) {
+              ILabel taskNameBandLabel;
+              if (node.Labels.Count <= 0 ||
+                  GetLabelFromParameter(node.Labels, ChoreographyLabelModel.TaskNameBand) == null) {
                 var parameter = ChoreographyLabelModel.TaskNameBand;
                 taskNameBandLabel = graphControl.Graph.AddLabel(node, "");
                 graphControl.Graph.SetLabelLayoutParameter(taskNameBandLabel, parameter);
@@ -484,18 +455,17 @@ namespace Demo.yFiles.Graph.Bpmn.Editor
               } else {
                 taskNameBandLabel = GetLabelFromParameter(node.Labels, ChoreographyLabelModel.TaskNameBand);
               }
-              ((GraphEditorInputMode) graphControl.InputMode).EditLabel(taskNameBandLabel);
+              ((GraphEditorInputMode) graphControl.InputMode).StartLabelEditing(taskNameBandLabel);
             });
           }
         }
 
         // If it is an Activity node...
-        var activityNodeStyle = node.Style as ActivityNodeStyle;
-        if (activityNodeStyle != null) {
+        if (node.Style is ActivityNodeStyle) {
           items.Add(new Separator());
           // allow to add a Boundary Event as port that uses an EventPortStyle
           AddMenuItem(items, "Add Boundary Event", (o, args) => {
-            graphControl.Graph.AddPort(node, FreeNodePortLocationModel.NodeBottomAnchored, new EventPortStyle());
+            graphControl.Graph.AddPort(node, FreeNodePortLocationModel.Bottom, new EventPortStyle());
             graphControl.Focus();
           });
         }
@@ -506,14 +476,14 @@ namespace Demo.yFiles.Graph.Bpmn.Editor
         if (stripeDescriptor != null) {
           // add the insert before menu item
           AddMenuItem(items, "Insert new lane before " + stripeDescriptor.Stripe, delegate {
-            IStripe parent = stripeDescriptor.Stripe.GetParentStripe();
-            int index = stripeDescriptor.Stripe.GetIndex();
+            var parent = stripeDescriptor.Stripe.GetParentStripe();
+            var index = stripeDescriptor.Stripe.GetIndex();
             tableEditorInputMode.InsertChild(parent, index);
           });
           // add the insert after menu item
           AddMenuItem(items, "Insert new lane after " + stripeDescriptor.Stripe, delegate {
-            IStripe parent = stripeDescriptor.Stripe.GetParentStripe();
-            int index = stripeDescriptor.Stripe.GetIndex();
+            var parent = stripeDescriptor.Stripe.GetParentStripe();
+            var index = stripeDescriptor.Stripe.GetIndex();
             tableEditorInputMode.InsertChild(parent, index + 1);
           });
           // add the delete menu item
@@ -522,30 +492,30 @@ namespace Demo.yFiles.Graph.Bpmn.Editor
         if (stripeDescriptor != null && stripeDescriptor.Stripe is IRow) {
           // ... allow to increase or decrease the row header size
           var stripe = (IRow) stripeDescriptor.Stripe;
-          var insets = stripe.Insets;
-          var defaultInsets = stripe.Table.RowDefaults.Insets;
+          var padding = stripe.Padding;
+          var defaultPadding = stripe.Table.RowDefaults.Padding;
 
           items.Add(new Separator());
 
-          if (insets.Left > defaultInsets.Left) {
+          if (padding.Left > defaultPadding.Left) {
             AddMenuItem(items, "Reduce header size", (o, args) => {
-              // by reducing the header size of one of the rows, the size of the table insets might change
-              var insetsBefore = stripe.Table.GetAccumulatedInsets();
-              stripe.Table.SetStripeInsets(stripe,
-                  new InsetsD(insets.Left - defaultInsets.Left, insets.Top, insets.Right, insets.Bottom));
-              var insetsAfter = stripe.Table.GetAccumulatedInsets();
-              // if the table insets have changed, the bounds of the pool node have to be adjusted as well
-              var diff = insetsBefore.Left - insetsAfter.Left;
+              // by reducing the header size of one of the rows, the size of the table padding might change
+              var paddingBefore = stripe.Table.GetAccumulatedPadding();
+              stripe.Table.SetStripePadding(stripe,
+                  new InsetsD(padding.Left - defaultPadding.Left, padding.Top, padding.Right, padding.Bottom));
+              var paddingAfter = stripe.Table.GetAccumulatedPadding();
+              // if the table padding has changed, the bounds of the pool node have to be adjusted as well
+              var diff = paddingBefore.Left - paddingAfter.Left;
               graphControl.Graph.SetNodeLayout(node,
                   new RectD(node.Layout.X + diff, node.Layout.Y, node.Layout.Width - diff, node.Layout.Height));
             });
           }
           AddMenuItem(items, "Increase header size", (o, args) => {
-            var insetsBefore = stripe.Table.GetAccumulatedInsets();
-            stripe.Table.SetStripeInsets(stripe,
-                new InsetsD(insets.Left + defaultInsets.Left, insets.Top, insets.Right, insets.Bottom));
-            var insetsAfter = stripe.Table.GetAccumulatedInsets();
-            var diff = insetsBefore.Left - insetsAfter.Left;
+            var paddingBefore = stripe.Table.GetAccumulatedPadding();
+            stripe.Table.SetStripePadding(stripe,
+                new InsetsD(padding.Left + defaultPadding.Left, padding.Top, padding.Right, padding.Bottom));
+            var paddingAfter = stripe.Table.GetAccumulatedPadding();
+            var diff = paddingBefore.Left - paddingAfter.Left;
             graphControl.Graph.SetNodeLayout(node,
                 new RectD(node.Layout.X + diff, node.Layout.Y, node.Layout.Width - diff, node.Layout.Height));
           });
@@ -554,16 +524,17 @@ namespace Demo.yFiles.Graph.Bpmn.Editor
         // we don't want to be queried again if there are more items at this location
         e.Handled = true;
       }
-      var edge = e.Item as IEdge;
-      if (edge != null) {
-        // For edges a label with a Message Icon may be added
-        var modelParameter = new EdgeSegmentLabelModel(0, 0, 0, false, EdgeSides.OnEdge).CreateDefaultParameter();
+      if (e.Item is IEdge edge) {
+        // For edges, a label with a Message Icon may be added
+        var modelParameter = new EdgeSegmentLabelModel(0, 0, 0, false, EdgeSides.OnEdge).CreateParameterFromSource(0);
         AddMenuItem(items, "Add Initiating Message Icon Label", (o, args) => {
-          graphControl.Graph.AddLabel(edge, "", modelParameter, new MessageLabelStyle { IsInitiating = true }, new SizeD(20, 14));
+          graphControl.Graph.AddLabel(edge, "", modelParameter, new MessageLabelStyle { IsInitiating = true },
+              new SizeD(20, 14));
           graphControl.Focus();
         });
         AddMenuItem(items, "Add Response Message Icon Label", (o, args) => {
-          graphControl.Graph.AddLabel(edge, "", modelParameter, new MessageLabelStyle { IsInitiating = false }, new SizeD(20, 14));
+          graphControl.Graph.AddLabel(edge, "", modelParameter, new MessageLabelStyle { IsInitiating = false },
+              new SizeD(20, 14));
           graphControl.Focus();
         });
 
@@ -571,23 +542,21 @@ namespace Demo.yFiles.Graph.Bpmn.Editor
         e.Handled = true;
       }
     }
-    
-    
+
 
     /// <summary>
-    /// Helper method that retrieves the label to the corresponding choreography participant
+    ///   Helper method that retrieves the label to the corresponding choreography participant
     /// </summary>
-    /// <param name="nodeLabels"></param> All labels of this node
-    /// <param name="parameter"></param> Parameter of this taskNameBand
+    /// <param name="nodeLabels">All labels of this node</param>
+    /// <param name="parameter">Parameter of this taskNameBand</param>
     private static ILabel GetLabelFromParameter(IEnumerable<ILabel> nodeLabels, ILabelModelParameter parameter) {
-      
-        foreach (var label in nodeLabels) {
-          if (ChoreographyLabelModel.GetEqualParameters(label.LayoutParameter, parameter)) {
-            return label;
-          }
+      foreach (var label in nodeLabels) {
+        if (ChoreographyLabelModel.GetEqualParameters(label.LayoutParameter, parameter)) {
+          return label;
         }
+      }
 
-        return null;
+      return null;
     }
 
     private static void AddMenuItem(IList items, string header, RoutedEventHandler clickHandler) {
@@ -597,7 +566,7 @@ namespace Demo.yFiles.Graph.Bpmn.Editor
     }
 
     /// <summary>
-    /// Initializes the panel from where BPMN elements can be dragged onto the graph.
+    ///   Initializes the panel from where BPMN elements can be dragged onto the graph.
     /// </summary>
     private void InitializeStylePanel() {
       // Create a new Graph in which the palette nodes live
@@ -607,11 +576,12 @@ namespace Demo.yFiles.Graph.Bpmn.Editor
       var verticalPoolNodeStyle = new PoolNodeStyle();
       var verticalPoolNode = nodeContainer.CreateNode(PointD.Origin, verticalPoolNodeStyle);
       var verticalPoolTable = GetTable(verticalPoolNodeStyle);
-      verticalPoolTable.ColumnDefaults.Insets = new InsetsD();
-      verticalPoolTable.Insets = new InsetsD();
+      verticalPoolTable.ColumnDefaults.Padding = new InsetsD();
+      verticalPoolTable.Padding = new InsetsD();
       verticalPoolTable.CreateGrid(1, 1);
-      //Use twice the default width for this sample column (looks nicer in the preview)
-      verticalPoolTable.SetSize(verticalPoolTable.RootColumn.ChildColumns.First(), verticalPoolTable.RootColumn.ChildColumns.First().GetActualSize() * 2);
+      // Use twice the default width for this sample column (looks nicer in the preview)
+      verticalPoolTable.SetSize(verticalPoolTable.RootColumn.ChildColumns.First(),
+          verticalPoolTable.RootColumn.ChildColumns.First().GetActualSize() * 2);
       nodeContainer.SetNodeLayout(verticalPoolNode, verticalPoolTable.Layout.ToRectD());
       verticalPoolTable.AddLabel(verticalPoolTable.RootRow.ChildRows.First(), "Vertical Pool");
 
@@ -622,8 +592,8 @@ namespace Demo.yFiles.Graph.Bpmn.Editor
       var rowSampleRow = rowTable.CreateRow(100d);
       var rowSampleColumn = rowTable.CreateColumn(200d);
       rowTable.SetStyle(rowSampleColumn, VoidStripeStyle.Instance);
-      rowTable.SetStripeInsets(rowSampleColumn, new InsetsD());
-      rowTable.Insets = new InsetsD();
+      rowTable.SetStripePadding(rowSampleColumn, new InsetsD());
+      rowTable.Padding = new InsetsD();
       rowTable.AddLabel(rowSampleRow, "Row");
       nodeContainer.SetNodeLayout(rowNode, rowTable.Layout.ToRectD());
       // Set the first row as tag so the NodeDragControl knows that a row and not a complete pool node shall be dragged
@@ -642,13 +612,14 @@ namespace Demo.yFiles.Graph.Bpmn.Editor
       var choreographyNodeStyle = new ChoreographyNodeStyle();
       choreographyNodeStyle.TopParticipants.Add(new Participant());
       choreographyNodeStyle.BottomParticipants.Add(new Participant());
-      var choreographyNode = nodeContainer.CreateNode(new RectD(PointD.Origin, new SizeD(80, 90)), choreographyNodeStyle,
-          "GroupNode");
-      nodeContainer.AddLabel(choreographyNode, "Participant 1", ChoreographyLabelModel.Instance.CreateParticipantParameter(true, 0));
-      nodeContainer.AddLabel(choreographyNode, "Participant 2", ChoreographyLabelModel.Instance.CreateParticipantParameter(false, 0));
+      var choreographyNode = nodeContainer.CreateNode(new RectD(PointD.Origin, new SizeD(80, 90)),
+          choreographyNodeStyle, "GroupNode");
+      nodeContainer.AddLabel(choreographyNode, "Participant 1",
+          ChoreographyLabelModel.Instance.CreateParticipantParameter(true, 0));
+      nodeContainer.AddLabel(choreographyNode, "Participant 2",
+          ChoreographyLabelModel.Instance.CreateParticipantParameter(false, 0));
 
-      nodeContainer.CreateNode(new RectD(PointD.Origin, new SizeD(50, 50)),
-          new ConversationNodeStyle());
+      nodeContainer.CreateNode(new RectD(PointD.Origin, new SizeD(50, 50)), new ConversationNodeStyle());
 
       foreach (var node in nodeContainer.Nodes) {
         styleListBox.Items.Add(node);
@@ -688,13 +659,9 @@ namespace Demo.yFiles.Graph.Bpmn.Editor
       // Get all boolean, brush, and enum properties
       var properties = style.GetType().GetProperties();
       var filteredProperties = properties
-                               .Where(p =>
-                                   p.PropertyType == typeof(bool) ||
-                                   p.PropertyType == typeof(Brush) ||
-                                   p.PropertyType.IsEnum)
-                               .OrderBy(p => p.PropertyType.IsEnum)
-                               .ThenBy(p => p.PropertyType == typeof(Brush))
-                               .ThenBy(p => p.Name).ToList();
+          .Where(p => p.PropertyType == typeof(bool) || p.PropertyType == typeof(Brush) || p.PropertyType.IsEnum)
+          .OrderBy(p => p.PropertyType.IsEnum).ThenBy(p => p.PropertyType == typeof(Brush)).ThenBy(p => p.Name)
+          .ToList();
 
       if (filteredProperties.Count == 0) {
         editorControl.Items.Add(CreateHintLabel("(No properties to change)"));
@@ -703,7 +670,7 @@ namespace Demo.yFiles.Graph.Bpmn.Editor
 
       foreach (var p in filteredProperties) {
         // CheckBox for boolean properties
-        if (p.PropertyType == typeof (bool)) {
+        if (p.PropertyType == typeof(bool)) {
           var checkBox = new CheckBox { Content = p.Name, IsChecked = (bool?) p.GetValue(style, null) };
           RoutedEventHandler handler = (o, args) => ApplyStyleProperty(p, item, checkBox.IsChecked, graphControl);
           checkBox.Checked += handler;
@@ -724,7 +691,7 @@ namespace Demo.yFiles.Graph.Bpmn.Editor
         }
 
         // Color picker for Brushes
-        if (p.PropertyType == typeof (Brush)) {
+        if (p.PropertyType == typeof(Brush)) {
           var label = new Label { Content = p.Name };
           editorControl.Items.Add(label);
           var comboBox = new ComboBox();
@@ -740,24 +707,26 @@ namespace Demo.yFiles.Graph.Bpmn.Editor
     }
 
     /// <summary>
-    /// Exits the application on menu item click.
+    ///   Exits the application on menu item click.
     /// </summary>
     /// <param name="sender">The sender.</param>
-    /// <param name="e">The <see cref="System.Windows.RoutedEventArgs" /> instance containing the event data.</param>
+    /// <param name="e">The <see cref="System.Windows.RoutedEventArgs"/> instance containing the event data.</param>
     private void OnExitMenuItemClick(object sender, RoutedEventArgs e) {
       Application.Current.Shutdown();
     }
 
     /// <summary>
-    /// Called when the selection of the graph selection combo box is changed.
+    ///   Called when the selection of the graph selection combo box is changed.
     /// </summary>
     /// <param name="sender">The sender.</param>
     /// <param name="e">
-    /// The <see cref="System.Windows.Controls.SelectionChangedEventArgs" /> instance containing the event
-    /// data.
+    ///   The <see cref="System.Windows.Controls.SelectionChangedEventArgs"/> instance containing the event
+    ///   data.
     /// </param>
     private void OnSampleGraphChanged(object sender, SelectionChangedEventArgs e) {
-      var selection = sampleGraphComboBox.SelectedItem != null ? ((ComboBoxItem) sampleGraphComboBox.SelectedItem).Content as string : null;
+      var selection = sampleGraphComboBox.SelectedItem != null
+          ? ((ComboBoxItem) sampleGraphComboBox.SelectedItem).Content as string
+          : null;
       if (selection != null) {
         // modify selection string to match file
         var name = selection.ToLower().Replace(' ', '_') + ".graphml";
@@ -769,17 +738,18 @@ namespace Demo.yFiles.Graph.Bpmn.Editor
         sampleGraphDiComboBox.SelectedItem = null;
       }
     }
-    
+
     /// <summary>
-    /// Called when the selection of the bpmn graph selection combo box is changed.
+    ///   Called when the selection of the bpmn graph selection combo box is changed.
     /// </summary>
     /// <param name="sender">The sender.</param>
     /// <param name="e">
-    /// The <see cref="System.Windows.Controls.SelectionChangedEventArgs" /> instance containing the event
-    /// data.
+    ///   The <see cref="System.Windows.Controls.SelectionChangedEventArgs"/> instance containing the event data.
     /// </param>
     private void OnSampleDiGraphChanged(object sender, SelectionChangedEventArgs e) {
-      var selection = sampleGraphDiComboBox.SelectedItem != null ? ((ComboBoxItem) sampleGraphDiComboBox.SelectedItem).Content as string : null;
+      var selection = sampleGraphDiComboBox.SelectedItem != null
+          ? ((ComboBoxItem) sampleGraphDiComboBox.SelectedItem).Content as string
+          : null;
       if (selection != null) {
         // modify selection string to match file
         var name = selection.ToLower().Replace(' ', '_') + ".bpmn";
@@ -795,41 +765,34 @@ namespace Demo.yFiles.Graph.Bpmn.Editor
     }
 
     /// <summary>
-    /// Event callback to handle the automatic layout.
+    ///   Event callback to handle the automatic layout.
     /// </summary>
     private async void OnLayoutClick(object sender, RoutedEventArgs e) {
       // Create a new BpmnLayout using a Left-To-Right layout orientation
-      var bpmnLayout = new BpmnLayout { LayoutOrientation = yWorks.Layout.Bpmn.LayoutOrientation.LeftToRight };
+      var bpmnLayout = new BpmnLayout { LayoutOrientation = LayoutOrientation.LeftToRight };
 
-      //We use Layout executor convenience method that already sets up the whole layout pipeline correctly
-      var layoutExecutor = new LayoutExecutor(graphControl, bpmnLayout)
-      {
-        // Set the duration of the animation
-        Duration = TimeSpan.FromSeconds(1),
-        // The viewport shall be animated as well
-        AnimateViewport = true,
-        // The content rect shall be adjusted to the new layout
-        UpdateContentRect = true,
-        TableLayoutConfigurator = { HorizontalLayout = true, FromSketch = true },
-        // the BpmnLayoutData provides information about the BPMN node and edge types to the layout algorithm.
-        LayoutData = new BpmnLayoutData()
-        {
-          CompactMessageFlowLayering = false,
-          StartNodesFirst = true
-        }.Create(graphControl.Graph, graphControl.Selection, bpmnLayout.Scope)
+      // We use Layout executor convenience method that already sets up the whole layout pipeline correctly
+      var layoutExecutor = new LayoutExecutor(graphControl, bpmnLayout) {
+          // Set the duration of the animation
+          AnimationDuration = TimeSpan.FromSeconds(1),
+          TableLayoutConfigurator = { HorizontalLayout = true, FromSketch = true },
+          // the BpmnLayoutData provides information about the BPMN node and edge types to the layout algorithm.
+          LayoutData =
+              new BpmnLayoutData { CompactMessageFlowLayering = false, StartNodesFirst = true }.Create(
+                  graphControl.Graph, graphControl.Selection, bpmnLayout)
       };
       await layoutExecutor.Start();
     }
 
     /// <summary>
-    /// Custom <see cref="NodeDropInputMode" /> that disallows creating a table node inside of a group node
-    /// (especially inside of another table node)
+    ///   Custom <see cref="NodeDropInputMode"/> that disallows creating a table node inside of a group node
+    ///   (especially inside of another table node)
     /// </summary>
     private sealed class MyNodeDropInputMode : NodeDropInputMode
     {
       protected override IModelItem GetDropTarget(PointD dragLocation) {
-        //Ok, this node has a table associated -> disallow dragging it into a group node.
-        if (DraggedItem.Lookup<ITable>() != null) {
+        // Ok, this node has a table associated -> disallow dragging it into a group node.
+        if (DraggedItem?.Lookup<ITable>() != null) {
           return null;
         }
         return base.GetDropTarget(dragLocation);
@@ -837,50 +800,55 @@ namespace Demo.yFiles.Graph.Bpmn.Editor
     }
 
     /// <summary>
-    /// Custom <see cref="NodeDropInputMode" /> that disallows creating a table node inside of a group node and
-    /// enlarges the group node if a new node is dropped outside of its bounds.
+    ///   Custom <see cref="NodeDropInputMode"/> that disallows creating a table node inside of a group node and
+    ///   enlarges the group node if a new node is dropped outside of its bounds.
     /// </summary>
     private sealed class ContentViewerNodeDropInputMode : NodeDropInputMode
     {
-      protected override INode CreateNode(IInputModeContext context, IGraph graph, INode node, IModelItem dropTarget, RectD layout) {
+      protected override INode CreateNode(
+          IInputModeContext context,
+          IGraph graph,
+          INode node,
+          IModelItem dropTarget,
+          RectD layout) {
         var node1 = base.CreateNode(context, graph, node, dropTarget, layout);
 
         // Enlarges the group node, if a new node is dropped outside the bounds of the master group node
         var localRoot = context.GetGraph().GetFoldingView().LocalRoot;
         var view = context.GetGraph().GetFoldingView();
         view.Manager.MasterGraph.GetGroupingSupport().EnlargeGroupNode(context, localRoot, true);
-        
+
         return node1;
       }
 
       protected override IModelItem GetDropTarget(PointD dragLocation) {
-        
-        //Ok, this node has a table associated -> disallow dragging it into a group node.
-        if (DraggedItem.Lookup<ITable>() != null) {
+        // Ok, this node has a table associated -> disallow dragging it into a group node.
+        if (DraggedItem?.Lookup<ITable>() != null) {
           return null;
         }
-        
+
         return base.GetDropTarget(dragLocation);
       }
     }
 
     /// <summary>
-    /// Custom <see cref="ReparentNodeHandler" /> that disallows reparenting a table node.
+    ///   Custom <see cref="ReparentNodeHandler"/> that disallows reparenting a table node.
     /// </summary>
     private sealed class NoTableReparentNodeHandler : ReparentNodeHandler
     {
       public override bool IsValidParent(IInputModeContext context, INode node, INode newParent) {
         // table nodes shall not become child nodes
-        return node.Lookup(typeof (ITable)) == null && base.IsValidParent(context, node, newParent);
+        return node.Lookup(typeof(ITable)) == null && base.IsValidParent(context, node, newParent);
       }
     }
 
     /// <summary>
-    /// Custom Open File Dialog for .bpmn and GraphML files.
+    ///   Custom Open File Dialog for .bpmn and GraphML files.
     /// </summary>
     private void OpenFile(object sender, RoutedEventArgs e) {
       var openFileDialog = new OpenFileDialog();
-      openFileDialog.Filter = "All graphs|*.bpmn;*.graphml|BPMN files (*.bpmn)|*.bpmn|GraphML files (*.graphml)|*.graphml|XML files (*.xml)|*.xml|All files (*.*)|*.*";
+      openFileDialog.Filter =
+          "All graphs|*.bpmn;*.graphml|BPMN files (*.bpmn)|*.bpmn|GraphML files (*.graphml)|*.graphml|XML files (*.xml)|*.xml|All files (*.*)|*.*";
       openFileDialog.FilterIndex = 1;
       openFileDialog.RestoreDirectory = true;
       if (openFileDialog.ShowDialog() == true) {
@@ -889,14 +857,14 @@ namespace Demo.yFiles.Graph.Bpmn.Editor
           var parser = new BpmnDiParser();
           parser.Load(graphControl.Graph, fileName, SelectDiagram);
         } else {
-          graphControl.GraphMLIOHandler.Read(graphControl.Graph,fileName);
+          graphControl.GraphMLIOHandler.Read(graphControl.Graph, fileName);
         }
         graphControl.FitGraphBounds();
       }
     }
 
     /// <summary>
-    /// Lets the user select a diagram from a list of possible diagrams
+    ///   Lets the user select a diagram from a list of possible diagrams
     /// </summary>
     /// <param name="topLevelDiagrams">Supplied list of possible diagrams.</param>
     /// <returns>The selected Diagram</returns>
@@ -908,43 +876,33 @@ namespace Demo.yFiles.Graph.Bpmn.Editor
       if (topLevelDiagrams.Count() == 1) {
         diaToLoad = topLevelDiagrams.First();
       } else {
-
-        var grid = new Grid {
-          Background = Brushes.LightGray,
-
-        };
+        var grid = new Grid { Background = Brushes.LightGray };
         var listWindow = new Window { Title = "Choose diagram", Content = grid };
         listWindow.MinWidth = listWindow.MinHeight = 150;
         listWindow.ResizeMode = ResizeMode.NoResize;
         listWindow.WindowStartupLocation = WindowStartupLocation.CenterScreen;
 
-        var listView = new ListView() {
-          Margin = new Thickness(4),
-          MinHeight = 50,
-          MinWidth = 120
-        };
+        var listView = new ListView { Margin = new Thickness(4), MinHeight = 50, MinWidth = 120 };
 
         foreach (var diagram in topLevelDiagrams) {
           listView.Items.Add(diagram);
         }
 
         var textBlock = new TextBlock {
-          Text = "Your file contains several BPMN diagrams. \n" +
-                       "Choose the diagram you want to display and then click 'open'. \n" +
-                       "If you choose nothing, an empty diagram will be opened.",
-          TextWrapping = TextWrapping.Wrap,
-          Margin = new Thickness(4),
+            Text = "Your file contains several BPMN diagrams. \n" +
+                "Choose the diagram you want to display and then click 'open'. \n" +
+                "If you choose nothing, an empty diagram will be opened.",
+            TextWrapping = TextWrapping.Wrap,
+            Margin = new Thickness(4)
         };
 
-
-        var button = new Button() {
-          ClickMode = ClickMode.Release,
-          HorizontalAlignment = HorizontalAlignment.Right,
-          Content = "Open",
-          Height = 20,
-          Width = 50,
-          Margin = new Thickness(4),
-
+        var button = new Button {
+            ClickMode = ClickMode.Release,
+            HorizontalAlignment = HorizontalAlignment.Right,
+            Content = "Open",
+            Height = 20,
+            Width = 50,
+            Margin = new Thickness(4)
         };
 
         button.Click += (sender, args) => {
@@ -955,7 +913,9 @@ namespace Demo.yFiles.Graph.Bpmn.Editor
         var column = new ColumnDefinition();
         var row0 = new RowDefinition { Height = GridLength.Auto };
         var row1 = new RowDefinition { Height = GridLength.Auto };
-        var row2 = new RowDefinition { Height = new GridLength(button.Height + button.Margin.Top + button.Margin.Bottom) };
+        var row2 = new RowDefinition {
+            Height = new GridLength(button.Height + button.Margin.Top + button.Margin.Bottom)
+        };
 
         grid.ColumnDefinitions.Add(column);
         grid.RowDefinitions.Add(row0);
@@ -984,7 +944,7 @@ namespace Demo.yFiles.Graph.Bpmn.Editor
 
 
     /// <summary>
-    /// Helper method for the <see cref="ShowContentsCommand"/> binding.
+    ///   Helper method for the <see cref="ShowContentsCommand"/> binding.
     /// </summary>
     private void OnShowContentsExecuted(object sender, ExecutedRoutedEventArgs e) {
       if (graphControl == null) {
@@ -1007,9 +967,9 @@ namespace Demo.yFiles.Graph.Bpmn.Editor
         e.Handled = false;
       }
     }
-    
+
     /// <summary>
-    /// Helper method for the <see cref="ShowContentsCommand"/> binding.
+    ///   Helper method for the <see cref="ShowContentsCommand"/> binding.
     /// </summary>
     private void OnCanShowContentsExecuted(object sender, CanExecuteRoutedEventArgs e) {
       if (graphControl == null) {
@@ -1030,81 +990,72 @@ namespace Demo.yFiles.Graph.Bpmn.Editor
         e.Handled = false;
       }
     }
-    
+
     /// <summary>
-    /// Helper method that identifies the node to show the contents of
-    /// if <see cref="ShowContentsCommand"/> is executed.
+    ///   Helper method that identifies the node to show the contents of
+    ///   if <see cref="ShowContentsCommand"/> is executed.
     /// </summary>
     /// <remarks>
-    /// This method will use the parameter as the return value or the currently selected node
-    /// if it's a group node.
+    ///   This method will use the parameter as the return value or the currently selected node
+    ///   if it's a group node.
     /// </remarks>
     private INode FindNode(IFoldingView foldingView, object parameter) {
       var node = parameter as INode;
-      if (node != null && foldingView.Graph.Contains(node) && !foldingView.Manager.MasterGraph.IsGroupNode(foldingView.GetMasterItem(node))) {
+      if (node != null && foldingView.Graph.Contains(node) &&
+          !foldingView.Manager.MasterGraph.IsGroupNode(foldingView.GetMasterItem(node))) {
         node = null;
       }
       if (node == null) {
-        var selectedNodes = graphControl.Selection.SelectedNodes.GetEnumerator();
+        var selectedNodes = graphControl.Selection.Nodes.GetEnumerator();
         while (selectedNodes.MoveNext()) {
           node = selectedNodes.Current;
-          if (foldingView.Graph.Contains(node) && foldingView.Manager.MasterGraph.IsGroupNode(foldingView.GetMasterItem(node))) {
+          if (foldingView.Graph.Contains(node) &&
+              foldingView.Manager.MasterGraph.IsGroupNode(foldingView.GetMasterItem(node))) {
             break;
-          } else {
-            node = null;
           }
+          node = null;
         }
       }
       return node;
     }
 
     /// <summary>
-    /// Method that is called, to show the contents of a group node in a new window
+    ///   Method that is called, to show the contents of a group node in a new window
     /// </summary>
     private void ShowContents(INode localRoot) {
-      var window = new Window {Title = "Contents of " + localRoot};
+      var window = new Window { Title = "Contents of " + localRoot };
 
       // we create a new control
       var groupContentsGraphControl = new GraphControl();
- 
+
       // now obtain a view for the given node from the manager
       var foldingView = foldingManager.CreateFoldingView(localRoot, graphControl.Graph.GetFoldingView().IsExpanded);
-      
+
       // instead of switching to the ancestor if the localRoot is removed from the graph,
       // we want to dispose the window, instead.
       foldingView.AutoSwitchToAncestor = false;
- 
+
       // assign the graph and input mode
       groupContentsGraphControl.Graph = foldingView.Graph;
-      groupContentsGraphControl.InputMode = new GraphEditorInputMode() {
-          
-        // creating of nodes via click is disabled
-        AllowCreateNode = false,
-        
-        // all other operations work like in the main graph
-        AllowGroupingOperations = true,
-        
-        // AllowReparentToNonGroupNodes = true,
-        AllowCreateEdge = true,   
-        AllowClipboardOperations = true,
-        AllowEditLabel = true,
-        OrthogonalEdgeEditingContext = new OrthogonalEdgeEditingContext(),
-        DeletableItems = GraphItemTypes.All,
-        NodeDropInputMode = new ContentViewerNodeDropInputMode()
+      groupContentsGraphControl.InputMode = new GraphEditorInputMode {
+          // creating of nodes via click is disabled
+          AllowCreateNode = false,
+          // AllowReparentToNonGroupNodes = true,
+          AllowCreateEdge = true,
+          AllowEditLabel = true,
+          DeletableItems = GraphItemTypes.All,
+          NodeDropInputMode = new ContentViewerNodeDropInputMode()
       };
- 
+
       // show the window
       window.Content = groupContentsGraphControl;
       window.Width = window.Height = 300;
       window.Owner = this;
       window.Show();
- 
-      // enable cutting & pasting with the original window
-      groupContentsGraphControl.Clipboard = graphControl.Clipboard;
-      
+
       // and fit the bounds
       window.Dispatcher.BeginInvoke(new Action(() => groupContentsGraphControl.FitGraphBounds()));
- 
+
       // register a delegate that will dispose the window when the view gets invalid
       foldingView.PropertyChanged += delegate(object sender, PropertyChangedEventArgs e) {
         if (e.PropertyName == "Invalid" && foldingView.Invalid) {

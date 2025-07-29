@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -33,7 +33,6 @@ using System.Reflection;
 using Demo.yFiles.Toolkit.OptionHandler;
 using yWorks.Controls;
 using yWorks.Graph;
-using yWorks.Graph.LabelModels;
 using yWorks.Layout;
 using yWorks.Layout.Labeling;
 using yWorks.Layout.Radial;
@@ -41,7 +40,7 @@ using yWorks.Layout.Radial;
 namespace Demo.yFiles.Layout.Configurations
 {
   /// <summary>
-  /// Configuration options for the layout algorithm of the same name.
+  ///   Configuration options for the layout algorithm of the same name.
   /// </summary>
   [Obfuscation(StripAfterObfuscation = false, Exclude = true, ApplyToMembers = true)]
   [Label("RadialLayout")]
@@ -52,19 +51,18 @@ namespace Demo.yFiles.Layout.Configurations
     private const int SmoothnessAngleFactor = 4;
 
     /// <summary>
-    /// Setup default values for various configuration parameters.
+    ///   Setup default values for various configuration parameters.
     /// </summary>
     public RadialLayoutConfig() {
       var layout = new RadialLayout();
 
       CenterStrategyItem = CenterNodesPolicy.WeightedCentrality;
-      LayeringStrategyItem = LayeringStrategy.Bfs;
+      LayeringStrategyItem = RadialLayeringStrategy.Bfs;
       MinimumLayerDistanceItem = (int) layout.MinimumLayerDistance;
-      MinimumNodeToNodeDistanceItem = (int) layout.MinimumNodeToNodeDistance;
-      MaximumChildSectorSizeItem = (int) layout.MaximumChildSectorAngle;
-      EdgeRoutingStrategyItem = EdgeRoutingStyle.Arc;
-      EdgeSmoothnessItem = (int) Math.Min(MaximumSmoothness,
-          (1 + MaximumSmoothness * SmoothnessAngleFactor - layout.MinimumBendAngle) / SmoothnessAngleFactor);
+      MinimumNodeDistanceItem = (int) layout.MinimumNodeDistance;
+      MaximumChildSectorAngleItem = (int) layout.MaximumChildSectorAngle;
+      EdgeRoutingStyleItem = EdgeRoutingStyle.Arc;
+      EdgeSmoothnessItem = MaximumSmoothness;
       EdgeBundlingStrengthItem = 0.95;
 
       EdgeLabelingItem = false;
@@ -72,98 +70,67 @@ namespace Demo.yFiles.Layout.Configurations
       LabelPlacementSideOfEdgeItem = EnumLabelPlacementSideOfEdge.OnEdge;
       LabelPlacementOrientationItem = EnumLabelPlacementOrientation.Horizontal;
       LabelPlacementDistanceItem = 10;
-      NodeLabelingStyleItem = EnumNodeLabelingPolicies.ConsiderCurrentPosition;
+      NodeLabelingStyleItem = layout.NodeLabelPlacement;
     }
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     protected override ILayoutAlgorithm CreateConfiguredLayout(GraphControl graphControl) {
       var layout = new RadialLayout();
-      layout.MinimumNodeToNodeDistance = MinimumNodeToNodeDistanceItem;
-      if (EdgeRoutingStrategyItem != EdgeRoutingStyle.Bundled) {
-        layout.EdgeRoutingStrategy = (EdgeRoutingStrategy) EdgeRoutingStrategyItem;
+      layout.MinimumNodeDistance = MinimumNodeDistanceItem;
+      if (EdgeRoutingStyleItem != EdgeRoutingStyle.Bundled) {
+        layout.EdgeRoutingStyle = (RoutingStyle) EdgeRoutingStyleItem;
       }
 
       var minimumBendAngle = 1 + (MaximumSmoothness - EdgeSmoothnessItem) * SmoothnessAngleFactor;
       layout.MinimumBendAngle = minimumBendAngle;
       layout.MinimumLayerDistance = MinimumLayerDistanceItem;
-      layout.MaximumChildSectorAngle = MaximumChildSectorSizeItem;
-      layout.CenterNodesPolicy = CenterStrategyItem;
+      layout.MaximumChildSectorAngle = MaximumChildSectorAngleItem;
+      layout.CenterNodesPolicy = GetCenterStrategy(CenterStrategyItem);
       layout.LayeringStrategy = LayeringStrategyItem;
 
       var ebc = layout.EdgeBundling;
       ebc.BundlingStrength = EdgeBundlingStrengthItem;
       ebc.DefaultBundleDescriptor = new EdgeBundleDescriptor {
-          Bundled = EdgeRoutingStrategyItem == EdgeRoutingStyle.Bundled
+          Bundled = EdgeRoutingStyleItem == EdgeRoutingStyle.Bundled
       };
 
       if (EdgeLabelingItem) {
-        var labeling = new GenericLabeling {
-            PlaceEdgeLabels = true, PlaceNodeLabels = false, ReduceAmbiguity = ReduceAmbiguityItem
-        };
-        layout.LabelingEnabled = true;
-        layout.Labeling = labeling;
-      }
-
-      switch (NodeLabelingStyleItem) {
-        case EnumNodeLabelingPolicies.None:
-          layout.ConsiderNodeLabels = false;
-          break;
-        case EnumNodeLabelingPolicies.RaylikeLeaves:
-          layout.IntegratedNodeLabeling = true;
-          layout.NodeLabelingPolicy = NodeLabelingPolicy.RayLikeLeaves;
-          break;
-        case EnumNodeLabelingPolicies.Raylike:
-          layout.IntegratedNodeLabeling = true;
-          layout.NodeLabelingPolicy = NodeLabelingPolicy.RayLike;
-          break;
-        case EnumNodeLabelingPolicies.ConsiderCurrentPosition:
-          layout.ConsiderNodeLabels = true;
-          break;
-        case EnumNodeLabelingPolicies.Horizontal:
-          layout.IntegratedNodeLabeling = true;
-          layout.NodeLabelingPolicy = NodeLabelingPolicy.Horizontal;
-          break;
-        default:
-          layout.ConsiderNodeLabels = false;
-          break;
-      }
-
-      if (this.NodeLabelingStyleItem == EnumNodeLabelingPolicies.RaylikeLeaves ||
-          NodeLabelingStyleItem == EnumNodeLabelingPolicies.Raylike ||
-          NodeLabelingStyleItem == EnumNodeLabelingPolicies.Horizontal) {
-        foreach (var label in graphControl.Graph.Labels) {
-          if (label.Owner is INode) {
-            graphControl.Graph.SetLabelLayoutParameter(
-                label,
-                FreeNodeLabelModel.Instance.FindBestParameter(
-                    label,
-                    FreeNodeLabelModel.Instance,
-                    label.GetLayout()
-                )
-            );
-          }
+        layout.EdgeLabelPlacement = RadialEdgeLabelPlacement.Generic;
+        if (ReduceAmbiguityItem) {
+          layout.LayoutStages.Get<GenericLabeling>().DefaultEdgeLabelingCosts.AmbiguousPlacementCost = 1.0;
         }
       }
+
+      layout.NodeLabelPlacement = NodeLabelingStyleItem;
 
       return layout;
     }
 
-    protected override LayoutData CreateConfiguredLayoutData(GraphControl graphControl, ILayoutAlgorithm layout) {
-      var layoutData = new RadialLayoutData();
+    private yWorks.Layout.Radial.CenterNodesPolicy GetCenterStrategy(CenterNodesPolicy strategy) {
+      switch (strategy) {
+        case CenterNodesPolicy.Directed:
+          return yWorks.Layout.Radial.CenterNodesPolicy.Directed;
+        case CenterNodesPolicy.Centrality:
+          return yWorks.Layout.Radial.CenterNodesPolicy.Centrality;
+        case CenterNodesPolicy.WeightedCentrality:
+        case CenterNodesPolicy.Custom:
+          return yWorks.Layout.Radial.CenterNodesPolicy.WeightedCentrality;
+        default:
+          throw new ArgumentOutOfRangeException(nameof(strategy), strategy, null);
+      }
+    }
+
+    protected override LayoutData<INode, IEdge, ILabel, ILabel> CreateConfiguredLayoutData(
+        GraphControl graphControl,
+        ILayoutAlgorithm layout) {
+      var layoutData = new RadialLayoutData<INode, IEdge, ILabel, ILabel>();
 
       if (CenterStrategyItem == CenterNodesPolicy.Custom) {
-        layoutData.CenterNodes.Source = graphControl.Selection.SelectedNodes;
+        layoutData.CenterNodes.Source = graphControl.Selection.Nodes;
       }
 
-      return layoutData.CombineWith(
-          CreateLabelingLayoutData(
-              graphControl.Graph,
-              LabelPlacementAlongEdgeItem,
-              LabelPlacementSideOfEdgeItem,
-              LabelPlacementOrientationItem,
-              LabelPlacementDistanceItem
-          )
-      );
+      return layoutData.CombineWith(CreateLabelingLayoutData(graphControl.Graph, LabelPlacementAlongEdgeItem,
+          LabelPlacementSideOfEdgeItem, LabelPlacementOrientationItem, LabelPlacementDistanceItem));
     }
 
     // ReSharper disable UnusedMember.Global
@@ -199,18 +166,14 @@ namespace Demo.yFiles.Layout.Configurations
     public object PreferredPlacementGroup;
 
     // ReSharper restore UnusedMember.Global
-    // ReSharper restore InconsistentNaming    
+    // ReSharper restore InconsistentNaming
 
     [OptionGroup("DescriptionGroup", 10)]
     [ComponentType(ComponentTypes.FormattedText)]
-    public string DescriptionText {
-      get {
-        return
-            "<Paragraph>The radial layout arranges the nodes of a graph on concentric circles. Similar to hierarchic layouts, "
-            + "the overall flow of the graph is nicely visualized.</Paragraph>"
-            + "<Paragraph>This style is well suited for the visualization of directed graphs and tree-like structures.</Paragraph>";
-      }
-    }
+    public string DescriptionText =>
+        "<Paragraph>The radial layout arranges the nodes of a graph on concentric circles. Similar to hierarchical layouts, " +
+        "the overall flow of the graph is nicely visualized.</Paragraph>" +
+        "<Paragraph>This style is well suited for the visualization of directed graphs and tree-like structures.</Paragraph>";
 
     [Label("Minimum Circle Distance")]
     [OptionGroup("GeneralGroup", 10)]
@@ -224,14 +187,14 @@ namespace Demo.yFiles.Layout.Configurations
     [DefaultValue(10)]
     [MinMax(Min = 0, Max = 300)]
     [ComponentType(ComponentTypes.Slider)]
-    public int MinimumNodeToNodeDistanceItem { get; set; }
+    public int MinimumNodeDistanceItem { get; set; }
 
-    [Label("Maximum Child Sector Size")]
+    [Label("Maximum Child Sector Angle")]
     [OptionGroup("GeneralGroup", 30)]
     [DefaultValue(180)]
     [MinMax(Min = 15, Max = 360)]
     [ComponentType(ComponentTypes.Slider)]
-    public int MaximumChildSectorSizeItem { get; set; }
+    public int MaximumChildSectorAngleItem { get; set; }
 
     [Label("Routing Style")]
     [OptionGroup("GeneralGroup", 40)]
@@ -241,18 +204,16 @@ namespace Demo.yFiles.Layout.Configurations
     [EnumValue("Curved", EdgeRoutingStyle.Curved)]
     [EnumValue("Radial Polyline", EdgeRoutingStyle.RadialPolyline)]
     [EnumValue("Bundled", EdgeRoutingStyle.Bundled)]
-    public EdgeRoutingStyle EdgeRoutingStrategyItem { get; set; }
+    public EdgeRoutingStyle EdgeRoutingStyleItem { get; set; }
 
     [Label("Arc Smoothness")]
     [OptionGroup("GeneralGroup", 50)]
-    [DefaultValue(9)]
+    [DefaultValue(10)]
     [MinMax(Min = MinimumSmoothness, Max = MaximumSmoothness)]
     [ComponentType(ComponentTypes.Slider)]
     public int EdgeSmoothnessItem { get; set; }
 
-    public bool ShouldDisableEdgeSmoothnessItem {
-      get { return EdgeRoutingStrategyItem != EdgeRoutingStyle.Arc; }
-    }
+    public bool ShouldDisableEdgeSmoothnessItem => EdgeRoutingStyleItem != EdgeRoutingStyle.Arc;
 
     [Label("Bundling Strength")]
     [OptionGroup("GeneralGroup", 55)]
@@ -261,9 +222,7 @@ namespace Demo.yFiles.Layout.Configurations
     [ComponentType(ComponentTypes.Slider)]
     public double EdgeBundlingStrengthItem { get; set; }
 
-    public bool ShouldDisableEdgeBundlingStrengthItem {
-      get { return EdgeRoutingStrategyItem != EdgeRoutingStyle.Bundled; }
-    }
+    public bool ShouldDisableEdgeBundlingStrengthItem => EdgeRoutingStyleItem != EdgeRoutingStyle.Bundled;
 
     [Label("Center Allocation Strategy")]
     [OptionGroup("GeneralGroup", 60)]
@@ -276,21 +235,22 @@ namespace Demo.yFiles.Layout.Configurations
 
     [Label("Circle Assignment Strategy")]
     [OptionGroup("GeneralGroup", 70)]
-    [DefaultValue(LayeringStrategy.Bfs)]
-    [EnumValue("Distance From Center", LayeringStrategy.Bfs)]
-    [EnumValue("Hierarchic", LayeringStrategy.Hierarchical)]
-    [EnumValue("Dendrogram", LayeringStrategy.Dendrogram)]
-    public LayeringStrategy LayeringStrategyItem { get; set; }
+    [DefaultValue(RadialLayeringStrategy.Bfs)]
+    [EnumValue("Distance From Center", RadialLayeringStrategy.Bfs)]
+    [EnumValue("Hierarchical", RadialLayeringStrategy.Hierarchical)]
+    [EnumValue("Dendrogram", RadialLayeringStrategy.Dendrogram)]
+    public RadialLayeringStrategy LayeringStrategyItem { get; set; }
 
     [Label("Node Labeling")]
     [OptionGroup("NodePropertiesGroup", 10)]
-    [DefaultValue(EnumNodeLabelingPolicies.ConsiderCurrentPosition)]
-    [EnumValue("Ignore Labels", EnumNodeLabelingPolicies.None)]
-    [EnumValue("Consider Labels", EnumNodeLabelingPolicies.ConsiderCurrentPosition)]
-    [EnumValue("Horizontal", EnumNodeLabelingPolicies.Horizontal)]
-    [EnumValue("Ray-like at Leaves", EnumNodeLabelingPolicies.RaylikeLeaves)]
-    [EnumValue("Ray-like", EnumNodeLabelingPolicies.Raylike)]
-    public EnumNodeLabelingPolicies NodeLabelingStyleItem { get; set; }
+    [DefaultValue(RadialNodeLabelPlacement.Consider)]
+    [EnumValue("Ignore Labels", RadialNodeLabelPlacement.Ignore)]
+    [EnumValue("Consider Labels", RadialNodeLabelPlacement.Consider)]
+    [EnumValue("Generic", RadialNodeLabelPlacement.Generic)]
+    [EnumValue("Horizontal", RadialNodeLabelPlacement.Horizontal)]
+    [EnumValue("Ray-like at Leaves", RadialNodeLabelPlacement.RayLikeLeaves)]
+    [EnumValue("Ray-like", RadialNodeLabelPlacement.RayLike)]
+    public RadialNodeLabelPlacement NodeLabelingStyleItem { get; set; }
 
     [Label("Edge Labeling")]
     [OptionGroup("EdgePropertiesGroup", 10)]
@@ -302,9 +262,7 @@ namespace Demo.yFiles.Layout.Configurations
     [DefaultValue(false)]
     public bool ReduceAmbiguityItem { get; set; }
 
-    public bool ShouldDisableReduceAmbiguityItem {
-      get { return !EdgeLabelingItem; }
-    }
+    public bool ShouldDisableReduceAmbiguityItem => !EdgeLabelingItem;
 
     [Label("Orientation")]
     [OptionGroup("PreferredPlacementGroup", 10)]
@@ -315,9 +273,7 @@ namespace Demo.yFiles.Layout.Configurations
     [EnumValue("Vertical", EnumLabelPlacementOrientation.Vertical)]
     public EnumLabelPlacementOrientation LabelPlacementOrientationItem { get; set; }
 
-    public bool ShouldDisableLabelPlacementOrientationItem {
-      get { return !EdgeLabelingItem; }
-    }
+    public bool ShouldDisableLabelPlacementOrientationItem => !EdgeLabelingItem;
 
     [Label("Along Edge")]
     [OptionGroup("PreferredPlacementGroup", 20)]
@@ -330,9 +286,7 @@ namespace Demo.yFiles.Layout.Configurations
     [EnumValue("Centered", EnumLabelPlacementAlongEdge.Centered)]
     public EnumLabelPlacementAlongEdge LabelPlacementAlongEdgeItem { get; set; }
 
-    public bool ShouldDisableLabelPlacementAlongEdgeItem {
-      get { return !EdgeLabelingItem; }
-    }
+    public bool ShouldDisableLabelPlacementAlongEdgeItem => !EdgeLabelingItem;
 
     [Label("Side of Edge")]
     [OptionGroup("PreferredPlacementGroup", 30)]
@@ -344,9 +298,7 @@ namespace Demo.yFiles.Layout.Configurations
     [EnumValue("Left or Right", EnumLabelPlacementSideOfEdge.LeftOrRight)]
     public EnumLabelPlacementSideOfEdge LabelPlacementSideOfEdgeItem { get; set; }
 
-    public bool ShouldDisableLabelPlacementSideOfEdgeItem {
-      get { return !EdgeLabelingItem; }
-    }
+    public bool ShouldDisableLabelPlacementSideOfEdgeItem => !EdgeLabelingItem;
 
     [Label("Distance")]
     [OptionGroup("PreferredPlacementGroup", 40)]
@@ -355,13 +307,24 @@ namespace Demo.yFiles.Layout.Configurations
     [ComponentType(ComponentTypes.Slider)]
     public double LabelPlacementDistanceItem { get; set; }
 
-    public bool ShouldDisableLabelPlacementDistanceItem {
-      get { return !EdgeLabelingItem || LabelPlacementSideOfEdgeItem == EnumLabelPlacementSideOfEdge.OnEdge; }
-    }
+    public bool ShouldDisableLabelPlacementDistanceItem =>
+        !EdgeLabelingItem || LabelPlacementSideOfEdgeItem == EnumLabelPlacementSideOfEdge.OnEdge;
 
     public enum EdgeRoutingStyle
     {
-      Polyline = 1, Arc = 5, RadialPolyline = 6, Curved = 7, Bundled
+      Polyline = 1,
+      Arc = 5,
+      RadialPolyline = 6,
+      Curved = 7,
+      Bundled
+    }
+
+    public enum CenterNodesPolicy : sbyte
+    {
+      Directed = 0,
+      Centrality = 1,
+      WeightedCentrality = 2,
+      Custom = 3
     }
   }
 }

@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -42,21 +42,21 @@ using yWorks.Layout.Organic;
 namespace Demo.yFiles.Layout.Configurations
 {
   /// <summary>
-  /// Configuration options for the layout algorithm of the same name.
+  ///   Configuration options for the layout algorithm of the same name.
   /// </summary>
   [Obfuscation(StripAfterObfuscation = false, Exclude = true, ApplyToMembers = true)]
   [Label("CompactDiskLayout")]
   public class CompactDiskLayoutConfig : LayoutConfiguration
   {
     /// <summary>
-    /// Setup default values for various configuration parameters.
+    ///   Setup default values for various configuration parameters.
     /// </summary>
     public CompactDiskLayoutConfig() {
       var layout = new CompactDiskLayout();
 
       UseDrawingAsSketchItem = layout.FromSketchMode;
       MinimumNodeDistanceItem = layout.MinimumNodeDistance;
-      NodeLabelingStyleItem = EnumNodeLabelingPolicies.None;
+      NodeLabelingStyleItem = layout.NodeLabelPlacement;
       LayoutGroupsItem = GroupLayout.None;
     }
 
@@ -68,21 +68,23 @@ namespace Demo.yFiles.Layout.Configurations
         // each group content in function createConfiguredLayoutData
         return new RecursiveGroupLayout {
             CoreLayout = new OrganicLayout {
-                Deterministic = true, NodeOverlapsAllowed = false, MinimumNodeDistance = MinimumNodeDistanceItem
+                Deterministic = true, AllowNodeOverlaps = false, DefaultMinimumNodeDistance = MinimumNodeDistanceItem
             },
             FromSketchMode = UseDrawingAsSketchItem
         };
       }
 
       // just use plain CompactDiskLayout
-      return this.CreateCompactDiskLayout(graphControl);
+      return CreateCompactDiskLayout(graphControl);
     }
 
-    protected override LayoutData CreateConfiguredLayoutData(GraphControl graphControl, ILayoutAlgorithm layout) {
+    protected override LayoutData<INode, IEdge, ILabel, ILabel> CreateConfiguredLayoutData(
+        GraphControl graphControl,
+        ILayoutAlgorithm layout) {
       if (LayoutGroupsItem == GroupLayout.Recursive) {
-        var compactDiskLayout = this.CreateCompactDiskLayout(graphControl);
-        return new RecursiveGroupLayoutData {
-            GroupNodeLayouts = new ItemMapping<INode, ILayoutAlgorithm>(compactDiskLayout)
+        var compactDiskLayout = CreateCompactDiskLayout(graphControl);
+        return new RecursiveGroupLayoutData<INode, IEdge, ILabel, ILabel> {
+            GroupNodeLayouts = { Constant = compactDiskLayout }
         };
       }
       return null;
@@ -99,39 +101,13 @@ namespace Demo.yFiles.Layout.Configurations
 
       layout.MinimumNodeDistance = MinimumNodeDistanceItem;
 
-      switch (NodeLabelingStyleItem) {
-        case EnumNodeLabelingPolicies.None:
-          layout.ConsiderNodeLabels = false;
-          break;
-        case EnumNodeLabelingPolicies.RaylikeLeaves:
-          layout.IntegratedNodeLabeling = true;
-          layout.NodeLabelingPolicy = NodeLabelingPolicy.RayLikeLeaves;
-          break;
-        case EnumNodeLabelingPolicies.ConsiderCurrentPosition:
-          layout.ConsiderNodeLabels = true;
-          break;
-        case EnumNodeLabelingPolicies.Horizontal:
-          layout.IntegratedNodeLabeling = true;
-          layout.NodeLabelingPolicy = NodeLabelingPolicy.Horizontal;
-          break;
-        default:
-          layout.ConsiderNodeLabels = false;
-          break;
-      }
-
-      if (NodeLabelingStyleItem == EnumNodeLabelingPolicies.RaylikeLeaves ||
-          NodeLabelingStyleItem == EnumNodeLabelingPolicies.Horizontal) {
-        foreach (var label in graphControl.Graph.Labels) {
-          if (label.Owner is INode) {
-            graphControl.Graph.SetLabelLayoutParameter(
-                label,
-                FreeNodeLabelModel.Instance.FindBestParameter(
-                    label,
-                    FreeNodeLabelModel.Instance,
-                    label.GetLayout()
-                )
-            );
-          }
+      layout.NodeLabelPlacement = NodeLabelingStyleItem;
+      if (NodeLabelingStyleItem == RadialNodeLabelPlacement.RayLikeLeaves ||
+          NodeLabelingStyleItem == RadialNodeLabelPlacement.Horizontal) {
+        var graph = graphControl.Graph;
+        foreach (var label in graph.GetNodeLabels()) {
+          graph.SetLabelLayoutParameter(label,
+              FreeNodeLabelModel.Instance.FindBestParameter(label, label.GetLayout()));
         }
       }
 
@@ -159,14 +135,11 @@ namespace Demo.yFiles.Layout.Configurations
 
     [OptionGroup("DescriptionGroup", 10)]
     [ComponentType(ComponentTypes.FormattedText)]
-    public string DescriptionText {
-      get {
-        return "<Paragraph>The nodes are arranged on a disk such that the disk's radius is minimized.</Paragraph>"
-               + "<Paragraph>The layout mostly optimizes the dense placement of the nodes, " +
-               "while edges play a minor role. Hence, the compact disk layout is mostly suitable for graphs with " +
-               "small components whose loosely connected nodes should be grouped and packed in a small area.</Paragraph>";
-      }
-    }
+    public string DescriptionText =>
+        "<Paragraph>The nodes are arranged on a disk such that the disk's radius is minimized.</Paragraph>" +
+        "<Paragraph>The layout mostly optimizes the dense placement of the nodes, " +
+        "while edges play a minor role. Hence, the compact disk layout is mostly suitable for graphs with " +
+        "small components whose loosely connected nodes should be grouped and packed in a small area.</Paragraph>";
 
 
     [Label("Use Drawing as Sketch")]
@@ -191,12 +164,14 @@ namespace Demo.yFiles.Layout.Configurations
 
     [Label("Node Labeling")]
     [OptionGroup("LabelingGroup", 10)]
-    [DefaultValue(EnumNodeLabelingPolicies.None)]
-    [EnumValue("Ignore Labels", EnumNodeLabelingPolicies.None)]
-    [EnumValue("Consider Labels", EnumNodeLabelingPolicies.ConsiderCurrentPosition)]
-    [EnumValue("Horizontal", EnumNodeLabelingPolicies.Horizontal)]
-    [EnumValue("Ray-like at Leaves", EnumNodeLabelingPolicies.RaylikeLeaves)]
-    public EnumNodeLabelingPolicies NodeLabelingStyleItem { get; set; }
+    [DefaultValue(RadialNodeLabelPlacement.Consider)]
+    [EnumValue("Ignore Labels", RadialNodeLabelPlacement.Ignore)]
+    [EnumValue("Consider Labels", RadialNodeLabelPlacement.Consider)]
+    [EnumValue("Generic", RadialNodeLabelPlacement.Generic)]
+    [EnumValue("Horizontal", RadialNodeLabelPlacement.Horizontal)]
+    [EnumValue("Ray-like at Leaves", RadialNodeLabelPlacement.RayLikeLeaves)]
+    [EnumValue("Ray-like", RadialNodeLabelPlacement.RayLike)]
+    public RadialNodeLabelPlacement NodeLabelingStyleItem { get; set; }
 
     public enum GroupLayout
     {

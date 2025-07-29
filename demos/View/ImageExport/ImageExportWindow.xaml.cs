@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -29,6 +29,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Reflection;
 using System.Resources;
@@ -41,21 +42,22 @@ using System.Windows.Xps.Packaging;
 using Demo.yFiles.Option.Constraint;
 using Demo.yFiles.Option.Handler;
 using Demo.yFiles.Option.I18N;
+using Demo.yFiles.Toolkit;
 using Microsoft.Win32;
-using yWorks.Controls.Input;
-using yWorks.Controls;
 using yWorks.Annotations;
+using yWorks.Controls;
+using yWorks.Controls.Input;
 using yWorks.Geometry;
 using yWorks.Graph;
-using yWorks.Graph.Styles;
 using yWorks.Utils;
-using Demo.yFiles.Toolkit;
+using Path = System.IO.Path;
+using Rect = System.Windows.Rect;
 
 namespace Demo.yFiles.ImageExport
 {
   /// <summary>
-  /// This demo shows how to export a graph or part of it to different 
-  /// pixel and vector format images like JPEG, PNG, TIFF, GIF, BMP or XPS.
+  ///   This demo shows how to export a graph or part of it to different
+  ///   pixel and vector format images like JPEG, PNG, TIFF, GIF, BMP, or XPS.
   /// </summary>
   /// <remarks>For more details, see the description file or run the application.</remarks>
   public partial class ImageExportWindow
@@ -63,11 +65,13 @@ namespace Demo.yFiles.ImageExport
     #region private fields
 
     // Option handler for export options
-    private OptionHandler handler;
+
     // Currently focused CanvasControl for which the zoom buttons work
     private CanvasControl focusedCanvas;
+
     // region that gets exported
     private MutableRectangle exportRect;
+
     #endregion
 
     #region Constructors
@@ -86,9 +90,7 @@ namespace Demo.yFiles.ImageExport
 
     #region Properties
 
-    private OptionHandler Handler {
-      get { return handler; }
-    }
+    private OptionHandler Handler { get; set; }
 
     #endregion
 
@@ -101,76 +103,76 @@ namespace Demo.yFiles.ImageExport
       // and install the edit mode into the canvas.
       graphControl.InputMode = editMode;
 
-      // create the model for the export rectangle 
+      // create the model for the export rectangle
       exportRect = new MutableRectangle(0, 0, 100, 100);
 
       // visualize it
-      new RectangleIndicatorInstaller(exportRect, RectangleIndicatorInstaller.SelectionTemplateKey)
-        .AddCanvasObject(graphControl.CanvasContext, graphControl.BackgroundGroup, exportRect);
+      var renderTree = graphControl.RenderTree;
+      renderTree.CreateElement(renderTree.InputModeGroup, exportRect,
+          new ExportRectangleRenderer((Pen) new Pen(Brushes.Gray, 4).GetAsFrozen()));
 
-      AddExportRectInputModes(editMode);
+      AddExportRectInputModes(graphControl.InputModeContext, editMode);
     }
 
     /// <summary>
-    /// Adds the view modes that handle the resizing and movement of the export rectangle.
+    ///   Adds the view modes that handle the resizing and movement of the export rectangle.
     /// </summary>
+    /// <param name="graphControlInputModeContext"></param>
     /// <param name="inputMode"></param>
-    private void AddExportRectInputModes(MultiplexingInputMode inputMode){
-      // create handles for interactivel resizing the export rectangle
-      var rectangleHandles = new RectangleReshapeHandleProvider(exportRect) {MinimumSize = new SizeD(1, 1)};
+    private void AddExportRectInputModes(
+        IInputModeContext graphControlInputModeContext,
+        MultiplexingInputMode inputMode) {
+      // create handles for interactively resizing the export rectangle
+      var rectangleHandles = new RectangleReshapeHandleProvider(exportRect) { MinimumSize = new SizeD(1, 1) };
 
       // create a mode that deals with the handles
-      var exportHandleInputMode = new HandleInputMode{Priority = 1};
+      var exportHandleInputMode = new HandleInputMode { Priority = 1 };
 
       // add it to the graph editor mode
       inputMode.Add(exportHandleInputMode);
 
       // now the handles
-      var inputModeContext = Contexts.CreateInputModeContext(exportHandleInputMode);
-      exportHandleInputMode.Handles = new DefaultObservableCollection<IHandle>
-                                        {
-                                          rectangleHandles.GetHandle(inputModeContext, HandlePositions.NorthEast),
-                                          rectangleHandles.GetHandle(inputModeContext, HandlePositions.NorthWest),
-                                          rectangleHandles.GetHandle(inputModeContext, HandlePositions.SouthEast),
-                                          rectangleHandles.GetHandle(inputModeContext, HandlePositions.SouthWest),
-                                        };
+      var inputModeContext = graphControlInputModeContext;
+      exportHandleInputMode.Handles = new ObservableCollection<IHandle> {
+          rectangleHandles.GetHandle(inputModeContext, HandlePositions.TopRight),
+          rectangleHandles.GetHandle(inputModeContext, HandlePositions.TopLeft),
+          rectangleHandles.GetHandle(inputModeContext, HandlePositions.BottomRight),
+          rectangleHandles.GetHandle(inputModeContext, HandlePositions.BottomLeft)
+      };
 
       // create a mode that allows for dragging the export rectangle at the sides
 
-      var moveInputMode = new MoveInputMode
-                            {
-                              PositionHandler = new ExportRectanglePositionHandler(exportRect),
-                              HitTestable = HitTestables.Create(
-                                (context, location) => {
-                                  var path = new GeneralPath(5);
-                                  path.AppendRectangle(exportRect, false);
-                                  return path.PathContains(location, context.HitTestRadius);
-                                }),
-                              Priority = 41
-                            };
+      var moveInputMode = new MoveInputMode {
+          PositionHandler = new ExportRectanglePositionHandler(exportRect),
+          HitTestable = HitTestables.Create((context, location) => {
+            var path = new GeneralPath(5);
+            path.AppendRectangle(exportRect, false);
+            return path.PathContains(location, context.HitTestRadius);
+          }),
+          Priority = 41
+      };
 
       // add it to the edit mode
       inputMode.Add(moveInputMode);
     }
 
     private void InitializeGraph() {
-      IGraph graph = graphControl.Graph;
+      var graph = graphControl.Graph;
       // initialize defaults
       DemoStyles.InitDemoStyles(graph);
 
       // create sample graph
       graph.AddLabel(graph.CreateNode(new RectD(15, 15, 50, 30)), "Node");
-      INode node = graph.CreateNode(new PointD(90, 30));
+      var node = graph.CreateNode(new PointD(90, 30));
       graph.CreateEdge(node, graph.CreateNode(new PointD(90, 90)));
 
       graphControl.FitGraphBounds();
       // initially set the export rect to enclose part of the graph's contents
-      exportRect.Reshape(graphControl.ContentRect);
+      exportRect.SetShape(graphControl.ContentBounds);
 
       graph.CreateEdge(node, graph.CreateNode(new PointD(200, 30)));
 
       graphControl.FitGraphBounds();
-
     }
 
     #endregion
@@ -187,40 +189,37 @@ namespace Demo.yFiles.ImageExport
     }
 
     /// <summary>
-    /// Initializes the option handler for the export
+    ///   Initializes the option handler for the export
     /// </summary>
     private void SetupHandler() {
-      handler = new OptionHandler(IMAGE_EXPORT);
-      handler.PropertyChanged += handler_PropertyChanged;
-      OptionGroup currentGroup = handler.AddGroup(OUTPUT);
+      Handler = new OptionHandler(IMAGE_EXPORT);
+      Handler.PropertyChanged += handler_PropertyChanged;
+      var currentGroup = Handler.AddGroup(OUTPUT);
       OptionItem formatItem = currentGroup.AddList(FORMAT, Formats.Keys, FORMAT_JPG);
       currentGroup.AddBool(HIDE_DECORATIONS, true);
       currentGroup.AddBool(EXPORT_RECTANGLE, true);
-      currentGroup = handler.AddGroup(BOUNDS);
-
+      currentGroup = Handler.AddGroup(BOUNDS);
 
       OptionItem sizeItem = currentGroup.AddList(SIZE, SizeModes, USE_ORIGINAL_SIZE);
-      IOptionItem widthItem = currentGroup.AddInt(WIDTH, DefaultWidth, 1, int.MaxValue);
-      IOptionItem heightItem = currentGroup.AddInt(HEIGHT, DefaultHeight, 1, Int32.MaxValue);
+      var widthItem = currentGroup.AddInt(WIDTH, DefaultWidth, 1, int.MaxValue);
+      var heightItem = currentGroup.AddInt(HEIGHT, DefaultHeight, 1, int.MaxValue);
 
       currentGroup.AddDouble(SCALE, DefaultScale);
 
-      currentGroup = handler.AddGroup(MARGINS);
+      currentGroup = Handler.AddGroup(MARGINS);
 
       currentGroup.AddInt(LEFT_MARGIN, DefaultMargins);
       currentGroup.AddInt(RIGHT_MARGIN, DefaultMargins);
       currentGroup.AddInt(TOP_MARGIN, DefaultMargins);
       currentGroup.AddInt(BOTTOM_MARGIN, DefaultMargins);
 
-      currentGroup = handler.AddGroup(JPG);
-      IOptionItem qualityItem = currentGroup.AddDouble(QUALITY, DefaultQuality);
+      currentGroup = Handler.AddGroup(JPG);
+      var qualityItem = currentGroup.AddDouble(QUALITY, DefaultQuality);
 
-      currentGroup = handler.AddGroup(TIFF);
-      OptionItem compressionItem = currentGroup.AddList(COMPRESSION,
-                                                        Compressions.Keys, DefaultCompression);
+      currentGroup = Handler.AddGroup(TIFF);
+      OptionItem compressionItem = currentGroup.AddList(COMPRESSION, Compressions.Keys, DefaultCompression);
 
-
-      currentGroup = handler.AddGroup(PNG);
+      currentGroup = Handler.AddGroup(PNG);
       var transparentItem = currentGroup.AddBool(TRANSPARENT, false);
 
       var cm = new ConstraintManager(Handler);
@@ -233,13 +232,10 @@ namespace Demo.yFiles.ImageExport
       cm.SetEnabledOnValueEquals(formatItem, FORMAT_TIFF, compressionItem);
 
       // localization
-      var rm =
-        new ResourceManager("Demo.yFiles.ImageExport.ImageExport",
-                            Assembly.GetExecutingAssembly());
+      var rm = new ResourceManager("Demo.yFiles.ImageExport.ImageExport", Assembly.GetExecutingAssembly());
       var rmf = new ResourceManagerI18NFactory();
       rmf.AddResourceManager(Handler.Name, rm);
       Handler.I18nFactory = rmf;
-
     }
 
     #endregion
@@ -252,16 +248,16 @@ namespace Demo.yFiles.ImageExport
 
     [CanBeNull]
     private ImageSource ImageExport() {
-      GraphControl control = graphControl;
+      var control = graphControl;
       // check if the rectangular region or the whole viewport should be exported
-      bool useRect = (bool) handler.GetValue(OUTPUT, EXPORT_RECTANGLE);
-      RectD bounds = useRect ? exportRect.ToRectD() : control.Viewport;
+      var useRect = (bool) Handler.GetValue(OUTPUT, EXPORT_RECTANGLE);
+      var bounds = useRect ? exportRect.ToRectD() : control.Viewport;
 
       // get the format
-      string formatChoice = (string) Handler.GetValue(OUTPUT, FORMAT);
-      string format = Formats[formatChoice];
+      var formatChoice = (string) Handler.GetValue(OUTPUT, FORMAT);
+      var format = Formats[formatChoice];
       // check whether decorations (selection, handles, ...) should be hidden
-      bool hide = (bool) handler.GetValue(OUTPUT, HIDE_DECORATIONS);
+      var hide = (bool) Handler.GetValue(OUTPUT, HIDE_DECORATIONS);
       if (hide) {
         // if so, create a new graph control with the same graph
         control = new GraphControl {
@@ -272,14 +268,14 @@ namespace Demo.yFiles.ImageExport
         };
       }
       IImageExporter exporter;
-      ContextConfigurator config = GetConfig(bounds, !useRect);
+      var config = GetConfig(bounds, !useRect);
 
       var transparentBackground = (bool) Handler.GetValue(PNG, TRANSPARENT);
 
       if (format.Equals("XPS")) {
         // create the exporter
-        XpsExporter xpsExporter = new XpsExporter(config);
-        string tempFileName = Path.GetTempFileName();
+        var xpsExporter = new XpsExporter(config);
+        var tempFileName = Path.GetTempFileName();
         using (var fileStream = new FileStream(tempFileName, FileMode.Create, FileAccess.ReadWrite)) {
           xpsExporter.Export(control, fileStream);
         }
@@ -287,91 +283,94 @@ namespace Demo.yFiles.ImageExport
         documentViewer.Visibility = Visibility.Visible;
         previewCanvas.Visibility = Visibility.Hidden;
         documentViewer.Document = new XpsDocument(tempFileName, FileAccess.Read).GetFixedDocumentSequence();
-        return null; 
-      } else {
-        // create the exporter
-        PixelImageExporter pixelImageExport = new PixelImageExporter(config);
-        AddExportParameters(pixelImageExport, format);
-        pixelImageExport.OutputFormat = format;
-        // check if the format is transparent PNG
-        if ((!format.Equals("image/png") || !transparentBackground)) {
-          // if not, set the background color
-          pixelImageExport.Background = control.Background ?? Brushes.White;
+        return null;
+      }
+      // create the exporter
+      var pixelImageExport = new PixelImageExporter(config);
+      AddExportParameters(pixelImageExport, format);
+      pixelImageExport.OutputFormat = format;
+      // check if the format is transparent PNG
+      if (!format.Equals("image/png") || !transparentBackground) {
+        // if not, set the background color
+        pixelImageExport.Background = control.Background ?? Brushes.White;
+      }
+      exporter = pixelImageExport;
+      var memoryStream = new MemoryStream();
+      try {
+        exporter.Export(control, memoryStream);
+
+        // reset the stream
+        memoryStream.Position = 0;
+        // and read back the image for display
+        var bitmapImage = new BitmapImage();
+        bitmapImage.BeginInit();
+        bitmapImage.StreamSource = memoryStream;
+        bitmapImage.EndInit();
+
+        var renderTree = previewCanvas.RenderTree;
+        if (renderTree.RootGroup.First != null) {
+          renderTree.Remove(renderTree.RootGroup.First);
         }
-        exporter = pixelImageExport;
-        var memoryStream = new MemoryStream();
-        try {
-          exporter.Export(control, memoryStream);
+        documentViewer.Visibility = Visibility.Hidden;
+        previewCanvas.Visibility = Visibility.Visible;
+        var image = new Image { Source = bitmapImage, Width = bitmapImage.Width, Height = bitmapImage.Height };
+        image.SetCanvasArrangeRect(new Rect(0, 0, image.Width, image.Height));
+        renderTree.CreateElement(renderTree.RootGroup, image);
+        previewCanvas.ContentBounds = new RectD(0, 0, bitmapImage.Width, bitmapImage.Height).GetEnlarged(20);
 
-          // reset the stream
-          memoryStream.Position = 0;
-          // and read back the image for display
-          var bitmapImage = new BitmapImage();
-          bitmapImage.BeginInit();
-          bitmapImage.StreamSource = memoryStream;
-          bitmapImage.EndInit();
-
-          if (previewCanvas.RootGroup.First != null) {
-            previewCanvas.RootGroup.First.Remove();
-          }
-          documentViewer.Visibility = Visibility.Hidden;
-          previewCanvas.Visibility = Visibility.Visible;
-          var image = new Image {Source = bitmapImage, Width = bitmapImage.Width, Height = bitmapImage.Height};
-          image.SetCanvasArrangeRect(new Rect(0,0, image.Width, image.Height));
-          previewCanvas.RootGroup.AddChild(image, CanvasObjectDescriptors.Visual);
-          previewCanvas.ContentRect = new RectD(0,0, bitmapImage.Width, bitmapImage.Height).GetEnlarged(20);
-
-          return bitmapImage;
-        } catch (IOException exception) {
-          MessageBox.Show(exception.Message, "I/O Error", MessageBoxButton.OK);
-          return null;
+        return bitmapImage;
+      } catch (IOException exception) {
+        MessageBox.Show(exception.Message, "I/O Error", MessageBoxButton.OK);
+        return null;
+      } finally {
+        if (control != graphControl) {
+          // Don't keep the graph around in the temporary control to avoid memory leaks.
+          control.ClearValue(GraphControl.GraphProperty);
         }
       }
     }
 
     private void ImageExportToFile() {
-
-      GraphControl control = graphControl;
+      var control = graphControl;
       // check if the rectangular region or the whole viewport should be printed
-      bool useRect = (bool)handler.GetValue(OUTPUT, EXPORT_RECTANGLE);
-      RectD bounds = useRect ? exportRect.ToRectD() : control.Viewport;
+      var useRect = (bool) Handler.GetValue(OUTPUT, EXPORT_RECTANGLE);
+      var bounds = useRect ? exportRect.ToRectD() : control.Viewport;
 
       // get the format
-      string formatChoice = (string)Handler.GetValue(OUTPUT, FORMAT);
-      string format = Formats[formatChoice];
+      var formatChoice = (string) Handler.GetValue(OUTPUT, FORMAT);
+      var format = Formats[formatChoice];
       // check whether decorations (selection, handles, ...) should be hidden
-      bool hide = (bool)handler.GetValue(OUTPUT, HIDE_DECORATIONS);
+      var hide = (bool) Handler.GetValue(OUTPUT, HIDE_DECORATIONS);
       if (hide) {
         // if so, create a new graph control with the same graph
         control = new GraphControl { Graph = graphControl.Graph, FlowDirection = graphControl.FlowDirection };
       }
       IImageExporter exporter;
-      ContextConfigurator config = GetConfig(bounds, !useRect);
-
+      var config = GetConfig(bounds, !useRect);
 
       if (format.Equals("XPS")) {
         // create the exporter
-        XpsExporter emfImageExporter = new XpsExporter(config);
+        var emfImageExporter = new XpsExporter(config);
         exporter = emfImageExporter;
         saveFileDialog.Reset();
         saveFileDialog.Filter = "XPS files (*.xps)|*.xps";
         if (saveFileDialog.ShowDialog(this) == true) {
-          string fileName = saveFileDialog.FileName;
+          var fileName = saveFileDialog.FileName;
           if (File.Exists(fileName)) {
             File.Delete(fileName);
           }
-          using (FileStream stream = new FileStream(fileName, FileMode.CreateNew, FileAccess.ReadWrite)) {
+          using (var stream = new FileStream(fileName, FileMode.CreateNew, FileAccess.ReadWrite)) {
             exporter.Export(control, stream);
           }
         }
       } else {
-        var transparentBackground = (bool)Handler.GetValue(PNG, TRANSPARENT);
+        var transparentBackground = (bool) Handler.GetValue(PNG, TRANSPARENT);
         // create the exporter
-        PixelImageExporter pixelImageExport = new PixelImageExporter(config);
+        var pixelImageExport = new PixelImageExporter(config);
         AddExportParameters(pixelImageExport, format);
         pixelImageExport.OutputFormat = format;
         // check if the format is transparent PNG
-        if ((!format.Equals("image/png") || !transparentBackground)) {
+        if (!format.Equals("image/png") || !transparentBackground) {
           // if not, set the background color
           pixelImageExport.Background = control.Background ?? Brushes.White;
         }
@@ -380,31 +379,36 @@ namespace Demo.yFiles.ImageExport
         saveFileDialog.Reset();
         saveFileDialog.Filter = format + "|*." + format.Substring(6);
         if (saveFileDialog.ShowDialog(this) == true) {
-          FileStream stream = new FileStream(saveFileDialog.FileName, FileMode.Create, FileAccess.Write);
+          var stream = new FileStream(saveFileDialog.FileName, FileMode.Create, FileAccess.Write);
           exporter.Export(control, stream);
           stream.Flush();
           stream.Close();
+
+          if (control != graphControl) {
+            // Don't keep the graph around in the temporary control to avoid memory leaks.
+            control.ClearValue(GraphControl.GraphProperty);
+          }
         }
       }
     }
 
     /// <summary>
-    /// Gets the export configuration
+    ///   Gets the export configuration
     /// </summary>
     private ContextConfigurator GetConfig(RectD worldBounds, bool useViewport) {
-      ContextConfigurator config = new ContextConfigurator(worldBounds) { Projection = graphControl.Projection };
+      var config = new ContextConfigurator(worldBounds) { Projection = graphControl.Projection };
       SetScale(config, useViewport);
       // get the margins
-      int leftMargin = (int) Handler.GetValue(MARGINS, LEFT_MARGIN);
-      int rightMargin = (int) Handler.GetValue(MARGINS, RIGHT_MARGIN);
-      int topMargin = (int) Handler.GetValue(MARGINS, TOP_MARGIN);
-      int bottomMargin = (int) Handler.GetValue(MARGINS, BOTTOM_MARGIN);
+      var leftMargin = (int) Handler.GetValue(MARGINS, LEFT_MARGIN);
+      var rightMargin = (int) Handler.GetValue(MARGINS, RIGHT_MARGIN);
+      var topMargin = (int) Handler.GetValue(MARGINS, TOP_MARGIN);
+      var bottomMargin = (int) Handler.GetValue(MARGINS, BOTTOM_MARGIN);
       config.Margins = new InsetsD(leftMargin, topMargin, rightMargin, bottomMargin);
       return config;
     }
 
     /// <summary>
-    /// Gets the various export parameters for the chosen format
+    ///   Gets the various export parameters for the chosen format
     /// </summary>
     private void AddExportParameters(PixelImageExporter pixelImageExport, string format) {
       if (format.Equals("image/jpeg")) {
@@ -412,31 +416,33 @@ namespace Demo.yFiles.ImageExport
         pixelImageExport.Quality = (double) Handler.GetValue(JPG, QUALITY);
       } else if (format.Equals("image/tiff")) {
         // get tiff compression
-        string compressionChoice = (string) Handler.GetValue(TIFF, COMPRESSION);
-        pixelImageExport.Compression = !compressionChoice.Equals(COMPRESSION_NONE) ? TiffCompressOption.Default : TiffCompressOption.None;
+        var compressionChoice = (string) Handler.GetValue(TIFF, COMPRESSION);
+        pixelImageExport.Compression = !compressionChoice.Equals(COMPRESSION_NONE)
+            ? TiffCompressOption.Default
+            : TiffCompressOption.None;
       }
     }
 
     /// <summary>
-    /// Sets the export scale
+    ///   Sets the export scale
     /// </summary>
     private void SetScale(ContextConfigurator config, bool useViewport) {
       // get the scale value specified in the options
-      double userScale = (double) Handler.GetValue(BOUNDS, SCALE);
+      var userScale = (double) Handler.GetValue(BOUNDS, SCALE);
       // consider the zoom level
       if (useViewport) {
         userScale *= graphControl.Zoom;
       }
       // look if a fixed size has been specified
-      string sizeChoice = (string) Handler.GetValue(BOUNDS, SIZE);
+      var sizeChoice = (string) Handler.GetValue(BOUNDS, SIZE);
       switch (sizeChoice) {
-        case (SPECIFY_WIDTH):
-          int newWidth = (int) Handler.GetValue(BOUNDS, WIDTH);
-          config.Scale = config.CalculateScaleForWidth((int) (userScale*newWidth));
+        case SPECIFY_WIDTH:
+          var newWidth = (int) Handler.GetValue(BOUNDS, WIDTH);
+          config.Scale = config.CalculateScaleForWidth((int) (userScale * newWidth));
           break;
-        case (SPECIFY_HEIGHT):
-          int newHeight = (int) Handler.GetValue(BOUNDS, HEIGHT);
-          config.Scale = config.CalculateScaleForHeight((int) (userScale*newHeight));
+        case SPECIFY_HEIGHT:
+          var newHeight = (int) Handler.GetValue(BOUNDS, HEIGHT);
+          config.Scale = config.CalculateScaleForHeight((int) (userScale * newHeight));
           break;
         default:
           config.Scale = (float) userScale;
@@ -463,11 +469,11 @@ namespace Demo.yFiles.ImageExport
     }
 
     private void graphTabControl_SelectedIndexChanged(object sender, EventArgs e) {
-      if (handler != null) {
+      if (Handler != null) {
         if (graphTabControl.SelectedIndex == 1) {
           // if preview tab has been selected, trigger export
           ImageExportToPreview();
-          int i = ((TabControl)sender).SelectedIndex;
+          var i = ((TabControl) sender).SelectedIndex;
           focusedCanvas = i == 1 ? previewCanvas : graphControl;
           focusedCanvas.Focus();
         }
@@ -475,14 +481,14 @@ namespace Demo.yFiles.ImageExport
     }
 
     /// <summary>
-    /// Called when a value in the option handler is changed
+    ///   Called when a value in the option handler is changed
     /// </summary>
-    void handler_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
+    private void handler_PropertyChanged(object sender, PropertyChangedEventArgs e) {
       ImageExportToPreview();
     }
 
     private void copyToClipboardButton_Click(object sender, EventArgs e) {
-      //Clipboard.SetDataObject(ImageExport());
+      // Clipboard.SetDataObject(ImageExport());
       var img = ImageExport();
       if (img is BitmapSource) {
         var image = img as BitmapSource;
@@ -545,15 +551,13 @@ namespace Demo.yFiles.ImageExport
     private const int DefaultDepth = 24;
     private const string DefaultCompression = COMPRESSION_LZW;
 
-    private static readonly List<string> SizeModes = new List<string>();
+    private static readonly List<string> SizeModes = new();
 
-    private static readonly Dictionary<string, TiffCompressOption> Compressions =
-      new Dictionary<string, TiffCompressOption>();
+    private static readonly Dictionary<string, TiffCompressOption> Compressions = new();
 
-    private static readonly Dictionary<string, string> Formats =
-      new Dictionary<string, string>();
+    private static readonly Dictionary<string, string> Formats = new();
 
-    private SaveFileDialog saveFileDialog = new SaveFileDialog();
+    private readonly SaveFileDialog saveFileDialog = new();
 
     static ImageExportWindow() {
       SizeModes.Add(USE_ORIGINAL_SIZE);
@@ -574,41 +578,37 @@ namespace Demo.yFiles.ImageExport
     #endregion
 
     /// <summary>
-    /// Helper method that allows for reusing this window in other applications.
+    ///   Helper method that allows for reusing this window in other applications.
     /// </summary>
     /// <param name="graphControl">The graph control.</param>
     public void ShowGraph(GraphControl graphControl) {
       this.graphControl.Graph = graphControl.Graph;
       this.graphControl.Selection.Clear(); // or possibly: = graphControl.Selection;
-      this.graphControl.ContentRect = graphControl.ContentRect.GetEnlarged(20);
-      
+      this.graphControl.ContentBounds = graphControl.ContentBounds.GetEnlarged(20);
+
       // show all of the contents
       this.graphControl.FitContent();
-      
+
       // or possibly the same viewport
-//      this.graphControl.Zoom = graphControl.Zoom;
-//      this.graphControl.ViewPoint = graphControl.ViewPoint;
+      //      this.graphControl.Zoom = graphControl.Zoom;
+      //      this.graphControl.ViewPoint = graphControl.ViewPoint;
 
       var inputMode = new MultiplexingInputMode();
 
-      // set the whole content rect as the export rectangle
-      exportRect.Reshape(graphControl.ContentRect);
+      // set the whole content bounds as the export rectangle
+      exportRect.SetShape(graphControl.ContentBounds);
       // or possibly just the visible viewport
       //exportRect.Set(graphControl.Viewport);
 
-
       // create mode which supports moving the viewport by pressing ctrl
-      var moveViewportInputMode = new MoveViewportInputMode
-                                    {
-                                      PressedRecognizer =
-                                          (source, args) =>
-                                          MouseEventRecognizers.LeftPressed(source, args) &&
-                                          (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control
-                                    };
+      var moveViewportInputMode = new MoveViewportInputMode {
+          BeginRecognizer = (source, args) => EventRecognizers.MouseDown(source, args) &&
+              (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control
+      };
 
       inputMode.Add(moveViewportInputMode);
 
-      AddExportRectInputModes(inputMode);
+      AddExportRectInputModes(this.graphControl.InputModeContext, inputMode);
       this.graphControl.InputMode = inputMode;
     }
   }

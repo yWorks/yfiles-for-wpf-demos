@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -54,11 +54,11 @@ namespace Demo.yFiles.Graph.VisualStateManager
     /// Initializes a new instance of the <see cref="GraphItemControlBase{TModelItem}"/> class.
     /// </summary>
     public VSMEdgeSegmentControl() {
-      this.Loaded += OnLoaded;
+      Loaded += OnLoaded;
     }
 
     private void OnLoaded(object sender, RoutedEventArgs routedEventArgs) {
-      this.Loaded -= OnLoaded;
+      Loaded -= OnLoaded;
       loaded = true;
       UpdateSelectionState(ItemSelected, false);
       UpdateFocusState(ItemFocused, false);

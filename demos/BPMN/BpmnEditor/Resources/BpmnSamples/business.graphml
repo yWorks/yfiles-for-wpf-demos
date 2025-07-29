@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--Created by yFiles WPF 3.0-->
-<graphml xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/3.0/xaml" xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/3.0" xmlns:y="http://www.yworks.com/xml/yfiles-common/3.0" xmlns:bpmn="http://www.yworks.com/xml/yfiles-bpmn/1.0" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml.wpf/2.0/ygraphml.xsd " xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://graphml.graphdrawing.org/xmlns">
+<!--Created by yFiles WPF 4.0-->
+<graphml xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/4.0/xaml" xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/3.0" xmlns:y="http://www.yworks.com/xml/yfiles-common/3.0"  xmlns:yx="http://www.yworks.com/xml/yfiles-common/4.0" xmlns:bpmn="http://www.yworks.com/xml/yfiles-bpmn/3.0" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml.wpf/2.0/ygraphml.xsd " xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://graphml.graphdrawing.org/xmlns">
   <key id="d0" attr.type="boolean" attr.name="Expanded" for="node" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/folding/Expanded">
     <default>true</default>
   </key>
@@ -27,7 +27,7 @@
   <key id="d13" attr.name="SharedData" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/SharedData" />
   <data key="d13">
     <y:SharedData>
-      <ywpf:DefaultLabelStyle x:Key="1" VerticalTextAlignment="Center" TextAlignment="Center" Typeface="{y:GraphMLReference 3}" />
+      <ywpf:LabelStyle x:Key="1" VerticalTextAlignment="Center" TextAlignment="Center" Typeface="{y:GraphMLReference 3}" />
       <bpmn:AlternatingLeafStripeStyle x:Key="2">
         <bpmn:AlternatingLeafStripeStyle.EvenLeafDescriptor>
           <bpmn:StripeDescriptor BackgroundBrush="#FFC4D7ED" InsetBrush="#FFE0E0E0" />
@@ -43,28 +43,28 @@
       <ywpf:NodeStyleStripeStyleAdapter x:Key="4">
         <ywpf:ShapeNodeStyle Brush="#00FFFFFF" />
       </ywpf:NodeStyleStripeStyleAdapter>
-      <y:InteriorLabelModel x:Key="5" />
-      <ywpf:DefaultLabelStyle x:Key="6" Typeface="{y:GraphMLReference 3}" TextSize="10" />
+      <yx:InteriorNodeLabelModel x:Key="5" />
+      <ywpf:LabelStyle x:Key="6" Typeface="{y:GraphMLReference 3}" TextSize="10" />
       <bpmn:BpmnEdgeStyle x:Key="7" />
       <bpmn:BpmnEdgeStyle x:Key="8" />
       <bpmn:BpmnEdgeStyle x:Key="9" Type="DefaultFlow" />
-      <y:EdgeSegmentLabelModel x:Key="10" Distance="-4.94065645841247E-324" />
-      <y:EdgeSegmentLabelModel x:Key="11" Distance="4.94065645841247E-324" />
+      <yx:EdgeSegmentLabelModel x:Key="10" Distance="-4.94065645841247E-324" />
+      <yx:EdgeSegmentLabelModel x:Key="11" Distance="4.94065645841247E-324" />
       <ywpf:ShapeNodeStyle x:Key="12" Brush="#FFE0E0E0" />
-      <y:StripeDefaults x:Key="13" Insets="20,0,0,0" Style="{y:GraphMLReference 2}">
-        <y:StripeDefaults.Labels>
-          <y:LabelDefaults AutoAdjustPreferredSize="True" ShareLayoutParameterInstance="True" LayoutParameter="{x:Static y:StretchStripeLabelModel.West}" Style="{y:GraphMLReference 1}" ShareStyleInstance="True" />
-        </y:StripeDefaults.Labels>
-      </y:StripeDefaults>
-      <y:StripeDefaults x:Key="14" Insets="0,30,0,0" Style="{y:GraphMLReference 4}">
-        <y:StripeDefaults.Labels>
-          <y:LabelDefaults AutoAdjustPreferredSize="True" ShareLayoutParameterInstance="True" LayoutParameter="{x:Static y:StretchStripeLabelModel.North}" ShareStyleInstance="True">
+      <yx:StripeDefaults x:Key="13" Padding="20,0,0,0" Style="{y:GraphMLReference 2}">
+        <yx:StripeDefaults.Labels>
+          <y:LabelDefaults AutoAdjustPreferredSize="True" ShareLayoutParameterInstance="True" LayoutParameter="{x:Static yx:StretchStripeLabelModel.Left}" Style="{y:GraphMLReference 1}" ShareStyleInstance="True" />
+        </yx:StripeDefaults.Labels>
+      </yx:StripeDefaults>
+      <yx:StripeDefaults x:Key="14" Padding="0,30,0,0" Style="{y:GraphMLReference 4}">
+        <yx:StripeDefaults.Labels>
+          <y:LabelDefaults AutoAdjustPreferredSize="True" ShareLayoutParameterInstance="True" LayoutParameter="{x:Static yx:StretchStripeLabelModel.Top}" ShareStyleInstance="True">
             <y:LabelDefaults.Style>
-              <ywpf:DefaultLabelStyle VerticalTextAlignment="Center" TextAlignment="Center" Typeface="{y:GraphMLReference 3}" />
+              <ywpf:LabelStyle VerticalTextAlignment="Center" TextAlignment="Center" Typeface="{y:GraphMLReference 3}" />
             </y:LabelDefaults.Style>
           </y:LabelDefaults>
-        </y:StripeDefaults.Labels>
-      </y:StripeDefaults>
+        </yx:StripeDefaults.Labels>
+      </yx:StripeDefaults>
       <bpmn:BpmnEdgeStyle x:Key="15" Type="MessageFlow" />
     </y:SharedData>
   </data>
@@ -74,77 +74,77 @@
         <bpmn:PoolNodeStyle>
           <ywpf:TableNodeStyle TableRenderingOrder="RowsFirst" BackgroundStyle="{y:GraphMLReference 12}">
             <ywpf:TableNodeStyle.Table>
-              <y:Table Insets="20,0,0,0" RowDefaults="{y:GraphMLReference 13}" ColumnDefaults="{y:GraphMLReference 14}">
-                <y:Table.Rows>
-                  <y:Row MinimumSize="50" Size="160" Insets="40,0,0,0" Style="{y:GraphMLReference 2}">
-                    <y:Row.Labels>
-                      <y:Label LayoutParameter="{x:Static y:StretchStripeLabelModel.West}" Style="{y:GraphMLReference 1}" PreferredSize="135,28">
+              <yx:Table Padding="20,0,0,0" RowDefaults="{y:GraphMLReference 13}" ColumnDefaults="{y:GraphMLReference 14}">
+                <yx:Table.Rows>
+                  <yx:Row MinimumSize="50" Size="160" Padding="40,0,0,0" Style="{y:GraphMLReference 2}">
+                    <yx:Row.Labels>
+                      <y:Label LayoutParameter="{x:Static yx:StretchStripeLabelModel.Left}" Style="{y:GraphMLReference 1}" PreferredSize="135,28">
                         <y:Label.Text><![CDATA[Tap Systems Coordinator 
 (Project Manager)]]></y:Label.Text>
                       </y:Label>
-                    </y:Row.Labels>
-                  </y:Row>
-                  <y:Row MinimumSize="50" Size="80" Insets="40,0,0,0" Style="{y:GraphMLReference 2}">
-                    <y:Row.Labels>
-                      <y:Label LayoutParameter="{x:Static y:StretchStripeLabelModel.West}" Style="{y:GraphMLReference 1}" PreferredSize="71,28">
+                    </yx:Row.Labels>
+                  </yx:Row>
+                  <yx:Row MinimumSize="50" Size="80" Padding="40,0,0,0" Style="{y:GraphMLReference 2}">
+                    <yx:Row.Labels>
+                      <y:Label LayoutParameter="{x:Static yx:StretchStripeLabelModel.Left}" Style="{y:GraphMLReference 1}" PreferredSize="71,28">
                         <y:Label.Text><![CDATA[Business
 Development]]></y:Label.Text>
                       </y:Label>
-                    </y:Row.Labels>
-                  </y:Row>
-                  <y:Row MinimumSize="50" Size="80" Insets="20,0,0,0" Style="{y:GraphMLReference 2}">
-                    <y:Row.Labels>
-                      <y:Label LayoutParameter="{x:Static y:StretchStripeLabelModel.West}" Style="{y:GraphMLReference 1}" PreferredSize="30,14">
+                    </yx:Row.Labels>
+                  </yx:Row>
+                  <yx:Row MinimumSize="50" Size="80" Padding="20,0,0,0" Style="{y:GraphMLReference 2}">
+                    <yx:Row.Labels>
+                      <y:Label LayoutParameter="{x:Static yx:StretchStripeLabelModel.Left}" Style="{y:GraphMLReference 1}" PreferredSize="30,14">
                         <y:Label.Text>Legal</y:Label.Text>
                       </y:Label>
-                    </y:Row.Labels>
-                  </y:Row>
-                  <y:Row MinimumSize="50" Size="164" Insets="40,0,0,0" Style="{y:GraphMLReference 2}">
-                    <y:Row.Labels>
-                      <y:Label LayoutParameter="{x:Static y:StretchStripeLabelModel.West}" Style="{y:GraphMLReference 1}" PreferredSize="70,28">
+                    </yx:Row.Labels>
+                  </yx:Row>
+                  <yx:Row MinimumSize="50" Size="164" Padding="40,0,0,0" Style="{y:GraphMLReference 2}">
+                    <yx:Row.Labels>
+                      <y:Label LayoutParameter="{x:Static yx:StretchStripeLabelModel.Left}" Style="{y:GraphMLReference 1}" PreferredSize="70,28">
                         <y:Label.Text><![CDATA[Land or
 Right-of-Way]]></y:Label.Text>
                       </y:Label>
-                    </y:Row.Labels>
-                  </y:Row>
-                  <y:Row MinimumSize="50" Size="50" Insets="40,0,0,0" Style="{y:GraphMLReference 2}">
-                    <y:Row.Labels>
-                      <y:Label LayoutParameter="{x:Static y:StretchStripeLabelModel.West}" Style="{y:GraphMLReference 1}" PreferredSize="63,28">
+                    </yx:Row.Labels>
+                  </yx:Row>
+                  <yx:Row MinimumSize="50" Size="50" Padding="40,0,0,0" Style="{y:GraphMLReference 2}">
+                    <yx:Row.Labels>
+                      <y:Label LayoutParameter="{x:Static yx:StretchStripeLabelModel.Left}" Style="{y:GraphMLReference 1}" PreferredSize="63,28">
                         <y:Label.Text><![CDATA[LDC
 (Distributor)]]></y:Label.Text>
                       </y:Label>
-                    </y:Row.Labels>
-                  </y:Row>
-                  <y:Row MinimumSize="50" Size="80" Insets="20,0,0,0" Style="{y:GraphMLReference 2}">
-                    <y:Row.Labels>
-                      <y:Label LayoutParameter="{x:Static y:StretchStripeLabelModel.West}" Style="{y:GraphMLReference 1}" PreferredSize="31,14">
+                    </yx:Row.Labels>
+                  </yx:Row>
+                  <yx:Row MinimumSize="50" Size="80" Padding="20,0,0,0" Style="{y:GraphMLReference 2}">
+                    <yx:Row.Labels>
+                      <y:Label LayoutParameter="{x:Static yx:StretchStripeLabelModel.Left}" Style="{y:GraphMLReference 1}" PreferredSize="31,14">
                         <y:Label.Text>Retail</y:Label.Text>
                       </y:Label>
-                    </y:Row.Labels>
-                  </y:Row>
-                  <y:Row MinimumSize="50" Size="80" Insets="40,0,0,0" Style="{y:GraphMLReference 2}">
-                    <y:Row.Labels>
-                      <y:Label LayoutParameter="{x:Static y:StretchStripeLabelModel.West}" Style="{y:GraphMLReference 1}" PreferredSize="54,28">
+                    </yx:Row.Labels>
+                  </yx:Row>
+                  <yx:Row MinimumSize="50" Size="80" Padding="40,0,0,0" Style="{y:GraphMLReference 2}">
+                    <yx:Row.Labels>
+                      <y:Label LayoutParameter="{x:Static yx:StretchStripeLabelModel.Left}" Style="{y:GraphMLReference 1}" PreferredSize="54,28">
                         <y:Label.Text><![CDATA[Employee
 At-Large]]></y:Label.Text>
                       </y:Label>
-                    </y:Row.Labels>
-                  </y:Row>
-                </y:Table.Rows>
-                <y:Table.Columns>
-                  <y:Column Style="{y:GraphMLReference 4}" MinimumSize="10" Size="1624.0131795166719" />
-                </y:Table.Columns>
-              </y:Table>
+                    </yx:Row.Labels>
+                  </yx:Row>
+                </yx:Table.Rows>
+                <yx:Table.Columns>
+                  <yx:Column Style="{y:GraphMLReference 4}" MinimumSize="10" Size="1624.0131795166719" />
+                </yx:Table.Columns>
+              </yx:Table>
             </ywpf:TableNodeStyle.Table>
           </ywpf:TableNodeStyle>
         </bpmn:PoolNodeStyle>
       </data>
       <data key="d3">
         <x:List>
-          <y:Label LayoutParameter="{x:Static bpmn:PoolHeaderLabelModel.West}" PreferredSize="309,14">
+          <y:Label LayoutParameter="{x:Static bpmn:PoolHeaderLabelModel.Left}" PreferredSize="309,14">
             <y:Label.Text><![CDATA[Lower-level Business Process for the High-Level Example]]></y:Label.Text>
             <y:Label.Style>
-              <ywpf:DefaultLabelStyle VerticalTextAlignment="Center" TextAlignment="Center" Typeface="{y:GraphMLReference 3}" AutoFlip="False" />
+              <ywpf:LabelStyle VerticalTextAlignment="Center" TextAlignment="Center" Typeface="{y:GraphMLReference 3}" AutoFlip="False" />
             </y:Label.Style>
           </y:Label>
         </x:List>
@@ -164,7 +164,7 @@ At-Large]]></y:Label.Text>
 Gate
 Information]]></y:Label.Text>
                 <y:Label.LayoutParameter>
-                  <y:InteriorLabelModelParameter Position="Center" Model="{y:GraphMLReference 5}" />
+                  <yx:InteriorNodeLabelModelParameter Position="Center" Model="{y:GraphMLReference 5}" />
                 </y:Label.LayoutParameter>
               </y:Label>
             </x:List>
@@ -211,7 +211,7 @@ Information]]></y:Label.Text>
                 <y:Label.Text><![CDATA[Receive
 Request]]></y:Label.Text>
                 <y:Label.LayoutParameter>
-                  <y:InteriorLabelModelParameter Position="Center" Model="{y:GraphMLReference 5}" />
+                  <yx:InteriorNodeLabelModelParameter Position="Center" Model="{y:GraphMLReference 5}" />
                 </y:Label.LayoutParameter>
               </y:Label>
             </x:List>
@@ -251,7 +251,7 @@ Request]]></y:Label.Text>
 Systems
 Coordinator]]></y:Label.Text>
                 <y:Label.LayoutParameter>
-                  <y:InteriorLabelModelParameter Position="Center" Model="{y:GraphMLReference 5}" />
+                  <yx:InteriorNodeLabelModelParameter Position="Center" Model="{y:GraphMLReference 5}" />
                 </y:Label.LayoutParameter>
               </y:Label>
             </x:List>
@@ -281,7 +281,7 @@ Coordinator]]></y:Label.Text>
 Gate 
 Information]]></y:Label.Text>
                 <y:Label.LayoutParameter>
-                  <y:InteriorLabelModelParameter Position="Center" Model="{y:GraphMLReference 5}" />
+                  <yx:InteriorNodeLabelModelParameter Position="Center" Model="{y:GraphMLReference 5}" />
                 </y:Label.LayoutParameter>
               </y:Label>
             </x:List>
@@ -315,11 +315,11 @@ Information]]></y:Label.Text>
                 <y:Label.Text><![CDATA[Interstate 
 Pipeline?]]></y:Label.Text>
                 <y:Label.LayoutParameter>
-                  <y:ExteriorLabelModelParameter Position="North">
-                    <y:ExteriorLabelModelParameter.Model>
-                      <y:ExteriorLabelModel />
-                    </y:ExteriorLabelModelParameter.Model>
-                  </y:ExteriorLabelModelParameter>
+                  <yx:ExteriorNodeLabelModelParameter Position="Top">
+                    <yx:ExteriorNodeLabelModelParameter.Model>
+                      <yx:ExteriorNodeLabelModel />
+                    </yx:ExteriorNodeLabelModelParameter.Model>
+                  </yx:ExteriorNodeLabelModelParameter>
                 </y:Label.LayoutParameter>
               </y:Label>
             </x:List>
@@ -353,7 +353,7 @@ Pipeline?]]></y:Label.Text>
                 <y:Label.Text><![CDATA[Contact and
 Inform Retail]]></y:Label.Text>
                 <y:Label.LayoutParameter>
-                  <y:InteriorLabelModelParameter Position="Center" Model="{y:GraphMLReference 5}" />
+                  <yx:InteriorNodeLabelModelParameter Position="Center" Model="{y:GraphMLReference 5}" />
                 </y:Label.LayoutParameter>
               </y:Label>
             </x:List>
@@ -381,7 +381,7 @@ Inform Retail]]></y:Label.Text>
               <y:Label Style="{y:GraphMLReference 6}" PreferredSize="53,12">
                 <y:Label.Text><![CDATA[Notify Legal]]></y:Label.Text>
                 <y:Label.LayoutParameter>
-                  <y:InteriorLabelModelParameter Position="Center" Model="{y:GraphMLReference 5}" />
+                  <yx:InteriorNodeLabelModelParameter Position="Center" Model="{y:GraphMLReference 5}" />
                 </y:Label.LayoutParameter>
               </y:Label>
             </x:List>
@@ -410,7 +410,7 @@ Inform Retail]]></y:Label.Text>
                 <y:Label.Text><![CDATA[Receive And
 Acknowledge]]></y:Label.Text>
                 <y:Label.LayoutParameter>
-                  <y:InteriorLabelModelParameter Position="Center" Model="{y:GraphMLReference 5}" />
+                  <yx:InteriorNodeLabelModelParameter Position="Center" Model="{y:GraphMLReference 5}" />
                 </y:Label.LayoutParameter>
               </y:Label>
             </x:List>
@@ -439,7 +439,7 @@ Acknowledge]]></y:Label.Text>
                 <y:Label.Text><![CDATA[Notify Buisiness
 Development]]></y:Label.Text>
                 <y:Label.LayoutParameter>
-                  <y:InteriorLabelModelParameter Position="Center" Model="{y:GraphMLReference 5}" />
+                  <yx:InteriorNodeLabelModelParameter Position="Center" Model="{y:GraphMLReference 5}" />
                 </y:Label.LayoutParameter>
               </y:Label>
             </x:List>
@@ -468,7 +468,7 @@ Development]]></y:Label.Text>
                 <y:Label.Text><![CDATA[Receive and
 Acknowledge]]></y:Label.Text>
                 <y:Label.LayoutParameter>
-                  <y:InteriorLabelModelParameter Position="Center" Model="{y:GraphMLReference 5}" />
+                  <yx:InteriorNodeLabelModelParameter Position="Center" Model="{y:GraphMLReference 5}" />
                 </y:Label.LayoutParameter>
               </y:Label>
             </x:List>
@@ -497,7 +497,7 @@ Acknowledge]]></y:Label.Text>
                 <y:Label.Text><![CDATA[Refer Customer
 to Retail]]></y:Label.Text>
                 <y:Label.LayoutParameter>
-                  <y:InteriorLabelModelParameter Position="Center" Model="{y:GraphMLReference 5}" />
+                  <yx:InteriorNodeLabelModelParameter Position="Center" Model="{y:GraphMLReference 5}" />
                 </y:Label.LayoutParameter>
               </y:Label>
             </x:List>
@@ -536,7 +536,7 @@ to Retail]]></y:Label.Text>
                 <y:Label.Text><![CDATA[Receive and
 Acknowledge]]></y:Label.Text>
                 <y:Label.LayoutParameter>
-                  <y:InteriorLabelModelParameter Position="Center" Model="{y:GraphMLReference 5}" />
+                  <yx:InteriorNodeLabelModelParameter Position="Center" Model="{y:GraphMLReference 5}" />
                 </y:Label.LayoutParameter>
               </y:Label>
             </x:List>
@@ -578,7 +578,7 @@ Acknowledge]]></y:Label.Text>
                 <y:Label.Text><![CDATA[Request
 Contact Review]]></y:Label.Text>
                 <y:Label.LayoutParameter>
-                  <y:InteriorLabelModelParameter Position="Center" Model="{y:GraphMLReference 5}" />
+                  <yx:InteriorNodeLabelModelParameter Position="Center" Model="{y:GraphMLReference 5}" />
                 </y:Label.LayoutParameter>
               </y:Label>
             </x:List>
@@ -607,7 +607,7 @@ Contact Review]]></y:Label.Text>
                 <y:Label.Text><![CDATA[Advise
 Customer]]></y:Label.Text>
                 <y:Label.LayoutParameter>
-                  <y:InteriorLabelModelParameter Position="Center" Model="{y:GraphMLReference 5}" />
+                  <yx:InteriorNodeLabelModelParameter Position="Center" Model="{y:GraphMLReference 5}" />
                 </y:Label.LayoutParameter>
               </y:Label>
             </x:List>
@@ -636,7 +636,7 @@ Customer]]></y:Label.Text>
                 <y:Label.Text><![CDATA[Request
 Contact Review]]></y:Label.Text>
                 <y:Label.LayoutParameter>
-                  <y:InteriorLabelModelParameter Position="Center" Model="{y:GraphMLReference 5}" />
+                  <yx:InteriorNodeLabelModelParameter Position="Center" Model="{y:GraphMLReference 5}" />
                 </y:Label.LayoutParameter>
               </y:Label>
             </x:List>
@@ -670,11 +670,11 @@ Contact Review]]></y:Label.Text>
                 <y:Label.Text><![CDATA[Contact
 Constraints?]]></y:Label.Text>
                 <y:Label.LayoutParameter>
-                  <y:ExteriorLabelModelParameter Position="South">
-                    <y:ExteriorLabelModelParameter.Model>
-                      <y:ExteriorLabelModel />
-                    </y:ExteriorLabelModelParameter.Model>
-                  </y:ExteriorLabelModelParameter>
+                  <yx:ExteriorNodeLabelModelParameter Position="Bottom">
+                    <yx:ExteriorNodeLabelModelParameter.Model>
+                      <yx:ExteriorNodeLabelModel />
+                    </yx:ExteriorNodeLabelModelParameter.Model>
+                  </yx:ExteriorNodeLabelModelParameter>
                 </y:Label.LayoutParameter>
               </y:Label>
             </x:List>
@@ -708,11 +708,11 @@ Constraints?]]></y:Label.Text>
                 <y:Label.Text><![CDATA[Tap for gas
 delivery?]]></y:Label.Text>
                 <y:Label.LayoutParameter>
-                  <y:ExteriorLabelModelParameter Position="SouthWest">
-                    <y:ExteriorLabelModelParameter.Model>
-                      <y:ExteriorLabelModel />
-                    </y:ExteriorLabelModelParameter.Model>
-                  </y:ExteriorLabelModelParameter>
+                  <yx:ExteriorNodeLabelModelParameter Position="BottomLeft">
+                    <yx:ExteriorNodeLabelModelParameter.Model>
+                      <yx:ExteriorNodeLabelModel />
+                    </yx:ExteriorNodeLabelModelParameter.Model>
+                  </yx:ExteriorNodeLabelModelParameter>
                 </y:Label.LayoutParameter>
               </y:Label>
             </x:List>
@@ -773,11 +773,11 @@ delivery?]]></y:Label.Text>
               <y:Label Style="{y:GraphMLReference 6}" PreferredSize="7,12">
                 <y:Label.Text>B</y:Label.Text>
                 <y:Label.LayoutParameter>
-                  <y:ExteriorLabelModelParameter Position="East">
-                    <y:ExteriorLabelModelParameter.Model>
-                      <y:ExteriorLabelModel />
-                    </y:ExteriorLabelModelParameter.Model>
-                  </y:ExteriorLabelModelParameter>
+                  <yx:ExteriorNodeLabelModelParameter Position="Right">
+                    <yx:ExteriorNodeLabelModelParameter.Model>
+                      <yx:ExteriorNodeLabelModel />
+                    </yx:ExteriorNodeLabelModelParameter.Model>
+                  </yx:ExteriorNodeLabelModelParameter>
                 </y:Label.LayoutParameter>
               </y:Label>
             </x:List>
@@ -800,11 +800,11 @@ delivery?]]></y:Label.Text>
               <y:Label Style="{y:GraphMLReference 6}" PreferredSize="8,12">
                 <y:Label.Text>C</y:Label.Text>
                 <y:Label.LayoutParameter>
-                  <y:ExteriorLabelModelParameter Position="North">
-                    <y:ExteriorLabelModelParameter.Model>
-                      <y:ExteriorLabelModel />
-                    </y:ExteriorLabelModelParameter.Model>
-                  </y:ExteriorLabelModelParameter>
+                  <yx:ExteriorNodeLabelModelParameter Position="Top">
+                    <yx:ExteriorNodeLabelModelParameter.Model>
+                      <yx:ExteriorNodeLabelModel />
+                    </yx:ExteriorNodeLabelModelParameter.Model>
+                  </yx:ExteriorNodeLabelModelParameter>
                 </y:Label.LayoutParameter>
               </y:Label>
             </x:List>
@@ -863,11 +863,11 @@ delivery?]]></y:Label.Text>
               <y:Label Style="{y:GraphMLReference 6}" PreferredSize="13,12">
                 <y:Label.Text>No</y:Label.Text>
                 <y:Label.LayoutParameter>
-                  <y:EdgeSegmentLabelModelParameter SideOfEdge="RightOfEdge" SegmentRatio="0">
-                    <y:EdgeSegmentLabelModelParameter.Model>
-                      <y:EdgeSegmentLabelModel Distance="0.99" />
-                    </y:EdgeSegmentLabelModelParameter.Model>
-                  </y:EdgeSegmentLabelModelParameter>
+                  <yx:EdgeSegmentLabelModelParameter SideOfEdge="RightOfEdge" SegmentRatio="0">
+                    <yx:EdgeSegmentLabelModelParameter.Model>
+                      <yx:EdgeSegmentLabelModel Distance="0.99" />
+                    </yx:EdgeSegmentLabelModelParameter.Model>
+                  </yx:EdgeSegmentLabelModelParameter>
                 </y:Label.LayoutParameter>
               </y:Label>
             </x:List>
@@ -958,7 +958,7 @@ delivery?]]></y:Label.Text>
               <y:Label Style="{y:GraphMLReference 6}" PreferredSize="17,12">
                 <y:Label.Text>Yes</y:Label.Text>
                 <y:Label.LayoutParameter>
-                  <y:EdgeSegmentLabelModelParameter Model="{y:GraphMLReference 10}" SideOfEdge="LeftOfEdge" SegmentRatio="0" />
+                  <yx:EdgeSegmentLabelModelParameter Model="{y:GraphMLReference 10}" SideOfEdge="LeftOfEdge" SegmentRatio="0" />
                 </y:Label.LayoutParameter>
               </y:Label>
             </x:List>
@@ -989,7 +989,7 @@ delivery?]]></y:Label.Text>
               <y:Label Style="{y:GraphMLReference 6}" PreferredSize="13,12">
                 <y:Label.Text>No</y:Label.Text>
                 <y:Label.LayoutParameter>
-                  <y:EdgeSegmentLabelModelParameter Model="{y:GraphMLReference 11}" SideOfEdge="LeftOfEdge" SegmentRatio="0" />
+                  <yx:EdgeSegmentLabelModelParameter Model="{y:GraphMLReference 11}" SideOfEdge="LeftOfEdge" SegmentRatio="0" />
                 </y:Label.LayoutParameter>
               </y:Label>
             </x:List>
@@ -1014,11 +1014,11 @@ delivery?]]></y:Label.Text>
               <y:Label Style="{y:GraphMLReference 6}" PreferredSize="17,12">
                 <y:Label.Text>Yes</y:Label.Text>
                 <y:Label.LayoutParameter>
-                  <y:EdgeSegmentLabelModelParameter SideOfEdge="LeftOfEdge" SegmentRatio="0">
-                    <y:EdgeSegmentLabelModelParameter.Model>
-                      <y:EdgeSegmentLabelModel Distance="0.99" />
-                    </y:EdgeSegmentLabelModelParameter.Model>
-                  </y:EdgeSegmentLabelModelParameter>
+                  <yx:EdgeSegmentLabelModelParameter SideOfEdge="LeftOfEdge" SegmentRatio="0">
+                    <yx:EdgeSegmentLabelModelParameter.Model>
+                      <yx:EdgeSegmentLabelModel Distance="0.99" />
+                    </yx:EdgeSegmentLabelModelParameter.Model>
+                  </yx:EdgeSegmentLabelModelParameter>
                 </y:Label.LayoutParameter>
               </y:Label>
             </x:List>
@@ -1038,7 +1038,7 @@ delivery?]]></y:Label.Text>
               <y:Label Style="{y:GraphMLReference 6}" PreferredSize="17,12">
                 <y:Label.Text>Yes</y:Label.Text>
                 <y:Label.LayoutParameter>
-                  <y:EdgeSegmentLabelModelParameter Model="{y:GraphMLReference 10}" SideOfEdge="LeftOfEdge" SegmentRatio="0" />
+                  <yx:EdgeSegmentLabelModelParameter Model="{y:GraphMLReference 10}" SideOfEdge="LeftOfEdge" SegmentRatio="0" />
                 </y:Label.LayoutParameter>
               </y:Label>
             </x:List>
@@ -1058,7 +1058,7 @@ delivery?]]></y:Label.Text>
               <y:Label Style="{y:GraphMLReference 6}" PreferredSize="17,12">
                 <y:Label.Text>Yes</y:Label.Text>
                 <y:Label.LayoutParameter>
-                  <y:EdgeSegmentLabelModelParameter Model="{y:GraphMLReference 10}" SideOfEdge="LeftOfEdge" SegmentRatio="0" />
+                  <yx:EdgeSegmentLabelModelParameter Model="{y:GraphMLReference 10}" SideOfEdge="LeftOfEdge" SegmentRatio="0" />
                 </y:Label.LayoutParameter>
               </y:Label>
             </x:List>
@@ -1078,7 +1078,7 @@ delivery?]]></y:Label.Text>
               <y:Label Style="{y:GraphMLReference 6}" PreferredSize="13,12">
                 <y:Label.Text>No</y:Label.Text>
                 <y:Label.LayoutParameter>
-                  <y:EdgeSegmentLabelModelParameter Model="{y:GraphMLReference 11}" SideOfEdge="LeftOfEdge" SegmentRatio="0" />
+                  <yx:EdgeSegmentLabelModelParameter Model="{y:GraphMLReference 11}" SideOfEdge="LeftOfEdge" SegmentRatio="0" />
                 </y:Label.LayoutParameter>
               </y:Label>
             </x:List>
@@ -1093,7 +1093,7 @@ delivery?]]></y:Label.Text>
               <y:Label Style="{y:GraphMLReference 6}" PreferredSize="13,12">
                 <y:Label.Text>No</y:Label.Text>
                 <y:Label.LayoutParameter>
-                  <y:EdgeSegmentLabelModelParameter Model="{y:GraphMLReference 10}" SideOfEdge="LeftOfEdge" SegmentRatio="0" />
+                  <yx:EdgeSegmentLabelModelParameter Model="{y:GraphMLReference 10}" SideOfEdge="LeftOfEdge" SegmentRatio="0" />
                 </y:Label.LayoutParameter>
               </y:Label>
             </x:List>
@@ -1111,21 +1111,21 @@ delivery?]]></y:Label.Text>
         <bpmn:PoolNodeStyle>
           <ywpf:TableNodeStyle TableRenderingOrder="RowsFirst" BackgroundStyle="{y:GraphMLReference 12}">
             <ywpf:TableNodeStyle.Table>
-              <y:Table Insets="20,0,0,0" RowDefaults="{y:GraphMLReference 13}" ColumnDefaults="{y:GraphMLReference 14}">
-                <y:Table.Rows>
-                  <y:Row MinimumSize="50" Size="82" Insets="40,0,0,0" Style="{y:GraphMLReference 2}">
-                    <y:Row.Labels>
-                      <y:Label LayoutParameter="{x:Static y:StretchStripeLabelModel.West}" Style="{y:GraphMLReference 1}" PreferredSize="79,28">
+              <yx:Table Padding="20,0,0,0" RowDefaults="{y:GraphMLReference 13}" ColumnDefaults="{y:GraphMLReference 14}">
+                <yx:Table.Rows>
+                  <yx:Row MinimumSize="50" Size="82" Padding="40,0,0,0" Style="{y:GraphMLReference 2}">
+                    <yx:Row.Labels>
+                      <y:Label LayoutParameter="{x:Static yx:StretchStripeLabelModel.Left}" Style="{y:GraphMLReference 1}" PreferredSize="79,28">
                         <y:Label.Text><![CDATA[Tap Requester
 (Customer)]]></y:Label.Text>
                       </y:Label>
-                    </y:Row.Labels>
-                  </y:Row>
-                </y:Table.Rows>
-                <y:Table.Columns>
-                  <y:Column Style="{y:GraphMLReference 4}" MinimumSize="10" Size="1624.0131795166719" />
-                </y:Table.Columns>
-              </y:Table>
+                    </yx:Row.Labels>
+                  </yx:Row>
+                </yx:Table.Rows>
+                <yx:Table.Columns>
+                  <yx:Column Style="{y:GraphMLReference 4}" MinimumSize="10" Size="1624.0131795166719" />
+                </yx:Table.Columns>
+              </yx:Table>
             </ywpf:TableNodeStyle.Table>
           </ywpf:TableNodeStyle>
         </bpmn:PoolNodeStyle>
@@ -1157,7 +1157,7 @@ delivery?]]></y:Label.Text>
                 <y:Label.Text><![CDATA[Contact
 Provider]]></y:Label.Text>
                 <y:Label.LayoutParameter>
-                  <y:InteriorLabelModelParameter Position="Center" Model="{y:GraphMLReference 5}" />
+                  <yx:InteriorNodeLabelModelParameter Position="Center" Model="{y:GraphMLReference 5}" />
                 </y:Label.LayoutParameter>
               </y:Label>
             </x:List>
@@ -1192,7 +1192,7 @@ Provider]]></y:Label.Text>
 Appropriate
 Request]]></y:Label.Text>
                 <y:Label.LayoutParameter>
-                  <y:InteriorLabelModelParameter Position="Center" Model="{y:GraphMLReference 5}" />
+                  <yx:InteriorNodeLabelModelParameter Position="Center" Model="{y:GraphMLReference 5}" />
                 </y:Label.LayoutParameter>
               </y:Label>
             </x:List>
@@ -1232,7 +1232,7 @@ Request]]></y:Label.Text>
 Acknowledge
 Referral]]></y:Label.Text>
                 <y:Label.LayoutParameter>
-                  <y:InteriorLabelModelParameter Position="Center" Model="{y:GraphMLReference 5}" />
+                  <yx:InteriorNodeLabelModelParameter Position="Center" Model="{y:GraphMLReference 5}" />
                 </y:Label.LayoutParameter>
               </y:Label>
             </x:List>
@@ -1271,11 +1271,11 @@ Referral]]></y:Label.Text>
               <y:Label Style="{y:GraphMLReference 6}" PreferredSize="7,12">
                 <y:Label.Text>A</y:Label.Text>
                 <y:Label.LayoutParameter>
-                  <y:ExteriorLabelModelParameter Position="East">
-                    <y:ExteriorLabelModelParameter.Model>
-                      <y:ExteriorLabelModel />
-                    </y:ExteriorLabelModelParameter.Model>
-                  </y:ExteriorLabelModelParameter>
+                  <yx:ExteriorNodeLabelModelParameter Position="Right">
+                    <yx:ExteriorNodeLabelModelParameter.Model>
+                      <yx:ExteriorNodeLabelModel />
+                    </yx:ExteriorNodeLabelModelParameter.Model>
+                  </yx:ExteriorNodeLabelModelParameter>
                 </y:Label.LayoutParameter>
               </y:Label>
             </x:List>
@@ -1299,7 +1299,7 @@ Referral]]></y:Label.Text>
                 <y:Label.Text><![CDATA[Receive and 
 Acknowledge]]></y:Label.Text>
                 <y:Label.LayoutParameter>
-                  <y:InteriorLabelModelParameter Position="Center" Model="{y:GraphMLReference 5}" />
+                  <yx:InteriorNodeLabelModelParameter Position="Center" Model="{y:GraphMLReference 5}" />
                 </y:Label.LayoutParameter>
               </y:Label>
             </x:List>

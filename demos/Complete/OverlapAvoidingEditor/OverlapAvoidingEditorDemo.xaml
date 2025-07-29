@@ -1,6 +1,6 @@
 <!-- ************************************************************************ -->
-<!-- This demo file is part of yFiles WPF 3.6.                           -->
-<!-- Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
+<!-- This demo file is part of yFiles WPF 4.0.                           -->
+<!-- Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
 <!-- 72070 Tuebingen, Germany. All rights reserved.                           -->
 <!--                                                                          -->
 <!-- yFiles demo files exhibit yFiles WPF functionalities. Any redistribution  -->
@@ -27,7 +27,7 @@
 <Window x:Class="Demo.yFiles.Graph.OverlapAvoidingEditor.OverlapAvoidingEditorDemo" 
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
-        xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/3.0/xaml"
+        xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/4.0/xaml"
         Height="Auto" Width="Auto" Loaded="OnLoad" x:Name="LayoutRoot" Style="{StaticResource DemoWindow}" Title="Demo.yFiles.Graph.OverlapAvoidingEditor">
     <HeaderedContentControl Style="{StaticResource DemoStyle}" >
         <HeaderedContentControl.Header>
@@ -75,7 +75,7 @@
                 <ToolBar Width="{Binding ActualWidth, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ToolBarTray}}}" Height="Auto">
                     <Button Command="IncreaseZoom" CommandTarget="{Binding ElementName=GraphControl}"/>
                     <Button Command="DecreaseZoom" CommandTarget="{Binding ElementName=GraphControl}"/>
-                    <Button Command="{x:Static ywpf:GraphControl.FitGraphBoundsCommand}" CommandTarget="{Binding ElementName=GraphControl}"/>
+                    <Button Command="{x:Static ywpf:GraphCommands.FitGraphBounds}" CommandTarget="{Binding ElementName=GraphControl}"/>
                 </ToolBar>
             </ToolBarTray>
             <ywpf:GraphControl Width="Auto" x:Name="GraphControl" FileOperationsEnabled="True" MinWidth="200" MinHeight="200"/>

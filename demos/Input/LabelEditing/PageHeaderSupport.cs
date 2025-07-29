@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -29,85 +29,101 @@
 
 using System;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media;
 using yWorks.Controls;
 using yWorks.Controls.Input;
 using yWorks.Geometry;
 using yWorks.Graph;
-using yWorks.Graph.Styles;
 using yWorks.Graph.LabelModels;
-using System.Windows.Controls;
+using yWorks.Graph.Styles;
 
 namespace Demo.yFiles.Graph.Input.LabelEditing
 {
-  public class PageHeaderSupport
+  public static class PageHeaderSupport
   {
     /// <summary>Creates the label for the page header.</summary>
     /// <remarks>
-    /// The page header is a dummy labeled that is anchored at a fixed location. FreeLabelModel allows arbitrary positioning.
-    /// In this case, we anchor the label to a dynamic point that always corresponds to the upper left corner of the viewport.
-    /// We use the ZoomInvariantLabelStyle from the tutorial to ensure we always look the same
+    ///   The page header is a dummy label that is anchored at a fixed location. FreeLabelModel allows arbitrary positioning.
+    ///   In this case, we anchor the label to a dynamic point that always corresponds to the upper left corner of the
+    ///   viewport.
+    ///   We use the ZoomInvariantLabelStyle from the tutorial to ensure we always look the same.
     /// </remarks>
     public static SimpleLabel CreatePageHeader(GraphControl graphControl) {
-      var innerLabelStyle = new DefaultLabelStyle
-      {
-        Typeface = new Typeface(new FontFamily("Arial"), FontStyles.Normal, FontWeights.Bold, FontStretches.Normal),
-        TextSize = 20,
-        BackgroundPen = Pens.Green,
-        TextBrush = Brushes.White,
-        BackgroundBrush = Brushes.Green
+      var innerLabelStyle = new LabelStyle {
+          Typeface = new Typeface(new FontFamily("Arial"), FontStyles.Normal, FontWeights.Bold, FontStretches.Normal),
+          TextSize = 20,
+          BackgroundPen = Pens.Green,
+          TextBrush = Brushes.White,
+          BackgroundBrush = Brushes.Green
       };
-      var headerLabel = new SimpleLabel(null, "Page Header", FreeLabelModel.Instance.CreateAnchored(
-          new DynamicViewPoint(graphControl, 5, 30)))
-      {
-        Style = new ZoomInvariantLabelStyle(innerLabelStyle)
-      };
+      var headerLabel =
+          new SimpleLabel(new SimpleNode(), "Page Header",
+              FreeLabelModel.Instance.CreateAnchored(new DynamicViewPoint(graphControl, 5, 30))) {
+              Style = new ZoomInvariantLabelStyle(innerLabelStyle)
+          };
       // Adjust the size so that the text fits
       headerLabel.AdoptPreferredSizeFromStyle();
 
       // Since we don't have a model item for the label, we add the label's visual creator directly
       // to the scene graph
-      var headerCanvasObject = graphControl.RootGroup.AddChild(new PageHeaderVisualCreator(headerLabel));
+      var renderTree = graphControl.RenderTree;
+      var headerRenderTreeElement =
+          renderTree.CreateElement(renderTree.RootGroup, new PageHeaderVisualCreator(headerLabel));
 
-      var pageHeaderLabelEditHelper = new PageHeaderEditLabelHelper(headerLabel, headerCanvasObject);
-      headerLabel.LookupImplementation = Lookups.Single<IEditLabelHelper>(pageHeaderLabelEditHelper);
+      var pageHeaderLabelEditHelper = new PageHeaderEditLabelHelper(headerLabel, headerRenderTreeElement);
+      headerLabel.GetDecorator().EditLabelHelper.AddConstant(pageHeaderLabelEditHelper);
 
       return headerLabel;
     }
 
     /// <summary>
-    /// The <see cref="IEditLabelHelper"/> for the page header label.
+    ///   The <see cref="IEditLabelHelper"/> for the page header label.
     /// </summary>
     /// <remarks>
-    /// This class sets a special configuration for the zoom-invariant page header label to the
-    /// <see cref="TextEditorInputMode"/> and its text box, and restores their previous settings after editing.
+    ///   This class sets a special configuration for the zoom-invariant page header label to the
+    ///   <see cref="TextEditorInputMode"/> and its text box, and restores their previous settings after editing.
     /// </remarks>
-    public class PageHeaderEditLabelHelper : IEditLabelHelper
+    public sealed class PageHeaderEditLabelHelper : IEditLabelHelper
     {
-      private readonly ILabel label;
-      private readonly ICanvasObject labelCanvasObject;
+      private readonly SimpleLabel label;
+      private readonly IRenderTreeElement labelRenderTreeElement;
 
-      public PageHeaderEditLabelHelper(SimpleLabel label, ICanvasObject labelCanvasObject) {
+      public PageHeaderEditLabelHelper(SimpleLabel label, IRenderTreeElement labelRenderTreeElement) {
         this.label = label;
-        this.labelCanvasObject = labelCanvasObject;
+        this.labelRenderTreeElement = labelRenderTreeElement;
       }
 
-      public void OnLabelEditing(LabelEditingEventArgs args) {
-        args.TextEditorInputModeConfigurator = ConfigureTextEditorInputMode;
-        args.Label = label;
-        args.Handled = true;
+      public void Initialize(IInputModeContext context, LabelEditingEventArgs args, LabelEditingAction action) {
+        if (action == LabelEditingAction.Add) {
+          args.Cancel = true;
+        } else {
+          args.TextEditorInputModeConfigurator = ConfigureTextEditorInputMode;
+          args.Label = label;
+          args.Handled = true;
+        }
       }
 
-      public void OnLabelAdding(LabelEditingEventArgs args) {
-        args.Cancel = true;
+      public ILabel Finish(IInputModeContext context, LabelEditingEventArgs args, LabelEditingAction action) {
+        if (action == LabelEditingAction.Edit) {
+          if (label == null || label != args.Label || args.Text == label.Text) {
+            return null;
+          }
+          label.Text = args.Text;
+          return label;
+        }
+        return null;
       }
+
+      public void Cancel(IInputModeContext context, LabelEditingEventArgs args) { }
 
       private void ConfigureTextEditorInputMode(IInputModeContext context, TextEditorInputMode mode, ILabel label) {
-        var oldVisual = labelCanvasObject.Visible;
+        var oldVisible = labelRenderTreeElement.Visible;
 
         // We know that this label helper is only used once this demo is properly set up.
-        var graphEditorInputMode = (GraphEditorInputMode) context.CanvasControl.InputMode;
-        var textEditorInputMode = ((LabelEditingDemo.DemoTextEditorInputMode) graphEditorInputMode.TextEditorInputMode);
+        var graphEditorInputMode = (GraphEditorInputMode) context.CanvasControl.InputMode!;
+        var textEditorInputMode =
+            (LabelEditingDemo.DemoTextEditorInputMode) graphEditorInputMode.EditLabelInputMode.TextEditorInputMode;
 
         mode.TextBox.Background = Brushes.White;
         mode.TextBox.FontSize = 20;
@@ -119,15 +135,15 @@ namespace Demo.yFiles.Graph.Input.LabelEditing
 
         // Hide this label during editing if the corresponding setting is enabled.
         // This is only necessary since this label is not part of the graph.
-        if (graphEditorInputMode.HideLabelDuringEditing) {
-          labelCanvasObject.Visible = false;
+        if (graphEditorInputMode.EditLabelInputMode.HideLabelDuringEditing) {
+          labelRenderTreeElement.Visible = false;
         }
 
         // Restore after editing
         EventHandler<TextEventArgs> afterEditing = null;
         afterEditing = delegate {
           textEditorInputMode.ShowInViewCoordinatesProperty = false;
-          labelCanvasObject.Visible = oldVisual;
+          labelRenderTreeElement.Visible = oldVisible;
           mode.TextBox.ClearValue(Panel.BackgroundProperty);
           mode.TextBox.ClearValue(Control.FontSizeProperty);
           mode.TextEdited -= afterEditing;
@@ -138,7 +154,7 @@ namespace Demo.yFiles.Graph.Input.LabelEditing
       }
     }
 
-    private class PageHeaderVisualCreator : IVisualCreator
+    private sealed class PageHeaderVisualCreator : IVisualCreator
     {
       private readonly ILabel label;
 
@@ -156,9 +172,9 @@ namespace Demo.yFiles.Graph.Input.LabelEditing
     }
 
     /// <summary>
-    /// Provides a live view of the upper left corner of the view point.
+    ///   Provides a live view of the upper left corner of the view point.
     /// </summary>
-    private class DynamicViewPoint : IPoint
+    private sealed class DynamicViewPoint : IPoint
     {
       private readonly GraphControl graphControl;
       private readonly double dx;
@@ -171,19 +187,15 @@ namespace Demo.yFiles.Graph.Input.LabelEditing
       }
 
       /// <summary>
-      /// Returns the upper left X coordinate of the view plus a fixed zoom invariant offset.
+      ///   Returns the upper left X coordinate of the view plus a fixed zoom invariant offset.
       /// </summary>
-      public double X {
-        get { return graphControl.ViewPoint.X + dx / graphControl.Zoom; }
-      }
+      public double X => graphControl.ViewPoint.X + dx / graphControl.Zoom;
 
-      /// <summary>.
-      /// Returns the upper left Y coordinate of the view plus a fixed zoom invariant offset.
+      /// <summary>
+      ///   .
+      ///   Returns the upper left Y coordinate of the view plus a fixed zoom invariant offset.
       /// </summary>
-      public double Y {
-        get { return graphControl.ViewPoint.Y + dy / graphControl.Zoom; }
-      }
+      public double Y => graphControl.ViewPoint.Y + dy / graphControl.Zoom;
     }
-
   }
 }

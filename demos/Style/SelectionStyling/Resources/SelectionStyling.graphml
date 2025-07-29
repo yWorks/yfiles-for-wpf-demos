@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--Created by yFiles WPF 2.2-->
-<graphml xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/3.0" xmlns:y="http://www.yworks.com/xml/yfiles-common/3.0" xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/3.0/xaml" xmlns:demo="http://www.yworks.com/yFilesWPF/demos/SelectionStyling/1.0" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml.wpf/2.0/ygraphml.xsd " xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://graphml.graphdrawing.org/xmlns">
+<!--Created by yFiles WPF 4.0-->
+<graphml xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/3.0" xmlns:y="http://www.yworks.com/xml/yfiles-common/3.0"  xmlns:yx="http://www.yworks.com/xml/yfiles-common/4.0" xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/4.0/xaml" xmlns:demo="http://www.yworks.com/yFilesWPF/demos/SelectionStyling/1.0" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml.wpf/2.0/ygraphml.xsd " xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://graphml.graphdrawing.org/xmlns">
   <key id="d0" for="all" attr.name="UserTags" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/UserTags" />
   <key id="d1" for="node" attr.name="NodeLabels" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeLabels" />
   <key id="d2" for="node" attr.name="NodeGeometry" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeGeometry" />
@@ -19,8 +19,8 @@
   <key id="d9" attr.name="SharedData" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/SharedData" />
   <data key="d9">
     <y:SharedData>
-      <y:ExteriorLabelModel x:Key="2" Insets="15" />
-      <y:EdgeSegmentLabelModel x:Key="6" Distance="0" Angle="0" />
+      <yx:ExteriorNodeLabelModel x:Key="2" Margins="15" />
+      <yx:EdgeSegmentLabelModel x:Key="6" Distance="0" Angle="0" />
     </y:SharedData>
   </data>
   <graph id="G" edgedefault="directed">
@@ -33,7 +33,7 @@
           <y:Label>
             <y:Label.Text><![CDATA[Node 1]]></y:Label.Text>
             <y:Label.LayoutParameter>
-              <y:ExteriorLabelModelParameter Position="North" Model="{y:GraphMLReference 2}" />
+              <yx:ExteriorNodeLabelModelParameter Position="Top" Model="{y:GraphMLReference 2}" />
             </y:Label.LayoutParameter>
           </y:Label>
         </x:List>
@@ -50,7 +50,7 @@
           <y:Label>
             <y:Label.Text><![CDATA[Node 3]]></y:Label.Text>
             <y:Label.LayoutParameter>
-              <y:ExteriorLabelModelParameter Position="East" Model="{y:GraphMLReference 2}" />
+              <yx:ExteriorNodeLabelModelParameter Position="Left" Model="{y:GraphMLReference 2}" />
             </y:Label.LayoutParameter>
           </y:Label>
         </x:List>
@@ -67,7 +67,7 @@
           <y:Label>
             <y:Label.Text><![CDATA[Node 2]]></y:Label.Text>
             <y:Label.LayoutParameter>
-              <y:ExteriorLabelModelParameter Position="West" Model="{y:GraphMLReference 2}" />
+              <yx:ExteriorNodeLabelModelParameter Position="Left" Model="{y:GraphMLReference 2}" />
             </y:Label.LayoutParameter>
           </y:Label>
         </x:List>
@@ -87,7 +87,7 @@
           <y:Label>
             <y:Label.Text><![CDATA[Node 4]]></y:Label.Text>
             <y:Label.LayoutParameter>
-              <y:ExteriorLabelModelParameter Position="West" Model="{y:GraphMLReference 2}" />
+              <yx:ExteriorNodeLabelModelParameter Position="Left" Model="{y:GraphMLReference 2}" />
             </y:Label.LayoutParameter>
           </y:Label>
         </x:List>
@@ -104,7 +104,7 @@
           <y:Label>
             <y:Label.Text><![CDATA[Node 5]]></y:Label.Text>
             <y:Label.LayoutParameter>
-              <y:ExteriorLabelModelParameter Position="East" Model="{y:GraphMLReference 2}" />
+              <yx:ExteriorNodeLabelModelParameter Position="Right" Model="{y:GraphMLReference 2}" />
             </y:Label.LayoutParameter>
           </y:Label>
         </x:List>
@@ -124,7 +124,7 @@
           <y:Label>
             <y:Label.Text><![CDATA[Node 6]]></y:Label.Text>
             <y:Label.LayoutParameter>
-              <y:ExteriorLabelModelParameter Position="South" Model="{y:GraphMLReference 2}" />
+              <yx:ExteriorNodeLabelModelParameter Position="Bottom" Model="{y:GraphMLReference 2}" />
             </y:Label.LayoutParameter>
           </y:Label>
         </x:List>
@@ -144,7 +144,7 @@
           <y:Label>
             <y:Label.Text><![CDATA[Edge 2]]></y:Label.Text>
             <y:Label.LayoutParameter>
-              <y:EdgeSegmentLabelModelParameter SegmentRatio="0.30000000000000004" Model="{y:GraphMLReference 6}" />
+              <yx:EdgeSegmentLabelModelParameter SegmentRatio="0.30000000000000004" Model="{y:GraphMLReference 6}" />
             </y:Label.LayoutParameter>
           </y:Label>
         </x:List>
@@ -161,7 +161,7 @@
           <y:Label>
             <y:Label.Text><![CDATA[Edge 3]]></y:Label.Text>
             <y:Label.LayoutParameter>
-              <y:EdgeSegmentLabelModelParameter Model="{y:GraphMLReference 6}" />
+              <yx:EdgeSegmentLabelModelParameter Model="{y:GraphMLReference 6}" />
             </y:Label.LayoutParameter>
           </y:Label>
         </x:List>
@@ -178,7 +178,7 @@
           <y:Label>
             <y:Label.Text><![CDATA[Edge 1]]></y:Label.Text>
             <y:Label.LayoutParameter>
-              <y:EdgeSegmentLabelModelParameter Model="{y:GraphMLReference 6}" />
+              <yx:EdgeSegmentLabelModelParameter Model="{y:GraphMLReference 6}" />
             </y:Label.LayoutParameter>
           </y:Label>
         </x:List>

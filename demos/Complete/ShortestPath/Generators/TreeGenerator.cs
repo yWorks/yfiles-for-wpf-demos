@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -28,16 +28,15 @@
  ***************************************************************************/
 
 using System;
-using System.Collections.Generic;
 using yWorks.Graph;
 
 namespace Demo.Base.TreeGenerator
 {
-  ///<summary>
+  /// <summary>
   /// A class that creates tree structures. The size of the graph and other options
   /// may be specified. These options influence the properties of the created
   /// tree.
-  ///</summary>
+  /// </summary>
   public class TreeGenerator
   {
     /// <summary>
@@ -92,7 +91,7 @@ namespace Demo.Base.TreeGenerator
       nodes[0] = g.CreateNode();
       depth[0] = 0;
 
-      int saturatedCount = (maxDepth <= 0 || maxChildCount <= 0) ? 1 : 0;
+      int saturatedCount = maxDepth <= 0 || maxChildCount <= 0 ? 1 : 0;
 
       // create more nodes; create edges
       for (int childID = 1; childID < nodeCount && saturatedCount < childID; childID++) {
@@ -105,7 +104,7 @@ namespace Demo.Base.TreeGenerator
 
 
         if (g.OutDegree(parent) >= maxChildCount) {
-          //parent is saturated
+          // parent is saturated
           int parentDepth = depth[parentID];
           depth[parentID] = depth[saturatedCount];
           depth[saturatedCount] = parentDepth;
@@ -115,7 +114,7 @@ namespace Demo.Base.TreeGenerator
           saturatedCount++;
         }
         if (depth[childID] >= maxDepth) {
-          //child is saturated
+          // child is saturated
           int childDepth = depth[childID];
           depth[childID] = depth[saturatedCount];
           depth[saturatedCount] = childDepth;

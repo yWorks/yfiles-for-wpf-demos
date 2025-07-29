@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -33,43 +33,37 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Media;
-using System.Xml;
 
 namespace Demo.yFiles.Option.Handler
 {
-  
   /// <summary>
-  /// Used to classify option items into groups.
+  ///   Used to classify option items into groups.
   /// </summary>
   /// <remarks>OptionGroups can be nested.</remarks>
   public class OptionGroup : OptionItem, IOptionGroup, IEnumerable<IOptionItem>
   {
-    private readonly ObservableCollection<IOptionItem> children;
-    //used for direct access by item name
+    // used for direct access by item name
     private readonly IDictionary<string, IOptionItem> nameMap = new Dictionary<string, IOptionItem>();
 
     /// <summary>
-    /// Get or set the value of this item.
+    ///   Get or set the value of this item.
     /// </summary>
-    /// <remarks>Getting this property's value returns just a readonly list of all children, while
-    /// setting the property's  value has no effect and is silently ignored.</remarks>
-//    public override object Value {
-//      get { return children; }
-//      set {}
-//    }
-
-
-
+    /// <remarks>
+    ///   Getting this property's value returns just a readonly list of all children, while
+    ///   setting the property's  value has no effect and is silently ignored.
+    /// </remarks>
+    //    public override object Value {
+    //      get { return children; }
+    //      set {}
+    //    }
     IEnumerator<IOptionItem> IEnumerable<IOptionItem>.GetEnumerator() {
-      return children.GetEnumerator();
+      return Items.GetEnumerator();
     }
 
     IEnumerator IEnumerable.GetEnumerator() {
-      return ((IEnumerable<IOptionItem>)this).GetEnumerator();
+      return ((IEnumerable<IOptionItem>) this).GetEnumerator();
     }
 
 
@@ -77,24 +71,23 @@ namespace Demo.yFiles.Option.Handler
     public override object Lookup(Type type) {
       if (type == typeof(IOptionGroup)) {
         return this;
-      } else {
-        return base.Lookup(type);
       }
+      return base.Lookup(type);
     }
 
     /// <summary>
-    /// Return a readonly list of all children
+    ///   Return a read-only list of all children
     /// </summary>
-    public ObservableCollection<IOptionItem> Items {
-      get { return children; }
-    }
+    public ObservableCollection<IOptionItem> Items { get; }
 
     /// <summary>
-    /// Retrieve the child item with name <paramref name="index"/>
+    ///   Retrieve the child item with name <paramref name="index"/>.
     /// </summary>
-    /// <param name="index">The name of the item to find</param>
-    /// <returns>the child item with name <paramref name="index"/>, or <see langword="null"/>
-    /// if nno such child exists.</returns>
+    /// <param name="index">The name of the item to find.</param>
+    /// <returns>
+    ///   The child item with name <paramref name="index"/>, or <see langword="null"/>
+    ///   if no such child exists.
+    /// </returns>
     public IOptionItem this[string index] {
       get {
         IOptionItem retval;
@@ -104,42 +97,41 @@ namespace Demo.yFiles.Option.Handler
     }
 
     /// <summary>
-    /// Return the number of children.
+    ///   Return the number of children.
     /// </summary>
-    public int Count {
-      get { return children.Count; }
-    }
+    public int Count => Items.Count;
 
-    public OptionGroup() : this(string.Empty){}
+    public OptionGroup() : this(string.Empty) { }
 
     /// <summary>
-    /// Create new instance with the given <paramref name="name"/> and no children.
+    ///   Create a new instance with the given <paramref name="name"/> and no children.
     /// </summary>
     /// <param name="name">The name of the group</param>
-    public OptionGroup(string name)
-      : base(name) {
-      children = new ObservableCollection<IOptionItem>();
-      children.CollectionChanged += ChildrenOnCollectionChanged;
-      Type = typeof (object);
-      //Option groups don't support both elements
-      Attributes[OptionItem.SupportNullValueAttribute] = true;
-      Attributes[OptionItem.SupportUndefinedValueAttribute] = true;
+    public OptionGroup(string name) : base(name) {
+      Items = new ObservableCollection<IOptionItem>();
+      Items.CollectionChanged += ChildrenOnCollectionChanged;
+      Type = typeof(object);
+      // Option groups don't support both elements
+      Attributes[SupportNullValueAttribute] = true;
+      Attributes[SupportUndefinedValueAttribute] = true;
     }
 
-    private void ChildrenOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs) {
+    private void ChildrenOnCollectionChanged(
+        object sender,
+        NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs) {
       switch (notifyCollectionChangedEventArgs.Action) {
         case NotifyCollectionChangedAction.Add:
           foreach (var i in notifyCollectionChangedEventArgs.NewItems) {
-            IOptionItem item = (IOptionItem) i;
+            var item = (IOptionItem) i;
             item.Owner = this;
             nameMap.Add(item.Name, item);
-            //register for child notification events
+            // register for child notification events
             item.PropertyChanged += item_PropertyChanged;
           }
           break;
         case NotifyCollectionChangedAction.Remove:
           foreach (var i in notifyCollectionChangedEventArgs.OldItems) {
-            IOptionItem item = (IOptionItem)i;
+            var item = (IOptionItem) i;
             item.Owner = null;
             nameMap.Remove(item.Name);
             item.PropertyChanged -= item_PropertyChanged;
@@ -147,21 +139,21 @@ namespace Demo.yFiles.Option.Handler
           break;
         case NotifyCollectionChangedAction.Replace:
           foreach (var i in notifyCollectionChangedEventArgs.NewItems) {
-            IOptionItem item = (IOptionItem)i;
+            var item = (IOptionItem) i;
             item.Owner = this;
             nameMap.Add(item.Name, item);
-            //register for child notification events
+            // register for child notification events
             item.PropertyChanged += item_PropertyChanged;
           }
           foreach (var i in notifyCollectionChangedEventArgs.OldItems) {
-            IOptionItem item = (IOptionItem)i;
+            var item = (IOptionItem) i;
             item.Owner = null;
             nameMap.Remove(item.Name);
             item.PropertyChanged -= item_PropertyChanged;
           }
           break;
         case NotifyCollectionChangedAction.Reset:
-          foreach (var o in children) {
+          foreach (var o in Items) {
             o.Owner = this;
           }
           break;
@@ -171,44 +163,43 @@ namespace Demo.yFiles.Option.Handler
     }
 
     /// <summary>
-    /// Add a new <see cref="IOptionItem"/> to this group
+    ///   Add a new <see cref="IOptionItem"/> to this group
     /// </summary>
     /// <param name="item"></param>
     public virtual IOptionItem AddOptionItem(IOptionItem item) {
-      children.Add(item);
-//      if (item is IOwnerSettable) {
-//        ((IOwnerSettable)item).Owner = this;
-//      }
+      Items.Add(item);
+      //      if (item is IOwnerSettable) {
+      //        ((IOwnerSettable)item).Owner = this;
+      //      }
 
       return item;
     }
 
-    void item_PropertyChanged(object sender, PropertyChangedEventArgs e) {
-//      if (e is OptionValueChangedEventArgs) {
-//        OnValueChanged((OptionItem) sender,
-//                       ((OptionValueChangedEventArgs) e).OldValue, ((OptionValueChangedEventArgs) e).NewValue);
-//      }
+    private void item_PropertyChanged(object sender, PropertyChangedEventArgs e) {
+      //      if (e is OptionValueChangedEventArgs) {
+      //        OnValueChanged((OptionItem) sender,
+      //                       ((OptionValueChangedEventArgs) e).OldValue, ((OptionValueChangedEventArgs) e).NewValue);
+      //      }
     }
 
     /// <summary>
-    /// Remove the specified child.
+    ///   Remove the specified child.
     /// </summary>
     /// <param name="item">The child to remove</param>
     public virtual void RemoveOptionItem(IOptionItem item) {
-      children.Remove(item);
-      nameMap.Remove(item.Name); 
-//      if (item is IOwnerSettable) {
-//        ((IOwnerSettable)item).Owner = this;
-//      }
-
+      Items.Remove(item);
+      nameMap.Remove(item.Name);
+      //      if (item is IOwnerSettable) {
+      //        ((IOwnerSettable)item).Owner = this;
+      //      }
     }
 
     /// <summary>
-    /// Clear the list of all children
+    ///   Clear the list of all children.
     /// </summary>
     public void Clear() {
-      IList<IOptionItem> tmpList = new List<IOptionItem>(children);
-      foreach (IOptionItem item in tmpList) {
+      IList<IOptionItem> tmpList = new List<IOptionItem>(Items);
+      foreach (var item in tmpList) {
         if (item is IOptionGroup) {
           ((IOptionGroup) item).Items.Clear();
         }
@@ -217,42 +208,42 @@ namespace Demo.yFiles.Option.Handler
     }
 
     /// <summary>
-    /// Convenience method to add an <see cref="OptionItem"/> to this group
+    ///   Convenience method to add an <see cref="OptionItem"/> to this group
     /// </summary>
     /// <param name="itemName">The name of the item</param>
     /// <param name="initialValue">The initial value of the item</param>
     /// <returns>A new instance of <see cref="OptionItem"/></returns>
     public IOptionItem AddInt(string itemName, int initialValue) {
-      OptionItem newItem = new OptionItem(itemName) {Value = initialValue, Type = typeof(int)};
+      var newItem = new OptionItem(itemName) { Value = initialValue, Type = typeof(int) };
       AddOptionItem(newItem);
       return newItem;
     }
 
     /// <summary>
-    /// Convenience method to add an <see cref="OptionItem"/> to this group
+    ///   Convenience method to add an <see cref="OptionItem"/> to this group
     /// </summary>
     /// <param name="itemName">The name of the item</param>
     /// <param name="initialValue">The initial value of the item</param>
-    /// <param name="minValue">The minimum allowed value.</param>
-    /// <param name="maxValue">The maximum allowed value.</param>
+    /// <param name="minValue">The minimum allowed value</param>
+    /// <param name="maxValue">The maximum allowed value</param>
     /// <returns>A new instance of <see cref="OptionItem"/></returns>
     public IOptionItem AddInt(string itemName, int initialValue, int minValue, int maxValue) {
-      OptionItem newItem = new OptionItem(itemName) {Value = initialValue, Type = typeof(int)};
+      var newItem = new OptionItem(itemName) { Value = initialValue, Type = typeof(int) };
 #if UseDataAnnotations
       newItem.Attributes[OptionItem.ValidationAttributesAttribute] = new List<ValidationAttribute>()
                                                                   {new RangeAttribute(minValue, maxValue)};
 #else
-      newItem.Attributes[OptionItem.ValidationRulesAttribute] = new List<ValidationRule>()
-                                                                  {new RangeValidationRule<int>(minValue, maxValue)};
+      newItem.Attributes[ValidationRulesAttribute] =
+          new List<ValidationRule> { new RangeValidationRule<int>(minValue, maxValue) };
 #endif
       AddOptionItem(newItem);
       return newItem;
     }
 
     /// <summary>
-    /// Convenience method to add an <see cref="OptionItem"/> to this group
+    ///   Convenience method to add an <see cref="OptionItem"/> to this group
     /// </summary>
-    /// <remarks>The values of this item are constrained to be non negative, with no upper bound.</remarks>
+    /// <remarks>The values of this item are constrained to be non-negative, with no upper bound.</remarks>
     /// <param name="itemName">The name of the item</param>
     /// <param name="initialValue">The initial value of the item</param>
     /// <returns>A new instance of <see cref="OptionItem"/></returns>
@@ -261,53 +252,54 @@ namespace Demo.yFiles.Option.Handler
     }
 
     /// <summary>
-    /// Convenience method to add a <see cref="OptionItem"/> to this group
+    ///   Convenience method to add an <see cref="OptionItem"/> to this group
     /// </summary>
     /// <param name="itemName">The name of the item</param>
     /// <param name="initialValue">The initial value of the item</param>
     /// <returns>A new instance of <see cref="OptionItem"/></returns>
     public IOptionItem AddBool(string itemName, bool initialValue) {
-      OptionItem newItem = new OptionItem(itemName) {Value = initialValue, Type = typeof (bool)};
+      var newItem = new OptionItem(itemName) { Value = initialValue, Type = typeof(bool) };
       AddOptionItem(newItem);
       return newItem;
     }
 
     /// <summary>
-    /// Convenience method to add a <see cref="OptionItem"/> to this group
+    ///   Convenience method to add an <see cref="OptionItem"/> to this group
     /// </summary>
     /// <param name="itemName">The name of the item</param>
     /// <param name="initialValue">The initial value of the item</param>
     /// <returns>A new instance of <see cref="OptionItem"/></returns>
     public IOptionItem AddDouble(string itemName, double initialValue) {
-      OptionItem newItem = new OptionItem(itemName) { Value = initialValue, Type = typeof(double) };
+      var newItem = new OptionItem(itemName) { Value = initialValue, Type = typeof(double) };
       AddOptionItem(newItem);
       return newItem;
     }
-    
+
     /// <summary>
-    /// Convenience method to add a <see cref="OptionItem"/> to this group
+    ///   Convenience method to add a <see cref="OptionItem"/> to this group
     /// </summary>
     /// <param name="itemName">The name of the item</param>
     /// <param name="initialValue">The initial value of the item</param>
-    /// <param name="minValue">The minimum allowed value.</param>
-    /// <param name="maxValue">The maximum allowed value.</param>
+    /// <param name="minValue">The minimum allowed value</param>
+    /// <param name="maxValue">The maximum allowed value</param>
     /// <returns>A new instance of <see cref="OptionItem"/></returns>
     public IOptionItem AddDouble(string itemName, double initialValue, double minValue, double maxValue) {
-      OptionItem newItem = new OptionItem(itemName) { Value = initialValue, Type = typeof(double) };
+      var newItem = new OptionItem(itemName) { Value = initialValue, Type = typeof(double) };
 #if UseDataAnnotations
       newItem.Attributes[OptionItem.ValidationAttributesAttribute] = new List<ValidationAttribute>()
                                                                   {new RangeAttribute(minValue, maxValue)};
 #else
-      newItem.Attributes[OptionItem.ValidationRulesAttribute] = new List<ValidationRule>() { new RangeValidationRule<double>(minValue, maxValue) };
+      newItem.Attributes[ValidationRulesAttribute] =
+          new List<ValidationRule> { new RangeValidationRule<double>(minValue, maxValue) };
 #endif
       AddOptionItem(newItem);
       return newItem;
     }
 
     /// <summary>
-    /// Convenience method to add an <see cref="OptionItem"/> to this group
+    ///   Convenience method to add an <see cref="OptionItem"/> to this group
     /// </summary>
-    /// <remarks>The values of this item are constrained to be non negative, with no upper bound.</remarks>
+    /// <remarks>The values of this item are constrained to be non-negative, with no upper bound.</remarks>
     /// <param name="itemName">The name of the item</param>
     /// <param name="initialValue">The initial value of the item</param>
     /// <returns>A new instance of <see cref="OptionItem"/></returns>
@@ -316,56 +308,58 @@ namespace Demo.yFiles.Option.Handler
     }
 
     /// <summary>
-    /// Convenience method to add a <see cref="OptionItem"/> to this group
+    ///   Convenience method to add an <see cref="OptionItem"/> to this group
     /// </summary>
     /// <param name="itemName">The name of the item</param>
     /// <param name="initialValue">The initial value of the item</param>
     /// <returns>A new instance of <see cref="OptionItem"/></returns>
     public IOptionItem AddString(string itemName, string initialValue) {
-      OptionItem newItem = new OptionItem(itemName) { Value = initialValue, Type = typeof(string) };
+      var newItem = new OptionItem(itemName) { Value = initialValue, Type = typeof(string) };
       AddOptionItem(newItem);
       return newItem;
     }
 
     /// <summary>
-    /// Convenience method to add a <see cref="CollectionOptionItem{T}"/> to this group
+    ///   Convenience method to add a <see cref="CollectionOptionItem{T}"/> to this group
     /// </summary>
     /// <param name="itemName">The name of the item</param>
     /// <param name="domain">List of initial values for this item.</param>
     /// <param name="initialValue">The initial value of the item</param>
     /// <returns>A new instance of <see cref="CollectionOptionItem{T}"/></returns>
     public CollectionOptionItem<T> AddList<T>(string itemName, ICollection<T> domain, T initialValue) {
-      CollectionOptionItem<T> newItem = new CollectionOptionItem<T>(itemName, domain, initialValue);
+      var newItem = new CollectionOptionItem<T>(itemName, domain, initialValue);
       AddOptionItem(newItem);
       return newItem;
     }
 
     /// <summary>
-    /// Convenience method to add a OptionItem for <see cref="Color"/> values to this handler
+    ///   Convenience method to add an OptionItem for <see cref="Color"/> values to this handler
     /// </summary>
     /// <param name="itemName">The name of the item</param>
     /// <param name="initialValue">The initial value of the item</param>
     /// <returns>A new instance of <see cref="OptionItem"/></returns>
     public IOptionItem AddColor(string itemName, Color initialValue) {
-      OptionItem newItem = new OptionItem(itemName) { Value = initialValue, Type = typeof(Color) };
+      var newItem = new OptionItem(itemName) { Value = initialValue, Type = typeof(Color) };
       AddOptionItem(newItem);
       return newItem;
     }
 
     /// <summary>
-    /// Convenience method to add a <see cref="OptionGroup"/> to this handler
+    ///   Convenience method to add an <see cref="OptionGroup"/> to this handler
     /// </summary>
-    /// <param name="name">The name of the group where this item belongs to. If 
-    /// <see langword="null"/>, the item is added directly to the handler itself.</param>
+    /// <param name="name">
+    ///   The name of the group where this item belongs to. If
+    ///   <see langword="null"/>, the item is added directly to the handler itself.
+    /// </param>
     /// <returns>A new instance of <see cref="OptionGroup"/></returns>
     public OptionGroup AddGroup(string name) {
-      OptionGroup retval = new OptionGroup(name);
+      var retval = new OptionGroup(name);
       AddOptionItem(retval);
       return retval;
     }
 
     public IOptionItem Add<T>(string name, T value) {
-      return Add(new OptionItem(name) {Value = value, Type = typeof (T)});
+      return Add(new OptionItem(name) { Value = value, Type = typeof(T) });
     }
 
     public IOptionItem Add(IOptionItem optionItem) {

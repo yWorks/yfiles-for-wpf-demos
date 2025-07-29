@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -47,7 +47,15 @@ namespace Demo.yFiles.Graph.Bpmn.Util {
     /// <summary>
     /// The namespace URI for yFiles BPMN extensions to GraphML.
     /// </summary>
-    public const string YfilesBpmnNS = "http://www.yworks.com/xml/yfiles-bpmn/2.0";
+    public const string YfilesBpmnNS = "http://www.yworks.com/xml/yfiles-bpmn/3.0";
+
+    /// <summary>
+    /// The namespace URI for the older yFiles BPMN extensions to GraphML.
+    /// </summary>
+    /// <remarks>
+    /// This is the version of the label models with North, East, South, West parameter names.
+    /// </remarks>
+    public const string YfilesBpmnLegacyNS20 = "http://www.yworks.com/xml/yfiles-bpmn/2.0";
 
     /// <summary>
     /// The namespace URI for the older yFiles BPMN extensions to GraphML.
@@ -55,7 +63,7 @@ namespace Demo.yFiles.Graph.Bpmn.Util {
     /// <remarks>
     /// This is the version of the styles without changeable colors.
     /// </remarks>
-    public const string YfilesBpmnLegacyNS = "http://www.yworks.com/xml/yfiles-bpmn/1.0";
+    public const string YfilesBpmnLegacyNS10 = "http://www.yworks.com/xml/yfiles-bpmn/1.0";
 
     /// <summary>
     /// The default namespace prefix for <see cref="YfilesBpmnNS"/>.
@@ -121,32 +129,32 @@ namespace Demo.yFiles.Graph.Bpmn.Util {
 
     // Placement constants for where parts of item visualizations should appear
 
-    private static readonly InteriorLabelModel ilm2 = new InteriorLabelModel { Insets = new InsetsD(2) };
-    private static readonly InteriorLabelModel ilm6 = new InteriorLabelModel { Insets = new InsetsD(6) };
-    private static readonly InteriorStretchLabelModel islmInsideDoubleLine = new InteriorStretchLabelModel { Insets = new InsetsD(2 * DoubleLineOffset + 1) };
-    private static readonly ExteriorLabelModel elm15 = new ExteriorLabelModel { Insets = new InsetsD(15) };
+    private static readonly InteriorNodeLabelModel ilm2 = new InteriorNodeLabelModel { Padding = new InsetsD(2) };
+    private static readonly InteriorNodeLabelModel ilm6 = new InteriorNodeLabelModel { Padding = new InsetsD(6) };
+    private static readonly StretchNodeLabelModel islmInsideDoubleLine = new StretchNodeLabelModel { Padding = new InsetsD(2 * DoubleLineOffset + 1) };
+    private static readonly ExteriorNodeLabelModel elm15 = new ExteriorNodeLabelModel { Margins = new InsetsD(15) };
     private static readonly ScalingLabelModel slm = new ScalingLabelModel();
-    private static readonly ScalingLabelModel slm3 = new ScalingLabelModel { Insets = new InsetsD(3) };
-    public static readonly ILabelModelParameter TaskTypePlacement = ilm6.CreateParameter(InteriorLabelModel.Position.NorthWest);
-    public static readonly ILabelModelParameter TaskMarkerPlacement = islmInsideDoubleLine.CreateParameter(InteriorStretchLabelModel.Position.South);
-    public static readonly ILabelModelParameter ChoreographyMarkerPlacement = ilm2.CreateParameter(InteriorLabelModel.Position.South);
-    public static readonly ILabelModelParameter ChoreographyTopMessagePlacement = elm15.CreateParameter(ExteriorLabelModel.Position.North);
-    public static readonly ILabelModelParameter ChoreographyBottomMessagePlacement = elm15.CreateParameter(ExteriorLabelModel.Position.South);
+    private static readonly ScalingLabelModel slm3 = new ScalingLabelModel { Padding = new InsetsD(3) };
+    public static readonly ILabelModelParameter TaskTypePlacement = ilm6.CreateParameter(InteriorNodeLabelModel.Position.TopLeft);
+    public static readonly ILabelModelParameter TaskMarkerPlacement = islmInsideDoubleLine.CreateParameter(StretchNodeLabelModel.Position.Bottom);
+    public static readonly ILabelModelParameter ChoreographyMarkerPlacement = ilm2.CreateParameter(InteriorNodeLabelModel.Position.Bottom);
+    public static readonly ILabelModelParameter ChoreographyTopMessagePlacement = elm15.CreateParameter(ExteriorNodeLabelModel.Position.Top);
+    public static readonly ILabelModelParameter ChoreographyBottomMessagePlacement = elm15.CreateParameter(ExteriorNodeLabelModel.Position.Bottom);
     private static readonly double ratioWidthHeight = 1 / Math.Sin(Math.PI / 3.0);
     public static readonly ILabelModelParameter ConversationPlacement = slm.CreateScaledParameterWithRatio(1, ratioWidthHeight);
-    public static readonly ILabelModelParameter ConversationMarkerPlacement = ilm2.CreateParameter(InteriorLabelModel.Position.South);
-    public static readonly ILabelModelParameter DataObjectTypePlacement = ilm2.CreateParameter(InteriorLabelModel.Position.NorthWest);
-    public static readonly ILabelModelParameter DataObjectMarkerPlacement = ilm2.CreateParameter(InteriorLabelModel.Position.South);
+    public static readonly ILabelModelParameter ConversationMarkerPlacement = ilm2.CreateParameter(InteriorNodeLabelModel.Position.Bottom);
+    public static readonly ILabelModelParameter DataObjectTypePlacement = ilm2.CreateParameter(InteriorNodeLabelModel.Position.TopLeft);
+    public static readonly ILabelModelParameter DataObjectMarkerPlacement = ilm2.CreateParameter(InteriorNodeLabelModel.Position.Bottom);
     public static readonly ILabelModelParameter EventPlacement = slm.CreateScaledParameterWithRatio(1, 1);
     public static readonly ILabelModelParameter EventTypePlacement = slm3.CreateScaledParameterWithRatio(0.9, 1);
     public static readonly ILabelModelParameter GatewayPlacement = slm.CreateScaledParameterWithRatio(1, 1);
     public static readonly ILabelModelParameter GatewayTypePlacement = slm.CreateScaledParameterWithRatio(0.6, 1);
     public static readonly ILabelModelParameter EventTypeMessagePlacement = slm.CreateScaledParameterWithRatio(0.8, 1.4);
     public static readonly ILabelModelParameter ActivityTaskTypeMessagePlacement = slm.CreateScaledParameterWithRatio(1, 1.4);
-    public static readonly ILabelModelParameter DoubleLinePlacement = new InteriorStretchLabelModel { Insets = new InsetsD(DoubleLineOffset) }.CreateParameter(InteriorStretchLabelModel.Position.Center);
-    public static readonly ILabelModelParameter ThickLinePlacement = new InteriorStretchLabelModel { Insets = new InsetsD(DoubleLineOffset / 2) }.CreateParameter(InteriorStretchLabelModel.Position.Center);
-    public static readonly ILabelModelParameter InsideDoubleLinePlacement = islmInsideDoubleLine.CreateParameter(InteriorStretchLabelModel.Position.Center);
-    public static readonly ILabelModelParameter PoolNodeMarkerPlacement = ilm2.CreateParameter(InteriorLabelModel.Position.South);
+    public static readonly ILabelModelParameter DoubleLinePlacement = new StretchNodeLabelModel { Padding = new InsetsD(DoubleLineOffset) }.CreateParameter(StretchNodeLabelModel.Position.Center);
+    public static readonly ILabelModelParameter ThickLinePlacement = new StretchNodeLabelModel { Padding = new InsetsD(DoubleLineOffset / 2) }.CreateParameter(StretchNodeLabelModel.Position.Center);
+    public static readonly ILabelModelParameter InsideDoubleLinePlacement = islmInsideDoubleLine.CreateParameter(StretchNodeLabelModel.Position.Center);
+    public static readonly ILabelModelParameter PoolNodeMarkerPlacement = ilm2.CreateParameter(InteriorNodeLabelModel.Position.Bottom);
 
     // Default sizes for different items
 

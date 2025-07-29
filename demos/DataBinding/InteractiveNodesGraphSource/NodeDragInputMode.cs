@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -27,12 +27,12 @@
  ** 
  ***************************************************************************/
 
-using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using yWorks.Controls;
 using yWorks.Controls.Input;
 using yWorks.Graph;
+using yWorks.Utils;
 
 namespace Demo.yFiles.DataBinding.InteractiveNodesGraphSource {
 
@@ -47,40 +47,40 @@ namespace Demo.yFiles.DataBinding.InteractiveNodesGraphSource {
       base.Install(context, concurrencyController);
       // register the relevant events
       var canvas = context.CanvasControl;
-      canvas.Mouse2DPressed += CanvasOnMouse2DPressed;
-      canvas.Mouse2DReleased += CanvasOnMouse2DReleased;
-      canvas.Mouse2DDragged += CanvasOnMouse2DDragged;
+      canvas.PointerDown += CanvasOnPointerDown;
+      canvas.PointerUp += CanvasOnPointerUp;
+      canvas.PointerDrag += CanvasOnPointerDrag;
     }
 
     public override void Uninstall(IInputModeContext context) {
       base.Uninstall(context);
       // de-register the relevant events
       var canvas = context.CanvasControl;
-      canvas.Mouse2DPressed -= CanvasOnMouse2DPressed;
-      canvas.Mouse2DReleased -= CanvasOnMouse2DReleased;
-      canvas.Mouse2DDragged -= CanvasOnMouse2DDragged;
+      canvas.PointerDown -= CanvasOnPointerDown;
+      canvas.PointerUp -= CanvasOnPointerUp;
+      canvas.PointerDrag -= CanvasOnPointerDrag;
     }
 
-    private void CanvasOnMouse2DPressed(object sender, Mouse2DEventArgs me) {
+    private void CanvasOnPointerDown(object sender, PointerEventArgs me) {
       // get hitTester from context
-      var hitTest = InputModeContext.Lookup<IHitTester<INode>>();
+      var hitTest = ParentInputModeContext.Lookup<IHitTester>();
       // take first node and request mutex
-      node = hitTest.EnumerateHits(InputModeContext, me.Location).FirstOrDefault();
+      node = hitTest.EnumerateHits(ParentInputModeContext, me.Location, GraphItemTypes.Node).Cast<INode>().FirstOrDefault();
     }
 
-    private void CanvasOnMouse2DDragged(object sender, Mouse2DEventArgs me) {
+    private void CanvasOnPointerDrag(object sender, PointerEventArgs me) {
       if (node != null) {
         RequestMutex();
         // start drag and drop
         DataObject dao = new DataObject();
         dao.SetData(typeof (INode), node);
-        DragDrop.DoDragDrop(InputModeContext.CanvasControl, dao, DragDropEffects.Link | DragDropEffects.Copy | DragDropEffects.Move);
+        DragDrop.DoDragDrop(ParentInputModeContext.CanvasControl, dao, DragDropEffects.Link | DragDropEffects.Copy | DragDropEffects.Move);
         node = null;
         ReleaseMutex();
       }
     }
 
-    private void CanvasOnMouse2DReleased(object sender, Mouse2DEventArgs me) {
+    private void CanvasOnPointerUp(object sender, PointerEventArgs me) {
       Cancel();
     }
 

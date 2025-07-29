@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -31,21 +31,22 @@ using yWorks.Controls;
 using yWorks.Controls.Input;
 using yWorks.Graph;
 using yWorks.Graph.Styles;
+using yWorks.Utils;
 
 namespace Demo.yFiles.Graph.LargeGraphs.Styles
 {
   /// <summary>
-  ///   Simple <see cref="INodeStyle" /> wrapper to simplify changing every node's style.
+  ///   Simple <see cref="INodeStyle"/> wrapper to simplify changing every node's style.
   /// </summary>
   /// <remarks>
-  ///   This class also implements <see cref="INodeStyleRenderer" /> because renderer instances are tightly integrated with
+  ///   This class also implements <see cref="INodeStyleRenderer"/> because renderer instances are tightly integrated with
   ///   their styles and we cannot simply return another style's renderer from here.
   /// </remarks>
   public class WrapperNodeStyle : INodeStyle, INodeStyleRenderer
   {
     /// <summary>
-    ///   Initializes a new instance of the <see cref="WrapperNodeStyle" /> class, wrapping the given
-    ///   <see cref="INodeStyle" />.
+    ///   Initializes a new instance of the <see cref="WrapperNodeStyle"/> class, wrapping the given
+    ///   <see cref="INodeStyle"/>.
     /// </summary>
     /// <param name="style">The style to wrap.</param>
     public WrapperNodeStyle(INodeStyle style) {
@@ -59,51 +60,53 @@ namespace Demo.yFiles.Graph.LargeGraphs.Styles
 
     #region INodeStyle
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     public object Clone() {
       return MemberwiseClone();
     }
 
-    /// <inheritdoc />
-    public INodeStyleRenderer Renderer {
-      get { return this; }
-    }
+    /// <inheritdoc/>
+    public INodeStyleRenderer Renderer => this;
 
     #endregion
 
     #region INodeStyleRenderer
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     public IVisualCreator GetVisualCreator(INode node, INodeStyle style) {
       return Style.Renderer.GetVisualCreator(node, Style);
     }
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     public IBoundsProvider GetBoundsProvider(INode node, INodeStyle style) {
       return Style.Renderer.GetBoundsProvider(node, Style);
     }
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     public IVisibilityTestable GetVisibilityTestable(INode node, INodeStyle style) {
       return Style.Renderer.GetVisibilityTestable(node, Style);
     }
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     public IHitTestable GetHitTestable(INode node, INodeStyle style) {
       return Style.Renderer.GetHitTestable(node, Style);
     }
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     public IMarqueeTestable GetMarqueeTestable(INode node, INodeStyle style) {
       return Style.Renderer.GetMarqueeTestable(node, Style);
     }
 
-    /// <inheritdoc />
+    public ILassoTestable GetLassoTestable(INode node, INodeStyle style) {
+      return Style.Renderer.GetLassoTestable(node, Style);
+    }
+
+    /// <inheritdoc/>
     public ILookup GetContext(INode node, INodeStyle style) {
       return Style.Renderer.GetContext(node, Style);
     }
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     public IShapeGeometry GetShapeGeometry(INode node, INodeStyle style) {
       return Style.Renderer.GetShapeGeometry(node, Style);
     }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--Created by yFiles WPF 3.0-->
-<graphml xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/3.0/xaml" xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/3.0" xmlns:y="http://www.yworks.com/xml/yfiles-common/3.0" xmlns:bpmn="http://www.yworks.com/xml/yfiles-bpmn/1.0" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml.wpf/2.0/ygraphml.xsd " xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://graphml.graphdrawing.org/xmlns">
+<!--Created by yFiles WPF 4.0-->
+<graphml xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/4.0/xaml" xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/3.0" xmlns:y="http://www.yworks.com/xml/yfiles-common/3.0"  xmlns:yx="http://www.yworks.com/xml/yfiles-common/4.0" xmlns:bpmn="http://www.yworks.com/xml/yfiles-bpmn/3.0" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml.wpf/2.0/ygraphml.xsd " xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://graphml.graphdrawing.org/xmlns">
   <key id="d0" attr.type="boolean" attr.name="Expanded" for="node" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/folding/Expanded">
     <default>true</default>
   </key>
@@ -27,12 +27,12 @@
   <key id="d13" attr.name="SharedData" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/SharedData" />
   <data key="d13">
     <y:SharedData>
-      <y:InteriorLabelModelParameter x:Key="1" Position="Center">
-        <y:InteriorLabelModelParameter.Model>
-          <y:InteriorLabelModel />
-        </y:InteriorLabelModelParameter.Model>
-      </y:InteriorLabelModelParameter>
-      <ywpf:DefaultLabelStyle x:Key="2" Typeface="Arial,Normal,Normal,Normal" TextSize="10" />
+      <yx:InteriorNodeLabelModelParameter x:Key="1" Position="Center">
+        <yx:InteriorNodeLabelModelParameter.Model>
+          <yx:InteriorNodeLabelModel />
+        </yx:InteriorNodeLabelModelParameter.Model>
+      </yx:InteriorNodeLabelModelParameter>
+      <ywpf:LabelStyle x:Key="2" Typeface="Arial,Normal,Normal,Normal" TextSize="10" />
       <bpmn:BpmnEdgeStyle x:Key="3" />
       <bpmn:BpmnEdgeStyle x:Key="4" Type="DefaultFlow" />
     </y:SharedData>
@@ -242,11 +242,11 @@ Result]]></y:Label.Text>
                 <y:Label.Text><![CDATA[Result not
 plausible]]></y:Label.Text>
                 <y:Label.LayoutParameter>
-                  <y:ExteriorLabelModelParameter Position="East">
-                    <y:ExteriorLabelModelParameter.Model>
-                      <y:ExteriorLabelModel />
-                    </y:ExteriorLabelModelParameter.Model>
-                  </y:ExteriorLabelModelParameter>
+                  <yx:ExteriorNodeLabelModelParameter Position="Right">
+                    <yx:ExteriorNodeLabelModelParameter.Model>
+                      <yx:ExteriorNodeLabelModel />
+                    </yx:ExteriorNodeLabelModelParameter.Model>
+                  </yx:ExteriorNodeLabelModelParameter>
                 </y:Label.LayoutParameter>
               </y:Label>
             </x:List>
@@ -270,11 +270,11 @@ plausible]]></y:Label.Text>
                 <y:Label.Text><![CDATA[Equipment
 out of order]]></y:Label.Text>
                 <y:Label.LayoutParameter>
-                  <y:ExteriorLabelModelParameter Position="East">
-                    <y:ExteriorLabelModelParameter.Model>
-                      <y:ExteriorLabelModel />
-                    </y:ExteriorLabelModelParameter.Model>
-                  </y:ExteriorLabelModelParameter>
+                  <yx:ExteriorNodeLabelModelParameter Position="Right">
+                    <yx:ExteriorNodeLabelModelParameter.Model>
+                      <yx:ExteriorNodeLabelModel />
+                    </yx:ExteriorNodeLabelModelParameter.Model>
+                  </yx:ExteriorNodeLabelModelParameter>
                 </y:Label.LayoutParameter>
               </y:Label>
             </x:List>
@@ -343,11 +343,11 @@ out of order]]></y:Label.Text>
                 <y:Label.Text><![CDATA[Repair not
 successful]]></y:Label.Text>
                 <y:Label.LayoutParameter>
-                  <y:EdgeSegmentLabelModelParameter SideOfEdge="LeftOfEdge" SegmentRatio="0">
-                    <y:EdgeSegmentLabelModelParameter.Model>
-                      <y:EdgeSegmentLabelModel Distance="-4.94065645841247E-324" />
-                    </y:EdgeSegmentLabelModelParameter.Model>
-                  </y:EdgeSegmentLabelModelParameter>
+                  <yx:EdgeSegmentLabelModelParameter SideOfEdge="LeftOfEdge" SegmentRatio="0">
+                    <yx:EdgeSegmentLabelModelParameter.Model>
+                      <yx:EdgeSegmentLabelModel Distance="-4.94065645841247E-324" />
+                    </yx:EdgeSegmentLabelModelParameter.Model>
+                  </yx:EdgeSegmentLabelModelParameter>
                 </y:Label.LayoutParameter>
               </y:Label>
             </x:List>
@@ -363,11 +363,11 @@ successful]]></y:Label.Text>
                 <y:Label.Text><![CDATA[Result
 plausible]]></y:Label.Text>
                 <y:Label.LayoutParameter>
-                  <y:EdgeSegmentLabelModelParameter SideOfEdge="LeftOfEdge" SegmentRatio="0">
-                    <y:EdgeSegmentLabelModelParameter.Model>
-                      <y:EdgeSegmentLabelModel Distance="4.94065645841247E-324" />
-                    </y:EdgeSegmentLabelModelParameter.Model>
-                  </y:EdgeSegmentLabelModelParameter>
+                  <yx:EdgeSegmentLabelModelParameter SideOfEdge="LeftOfEdge" SegmentRatio="0">
+                    <yx:EdgeSegmentLabelModelParameter.Model>
+                      <yx:EdgeSegmentLabelModel Distance="4.94065645841247E-324" />
+                    </yx:EdgeSegmentLabelModelParameter.Model>
+                  </yx:EdgeSegmentLabelModelParameter>
                 </y:Label.LayoutParameter>
               </y:Label>
             </x:List>
@@ -383,11 +383,11 @@ plausible]]></y:Label.Text>
                 <y:Label.Text><![CDATA[Repair
 successful]]></y:Label.Text>
                 <y:Label.LayoutParameter>
-                  <y:EdgeSegmentLabelModelParameter SideOfEdge="LeftOfEdge" SegmentRatio="1">
-                    <y:EdgeSegmentLabelModelParameter.Model>
-                      <y:EdgeSegmentLabelModel Distance="0.99" />
-                    </y:EdgeSegmentLabelModelParameter.Model>
-                  </y:EdgeSegmentLabelModelParameter>
+                  <yx:EdgeSegmentLabelModelParameter SideOfEdge="LeftOfEdge" SegmentRatio="1">
+                    <yx:EdgeSegmentLabelModelParameter.Model>
+                      <yx:EdgeSegmentLabelModel Distance="0.99" />
+                    </yx:EdgeSegmentLabelModelParameter.Model>
+                  </yx:EdgeSegmentLabelModelParameter>
                 </y:Label.LayoutParameter>
               </y:Label>
             </x:List>

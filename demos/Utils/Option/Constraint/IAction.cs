@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -34,40 +34,42 @@ using Demo.yFiles.Option.View;
 namespace Demo.yFiles.Option.Constraint
 {
   /// <summary>
-  /// This interface describes the general contract for an action that can be used as a building block
-  /// in <see cref="IConstraint"/>s.
+  ///   This interface describes the general contract for an action that can be used as a building block
+  ///   in <see cref="IConstraint"/>s.
   /// </summary>
-  /// <remarks>The basic design pattern that should be follwed when implementing this interface is
-  /// to listen to <see cref="INotifyPropertyChanged.PropertyChanged"/> events on the
-  /// input objects and perform something on the <see cref="IModelView"/> where
-  /// this action is installed. For performance and consistency reasons,
-  /// registering to input changes should happen only on copies that are created for 
-  /// <see cref="IModelView"/> instances, <b>not</b> on the original instance itself. When the 
-  /// action is
-  /// used in an <see cref="IConstraint"/> constraint, it is the constraint's responsibility to
-  /// ensure that the action is registered and disposed for an actual <see cref="IModelView"/> 
-  /// by calling
-  /// <see cref="InstallInView"/>.
+  /// <remarks>
+  ///   The basic design pattern that should be followed when implementing this interface is
+  ///   to listen to <see cref="INotifyPropertyChanged.PropertyChanged"/> events on the
+  ///   input objects and perform something on the <see cref="IModelView"/> where
+  ///   this action is installed. For performance and consistency reasons,
+  ///   registering to input changes should happen only on copies that are created for
+  ///   <see cref="IModelView"/> instances, <b>not</b> on the original instance itself. When the
+  ///   action is
+  ///   used in an <see cref="IConstraint"/> constraint, it is the constraint's responsibility to
+  ///   ensure that the action is registered and disposed for an actual <see cref="IModelView"/>
+  ///   by calling
+  ///   <see cref="InstallInView"/>.
   /// </remarks>
   /// <seealso cref="ConditionBase"/>
   /// <seealso cref="IConstraint"/>
   /// <seealso cref="ConstraintManager"/>
   /// <seealso cref="INotifyPropertyChanged"/>
   /// <seealso cref="IModelView"/>
-  public interface IAction: IDisposable
+  public interface IAction : IDisposable
   {
     /// <summary>
-    /// Perform an action on the view where this action is registered.
+    ///   Perform an action on the view where this action is registered.
     /// </summary>
     /// <param name="source">The event source</param>
     /// <param name="statusInformation">The event parameters</param>
     void PerformAction(object source, ConditionTriggeredEventArgs statusInformation);
-    
+
     /// <summary>
-    /// Register this action into the given <paramref name="view"/>.
+    ///   Register this action into the given <paramref name="view"/>.
     /// </summary>
-    /// <param name="view">The view where the action should be regstered</param>
-    /// <returns>A copy of the action that is correctly configured to work on <paramref name="view"/>.
+    /// <param name="view">The view where the action should be registered</param>
+    /// <returns>
+    ///   A copy of the action that is correctly configured to work on <paramref name="view"/>.
     /// </returns>
     IAction InstallInView(IModelView view);
   }

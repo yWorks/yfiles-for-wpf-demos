@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -61,7 +61,7 @@ namespace Demo.yFiles.Graph.Bpmn.Legacy
 
     public bool Compensation { get; set; }
 
-    public InsetsD Insets { get; set; }
+    public InsetsD Padding { get; set; }
 
     public SizeD MinimumSize { get; set; }
 
@@ -74,7 +74,7 @@ namespace Demo.yFiles.Graph.Bpmn.Legacy
       SubState = SubState.None;
       AdHoc = false;
       Compensation = false;
-      Insets = new InsetsD(15);
+      Padding = new InsetsD(15);
       MinimumSize = SizeD.Empty;
     }
 
@@ -88,7 +88,7 @@ namespace Demo.yFiles.Graph.Bpmn.Legacy
           SubState = (Bpmn.SubState) SubState,
           AdHoc = AdHoc,
           Compensation = Compensation,
-          Insets = Insets,
+          Padding = Padding,
           MinimumSize = MinimumSize
       };
     }
@@ -112,15 +112,15 @@ namespace Demo.yFiles.Graph.Bpmn.Legacy
 
   public class AnnotationLabelStyleExtension : MarkupExtension
   {
-    public double Insets { get; set; }
+    public double Padding { get; set; }
 
     public AnnotationLabelStyleExtension() {
-      Insets = 5;
+      Padding = 5;
     }
 
     public override object ProvideValue(IServiceProvider serviceProvider) {
       return new AnnotationLabelStyle {
-          Insets = Insets,
+          Padding = Padding,
       };
     }
   }
@@ -149,7 +149,7 @@ namespace Demo.yFiles.Graph.Bpmn.Legacy
     public EdgeType Type { get; set; }
 
     public double SmoothingLength { get; set; }
-    
+
     public BpmnEdgeStyleExtension() {
       Type = EdgeType.SequenceFlow;
       SmoothingLength = 20;
@@ -167,8 +167,8 @@ namespace Demo.yFiles.Graph.Bpmn.Legacy
   {
     public static readonly ChoreographyLabelModel Instance = ChoreographyLabelModel.Instance;
     public static readonly ILabelModelParameter TaskNameBand = ChoreographyLabelModel.TaskNameBand;
-    public static readonly ILabelModelParameter NorthMessage = ChoreographyLabelModel.NorthMessage;
-    public static readonly ILabelModelParameter SouthMessage = ChoreographyLabelModel.SouthMessage;
+    public static readonly ILabelModelParameter NorthMessage = ChoreographyLabelModel.TopMessage;
+    public static readonly ILabelModelParameter SouthMessage = ChoreographyLabelModel.BottomMessage;
 
     public override object ProvideValue(IServiceProvider serviceProvider) {
       return ChoreographyLabelModel.Instance;
@@ -233,7 +233,7 @@ namespace Demo.yFiles.Graph.Bpmn.Legacy
       get { return bottomParticipants; }
     }
 
-    public InsetsD Insets { get; set; }
+    public InsetsD Padding { get; set; }
 
     public ChoreographyNodeStyleExtension() {
       Type = ChoreographyType.Task;
@@ -242,7 +242,7 @@ namespace Demo.yFiles.Graph.Bpmn.Legacy
       InitiatingMessage = false;
       ResponseMessage = false;
       InitiatingAtTop = true;
-      Insets = new InsetsD(5);
+      Padding = new InsetsD(5);
       MinimumSize = SizeD.Empty;
     }
 
@@ -254,7 +254,7 @@ namespace Demo.yFiles.Graph.Bpmn.Legacy
           InitiatingMessage = InitiatingMessage,
           ResponseMessage = ResponseMessage,
           InitiatingAtTop = InitiatingAtTop,
-          Insets = Insets,
+          Padding = Padding,
           MinimumSize = MinimumSize,
           InitiatingColor = Brushes.LightGray
       };
@@ -287,7 +287,7 @@ namespace Demo.yFiles.Graph.Bpmn.Legacy
     public ConversationNodeStyleExtension() {
       Type = ConversationType.Conversation;
     }
-    
+
     public override object ProvideValue(IServiceProvider serviceProvider) {
       return new ConversationNodeStyle {
           Type = (Bpmn.ConversationType) Type,
@@ -395,15 +395,15 @@ namespace Demo.yFiles.Graph.Bpmn.Legacy
 
   public class GroupNodeStyleExtension : MarkupExtension
   {
-    public InsetsD Insets { get; set; }
+    public InsetsD Padding { get; set; }
 
     public GroupNodeStyleExtension() {
-      Insets = new InsetsD(15);
+      Padding = new InsetsD(15);
     }
 
     public override object ProvideValue(IServiceProvider serviceProvider) {
       return new GroupNodeStyle {
-          Insets = Insets
+          Padding = Padding
       };
     }
   }
@@ -418,10 +418,10 @@ namespace Demo.yFiles.Graph.Bpmn.Legacy
   public class PoolHeaderLabelModelExtension : MarkupExtension
   {
     public static readonly PoolHeaderLabelModel Instance = PoolHeaderLabelModel.Instance;
-    public static readonly ILabelModelParameter North = PoolHeaderLabelModel.North;
-    public static readonly ILabelModelParameter East = PoolHeaderLabelModel.East;
-    public static readonly ILabelModelParameter South = PoolHeaderLabelModel.South;
-    public static readonly ILabelModelParameter West = PoolHeaderLabelModel.West;
+    public static readonly ILabelModelParameter North = PoolHeaderLabelModel.Top;
+    public static readonly ILabelModelParameter East = PoolHeaderLabelModel.Right;
+    public static readonly ILabelModelParameter South = PoolHeaderLabelModel.Bottom;
+    public static readonly ILabelModelParameter West = PoolHeaderLabelModel.Left;
 
     public override object ProvideValue(IServiceProvider serviceProvider) {
       return PoolHeaderLabelModel.Instance;

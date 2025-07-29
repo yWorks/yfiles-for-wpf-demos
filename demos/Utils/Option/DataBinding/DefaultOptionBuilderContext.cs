@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -30,36 +30,29 @@
 using System;
 using Demo.yFiles.Option.Constraint;
 using Demo.yFiles.Option.Handler;
-using Demo.yFiles.Option.DataBinding;
-using yWorks.Graph;
+using yWorks.Utils;
 
 namespace Demo.yFiles.Option.DataBinding
 {
   internal class DefaultOptionBuilderContext<T> : IOptionBuilderContext
   {
-    private ILookup innerLookup;
-    private IContextLookup contextLookup;
-    private ISelectionProvider<T> selectionProvider;
-    private string propertyPrefix = string.Empty;
-    private IOptionGroup parentGroup;
+    private readonly ISelectionProvider<T> selectionProvider;
+    private readonly string propertyPrefix = string.Empty;
+    private readonly IOptionGroup parentGroup;
+    private readonly ContextLookupDelegate contextLookup;
 
-
-    public DefaultOptionBuilderContext(ISelectionProvider<T> selectionProvider, IOptionGroup parentGroup) {
-      this.innerLookup = Lookups.Empty;
-      this.contextLookup = Lookups.EmptyContextLookup;
+    public DefaultOptionBuilderContext(
+        ISelectionProvider<T> selectionProvider,
+        IOptionGroup parentGroup,
+        ContextLookupDelegate contextLookup) {
+      InnerLookup = Lookups.Empty;
+      this.contextLookup = contextLookup;
       this.parentGroup = parentGroup;
       this.selectionProvider = selectionProvider;
     }
 
-    public ILookup InnerLookup {
-      get { return innerLookup; }
-      set { innerLookup = value; }
-    }
+    public ILookup InnerLookup { get; set; }
 
-    public IContextLookup ContextLookup {
-      get { return contextLookup; }
-      set { contextLookup = value; }
-    }
 
     public bool BindItem(IOptionItem item, string virtualPropertyName) {
       return BindItem(item, false, virtualPropertyName, true);
@@ -69,23 +62,28 @@ namespace Demo.yFiles.Option.DataBinding
     public bool BindItem(IOptionItem item, bool fullyQualifiedId, string id, bool addToOptionHandler) {
       if (fullyQualifiedId) {
         return BindItemHelper(item, id, parentGroup, selectionProvider, string.Empty, addToOptionHandler);
-      } else {
-        return BindItemHelper(item, id, parentGroup, selectionProvider, propertyPrefix, addToOptionHandler);
       }
+      return BindItemHelper(item, id, parentGroup, selectionProvider, propertyPrefix, addToOptionHandler);
     }
 
-    internal static bool BindItemHelper(IOptionItem item, string virtualPropertyName, IOptionGroup group, ISelectionProvider<T> selectionProvider, string prefix, bool addToOptionHandler) {
-      bool retval = false;
-      IOptionItemFilter<T> filter = item.Lookup<IOptionItemFilter<T>>();
-      string finalName = DefaultOptionBuilderContext<object>.CreatePrefix(prefix, virtualPropertyName);
+    internal static bool BindItemHelper(
+        IOptionItem item,
+        string virtualPropertyName,
+        IOptionGroup group,
+        ISelectionProvider<T> selectionProvider,
+        string prefix,
+        bool addToOptionHandler) {
+      var retval = false;
+      var filter = item.Lookup<IOptionItemFilter<T>>();
+      var finalName = DefaultOptionBuilderContext<object>.CreatePrefix(prefix, virtualPropertyName);
       OptionItemValidities validities;
       if (filter == null) {
         validities = CheckValidity(new DefaultOptionItemFilter<T>(finalName), selectionProvider);
       } else {
-        validities = CheckValidity(new DefaultOptionItemFilter<T>(finalName), selectionProvider)
-                   & CheckValidity(filter, selectionProvider);
+        validities = CheckValidity(new DefaultOptionItemFilter<T>(finalName), selectionProvider) &
+            CheckValidity(filter, selectionProvider);
       }
-      if (validities != OptionItemValidities.Invalid) { 
+      if (validities != OptionItemValidities.Invalid) {
         CompositeHandler<T>.Create(selectionProvider, finalName, item);
         if (addToOptionHandler) {
           group.Items.Add(item);
@@ -101,14 +99,13 @@ namespace Demo.yFiles.Option.DataBinding
     private static OptionItemValidities CheckValidity(IOptionItemFilter<T> filter, ISelectionProvider<T> selection) {
       if (filter != null) {
         return filter.CheckValidity(selection);
-      } else {
-        return OptionItemValidities.ReadWrite;
       }
+      return OptionItemValidities.ReadWrite;
     }
 
     public virtual IOptionBuilder GetOptionBuilder(object subject) {
-      IOptionBuilder builder = contextLookup.Lookup(subject, typeof(IOptionBuilder)) as IOptionBuilder;
-      if (builder != null){
+      var builder = contextLookup.Invoke(subject, typeof(IOptionBuilder)) as IOptionBuilder;
+      if (builder != null) {
         return builder;
       }
       if (subject != null) {
@@ -121,35 +118,33 @@ namespace Demo.yFiles.Option.DataBinding
     }
 
     private IOptionBuilder GetBuilder(Type type) {
-//      if (typeof(Brush).IsAssignableFrom(type)) {
-//        return new DefaultBrushOptionBuilder();
-//      }
-//      if (type == typeof(Pen)) {
-//        return new DefaultPenOptionBuilder();
-//      }
+      //      if (typeof(Brush).IsAssignableFrom(type)) {
+      //        return new DefaultBrushOptionBuilder();
+      //      }
+      //      if (type == typeof(Pen)) {
+      //        return new DefaultPenOptionBuilder();
+      //      }
       // TODO
-//      if(type == typeof(StringFormat)) {
-//        return new StringFormatOptionBuilder();
-//      }
+      //      if(type == typeof(StringFormat)) {
+      //        return new StringFormatOptionBuilder();
+      //      }
       return null;
     }
 
     public virtual IOptionBuilder GetOptionBuilder(Type type, object subject) {
       if (subject != null) {
         return GetOptionBuilder(subject);
-      } else {
-        IOptionBuilder builder = contextLookup.Lookup(type, typeof (IOptionBuilder)) as IOptionBuilder;
-        if (builder == null) {
-          builder = GetBuilder(type);
-          return builder != null ? builder : ReflectionHelper.GetOptionBuilderFromAttribute(type);
-        } else {
-          return builder;
-        }
       }
+      var builder = contextLookup.Invoke(type, typeof(IOptionBuilder)) as IOptionBuilder;
+      if (builder == null) {
+        builder = GetBuilder(type);
+        return builder != null ? builder : ReflectionHelper.GetOptionBuilderFromAttribute(type);
+      }
+      return builder;
     }
 
     public IOptionBuilderContext CreateChildContext(string prefix) {
-      return new ChildBuilderContext(this, this.propertyPrefix, prefix, selectionProvider);
+      return new ChildBuilderContext(this, propertyPrefix, prefix, selectionProvider);
     }
 
     internal static string CreatePrefix(string prefix, string suffix) {
@@ -167,17 +162,21 @@ namespace Demo.yFiles.Option.DataBinding
       private readonly IOptionBuilderContext parent;
       private readonly string propertyPrefix;
       private readonly ISelectionProvider<T> selectionProvider;
-      private IOptionGroup parentGroup;
+      private readonly IOptionGroup parentGroup;
 
-      internal ChildBuilderContext(IOptionBuilderContext context, string prefix, string groupName, ISelectionProvider<T> selectionProvider) {
-        IOptionGroup group = context.Lookup<IOptionGroup>();
+      internal ChildBuilderContext(
+          IOptionBuilderContext context,
+          string prefix,
+          string groupName,
+          ISelectionProvider<T> selectionProvider) {
+        var group = context.Lookup<IOptionGroup>();
         if (group != null && groupName != string.Empty) {
-          group.Items.Add(this.parentGroup  = new OptionGroup(groupName));
+          group.Items.Add(parentGroup = new OptionGroup(groupName));
         } else {
-          this.parentGroup = group;
+          parentGroup = group;
         }
-        this.parent = context;
-        this.propertyPrefix = CreatePrefix(prefix, groupName);
+        parent = context;
+        propertyPrefix = CreatePrefix(prefix, groupName);
         this.selectionProvider = selectionProvider;
       }
 
@@ -188,9 +187,8 @@ namespace Demo.yFiles.Option.DataBinding
       public bool BindItem(IOptionItem item, bool fullyQualifiedId, string id, bool addToOptionHandler) {
         if (fullyQualifiedId) {
           return BindItemHelper(item, id, parentGroup, selectionProvider, string.Empty, addToOptionHandler);
-        } else {
-          return BindItemHelper(item, id, parentGroup, selectionProvider, propertyPrefix, addToOptionHandler);
         }
+        return BindItemHelper(item, id, parentGroup, selectionProvider, propertyPrefix, addToOptionHandler);
       }
 
       public IOptionBuilder GetOptionBuilder(object subject) {
@@ -202,32 +200,31 @@ namespace Demo.yFiles.Option.DataBinding
       }
 
       public IOptionBuilderContext CreateChildContext(string prefix) {
-        return new ChildBuilderContext(this, this.propertyPrefix,prefix, selectionProvider);
+        return new ChildBuilderContext(this, propertyPrefix, prefix, selectionProvider);
       }
 
       public object Lookup(Type type) {
         if (type == typeof(IOptionGroup)) {
           return parentGroup;
-        } else {
-          return parent.Lookup(type);
         }
+        return parent.Lookup(type);
       }
     }
 
     public virtual object Lookup(Type type) {
       if (type == typeof(ConstraintManager)) {
-        object o = parentGroup.Lookup(type);
+        var o = parentGroup.Lookup(type);
         if (o != null) {
           return o;
         }
       }
       if (type == typeof(ISelectionProvider<T>)) {
         return selectionProvider;
-      } else if (type == typeof(IOptionGroup)) {
-        return parentGroup;
-      } else {
-        return innerLookup.Lookup(type);
       }
+      if (type == typeof(IOptionGroup)) {
+        return parentGroup;
+      }
+      return InnerLookup.Lookup(type);
     }
   }
 }

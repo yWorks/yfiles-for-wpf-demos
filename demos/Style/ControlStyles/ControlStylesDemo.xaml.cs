@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -120,13 +120,12 @@ namespace Demo.yFiles.Graph.ControlStyles
       var product  = targetPort.Owner.Tag as Product;
       if (customer != null && product != null) {
         var edge = graph.CreateEdge(sourcePort, targetPort, edgeStyle);
-        var relation = new Relation() {Customer = customer, Product = product};
+        var relation = new Relation {Customer = customer, Product = product};
         var label = graph.AddLabel(edge, relation.ToString());
         label.Tag = relation;
         return edge;
-      } else {
-        return null;
       }
+      return null;
     }
 
     /// <summary>
@@ -168,7 +167,7 @@ namespace Demo.yFiles.Graph.ControlStyles
     }
 
     /// <summary>
-    /// Creates a simple model - this method is not used in this demo - instead the graph is loaded from 
+    /// Creates a simple model - this method is not used in this demo - instead the graph is loaded from
     /// the included GraphML file.
     /// </summary>
     private void CreateModel() {
@@ -207,8 +206,8 @@ namespace Demo.yFiles.Graph.ControlStyles
 
       var products = new[]
                        {
-                         new Product("Donut Maker", 8971, true), 
-                         new Product("Snow Boots", 8972, true), 
+                         new Product("Donut Maker", 8971, true),
+                         new Product("Snow Boots", 8972, true),
                          new Product("Cowboy Hat", 8973, false),
                        };
 
@@ -244,7 +243,7 @@ namespace Demo.yFiles.Graph.ControlStyles
     }
 
     /// <summary>
-    /// Gets the currently registered IGraph instance from the GraphControl.
+    ///   Gets the currently registered <see cref="IGraph"/> instance from the GraphControl.
     /// </summary>
     public IGraph Graph {
       get { return graphControl.Graph; }

@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -29,7 +29,6 @@
 
 using System;
 using System.ComponentModel;
-using System.Linq;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Media;
@@ -43,7 +42,7 @@ using yWorks.Graph.Styles;
 namespace Demo.yFiles.Graph.Bpmn.Styles {
 
   /// <summary>
-  /// A <see cref="NodeStyleBase{TVisual}"/> implementation used as base class for nodes styles representing BPMN elements.
+  /// A <see cref="NodeStyleBase{TVisual}"/> implementation used as a base class for node styles representing BPMN elements.
   /// </summary>
   [Obfuscation(StripAfterObfuscation = false, Exclude = true, ApplyToMembers = false)]
   public class BpmnNodeStyle : NodeStyleBase<Visual> {
@@ -81,7 +80,7 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
       if (visual != null) {
         container.Add(visual);
       }
-      container.SetCanvasArrangeRect(new Rect(bounds.TopLeft, bounds.BottomRight));
+      container.SetCanvasArrangeRect(new Rect(bounds.GetTopLeft().ToPoint(), bounds.GetBottomRight().ToPoint()));
       container.SetRenderDataCache(new IconData {ModCount = ModCount, Bounds = bounds});
 
       return container;
@@ -108,8 +107,8 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
         return oldVisual;
       }
 
-      if (cache.Bounds.Size != newBounds.Size) {
-        RectD newIconBounds = new RectD(PointD.Origin, newBounds.Size);
+      if (cache.Bounds.GetSize() != newBounds.GetSize()) {
+        RectD newIconBounds = new RectD(PointD.Origin, newBounds.GetSize());
         Icon.SetBounds(newIconBounds);
 
         Visual oldIconVisual = null;
@@ -131,7 +130,7 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
           }
         }
       }
-      container.SetCanvasArrangeRect(new Rect(newBounds.TopLeft, newBounds.BottomRight));
+      container.SetCanvasArrangeRect(new Rect(newBounds.GetTopLeft().ToPoint(), newBounds.GetBottomRight().ToPoint()));
       cache.Bounds = newBounds;
 
       return container;
@@ -154,10 +153,10 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
     protected override object Lookup(INode node, Type type) {
       var lookup = base.Lookup(node, type);
       if (lookup == null && type == typeof(INodeSizeConstraintProvider)) {
-        if (!MinimumSize.IsEmpty) {
+        if (!MinimumSize.IsEmpty()) {
           return new NodeSizeConstraintProvider(MinimumSize, SizeD.Infinite);
         }
-      } 
+      }
       return lookup;
     }
   }
@@ -166,6 +165,6 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
   {
     public int ModCount { get; set; }
     public RectD Bounds { get; set; }
-    
+
   }
 }

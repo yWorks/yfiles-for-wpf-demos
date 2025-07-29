@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -34,85 +34,87 @@ using yWorks.Geometry;
 using yWorks.Graph;
 using yWorks.Layout;
 using yWorks.Layout.Partial;
+using yWorks.Utils;
 
 namespace Demo.yFiles.Graph.ComponentDragAndDrop
 {
   /// <summary>
-  /// Performs layout and animation during the drag and drop operation.
+  ///   Performs layout and animation during the drag and drop operation.
   /// </summary>
   internal class ClearAreaLayoutHelper
   {
     /// <summary>
-    /// We use the same <see cref="LayoutGraphAdapter"/> for one drag gesture.
+    ///   We use the same <see cref="LayoutGraphAdapter"/> for one drag gesture.
     /// </summary>
     private LayoutExecutor executor;
 
     /// <summary>
-    /// The graph that is displayed.
+    ///   The graph that is displayed.
     /// </summary>
-    private IGraph Graph {
-      get { return graphControl.Graph; }
-    }
+    private IGraph Graph => graphControl.Graph;
 
     /// <summary>
-    /// The control that displays the graph.
+    ///   The control that displays the graph.
     /// </summary>
     private readonly GraphControl graphControl;
 
     /// <summary>
-    /// The location of the last drag. Used to move the outline to the current mouse location.
+    ///   The location of the last drag. Used to move the outline to the current mouse location.
     /// </summary>
     private PointD oldLocation;
 
     /// <summary>
-    /// The original layout before the drag and drop operation has been started.
+    ///   The original layout before the drag and drop operation has been started.
     /// </summary>
-    private GivenCoordinatesStageData resetToOriginalGraphStageData;
+    private GivenCoordinatesLayoutData<INode, IEdge, ILabel, ILabel> resetToOriginalGraphLayoutData;
 
     /// <summary>
-    /// The location of the current drag.
+    ///   The location of the current drag.
     /// </summary>
     public PointD Location { get; set; }
 
     /// <summary>
-    /// The component that has been created by the drag and drop operation.
+    ///   The component that has been created by the drag and drop operation.
     /// </summary>
     public IGraph Component { get; set; }
 
     /// <summary>
-    /// The <see cref="ILayoutAlgorithm"/> that makes space for the dropped component.
+    ///   The <see cref="ILayoutAlgorithm"/> that makes space for the dropped component.
     /// </summary>
     private ClearAreaLayout clearAreaLayout;
 
     /// <summary>
-    /// Components that should not be modified by the layout.
+    ///   Components that should not be modified by the layout.
     /// </summary>
     private readonly DictionaryMapper<INode, object> components;
 
     #region Initialization
 
     /// <summary>
-    /// Initializes the helper.
+    ///   Initializes the helper.
     /// </summary>
     /// <param name="graphControl">The control that displays the graph.</param>
-    /// <param name="component">The component the is dragged.</param>
+    /// <param name="component">The component that is dragged.</param>
     /// <param name="components">Defines components that should not be separated by the layout algorithm.</param>
-    public ClearAreaLayoutHelper(GraphControl graphControl, IGraph component, DictionaryMapper<INode, object> components) {
+    public ClearAreaLayoutHelper(
+        GraphControl graphControl,
+        IGraph component,
+        DictionaryMapper<INode, object> components) {
       this.graphControl = graphControl;
-      this.oldLocation = GetCenter(component);
-      this.Component = component;
+      oldLocation = GetCenter(component);
+      Component = component;
       this.components = components;
     }
 
     /// <summary>
-    /// Returns the center of the <paramref name="graph"/>.
+    ///   Returns the center of the <paramref name="graph"/>.
     /// </summary>
     private PointD GetCenter(IGraph graph) {
       var bounds = RectD.Empty;
       foreach (var node in graph.Nodes) {
         bounds += node.Layout.ToRectD();
       }
-      return bounds.Center;
+      return bounds.GetCenter();
     }
 
     #endregion
@@ -120,10 +122,11 @@ namespace Demo.yFiles.Graph.ComponentDragAndDrop
     #region Layout executor configurations
 
     /// <summary>
-    /// Creates a <see cref="GivenCoordinatesStageData"/> that store the layout of nodes and edges.
+    ///   Creates a <see cref="GivenCoordinatesLayoutData{TNode,TEdge,TNodeLabel,TEdgeLabel}"/> that store the layout of nodes
+    ///   and edges.
     /// </summary>
-    private GivenCoordinatesStageData CreateGivenCoordinateStageData() {
-      var data = new GivenCoordinatesStageData();
+    private GivenCoordinatesLayoutData<INode, IEdge, ILabel, ILabel> CreateGivenCoordinateStageData() {
+      var data = new GivenCoordinatesLayoutData<INode, IEdge, ILabel, ILabel>();
       foreach (var node in Graph.Nodes) {
         data.NodeLocations.Mapper[node] = node.Layout.GetTopLeft();
         data.NodeSizes.Mapper[node] = node.Layout.GetSize();
@@ -135,25 +138,22 @@ namespace Demo.yFiles.Graph.ComponentDragAndDrop
     }
 
     /// <summary>
-    /// A <see cref="LayoutExecutor"/> that is used during the drag and drop operation.
+    ///   A <see cref="LayoutExecutor"/> that is used during the drag and drop operation.
     /// </summary>
     /// <remarks>
-    /// First, all nodes and edges are pushed back into place before the drag started. Then space 
-    /// is made for the component at its current position. The animation morphs all elements to the 
-    /// calculated positions.
+    ///   First, all nodes and edges are pushed back into place before the drag started. Then space
+    ///   is made for the component at its current position. The animation morphs all elements to the
+    ///   calculated positions.
     /// </remarks>
     private LayoutExecutor CreateDraggingLayoutExecutor() {
-      var layout = new GivenCoordinatesStage(
-          clearAreaLayout = new ClearAreaLayout {
-              ComponentAssignmentStrategy = ComponentAssignmentStrategy.Customized,
-              ClearAreaStrategy = ClearAreaStrategy.PreserveShapes
-          });
+      var layout = new GivenCoordinatesLayout(clearAreaLayout = new ClearAreaLayout {
+          ClearAreaStrategy = ClearAreaStrategy.PreserveShapes
+      });
 
-      var layoutData = new CompositeLayoutData(
-          resetToOriginalGraphStageData,
-          new ClearAreaLayoutData {
-              ComponentIds = { Mapper = components }
-          });
+      var clearAreaLayoutData = clearAreaLayout.CreateLayoutData(graphControl.Graph);
+      clearAreaLayoutData.ComponentIds.Mapper = components;
+      var layoutData =
+          graphControl.Graph.CreateCompositeLayoutData(resetToOriginalGraphLayoutData, clearAreaLayoutData);
 
       var items = new List<IModelItem>();
       items.AddRange(Component.Nodes);
@@ -161,52 +161,44 @@ namespace Demo.yFiles.Graph.ComponentDragAndDrop
       clearAreaLayout.ConfigureAreaOutline(items, 10);
 
       return new LayoutExecutor(graphControl, layout) {
-          LayoutData = layoutData,
-          RunInThread = true,
-          Duration = TimeSpan.FromMilliseconds(150)
+          AnimationDuration = TimeSpan.FromMilliseconds(150), AnimateViewport = false, LayoutData = layoutData
       };
     }
 
     /// <summary>
-    /// A <see cref="LayoutExecutor"/> that is used after the drag and drop operation has been
-    /// canceled.
+    ///   A <see cref="LayoutExecutor"/> that is used after the drag and drop operation has been canceled.
     /// </summary>
     /// <remarks>
-    /// All nodes and edges are pushed back into place before the drag started.
+    ///   All nodes and edges are pushed back into place before the drag started.
     /// </remarks>
     private LayoutExecutor CreateCanceledLayoutExecutor() {
-      return new LayoutExecutor(graphControl, new GivenCoordinatesStage()) {
-          LayoutData = resetToOriginalGraphStageData,
-          RunInThread = true,
-          Duration = TimeSpan.FromMilliseconds(150)
+      return new LayoutExecutor(graphControl, new GivenCoordinatesLayout()) {
+          AnimationDuration = TimeSpan.FromMilliseconds(150),
+          AnimateViewport = false,
+          LayoutData = resetToOriginalGraphLayoutData,
+          RunInThread = true
       };
     }
 
     /// <summary>
-    /// A <see cref="LayoutExecutor"/> that is used after the drag and drop operation is finished.
+    ///   A <see cref="LayoutExecutor"/> that is used after the drag and drop operation is finished.
     /// </summary>
     /// <remarks>
-    /// All nodes and edges are pushed back into place before the drag started. Then space is made
-    /// for the component that has been dropped.
+    ///   All nodes and edges are pushed back into place before the drag started. Then space is made
+    ///   for the component that has been dropped.
     /// </remarks>
     private LayoutExecutor CreateFinishedLayoutExecutor() {
-      var layout = new GivenCoordinatesStage(
-          new ClearAreaLayout {
-              ComponentAssignmentStrategy = ComponentAssignmentStrategy.Customized,
-              ClearAreaStrategy = ClearAreaStrategy.PreserveShapes
-          });
+      var clearAreaLayout = new ClearAreaLayout { ClearAreaStrategy = ClearAreaStrategy.PreserveShapes };
+      var layout = new GivenCoordinatesLayout(clearAreaLayout);
 
-      var layoutData = new CompositeLayoutData(
-          resetToOriginalGraphStageData,
-          new ClearAreaLayoutData {
-              AreaNodes = { Source = Component.Nodes },
-              ComponentIds = { Mapper = components }
-          });
+      var clearAreaLayoutData = clearAreaLayout.CreateLayoutData(graphControl.Graph);
+      clearAreaLayoutData.AreaNodes.Source = Component.Nodes;
+      clearAreaLayoutData.ComponentIds.Mapper = components;
+      var layoutData =
+          graphControl.Graph.CreateCompositeLayoutData(resetToOriginalGraphLayoutData, clearAreaLayoutData);
 
       return new LayoutExecutor(graphControl, layout) {
-          LayoutData = layoutData,
-          RunInThread = true,
-          Duration = TimeSpan.FromMilliseconds(150)
+          AnimationDuration = TimeSpan.FromMilliseconds(150), AnimateViewport = false, LayoutData = layoutData
       };
     }
 
@@ -215,27 +207,27 @@ namespace Demo.yFiles.Graph.ComponentDragAndDrop
     #region Layout execution
 
     /// <summary>
-    /// A lock which prevents re-entrant layout execution.
+    ///   A lock which prevents re-entrant layout execution.
     /// </summary>
     private bool layoutIsRunning;
 
     /// <summary>
-    /// Indicates whether a layout run has been requested while running a layout calculation.
+    ///   Indicates whether a layout run has been requested while running a layout calculation.
     /// </summary>
     private bool layoutPending;
 
     /// <summary>
-    /// Indicates that the executor has been canceled and the original layout should be restored.
+    ///   Indicates that the executor has been canceled and the original layout should be restored.
     /// </summary>
     private bool canceled;
 
     /// <summary>
-    /// Indicates that the final layout should be calculated.
+    ///   Indicates that the final layout should be calculated.
     /// </summary>
     private bool finished;
 
     /// <summary>
-    /// Starts a layout calculation if none is already running.
+    ///   Starts a layout calculation if none is already running.
     /// </summary>
     public async void RunLayout() {
       if (layoutIsRunning) {
@@ -256,7 +248,7 @@ namespace Demo.yFiles.Graph.ComponentDragAndDrop
           // calculate the final layout
           executor = CreateFinishedLayoutExecutor();
         } else {
-          // update the location of the components outline
+          // update the location of the component's outline
           UpdateOutline();
         }
         await executor.Start();
@@ -267,29 +259,35 @@ namespace Demo.yFiles.Graph.ComponentDragAndDrop
     }
 
     /// <summary>
-    /// Prepares the layout execution.
+    ///   Prepares the layout execution.
     /// </summary>
     public void InitializeLayout() {
-      resetToOriginalGraphStageData = CreateGivenCoordinateStageData();
+      resetToOriginalGraphLayoutData = CreateGivenCoordinateStageData();
       executor = CreateDraggingLayoutExecutor();
     }
 
     /// <summary>
-    /// Cancels the current layout calculation.
+    ///   Cancels the current layout calculation.
     /// </summary>
     public void CancelLayout() {
-        executor.Stop();
-        canceled = true;
-        RunLayout();
+      executor.Stop();
+      canceled = true;
+      if (layoutIsRunning) {
+        // if layout is running, append another 'cancel' layout run
+        layoutPending = true;
+      }
     }
 
     /// <summary>
-    /// Finishes the current layout calculation.
+    ///   Finishes the current layout calculation.
     /// </summary>
     public void FinishLayout() {
       executor.Stop();
       finished = true;
-      RunLayout();
+      if (layoutIsRunning) {
+        // if layout is running, append another 'finish' layout run
+        layoutPending = true;
+      }
     }
 
     #endregion
@@ -297,7 +295,7 @@ namespace Demo.yFiles.Graph.ComponentDragAndDrop
     #region Outline
 
     /// <summary>
-    /// Moves the <see cref="ClearAreaLayout.AreaOutline"/> to the current drag location.
+    ///   Moves the <see cref="ClearAreaLayout.AreaOutline"/> to the current drag location.
     /// </summary>
     private void UpdateOutline() {
       if (Location != oldLocation) {
@@ -308,6 +306,5 @@ namespace Demo.yFiles.Graph.ComponentDragAndDrop
     }
 
     #endregion
-
   }
 }

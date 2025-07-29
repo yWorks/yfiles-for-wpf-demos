@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -39,79 +39,76 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Xml;
 using yWorks.Controls;
-using yWorks.Algorithms;
-using yWorks.Algorithms.Geometry;
-using yWorks.Layout;
-using yWorks.Layout.Tree;
 using yWorks.Controls.Input;
 using yWorks.Geometry;
 using yWorks.Graph;
 using yWorks.Graph.Styles;
-using Application = System.Windows.Application;
-using LineSegment = yWorks.Algorithms.Geometry.LineSegment;
+using yWorks.Layout;
+using yWorks.Layout.Graph;
+using yWorks.Layout.Tree;
+using yWorks.Utils;
+using LineSegment = yWorks.Geometry.LineSegment;
 
 namespace Demo.yFiles.Graph.OrgChart
 {
   /// <summary>
-  /// Interaction logic for OrgChartWindow.xaml
+  ///   Interaction logic for OrgChartWindow.xaml
   /// </summary>
   public partial class OrgChartWindow
   {
     public OrgChartWindow() {
       InitializeComponent();
-      hiddenNodesSet = new System.Collections.Generic.HashSet<INode>();
+      hiddenNodesSet = new HashSet<INode>();
     }
 
 
     /// <summary>
-    /// The command that can be used by the buttons to show the parent node.
+    ///   The command that can be used by the buttons to show the parent node.
     /// </summary>
     /// <remarks>
-    /// This command requires the corresponding <see cref="INode"/> as the <see cref="System.Windows.Input.ExecutedRoutedEventArgs.Parameter"/>.
+    ///   This command requires the corresponding <see cref="INode"/> as the
+    ///   <see cref="System.Windows.Input.ExecutedRoutedEventArgs.Parameter"/>.
     /// </remarks>
-    public static readonly RoutedUICommand ShowParentCommand = new RoutedUICommand("Show Parent", "ShowParent",
-                                                                            typeof(OrgChartWindow));
+    public static readonly RoutedUICommand ShowParentCommand = new("Show Parent", "ShowParent", typeof(OrgChartWindow));
 
     /// <summary>
-    /// The command that can be used by the buttons to hide the parent node.
+    ///   The command that can be used by the buttons to hide the parent node.
     /// </summary>
     /// <remarks>
-    /// This command requires the corresponding <see cref="INode"/> as the <see cref="ExecutedRoutedEventArgs.Parameter"/>.
+    ///   This command requires the corresponding <see cref="INode"/> as the <see cref="ExecutedRoutedEventArgs.Parameter"/>.
     /// </remarks>
-    public static readonly RoutedUICommand HideParentCommand = new RoutedUICommand("Hide Parent", "HideParent",
-                                                                            typeof(OrgChartWindow));
+    public static readonly RoutedUICommand HideParentCommand = new("Hide Parent", "HideParent", typeof(OrgChartWindow));
 
     /// <summary>
-    /// The command that can be used by the buttons to show the child nodes.
+    ///   The command that can be used by the buttons to show the child nodes.
     /// </summary>
     /// <remarks>
-    /// This command requires the corresponding <see cref="INode"/> as the <see cref="ExecutedRoutedEventArgs.Parameter"/>.
+    ///   This command requires the corresponding <see cref="INode"/> as the <see cref="ExecutedRoutedEventArgs.Parameter"/>.
     /// </remarks>
-    public static readonly RoutedUICommand ShowChildrenCommand = new RoutedUICommand("Show Children", "ShowChildren",
-                                                                            typeof(OrgChartWindow));
+    public static readonly RoutedUICommand ShowChildrenCommand = new("Show Children", "ShowChildren",
+        typeof(OrgChartWindow));
 
     /// <summary>
-    /// The command that can be used by the buttons to hide the child nodes.
+    ///   The command that can be used by the buttons to hide the child nodes.
     /// </summary>
     /// <remarks>
-    /// This command requires the corresponding <see cref="INode"/> as the <see cref="ExecutedRoutedEventArgs.Parameter"/>.
+    ///   This command requires the corresponding <see cref="INode"/> as the <see cref="ExecutedRoutedEventArgs.Parameter"/>.
     /// </remarks>
-    public static readonly RoutedUICommand HideChildrenCommand = new RoutedUICommand("Hide Children", "HideChildren",
-                                                                            typeof(OrgChartWindow));
+    public static readonly RoutedUICommand HideChildrenCommand = new("Hide Children", "HideChildren",
+        typeof(OrgChartWindow));
 
     /// <summary>
-    /// The command that can be used by the buttons to expand all collapsed nodes.
+    ///   The command that can be used by the buttons to expand all collapsed nodes.
     /// </summary>
-    public static readonly RoutedUICommand ShowAllCommand = new RoutedUICommand("Show All", "ShowAll",
-                                                                            typeof(OrgChartWindow));
+    public static readonly RoutedUICommand ShowAllCommand = new("Show All", "ShowAll", typeof(OrgChartWindow));
 
     /// <summary>
-    /// Used by the predicate function to determine which nodes should not be shown.
+    ///   Used by the predicate function to determine which nodes should not be shown.
     /// </summary>
-    private readonly System.Collections.Generic.HashSet<INode> hiddenNodesSet;
+    private readonly HashSet<INode> hiddenNodesSet;
 
     /// <summary>
-    /// The filtered graph instance that hides nodes from the to create smaller graphs for easier navigation.
+    ///   The filtered graph instance that hides nodes from the to create smaller graphs for easier navigation.
     /// </summary>
     private FilteredGraphWrapper filteredGraphWrapper;
 
@@ -119,13 +116,15 @@ namespace Demo.yFiles.Graph.OrgChart
       InitializeGraph();
 
       // register command bindings
-      graphControl.CommandBindings.Add(new CommandBinding(HideChildrenCommand, HideChildrenExecuted, CanExecuteHideChildren));
-      graphControl.CommandBindings.Add(new CommandBinding(ShowChildrenCommand, ShowChildrenExecuted, CanExecuteShowChildren));
+      graphControl.CommandBindings.Add(new CommandBinding(HideChildrenCommand, HideChildrenExecuted,
+          CanExecuteHideChildren));
+      graphControl.CommandBindings.Add(new CommandBinding(ShowChildrenCommand, ShowChildrenExecuted,
+          CanExecuteShowChildren));
       graphControl.CommandBindings.Add(new CommandBinding(HideParentCommand, HideParentExecuted, CanExecuteHideParent));
       graphControl.CommandBindings.Add(new CommandBinding(ShowParentCommand, ShowParentExecuted, CanExecuteShowParent));
       graphControl.CommandBindings.Add(new CommandBinding(ShowAllCommand, ShowAllExecuted, CanExecuteShowAll));
 
-      // disable selection, focus and highlight painting
+      // disable selection, focus and highlight rendering
       GraphControl.SelectionIndicatorManager.Enabled = false;
       GraphControl.FocusIndicatorManager.Enabled = false;
       GraphControl.HighlightIndicatorManager.Enabled = false;
@@ -142,7 +141,7 @@ namespace Demo.yFiles.Graph.OrgChart
     }
 
     /// <summary>
-    /// Called when an item has been double clicked.
+    ///   Called when an item has been double clicked.
     /// </summary>
     /// <param name="o">The source of the event.</param>
     /// <param name="itemClickedEventArgs">The event argument instance containing the event data.</param>
@@ -152,12 +151,12 @@ namespace Demo.yFiles.Graph.OrgChart
     }
 
     private void InitializeGraph() {
-      // create new nodestyle that delegates to other 
+      // create new nodestyle that delegates to other
       // styles for different zoom ranges
       var nodeStyle = new NodeControlNodeStyle("EmployeeNodeControlStyle");
 
       graphControl.CurrentItemChanged += graphControl_CurrentItemChanged;
-      
+
       graphControl.Graph.NodeDefaults.Style = nodeStyle;
       graphControl.Graph.NodeDefaults.Size = new SizeD(250, 100);
 
@@ -165,75 +164,83 @@ namespace Demo.yFiles.Graph.OrgChart
     }
 
     /// <summary>
-    /// The predicate used for the FilterGraphWrapper
+    ///   The predicate used for the FilterGraphWrapper
     /// </summary>
     /// <param name="obj"></param>
-    /// <returns></returns>
     private bool ShouldShowNode(INode obj) {
       return !hiddenNodesSet.Contains(obj);
     }
 
     private void LimitViewport() {
-      GraphControl.UpdateContentRect();
-      ViewportLimiter limiter = GraphControl.ViewportLimiter;
-      limiter.HonorBothDimensions = false;
-      limiter.Bounds = GraphControl.ContentRect.GetEnlarged(100);
+      GraphControl.UpdateContentBounds();
+      GraphControl.ViewportLimiter.Policy = ViewportLimitingPolicy.TowardsLimit;
     }
 
     /// <summary>
-    /// Gets the GraphControl instance used in the form.
+    ///   Gets the GraphControl instance used in the form.
     /// </summary>
-    public GraphControl GraphControl {
-      get { return graphControl; }
-    }
+    public GraphControl GraphControl => graphControl;
 
     #region Tree Layout Configuration and initial execution
 
     /// <summary>
-    /// Does a tree layout of the graph.
-    /// The layout and assistant attributes from the business data of the employees are used to
-    /// guide the the layout.
+    ///   Does a tree layout of the graph.
+    ///   The layout and assistant attributes from the business data of the employees are used to
+    ///   guide the layout.
     /// </summary>
     public void DoLayout() {
-      IGraph tree = graphControl.Graph;
+      var tree = graphControl.Graph;
       var layoutData = CreateLayoutData(tree, null);
       tree.ApplyLayout(new BendDuplicatorStage(new TreeLayout()), layoutData);
     }
 
-    private static LayoutData CreateLayoutData(IGraph tree, INode centerNode) {
-      var data = new TreeLayoutData
-      {
-        NodePlacers = { Delegate = delegate(INode node) {
-          var employee = node.Tag as XmlElement;
-          if (tree.OutDegree(node) == 0 || employee == null) {
-            return null;
+    private static LayoutData<INode, IEdge, ILabel, ILabel> CreateLayoutData(IGraph tree, INode centerNode) {
+      var data = new TreeLayoutData<INode, IEdge, ILabel, ILabel> {
+          SubtreePlacers = {
+              MapperFunction = delegate(INode node) {
+                var employee = node.Tag as XmlElement;
+                if (tree.OutDegree(node) == 0 || employee == null) {
+                  return null;
+                }
+                var layout = employee.GetAttribute("layout");
+                switch (layout) {
+                  case "rightHanging":
+                    return new AssistantSubtreePlacer {
+                        ChildSubtreePlacer = new SingleLayerSubtreePlacer(SubtreeTransform.RotateLeftFlipY,
+                            SingleLayerSubtreePlacerRootAlignment.LeadingOnBus,
+                            SingleLayerSubtreePlacerRoutingStyle.OrthogonalAtRoot, 30, 30)
+                    };
+                  case "leftHanging":
+                    return new AssistantSubtreePlacer {
+                        ChildSubtreePlacer = new SingleLayerSubtreePlacer(SubtreeTransform.RotateRight,
+                            SingleLayerSubtreePlacerRootAlignment.LeadingOnBus,
+                            SingleLayerSubtreePlacerRoutingStyle.OrthogonalAtRoot, 30, 30)
+                    };
+                  case "bothHanging":
+                    return new AssistantSubtreePlacer {
+                        ChildSubtreePlacer = new LeftRightSubtreePlacer { PlaceLastOnBottom = false }
+                    };
+                  default:
+                    return new AssistantSubtreePlacer {
+                        ChildSubtreePlacer = new SingleLayerSubtreePlacer(SubtreeTransform.None,
+                            SingleLayerSubtreePlacerRootAlignment.Median, verticalDistance : 30,
+                            horizontalDistance : 30)
+                    };
+                }
+              }
+          },
+          AssistantNodes = {
+              Predicate = delegate(INode node) {
+                var employee = node.Tag as XmlElement;
+                var assistant = employee != null ? employee.Attributes["assistant"] : null;
+                return assistant != null && assistant.Value == "true";
+              }
           }
-          var layout = employee.GetAttribute("layout");
-          switch (layout) {
-            case "rightHanging":
-              return new AssistantNodePlacer() {
-                ChildNodePlacer = new DefaultNodePlacer(ChildPlacement.VerticalToRight, RootAlignment.LeadingOnBus, 30, 30) {RoutingStyle = RoutingStyle.ForkAtRoot}
-              };
-            case "leftHanging":
-              return new AssistantNodePlacer() {
-                ChildNodePlacer = new DefaultNodePlacer(ChildPlacement.VerticalToLeft, RootAlignment.LeadingOnBus, 30, 30) {RoutingStyle = RoutingStyle.ForkAtRoot}
-              };
-            case "bothHanging":
-              return new AssistantNodePlacer() {
-                ChildNodePlacer = new LeftRightNodePlacer() {PlaceLastOnBottom = false}};
-            default:
-              return new AssistantNodePlacer() {
-                ChildNodePlacer = new DefaultNodePlacer(ChildPlacement.HorizontalDownward, RootAlignment.Median, 30, 30)};
-          }
-        }},
-        AssistantNodes = { Delegate = delegate(INode node) {
-          var employee = node.Tag as XmlElement;
-          var assistant = employee != null ? employee.Attributes["assistant"] : null;
-          return assistant != null && assistant.Value == "true";
-        }}
       };
 
-      return data.CombineWith(new FixNodeLayoutData {FixedNodes = {Item = centerNode}});
+      var layoutAnchoringStageData = new LayoutAnchoringStageData<INode, IEdge, ILabel, ILabel>();
+      layoutAnchoringStageData.NodeAnchoringPolicies.Mapper[centerNode] = LayoutAnchoringPolicy.Center;
+      return data.CombineWith(layoutAnchoringStageData);
     }
 
     #endregion
@@ -241,7 +248,7 @@ namespace Demo.yFiles.Graph.OrgChart
     #region Command Binding Helper methods
 
     /// <summary>
-    /// Helper method that determines whether the <see cref="ShowParentCommand"/> can be executed.
+    ///   Helper method that determines whether the <see cref="ShowParentCommand"/> can be executed.
     /// </summary>
     public void CanExecuteShowChildren(object sender, CanExecuteRoutedEventArgs e) {
       var node = (e.Parameter ?? graphControl.CurrentItem) as INode;
@@ -254,12 +261,12 @@ namespace Demo.yFiles.Graph.OrgChart
     }
 
     /// <summary>
-    /// Handler for the <see cref="ShowChildrenCommand"/>
+    ///   Handler for the <see cref="ShowChildrenCommand"/>
     /// </summary>
     public async void ShowChildrenExecuted(object sender, ExecutedRoutedEventArgs e) {
       var node = (e.Parameter ?? graphControl.CurrentItem) as INode;
       if (node != null && !doingLayout) {
-        int count = hiddenNodesSet.Count;
+        var count = hiddenNodesSet.Count;
         foreach (var childEdge in filteredGraphWrapper.WrappedGraph.OutEdgesAt(node)) {
           var child = childEdge.GetTargetNode();
           if (hiddenNodesSet.Remove(child)) {
@@ -272,7 +279,7 @@ namespace Demo.yFiles.Graph.OrgChart
     }
 
     /// <summary>
-    /// Helper method that determines whether the <see cref="ShowParentCommand"/> can be executed.
+    ///   Helper method that determines whether the <see cref="ShowParentCommand"/> can be executed.
     /// </summary>
     private void CanExecuteShowParent(object sender, CanExecuteRoutedEventArgs e) {
       var node = (e.Parameter ?? graphControl.CurrentItem) as INode;
@@ -285,12 +292,12 @@ namespace Demo.yFiles.Graph.OrgChart
     }
 
     /// <summary>
-    /// Handler for the <see cref="ShowParentCommand"/>
+    ///   Handler for the <see cref="ShowParentCommand"/>
     /// </summary>
     private async void ShowParentExecuted(object sender, ExecutedRoutedEventArgs e) {
       var node = (e.Parameter ?? graphControl.CurrentItem) as INode;
       if (node != null && !doingLayout) {
-        int count = hiddenNodesSet.Count;
+        var count = hiddenNodesSet.Count;
         foreach (var parentEdge in filteredGraphWrapper.WrappedGraph.InEdgesAt(node)) {
           var parent = parentEdge.GetSourceNode();
           if (hiddenNodesSet.Remove(parent)) {
@@ -303,7 +310,7 @@ namespace Demo.yFiles.Graph.OrgChart
     }
 
     /// <summary>
-    /// Helper method that determines whether the <see cref="HideParentCommand"/> can be executed.
+    ///   Helper method that determines whether the <see cref="HideParentCommand"/> can be executed.
     /// </summary>
     private void CanExecuteHideParent(object sender, CanExecuteRoutedEventArgs e) {
       var node = (e.Parameter ?? graphControl.CurrentItem) as INode;
@@ -316,17 +323,17 @@ namespace Demo.yFiles.Graph.OrgChart
     }
 
     /// <summary>
-    /// Handler for the <see cref="HideParentCommand"/>
+    ///   Handler for the <see cref="HideParentCommand"/>
     /// </summary>
     private async void HideParentExecuted(object sender, ExecutedRoutedEventArgs e) {
       var node = (e.Parameter ?? graphControl.CurrentItem) as INode;
       if (node != null && !doingLayout) {
-        int count = hiddenNodesSet.Count;
+        var count = hiddenNodesSet.Count;
 
         foreach (var testNode in filteredGraphWrapper.WrappedGraph.Nodes) {
           if (testNode != node && filteredGraphWrapper.Contains(testNode) &&
               filteredGraphWrapper.InDegree(testNode) == 0) {
-            // this is a root node - remove it and all children unless 
+            // this is a root node - remove it and all children unless
             HideAllExcept(testNode, node);
           }
         }
@@ -335,7 +342,7 @@ namespace Demo.yFiles.Graph.OrgChart
     }
 
     /// <summary>
-    /// Helper method that determines whether the <see cref="HideChildrenCommand"/> can be executed.
+    ///   Helper method that determines whether the <see cref="HideChildrenCommand"/> can be executed.
     /// </summary>
     private void CanExecuteHideChildren(object sender, CanExecuteRoutedEventArgs e) {
       var node = (e.Parameter ?? graphControl.CurrentItem) as INode;
@@ -348,12 +355,12 @@ namespace Demo.yFiles.Graph.OrgChart
     }
 
     /// <summary>
-    /// Handler for the <see cref="HideChildrenCommand"/>
+    ///   Handler for the <see cref="HideChildrenCommand"/>
     /// </summary>
     private async void HideChildrenExecuted(object sender, ExecutedRoutedEventArgs e) {
       var node = (e.Parameter ?? graphControl.CurrentItem) as INode;
       if (node != null && !doingLayout) {
-        int count = hiddenNodesSet.Count;
+        var count = hiddenNodesSet.Count;
         foreach (var child in filteredGraphWrapper.Successors(node)) {
           HideAllExcept(child, node);
         }
@@ -362,15 +369,15 @@ namespace Demo.yFiles.Graph.OrgChart
     }
 
     /// <summary>
-    /// Helper method that determines whether the <see cref="ShowParentCommand"/> can be executed.
+    ///   Helper method that determines whether the <see cref="ShowParentCommand"/> can be executed.
     /// </summary>
     private void CanExecuteShowAll(object sender, CanExecuteRoutedEventArgs e) {
-      e.CanExecute =  filteredGraphWrapper != null && hiddenNodesSet.Count != 0 && !doingLayout;
+      e.CanExecute = filteredGraphWrapper != null && hiddenNodesSet.Count != 0 && !doingLayout;
       e.Handled = true;
     }
 
     /// <summary>
-    /// Handler for the <see cref="ShowAllCommand"/>
+    ///   Handler for the <see cref="ShowAllCommand"/>
     /// </summary>
     private async void ShowAllExecuted(object sender, ExecutedRoutedEventArgs e) {
       if (!doingLayout) {
@@ -382,7 +389,7 @@ namespace Demo.yFiles.Graph.OrgChart
     #endregion
 
     /// <summary>
-    /// Help method that hides all nodes and its descendants except for a given node
+    ///   Help method that hides all nodes and its descendants except for a given node
     /// </summary>
     private void HideAllExcept(INode nodeToHide, INode exceptNode) {
       hiddenNodesSet.Add(nodeToHide);
@@ -397,8 +404,8 @@ namespace Demo.yFiles.Graph.OrgChart
     private bool doingLayout;
 
     /// <summary>
-    /// Helper method that refreshes the layout after children or parent nodes have been added
-    /// or removed.
+    ///   Helper method that refreshes the layout after children or parent nodes have been added
+    ///   or removed.
     /// </summary>
     private async Task RefreshLayout(int count, INode centerNode) {
       if (doingLayout) {
@@ -412,26 +419,24 @@ namespace Demo.yFiles.Graph.OrgChart
         CommandManager.InvalidateRequerySuggested();
 
         // now layout the graph in animated fashion
-        IGraph tree = graphControl.Graph;
+        var tree = graphControl.Graph;
 
         // configure the layout data
         var layoutData = CreateLayoutData(tree, centerNode);
 
         // create the layout algorithm (with a stage that fixes the center node in the coordinate system
-        var layout = new BendDuplicatorStage(new FixNodeLayoutStage(new TreeLayout()));
+        var layout = new BendDuplicatorStage(new LayoutAnchoringStage(new TreeLayout()));
 
         // configure a LayoutExecutor
-        var executor = new LayoutExecutor(graphControl, layout)
-        {
-          AnimateViewport = centerNode == null,
-          EasedAnimation = true,
-          RunInThread = true,
-          UpdateContentRect = true,
-          LayoutData = layoutData,
-          Duration = TimeSpan.FromMilliseconds(500)
+        var executor = new LayoutExecutor(graphControl, layout) {
+            AnimateViewport = centerNode == null,
+            EasedAnimation = true,
+            RunInThread = true,
+            UpdateContentBounds = true,
+            LayoutData = layoutData,
+            AnimationDuration = TimeSpan.FromMilliseconds(500)
         };
         await executor.Start();
-        graphControl.Graph.MapperRegistry.RemoveMapper("CenterNode");
         doingLayout = false;
         LimitViewport();
       }
@@ -441,7 +446,7 @@ namespace Demo.yFiles.Graph.OrgChart
       var currentItem = GraphControl.CurrentItem as INode;
       // visible current item
       if (GraphControl.Graph.Contains(currentItem)) {
-        GraphControl.ZoomToCurrentItemCommand.Execute(null, GraphControl);
+        GraphCommands.ZoomToCurrentItem.Execute(currentItem, GraphControl);
       } else {
         // see if it can be made visible
         if (filteredGraphWrapper.WrappedGraph.Nodes.Contains(currentItem)) {
@@ -472,8 +477,8 @@ namespace Demo.yFiles.Graph.OrgChart
     #region TreeView related
 
     private async void TreeMouseDoubleClick(object sender, MouseButtonEventArgs e) {
-      XmlLinkedNode clickedItem = ((TreeView)e.Source).SelectedItem as XmlLinkedNode;
-      INode selectedNode = filteredGraphWrapper.WrappedGraph.Nodes.FirstOrDefault(node => node.Tag == clickedItem);
+      var clickedItem = ((TreeView) e.Source).SelectedItem as XmlLinkedNode;
+      var selectedNode = filteredGraphWrapper.WrappedGraph.Nodes.FirstOrDefault(node => node.Tag == clickedItem);
       graphControl.CurrentItem = selectedNode;
       await ZoomToCurrentItem();
     }
@@ -483,9 +488,9 @@ namespace Demo.yFiles.Graph.OrgChart
     }
 
     private void ZoomToTreeItem() {
-      XmlLinkedNode clickedItem = treeView.SelectedItem as XmlLinkedNode;
+      var clickedItem = treeView.SelectedItem as XmlLinkedNode;
       // get the correspondent node in the graph
-      INode selectedNode = filteredGraphWrapper.WrappedGraph.Nodes.FirstOrDefault(node => node.Tag == clickedItem);
+      var selectedNode = filteredGraphWrapper.WrappedGraph.Nodes.FirstOrDefault(node => node.Tag == clickedItem);
       if (selectedNode != null && graphControl.Graph.Contains(selectedNode)) {
         // select the node in the GraphControl
         GraphControl.CurrentItem = selectedNode;
@@ -493,7 +498,7 @@ namespace Demo.yFiles.Graph.OrgChart
       }
     }
 
-    void graphControl_CurrentItemChanged(object sender, RoutedPropertyChangedEventArgs<IModelItem> e) {
+    private void graphControl_CurrentItemChanged(object sender, RoutedPropertyChangedEventArgs<IModelItem> e) {
       foreach (var item in treeView.Items) {
         SelectCurrentItemInTreeRec(treeView, item);
       }
@@ -504,8 +509,8 @@ namespace Demo.yFiles.Graph.OrgChart
       if (currentItem == null) {
         return;
       }
-      XmlLinkedNode employee = currentItem.Tag as XmlLinkedNode;
-      
+      var employee = currentItem.Tag as XmlLinkedNode;
+
       if (item == null || parent == null || employee == null) {
         return;
       }
@@ -522,8 +527,7 @@ namespace Demo.yFiles.Graph.OrgChart
       }
     }
 
-    private void TreeSource_GraphRebuilt(object sender, EventArgs e) {
-    }
+    private void TreeSource_GraphRebuilt(object sender, EventArgs e) { }
 
     private async void TreeViewKeyDown(object sender, KeyEventArgs e) {
       if (e.Key == Key.Return || e.Key == Key.Enter) {
@@ -535,39 +539,51 @@ namespace Demo.yFiles.Graph.OrgChart
   }
 
   /// <summary>
-  /// LayoutStage that duplicates bends that share a common bus.
+  ///   LayoutStage that duplicates bends that share a common bus.
   /// </summary>
-  class BendDuplicatorStage : LayoutStageBase
+  internal class BendDuplicatorStage : LayoutStageBase
   {
+    /// <summary>
+    ///   Represents a small tolerance value used for floating-point comparisons.
+    /// </summary>
+    /// <remarks>
+    ///   <para>
+    ///     The <c>Epsilon</c> constant is used to account for minor inaccuracies in floating-point arithmetic when performing
+    ///     geometric calculations involving line segments. It provides a threshold for determining approximate equality or
+    ///     intersections, helping to mitigate precision issues that can arise from the limitations of floating-point
+    ///     representation.
+    ///   </para>
+    ///   <para>
+    ///     This constant is typically used in methods that involve checking for intersections, containment, or equality of
+    ///     line segments where exact precision is not feasible. The default value of <c>1e-8</c> is chosen to balance
+    ///     precision with practical considerations of computational accuracy.
+    ///   </para>
+    /// </remarks>
+    private const double Epsilon = 1e-8;
 
-    public BendDuplicatorStage()
-      : base() {
-    }
+    public BendDuplicatorStage() { }
 
-    public BendDuplicatorStage(ILayoutAlgorithm coreLayout)
-      : base(coreLayout) {
-    }
+    public BendDuplicatorStage(ILayoutAlgorithm coreLayout) : base(coreLayout) { }
 
-    public override void ApplyLayout(LayoutGraph graph) {
+    protected override void ApplyLayoutImpl(LayoutGraph graph) {
+      CoreLayout?.ApplyLayout(graph);
 
-      ApplyLayoutCore(graph);
-
-      foreach (Node n in graph.Nodes) {
-        foreach (Edge e in n.OutEdges) {
-          bool lastSegmentOverlap = false;
-          IEdgeLayout er = graph.GetLayout(e);
-          if (er.PointCount() > 0) {
+      foreach (var n in graph.Nodes) {
+        foreach (var e in n.OutEdges) {
+          var lastSegmentOverlap = false;
+          if (e.Bends.Count > 0) {
             // last bend point
-            YPoint bendPoint = er.GetPoint(er.PointCount() - 1);
+            var bendPoint = e.Bends.Last.Location;
 
-            IEnumerator<Edge> ecc = n.OutEdges.GetEnumerator();
-          loop: while (ecc.MoveNext()) {
-              Edge eccEdge = ecc.Current;
+            var ecc = n.OutEdges.GetEnumerator();
+          loop:
+            while (ecc.MoveNext()) {
+              var eccEdge = ecc.Current;
               if (eccEdge != e) {
-                YPointPath path = graph.GetPath(eccEdge);
-                for (ILineSegmentCursor lc = path.LineSegments(); lc.Ok; lc.Next()) {
-                  LineSegment seg = lc.LineSegment;
-                  if (seg.Contains(bendPoint)) {
+                var path = eccEdge.PathPoints.ToArray();
+                for (var i = 1; i < path.Length; i++) {
+                  var seg = new LineSegment(path[i - 1].Location, path[i].Location);
+                  if (seg.Contains(bendPoint, Epsilon)) {
                     lastSegmentOverlap = true;
                     goto loop;
                   }
@@ -576,25 +592,31 @@ namespace Demo.yFiles.Graph.OrgChart
             }
           }
 
-
-          YList points = graph.GetPointList(e);
-          for (ListCell c = points.FirstCell; c != null; c = c.Succ()) {
-            YPoint p = (YPoint)c.Info;
-            if (c.Succ() == null && !lastSegmentOverlap) {
+          var bendPoints = new YList<PointD>();
+          foreach (var eBend in e.Bends) {
+            bendPoints.Add(eBend.Location);
+          }
+          for (var c = bendPoints.FirstCell; c != null; c = c.Next) {
+            var p = c.Info;
+            if (c.Next == null && !lastSegmentOverlap) {
               break;
             }
 
-            YPoint p0 = (YPoint)(c.Pred() == null ? graph.GetSourcePointAbs(e) : c.Pred().Info);
-            YPoint p2;
+            var p0 = c.Previous == null ? e.SourcePortLocation : c.Previous.Info;
+            PointD p2;
             if (Math.Abs(p0.X - p.X) < 0.01) {
-              p2 = new YPoint(p.X, p.Y - 0.001);
+              p2 = new PointD(p.X, p.Y - 0.001);
             } else {
-              p2 = new YPoint(p.X - 0.001, p.Y);
+              p2 = new PointD(p.X - 0.001, p.Y);
             }
 
-            points.InsertBefore(p2, c);
+            bendPoints.InsertBefore(p2, c);
           }
-          graph.SetPoints(e, points);
+          e.ResetPath(false);
+          foreach (var bendPoint in bendPoints) {
+            var point = bendPoint;
+            graph.AddBend(e, point.X, point.Y);
+          }
         }
       }
     }
@@ -605,9 +627,9 @@ namespace Demo.yFiles.Graph.OrgChart
     #region Implementation of IValueConverter
 
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
-      String name = value.ToString();
-      String[] names = name.Split(' ');
-      String shortName;
+      var name = value.ToString();
+      var names = name.Split(' ');
+      string shortName;
       if (names.Length > 1) {
         shortName = names[0].Substring(0, 1) + ". " + names[names.Length - 1];
       } else {
@@ -628,16 +650,16 @@ namespace Demo.yFiles.Graph.OrgChart
     #region Implementation of IValueConverter
 
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
-      Color c = Colors.White;
+      var c = Colors.White;
       if (value != null) {
-        string s = (string)value;
+        var s = (string) value;
         if (s.Equals("present")) {
           c = Colors.Green;
         } else if (s.Equals("unavailable")) {
           c = Colors.Red;
         } else if (s.Equals("travel")) {
           c = Colors.Purple;
-        } 
+        }
       }
       return new SolidColorBrush(c);
     }
@@ -654,7 +676,7 @@ namespace Demo.yFiles.Graph.OrgChart
     #region Implementation of IValueConverter
 
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
-      INode node = value as INode;
+      var node = value as INode;
       if (node != null) {
         return node.Tag;
       }
@@ -668,5 +690,4 @@ namespace Demo.yFiles.Graph.OrgChart
 
     #endregion
   }
-
 }

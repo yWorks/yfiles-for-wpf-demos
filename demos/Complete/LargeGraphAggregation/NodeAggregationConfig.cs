@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -34,56 +34,56 @@ using Demo.yFiles.Toolkit.OptionHandler;
 using yWorks.Analysis;
 using yWorks.Controls;
 using yWorks.Layout;
+using NodeAggregation = yWorks.Analysis.NodeAggregation;
 
-namespace Demo.yFiles.Complete.LargeGraphAggregation {
-  
+namespace Demo.yFiles.Complete.LargeGraphAggregation
+{
   /// <summary>
-  /// A configuration that uses the <see cref="ConfigurationEditor"/> to display a properties panel.
+  ///   A configuration that uses the <see cref="ConfigurationEditor"/> to display a properties panel.
   /// </summary>
   public class NodeAggregationConfig : LayoutConfiguration
   {
-    
     /// <summary>
-    /// Setup default values for various configuration parameters.
+    ///   Setup default values for various configuration parameters.
     /// </summary>
     public NodeAggregationConfig() {
       var nodeAggregation = new NodeAggregation();
-      
-      AggregationPolicy = nodeAggregation.Aggregation;
-      MaximumDuration = nodeAggregation.MaximumDuration.TotalSeconds;
+
+      NodeAggregationPolicy = nodeAggregation.AggregationPolicy;
+      StopDuration = 240.0;
       MinimumClusterSize = nodeAggregation.MinimumClusterSize;
       MaximumClusterSize = nodeAggregation.MaximumClusterSize;
     }
 
     public NodeAggregation CreateConfiguredAggregation() {
       return new NodeAggregation {
-          Aggregation = AggregationPolicy,
-          MaximumDuration = TimeSpan.FromSeconds(MaximumDuration),
+          AggregationPolicy = NodeAggregationPolicy,
+          StopDuration = TimeSpan.FromSeconds(StopDuration),
           MinimumClusterSize = MinimumClusterSize,
           MaximumClusterSize = MaximumClusterSize,
           NodesOnlyOnLeaves = false
       };
     }
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     protected override ILayoutAlgorithm CreateConfiguredLayout(GraphControl graphControl) {
       // cannot use this method, CreateConfiguredAggregation is used instead
       return null;
     }
-    
+
     [Label("Aggregation Mode")]
     [OptionGroup("RootGroup", 10)]
-    [DefaultValue(NodeAggregation.AggregationPolicy.Structural)]
-    [EnumValue("Structural", NodeAggregation.AggregationPolicy.Structural)]
-    [EnumValue("Geometric", NodeAggregation.AggregationPolicy.Geometric)]
-    public NodeAggregation.AggregationPolicy AggregationPolicy { get; set; }
+    [DefaultValue(NodeAggregationPolicy.Structural)]
+    [EnumValue("Structural", NodeAggregationPolicy.Structural)]
+    [EnumValue("Geometric", NodeAggregationPolicy.Geometric)]
+    public NodeAggregationPolicy NodeAggregationPolicy { get; set; }
 
-    [Label("Maximum Duration")]
+    [Label("Stop Duration (seconds)")]
     [OptionGroup("RootGroup", 20)]
-    [DefaultValue(0)]
-    [MinMax(Min = 0.0d, Max = 120.0d)]
+    [DefaultValue(240.0)]
+    [MinMax(Min = 0.0d, Max = 240.0d)]
     [ComponentType(ComponentTypes.Slider)]
-    public double MaximumDuration { get; set; }
+    public double StopDuration { get; set; }
 
     [Label("Minimum Cluster Size")]
     [OptionGroup("RootGroup", 30)]
@@ -98,6 +98,5 @@ namespace Demo.yFiles.Complete.LargeGraphAggregation {
     [MinMax(Min = 2, Max = 100)]
     [ComponentType(ComponentTypes.Slider)]
     public int MaximumClusterSize { get; set; }
-
   }
 }

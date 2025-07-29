@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -30,19 +30,20 @@
 namespace Demo.yFiles.Option.DataBinding
 {
   /// <summary>
-  /// The interface that is used by <see cref="IPropertyItem"/> to retrieve a value from a given
-  /// context.
+  ///   The interface that is used by <see cref="IPropertyItem"/> to retrieve a value from a given
+  ///   context.
   /// </summary>
   public interface IValueGetter
   {
     /// <summary>
-    /// Retrieves the value from it's context.
+    ///   Retrieves the value from its context.
     /// </summary>
     /// <returns>The current value.</returns>
     /// <seealso cref="IPropertyBuildContext{TSubject}.CurrentInstance"/>
     object GetValue();
+
     /// <summary>
-    /// Determines whether this instance can get the value from it's context.
+    ///   Determines whether this instance can get the value from its context.
     /// </summary>
     /// <returns>Whether a call to <see cref="GetValue"/> can be made.</returns>
     /// <seealso cref="IPropertyBuildContext{TSubject}.CurrentInstance"/>
@@ -50,8 +51,9 @@ namespace Demo.yFiles.Option.DataBinding
   }
 
   /// <summary>
-  /// A typed delegate version of <see cref="IValueGetter"/> used primarily by
-  /// <see cref="IPropertyBuildContext{TSubject}.AddEntry{TValue}(string,ValueGetterDelegate{TValue},ValueSetterDelegate{TValue})"/>.
+  ///   A typed delegate version of <see cref="IValueGetter"/> used primarily by
+  ///   <see cref="IPropertyBuildContext{TSubject}.AddEntry{TValue}(string,ValueGetterDelegate{TValue},ValueSetterDelegate{TValue})"/>
+  ///   .
   /// </summary>
   /// <typeparam name="TValue">The type of the value to get.</typeparam>
   /// <returns>The value.</returns>
@@ -59,8 +61,8 @@ namespace Demo.yFiles.Option.DataBinding
   public delegate TValue ValueGetterDelegate<TValue>();
 
   /// <summary>
-  /// A typed delegate version of <see cref="IValueGetter"/> used by
-  /// <see cref="DelegateGetter{T}"/>.
+  ///   A typed delegate version of <see cref="IValueGetter"/> used by
+  ///   <see cref="DelegateGetter{T}"/>.
   /// </summary>
   /// <returns>Whether a value can be "get".</returns>
   /// <seealso cref="IPropertyBuildContext{TSubject}.CurrentInstance"/>
@@ -68,19 +70,18 @@ namespace Demo.yFiles.Option.DataBinding
   public delegate bool ValueGetterValidityPredicate();
 
   /// <summary>
-  /// An adapter class that adapts <see cref="ValueGetterDelegate{TValue}"/>
-  /// and <see cref="ValueGetterValidityPredicate"/> to the <see cref="IValueGetter"/>
-  /// interface.
+  ///   An adapter class that adapts <see cref="ValueGetterDelegate{TValue}"/>
+  ///   and <see cref="ValueGetterValidityPredicate"/> to the <see cref="IValueGetter"/>
+  ///   interface.
   /// </summary>
   /// <typeparam name="T">The type of the items.</typeparam>
-  public class DelegateGetter<T> : IValueGetter 
+  public class DelegateGetter<T> : IValueGetter
   {
-
     private readonly ValueGetterDelegate<T> getter;
     private readonly ValueGetterValidityPredicate predicate;
 
     /// <summary>
-    /// Creates a new instance.
+    ///   Creates a new instance.
     /// </summary>
     /// <param name="getter">The getter to use.</param>
     /// <param name="predicate">The predicate to use.</param>
@@ -90,7 +91,7 @@ namespace Demo.yFiles.Option.DataBinding
     }
 
     /// <summary>
-    /// Creates a new instance.
+    ///   Creates a new instance.
     /// </summary>
     /// <param name="getter">The getter to use.</param>
     public DelegateGetter(ValueGetterDelegate<T> getter) {
@@ -106,7 +107,7 @@ namespace Demo.yFiles.Option.DataBinding
 
     /// <inheritdoc/>
     public virtual bool CanGet() {
-      return predicate == null? getter != null : getter != null && predicate();
+      return predicate == null ? getter != null : getter != null && predicate();
     }
 
     #endregion

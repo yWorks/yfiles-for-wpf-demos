@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -31,12 +31,11 @@ using System;
 using System.ComponentModel;
 using System.Reflection;
 using System.Windows.Media.Imaging;
-using yWorks.Controls.Input;
 using yWorks.Controls;
+using yWorks.Controls.Input;
 using yWorks.Geometry;
 using yWorks.Graph;
 using yWorks.Graph.Styles;
-using yWorks.Utils;
 
 namespace Demo.yFiles.Graph.StyleDecorators {
   /// <summary>
@@ -48,13 +47,13 @@ namespace Demo.yFiles.Graph.StyleDecorators {
   /// <see cref="ImageNodeStyle"/> is used to render the image decorator.
   /// </para>
   /// <para>
-  /// This style overrides <see cref="IVisibilityTestable.IsVisible"/> with a custom implementation 
-  /// that also checks the visibility of the image decorator in addition to calling the 
+  /// This style overrides <see cref="IVisibilityTestable.IsVisible"/> with a custom implementation
+  /// that also checks the visibility of the image decorator in addition to calling the
   /// implementation of the decorated style.
   /// Other checks like <see cref="IHitTestable.IsHit" /> and <see cref="IMarqueeTestable.IsInBox" />
-  /// are simply delegated to the wrapped style in order to not make the node selectable 
+  /// are simply delegated to the wrapped style in order to not make the node selectable
   /// by clicking or marquee selecting the image decorator part of the visualization.
-  /// If desired, this feature can be implemented like demonstrated in <see cref="NodeStyleDecorator.IsVisible"/>.
+  /// If desired, this feature can be implemented as demonstrated in <see cref="NodeStyleDecorator.IsVisible"/>.
   /// </para>
   /// </remarks>
   [Obfuscation(StripAfterObfuscation = false, Exclude = true, ApplyToMembers = true)]
@@ -78,7 +77,7 @@ namespace Demo.yFiles.Graph.StyleDecorators {
     /// Initializes an instance of this style.
     /// </summary>
     /// <param name="wrapped">the wrapped style</param>
-    /// <param name="imageUrl">the url of the decorator image</param>
+    /// <param name="imageUrl">the URL of the decorator image</param>
     public NodeStyleDecorator(INodeStyle wrapped, string imageUrl) {
       this.wrapped = wrapped;
       this.imageUrl = imageUrl;
@@ -93,10 +92,10 @@ namespace Demo.yFiles.Graph.StyleDecorators {
     }
 
     /// <summary>
-    /// Gets or sets the decorator image url.
+    /// Gets or sets the decorator image URL.
     /// </summary>
     /// <remarks>
-    /// Changes to this property will only apply after the next call of 
+    /// Changes to this property will only apply after the next call of
     /// <see cref="UpdateVisual"/>.</remarks>
     public string ImageUrl {
       get { return imageUrl; }
@@ -131,7 +130,7 @@ namespace Demo.yFiles.Graph.StyleDecorators {
       container.Add(wrappedVisual);
       container.Add(image);
       // save image url with the visual for later update
-      container.SetRenderDataCache<string>(imageUrl);
+      container.SetRenderDataCache(imageUrl);
       return container;
     }
 

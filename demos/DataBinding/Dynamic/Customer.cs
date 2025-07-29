@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -35,8 +35,8 @@ using yWorks.Annotations;
 namespace Demo.yFiles.DataBinding.Dynamic
 {
   /// <summary>
-  /// This class is a simple example for a business object. Each customer has a
-  /// <see cref="CustomerName">name</see> and a <see cref="RelatedCustomers">list of related customers</see>.
+  /// This class is a simple example of a business object. Each customer has a
+  /// <see cref="CustomerName">name</see> and a list of <see cref="RelatedCustomers"/>.
   /// </summary>
   [ContentProperty("RelatedCustomers")]
   public class Customer
@@ -52,7 +52,7 @@ namespace Demo.yFiles.DataBinding.Dynamic
   }
 
   /// <summary>
-  /// This class is a container for <see cref="Customer">customers</see>. It maintains a list of root
+  /// This class is a container for <see cref="Customer"/>s. It maintains a list of root
   /// <see cref="Customers"/> and provides methods to <see cref="CreateCustomer">create new customers</see>
   /// and to <see cref="RemoveCustomer">remove customers</see>.
   /// </summary>
@@ -62,7 +62,7 @@ namespace Demo.yFiles.DataBinding.Dynamic
     private readonly ObservableCollection<Customer> customers = new ObservableCollection<Customer>();
 
     /// <summary>
-    /// Gets the root customers, i.e. customers which are not related customers of other customers.
+    /// Gets the root customers, i.e. customers which are not related to other customers.
     /// </summary>
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
     public ObservableCollection<Customer> Customers {
@@ -100,27 +100,25 @@ namespace Demo.yFiles.DataBinding.Dynamic
         // Remove customer at root level if possible.
         customers.Remove(customer);
         return true;
-      } else {
-        // The customer is not a root customer. Try to remove it from the related
-        // customers of one of the root customers.
-        foreach (var rootCustomer in customers) {
-          if(RemoveRelatedCustomer(rootCustomer, customer)) {
-            return true;
-          }
-        }
-        return false;
       }
+      // The customer is not a root customer. Try to remove it from the related
+      // customers of one of the root customers.
+      foreach (var rootCustomer in customers) {
+        if(RemoveRelatedCustomer(rootCustomer, customer)) {
+          return true;
+        }
+      }
+      return false;
     }
 
     private bool RemoveRelatedCustomer(Customer customer, Customer customerToBeRemoved) {
       if (customer.RelatedCustomers.Contains(customerToBeRemoved)) {
         customer.RelatedCustomers.Remove(customerToBeRemoved);
         return true;
-      } else {
-        foreach (var relatedCustomer in customer.RelatedCustomers) {
-          if (RemoveRelatedCustomer(relatedCustomer, customerToBeRemoved)) {
-            return true;
-          }
+      }
+      foreach (var relatedCustomer in customer.RelatedCustomers) {
+        if (RemoveRelatedCustomer(relatedCustomer, customerToBeRemoved)) {
+          return true;
         }
       }
       return false;

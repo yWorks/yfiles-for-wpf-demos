@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -28,119 +28,82 @@
  ***************************************************************************/
 
 using System;
+using System.Linq;
+using System.Windows;
 using Demo.Layout.LayoutGraphViewer;
-using yWorks.Algorithms;
+using yWorks.Geometry;
 using yWorks.Layout;
-using yWorks.Layout.Grouping;
-using yWorks.Layout.Hierarchic;
+using yWorks.Layout.Graph;
+using yWorks.Layout.Hierarchical;
 
 namespace Demo.Layout.GroupingLayout
 {
   /// <summary>
-  /// This class shows how to use layout and grouping algorithms.
-  /// This demo displays the calculated coordinates and group bounds
-  /// in a simple graph viewer.
-  /// In this demo HierarchicLayout is used to layout a small graph. 
+  ///   This class shows how to use layout and grouping algorithms.
+  ///   This demo displays the calculated coordinates and group bounds
+  ///   in a simple graph viewer.
+  ///   In this demo HierarchicalLayout is used to layout a small graph.
   /// </summary>
   public class GroupingLayoutDemo
   {
-  
     [STAThread]
-    public static void Main()
-    {
+    public static void Main() {
       new GroupingLayoutDemo().Run();
     }
 
-   
+
     /// <summary>
-    /// Creates a small graph and applies a hierarchic group layout to it.
-    /// The output of the calculated coordinates will be displayed in the
-    /// console.
+    ///   Creates a small graph and applies a hierarchical group layout to it.
+    ///   The output of the calculated coordinates will be displayed in the
+    ///   console.
     /// </summary>
-    public void Run()
-    {
-      DefaultLayoutGraph graph = new DefaultLayoutGraph();
-    
-      //construct graph. assign sizes to nodes
-      Node v1 = graph.CreateNode();
-      graph.SetSize(v1,30,30);
-      Node v2 = graph.CreateNode();
-      graph.SetSize(v2,30,30);
-      Node v3 = graph.CreateNode();
-      graph.SetSize(v3,30,30);
-      Node v4 = graph.CreateNode();
-      graph.SetSize(v4,30,30);
-    
-      Node groupNode = graph.CreateNode();
-      graph.SetSize(groupNode, 100,100);
-    
-      Edge e1 = graph.CreateEdge(v1,v2);
-      Edge e2 = graph.CreateEdge(v4, groupNode);
-      Edge e3 = graph.CreateEdge(v1,v3);
-      Edge e4 = graph.CreateEdge(v1, v1);
-      Edge e5 = graph.CreateEdge(v2, groupNode);
-      Edge e6 = graph.CreateEdge(groupNode, v2);
- 
-      //optionally setup some edge groups
-      IEdgeMap spg = graph.CreateEdgeMap();
-      IEdgeMap tpg = graph.CreateEdgeMap();
-    
-      graph.AddDataProvider(PortConstraintKeys.SourceGroupIdDpKey, spg);
-      graph.AddDataProvider(PortConstraintKeys.TargetGroupIdDpKey, tpg);
-    
-      spg.Set(e1, "SGroup1");
-      spg.Set(e3, "SGroup1");
-      tpg.Set(e1, "TGroup1");
-      tpg.Set(e3, "TGroup1");
+    public void Run() {
+      var graph = new LayoutGraph();
 
-      //optionally setup the node grouping
-      INodeMap nodeId = graph.CreateNodeMap();
-      INodeMap parentNodeId = graph.CreateNodeMap();
-      INodeMap groupKey = graph.CreateNodeMap();
-    
-      graph.AddDataProvider(GroupingKeys.NodeIdDpKey, nodeId);
-      graph.AddDataProvider(GroupingKeys.ParentNodeIdDpKey, parentNodeId);
-      graph.AddDataProvider(GroupingKeys.GroupDpKey, groupKey);
-    
-      //mark a node as a group node
-      groupKey.SetBool(groupNode, true);
-    
-      // add ids for each node
-      nodeId.Set(v1, "v1");
-      nodeId.Set(v2, "v2");
-      nodeId.Set(v3, "v3");
-      nodeId.Set(v4, "v4");
-      nodeId.Set(groupNode, "groupNode");
-    
-      // set the parent for each grouped node
-      parentNodeId.Set(v2, "groupNode");
-      parentNodeId.Set(v3, "groupNode");
-    
-      HierarchicLayout layout = new HierarchicLayout();
-    
-      layout.MinimumLayerDistance = 0;
-      layout.EdgeLayoutDescriptor.MinimumDistance = 10;
-  
-      new BufferedLayout(layout).ApplyLayout(graph);
+      // construct graph. assign sizes to nodes
+      var groupNode = graph.CreateGroupNode(null, new RectD(0, 0, 100, 100));
 
-      Console.WriteLine("\n\nGRAPH LAID OUT USING HIERARCHICLAYOUT");
-      Console.WriteLine("v1 center position = " + graph.GetCenter(v1));
-      Console.WriteLine("v2 center position = " + graph.GetCenter(v2));
-      Console.WriteLine("v3 center position = " + graph.GetCenter(v3));
-      Console.WriteLine("v4 center position = " + graph.GetCenter(v4));
-      Console.WriteLine("group center position = " + graph.GetCenter(groupNode));
-      Console.WriteLine("group size = " + graph.GetSize(groupNode));
-      Console.WriteLine("e1 path = " + graph.GetPath(e1));
-      Console.WriteLine("e2 path = " + graph.GetPath(e2));
-      Console.WriteLine("e3 path = " + graph.GetPath(e3));
-      Console.WriteLine("e4 path = " + graph.GetPath(e4));
-      Console.WriteLine("e5 path = " + graph.GetPath(e5));
-      Console.WriteLine("e6 path = " + graph.GetPath(e4));
-      
-      //display the result in a simple viewer
+      var v1 = graph.CreateNode(new RectD(0, 0, 30, 30));
+      var v2 = graph.CreateNode(groupNode, new RectD(0, 0, 30, 30));
+      var v3 = graph.CreateNode(groupNode, new RectD(0, 0, 30, 30));
+      var v4 = graph.CreateNode(new RectD(0, 0, 30, 30));
+
+      var e1 = graph.CreateEdge(v1, v2);
+      var e2 = graph.CreateEdge(v4, groupNode);
+      var e3 = graph.CreateEdge(v1, v3);
+      var e4 = graph.CreateEdge(v1, v1);
+      var e5 = graph.CreateEdge(v2, groupNode);
+      var e6 = graph.CreateEdge(groupNode, v2);
+
+      var layout = new HierarchicalLayout {
+          MinimumLayerDistance = 0, DefaultEdgeDescriptor = { MinimumDistance = 10 }
+      };
+
+      // optionally setup some edge groups
+      var layoutData = layout.CreateLayoutData(graph);
+      layoutData.SourceGroupIds.MapperFunction = e => e == e1 || e == e3 ? "SGroup1" : null;
+      layoutData.TargetGroupIds.MapperFunction = e => e == e1 || e == e3 ? "TGroup1" : null;
+
+      graph.ApplyLayout(layout, layoutData);
+
+      Console.WriteLine("\n\nGRAPH LAID OUT USING HIERARCHICALLAYOUT");
+      Console.WriteLine("v1 center position = " + v1.Layout.Center);
+      Console.WriteLine("v2 center position = " + v2.Layout.Center);
+      Console.WriteLine("v3 center position = " + v3.Layout.Center);
+      Console.WriteLine("v4 center position = " + v4.Layout.Center);
+      Console.WriteLine("group center position = " + groupNode.Layout.Center);
+      Console.WriteLine("group size = " + new SizeD(groupNode.Layout.Width, groupNode.Layout.Height));
+      Console.WriteLine("e1 path = " + string.Join(",", e1.PathPoints.ToList()));
+      Console.WriteLine("e2 path = " + string.Join(",", e2.PathPoints.ToList()));
+      Console.WriteLine("e3 path = " + string.Join(",", e3.PathPoints.ToList()));
+      Console.WriteLine("e4 path = " + string.Join(",", e4.PathPoints.ToList()));
+      Console.WriteLine("e5 path = " + string.Join(",", e5.PathPoints.ToList()));
+      Console.WriteLine("e6 path = " + string.Join(",", e6.PathPoints.ToList()));
+
+      // display the result in a simple viewer
       var viewer = new GraphViewer();
       viewer.AddLayoutGraph(graph, "Hierarchical Group Layout");
-      var application = new System.Windows.Application();
+      var application = new Application();
       application.Run(viewer);
     }
   }

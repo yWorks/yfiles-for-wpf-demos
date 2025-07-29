@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -35,15 +35,15 @@ using yWorks.Geometry;
 using yWorks.Graph;
 using yWorks.Graph.LabelModels;
 
-namespace Demo.yFiles.Graph.Bpmn.Util {
-
+namespace Demo.yFiles.Graph.Bpmn.Util
+{
   /// <summary>
-  /// Factory class providing icons according to the BPMN.
+  ///   Factory class providing icons according to the BPMN.
   /// </summary>
   internal class IconFactory
   {
-    private static readonly IconBuilder builder = new IconBuilder();
-    private static readonly double radiusToCornerOffset = Math.Sqrt((1.5 - Math.Sqrt(2)));
+    private static readonly IconBuilder builder = new();
+    private static readonly double radiusToCornerOffset = Math.Sqrt(1.5 - Math.Sqrt(2));
 
     public static IIcon CreatePlacedIcon(IIcon icon, ILabelModelParameter placement, SizeD innerSize) {
       return new PlacedIcon(icon, placement, innerSize);
@@ -57,11 +57,11 @@ namespace Demo.yFiles.Graph.Bpmn.Util {
       return builder.CreateLineUpIcon(icons, innerIconSize, gap);
     }
 
-    private static readonly Dictionary<ActivityType, IIcon> activityIcons = new Dictionary<ActivityType, IIcon>();
+    private static readonly Dictionary<ActivityType, IIcon> activityIcons = new();
 
     public static IIcon CreateActivity(ActivityType type, Brush background, Brush outlineBrush) {
       var hasDefaultColors = Equals(background, BpmnConstants.ActivityDefaultBackground) &&
-                             Equals(outlineBrush, BpmnConstants.ActivityDefaultOutline);
+          Equals(outlineBrush, BpmnConstants.ActivityDefaultOutline);
       IIcon result;
       if (hasDefaultColors && activityIcons.TryGetValue(type, out result)) {
         return result;
@@ -71,7 +71,8 @@ namespace Demo.yFiles.Graph.Bpmn.Util {
 
       switch (type) {
         case ActivityType.EventSubProcess:
-          outlinePen = (Pen) new Pen(outlineBrush, 1) { DashStyle = DashStyles.Dot, DashCap = PenLineCap.Round }.GetAsFrozen();
+          outlinePen = (Pen) new Pen(outlineBrush, 1) { DashStyle = DashStyles.Dot, DashCap = PenLineCap.Round }
+              .GetAsFrozen();
           break;
         case ActivityType.CallActivity:
           outlinePen = (Pen) new Pen(outlineBrush, 3).GetAsFrozen();
@@ -104,7 +105,7 @@ namespace Demo.yFiles.Graph.Bpmn.Util {
       return result;
     }
 
-    private static readonly Dictionary<TaskType, IIcon> taskIcons = new Dictionary<TaskType, IIcon>();
+    private static readonly Dictionary<TaskType, IIcon> taskIcons = new();
 
     public static IIcon CreateActivityTaskType(TaskType type, Brush iconBrush, Brush background) {
       var hasDefaultColor = Equals(iconBrush, BpmnConstants.DefaultIconColor);
@@ -206,7 +207,7 @@ namespace Demo.yFiles.Graph.Bpmn.Util {
           builder.QuadTo(0.929, 0.642, 0.879, 0.714);
           builder.LineTo(0.502, 0.714);
 
-          // pinkie 
+          // pinkie
           builder.LineTo(0.796, 0.714);
           builder.QuadTo(0.847, 0.786, 0.796, 0.857);
           builder.LineTo(0.088, 0.857);
@@ -341,27 +342,35 @@ namespace Demo.yFiles.Graph.Bpmn.Util {
       return result;
     }
 
-    private static IIcon CreateGear(double radius, double centerX, double centerY, Pen pen, Brush brush, double start = -2* Math.PI/48, int count = 8) {
+    private static IIcon CreateGear(
+        double radius,
+        double centerX,
+        double centerY,
+        Pen pen,
+        Brush brush,
+        double start = -2 * Math.PI / 48,
+        int count = 8) {
       builder.Pen = pen;
       builder.Brush = brush;
-      var smallR = 0.7*radius;
+      var smallR = 0.7 * radius;
 
       var angle = start;
       builder.MoveTo(centerX + radius * Math.Cos(angle), centerY + radius * Math.Sin(angle));
-      for (int i = 0; i < count; i++) {
-        builder.ArcTo(radius, centerX, centerY, angle, angle + 4 * Math.PI/48);
-        builder.LineTo(centerX + smallR * Math.Cos(angle + 5 * Math.PI / 48), centerY + smallR * Math.Sin(angle + 5 * Math.PI / 48));
-        builder.ArcTo(smallR, centerX, centerY, angle + 5 * Math.PI/48, angle + 11 * Math.PI / 48);
-        builder.LineTo(centerX + radius * Math.Cos(angle + 12 * Math.PI / 48), centerY + radius * Math.Sin(angle + 12 * Math.PI / 48));
-        angle += Math.PI/4;
+      for (var i = 0; i < count; i++) {
+        builder.ArcTo(radius, centerX, centerY, angle, angle + 4 * Math.PI / 48);
+        builder.LineTo(centerX + smallR * Math.Cos(angle + 5 * Math.PI / 48),
+            centerY + smallR * Math.Sin(angle + 5 * Math.PI / 48));
+        builder.ArcTo(smallR, centerX, centerY, angle + 5 * Math.PI / 48, angle + 11 * Math.PI / 48);
+        builder.LineTo(centerX + radius * Math.Cos(angle + 12 * Math.PI / 48),
+            centerY + radius * Math.Sin(angle + 12 * Math.PI / 48));
+        angle += Math.PI / 4;
       }
 
       builder.Close();
       return builder.GetPathIcon();
-
     }
 
-    private static readonly Dictionary<LoopCharacteristic, IIcon> loopTypes = new Dictionary<LoopCharacteristic, IIcon>(4); 
+    private static readonly Dictionary<LoopCharacteristic, IIcon> loopTypes = new(4);
 
     public static IIcon CreateLoopCharacteristic(LoopCharacteristic loopCharacteristic, Brush iconBrush) {
       var hasDefaultColor = Equals(iconBrush, BpmnConstants.DefaultIconColor);
@@ -375,11 +384,11 @@ namespace Demo.yFiles.Graph.Bpmn.Util {
 
       switch (loopCharacteristic) {
         case LoopCharacteristic.Loop:
-          const double fromAngle = 0.65*Math.PI;
-          const double toAngle = 2.4*Math.PI;
+          const double fromAngle = 0.65 * Math.PI;
+          const double toAngle = 2.4 * Math.PI;
 
-          double x = 0.5 + 0.5*Math.Cos(fromAngle);
-          double y = 0.5 + 0.5*Math.Sin(fromAngle);
+          var x = 0.5 + 0.5 * Math.Cos(fromAngle);
+          var y = 0.5 + 0.5 * Math.Sin(fromAngle);
           builder.MoveTo(x, y);
           builder.ArcTo(0.5, 0.5, 0.5, fromAngle, toAngle);
           builder.MoveTo(x - 0.25, y + 0.05);
@@ -420,7 +429,7 @@ namespace Demo.yFiles.Graph.Bpmn.Util {
       if (hasDefaultColor) {
         loopTypes[loopCharacteristic] = result;
       }
-        
+
       return result;
     }
 
@@ -443,18 +452,18 @@ namespace Demo.yFiles.Graph.Bpmn.Util {
 
       var smallR = 0.25 / (1 - Math.Sqrt(1.5 - Math.Sqrt(2)));
       var co = smallR * radiusToCornerOffset;
-      double dy = 0.1;
+      var dy = 0.1;
 
       var c1x = smallR - co;
       var c1y = 0.35 + smallR;
-      double x1 = c1x + smallR * Math.Cos(fromAngle1);
-      double y1 = c1y + smallR * Math.Sin(fromAngle1);
+      var x1 = c1x + smallR * Math.Cos(fromAngle1);
+      var y1 = c1y + smallR * Math.Sin(fromAngle1);
 
       var c2x = c1x + 2 * smallR - 2 * co;
       var c2y = c1y - 2 * smallR + 2 * co;
 
-      double x2 = c2x + smallR * Math.Cos(fromAngle2);
-      double y2 = c2y + smallR * Math.Sin(fromAngle2);
+      var x2 = c2x + smallR * Math.Cos(fromAngle2);
+      var y2 = c2y + smallR * Math.Sin(fromAngle2);
       builder.MoveTo(x1, y1 + dy);
       builder.LineTo(x1, y1);
       builder.ArcTo(smallR, c1x, c1y, fromAngle1, toAngle1);
@@ -516,7 +525,7 @@ namespace Demo.yFiles.Graph.Bpmn.Util {
       return icon;
     }
 
-    private static readonly Dictionary<SubState, IIcon> subStates = new Dictionary<SubState, IIcon>(3);
+    private static readonly Dictionary<SubState, IIcon> subStates = new(3);
 
     public static IIcon CreateStaticSubState(SubState subState, Brush iconBrush) {
       var hasDefaultColor = Equals(iconBrush, BpmnConstants.DefaultIconColor);
@@ -570,7 +579,7 @@ namespace Demo.yFiles.Graph.Bpmn.Util {
 
     public static IIcon CreateGateway(Brush background, Brush outline) {
       var hasDefaultColors = Equals(background, BpmnConstants.GatewayDefaultBackground) &&
-                             Equals(outline, BpmnConstants.GatewayDefaultOutline);
+          Equals(outline, BpmnConstants.GatewayDefaultOutline);
 
       if (hasDefaultColors && gateway != null) {
         return gateway;
@@ -590,7 +599,7 @@ namespace Demo.yFiles.Graph.Bpmn.Util {
       return gatewayIcon;
     }
 
-    private static readonly Dictionary<GatewayType, IIcon> gatewayTypes = new Dictionary<GatewayType, IIcon>(8); 
+    private static readonly Dictionary<GatewayType, IIcon> gatewayTypes = new(8);
 
     public static IIcon CreateGatewayType(GatewayType type, Brush brush) {
       var hasDefaultColor = Equals(brush, BpmnConstants.DefaultIconColor);
@@ -604,7 +613,7 @@ namespace Demo.yFiles.Graph.Bpmn.Util {
       var thickPen = (Pen) new Pen(brush, 3).GetAsFrozen();
       List<IIcon> icons;
 
-      PointD[] outer = CreatePolygon(24, 0.5, Math.PI / 24);
+      var outer = CreatePolygon(24, 0.5, Math.PI / 24);
       switch (type) {
         case GatewayType.ExclusiveWithoutMarker:
           break;
@@ -655,7 +664,7 @@ namespace Demo.yFiles.Graph.Bpmn.Util {
           builder.Pen = pen;
           IList<PointD> polygon = CreatePolygon(5, 0.5, 0);
           builder.MoveTo(polygon[0].X, polygon[0].Y);
-          for (int i = 1; i < 5; i++) {
+          for (var i = 1; i < 5; i++) {
             builder.LineTo(polygon[i].X, polygon[i].Y);
           }
           builder.Close();
@@ -676,20 +685,18 @@ namespace Demo.yFiles.Graph.Bpmn.Util {
         case GatewayType.Complex:
           builder.Brush = brush;
           builder.Pen = pen;
-          double width = Math.Sqrt(0.5 - (0.5 * Math.Cos(Math.PI / 12)));
-          double rInner = width * Math.Sqrt((1 + Math.Sqrt(2) / 2));
+          var width = Math.Sqrt(0.5 - (0.5 * Math.Cos(Math.PI / 12)));
+          var rInner = width * Math.Sqrt(1 + Math.Sqrt(2) / 2);
           var inner = CreatePolygon(8, rInner, Math.PI / 8);
 
           builder.MoveTo(outer[0].X, outer[0].Y);
-          for (int i = 0; i < 8; i++) {
+          for (var i = 0; i < 8; i++) {
             builder.LineTo(outer[3 * i].X, outer[3 * i].Y);
             builder.LineTo(inner[i].X, inner[i].Y);
             builder.LineTo(outer[3 * i + 2].X, outer[3 * i + 2].Y);
           }
           builder.Close();
           result = builder.GetPathIcon();
-          break;
-        default:
           break;
       }
 
@@ -700,11 +707,11 @@ namespace Demo.yFiles.Graph.Bpmn.Util {
       return result;
     }
 
-    private static readonly Dictionary<EventCharacteristic, IIcon> eventCharacteristics = new Dictionary<EventCharacteristic, IIcon>(8); 
+    private static readonly Dictionary<EventCharacteristic, IIcon> eventCharacteristics = new(8);
 
     public static IIcon CreateEvent(EventCharacteristic characteristic, Brush background, Brush outline) {
       var hasDefaultColors = Equals(background, BpmnConstants.DefaultEventBackground) &&
-                             Equals(outline, BpmnConstants.DefaultEventOutline);
+          Equals(outline, BpmnConstants.DefaultEventOutline);
 
       IIcon result;
       if (hasDefaultColors && eventCharacteristics.TryGetValue(characteristic, out result)) {
@@ -743,7 +750,7 @@ namespace Demo.yFiles.Graph.Bpmn.Util {
         case EventCharacteristic.BoundaryInterrupting:
         case EventCharacteristic.BoundaryNonInterrupting:
         case EventCharacteristic.Throwing:
-          List<IIcon> icons = new List<IIcon>();
+          var icons = new List<IIcon>();
           icons.Add(ellipseIcon);
 
           builder.Pen = pen;
@@ -764,11 +771,11 @@ namespace Demo.yFiles.Graph.Bpmn.Util {
       return result;
     }
 
-    private static readonly Dictionary<EventTypeWithFill, IIcon> eventTypes = new Dictionary<EventTypeWithFill, IIcon>(26); 
+    private static readonly Dictionary<EventTypeWithFill, IIcon> eventTypes = new(26);
 
     public static IIcon CreateEventType(EventType type, bool filled, Brush brush, Brush background) {
       var hasDefaultColors = Equals(brush, BpmnConstants.DefaultIconColor) &&
-                             Equals(background, BpmnConstants.DefaultEventBackground);
+          Equals(background, BpmnConstants.DefaultEventBackground);
 
       IIcon result = null;
       var eventTypeWithFill = new EventTypeWithFill(type, filled);
@@ -777,15 +784,20 @@ namespace Demo.yFiles.Graph.Bpmn.Util {
       }
 
       var pen = (Pen) new Pen(brush, 1).GetAsFrozen();
-      var roundPen = (Pen) new Pen(brush, 1) { LineJoin = PenLineJoin.Round, StartLineCap = PenLineCap.Round, EndLineCap = PenLineCap.Round }.GetAsFrozen();
-      var backgroundRoundPen = (Pen) new Pen(background, 1) { LineJoin = PenLineJoin.Round, StartLineCap = PenLineCap.Round, EndLineCap = PenLineCap.Round }.GetAsFrozen();
+      var roundPen = (Pen) new Pen(brush, 1) {
+          LineJoin = PenLineJoin.Round, StartLineCap = PenLineCap.Round, EndLineCap = PenLineCap.Round
+      }.GetAsFrozen();
+      var backgroundRoundPen = (Pen) new Pen(background, 1) {
+          LineJoin = PenLineJoin.Round, StartLineCap = PenLineCap.Round, EndLineCap = PenLineCap.Round
+      }.GetAsFrozen();
       builder.Pen = pen;
       builder.Brush = filled ? brush : null;
 
       List<IIcon> icons;
       switch (type) {
         case EventType.Message:
-          var combinedIcons = CreateMessage(!filled ? pen : Pens.Transparent, filled ? brush : Brushes.Transparent, filled);
+          var combinedIcons =
+              CreateMessage(!filled ? pen : Pens.Transparent, filled ? brush : Brushes.Transparent, filled);
           result = CreatePlacedIcon(combinedIcons, BpmnConstants.EventTypeMessagePlacement, SizeD.Empty);
           break;
         case EventType.Timer:
@@ -795,7 +807,7 @@ namespace Demo.yFiles.Graph.Bpmn.Util {
           builder.Pen = filled ? backgroundRoundPen : roundPen;
           var outerPoints = CreatePolygon(12, 0.5, 0);
           var innerPoints = CreatePolygon(12, 0.4, 0);
-          for (int i = 0; i < 12; i++) {
+          for (var i = 0; i < 12; i++) {
             builder.MoveTo(outerPoints[i].X, outerPoints[i].Y);
             builder.LineTo(innerPoints[i].X, innerPoints[i].Y);
           }
@@ -824,7 +836,7 @@ namespace Demo.yFiles.Graph.Bpmn.Util {
           icons.Add(builder.GetPathIcon());
 
           builder.Pen = filled ? backgroundRoundPen : roundPen;
-          for (int i = 0; i < 4; i++) {
+          for (var i = 0; i < 4; i++) {
             var y = 0.235 + i * 0.177;
             builder.MoveTo(0.274, y);
             builder.LineTo(0.726, y);
@@ -932,7 +944,7 @@ namespace Demo.yFiles.Graph.Bpmn.Util {
         if (!(other is EventTypeWithFill)) {
           return false;
         }
-        return ((EventTypeWithFill)other).type == type && ((EventTypeWithFill)other).filled == filled;
+        return ((EventTypeWithFill) other).type == type && ((EventTypeWithFill) other).filled == filled;
       }
 
       public override int GetHashCode() {
@@ -982,7 +994,8 @@ namespace Demo.yFiles.Graph.Bpmn.Util {
       return builder.CombineIcons(icons);
     }
 
-    private sealed class PenAndBrush {
+    private sealed class PenAndBrush
+    {
       private readonly Pen pen;
       private readonly Brush brush;
       private readonly bool inverted;
@@ -998,7 +1011,7 @@ namespace Demo.yFiles.Graph.Bpmn.Util {
           return false;
         }
         return ((PenAndBrush) other).pen == pen && ((PenAndBrush) other).brush == brush &&
-               ((PenAndBrush) other).inverted == inverted;
+            ((PenAndBrush) other).inverted == inverted;
       }
 
       public override int GetHashCode() {
@@ -1008,7 +1021,7 @@ namespace Demo.yFiles.Graph.Bpmn.Util {
       }
     }
 
-    private static readonly Dictionary<PlusData, IIcon> plusIcons = new Dictionary<PlusData, IIcon>(); 
+    private static readonly Dictionary<PlusData, IIcon> plusIcons = new();
 
     private static IIcon CreatePlusIcon(double size, Pen pen, Brush brush) {
       IIcon result;
@@ -1016,8 +1029,8 @@ namespace Demo.yFiles.Graph.Bpmn.Util {
       if (!plusIcons.TryGetValue(plusData, out result)) {
         builder.Pen = pen;
         builder.Brush = brush;
-        var d = 0.1*size;
-        var dOff = Math.Sqrt(0.25*size*size - d*d);
+        var d = 0.1 * size;
+        var dOff = Math.Sqrt(0.25 * size * size - d * d);
         builder.MoveTo(0.5 - dOff, 0.5 - d);
         builder.LineTo(0.5 - d, 0.5 - d);
         builder.LineTo(0.5 - d, 0.5 - dOff);
@@ -1053,7 +1066,7 @@ namespace Demo.yFiles.Graph.Bpmn.Util {
         if (!(other is PlusData)) {
           return false;
         }
-        PlusData otherData = (PlusData) other;
+        var otherData = (PlusData) other;
         return otherData.size == size && otherData.pen == pen && otherData.brush == brush;
       }
 
@@ -1084,8 +1097,8 @@ namespace Demo.yFiles.Graph.Bpmn.Util {
 
       var icon = builder.CreateRectIcon(
           // Needs all four arguments instead of one because the path is drawn differently in both cases on some platforms ...
-            BpmnConstants.ChoreographyCornerRadius, BpmnConstants.ChoreographyCornerRadius,
-            BpmnConstants.ChoreographyCornerRadius, BpmnConstants.ChoreographyCornerRadius);
+          BpmnConstants.ChoreographyCornerRadius, BpmnConstants.ChoreographyCornerRadius,
+          BpmnConstants.ChoreographyCornerRadius, BpmnConstants.ChoreographyCornerRadius);
 
       if (hasDefaultColor) {
         if (type == ChoreographyType.Task) {
@@ -1099,12 +1112,16 @@ namespace Demo.yFiles.Graph.Bpmn.Util {
       return icon;
     }
 
-    private static readonly Dictionary<ParticipantBandType, IIcon> participantBands = new Dictionary<ParticipantBandType, IIcon>(); 
+    private static readonly Dictionary<ParticipantBandType, IIcon> participantBands = new();
 
-    public static IIcon CreateChoreographyParticipant(Brush outline, Brush background, double topRadius, double bottomRadius) {
+    public static IIcon CreateChoreographyParticipant(
+        Brush outline,
+        Brush background,
+        double topRadius,
+        double bottomRadius) {
       var hasDefaultColors = Equals(outline, BpmnConstants.ChoreographyDefaultOutline) &&
-                             (Equals(background, BpmnConstants.ChoreographyDefaultInitiatingColor) ||
-                              Equals(background, BpmnConstants.ChoreographyDefaultResponseColor));
+          (Equals(background, BpmnConstants.ChoreographyDefaultInitiatingColor) ||
+              Equals(background, BpmnConstants.ChoreographyDefaultResponseColor));
 
       IIcon result;
       var participantBandType = new ParticipantBandType(background, topRadius, bottomRadius);
@@ -1115,7 +1132,7 @@ namespace Demo.yFiles.Graph.Bpmn.Util {
       builder.Pen = (Pen) new Pen(outline, 1).GetAsFrozen();
       builder.Brush = background;
       result = builder.CreateRectIcon(topRadius, topRadius, bottomRadius, bottomRadius);
-      
+
       if (hasDefaultColors) {
         participantBands[participantBandType] = result;
       }
@@ -1123,7 +1140,8 @@ namespace Demo.yFiles.Graph.Bpmn.Util {
       return result;
     }
 
-    private struct ParticipantBandType {
+    private readonly struct ParticipantBandType
+    {
       private readonly Brush brush;
       private readonly double topRadius;
       private readonly double bottomRadius;
@@ -1142,7 +1160,7 @@ namespace Demo.yFiles.Graph.Bpmn.Util {
         if (!(obj is ParticipantBandType)) {
           return false;
         }
-        return Equals((ParticipantBandType)obj);
+        return Equals((ParticipantBandType) obj);
       }
 
       public override int GetHashCode() {
@@ -1172,11 +1190,11 @@ namespace Demo.yFiles.Graph.Bpmn.Util {
       return icon;
     }
 
-    private static readonly Dictionary<ConversationType, IIcon> conversations = new Dictionary<ConversationType, IIcon>(4); 
+    private static readonly Dictionary<ConversationType, IIcon> conversations = new(4);
 
     public static IIcon CreateConversation(ConversationType type, Brush background, Brush outline) {
       var hasDefaultColors = Equals(background, BpmnConstants.ConversationDefaultBackground) &&
-                             Equals(outline, BpmnConstants.ConversationDefaultOutline);
+          Equals(outline, BpmnConstants.ConversationDefaultOutline);
 
       IIcon result;
       if (hasDefaultColors && conversations.TryGetValue(type, out result)) {
@@ -1237,7 +1255,8 @@ namespace Demo.yFiles.Graph.Bpmn.Util {
     private static IIcon dataObject;
 
     public static IIcon CreateDataObject(Brush background, Brush outline) {
-      var hasDefaultColors = Equals(background, BpmnConstants.DataObjectDefaultBackground) && Equals(outline, BpmnConstants.DataObjectDefaultOutline);
+      var hasDefaultColors = Equals(background, BpmnConstants.DataObjectDefaultBackground) &&
+          Equals(outline, BpmnConstants.DataObjectDefaultOutline);
 
       if (hasDefaultColors && dataObject != null) {
         return dataObject;
@@ -1292,7 +1311,7 @@ namespace Demo.yFiles.Graph.Bpmn.Util {
 
     public static IIcon CreateAnnotation(bool left, Brush background, Brush outline) {
       var hasDefaultColors = Equals(background, BpmnConstants.AnnotationDefaultBackground) &&
-                             Equals(outline, BpmnConstants.AnnotationDefaultOutline);
+          Equals(outline, BpmnConstants.AnnotationDefaultOutline);
 
       if (hasDefaultColors && left && leftAnnotation != null) {
         return leftAnnotation;
@@ -1335,7 +1354,7 @@ namespace Demo.yFiles.Graph.Bpmn.Util {
 
     public static IIcon CreateDataStore(Brush background, Brush outline) {
       var hasDefaultColors = Equals(background, BpmnConstants.DataStoreDefaultBackground) &&
-                             Equals(outline, BpmnConstants.DataStoreDefaultOutline);
+          Equals(outline, BpmnConstants.DataStoreDefaultOutline);
 
       if (hasDefaultColors && dataStore != null) {
         return dataStore;
@@ -1359,8 +1378,8 @@ namespace Demo.yFiles.Graph.Bpmn.Util {
       icons.Add(builder.GetPathIcon());
 
       builder.Pen = pen;
-      double ellipseCenterY = halfEllipseHeight;
-      for (int i = 0; i < 3; i++) {
+      var ellipseCenterY = halfEllipseHeight;
+      for (var i = 0; i < 3; i++) {
         builder.MoveTo(0, ellipseCenterY);
         builder.CubicTo(0, ellipseCenterY + halfEllipseHeight, 1, ellipseCenterY + halfEllipseHeight, 1,
             ellipseCenterY);
@@ -1377,9 +1396,9 @@ namespace Demo.yFiles.Graph.Bpmn.Util {
       return icon;
     }
 
-    private static readonly Dictionary<ArrowType, IIcon> arrows = new Dictionary<ArrowType, IIcon>(8); 
+    private static readonly Dictionary<BpmnArrowType, IIcon> arrows = new(8);
 
-    public static IIcon CreateArrowIcon(ArrowType type, Brush brush) {
+    public static IIcon CreateArrowIcon(BpmnArrowType type, Brush brush) {
       var hasDefaultColor = Equals(brush, BpmnConstants.DefaultIconColor);
 
       IIcon result;
@@ -1388,24 +1407,21 @@ namespace Demo.yFiles.Graph.Bpmn.Util {
       }
 
       builder.Pen = (Pen) new Pen {
-          Brush = brush,
-          StartLineCap = PenLineCap.Round,
-          EndLineCap = PenLineCap.Round,
-          LineJoin = PenLineJoin.Round
+          Brush = brush, StartLineCap = PenLineCap.Round, EndLineCap = PenLineCap.Round, LineJoin = PenLineJoin.Round
       }.GetAsFrozen();
       switch (type) {
-        case ArrowType.DefaultSource:
+        case BpmnArrowType.DefaultSource:
           builder.MoveTo(0.1, 0.1);
           builder.LineTo(0.9, 0.9);
           result = builder.GetPathIcon();
           break;
-        case ArrowType.Association:
+        case BpmnArrowType.Association:
           builder.MoveTo(0.5, 0);
           builder.LineTo(1, 0.5);
           builder.LineTo(0.5, 1);
           result = builder.GetPathIcon();
           break;
-        case ArrowType.ConditionalSource:
+        case BpmnArrowType.ConditionalSource:
           builder.MoveTo(0, 0.5);
           builder.LineTo(0.5, 0);
           builder.LineTo(1, 0.5);
@@ -1413,10 +1429,10 @@ namespace Demo.yFiles.Graph.Bpmn.Util {
           builder.Close();
           result = builder.GetPathIcon();
           break;
-        case ArrowType.MessageSource:
+        case BpmnArrowType.MessageSource:
           result = builder.CreateEllipseIcon();
           break;
-        case ArrowType.MessageTarget:
+        case BpmnArrowType.MessageTarget:
           builder.MoveTo(0, 0);
           builder.LineTo(1, 0.5);
           builder.LineTo(0, 1);
@@ -1424,9 +1440,9 @@ namespace Demo.yFiles.Graph.Bpmn.Util {
           result = builder.GetPathIcon();
           break;
         default:
-        case ArrowType.SequenceTarget:
-        case ArrowType.DefaultTarget:
-        case ArrowType.ConditionalTarget:
+        case BpmnArrowType.SequenceTarget:
+        case BpmnArrowType.DefaultTarget:
+        case BpmnArrowType.ConditionalTarget:
           builder.Brush = brush;
           builder.MoveTo(0, 0);
           builder.LineTo(1, 0.5);
@@ -1450,11 +1466,11 @@ namespace Demo.yFiles.Graph.Bpmn.Util {
 
     protected static PointD[] CreatePolygon(int sideCount, double radius, double rotation) {
       var result = new PointD[sideCount];
-      double delta = Math.PI * 2.0 / sideCount;
+      var delta = Math.PI * 2.0 / sideCount;
 
-      for (int i = 0; i < sideCount; i++) {
+      for (var i = 0; i < sideCount; i++) {
         var angle = delta * i + rotation;
-        result[i] = (new PointD(radius * Math.Sin(angle) + 0.5, -radius * Math.Cos(angle) + 0.5));
+        result[i] = new PointD(radius * Math.Sin(angle) + 0.5, -radius * Math.Cos(angle) + 0.5);
       }
       return result;
     }

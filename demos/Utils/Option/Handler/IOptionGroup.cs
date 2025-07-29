@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -33,13 +33,13 @@ using System.Reflection;
 namespace Demo.yFiles.Option.Handler
 {
   /// <summary>
-  /// interface for all classes that support the nesting of IOptionItems
+  ///   Interface for all classes that support the nesting of IOptionItems
   /// </summary>
   [Obfuscation(StripAfterObfuscation = false, Exclude = true, ApplyToMembers = true)]
   public interface IOptionGroup : IOptionItem
   {
     /// <summary>
-    /// Return a readonly list of all children
+    ///   Return a read-only list of all children
     /// </summary>
     ObservableCollection<IOptionItem> Items { get; }
   }

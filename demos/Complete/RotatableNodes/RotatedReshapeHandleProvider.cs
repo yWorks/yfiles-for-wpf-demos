@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -29,6 +29,7 @@
 
 using yWorks.Controls.Input;
 using yWorks.Graph;
+using yWorks.Utils;
 
 namespace Demo.yFiles.Complete.RotatableNodes
 {
@@ -45,7 +46,7 @@ namespace Demo.yFiles.Complete.RotatableNodes
     /// </summary>
     public RotatedReshapeHandleProvider(INode node) {
       this.node = node;
-      // use a reshape handler to properly handle 
+      // use a reshape handler to properly handle
       // implicit resizing of parent group nodes
       reshapeHandler = node.Lookup<IReshapeHandler>();
     }

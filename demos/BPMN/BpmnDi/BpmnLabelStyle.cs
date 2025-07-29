@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -64,36 +64,35 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
     public double Size { get; set; }
 
     /// <summary>
-    /// True, if this style depicts text in bold
+    /// <see langword="true"/>, if this style depicts text in bold
     /// </summary>
     public bool IsBold { get; set; }
 
     /// <summary>
-    /// True, if this style depicts text in italic
+    /// <see langword="true"/>, if this style depicts text in italics
     /// </summary>
     public bool IsItalic { get; set; }
 
     /// <summary>
-    /// True, if this style underlines text
+    /// <see langword="true"/>, if this style underlines text
     /// </summary>
     public bool IsUnderline { get; set; }
 
     /// <summary>
-    /// True, if this style depicts style with a StrikeThrough
+    /// <see langword="true"/>, if this style depicts a style with a StrikeThrough
     /// </summary>
     public bool IsStrikeThrough { get; set; }
 
     /// <summary>
-    /// <see cref="DefaultLabelStyle"/> that represents this BpmnLabelStyle
+    /// <see cref="yWorks.Graph.Styles.LabelStyle"/> that represents this BpmnLabelStyle
     /// </summary>
-    public DefaultLabelStyle LabelStyle { get; set; }
+    public LabelStyle LabelStyle { get; set; }
 
     /// <summary>
-    /// The default label Style
+    /// The default label style
     /// </summary>
-    /// <returns></returns>
-    public static DefaultLabelStyle NewDefaultInstance() {
-      var defaultLabelStyle = new DefaultLabelStyle();
+    public static LabelStyle NewDefaultInstance() {
+      var defaultLabelStyle = new LabelStyle();
 
       // Set font
       const string font = "Arial";
@@ -116,7 +115,7 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
     }
 
     /// <summary>
-    /// Constructs an instance of <see cref="DefaultLabelStyle"/> representing this Style
+    /// Constructs an instance of <see cref="yWorks.Graph.Styles.LabelStyle"/> representing this style
     /// </summary>
     /// <param name="xStyle">The XML Element to be converted into this style</param>
     public BpmnLabelStyle(XElement xStyle) {
@@ -160,7 +159,7 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
         }
       }
 
-      LabelStyle = new DefaultLabelStyle {
+      LabelStyle = new LabelStyle {
           TextAlignment = TextAlignment.Center, VerticalTextAlignment = VerticalAlignment.Center
       };
 
@@ -200,10 +199,9 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
     }
 
     /// <summary>
-    /// Returns the <see cref="DefaultLabelStyle"/> that represents this BpmnLabelStyle instance
+    /// Returns the <see cref="yWorks.Graph.Styles.LabelStyle"/> that represents this BpmnLabelStyle instance
     /// </summary>
-    /// <returns></returns>
-    public DefaultLabelStyle GetStyle() {
+    public LabelStyle GetStyle() {
       return LabelStyle;
     }
   }

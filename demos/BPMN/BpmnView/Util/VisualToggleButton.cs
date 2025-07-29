@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -45,7 +45,7 @@ namespace Demo.yFiles.Graph.Bpmn.Util {
     }
 
     /// <summary>
-    /// The visual used if the button is checked.
+    /// The visual used when the button is checked.
     /// </summary>
     public Visual CheckedVisual { get; set; }
 
@@ -70,7 +70,7 @@ namespace Demo.yFiles.Graph.Bpmn.Util {
     /// Called after the button state has been toggled.
     /// </summary>
     /// <remarks>
-    /// This methods updates the <see cref="FrameworkElement.GetTemplateChild">named template child</see>
+    /// This method updates the <see cref="FrameworkElement.GetTemplateChild">named template child</see>
     /// called <c>"visualGroup"</c> which needs to be of type <see cref="VisualGroup"/> by using 
     /// <see cref="CheckedVisual"/> or <see cref="UncheckedVisual"/> as single child element.
     /// </remarks>
@@ -106,7 +106,7 @@ namespace Demo.yFiles.Graph.Bpmn.Util {
     /// Returns the visual used by <see cref="UpdateChildren"/>.
     /// </summary>
     /// <remarks>
-    /// Depending on the the <see cref="ToggleButton.IsChecked">toggle state</see>, <see cref="CheckedVisual"/>
+    /// Depending on the <see cref="ToggleButton.IsChecked">toggle state</see>, <see cref="CheckedVisual"/>
     /// or <see cref="UncheckedVisual"/> is returned.
     /// </remarks>
     /// <returns>The visual used by <see cref="UpdateChildren"/>.</returns>

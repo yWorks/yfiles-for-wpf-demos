@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -35,12 +35,12 @@ namespace Demo.yFiles.Graph.VisualStateManager
 {
 
   [TemplateVisualState(Name = "ItemSelected", GroupName = "ItemSelectionStates")]
-  [TemplateVisualStateAttribute(Name = "ItemUnselected", GroupName = "ItemSelectionStates")]
-  [TemplateVisualStateAttribute(Name = "ItemHighlighted", GroupName = "ItemHighlightStates")]
-  [TemplateVisualStateAttribute(Name = "ItemUnhighlighted", GroupName = "ItemHighlightStates")]
-  [TemplateVisualStateAttribute(Name = "ItemFocused", GroupName = "ItemFocusStates")]
-  [TemplateVisualStateAttribute(Name = "ItemUnfocused", GroupName = "ItemFocusStates")]
-  [TemplateVisualStateAttribute(Name = "MouseOver", GroupName = "MouseStates")]
+  [TemplateVisualState(Name = "ItemUnselected", GroupName = "ItemSelectionStates")]
+  [TemplateVisualState(Name = "ItemHighlighted", GroupName = "ItemHighlightStates")]
+  [TemplateVisualState(Name = "ItemUnhighlighted", GroupName = "ItemHighlightStates")]
+  [TemplateVisualState(Name = "ItemFocused", GroupName = "ItemFocusStates")]
+  [TemplateVisualState(Name = "ItemUnfocused", GroupName = "ItemFocusStates")]
+  [TemplateVisualState(Name = "MouseOver", GroupName = "MouseStates")]
   [TemplateVisualState(Name = "MouseOutside", GroupName = "MouseStates")]
   class VSMPortControl : PortControl
   {
@@ -52,7 +52,7 @@ namespace Demo.yFiles.Graph.VisualStateManager
     /// Initializes a new instance of the <see cref="GraphItemControlBase&lt;TModelItem&gt;"/> class.
     /// </summary>
     public VSMPortControl() {
-      this.Loaded += OnLoaded;
+      Loaded += OnLoaded;
     }
 
     /// <summary>
@@ -74,7 +74,7 @@ namespace Demo.yFiles.Graph.VisualStateManager
     }
 
     private void OnLoaded(object sender, RoutedEventArgs routedEventArgs) {
-      this.Loaded -= OnLoaded;
+      Loaded -= OnLoaded;
       loaded = true;
       UpdateSelectionState(ItemSelected, false);
       UpdateFocusState(ItemFocused, false);

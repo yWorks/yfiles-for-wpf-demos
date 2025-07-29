@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -27,7 +27,6 @@
  ** 
  ***************************************************************************/
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
@@ -35,72 +34,66 @@ using Demo.yFiles.Toolkit;
 using yWorks.Controls.Input;
 using yWorks.Geometry;
 using yWorks.Graph;
-using yWorks.Graph.Styles;
 using yWorks.Graph.PortLocationModels;
+using yWorks.Graph.Styles;
+using yWorks.Utils;
 
 namespace Demo.yFiles.Graph.Input.OrthogonalEdges
 {
   /// <summary>
-  /// Shows how orthogonal edge editing can be customized by implementing the 
-  /// <see cref="IOrthogonalEdgeHelper"/> interface.
+  ///   Shows how orthogonal edge editing can be customized by implementing the
+  ///   <see cref="IOrthogonalEdgeHelper"/> interface.
   /// </summary>
   public partial class OrthogonalEdgesWindow
   {
-
     public OrthogonalEdgesWindow() {
       InitializeComponent();
     }
 
     /// <summary>
-    /// Creates the custom <see cref="IOrthogonalEdgeHelper"/> of this demo and
-    /// registers them with the <see cref="EdgeDecorator"/> of the graph.
-    /// Additionally, it sets some other decorators that complete the desired
-    /// behavior.
+    ///   Creates the custom <see cref="IOrthogonalEdgeHelper"/> of this demo and
+    ///   registers them with the <see cref="EdgeDecorator"/> of the graph.
+    ///   Additionally, it sets some other decorators that complete the desired
+    ///   behavior.
     /// </summary>
     private void RegisterOrthogonalEdgeHelperDecorators() {
-      EdgeDecorator edgeDecorator = graphControl.Graph.GetDecorator().EdgeDecorator;
-      
+      var edgeDecorator = graphControl.Graph.GetDecorator().Edges;
+
       // Add different IOrthogonalEdgeHelpers to demonstrate various custom behaviour.
-      edgeDecorator.OrthogonalEdgeHelperDecorator.SetImplementation(
-        edge => (edge.Tag == Themes.PaletteRed), new RedOrthogonalEdgeHelper());
-      // Green edges have the regular orthogonal editing behavior and therefore, 
+      edgeDecorator.OrthogonalEdgeHelper.AddConstant(edge => edge.Tag == Themes.PaletteRed,
+          new RedOrthogonalEdgeHelper());
+      // Green edges have the regular orthogonal editing behavior and therefore,
       // don't need a custom implementation.
-      edgeDecorator.OrthogonalEdgeHelperDecorator.SetImplementation(
-        edge => (edge.Tag == Themes.PaletteGreen), new OrthogonalEdgeHelper());
-      edgeDecorator.OrthogonalEdgeHelperDecorator.SetImplementation(
-        edge => (edge.Tag == Themes.PalettePurple), new PurpleOrthogonalEdgeHelper());
-      edgeDecorator.OrthogonalEdgeHelperDecorator.SetImplementation(
-        edge => (edge.Tag == Themes.PaletteOrange), new OrangeOrthogonalEdgeHelper());
-      edgeDecorator.OrthogonalEdgeHelperDecorator.SetImplementation(
-        edge => (edge.Tag == Themes.PaletteLightblue), new BlueOrthogonalEdgeHelper());
+      edgeDecorator.OrthogonalEdgeHelper.AddFactory(edge => edge.Tag == Themes.PaletteGreen,
+          edge => new OrthogonalEdgeHelper(edge));
+      edgeDecorator.OrthogonalEdgeHelper.AddFactory(edge => edge.Tag == Themes.PalettePurple,
+          edge => new PurpleOrthogonalEdgeHelper(edge));
+      edgeDecorator.OrthogonalEdgeHelper.AddFactory(edge => edge.Tag == Themes.PaletteOrange,
+          edge => new OrangeOrthogonalEdgeHelper(edge));
+      edgeDecorator.OrthogonalEdgeHelper.AddFactory(edge => edge.Tag == Themes.PaletteLightblue,
+          edge => new BlueOrthogonalEdgeHelper(edge));
 
       // Disable moving of the complete edge for orthogonal edges since this would create way too many bends.
-      edgeDecorator.PositionHandlerDecorator.HideImplementation(
-        edge => (edge.Tag == Themes.PaletteOrange) || 
-                (edge.Tag == Themes.PaletteGreen) ||
-                (edge.Tag == Themes.PalettePurple)
-        );
+      edgeDecorator.PositionHandler.Hide(edge =>
+          edge.Tag == Themes.PaletteOrange || edge.Tag == Themes.PaletteGreen || edge.Tag == Themes.PalettePurple);
 
-      // Add a custom BendCreator for blue edges that ensures orthogonality 
+      // Add a custom BendCreator for blue edges that ensures orthogonality
       // if a bend is added to the first or last (non-orthogonal) segment.
-      edgeDecorator.BendCreatorDecorator.SetImplementation(
-        edge => (edge.Tag == Themes.PaletteLightblue), new BlueBendCreator());
+      edgeDecorator.BendCreator.AddFactory(edge => edge.Tag == Themes.PaletteLightblue,
+          edge => new BlueBendCreator(edge));
 
-      // Add custom IEdgePortHandleProviders to make the handles of 
+      // Add custom IEdgePortHandleProviders to make the handles of
       // purple and orange edge move within the bounds of the node.
-      edgeDecorator.EdgePortHandleProviderDecorator.SetImplementationWrapper(
-        edge => edge.Tag == Themes.PalettePurple, (edge, provider) => new PurpleEdgePortHandleProvider(provider));
-      edgeDecorator.EdgePortHandleProviderDecorator.SetImplementation(
-        edge => edge.Tag == Themes.PaletteOrange, new OrangeEdgePortHandleProvider());
+      edgeDecorator.PortHandleProvider.AddWrapperFactory(edge => edge.Tag == Themes.PalettePurple,
+          (edge, provider) => new PurpleEdgePortHandleProvider(edge, provider));
+      edgeDecorator.PortHandleProvider.AddFactory(edge => edge.Tag == Themes.PaletteOrange,
+          edge => new OrangeEdgePortHandleProvider(edge));
     }
 
     private void OnWindowLoaded(object sender, RoutedEventArgs e) {
       // Create a default editor input mode
-      GraphEditorInputMode graphEditorInputMode = new GraphEditorInputMode();
+      var graphEditorInputMode = new GraphEditorInputMode();
 
-      // Enable orthogonal edge editing
-      graphEditorInputMode.OrthogonalEdgeEditingContext = new OrthogonalEdgeEditingContext();
-      
       // Just for user convenience: disable node and edge creation,
       graphEditorInputMode.AllowCreateEdge = false;
       graphEditorInputMode.AllowCreateNode = false;
@@ -113,16 +106,14 @@ namespace Demo.yFiles.Graph.Input.OrthogonalEdges
       graphEditorInputMode.AllowReparentNodes = false;
 
       // enable snapping for edges only,
-      graphEditorInputMode.SnapContext = new GraphSnapContext()
-                               {
-                                 CollectNodeSnapLines = false, 
-                                 CollectNodePairCenterSnapLines = false, 
-                                 CollectNodePairSnapLines = false, 
-                                 CollectNodePairSegmentSnapLines = false, 
-                                 CollectNodeSizes = false, 
-                                 SnapNodesToSnapLines = false, 
-                                 SnapOrthogonalMovement = false
-                               };
+      graphEditorInputMode.SnapContext = new GraphSnapContext {
+          SnappableItems = SnappableItems.Edge,
+          CollectNodeSnapReferences = false,
+          CollectNodePairCenterSnapLines = false,
+          CollectNodePairSnapLines = false,
+          CollectNodePairSegmentSnapLines = false,
+          CollectNodeSizes = false
+      };
 
       graphControl.Graph.SetUndoEngineEnabled(true);
 
@@ -136,15 +127,16 @@ namespace Demo.yFiles.Graph.Input.OrthogonalEdges
       RegisterOrthogonalEdgeHelperDecorators();
 
       CreateSampleGraph(graphControl.Graph);
+
+      graphControl.FitGraphBounds();
     }
 
     #region Sample Graph Creation
 
     /// <summary>
-    /// Creates the sample graph of this demo.
+    ///   Creates the sample graph of this demo.
     /// </summary>
     private void CreateSampleGraph(IGraph graph) {
-
       CreateSubgraph(graph, Themes.PaletteRed, 0, false);
       CreateSubgraph(graph, Themes.PaletteGreen, 110, false);
       CreateSubgraph(graph, Themes.PalettePurple, 220, true);
@@ -164,12 +156,14 @@ namespace Demo.yFiles.Graph.Input.OrthogonalEdges
     }
 
     /// <summary>
-    /// Creates the sample graph of the given color with two nodes and a single edge.
+    ///   Creates the sample graph of the given color with two nodes and a single edge.
     /// </summary>
     private static IEdge CreateSubgraph(IGraph graph, Palette palette, double yOffset, bool createPorts) {
       // Create two nodes
-      var n1 = graph.CreateNode(new RectD(110, 100 + yOffset, 40, 40), DemoStyles.CreateDemoNodeStyle(palette), palette);
-      var n2 = graph.CreateNode(new RectD(450, 130 + yOffset, 40, 40), DemoStyles.CreateDemoNodeStyle(palette), palette);
+      var n1 = graph.CreateNode(new RectD(110, 100 + yOffset, 40, 40), DemoStyles.CreateDemoNodeStyle(palette),
+          palette);
+      var n2 = graph.CreateNode(new RectD(450, 130 + yOffset, 40, 40), DemoStyles.CreateDemoNodeStyle(palette),
+          palette);
 
       // Create an edge, either between the two nodes or between the nodes's ports
       IEdge edge;
@@ -181,10 +175,10 @@ namespace Demo.yFiles.Graph.Input.OrthogonalEdges
         edge = graph.CreateEdge(p1[1], p2[2], DemoStyles.CreateDemoEdgeStyle(palette, false), palette);
       }
 
-      // Add bends that create a veredge.SourcePort.Locationtical segment in the middle of the edge
+      // Add bends that create a vertical segment in the middle of the edge
       var sourcePortLocation = edge.SourcePort.GetLocation();
       var targetPortLocation = edge.TargetPort.GetLocation();
-      var x = (sourcePortLocation.X + targetPortLocation.X)/2;
+      var x = (sourcePortLocation.X + targetPortLocation.X) / 2;
       graph.AddBend(edge, new PointD(x, sourcePortLocation.Y));
       graph.AddBend(edge, new PointD(x, targetPortLocation.Y));
 
@@ -192,7 +186,7 @@ namespace Demo.yFiles.Graph.Input.OrthogonalEdges
     }
 
     /// <summary>
-    /// Adds some ports to the given node.
+    ///   Adds some ports to the given node.
     /// </summary>
     private static IPort[] CreateSamplePorts(IGraph graph, INode node, bool toEastSide) {
       var model = FreeNodePortLocationModel.Instance;
@@ -206,66 +200,75 @@ namespace Demo.yFiles.Graph.Input.OrthogonalEdges
     }
 
     #endregion
-
   }
 
   /// <summary>
-  /// An <see cref="IOrthogonalEdgeHelper"/> for edges that don't have
-  /// orthogonal editing behavior.
+  ///   An <see cref="IOrthogonalEdgeHelper"/> for edges that don't have
+  ///   orthogonal editing behavior.
   /// </summary>
   public class RedOrthogonalEdgeHelper : IOrthogonalEdgeHelper
   {
     /// <summary>
-    /// Returns the non-orthogonal segment orientation.
+    ///   Returns the non-orthogonal segment orientation.
     /// </summary>
-    public SegmentOrientation GetSegmentOrientation(IInputModeContext context, IEdge edge, int segmentIndex) {
+    public SegmentOrientation GetSegmentOrientation(IInputModeContext context, int segmentIndex) {
       return SegmentOrientation.NonOrthogonal;
     }
 
     /// <summary>
-    /// Returns <see langword="false"/>.
+    ///   Returns <see langword="false"/>.
     /// </summary>
-    public bool ShouldMoveEndImplicitly(IInputModeContext context, IEdge edge, bool sourceEnd) {
+    public bool ShouldMoveEndImplicitly(IInputModeContext context, bool sourceEnd) {
       return false;
     }
 
     /// <summary>
-    /// Returns <see langword="false"/>.
+    ///   Returns <see langword="false"/>.
     /// </summary>
-    public bool ShouldEditOrthogonally(IInputModeContext context, IEdge edge) {
+    public bool ShouldEditOrthogonally(IInputModeContext context) {
       return false;
     }
 
     /// <summary>
-    /// Does nothing; no cleanup of bends performed.
+    ///   Does nothing; no cleanup of bends performed.
     /// </summary>
-    public void CleanUpEdge(IInputModeContext context, IGraph graph, IEdge edge) {
+    public void CleanUpEdge(IInputModeContext context, IGraph graph) {
       // no cleanup of bends performed
     }
   }
 
-    /// <summary>
-  /// An <see cref="OrthogonalEdgeHelper"/> that enables moving the
-  /// source/target of the edge to another port, removes bends inside the bounds
-  /// of the node and relocates the port to the last bend inside the node.
+  /// <summary>
+  ///   An <see cref="OrthogonalEdgeHelper"/> that enables moving the
+  ///   source/target of the edge to another port, removes bends inside the bounds
+  ///   of the node, and relocates the port to the last bend inside the node.
   /// </summary>
   public class PurpleOrthogonalEdgeHelper : OrthogonalEdgeHelper
   {
     /// <summary>
-    /// Enables moving the source and target of the edge to other ports.
+    ///   Creates a new instance for the given edge.
     /// </summary>
-    public override bool ShouldMoveEndImplicitly(IInputModeContext context, IEdge edge, bool sourceEnd) {
+    /// <param name="edge">The edge to inspect.</param>
+    public PurpleOrthogonalEdgeHelper(IEdge edge) : base(edge) { }
+
+    /// <summary>
+    ///   Enables moving the source and target of the edge to other ports.
+    /// </summary>
+    public override bool ShouldMoveEndImplicitly(IInputModeContext context, bool sourceEnd) {
       return true;
     }
 
     /// <summary>
-    /// Removes bends inside of nodes, in addition to the clean-ups provided by
-    /// the base implementation.
+    ///   Removes bends inside of nodes, in addition to the clean-ups provided by
+    ///   the base implementation.
     /// </summary>
-    public override void CleanUpEdge(IInputModeContext context, IGraph graph, IEdge edge) {
-      base.CleanUpEdge(context, graph, edge);
+    public override void CleanUpEdge(IInputModeContext context, IGraph graph) {
+      base.CleanUpEdge(context, graph);
+      CleanUpBends(graph, Edge);
+    }
+
+    private static void CleanUpBends(IGraph graph, IEdge edge) {
       // now check bends which lie inside the node bounds and remove them...
-      var sourceNode = edge.GetSourceNode();
+      var sourceNode = edge.SourcePort.Owner as INode;
       if (sourceNode != null) {
         var sourceContainsTest = sourceNode.SafeLookup<IShapeGeometry>();
         while (edge.Bends.Count > 0 && sourceContainsTest.IsInside(edge.Bends[0].Location.ToPointD())) {
@@ -278,11 +281,12 @@ namespace Demo.yFiles.Graph.Input.OrthogonalEdges
           graph.Remove(edge.Bends[0]);
         }
       }
-      var targetNode = edge.GetTargetNode();
+      var targetNode = edge.TargetPort.Owner as INode;
       if (targetNode != null) {
         var targetContainsTest = targetNode.SafeLookup<IShapeGeometry>();
-        while (edge.Bends.Count > 0 && targetContainsTest.IsInside(edge.Bends[edge.Bends.Count-1].Location.ToPointD())) {
-          var lastBend = edge.Bends[edge.Bends.Count-1];
+        while (edge.Bends.Count > 0 &&
+            targetContainsTest.IsInside(edge.Bends[edge.Bends.Count - 1].Location.ToPointD())) {
+          var lastBend = edge.Bends[edge.Bends.Count - 1];
           var bendLocation = lastBend.Location.ToPointD();
           // we try to move to port to the bend location so that the edge shape stays the same
           graph.SetPortLocation(edge.TargetPort, bendLocation);
@@ -296,63 +300,84 @@ namespace Demo.yFiles.Graph.Input.OrthogonalEdges
   }
 
   /// <summary>
-  /// An <see cref="OrthogonalEdgeHelper"/> that enables moving the
-  /// source/target of the edge to another port.
+  ///   An <see cref="OrthogonalEdgeHelper"/> that enables moving the
+  ///   source/target of the edge to another port.
   /// </summary>
   public class OrangeOrthogonalEdgeHelper : OrthogonalEdgeHelper
   {
     /// <summary>
-    /// Enables moving the source and target of the edge to other ports.
+    ///   Creates a new instance for the given edge.
     /// </summary>
-    public override bool ShouldMoveEndImplicitly(IInputModeContext context, IEdge edge, bool sourceEnd) {
+    /// <param name="edge">The edge to inspect.</param>
+    public OrangeOrthogonalEdgeHelper(IEdge edge) : base(edge) { }
+
+    /// <summary>
+    ///   Enables moving the source and target of the edge to other ports.
+    /// </summary>
+    public override bool ShouldMoveEndImplicitly(IInputModeContext context, bool sourceEnd) {
       return true;
     }
   }
 
   /// <summary>
-  /// The <see cref="OrthogonalEdgeHelper"/> for blue edges. Orthogonal edge
-  /// editing is enabled for the inner segments of this edges but not for the
-  /// first and last one.
+  ///   The <see cref="OrthogonalEdgeHelper"/> for blue edges. Orthogonal edge
+  ///   editing is enabled for the inner segments of these edges but not for the
+  ///   first and last one.
   /// </summary>
   public class BlueOrthogonalEdgeHelper : OrthogonalEdgeHelper
   {
     /// <summary>
-    /// Returns the NonOrthogonal segment orientation for the first and last
-    /// segment, and the default for all other segments.
+    ///   Creates a new instance for the given edge.
     /// </summary>
-    public override SegmentOrientation GetSegmentOrientation(IInputModeContext context, IEdge edge, int segmentIndex) {
-      return segmentIndex == 0 || segmentIndex == edge.Bends.Count
-               ? SegmentOrientation.NonOrthogonal
-               : base.GetSegmentOrientation(context, edge, segmentIndex);
+    /// <param name="edge">The edge to inspect.</param>
+    public BlueOrthogonalEdgeHelper(IEdge edge) : base(edge) { }
+
+    /// <summary>
+    ///   Returns the NonOrthogonal segment orientation for the first and last
+    ///   segment, and the default for all other segments.
+    /// </summary>
+    public override SegmentOrientation GetSegmentOrientation(IInputModeContext context, int segmentIndex) {
+      return segmentIndex == 0 || segmentIndex == Edge.Bends.Count
+          ? SegmentOrientation.NonOrthogonal
+          : base.GetSegmentOrientation(context, segmentIndex);
     }
   }
 
   /// <summary>
-  /// This bend creator ensures that inner segments of an edge are always
-  /// orthogonal, even if the new bend was created on the non-orthogonal first
-  /// or last segment. 
+  ///   This bend creator ensures that inner segments of an edge are always
+  ///   orthogonal, even if the new bend was created on the non-orthogonal first
+  ///   or last segment.
   /// </summary>
   public class BlueBendCreator : IBendCreator
   {
+    private readonly IEdge edge;
+
     /// <summary>
-    /// Creates a new bend at the given location. If this bend is on the first or last segment,
-    /// a second bend is created and placed at a location that ensures that the newly create
-    /// inner segment is orthogonal.
+    ///   Creates a new instance for the given edge.
     /// </summary>
-    public int CreateBend(IInputModeContext context, IGraph graph, IEdge edge, PointD location) {
+    public BlueBendCreator(IEdge edge) {
+      this.edge = edge;
+    }
+
+    /// <summary>
+    ///   Creates a new bend at the given location. If this bend is on the first or last segment,
+    ///   a second bend is created and placed at a location that ensures that the newly created
+    ///   inner segment is orthogonal.
+    /// </summary>
+    public int CreateBend(IInputModeContext context, IGraph graph, PointD location) {
       var edgePoints = GetEdgePoints(edge);
       var closestSegment = DetermineBendSegmentIndex(edgePoints, location);
 
-      int firstSegment = 0;
-      int lastSegment = edge.Bends.Count;
+      var firstSegment = 0;
+      var lastSegment = edge.Bends.Count;
 
       // if bend wasn't created in first or last segment, call default action
       if (closestSegment != firstSegment && closestSegment != lastSegment) {
-        return (new DefaultBendCreator()).CreateBend(context, graph, edge, location);
+        return new DefaultBendCreator(edge).CreateBend(context, graph, location);
       }
 
       // add created bend and another one to make the edge stay orthogonal
-      if (closestSegment == -1 || context == null || !(context.ParentInputMode is CreateBendInputMode)) {
+      if (closestSegment == -1 || !(context.InputMode is CreateBendInputMode)) {
         return -1;
       }
       var editingContext = context.Lookup<OrthogonalEdgeEditingContext>();
@@ -362,7 +387,7 @@ namespace Demo.yFiles.Graph.Input.OrthogonalEdges
       if (closestSegment == firstSegment) {
         IPoint nextPoint = edgePoints[1];
         // get orientation of next edge segment to determine second bend location
-        SegmentOrientation orientation = editingContext.GetSegmentOrientation(edge, 1);
+        var orientation = editingContext.GetSegmentOrientation(edge, 1);
         graph.AddBend(edge, location, 0);
         if (orientation == SegmentOrientation.Horizontal) {
           graph.AddBend(edge, new PointD(nextPoint.X, location.Y), 1);
@@ -374,7 +399,7 @@ namespace Demo.yFiles.Graph.Input.OrthogonalEdges
       if (closestSegment == lastSegment) {
         IPoint prevPoint = edgePoints[edge.Bends.Count];
         // get orientation of next edge segment to determine second bend location
-        SegmentOrientation orientation = editingContext.GetSegmentOrientation(edge, edge.Bends.Count - 1);
+        var orientation = editingContext.GetSegmentOrientation(edge, edge.Bends.Count - 1);
         graph.AddBend(edge, location, edge.Bends.Count);
         if (orientation == SegmentOrientation.Horizontal) {
           graph.AddBend(edge, new PointD(prevPoint.X, location.Y), edge.Bends.Count - 1);
@@ -387,13 +412,13 @@ namespace Demo.yFiles.Graph.Input.OrthogonalEdges
     }
 
     /// <summary>
-    /// Determines the index of the segment in which the bend was created. 
+    ///   Determines the index of the segment in which the bend was created.
     /// </summary>
     private int DetermineBendSegmentIndex(List<PointD> points, PointD location) {
-      int closestIndex = -1;
-      double minDist = Double.MaxValue;
-      for (int i = 0; i < points.Count - 1; i++) {
-        double dist = location.DistanceToSegment(points[i], points[i + 1]);
+      var closestIndex = -1;
+      var minDist = double.MaxValue;
+      for (var i = 0; i < points.Count - 1; i++) {
+        var dist = location.DistanceToSegment(points[i], points[i + 1]);
         if (dist < minDist) {
           closestIndex = i;
           minDist = dist;
@@ -403,13 +428,13 @@ namespace Demo.yFiles.Graph.Input.OrthogonalEdges
     }
 
     /// <summary>
-    /// Returns a list containing the source port location, the bend locations,
-    /// and the target port location of the given edge.
+    ///   Returns a list containing the source port location, the bend locations,
+    ///   and the target port location of the given edge.
     /// </summary>
     private List<PointD> GetEdgePoints(IEdge edge) {
-      List<PointD> points = new List<PointD>();
+      var points = new List<PointD>();
       points.Add(edge.SourcePort.GetLocation());
-      foreach (IBend bend in edge.Bends) {
+      foreach (var bend in edge.Bends) {
         points.Add(bend.Location.ToPointD());
       }
       points.Add(edge.TargetPort.GetLocation());
@@ -418,51 +443,57 @@ namespace Demo.yFiles.Graph.Input.OrthogonalEdges
   }
 
   /// <summary>
-  /// An <see cref="IEdgePortHandleProvider" /> that constraints the
-  /// port location handle of the wrapped provider to the layout rectangle of the port's owner node.
+  ///   An <see cref="IEdgePortHandleProvider"/> that constrains the
+  ///   port location handle of the wrapped provider to the layout rectangle of the port's owner node.
   /// </summary>
   public class PurpleEdgePortHandleProvider : IEdgePortHandleProvider
   {
+    private readonly IEdge edge;
     private readonly IEdgePortHandleProvider wrapped;
 
-    public PurpleEdgePortHandleProvider(IEdgePortHandleProvider wrapped) {
+    public PurpleEdgePortHandleProvider(IEdge edge, IEdgePortHandleProvider wrapped) {
+      this.edge = edge;
       this.wrapped = wrapped;
     }
 
     /// <summary>
-    /// Returns the handle of the wrapped provider constrained to the layout rectangle of the
-    /// port's owner node.
+    ///   Returns the handle of the wrapped provider constrained to the layout rectangle of the
+    ///   port's owner node.
     /// </summary>
-    public IHandle GetHandle(IInputModeContext context, IEdge edge, bool sourceHandle) {
-      var wrappedHandle = wrapped.GetHandle(context, edge, sourceHandle);
+    public IHandle GetHandle(IInputModeContext context, bool sourceHandle) {
+      var wrappedHandle = wrapped.GetHandle(context, sourceHandle);
 
-      IPort port = sourceHandle ? edge.SourcePort : edge.TargetPort;
-      return port.Owner is INode
-               ? new NodeLayoutPortLocationHandle((INode)port.Owner, wrappedHandle)
-               : wrappedHandle;
+      var port = sourceHandle ? edge.SourcePort : edge.TargetPort;
+      return port.Owner is INode ? new NodeLayoutPortLocationHandle((INode) port.Owner, wrappedHandle) : wrappedHandle;
     }
   }
 
   /// <summary>
-  /// An <see cref="IEdgePortHandleProvider" /> that constraints the original
-  /// port location handle to the layout rectangle of the port's owner node.
+  ///   An <see cref="IEdgePortHandleProvider"/> that constrains the original
+  ///   port location handle to the layout rectangle of the port's owner node.
   /// </summary>
   public class OrangeEdgePortHandleProvider : IEdgePortHandleProvider
   {
+    private readonly IEdge edge;
+
+    public OrangeEdgePortHandleProvider(IEdge edge) {
+      this.edge = edge;
+    }
+
     /// <summary>
-    /// Returns a handle that is constrained to the layout rectangle of the port's owner node.
+    ///   Returns a handle that is constrained to the layout rectangle of the port's owner node.
     /// </summary>
-    public IHandle GetHandle(IInputModeContext context, IEdge edge, bool sourceHandle) {
-      IPort port = sourceHandle ? edge.SourcePort : edge.TargetPort;
+    public IHandle GetHandle(IInputModeContext context, bool sourceHandle) {
+      var port = sourceHandle ? edge.SourcePort : edge.TargetPort;
       return port.Owner is INode
-               ? new NodeLayoutPortLocationHandle((INode) port.Owner, port.Lookup<IHandle>())
-               : port.Lookup<IHandle>();
+          ? new NodeLayoutPortLocationHandle((INode) port.Owner, port.Lookup<IHandle>())
+          : port.Lookup<IHandle>();
     }
   }
 
   /// <summary>
-  /// A port location handle that is constrained to the layout rectangle of
-  /// the port's owner node.
+  ///   A port location handle that is constrained to the layout rectangle of
+  ///   the port's owner node.
   /// </summary>
   public class NodeLayoutPortLocationHandle : ConstrainedHandle
   {
@@ -472,7 +503,10 @@ namespace Demo.yFiles.Graph.Input.OrthogonalEdges
       this.node = node;
     }
 
-    protected override PointD ConstrainNewLocation(IInputModeContext context, PointD originalLocation, PointD newLocation) {
+    protected override PointD ConstrainNewLocation(
+        IInputModeContext context,
+        PointD originalLocation,
+        PointD newLocation) {
       return newLocation.GetConstrained(node.Layout.ToRectD());
     }
   }

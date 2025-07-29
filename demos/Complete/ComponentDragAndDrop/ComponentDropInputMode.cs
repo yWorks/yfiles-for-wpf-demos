@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -35,48 +35,56 @@ using yWorks.Graph;
 namespace Demo.yFiles.Graph.ComponentDragAndDrop
 {
   /// <summary>
-  ///  An <see cref="ItemDropInputMode{T}"/> specialized to drag and drop <see cref="IGraph">components</see>.
+  ///   An <see cref="ItemDropInputMode{T}"/> specialized to drag and drop <see cref="IGraph">components</see>.
   /// </summary>
   /// <remarks>
-  /// Each component is stored and handled as an <see cref="IGraph"/> instance
-  /// where all nodes and edges belong solely to that component.
+  ///   Each component is stored and handled as an <see cref="IGraph"/> instance
+  ///   where all nodes and edges belong solely to that component.
   /// </remarks>
   internal class ComponentDropInputMode : ItemDropInputMode<IGraph>
   {
     /// <summary>
-    /// The center of the preview graph. 
+    ///   The center of the preview graph.
     /// </summary>
     private PointD center;
 
     /// <summary>
-    /// Constructs a new instance of class <see cref="ComponentDropInputMode"/>. 
+    ///   Constructs a new instance of class <see cref="ComponentDropInputMode"/>.
     /// </summary>
     public ComponentDropInputMode() {
       ItemCreator = CreateComponent;
     }
 
     /// <summary>
-    /// Creates the component in the graph after it has been dropped.
+    ///   Creates the component in the graph after it has been dropped.
     /// </summary>
-    /// <remarks>This method is called by the <see cref="ItemDropInputMode{T}.ItemCreator"/> that
-    /// is set as default on this class.</remarks>
+    /// <remarks>
+    ///   This method is called by the <see cref="ItemDropInputMode{T}.ItemCreator"/> that
+    ///   is set as default on this class.
+    /// </remarks>
     /// <param name="context">The context for which the component should be created.</param>
     /// <param name="graph">The <see cref="IGraph">Graph</see> in which to create the component.</param>
-    /// <param name="draggedGraph">The component that was dragged and should therefore be created.
-    /// The nodes and edges of the component will be copied into the <paramref name="graph"/>.</param>
+    /// <param name="draggedGraph">
+    ///   The component that was dragged and should therefore be created.
+    ///   The nodes and edges of the component will be copied into the <paramref name="graph"/>.
+    /// </param>
     /// <param name="dropTarget">The <see cref="IModelItem"/> on which the component is dropped. This is ignored here.</param>
     /// <param name="dropLocation">The location where the component has been dropped.</param>
     /// <returns>A newly created component.</returns>
-    private IGraph CreateComponent(IInputModeContext context, IGraph graph, IGraph draggedGraph, IModelItem dropTarget, PointD dropLocation) {
+    private IGraph CreateComponent(
+        IInputModeContext context,
+        IGraph graph,
+        IGraph draggedGraph,
+        IModelItem dropTarget,
+        PointD dropLocation) {
       // move the component to the drop location
       var delta = dropLocation - GetCenter(draggedGraph);
       Move(draggedGraph, delta);
 
       // create the component and collect the dropped nodes
       var droppedNodes = new HashSet<INode>();
-      new GraphCopier().Copy(draggedGraph, item => true, graph, PointD.Origin, (original, copy) => {
-        var node = copy as INode;
-        if (node != null) {
+      new GraphCopier().Copy(draggedGraph, graph, offset:PointD.Origin, itemCopiedCallback:(_, copy) => {
+        if (copy is INode node) {
           droppedNodes.Add(node);
         }
       });
@@ -86,7 +94,7 @@ namespace Demo.yFiles.Graph.ComponentDragAndDrop
     }
 
     /// <summary>
-    /// Fills the specified graph that is used to preview the dragged component.
+    ///   Fills the specified graph that is used to preview the dragged component.
     /// </summary>
     /// <param name="previewGraph">The preview graph to fill.</param>
     protected override void PopulatePreviewGraph(IGraph previewGraph) {
@@ -100,8 +108,8 @@ namespace Demo.yFiles.Graph.ComponentDragAndDrop
     }
 
     /// <summary>
-    /// Updates the <see paramref="previewGraph">preview graph</see> so the dragged component is
-    /// displayed at the specified <paramref name="dragLocation"/>.
+    ///   Updates the <see paramref="previewGraph">preview graph</see> so the dragged component is
+    ///   displayed at the specified <paramref name="dragLocation"/>.
     /// </summary>
     /// <param name="previewGraph">The preview graph to update.</param>
     /// <param name="dragLocation">The current drag location.</param>
@@ -112,25 +120,22 @@ namespace Demo.yFiles.Graph.ComponentDragAndDrop
       center = dragLocation;
 
       // trigger a repaint
-      var canvas = InputModeContext.CanvasControl;
-      if (canvas != null) {
-        canvas.Invalidate();
-      }
+      ParentInputModeContext?.CanvasControl.Invalidate();
     }
 
     /// <summary>
-    /// Returns the center of the <paramref name="graph"/>.
+    ///   Returns the center of the <paramref name="graph"/>.
     /// </summary>
     private PointD GetCenter(IGraph graph) {
       var bounds = RectD.Empty;
       foreach (var node in graph.Nodes) {
         bounds += node.Layout.ToRectD();
       }
-      return bounds.Center;
+      return bounds.GetCenter();
     }
 
     /// <summary>
-    /// Moves the <paramref name="graph"/> by <paramref name="delta"/>.
+    ///   Moves the <paramref name="graph"/> by <paramref name="delta"/>.
     /// </summary>
     private void Move(IGraph graph, PointD delta) {
       foreach (var node in graph.Nodes) {

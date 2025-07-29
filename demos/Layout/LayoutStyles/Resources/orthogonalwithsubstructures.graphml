@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<graphml xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml.html/2.0/ygraphml.xsd " xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:y="http://www.yworks.com/xml/yfiles-common/3.0" xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/3.0" xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/3.0/xaml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<graphml xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml.html/2.0/ygraphml.xsd " xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:y="http://www.yworks.com/xml/yfiles-common/3.0"  xmlns:yx="http://www.yworks.com/xml/yfiles-common/4.0" xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/3.0" xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/4.0/xaml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <key id="d0" for="node" attr.name="NodeLabels" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeLabels"/>
   <key id="d1" for="node" attr.name="NodeGeometry" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeGeometry"/>
   <key id="d2" for="all" attr.name="UserTags" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/UserTags"/>
@@ -21,13 +21,13 @@
   <key id="d10" attr.name="SharedData" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/SharedData"/>
   <data key="d10">
     <y:SharedData>
-      <y:RatioAnchoredLabelModelParameter x:Key="1" LayoutRatio="0.5,0.5" LabelRatio="0.5,0.5"/>
+      <yx:FreeNodeLabelModelParameter x:Key="1" LayoutRatio="0.5,0.5" LabelRatio="0.5,0.5"/>
       <ywpf:ShapeNodeStyle x:Key="freeNode" Pen="#FFA95D04" Brush="#FFFF8C00" />
       <ywpf:ShapeNodeStyle x:Key="cyNode" Pen="#FF480B1B" Brush="#FFAB2346" />
       <ywpf:ShapeNodeStyle x:Key="tNode" Pen="#FFA79200" Brush="#FFF1D302" />
       <ywpf:ShapeNodeStyle x:Key="chNode" Pen="#FF01749A" Brush="#FF00BFFF" />
-      <ywpf:DefaultLabelStyle x:Key="labelStyle" TextSize="12" TextAlignment="Center" AutoFlip="False" TextBrush="#FF000000" />
-      <ywpf:PolylineEdgeStyle x:Key="edgeStyle">
+      <ywpf:LabelStyle x:Key="labelStyle" TextSize="12" TextAlignment="Center" AutoFlip="False" TextBrush="#FF000000" />
+      <ywpf:PolylineEdgeStyle x:Key="edgeStyle" OrthogonalEditing="true">
         <ywpf:PolylineEdgeStyle.Pen>
           <Pen Brush="#FF336699" Thickness="1.5" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" />
         </ywpf:PolylineEdgeStyle.Pen>

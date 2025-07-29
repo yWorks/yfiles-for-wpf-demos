@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -30,20 +30,21 @@
 namespace Demo.yFiles.Option.DataBinding
 {
   /// <summary>
-  /// The interface that is used by <see cref="IPropertyItem"/> to set a value in a given
-  /// context.
+  ///   The interface that is used by <see cref="IPropertyItem"/> to set a value in a given
+  ///   context.
   /// </summary>
   public interface IValueSetter
   {
     /// <summary>
-    /// Sets the new value in the context.
+    ///   Sets the new value in the context.
     /// </summary>
     /// <param name="value">The new value to set.</param>
     /// <seealso cref="IPropertyBuildContext{TSubject}.CurrentInstance"/>
     /// <seealso cref="IPropertyBuildContext{TSubject}.SetNewInstance"/>
     void SetValue(object value);
+
     /// <summary>
-    /// Determines whether this instance can perform a <see cref="SetValue"/>.
+    ///   Determines whether this instance can perform a <see cref="SetValue"/>.
     /// </summary>
     /// <seealso cref="IPropertyBuildContext{TSubject}.CurrentInstance"/>
     /// <seealso cref="IPropertyBuildContext{TSubject}.SetNewInstance"/>
@@ -52,29 +53,29 @@ namespace Demo.yFiles.Option.DataBinding
   }
 
   /// <summary>
-  /// An adapter class that adapts <see cref="ValueSetterDelegate{TValue}"/>
-  /// and <see cref="ValueSetterValidityPredicate"/> to the <see cref="IValueSetter"/>
-  /// interface.
+  ///   An adapter class that adapts <see cref="ValueSetterDelegate{TValue}"/>
+  ///   and <see cref="ValueSetterValidityPredicate"/> to the <see cref="IValueSetter"/>
+  ///   interface.
   /// </summary>
   /// <typeparam name="T">The type of the items to set.</typeparam>
-  public class DelegateSetter<T> : IValueSetter 
+  public class DelegateSetter<T> : IValueSetter
   {
     private readonly ValueSetterDelegate<T> setter;
     private readonly ValueSetterValidityPredicate predicate;
 
 
     /// <summary>
-    /// Creates a new instance.
+    ///   Creates a new instance.
     /// </summary>
     /// <param name="setter">The setter to use.</param>
-    /// <param name="predicate">The predicate to use</param>
+    /// <param name="predicate">The predicate to use.</param>
     public DelegateSetter(ValueSetterDelegate<T> setter, ValueSetterValidityPredicate predicate) {
       this.setter = setter;
       this.predicate = predicate;
     }
 
     /// <summary>
-    /// Creates a new instance.
+    ///   Creates a new instance.
     /// </summary>
     /// <param name="setter">The setter to use.</param>
     public DelegateSetter(ValueSetterDelegate<T> setter) {
@@ -82,23 +83,24 @@ namespace Demo.yFiles.Option.DataBinding
     }
 
     #region IValueSetter Members
+
     /// <inheritdoc/>
     public virtual void SetValue(object value) {
       if (value is T || value == null) {
-        setter((T)value);
+        setter((T) value);
       }
     }
 
     /// <inheritdoc/>
     public virtual bool CanSet() {
-      return predicate==null? setter != null : setter != null && predicate();
+      return predicate == null ? setter != null : setter != null && predicate();
     }
 
     #endregion
   }
 
   /// <summary>
-  /// A delegate version of the <see cref="IValueSetter"/> interface.
+  ///   A delegate version of the <see cref="IValueSetter"/> interface.
   /// </summary>
   /// <typeparam name="TValue">The type of value to set.</typeparam>
   /// <param name="value">The value to set on the context.</param>
@@ -107,7 +109,7 @@ namespace Demo.yFiles.Option.DataBinding
   public delegate void ValueSetterDelegate<TValue>(TValue value);
 
   /// <summary>
-  /// A delegate version of the <see cref="IValueSetter"/> interface.
+  ///   A delegate version of the <see cref="IValueSetter"/> interface.
   /// </summary>
   /// <returns>Whether setting would succeed.</returns>
   /// <seealso cref="IPropertyBuildContext{TSubject}.CurrentInstance"/>

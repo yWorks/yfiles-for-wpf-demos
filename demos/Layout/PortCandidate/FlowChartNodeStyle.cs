@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -27,7 +27,6 @@
  ** 
  ***************************************************************************/
 
-using System.Windows.Media;
 using Demo.yFiles.Toolkit;
 using yWorks.Controls;
 using yWorks.Geometry;
@@ -38,9 +37,9 @@ using yWorks.Graph.Styles;
 namespace Demo.yFiles.Layout.PortCandidateDemo
 {
   /// <summary>
-  /// A very simple implementation of an <see cref="INodeStyle"/>
-  /// that delegates the rendering of the style to another node style and adds renderings
-  /// for <see cref="PortDescriptor"/> instances.
+  ///   A very simple implementation of an <see cref="INodeStyle"/>
+  ///   that delegates the rendering of the style to another node style and adds renderings
+  ///   for <see cref="PortDescriptor"/> instances.
   /// </summary>
   public class FlowChartNodeStyle : NodeStyleBase<VisualGroup>
   {
@@ -50,6 +49,7 @@ namespace Demo.yFiles.Layout.PortCandidateDemo
     }
 
     private ShapeNodeStyle NodeStyle { get; set; }
+
     private IPortStyle PortStyle { get; set; }
 
     protected override GeneralPath GetOutline(INode node) {
@@ -58,6 +58,7 @@ namespace Demo.yFiles.Layout.PortCandidateDemo
     }
 
     private FlowChartType flowChartType;
+
     public FlowChartType FlowChartType {
       get { return flowChartType; }
       set {
@@ -81,7 +82,7 @@ namespace Demo.yFiles.Layout.PortCandidateDemo
     #region Rendering
 
     /// <summary>
-    /// Creates the visual for a node.
+    ///   Creates the visual for a node.
     /// </summary>
     protected override VisualGroup CreateVisual(IRenderContext context, INode node) {
       // This implementation creates a VisualGroup and uses it for the rendering of the node.
@@ -93,18 +94,22 @@ namespace Demo.yFiles.Layout.PortCandidateDemo
 
     protected override VisualGroup UpdateVisual(IRenderContext context, VisualGroup oldVisual, INode node) {
       // update the node visualization
-      oldVisual.Children[0] = NodeStyle.Renderer.GetVisualCreator(node, NodeStyle).UpdateVisual(context, oldVisual.Children[0]);
+      oldVisual.Children[0] = NodeStyle.Renderer.GetVisualCreator(node, NodeStyle)
+          .UpdateVisual(context, oldVisual.Children[0]);
 
       // update the "visual" ports
       int count = 1;
       foreach (var portDescriptor in PortDescriptor.CreatePortDescriptors(FlowChartType)) {
         if (portDescriptor.X != int.MaxValue) {
-          var parameter = FreeNodePortLocationModel.Instance.CreateParameter(PointD.Origin, new PointD(portDescriptor.X, portDescriptor.Y));
-          var port = new SimplePort(node, parameter) { LookupImplementation = Lookups.Empty };
+          var parameter =
+              FreeNodePortLocationModel.Instance.CreateParameter(PointD.Origin,
+                  new PointD(portDescriptor.X, portDescriptor.Y));
+          var port = new SimplePort(node, parameter);
           // see if we have a visual to update...
           if (count < oldVisual.Children.Count) {
             var oldPortVisual = oldVisual.Children[count];
-            oldVisual.Children[count] = PortStyle.Renderer.GetVisualCreator(port, PortStyle).UpdateVisual(context, oldPortVisual);
+            oldVisual.Children[count] = PortStyle.Renderer.GetVisualCreator(port, PortStyle)
+                .UpdateVisual(context, oldPortVisual);
           } else {
             // no - add a new one
             var portVisual = PortStyle.Renderer.GetVisualCreator(port, PortStyle).CreateVisual(context);
@@ -123,12 +128,12 @@ namespace Demo.yFiles.Layout.PortCandidateDemo
     }
 
     /// <summary>
-    /// Actually creates the visual appearance of a node.
+    ///   Actually creates the visual appearance of a node.
     /// </summary>
     /// <remarks>
-    /// This renders the node and the edges to the labels and adds the visuals to the <paramref name="container"/>.
-    /// All items are arranged as if the node was located at (0,0). <see cref="CreateVisual"/> and <see cref="UpdateVisual"/>
-    /// finally arrange the container so that the drawing is translated into the final position.
+    ///   This renders the node and the edges to the labels and adds the visuals to the <paramref name="container"/>.
+    ///   All items are arranged as if the node was located at (0,0). <see cref="CreateVisual"/> and <see cref="UpdateVisual"/>
+    ///   finally arrange the container so that the drawing is translated into the final position.
     /// </remarks>
     private void Render(IRenderContext context, INode node, VisualGroup container) {
       var innerVisual = NodeStyle.Renderer.GetVisualCreator(node, NodeStyle).CreateVisual(context);
@@ -137,8 +142,10 @@ namespace Demo.yFiles.Layout.PortCandidateDemo
       // draw "visual" ports
       foreach (var portDescriptor in PortDescriptor.CreatePortDescriptors(FlowChartType)) {
         if (portDescriptor.X != int.MaxValue) {
-          var parameter = FreeNodePortLocationModel.Instance.CreateParameter(PointD.Origin, new PointD(portDescriptor.X, portDescriptor.Y));
-          var port = new SimplePort(node, parameter) { LookupImplementation = Lookups.Empty };
+          var parameter =
+              FreeNodePortLocationModel.Instance.CreateParameter(PointD.Origin,
+                  new PointD(portDescriptor.X, portDescriptor.Y));
+          var port = new SimplePort(node, parameter);
           var portVisual = PortStyle.Renderer.GetVisualCreator(port, PortStyle).CreateVisual(context);
           container.Children.Add(portVisual);
         }
@@ -148,16 +155,15 @@ namespace Demo.yFiles.Layout.PortCandidateDemo
     #endregion
 
     /// <summary>
-    /// Returns the size of the node based on its tag.
+    ///   Returns the size of the node based on its tag.
     /// </summary>
     /// <param name="node"></param>
-    /// <returns></returns>
     public static SizeD GetNodeTypeSize(INode node) {
       return GetNodeTypeSize(((FlowChartNodeStyle) node.Style).FlowChartType);
     }
 
     /// <summary>
-    /// Returns the size a node with this tag would need.
+    ///   Returns the size a node with this tag would need.
     /// </summary>
     public static SizeD GetNodeTypeSize(FlowChartType type) {
       switch (type) {

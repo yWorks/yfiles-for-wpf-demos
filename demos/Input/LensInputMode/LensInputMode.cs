@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -29,7 +29,6 @@
 
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using yWorks.Controls;
@@ -39,79 +38,87 @@ using yWorks.Geometry;
 namespace Demo.yFiles.Graph.Input.LensInputMode
 {
   /// <summary>
-  /// A specialized <see cref="IInputMode"/> that displays the currently hovered-over
-  /// part of the graph in some kind of magnifying glass.
+  ///   A specialized <see cref="IInputMode"/> that displays the currently hovered-over
+  ///   part of the graph in some kind of magnifying glass.
   /// </summary>
   public class LensInputMode : InputModeBase
   {
     /// <summary>
-    /// The <see cref="IVisualCreator"/> that displays the magnifying <see cref="GraphControl"/>.
+    ///   The <see cref="IVisualCreator"/> that displays the magnifying <see cref="GraphControl"/>.
     /// </summary>
     private sealed class LensVisualCreator : IVisualCreator
     {
-      private LensInputMode inputMode;
+      private readonly LensInputMode inputMode;
 
       public LensVisualCreator(LensInputMode inputMode) {
         this.inputMode = inputMode;
       }
 
       public Visual CreateVisual(IRenderContext context) {
-        var canvasControl = context.CanvasControl as GraphControl;
+        var canvasControl = (GraphControl) context.CanvasControl;
+        if (canvasControl.LastPointerEvent.PointerType == PointerType.None) {
+          // During initialization, the LastEventLocation is not set yet, so we don't display the lens.
+          return null;
+        }
 
         // Instantiate the GraphControl displaying the zoomed graph.
-        var lensGraphControl = new GraphControl
-        {
-          // Re-use the same graph, selection, and projection
-          Graph = canvasControl.Graph,
-          Selection = canvasControl.Selection,
-          Projection = canvasControl.Projection,
+        var lensGraphControl = new GraphControl {
+            // Re-use the same graph, selection, and projection
+            Graph = canvasControl.Graph,
+            Selection = canvasControl.Selection,
+            Projection = canvasControl.Projection,
 
-          // Disable interaction and scrollbars
-          MouseWheelBehavior = MouseWheelBehaviors.None,
-          AutoDrag = false,
-          IsHitTestVisible = false,
-          HorizontalScrollBarPolicy = ScrollBarVisibility.Hidden,
-          VerticalScrollBarPolicy = ScrollBarVisibility.Hidden,
-          // This is only necessary to show handles in the zoomed graph. Remove if not needed
-          InputMode = new GraphEditorInputMode(),
+            // Disable interaction and scrollbars
+            MouseWheelBehavior = MouseWheelBehaviors.None,
+            AutoScrollOnBounds = false,
+            IsHitTestVisible = false,
+            HorizontalScrollBarPolicy = ScrollBarVisibility.Hidden,
+            VerticalScrollBarPolicy = ScrollBarVisibility.Hidden,
+            // This is only necessary to show handles in the zoomed graph. Remove if not needed
+            InputMode = new GraphEditorInputMode(),
 
-          // Clip the overlay to circular
-          Clip = new EllipseGeometry(),
-          Background = Brushes.White
+            // Clip the overlay to circular
+            Clip = new EllipseGeometry(),
+            Background = Brushes.White
         };
 
         // Arrange both the GraphControl and an outline
-        var grid = new Grid
-        {
-          Children =
-          {
-            lensGraphControl,
-            new Ellipse { Stroke = Brushes.Gray, StrokeThickness = 2 }
-          }
+        var grid = new Grid {
+            Children = { lensGraphControl, new Ellipse { Stroke = Brushes.Gray, StrokeThickness = 2 } }
         };
 
-        // VisualGroup for easier handling 
-        var visualGroup = new VisualGroup {
-          Children = { grid }
-        };
+        // VisualGroup for easier handling
+        var visualGroup = new VisualGroup { Children = { grid } };
+
+        // Remove the shared graph when the visual is removed from the view to avoid memory leaks.
+        context.SetDisposeCallback(visualGroup, (_, _, _) => {
+          lensGraphControl.ClearValue(GraphControl.GraphProperty);
+          return null;
+        });
 
         // Update all properties to their current values and ensure that the overlay is rendered where it should
         return UpdateVisual(context, visualGroup);
       }
 
       public Visual UpdateVisual(IRenderContext context, Visual oldVisual) {
-        var canvasControl = context.CanvasControl as GraphControl;
+        var canvasControl = (GraphControl) context.CanvasControl;
+        if (canvasControl.LastPointerEvent.PointerType == PointerType.None) {
+          context.ChildVisualRemoved(oldVisual);
+          return null;
+        }
+        var lastEventLocation = canvasControl.LastPointerEvent.Location;
 
         var visualGroup = (VisualGroup) oldVisual;
         var grid = (Grid) visualGroup.Children[0];
         var lensGraphControl = (GraphControl) grid.Children[0];
 
         // Set where the overlay should appear
-        var arrangeRect = new RectD(context.ToViewCoordinates(canvasControl.LastEventLocation), inputMode.Size);
-        grid.SetCanvasArrangeRect(arrangeRect);
+        var size = inputMode.Size;
+        var arrangeRect = new RectD(context.WorldToViewCoordinates(lastEventLocation), size);
+        grid.SetCanvasArrangeRect(arrangeRect.ToRect());
 
         // Update center, zoom, and projection
-        lensGraphControl.Center = canvasControl.LastEventLocation;
+        lensGraphControl.Center = lastEventLocation;
         lensGraphControl.Zoom = inputMode.ZoomFactor * context.Zoom;
         lensGraphControl.Projection = context.Projection;
 
@@ -120,89 +127,90 @@ namespace Demo.yFiles.Graph.Input.LensInputMode
 
         // Update the clipping path
         var ellipseGeometry = (EllipseGeometry) lensGraphControl.Clip;
-        var halfWidth = inputMode.Size.Width / 2;
-        var halfHeight = inputMode.Size.Height / 2;
+        var halfWidth = size.Width / 2;
+        var halfHeight = size.Height / 2;
         ellipseGeometry.RadiusX = halfWidth;
         ellipseGeometry.RadiusY = halfHeight;
         ellipseGeometry.Center = new Point(halfWidth, halfHeight);
 
-        visualGroup.Visibility = canvasControl.IsMouseOver && inputMode.Enabled ? Visibility.Visible : Visibility.Collapsed;
+        visualGroup.Visibility =
+            canvasControl.IsMouseOver && inputMode.Enabled ? Visibility.Visible : Visibility.Collapsed;
 
         return oldVisual;
       }
     }
 
     /// <summary>
-    /// The <see cref="ICanvasObjectGroup"/> containing the lens graph control.
+    ///   The <see cref="IRenderTreeGroup"/> containing the lens graph control.
     /// </summary>
-    private ICanvasObjectGroup lensGroup;
+    private IRenderTreeGroup lensGroup;
 
-    private Size size = new Size(250, 250);
+    private SizeD size = new(250, 250);
     private double zoomFactor = 3;
 
     /// <summary>
-    /// The size of the "magnifying glass".
+    ///   The size of the "magnifying glass".
     /// </summary>
-    public Size Size {
-      get { return size; }
+    public SizeD Size {
+      get => size;
       set {
         size = value;
-        InputModeContext?.CanvasControl?.Invalidate();
+        ParentInputModeContext?.CanvasControl.Invalidate();
       }
     }
 
     /// <summary>
-    /// The zoom factor used for magnifying the graph.
+    ///   The zoom factor used for magnifying the graph.
     /// </summary>
     public double ZoomFactor {
-      get { return zoomFactor; }
+      get => zoomFactor;
       set {
         zoomFactor = value;
-        InputModeContext?.CanvasControl?.Invalidate();
+        ParentInputModeContext?.CanvasControl.Invalidate();
       }
     }
 
     /// <summary>
-    /// Installs the <see cref="LensInputMode"/> by adding the <see cref="LensVisualCreator"/>
-    /// to the <see cref="lensGroup"/> and registering the necessary mouse event handlers.
+    ///   Installs the <see cref="LensInputMode"/> by adding the <see cref="LensVisualCreator"/>
+    ///   to the <see cref="lensGroup"/> and registering the necessary mouse event handlers.
     /// </summary>
     public override void Install(IInputModeContext context, ConcurrencyController controller) {
       base.Install(context, controller);
 
-      var canvasControl = context.CanvasControl as GraphControl;
+      var canvasControl = (GraphControl) context.CanvasControl;
 
-      lensGroup = canvasControl.RootGroup.AddGroup();
-      lensGroup.Above(canvasControl.InputModeGroup);
-      lensGroup.AddChild(new LensVisualCreator(this));
+      var renderTree = canvasControl.RenderTree;
+      lensGroup = renderTree.CreateGroup(renderTree.RootGroup);
+      lensGroup.Above(renderTree.InputModeGroup);
+      renderTree.CreateElement(lensGroup, new LensVisualCreator(this));
 
-      canvasControl.Mouse2DMoved += UpdateLensLocation;
-      canvasControl.Mouse2DDragged += UpdateLensLocation;
+      canvasControl.PointerMove += UpdateLensLocation;
+      canvasControl.PointerDrag += UpdateLensLocation;
 
-      canvasControl.Mouse2DEntered += UpdateLensLocation;
-      canvasControl.Mouse2DExited += UpdateLensLocation;
+      canvasControl.PointerEnter += UpdateLensLocation;
+      canvasControl.PointerLeave += UpdateLensLocation;
     }
 
     /// <summary>
-    /// Uninstalls the <see cref="LensInputMode"/> by removing the <see cref="lensGroup"/>
-    /// and unregistering the various mouse event handlers.
+    ///   Uninstalls the <see cref="LensInputMode"/> by removing the <see cref="lensGroup"/>
+    ///   and unregistering the various mouse event handlers.
     /// </summary>
     /// <param name="context"></param>
     public override void Uninstall(IInputModeContext context) {
       var canvasControl = context.CanvasControl;
+      canvasControl.RenderTree.Remove(lensGroup);
 
-      lensGroup.Remove();
+      canvasControl.PointerMove -= UpdateLensLocation;
+      canvasControl.PointerDrag -= UpdateLensLocation;
 
-      canvasControl.Mouse2DMoved -= UpdateLensLocation;
-      canvasControl.Mouse2DDragged -= UpdateLensLocation;
-
-      canvasControl.Mouse2DEntered -= UpdateLensLocation;
-      canvasControl.Mouse2DExited -= UpdateLensLocation;
+      canvasControl.PointerEnter -= UpdateLensLocation;
+      canvasControl.PointerLeave -= UpdateLensLocation;
 
       base.Uninstall(context);
     }
 
-    private void UpdateLensLocation(object sender, Mouse2DEventArgs args) {
-      InputModeContext.CanvasControl.Invalidate();
+    private void UpdateLensLocation(object sender, PointerEventArgs args) {
+      ParentInputModeContext.CanvasControl.Invalidate();
     }
   }
 }

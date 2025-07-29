@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -42,27 +42,29 @@ using yWorks.Geometry;
 using yWorks.Graph;
 using yWorks.Graph.LabelModels;
 using yWorks.Layout;
-using yWorks.Layout.Hierarchic;
+using yWorks.Layout.Hierarchical;
 
 namespace Demo.yFiles.DataBinding.GraphSource
 {
   public partial class GraphSourceWindow
   {
-    private static readonly ILabelModelParameter edgeLabelLayoutParameter = FreeEdgeLabelModel.Instance.CreateDefaultParameter();
+    private static readonly ILabelModelParameter edgeLabelLayoutParameter =
+        FreeEdgeLabelModel.Instance.CreateParameter();
 
     public GraphSourceWindow() {
       InitializeComponent();
     }
 
-    private void GraphSourceWindow_OnLoaded(object sender, RoutedEventArgs e) {
+    private void OnLoaded(object sender, RoutedEventArgs e) {
       graphSourceComboBox.SelectedIndex = 0;
     }
 
     private async void GraphSourceModelChanged(object sender, SelectionChangedEventArgs e) {
       var newGraph = GetGraphSource(graphSourceComboBox.SelectedIndex).Graph;
 
-      // add some insets to group nodes
-      newGraph.GetDecorator().NodeDecorator.InsetsProviderDecorator.SetImplementation(newGraph.IsGroupNode, new GroupNodeInsetsProvider());
+      // add some padding to group nodes
+      newGraph.GetDecorator().Nodes.GroupPaddingProvider
+          .AddConstant(newGraph.IsGroupNode, new CustomGroupPaddingProvider());
 
       // use a FreeEdgeLabelModel for the 'Classes' graph
       if (graphSourceComboBox.SelectedIndex == 1) {
@@ -74,30 +76,37 @@ namespace Demo.yFiles.DataBinding.GraphSource
       graphControl.Graph = newGraph;
 
       // Perform an animated layout of the organization chart graph when the window is loaded.
-      await graphControl.MorphLayout(new HierarchicLayout {
-        EdgeLayoutDescriptor = new EdgeLayoutDescriptor {MinimumLength = 50},
-        LayoutOrientation =
-          graphSourceComboBox.SelectedIndex == 0 ? LayoutOrientation.TopToBottom : LayoutOrientation.BottomToTop,
-        IntegratedEdgeLabeling = graphSourceComboBox.SelectedIndex == 1
-      }, TimeSpan.FromSeconds(2));
+      await graphControl.ApplyLayoutAnimated(
+          new HierarchicalLayout {
+              DefaultEdgeDescriptor =
+                  new HierarchicalLayoutEdgeDescriptor {
+                      MinimumLength = 50, RoutingStyleDescriptor = new RoutingStyleDescriptor(RoutingStyle.Polyline)
+                  },
+              LayoutOrientation =
+                  graphSourceComboBox.SelectedIndex == 0
+                      ? LayoutOrientation.TopToBottom
+                      : LayoutOrientation.BottomToTop,
+              EdgeLabelPlacement =
+                  graphSourceComboBox.SelectedIndex == 1 ? EdgeLabelPlacement.Integrated : EdgeLabelPlacement.Ignore
+          }, TimeSpan.FromSeconds(2));
     }
 
     private yWorks.Graph.DataBinding.GraphSource GetGraphSource(int index) {
-      return (((ComboBoxItem) graphSourceComboBox.Items[index]).Tag as yWorks.Graph.DataBinding.GraphSource);
+      return ((ComboBoxItem) graphSourceComboBox.Items[index]).Tag as yWorks.Graph.DataBinding.GraphSource;
     }
   }
 
   /// <summary>
-  /// This is a value converter which enables XPath expressions which are not possible using only XAML.
+  ///   This is a value converter that enables XPath expressions which are not possible using only XAML.
   /// </summary>
-  public sealed class XPathConverter: IValueConverter
+  public sealed class XPathConverter : IValueConverter
   {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
-      XmlAttribute attribute = value as XmlAttribute;
+      var attribute = value as XmlAttribute;
       if (attribute != null) {
         string xpath;
         if (parameter is string) {
-          xpath = ((string) parameter).Replace("{}", "'"+attribute.Value+"'");
+          xpath = ((string) parameter).Replace("{}", "'" + attribute.Value + "'");
         } else {
           xpath = "//[@id='" + attribute.Value + "']";
         }
@@ -108,22 +117,23 @@ namespace Demo.yFiles.DataBinding.GraphSource
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
-      throw new System.NotImplementedException();
+      throw new NotImplementedException();
     }
   }
 
   /// <summary>
-  /// Converts a <see cref="Type"/> to a <see cref="Color"/>.
+  ///   Converts a <see cref="Type"/> to a <see cref="Color"/>.
   /// </summary>
   public sealed class TypeToColorConverter : IValueConverter
   {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
-      String type = value as String;
-      var isGroup = Boolean.Parse(parameter as String);
+      var type = value as string;
+      var isGroup = bool.Parse(parameter as string);
       if (type != null) {
         if ("interface" == type) {
           return isGroup ? Colors.MediumSeaGreen : Colors.LightGreen;
-        } else if ("class" == type) {
+        }
+        if ("class" == type) {
           return isGroup ? Colors.Goldenrod : Colors.PaleGoldenrod;
         }
       }
@@ -135,32 +145,33 @@ namespace Demo.yFiles.DataBinding.GraphSource
     }
   }
 
-  sealed class GroupNodeInsetsProvider : INodeInsetsProvider {
-    public InsetsD GetInsets(INode node) {
+  internal sealed class CustomGroupPaddingProvider : IGroupPaddingProvider
+  {
+    public InsetsD GetPadding() {
       return new InsetsD(5, 20, 5, 5);
     }
   }
 
   /// <summary>
-  /// A data holder for a selection of the <see cref="Type"/>s of an <see cref="Assembly"/>
-  /// as well as their inheritance <see cref="Relation"/>.
+  ///   A data holder for a selection of the <see cref="Type"/>s of an <see cref="Assembly"/>
+  ///   as well as their inheritance <see cref="Relation"/>.
   /// </summary>
-  sealed class AssemblyTypeData
+  internal sealed class AssemblyTypeData
   {
     /// <summary>
-    /// The <see cref="Type"/>s that are use as business model for the nodes.
+    ///   The <see cref="Type"/>s that are use as business model for the nodes.
     /// </summary>
     public IEnumerable<Type> Types { get; private set; }
 
     /// <summary>
-    /// Tuples of <see cref="Type"/>s that are used as business model for the edges.
+    ///   Tuples of <see cref="Type"/>s that are used as business model for the edges.
     /// </summary>
     public IEnumerable<Tuple<Type, Type>> Relation { get; private set; }
 
     /// <summary>
-    /// Use the yFiles Viewer assembly per default
+    ///   Use the yFiles Viewer assembly per default
     /// </summary>
-    public AssemblyTypeData(): this(typeof(IGraph).Assembly){}
+    public AssemblyTypeData() : this(typeof(IGraph).Assembly) { }
 
     public AssemblyTypeData(Assembly assembly) {
       // collect all public Types

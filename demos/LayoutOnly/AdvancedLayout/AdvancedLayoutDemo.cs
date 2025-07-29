@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -28,159 +28,150 @@
  ***************************************************************************/
 
 using System;
+using System.Linq;
+using System.Windows;
 using Demo.Layout.LayoutGraphViewer;
-using yWorks.Algorithms;
-using yWorks.Algorithms.Geometry;
+using yWorks.Geometry;
 using yWorks.Layout;
-using yWorks.Layout.Hierarchic;
+using yWorks.Layout.Graph;
+using yWorks.Layout.Hierarchical;
 using yWorks.Layout.Labeling;
+using yWorks.Utils;
 
 namespace Demo.Layout.AdvancedLayout
 {
   /// <summary>
-  /// This class shows how to use layout and labeling algorithms. This demo
-  /// displays the calculated coordinates in a simple graph viewer.
-  /// Additionally it outputs the calculated coordinates of the graph layout to 
-  /// the console.
-  /// In this demo HierarchicLayout is used to layout a small graph. 
-  /// First the edge labels of the graph will be laid out using a general labeling 
-  /// approach that effectively positions the labels after the node and edge positions
-  /// have already been fixed.
-  /// Second, a special edge labeling mechanism will be used that is currently only 
-  /// available in conjunction with HierarchicLayout. While laying out the graph the 
-  /// edge labels will be considered as well. Therefore the node and edge positions 
-  /// can be chosen in such a way that, the labeling does not
-  /// introduce overlaps between labels and other entities in the graph.
+  ///   This class shows how to use layout and labeling algorithms. This demo
+  ///   displays the calculated coordinates in a simple graph viewer.
+  ///   Additionally, it outputs the calculated coordinates of the graph layout to
+  ///   the console.
+  ///   In this demo, HierarchicalLayout is used to layout a small graph.
+  ///   First, the edge labels of the graph will be laid out using a general labeling
+  ///   approach that effectively positions the labels after the node and edge positions
+  ///   have already been fixed.
+  ///   Second, a special edge labeling mechanism will be used that is currently only
+  ///   available in conjunction with HierarchicalLayout. While laying out the graph, the
+  ///   edge labels will be considered as well. Therefore, the node and edge positions
+  ///   can be chosen in such a way that the labeling does not
+  ///   introduce overlaps between labels and other entities in the graph.
   /// </summary>
   public class AdvancedLayoutDemo
   {
     [STAThread]
     public static void Main() {
-      DefaultLayoutGraph graph = new DefaultLayoutGraph();
+      var graph = new LayoutGraph();
 
-      //construct graph. assign sizes to nodes
-      Node v1 = graph.CreateNode();
-      graph.SetSize(v1, 30, 30);
-      Node v2 = graph.CreateNode();
-      graph.SetSize(v2, 30, 30);
-      Node v3 = graph.CreateNode();
-      graph.SetSize(v3, 30, 30);
+      // construct graph. assign sizes to nodes
+      var v1 = graph.CreateNode();
+      v1.Layout.Size = new SizeD(30, 30);
+      var v2 = graph.CreateNode();
+      v2.Layout.Size = new SizeD(30, 30);
+      var v3 = graph.CreateNode();
+      v3.Layout.Size = new SizeD(30, 30);
 
-      Edge e1 = graph.CreateEdge(v1, v2);
-      Edge e2 = graph.CreateEdge(v2, v3);
-      Edge e3 = graph.CreateEdge(v1, v3);
+      var e1 = graph.CreateEdge(v1, v2);
+      var e2 = graph.CreateEdge(v2, v3);
+      var e3 = graph.CreateEdge(v1, v3);
 
-      //optionally setup some port constraints for HierarchicLayout
-      IEdgeMap spc = graph.CreateEdgeMap();
-      IEdgeMap tpc = graph.CreateEdgeMap();
-      //e1 shall leave and enter the node on the right side
-      spc.Set(e1, PortConstraint.Create(PortSide.East));
-      //additionally set a strong port constraint on the target side. 
-      tpc.Set(e1, PortConstraint.Create(PortSide.East, true));
-      //ports with strong port constraints will not be reset by the 
-      //layout algorithm.  So we specify the target port right now to connect 
-      //to the upper left corner of the node 
-      graph.SetTargetPointRel(e1, new YPoint(15, -15));
+      var layout = new HierarchicalLayout { EdgeLabelPlacement = EdgeLabelPlacement.Generic };
+      var hierarchicalLayoutData = layout.CreateLayoutData(graph);
 
-      //e2 shall leave and enter the node on the top side
-      spc.Set(e2, PortConstraint.Create(PortSide.North));
-      tpc.Set(e2, PortConstraint.Create(PortSide.North));
-      //e3 uses no port constraints, i.e. layout will choose best side
-      graph.AddDataProvider(PortConstraintKeys.SourcePortConstraintDpKey, spc);
-      graph.AddDataProvider(PortConstraintKeys.TargetPortConstraintDpKey, tpc);
+      // optionally set some port candidates for HierarchicalLayout
+      var spc = new DictionaryMapper<Edge, EdgePortCandidates>();
+      var tpc = new DictionaryMapper<Edge, EdgePortCandidates>();
+      // e1 shall leave and enter the node on the right side
+      spc[e1] = new EdgePortCandidates().AddFreeCandidate(PortSides.Right);
+      // additionally set a fixed port candidate on the target side.
+      PointD? offset = new PointD(15, -15);
+      tpc[e1] = new EdgePortCandidates().AddFixedCandidate(PortSides.Right, offset);
 
-      //setup two edge labels for edge e1. The size of the edge labels will be set to
-      //80x20. Usually the size of the labels will be determined by
-      //calculaing the bounding box of a piece text that is displayed
-      //with a specific font.
+      // e2 shall leave and enter the node on the top side
+      spc[e2] = new EdgePortCandidates().AddFreeCandidate(PortSides.Top);
+      tpc[e2] = new EdgePortCandidates().AddFreeCandidate(PortSides.Top);
+      // e3 uses no port constraints, i.e. layout will choose best side
+      hierarchicalLayoutData.Ports.SourcePortCandidates.Mapper = spc;
+      hierarchicalLayoutData.Ports.TargetPortCandidates.Mapper = tpc;
 
-      var labelFactory = LayoutGraphUtilities.GetLabelFactory(graph);
-      graph.SetLabelLayout(e1, new[]
-        {
-          CreateEdgeLabelLayout(labelFactory, e1,
-              new SliderEdgeLabelLayoutModel(SliderMode.Center),
-              PreferredPlacementDescriptor.NewSharedInstance(LabelPlacements.AtCenter)),
-          CreateEdgeLabelLayout(labelFactory, e1,
-              new SliderEdgeLabelLayoutModel(SliderMode.Side),
-              PreferredPlacementDescriptor.NewSharedInstance(LabelPlacements.LeftOfEdge))
-        });
+      // prepare adding labels with preferred placements
+      var preferredPlacementMap = new DictionaryMapper<EdgeLabel, EdgeLabelPreferredPlacement>();
+      hierarchicalLayoutData.EdgeLabelPreferredPlacements.Mapper = preferredPlacementMap;
 
-      var layout = new HierarchicLayout();
-      layout.LabelingEnabled = true;
-      layout.Labeling = new GenericLabeling();
+      // setup two edge labels for edge e1. The size of the edge labels will be set to
+      // 80x20. Usually the size of the labels will be determined by
+      // calculating the bounds of a piece of text that is displayed
+      // with a specific font.
+      var labelFactoryMap = new DictionaryMapper<EdgeLabel, EdgeLabelCandidates>();
+      var label1 = AddEdgeLabel(graph, e1);
+      preferredPlacementMap[label1] =
+          EdgeLabelPreferredPlacement.CreateSharedPlacement(LabelAlongEdgePlacements.AtCenter, LabelEdgeSides.Anywhere);
+      labelFactoryMap[label1] = new EdgeLabelCandidates().AddSliderCandidates(EdgeLabelSliderMode.Center);
+      var label2 = AddEdgeLabel(graph, e1);
+      preferredPlacementMap[label2] =
+          EdgeLabelPreferredPlacement.CreateSharedPlacement(LabelAlongEdgePlacements.Anywhere,
+              LabelEdgeSides.LeftOfEdge);
+      labelFactoryMap[label2] = new EdgeLabelCandidates().AddSliderCandidates(EdgeLabelSliderMode.Side);
+      preferredPlacementMap[label2] =
+          EdgeLabelPreferredPlacement.CreateSharedPlacement(LabelAlongEdgePlacements.Anywhere,
+              LabelEdgeSides.LeftOfEdge);
 
-      new BufferedLayout(layout).ApplyLayout(graph);
+      var labelingData = layout.LayoutStages.Get<GenericLabeling>().CreateLayoutData(graph);
+      labelingData.EdgeLabelCandidates.Mapper = labelFactoryMap;
+
+      var layoutData = graph.CreateCompositeLayoutData(hierarchicalLayoutData, labelingData);
+      graph.ApplyLayout(layout, layoutData);
 
       Console.WriteLine("\n\nGRAPH LAID OUT USING GENERIC EDGE LABELING");
-      Console.WriteLine("v1 center position = " + graph.GetCenter(v1));
-      Console.WriteLine("v2 center position = " + graph.GetCenter(v2));
-      Console.WriteLine("v3 center position = " + graph.GetCenter(v3));
-      Console.WriteLine("e1 path = " + graph.GetPath(e1));
-      Console.WriteLine("e2 path = " + graph.GetPath(e2));
-      Console.WriteLine("e3 path = " + graph.GetPath(e3));
-      Console.WriteLine("ell1 upper left location = " + GetEdgeLabelLocation(graph, e1, CreateEdgeLabelLayout(labelFactory, e1,
-          new SliderEdgeLabelLayoutModel(SliderMode.Center),
-          PreferredPlacementDescriptor.NewSharedInstance(LabelPlacements.AtCenter))));
-      Console.WriteLine("ell2 upper left location = " + GetEdgeLabelLocation(graph, e1, graph.GetLabelLayout(e1)[1]));
+      Console.WriteLine("v1 center position = " + v1.Layout.Center);
+      Console.WriteLine("v2 center position = " + v2.Layout.Center);
+      Console.WriteLine("v3 center position = " + v3.Layout.Center);
+      Console.WriteLine("e1 path = " + string.Join(",", e1.PathPoints.ToList()));
+      Console.WriteLine("e2 path = " + string.Join(",", e2.PathPoints.ToList()));
+      Console.WriteLine("e3 path = " + string.Join(",", e3.PathPoints.ToList()));
+      Console.WriteLine("ell1 upper left location = " + GetEdgeLabelLocation(e1.Labels[0]));
+      Console.WriteLine("ell2 upper left location = " + GetEdgeLabelLocation(e1.Labels[1]));
 
-      GraphViewer gv = new GraphViewer();
-      gv.AddLayoutGraph(new CopiedLayoutGraph(graph), "Layout with Generic Labeling");
+      var gv = new GraphViewer();
+      gv.AddLayoutGraph(LayoutGraph.CreateCopy(graph), "Layout with Generic Labeling");
 
-      var freeModel = new FreeEdgeLabelLayoutModel();
-      graph.SetLabelLayout(e1, new[]
-        {
-          CreateEdgeLabelLayout(labelFactory, e1, freeModel,
-              PreferredPlacementDescriptor.NewSharedInstance(LabelPlacements.AtCenter)),
-          CreateEdgeLabelLayout(labelFactory, e1, freeModel,
-              PreferredPlacementDescriptor.NewSharedInstance(LabelPlacements.LeftOfEdge))
-        });
+      // Remove slider labels and add to 'free' labels
+      graph.Remove(e1.Labels[0]);
+      graph.Remove(e1.Labels[0]);
+      preferredPlacementMap[AddEdgeLabel(graph, e1)] = new EdgeLabelPreferredPlacement();
+      preferredPlacementMap[AddEdgeLabel(graph, e1)] =
+          new EdgeLabelPreferredPlacement { EdgeSide = LabelEdgeSides.LeftOfEdge };
 
-      layout.LabelingEnabled = true;
-      layout.Labeling = new LabelLayoutTranslator();
+      layout.EdgeLabelPlacement = EdgeLabelPlacement.Integrated;
 
-      new BufferedLayout(layout).ApplyLayout(graph);
+      graph.ApplyLayout(layout, layoutData);
 
-      Console.WriteLine("\n\nGRAPH LAID OUT USING HIERACHIC LAYOUT SPECIFIC EDGE LABELING");
-      Console.WriteLine("v1 center position = " + graph.GetCenter(v1));
-      Console.WriteLine("v2 center position = " + graph.GetCenter(v2));
-      Console.WriteLine("v3 center position = " + graph.GetCenter(v3));
-      Console.WriteLine("e1 path = " + graph.GetPath(e1));
-      Console.WriteLine("e2 path = " + graph.GetPath(e2));
-      Console.WriteLine("e3 path = " + graph.GetPath(e3));
-      Console.WriteLine("ell1 upper left location = " + GetEdgeLabelLocation(graph, e1, CreateEdgeLabelLayout(labelFactory, e1,
-          new SliderEdgeLabelLayoutModel(SliderMode.Center),
-          PreferredPlacementDescriptor.NewSharedInstance(LabelPlacements.AtCenter))));
-      Console.WriteLine("ell2 upper left location = " + GetEdgeLabelLocation(graph, e1, graph.GetLabelLayout(e1)[1]));
+      Console.WriteLine("\n\nGRAPH LAID OUT USING HIERARCHICAL LAYOUT SPECIFIC EDGE LABELING");
+      Console.WriteLine("v1 center position = " + v1.Layout.Center);
+      Console.WriteLine("v2 center position = " + v2.Layout.Center);
+      Console.WriteLine("v3 center position = " + v3.Layout.Center);
+      Console.WriteLine("e1 path = " + string.Join(",", e1.PathPoints.ToList()));
+      Console.WriteLine("e2 path = " + string.Join(",", e2.PathPoints.ToList()));
+      Console.WriteLine("e3 path = " + string.Join(",", e3.PathPoints.ToList()));
+      Console.WriteLine("ell1 upper left location = " + GetEdgeLabelLocation(e1.Labels[0]));
+      Console.WriteLine("ell2 upper left location = " + GetEdgeLabelLocation(e1.Labels[1]));
 
-      //display the result in a simple viewer
+      // display the result in a simple viewer
       gv.AddLayoutGraph(graph, "Layout with Integrated Labeling");
-      var application = new System.Windows.Application();
+      var application = new Application();
       application.Run(gv);
     }
 
-    private static IEdgeLabelLayout CreateEdgeLabelLayout(ILabelLayoutFactory labelFactory, Edge edge,
-        IEdgeLabelLayoutModel edgeLabelModel, PreferredPlacementDescriptor preferredPlacementDescriptor) {
-      var label = labelFactory.CreateLabelLayout(edge, new YOrientedRectangle(0, 0, 80, 20), edgeLabelModel,
-          preferredPlacementDescriptor);
-      label.ModelParameter = edgeLabelModel.DefaultParameter;
-      return label;
+    private static EdgeLabel AddEdgeLabel(LayoutGraph graph, Edge edge) {
+      return graph.AddLabel(edge, new OrientedRectangle(0, 0, 80, 20));
     }
 
     /// <summary>
-    /// Returns the calculated location of the edge label. Note that the labeling
-    /// machinery returns the edge labels positions as a parameter
-    /// of the model that belongs to the label. This model parameter can be used
-    /// to retrieve the actual location of the label as shown in this method.
-    /// </summary> 
-    private static YPoint GetEdgeLabelLocation(LayoutGraph graph, Edge e, IEdgeLabelLayout ell) {
-      var placement = ell.LabelModel.GetLabelPlacement(
-        ell.BoundingBox,
-        graph.GetLayout(e),
-        graph.GetLayout(e.Source),
-        graph.GetLayout(e.Target),
-        ell.ModelParameter);
-      YPoint ellp = new YPoint(placement.Anchor.X, placement.Anchor.Y - placement.Height);
-      return ellp;
+    ///   Returns the calculated location of the edge label. Note that the labeling
+    ///   machinery can, depending on the layout algorithm, only find ideal label positions
+    ///   without constraints on the labels. This method demonstrates how to retrieve the
+    ///   best label positions in compliance with the constraints, based on that result.
+    /// </summary>
+    private static PointD GetEdgeLabelLocation(EdgeLabel label) {
+      return new PointD(label.Layout.AnchorX, label.Layout.AnchorY - label.Layout.Height);
     }
   }
 }

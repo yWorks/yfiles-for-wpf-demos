@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -28,15 +28,12 @@
  ***************************************************************************/
 
 using System;
-using System.IO;
 using System.Windows;
-using System.Windows.Media;
 using Demo.yFiles.Toolkit;
 using yWorks.Controls;
 using yWorks.Controls.Input;
 using yWorks.Geometry;
 using yWorks.Graph;
-using yWorks.Graph.Styles;
 
 namespace Demo.yFiles.Graph.CustomLabelModel
 {
@@ -54,16 +51,16 @@ namespace Demo.yFiles.Graph.CustomLabelModel
     }
 
     /// <summary>
-    /// Calls <see cref="CreateEditorMode"/> and registers
-    /// the result as the <see cref="CanvasControl.InputMode"/>.
+    ///   Calls <see cref="CreateEditorMode"/> and registers
+    ///   the result as the <see cref="CanvasControl.InputMode"/>.
     /// </summary>
     protected virtual void InitializeInputModes() {
       graphControl.InputMode = CreateEditorMode();
     }
 
     /// <summary>
-    /// Creates the default input mode for the GraphControl,
-    /// a <see cref="GraphEditorInputMode"/>.
+    ///   Creates the default input mode for the GraphControl,
+    ///   a <see cref="GraphEditorInputMode"/>.
     /// </summary>
     /// <returns>a new GraphEditorInputMode instance</returns>
     protected virtual IInputMode CreateEditorMode() {
@@ -71,36 +68,33 @@ namespace Demo.yFiles.Graph.CustomLabelModel
     }
 
     /// <summary>
-    /// Sets a custom node label model parameter instance for newly created
-    /// node labels in the graph, creates an example node with a label using
-    /// the default parameter and a nother node with a label without restrictions
-    /// on the number of possible placements.
+    ///   Sets a custom node label model parameter instance for newly created
+    ///   node labels in the graph, creates an example node with a label using
+    ///   the default parameter and another node with a label without restrictions
+    ///   on the number of possible placements.
     /// </summary>
     protected void InitializeGraph() {
       DemoStyles.InitDemoStyles(Graph);
 
-      Graph.NodeDefaults.Labels.LayoutParameter = new MyNodeLabelModel().CreateDefaultParameter();
+      Graph.NodeDefaults.Labels.LayoutParameter = new MyNodeLabelModel().CreateParameter(0.25d);
 
-      Graph.AddLabel(Graph.CreateNode(new RectD(90, 90, 100, 100)), "Click and Drag", new MyNodeLabelModel { CandidateCount = 0, Offset = 20 }.CreateDefaultParameter());
-      Graph.AddLabel(Graph.CreateNode(new RectD(250, 90, 100, 100)),
-                     "Click and Drag To Snap");
+      Graph.AddLabel(Graph.CreateNode(new RectD(90, 90, 100, 100)), "Click and Drag",
+          new MyNodeLabelModel { CandidateCount = 0, Offset = 20 }.CreateParameter(0.25d));
+      Graph.AddLabel(Graph.CreateNode(new RectD(250, 90, 100, 100)), "Click and Drag To Snap");
 
+      graphControl.FitGraphBounds();
     }
 
 
     /// <summary>
-    /// Returns the GraphControl instance used in the form.
+    ///   Returns the GraphControl instance used in the form.
     /// </summary>
-    public GraphControl GraphControl {
-      get { return graphControl; }
-    }
+    public GraphControl GraphControl => graphControl;
 
     /// <summary>
-    /// Gets the currently registered IGraph instance from the GraphControl.
+    ///   Gets the currently registered <see cref="IGraph"/> instance from the GraphControl.
     /// </summary>
-    public IGraph Graph {
-      get { return GraphControl.Graph; }
-    }
+    public IGraph Graph => GraphControl.Graph;
 
     private void OnExitClicked(object sender, RoutedEventArgs e) {
       Application.Current.Shutdown();

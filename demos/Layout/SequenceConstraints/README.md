@@ -1,4 +1,4 @@
 # SequenceConstraints
 
-Demonstrates how to use sequence constraints with the HierarchicLayout to
+Demonstrates how to use sequence constraints with the HierarchicalLayout to
       restrict the node sequencing.

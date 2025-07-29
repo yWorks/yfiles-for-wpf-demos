@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -34,49 +34,53 @@ using System.Windows;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Shapes;
 using System.Windows.Threading;
 using Demo.yFiles.Toolkit;
 using yWorks.Controls;
-using yWorks.Algorithms;
-using yWorks.Algorithms.Geometry;
-using yWorks.Layout;
-using yWorks.Layout.Circular;
-using yWorks.Layout.Hierarchic;
-using yWorks.Layout.Multipage;
-using yWorks.Layout.Organic;
-using yWorks.Layout.Orthogonal;
 using yWorks.Controls.Input;
 using yWorks.Geometry;
 using yWorks.Graph;
-using yWorks.Graph.Styles;
 using yWorks.Graph.LabelModels;
+using yWorks.Graph.Styles;
 using yWorks.GraphML;
-using Rectangle = System.Windows.Shapes.Rectangle;
+using yWorks.Layout;
+using yWorks.Layout.Circular;
+using yWorks.Layout.Graph;
+using yWorks.Layout.Hierarchical;
+using yWorks.Layout.Multipage;
+using yWorks.Layout.Organic;
+using yWorks.Layout.Orthogonal;
 
 namespace Demo.yFiles.Layout.MultiPage
 {
   /// <summary>
-  /// This demo application demonstrates how the result of a multi-page layout calculation
-  ///	can be displayed in a graph control.
+  ///   This demo application demonstrates how the result of a multi-page layout calculation
+  ///   can be displayed in a graph control.
   /// </summary>
   /// <remarks>
-  /// A multi-page layout splits a large graph into multiple pages with a fixed maximum width and height.
-  /// Each of these pages is displayed by a different graph. 
-  /// <see cref="MultiPageIGraphBuilder"/> is an adapter that helps to build the graphs, that can be displayed 
-  /// in a <see cref="GraphControl"/>, from the layout graphs that are calculated by the multi-page layout.
+  ///   A multi-page layout splits a large graph into multiple pages with a fixed maximum width and height.
+  ///   Each of these pages is displayed by a different graph.
+  ///   <see cref="MultiPageIGraphBuilder"/> is an adapter that helps to build the graphs, that can be displayed
+  ///   in a <see cref="GraphControl"/>, from the layout graphs that are calculated by the multi-page layout.
   /// </remarks>
   public partial class MultiPageWindow
   {
     // list of available core layouts
     private Dictionary<string, ILayoutAlgorithm> coreLayouts;
+
     // the current core layout
-    private ILayoutAlgorithm coreLayout = new HierarchicLayout();
+    private ILayoutAlgorithm coreLayout = new HierarchicalLayout();
+
     // the original graph that is the source for the multi-page layout
     private IGraph modelGraph;
+
     // the calculated page graphs
     private IGraph[] viewGraphs;
+
     // the currently selected page
     private int pageNumber;
+
     // visual creator for rendering the page bounds
     private PageBoundsVisualCreator pageBoundsVisualCreator;
 
@@ -85,7 +89,7 @@ namespace Demo.yFiles.Layout.MultiPage
     }
 
     /// <summary>
-    /// Called when the application has been loaded
+    ///   Called when the application has been loaded
     /// </summary>
     public void OnLoaded(object sender, RoutedEventArgs e) {
       // show a notification because the multi-page layout takes some time
@@ -98,37 +102,39 @@ namespace Demo.yFiles.Layout.MultiPage
       // so the node labels read from the GraphML file are assigned a correct size that considers the
       // paddings of the label style
       modelGraph.NodeDefaults.Labels.Style = DemoStyles.CreateDemoNodeLabelStyle(Themes.Palette21);
-      
-      GraphMLIOHandler ioHandler = new GraphMLIOHandler();
+
+      var ioHandler = new GraphMLIOHandler();
       ioHandler.Read(modelGraph, "Resources/pop-artists-small.graphml");
       // add the page bounds visual
       pageBoundsVisualCreator = new PageBoundsVisualCreator();
-      graphControl.BackgroundGroup.AddChild(pageBoundsVisualCreator);
+      var renderTree = graphControl.RenderTree;
+      renderTree.CreateElement(renderTree.BackgroundGroup, pageBoundsVisualCreator);
       // calculate the multi-page layout
       RunMultipageLayout();
     }
 
     private void InitializeInputMode() {
       // create the inputmode and disable selection and focus
-      GraphViewerInputMode mode = new GraphViewerInputMode() {
-        ClickableItems = GraphItemTypes.Node,
-        SelectableItems = GraphItemTypes.None,
-        FocusableItems = GraphItemTypes.None,
+      var mode = new GraphViewerInputMode {
+          ClickableItems = GraphItemTypes.Node,
+          SelectableItems = GraphItemTypes.None,
+          FocusableItems = GraphItemTypes.None
       };
       // handle clicks on nodes
-      mode.ItemClicked += (sender, e) => GotoReferencingNode((INode)e.Item);
+      mode.ItemClicked += (sender, e) => GotoReferencingNode((INode) e.Item);
       graphControl.InputMode = mode;
     }
 
     /// <summary>
-    /// Creates the core layouts and populates the layouts box
+    ///   Creates the core layouts and populates the layouts box
     /// </summary>
     private void InitializeCoreLayouts() {
       coreLayouts = new Dictionary<string, ILayoutAlgorithm>();
-      coreLayouts["Hierarchic"] = new HierarchicLayout { ConsiderNodeLabels = true, IntegratedEdgeLabeling = true, OrthogonalRouting = true };
+      coreLayouts["Hierarchical"] = new HierarchicalLayout {
+          NodeLabelPlacement = NodeLabelPlacement.Consider, EdgeLabelPlacement = EdgeLabelPlacement.Integrated
+      };
       coreLayouts["Circular"] = new CircularLayout();
-      coreLayouts["Compact Orthogonal"] = new CompactOrthogonalLayout();
-      coreLayouts["Organic"] = new OrganicLayout { MinimumNodeDistance = 10, Deterministic = true };
+      coreLayouts["Organic"] = new OrganicLayout { DefaultMinimumNodeDistance = 10, Deterministic = true };
       coreLayouts["Orthogonal"] = new OrthogonalLayout();
       coreLayoutComboBox.ItemsSource = coreLayouts.Keys;
       coreLayoutComboBox.SelectedIndex = 0;
@@ -137,17 +143,19 @@ namespace Demo.yFiles.Layout.MultiPage
     #region custom commands
 
     /// <summary>
-    /// Command for switching to the next page
+    ///   Command for switching to the next page
     /// </summary>
-    public static readonly ICommand PreviousPageCommand = new RoutedUICommand("Previous Page", "PreviousPage", typeof(MultiPageWindow));
+    public static readonly ICommand PreviousPageCommand =
+        new RoutedUICommand("Previous Page", "PreviousPage", typeof(MultiPageWindow));
 
     /// <summary>
-    /// Command for switching to the previous page
+    ///   Command for switching to the previous page
     /// </summary>
-    public static readonly ICommand NextPageCommand = new RoutedUICommand("Next Page", "NextPage", typeof(MultiPageWindow));
+    public static readonly ICommand NextPageCommand =
+        new RoutedUICommand("Next Page", "NextPage", typeof(MultiPageWindow));
 
     private void PreviousPage_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
-      e.CanExecute = IsPageNumberValid(pageNumber-1);
+      e.CanExecute = IsPageNumberValid(pageNumber - 1);
       e.Handled = true;
     }
 
@@ -157,7 +165,7 @@ namespace Demo.yFiles.Layout.MultiPage
     }
 
     private void PreviousPage_Executed(object sender, ExecutedRoutedEventArgs e) {
-      SetPageNumber(pageNumber-1, null);
+      SetPageNumber(pageNumber - 1, null);
     }
 
     private void NextPage_Executed(object sender, ExecutedRoutedEventArgs e) {
@@ -167,61 +175,52 @@ namespace Demo.yFiles.Layout.MultiPage
     #endregion
 
     private void RunMultipageLayout() {
-
       // parse the pageWidth and pageHeight parameters
       double pageWidth;
       double pageHeight;
 
-      if (!Double.TryParse(pageWidthTextBox.Text, out pageWidth)) {
+      if (!double.TryParse(pageWidthTextBox.Text, out pageWidth)) {
         pageWidth = 800;
       }
-      if (!Double.TryParse(pageHeightTextBox.Text, out pageHeight)) {
+      if (!double.TryParse(pageHeightTextBox.Text, out pageHeight)) {
         pageHeight = 800;
       }
 
       // get the core layout
-      string coreLayoutKey = coreLayoutComboBox.SelectedItem as string;
+      var coreLayoutKey = coreLayoutComboBox.SelectedItem as string;
       if (coreLayoutKey != null && coreLayouts.ContainsKey(coreLayoutKey)) {
         coreLayout = coreLayouts[coreLayoutKey];
       } else {
-        coreLayout = coreLayouts["Hierarchic"];
+        coreLayout = coreLayouts["Hierarchical"];
       }
-
-      // a data provider for the node, edge, and label IDs:
-      // this data provider returns the node/edge/label instances themselves
-
-      var multiPageLayoutData = new MultiPageLayoutData
-      {
-        NodeIds = {Delegate = node => node},
-        EdgeIds = {Delegate = edge => edge},
-        NodeLabelIds = {Delegate = label => label},
-        EdgeLabelIds = {Delegate = label => label},
-        AbortHandler = abortHandler = new AbortHandler()
-      };
 
       // apply the multi page layout
       // multiPageLayout contains a list with the single page graphs
-      MultiPageLayout multiPageLayout = new MultiPageLayout(coreLayout)
-      {
-        MaximumPageSize = new YDimension(pageWidth, pageHeight),
-        LayoutCallback = new DelegateLayoutCallback(result => Dispatcher.BeginInvoke(new Action(() => {
-          ApplyLayoutResult(result, pageWidth, pageHeight);
-          abortHandler = null;
-          ShowLoadingIndicator(false);
-          // force to update the command state
-          CommandManager.InvalidateRequerySuggested();
-        })))
-      };
+      var multiPageLayout = new MultiPageLayout(coreLayout) { MaximumPageSize = new SizeD(pageWidth, pageHeight) };
+
+      // the layout data takes care about mapping back from page graphs to the original graph items
+      var multiPageLayoutData = multiPageLayout.CreateLayoutData(modelGraph);
+
+      multiPageLayout.LayoutCallback = result => Dispatcher.BeginInvoke(new Action(() => {
+        ApplyLayoutResult(result, multiPageLayoutData, pageWidth, pageHeight);
+        abortController = null;
+        ShowLoadingIndicator(false);
+        // force to update the command state
+        CommandManager.InvalidateRequerySuggested();
+      }));
+
+      // create a controller to be able to stop/cancel the layout earlier
+      abortController = new LayoutAbortController();
 
       // execute layout in thread to prevent ui blocking
       new Thread(() => {
         try {
-          modelGraph.ApplyLayout(multiPageLayout, multiPageLayoutData);
+          modelGraph.ApplyLayout(multiPageLayout, multiPageLayoutData, abortController);
         } catch (AlgorithmAbortedException) {
           // layout was aborted
           Dispatcher.BeginInvoke(new Action(() => {
             // reset abortHandler and loading indicator in the view thread
-            abortHandler = null;
+            abortController = null;
             ShowLoadingIndicator(false);
           }));
         }
@@ -229,48 +228,50 @@ namespace Demo.yFiles.Layout.MultiPage
     }
 
     /// <summary>
-    /// Applies the result of the multipage layout using a <see cref="MultiPageIGraphBuilder"/>.
+    ///   Applies the result of the multipage layout using a <see cref="MultiPageIGraphBuilder"/>.
     /// </summary>
-    private void ApplyLayoutResult(MultiPageLayoutResult multiPageLayout, double pageWidth, double pageHeight)
-    {
+    private void ApplyLayoutResult(
+        MultiPageLayout.Result result,
+        MultiPageLayoutData<INode, IEdge, ILabel, ILabel> multiPageLayoutData,
+        double pageWidth,
+        double pageHeight) {
       // use the MultiPageGraphBuilder to create a list of IGraph instances that represent the single pages
-      MultiPageIGraphBuilder builder = new MultiPageIGraphBuilder(multiPageLayout)
-      {
-        // assign custom template node styles for the auxiliary nodes introduced by the multipage layout.
-        // also set the label style and model parameter. 
-        // if nothing is specified, the values of the original graph are copied.
-        NormalNodeDefaults =
-        {
-          Style = new NodeControlNodeStyle("NormalNodeTemplate"),
-          Labels = { Style = DemoStyles.CreateDemoNodeLabelStyle(Themes.Palette21), LayoutParameter = InteriorLabelModel.Center }
-        },
-        ConnectorNodeDefaults =
-        {
-          Style = new NodeControlNodeStyle("ConnectorNodeTemplate"),
-          Labels = { Style = DemoStyles.CreateDemoNodeLabelStyle(Themes.Palette23), LayoutParameter = InteriorLabelModel.Center }
-        },
-        ProxyNodeDefaults =
-        {
-          Style = new NodeControlNodeStyle("ProxyNodeTemplate"),
-          Labels = { Style = DemoStyles.CreateDemoNodeLabelStyle(Themes.Palette25), LayoutParameter = InteriorLabelModel.Center }
-        },
-        ProxyReferenceNodeDefaults =
-        {
-          Style = new NodeControlNodeStyle("ProxyReferenceNodeTemplate"),
-          Labels = { Style = DemoStyles.CreateDemoNodeLabelStyle(Themes.Palette14), LayoutParameter = InteriorLabelModel.Center }
-        },
-        NormalEdgeDefaults = {
-          Style = DemoStyles.CreateDemoEdgeStyle(Themes.Palette21, false)
-        },
-        ConnectorEdgeDefaults = {
-          Style = DemoStyles.CreateDemoEdgeStyle(Themes.Palette23, false)
-        },
-        ProxyEdgeDefaults = {
-          Style = DemoStyles.CreateDemoEdgeStyle(Themes.Palette25, false)
-        },
-        ProxyReferenceEdgeDefaults = {
-          Style = DemoStyles.CreateDemoEdgeStyle(Themes.Palette14)
-        }
+      builder = new MultiPageIGraphBuilder(multiPageLayoutData, result) {
+          // assign custom template node styles for the auxiliary nodes introduced by the multipage layout.
+          // also set the label style and model parameter.
+          // if nothing is specified, the values of the original graph are copied.
+          NormalNodeDefaults = {
+              Style = new NodeControlNodeStyle("NormalNodeTemplate"),
+              Labels = {
+                  Style = DemoStyles.CreateDemoNodeLabelStyle(Themes.Palette21),
+                  LayoutParameter = InteriorNodeLabelModel.Center
+              }
+          },
+          ConnectorNodeDefaults = {
+              Style = new NodeControlNodeStyle("ConnectorNodeTemplate"),
+              Labels = {
+                  Style = DemoStyles.CreateDemoNodeLabelStyle(Themes.Palette23),
+                  LayoutParameter = InteriorNodeLabelModel.Center
+              }
+          },
+          ProxyNodeDefaults = {
+              Style = new NodeControlNodeStyle("ProxyNodeTemplate"),
+              Labels = {
+                  Style = DemoStyles.CreateDemoNodeLabelStyle(Themes.Palette25),
+                  LayoutParameter = InteriorNodeLabelModel.Center
+              }
+          },
+          ProxyReferenceNodeDefaults = {
+              Style = new NodeControlNodeStyle("ProxyReferenceNodeTemplate"),
+              Labels = {
+                  Style = DemoStyles.CreateDemoNodeLabelStyle(Themes.Palette14),
+                  LayoutParameter = InteriorNodeLabelModel.Center
+              }
+          },
+          NormalEdgeDefaults = { Style = DemoStyles.CreateDemoEdgeStyle(Themes.Palette21, false) },
+          ConnectorEdgeDefaults = { Style = DemoStyles.CreateDemoEdgeStyle(Themes.Palette23, false) },
+          ProxyEdgeDefaults = { Style = DemoStyles.CreateDemoEdgeStyle(Themes.Palette25, false) },
+          ProxyReferenceEdgeDefaults = { Style = DemoStyles.CreateDemoEdgeStyle(Themes.Palette14) }
       };
 
       // create the graphs
@@ -284,7 +285,7 @@ namespace Demo.yFiles.Layout.MultiPage
     }
 
     private void SetPageNumber(int newPageNumber, INode targetNode) {
-      graphControl.HighlightIndicatorManager.ClearHighlights();
+      graphControl.Highlights.Clear();
       if (newPageNumber < 0) {
         newPageNumber = 0;
       } else if (newPageNumber > viewGraphs.Length - 1) {
@@ -292,36 +293,38 @@ namespace Demo.yFiles.Layout.MultiPage
       }
       graphControl.FocusIndicatorManager.FocusedItem = null;
       pageNumber = newPageNumber;
-      pageNumberTextBox.Text = (pageNumber+1).ToString();
+      pageNumberTextBox.Text = (pageNumber + 1).ToString();
       graphControl.Graph = GetCurrentGraph();
       // update the content bounds
-      graphControl.UpdateContentRect();
+      graphControl.UpdateContentBounds();
       // set the page center
-      pageBoundsVisualCreator.Center = graphControl.ContentRect.Center;
+      pageBoundsVisualCreator.Center = graphControl.ContentBounds.GetCenter();
 
       // place target node under mouse cursor
       if (targetNode != null && graphControl.Graph.Contains(targetNode)) {
-        PointD mousePosition = graphControl.ToWorldCoordinates(Mouse.GetPosition(graphControl));
-        PointD controlCenter = graphControl.ToWorldCoordinates(new PointD(graphControl.ActualWidth * 0.5, graphControl.ActualHeight * 0.5));
-        graphControl.ZoomTo(targetNode.Layout.GetCenter() - (mousePosition - controlCenter), graphControl.Zoom);
-        graphControl.HighlightIndicatorManager.AddHighlight(targetNode);
+        var viewMousePosition = Mouse.GetPosition(graphControl);
+        var mousePosition = graphControl.ViewToWorldCoordinates(new PointD(viewMousePosition.X, viewMousePosition.Y));
+        var controlCenter =
+            graphControl.ViewToWorldCoordinates(new PointD(graphControl.ActualWidth * 0.5,
+                graphControl.ActualHeight * 0.5));
+        graphControl.ZoomTo(graphControl.Zoom, targetNode.Layout.GetCenter() - (mousePosition - controlCenter));
+        graphControl.Highlights.Add(targetNode);
       } else {
         graphControl.FitGraphBounds();
       }
     }
 
     /// <summary>
-    /// "Jump" to a referencing node of a clicked auxiliary multi-page node.
+    ///   "Jump" to a referencing node of a clicked auxiliary multi-page node.
     /// </summary>
     /// <param name="viewNode">The multi page node that has been clicked</param>
     private void GotoReferencingNode(INode viewNode) {
-      IGraph graph = GetCurrentGraph();
       // get the ID of the referencing node
-      MultiPageIGraphBuilder.NodeData nodeData = graph.MapperRegistry.GetMapper<INode, MultiPageIGraphBuilder.NodeData>(MultiPageIGraphBuilder.MapperKeyNodeData)[viewNode];
+      var nodeData = builder.GetNodeData(viewNode);
       if (nodeData != null && nodeData.IsReferenceNode) {
         var referencedNode = nodeData.ReferencedNode;
         if (referencedNode != null) {
-          int targetPage = GetPageNumber(referencedNode);
+          var targetPage = GetPageNumber(referencedNode);
           // open the page and center on the referencing node
           if (IsPageNumberValid(targetPage)) {
             SetPageNumber(targetPage, referencedNode);
@@ -331,14 +334,12 @@ namespace Demo.yFiles.Layout.MultiPage
     }
 
     /// <summary>
-    /// Gets the number of the page a node is contained in.
+    ///   Gets the number of the page a node is contained in.
     /// </summary>
     /// <param name="node">The node to get the page number for.</param>
     /// <returns>The page number, or -1 if the node is not part of any page.</returns>
     private int GetPageNumber(INode node) {
-      MultiPageIGraphBuilder.NodeData nodeData =
-        GetCurrentGraph().MapperRegistry.GetMapper<INode, MultiPageIGraphBuilder.NodeData>(
-          MultiPageIGraphBuilder.MapperKeyNodeData)[node];
+      var nodeData = builder.GetNodeData(node);
       return nodeData != null ? nodeData.PageNumber : -1;
     }
 
@@ -361,27 +362,28 @@ namespace Demo.yFiles.Layout.MultiPage
     }
 
     private bool stopRequested;
-    private AbortHandler abortHandler;
+    private LayoutAbortController abortController;
 
     private void StopLayoutButtonClick(object sender, RoutedEventArgs e) {
       if (stopRequested) {
-        abortHandler.Cancel();
+        abortController.Cancel();
       } else {
         stopRequested = true;
         StopButton.Text = "Abort Immediately";
-        abortHandler.Stop();
+        abortController.Stop();
       }
     }
-    
+
     private bool inputGraphLoaded;
+    private MultiPageIGraphBuilder builder;
 
     /// <summary>
-    /// Displays the original graph
+    ///   Displays the original graph
     /// </summary>
     private void ShowInputGraph_Click(object sender, RoutedEventArgs e) {
-      var check = ((ToggleButton)sender).IsChecked;
+      var check = ((ToggleButton) sender).IsChecked;
 
-      if (check != null && (bool)check) {
+      if (check != null && (bool) check) {
         showInputGraphButton.Content = "Hide Input Graph";
         gridSplitter.IsEnabled = true;
         mainGrid.ColumnDefinitions[0].Width = new GridLength(600, GridUnitType.Pixel);
@@ -392,9 +394,9 @@ namespace Demo.yFiles.Layout.MultiPage
           originalGraphControl.ImportFromGraphML("Resources/pop-artists-small.graphml");
         }
         Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(delegate {
-                                                                           originalGraphControl.FitGraphBounds();
-                                                                           graphControl.FitGraphBounds();
-                                                                         }));
+          originalGraphControl.FitGraphBounds();
+          graphControl.FitGraphBounds();
+        }));
       } else {
         mainGrid.ColumnDefinitions[0].Width = new GridLength(0, GridUnitType.Pixel);
         mainGrid.ColumnDefinitions[1].Width = new GridLength(0, GridUnitType.Pixel);
@@ -405,13 +407,13 @@ namespace Demo.yFiles.Layout.MultiPage
     }
 
     /// <summary>
-    /// Sets the page number.
+    ///   Sets the page number.
     /// </summary>
     private void PageNumberTextBox_KeyDown(object sender, KeyEventArgs e) {
       if (e.Key == Key.Enter || e.Key == Key.Return) {
         int pageNo;
-        if (Int32.TryParse(pageNumberTextBox.Text, out pageNo)) {
-          SetPageNumber(pageNo-1, null);
+        if (int.TryParse(pageNumberTextBox.Text, out pageNo)) {
+          SetPageNumber(pageNo - 1, null);
         } else {
           pageNumberTextBox.Focus();
         }
@@ -423,14 +425,14 @@ namespace Demo.yFiles.Layout.MultiPage
     #region utility methods
 
     /// <summary>
-    /// Returns the currently selected page graph.
+    ///   Returns the currently selected page graph.
     /// </summary>
     private IGraph GetCurrentGraph() {
       return viewGraphs[pageNumber];
     }
 
     /// <summary>
-    /// Checks if the given page number is valid.
+    ///   Checks if the given page number is valid.
     /// </summary>
     private bool IsPageNumberValid(int pageNo) {
       return pageNo >= 0 && viewGraphs != null && pageNo < viewGraphs.Length;
@@ -440,42 +442,41 @@ namespace Demo.yFiles.Layout.MultiPage
   }
 
   /// <summary>
-  /// This class renders the page size
+  ///   This class renders the page size
   /// </summary>
   internal class PageBoundsVisualCreator : IVisualCreator
   {
     private const double Margin = 8;
 
     public PageBoundsVisualCreator() {
-      this.PageWidth = 0;
-      this.PageHeight = 0;
+      PageWidth = 0;
+      PageHeight = 0;
     }
 
     /// <summary>
-    /// The page Width
+    ///   The page Width
     /// </summary>
     public double PageWidth { get; set; }
 
     /// <summary>
-    /// The Page Height
+    ///   The Page Height
     /// </summary>
     public double PageHeight { get; set; }
 
     /// <summary>
-    /// The Page Center
+    ///   The Page Center
     /// </summary>
     public PointD Center { get; set; }
 
     public Visual CreateVisual(IRenderContext context) {
-      Rectangle rectangle = new Rectangle
-                              {
-                                Width = PageWidth + Margin,
-                                Height = PageHeight + Margin,
-                                Stroke = Brushes.DarkGray,
-                                StrokeDashArray = new DoubleCollection {2, 2},
-                              };
-      rectangle.RenderTransform = new TranslateTransform(Center.X - (rectangle.Width*0.5),
-                                                         Center.Y - (rectangle.Height*0.5));
+      var rectangle = new Rectangle {
+          Width = PageWidth + Margin,
+          Height = PageHeight + Margin,
+          Stroke = Brushes.DarkGray,
+          StrokeDashArray = new DoubleCollection { 2, 2 }
+      };
+      rectangle.RenderTransform = new TranslateTransform(Center.X - (rectangle.Width * 0.5),
+          Center.Y - (rectangle.Height * 0.5));
       rectangle.Measure(new Size(rectangle.Width, rectangle.Height));
       return rectangle;
     }
@@ -486,28 +487,11 @@ namespace Demo.yFiles.Layout.MultiPage
         rectangle.Width = PageWidth + Margin;
         rectangle.Height = PageHeight + Margin;
         rectangle.RenderTransform = new TranslateTransform(Center.X - (rectangle.Width * 0.5),
-                                                         Center.Y - (rectangle.Height * 0.5));
+            Center.Y - (rectangle.Height * 0.5));
         rectangle.Measure(new Size(rectangle.Width, rectangle.Height));
         return rectangle;
-      } else {
-        return CreateVisual(context);
       }
-    }
-  }
-
-  internal delegate void LayoutCallbackDelegate(MultiPageLayoutResult layout);
-
-  class DelegateLayoutCallback : ILayoutCallback
-  {
-
-    private LayoutCallbackDelegate layoutDelegate;
-
-    public DelegateLayoutCallback(LayoutCallbackDelegate layoutDelegate) {
-      this.layoutDelegate = layoutDelegate;
-    }
-
-    public void LayoutDone(MultiPageLayoutResult result) {
-      layoutDelegate(result);
+      return CreateVisual(context);
     }
   }
 }

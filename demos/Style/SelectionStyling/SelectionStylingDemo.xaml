@@ -1,6 +1,6 @@
 <!-- ************************************************************************ -->
-<!-- This demo file is part of yFiles WPF 3.6.                           -->
-<!-- Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
+<!-- This demo file is part of yFiles WPF 4.0.                           -->
+<!-- Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
 <!-- 72070 Tuebingen, Germany. All rights reserved.                           -->
 <!--                                                                          -->
 <!-- yFiles demo files exhibit yFiles WPF functionalities. Any redistribution  -->
@@ -27,7 +27,7 @@
 <Window x:Class="Demo.yFiles.Graph.SelectionStyling.SelectionStylingDemo"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:y="http://www.yworks.com/xml/yfiles-wpf/3.0/xaml"
+    xmlns:y="http://www.yworks.com/xml/yfiles-wpf/4.0/xaml"
     Title="Demo.yFiles.Graph.SelectionStyling" Height="600" Width="900"
     Loaded="OnLoaded" Style="{StaticResource DemoWindow}">
   <HeaderedContentControl Style="{StaticResource DemoStyle}">
@@ -35,10 +35,10 @@
       <RichTextBox BorderThickness="0" IsReadOnly="True">
         <FlowDocument>
           <Paragraph>
-            Demonstrates customized selection painting of nodes, edges and labels by decorating these items with a corresponding style.
+            Demonstrates customized selection rendering of nodes, edges and labels by decorating these items with a corresponding style.
           </Paragraph>
           <Paragraph>
-            Customizing the painting of the focus indicator and the highlighting is possible as well but not shown in this demo.
+            Customizing the focus and highlight rendering is possible in the same way but not shown in this demo.
           </Paragraph>
           
           <Paragraph Style="{StaticResource HtmlH2}">Things to Try</Paragraph>
@@ -46,13 +46,13 @@
           <List>
             <ListItem>
               <Paragraph>
-                Switch between the default and the custom selection painting of nodes, edges and labels with the
+                Switch between the default and the custom selection rendering of nodes, edges and labels with the
                 toolbar buttons.
               </Paragraph>
             </ListItem>
             <ListItem>
               <Paragraph>
-                Test the different zoom modes for the custom selection painting.
+                Test the different zoom modes for the custom selection rendering.
               </Paragraph>
             </ListItem>
           </List>
@@ -60,7 +60,7 @@
           <Paragraph Style="{StaticResource HtmlH2}">Zoom Mode Property</Paragraph>
           
           <Paragraph>
-            Specifies how the zoom level affects the custom selecting painting.
+            Specifies how the zoom level affects the custom selecting rendering.
           </Paragraph>
           
           <Paragraph Style="{StaticResource HtmlDt}">WorldCoordinates</Paragraph>
@@ -95,16 +95,16 @@
           <Button Command="DecreaseZoom" CommandTarget="{Binding ElementName=graphControl}" />
           <Button Command="Zoom" CommandParameter="1" CommandTarget="{Binding ElementName=graphControl}" Content="{StaticResource Zoom100Icon}" 
                   ToolTip="Zoom to 100%" ContentTemplate="{StaticResource ImageButtonContentTemplate}"/>
-          <Button Command="{x:Static y:GraphControl.FitGraphBoundsCommand}"
+          <Button Command="{x:Static y:GraphCommands.FitGraphBounds}"
               CommandTarget="{Binding ElementName=graphControl}" />
           <Separator />
-          <Label>Custom Painting:</Label>
+          <Label>Custom Rendering:</Label>
           <ToggleButton Content="Nodes" Name="CustomNodeDecoratorButton" Click="CustomNodeDecorationChanged" IsChecked="True"
-                        ToolTip="Controls custom selection painting for nodes" />
+                        ToolTip="Controls custom selection rendering for nodes" />
           <ToggleButton Content="Edges" Name="CustomEdgeDecoratorButton" Click="CustomEdgeDecorationChanged" IsChecked="True"
-                        ToolTip="Controls custom selection painting for edges" />
+                        ToolTip="Controls custom selection rendering for edges" />
           <ToggleButton Content="Labels" Name="CustomLabelDecoratorButton" Click="CustomLabelDecorationChanged" IsChecked="True"
-                        ToolTip="Controls custom selection painting for labels" />
+                        ToolTip="Controls custom selection rendering for labels" />
           <Separator />
           <Label>Zoom Mode:</Label>
           <ComboBox Name="ZoomModeComboBox" SelectionChanged="ZoomModeChanged" Padding="3,0" Width="130"

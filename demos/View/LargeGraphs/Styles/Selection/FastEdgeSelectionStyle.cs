@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -44,7 +44,7 @@ namespace Demo.yFiles.Graph.LargeGraphs.Styles.Selection
   /// </summary>
   /// <remarks>
   ///   <para>
-  ///     This style essentially displays a path along the edge and scales its stroke thickness and brush by 1 / zoom level.
+  ///     This style essentially displays a path along the edge and scales its stroke thickness and brush by 1 / zoom level.
   ///     This means that positioning considerations can still be done in world coordinates and the path doesn't require a
   ///     series of transformations to end up where it should be. The brush is scaled because the default selection
   ///     decoration uses a pixel checkerboard pattern which would otherwise be scaled with the zoom level.
@@ -175,11 +175,11 @@ namespace Demo.yFiles.Graph.LargeGraphs.Styles.Selection
       var geometry = new StreamGeometry();
 
       using (var ctx = geometry.Open()) {
-        ctx.BeginFigure(source, false, false);
+        ctx.BeginFigure(source.ToPoint(), false, false);
         foreach (var b in edge.Bends) {
-          ctx.LineTo(b.Location.ToPointD(), true, true);
+          ctx.LineTo(b.Location.ToPoint(), true, true);
         }
-        ctx.LineTo(target, true, false);
+        ctx.LineTo(target.ToPoint(), true, false);
       }
       geometry.Freeze();
       return geometry;

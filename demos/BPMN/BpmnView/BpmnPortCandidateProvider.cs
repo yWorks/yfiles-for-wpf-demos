@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -31,21 +31,24 @@ using System;
 using System.Collections.Generic;
 using Demo.yFiles.Graph.Bpmn.Styles;
 using Demo.yFiles.Graph.Bpmn.Util;
-using yWorks.Controls.Input;
 using yWorks.Annotations;
+using yWorks.Controls.Input;
 using yWorks.Geometry;
 using yWorks.Graph;
 using yWorks.Graph.PortLocationModels;
+using yWorks.Utils;
 
-namespace Demo.yFiles.Graph.Bpmn {
-
+namespace Demo.yFiles.Graph.Bpmn
+{
   /// <summary>
-  /// Provides some existing ports as well as ports on the north, south, east and west center of the visual bounds of a BPMN node.
+  ///   Provides some existing ports as well as ports on the top, bottom, right, and left center of the visual bounds of a
+  ///   BPMN node.
   /// </summary>
   /// <remarks>
-  /// An existing port is provided if it either uses an <see cref="EventPortStyle"/> or is used by at least one edge.
+  ///   An existing port is provided if it either uses an <see cref="EventPortStyle"/> or is used by at least one edge.
   /// </remarks>
-  public class BpmnPortCandidateProvider : PortCandidateProviderBase {
+  public class BpmnPortCandidateProvider : PortCandidateProviderBase
+  {
     private readonly INode node;
 
     public BpmnPortCandidateProvider([NotNull] INode node) {
@@ -56,41 +59,41 @@ namespace Demo.yFiles.Graph.Bpmn {
       var portCandidates = new List<IPortCandidate>();
 
       // provide existing ports as candidates only if they use EventPortStyle and have no edges attached to them.
-      foreach (IPort port in node.Ports) {
+      foreach (var port in node.Ports) {
         if (port.Style is EventPortStyle && context.Lookup<IGraph>().EdgesAt(port).Count == 0) {
-          portCandidates.Add(new DefaultPortCandidate(port));
+          portCandidates.Add(new PortCandidate(port));
         }
       }
-      
-      if (node.Style is ActivityNodeStyle || node.Style is ChoreographyNodeStyle 
-        || node.Style is DataObjectNodeStyle || node.Style is AnnotationNodeStyle 
-        || node.Style is GroupNodeStyle || node.Style is DataStoreNodeStyle) {
-        portCandidates.Add(new DefaultPortCandidate(node, FreeNodePortLocationModel.NodeTopAnchored));
-        portCandidates.Add(new DefaultPortCandidate(node, FreeNodePortLocationModel.NodeBottomAnchored));
-        portCandidates.Add(new DefaultPortCandidate(node, FreeNodePortLocationModel.NodeLeftAnchored));
-        portCandidates.Add(new DefaultPortCandidate(node, FreeNodePortLocationModel.NodeRightAnchored));
+
+      if (node.Style is ActivityNodeStyle || node.Style is ChoreographyNodeStyle || node.Style is DataObjectNodeStyle ||
+          node.Style is AnnotationNodeStyle || node.Style is GroupNodeStyle || node.Style is DataStoreNodeStyle) {
+        portCandidates.Add(new PortCandidate(node, FreeNodePortLocationModel.Top));
+        portCandidates.Add(new PortCandidate(node, FreeNodePortLocationModel.Bottom));
+        portCandidates.Add(new PortCandidate(node, FreeNodePortLocationModel.Left));
+        portCandidates.Add(new PortCandidate(node, FreeNodePortLocationModel.Right));
       } else if (node.Style is EventNodeStyle || node.Style is GatewayNodeStyle) {
-        double dmax = Math.Min(node.Layout.Width / 2, node.Layout.Height / 2);
+        var dmax = Math.Min(node.Layout.Width / 2, node.Layout.Height / 2);
         var model = FreeNodePortLocationModel.Instance;
-        portCandidates.Add(new DefaultPortCandidate(node, model.CreateParameter(new PointD(0.5, 0.5), new PointD(0, -dmax))));
-        portCandidates.Add(new DefaultPortCandidate(node, model.CreateParameter(new PointD(0.5, 0.5), new PointD(dmax, 0))));
-        portCandidates.Add(new DefaultPortCandidate(node, model.CreateParameter(new PointD(0.5, 0.5), new PointD(0, dmax))));
-        portCandidates.Add(new DefaultPortCandidate(node, model.CreateParameter(new PointD(0.5, 0.5), new PointD(-dmax, 0))));
+        portCandidates.Add(new PortCandidate(node, model.CreateParameter(new PointD(0.5, 0.5), new PointD(0, -dmax))));
+        portCandidates.Add(new PortCandidate(node, model.CreateParameter(new PointD(0.5, 0.5), new PointD(dmax, 0))));
+        portCandidates.Add(new PortCandidate(node, model.CreateParameter(new PointD(0.5, 0.5), new PointD(0, dmax))));
+        portCandidates.Add(new PortCandidate(node, model.CreateParameter(new PointD(0.5, 0.5), new PointD(-dmax, 0))));
       } else if (node.Style is ConversationNodeStyle) {
-        double dx = 0.5 * Math.Min(node.Layout.Width, node.Layout.Height / BpmnConstants.ConversationWidthHeightRatio);
-        double dy = dx * BpmnConstants.ConversationWidthHeightRatio;
+        var dx = 0.5 * Math.Min(node.Layout.Width, node.Layout.Height / BpmnConstants.ConversationWidthHeightRatio);
+        var dy = dx * BpmnConstants.ConversationWidthHeightRatio;
         var model = FreeNodePortLocationModel.Instance;
-        portCandidates.Add(new DefaultPortCandidate(node, model.CreateParameter(new PointD(0.5, 0.5), new PointD(0, -dy))));
-        portCandidates.Add(new DefaultPortCandidate(node, model.CreateParameter(new PointD(0.5, 0.5), new PointD(dx, 0))));
-        portCandidates.Add(new DefaultPortCandidate(node, model.CreateParameter(new PointD(0.5, 0.5), new PointD(0, dy))));
-        portCandidates.Add(new DefaultPortCandidate(node, model.CreateParameter(new PointD(0.5, 0.5), new PointD(-dx, 0))));
+        portCandidates.Add(new PortCandidate(node, model.CreateParameter(new PointD(0.5, 0.5), new PointD(0, -dy))));
+        portCandidates.Add(new PortCandidate(node, model.CreateParameter(new PointD(0.5, 0.5), new PointD(dx, 0))));
+        portCandidates.Add(new PortCandidate(node, model.CreateParameter(new PointD(0.5, 0.5), new PointD(0, dy))));
+        portCandidates.Add(new PortCandidate(node, model.CreateParameter(new PointD(0.5, 0.5), new PointD(-dx, 0))));
       }
 
-      var ceim = context.ParentInputMode as CreateEdgeInputMode;
+      var ceim = context.InputMode as CreateEdgeInputMode;
       var canvasControl = context.CanvasControl;
-      if (ceim == null || canvasControl == null || KeyEventRecognizers.ShiftPressed(canvasControl, canvasControl.LastInputEvent)) {
+      if (ceim == null ||
+          EventRecognizers.ShiftIsDown(canvasControl, canvasControl.LastPointerEvent)) {
         // add a dynamic candidate
-        portCandidates.Add(new DefaultPortCandidate(node, new FreeNodePortLocationModel()));
+        portCandidates.Add(new PortCandidate(node, new FreeNodePortLocationModel()));
       }
       return portCandidates;
     }

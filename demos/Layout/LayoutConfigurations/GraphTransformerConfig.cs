@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -27,59 +27,71 @@
  ** 
  ***************************************************************************/
 
+using System;
 using System.ComponentModel;
 using System.Reflection;
 using Demo.yFiles.Toolkit.OptionHandler;
 using yWorks.Controls;
+using yWorks.Graph;
 using yWorks.Layout;
-using yWorks.Layout.Transformer;
 
 namespace Demo.yFiles.Layout.Configurations
 {
   /// <summary>
-  /// Configuration options for the layout algorithm of the same name.
+  ///   Configuration options for the layout algorithm of the same name.
   /// </summary>
   [Obfuscation(StripAfterObfuscation = false, Exclude = true, ApplyToMembers = true)]
   [Label("GraphTransformer")]
-  public class GraphTransformerConfig : LayoutConfiguration {
+  public class GraphTransformerConfig : LayoutConfiguration
+  {
     /// <summary>
-    /// Setup default values for various configuration parameters.
+    ///   Setup default values for various configuration parameters.
     /// </summary>
     public GraphTransformerConfig() {
-      var transformer = new GraphTransformer();
-      
+      //var transformer = new GraphTransformer();
+
       OperationItem = OperationType.Scale;
       ActOnSelectionOnlyItem = false;
-      RotationAngleItem = transformer.RotationAngle;
+      RotationAngleItem = 0;
       ApplyBestFitRotationItem = false;
-      ScaleFactorItem = transformer.ScaleFactorX;
-      ScaleNodeSizeItem = transformer.ScaleNodeSize;
-      TranslateXItem = transformer.TranslateX;
-      TranslateYItem = transformer.TranslateY;
+      ScaleFactorItem = 1;
+      ScaleNodeSizeItem = false;
+      TranslateXItem = 0;
+      TranslateYItem = 0;
     }
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     protected override ILayoutAlgorithm CreateConfiguredLayout(GraphControl graphControl) {
-      var transformer = new GraphTransformer();
-      transformer.Operation = OperationItem;
-      transformer.SubgraphLayoutEnabled = ActOnSelectionOnlyItem;
-      transformer.RotationAngle = RotationAngleItem;
-      if (ApplyBestFitRotationItem && OperationItem == OperationType.Rotate) {
-        var size = graphControl.InnerSize;
-        ApplyBestFitRotationItem = true;
-
-        var layoutGraph = new LayoutGraphAdapter(graphControl.Graph).CreateCopiedLayoutGraph();
-        transformer.RotationAngle = GraphTransformer.FindBestFitRotationAngle(layoutGraph, size.Width, size.Height);
-      } else {
-        ApplyBestFitRotationItem = false;
+      ILayoutStage stage;
+      switch (OperationItem) {
+        case OperationType.MirrorXAxis:
+          stage = LayoutTransformations.CreateMirroringStage(true);
+          break;
+        case OperationType.MirrorYAxis:
+          stage = LayoutTransformations.CreateMirroringStage(false);
+          break;
+        case OperationType.Rotate:
+          stage = ApplyBestFitRotationItem
+              ? LayoutTransformations.CreateBestFitRotationStage(graphControl.InnerSize)
+              : LayoutTransformations.CreateRotationStage(RotationAngleItem);
+          break;
+        case OperationType.Scale:
+          stage = LayoutTransformations.CreateScalingStage(ScaleFactorItem, ScaleFactorItem, ScaleNodeSizeItem);
+          break;
+        case OperationType.Translate:
+          stage = LayoutTransformations.CreateTranslationStage(TranslateXItem, TranslateYItem);
+          break;
+        default:
+          throw new ArgumentOutOfRangeException();
       }
 
-      transformer.ScaleFactor = ScaleFactorItem;
-      transformer.ScaleNodeSize = ScaleNodeSizeItem;
-      transformer.TranslateX = TranslateXItem;
-      transformer.TranslateY = TranslateYItem;
+      return ActOnSelectionOnlyItem ? new SubgraphLayoutStage(stage) : stage;
+    }
 
-      return transformer;
+    /// <inheritdoc/>
+    protected override LayoutData<INode, IEdge, ILabel, ILabel> CreateConfiguredLayoutData(
+        GraphControl graphControl, ILayoutAlgorithm layout) {
+      return ActOnSelectionOnlyItem ? CreateSubgraphLayoutData(graphControl) : null;
     }
 
     // ReSharper disable UnusedMember.Global
@@ -91,31 +103,31 @@ namespace Demo.yFiles.Layout.Configurations
     public object GeneralGroup;
 
     [Label("Rotate")]
-    [OptionGroup("GeneralGroup", 20)]
+    [OptionGroup("GeneralGroup", 30)]
     [ComponentType(ComponentTypes.OptionGroup)]
     public object RotateGroup;
 
     [Label("Scale")]
-    [OptionGroup("GeneralGroup", 30)]
+    [OptionGroup("GeneralGroup", 40)]
     [ComponentType(ComponentTypes.OptionGroup)]
     public object ScaleGroup;
 
     [Label("Translate")]
-    [OptionGroup("GeneralGroup", 40)]
+    [OptionGroup("GeneralGroup", 50)]
     [ComponentType(ComponentTypes.OptionGroup)]
     public object TranslateGroup;
 
     // ReSharper restore UnusedMember.Global
     // ReSharper restore InconsistentNaming
-    
+
     [Label("Operation")]
     [OptionGroup("GeneralGroup", 10)]
     [DefaultValue(OperationType.Scale)]
     [EnumValue("Mirror on X axis", OperationType.MirrorXAxis)]
-    [EnumValue("Mirror on Y axis",OperationType.MirrorYAxis)]
-    [EnumValue("Rotate",OperationType.Rotate)]
-    [EnumValue("Scale",OperationType.Scale)]
-    [EnumValue("Translate",OperationType.Translate)]
+    [EnumValue("Mirror on Y axis", OperationType.MirrorYAxis)]
+    [EnumValue("Rotate", OperationType.Rotate)]
+    [EnumValue("Scale", OperationType.Scale)]
+    [EnumValue("Translate", OperationType.Translate)]
     public OperationType OperationItem { get; set; }
 
     [Label("Act on Selection Only")]
@@ -130,18 +142,14 @@ namespace Demo.yFiles.Layout.Configurations
     [ComponentType(ComponentTypes.Slider)]
     public double RotationAngleItem { get; set; }
 
-    public bool ShouldDisableRotationAngleItem {
-      get { return OperationItem != OperationType.Rotate || ApplyBestFitRotationItem; }
-    }
+    public bool ShouldDisableRotationAngleItem => OperationItem != OperationType.Rotate || ApplyBestFitRotationItem;
 
     [Label("Best Fit Rotation")]
     [OptionGroup("RotateGroup", 20)]
     [DefaultValue(false)]
     public bool ApplyBestFitRotationItem { get; set; }
 
-    public bool ShouldDisableApplyBestFitRotationItem {
-      get { return OperationItem != OperationType.Rotate; }
-    }
+    public bool ShouldDisableApplyBestFitRotationItem => OperationItem != OperationType.Rotate;
 
     [Label("Scale Factor")]
     [OptionGroup("ScaleGroup", 10)]
@@ -150,18 +158,14 @@ namespace Demo.yFiles.Layout.Configurations
     [ComponentType(ComponentTypes.Slider)]
     public double ScaleFactorItem { get; set; }
 
-    public bool ShouldDisableScaleFactorItem {
-      get { return OperationItem != OperationType.Scale; }
-    }
+    public bool ShouldDisableScaleFactorItem => OperationItem != OperationType.Scale;
 
     [Label("Scale Node Size")]
     [OptionGroup("ScaleGroup", 20)]
     [DefaultValue(false)]
     public bool ScaleNodeSizeItem { get; set; }
 
-    public bool ShouldDisableScaleNodeSizeItem {
-      get { return OperationItem != OperationType.Scale; }
-    }
+    public bool ShouldDisableScaleNodeSizeItem => OperationItem != OperationType.Scale;
 
     [Label("Horizontal Distance")]
     [OptionGroup("TranslateGroup", 10)]
@@ -170,9 +174,7 @@ namespace Demo.yFiles.Layout.Configurations
     [ComponentType(ComponentTypes.Slider)]
     public double TranslateXItem { get; set; }
 
-    public bool ShouldDisableTranslateXItem {
-      get { return OperationItem != OperationType.Translate; }
-    }
+    public bool ShouldDisableTranslateXItem => OperationItem != OperationType.Translate;
 
     [Label("Vertical Distance")]
     [OptionGroup("TranslateGroup", 20)]
@@ -181,9 +183,15 @@ namespace Demo.yFiles.Layout.Configurations
     [ComponentType(ComponentTypes.Slider)]
     public double TranslateYItem { get; set; }
 
-    public bool ShouldDisableTranslateYItem {
-      get { return OperationItem != OperationType.Translate; }
-    }
+    public bool ShouldDisableTranslateYItem => OperationItem != OperationType.Translate;
 
+    public enum OperationType
+    {
+      MirrorXAxis = 0,
+      MirrorYAxis = 1,
+      Rotate = 2,
+      Scale = 3,
+      Translate = 4
+    }
   }
 }

@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -42,9 +42,8 @@ using yWorks.Graph.Styles;
 namespace SankeyLayout
 {
   /// <summary>
-  /// Demonstrates how yFiles can be used to visualize a Sankey diagram.
+  ///   Demonstrates how yFiles can be used to visualize a Sankey diagram.
   /// </summary>
-
   public partial class SankeyWindow
   {
     private Demo.yFiles.Layout.Sankey.SankeyLayout sankeyLayout;
@@ -64,24 +63,22 @@ namespace SankeyLayout
 
     private void InitializeGraph() {
       var graph = graphControl.Graph;
-      graph.NodeDefaults.Style = new ShapeNodeStyle
-      {
-        Brush = (Brush) new SolidColorBrush(Color.FromRgb(0x42, 0x81, 0xA4)).GetAsFrozen(),
-        Pen = null
+      graph.NodeDefaults.Style = new ShapeNodeStyle {
+          Brush = (Brush) new SolidColorBrush(Color.FromRgb(0x42, 0x81, 0xA4)).GetAsFrozen(), Pen = null
       };
-      graph.EdgeDefaults.Style = new BezierEdgeStyle(new DemoEdgeStyleRenderer(graphControl.Selection, false));
+      graph.EdgeDefaults.Style = new DemoEdgeStyle(graphControl.Selection, false);
 
-      // use a label model that stretches the label over the full node layout, with small insets
-      var centerLabelModel = new InteriorStretchLabelModel { Insets = new InsetsD(3) };
-      graph.NodeDefaults.Labels.LayoutParameter = centerLabelModel.CreateParameter(InteriorStretchLabelModel.Position.Center);
+      // use a label model that stretches the label over the full node layout, with small margins
+      var centerLabelModel = new StretchNodeLabelModel { Padding = new InsetsD(3) };
+      graph.NodeDefaults.Labels.LayoutParameter =
+          centerLabelModel.CreateParameter(StretchNodeLabelModel.Position.Center);
 
       // set the default style for the node labels
-      graph.NodeDefaults.Labels.Style = new DefaultLabelStyle
-      {
-        TextBrush = Brushes.White,
-        TextWrapping = TextWrapping.Wrap,
-        VerticalTextAlignment = VerticalAlignment.Center,
-        TextAlignment = TextAlignment.Center
+      graph.NodeDefaults.Labels.Style = new LabelStyle {
+          TextBrush = Brushes.White,
+          TextWrapping = TextWrapping.Wrap,
+          VerticalTextAlignment = VerticalAlignment.Center,
+          TextAlignment = TextAlignment.Center
       };
 
       // set the default node size
@@ -91,8 +88,8 @@ namespace SankeyLayout
       graph.NodeTagChanged += (sender, e) => {
         var item = e.Item;
         var tag = (CustomTag) item.Tag;
-        if (item.Tag != null && e.OldValue != null && tag.brush != ((CustomTag)e.OldValue).brush) {
-          ((ShapeNodeStyle) item.Style).Brush = ((CustomTag)item.Tag).brush; //GetNodeColor(item);
+        if (item.Tag != null && e.OldValue != null && tag.brush != ((CustomTag) e.OldValue).brush) {
+          ((ShapeNodeStyle) item.Style).Brush = ((CustomTag) item.Tag).brush; //GetNodeColor(item);
           graphControl.Invalidate();
         }
       };
@@ -101,41 +98,39 @@ namespace SankeyLayout
       graph.SetUndoEngineEnabled(true);
 
       // disable all edge handles
-      var edgeDecorator = graph.GetDecorator().EdgeDecorator;
-      edgeDecorator.HandleProviderDecorator.HideImplementation();
-      edgeDecorator.SelectionDecorator.HideImplementation();
-      edgeDecorator.BendCreatorDecorator.HideImplementation();
-      edgeDecorator.PositionHandlerDecorator.HideImplementation();
-      graph.GetDecorator().BendDecorator.HandleProviderDecorator.HideImplementation();
+      var edgeDecorator = graph.GetDecorator().Edges;
+      edgeDecorator.HandleProvider.Hide();
+      edgeDecorator.SelectionRenderer.Hide();
+      edgeDecorator.BendCreator.Hide();
+      edgeDecorator.PositionHandler.Hide();
+      graph.GetDecorator().Bends.HandleProvider.Hide();
 
-      // allow nodes to be only moved vertically 
-      graph.GetDecorator().NodeDecorator.PositionHandlerDecorator.SetImplementationWrapper((node, handler) => new HorizontallyConstrainedPositionHandler(handler));
+      // allow nodes to be only moved vertically
+      graph.GetDecorator().Nodes.PositionHandler
+          .AddWrapperFactory((node, handler) => new HorizontallyConstrainedPositionHandler(handler));
 
       graphControl.HighlightIndicatorManager = new HighlightManager();
     }
 
     private void CreateInputMode() {
       // initialize input mode
-      var mode = new GraphEditorInputMode
-      {
-        SelectableItems = GraphItemTypes.None,
-        DeletableItems = GraphItemTypes.None,
-        AllowCreateEdge = false,
-        AllowCreateNode = false,
-        MovableItems = GraphItemTypes.Node,
-        MoveUnselectedInputMode = { Enabled = true, Priority = 38 },
-        MoveInputMode = { Enabled = false },
-        MarqueeSelectionInputMode = { Enabled = false },
-        MoveViewportInputMode = { PressedRecognizer = MouseEventRecognizers.LeftPressed }
+      var mode = new GraphEditorInputMode {
+          SelectableItems = GraphItemTypes.None,
+          DeletableItems = GraphItemTypes.None,
+          AllowCreateEdge = false,
+          AllowCreateNode = false,
+          MovableUnselectedItems = GraphItemTypes.Node,
+          MoveUnselectedItemsInputMode = { Priority = 38 },
+          MoveSelectedItemsInputMode = { Enabled = false },
+          MarqueeSelectionInputMode = { Enabled = false },
+          MoveViewportInputMode = { BeginRecognizer = EventRecognizers.MouseDown }
       };
 
       // listener to react if a node has been dragged
-      mode.MoveUnselectedInputMode.DragFinished += async (sender, args) => {
-        await RunLayout();
-      };
+      mode.MoveUnselectedItemsInputMode.DragFinished += async (sender, args) => { await RunLayout(); };
 
       // listener to react in edge label text changing
-      mode.LabelTextChanged += async (sender, args) => {
+      mode.LabelEdited += async (sender, args) => {
         if (args.Item.Owner is IEdge) {
           await OnLabelChanged(args.Item);
         }
@@ -163,20 +158,19 @@ namespace SankeyLayout
 
       mode.ItemHoverInputMode.Enabled = true;
       mode.ItemHoverInputMode.HoverItems = GraphItemTypes.Edge | GraphItemTypes.EdgeLabel;
-      mode.ItemHoverInputMode.DiscardInvalidItems = false;
       // add hover listener to implement edge and label highlighting
       mode.ItemHoverInputMode.HoveredItemChanged += (sender, args) => {
-        var highlightManager = graphControl.HighlightIndicatorManager;
-        highlightManager.ClearHighlights();
+        var highlights = graphControl.Highlights;
+        highlights.Clear();
         var item = args.Item;
         if (item != null) {
-          highlightManager.AddHighlight(item);
+          highlights.Add(item);
           if (item is IEdge) {
             foreach (var label in ((IEdge) item).Labels) {
-              highlightManager.AddHighlight(label);
+              highlights.Add(label);
             }
           } else {
-            highlightManager.AddHighlight(((ILabel) item).Owner);
+            highlights.Add(((ILabel) item).Owner);
           }
         }
       };
@@ -189,6 +183,7 @@ namespace SankeyLayout
     }
 
     #region Sample Graph
+
     private void CreateSampleGraph() {
       var blackParty = CustomTag.NewNodeTag(0, 0, 0);
       var blueParty = CustomTag.NewNodeTag(0x24, 0x22, 0x65);
@@ -199,41 +194,41 @@ namespace SankeyLayout
       var nonVoters = CustomTag.NewNodeTag(0x42, 0x81, 0xA4);
 
       var graph = graphControl.Graph;
-      var n0 = graph.CreateNode(new RectD(0, 0, 30, 30), tag: blackParty);
+      var n0 = graph.CreateNode(new RectD(0, 0, 30, 30), tag : blackParty);
       graph.AddLabel(n0, "Black Party");
-      var n1 = graph.CreateNode(new RectD(0, 100, 30, 30), tag: redParty);
+      var n1 = graph.CreateNode(new RectD(0, 100, 30, 30), tag : redParty);
       graph.AddLabel(n1, "Red Party");
-      var n2 = graph.CreateNode(new RectD(0, 200, 30, 30), tag: yellowParty);
+      var n2 = graph.CreateNode(new RectD(0, 200, 30, 30), tag : yellowParty);
       graph.AddLabel(n2, "Yellow Party");
-      var n3 = graph.CreateNode(new RectD(0, 300, 30, 30), tag: greenParty);
+      var n3 = graph.CreateNode(new RectD(0, 300, 30, 30), tag : greenParty);
       graph.AddLabel(n3, "Green Party");
-      var n4 = graph.CreateNode(new RectD(0, 400, 30, 30), tag: purpleParty);
+      var n4 = graph.CreateNode(new RectD(0, 400, 30, 30), tag : purpleParty);
       graph.AddLabel(n4, "Purple Party");
-      var n5 = graph.CreateNode(new RectD(100, 0, 30, 30), tag: blackParty);
+      var n5 = graph.CreateNode(new RectD(100, 0, 30, 30), tag : blackParty);
       graph.AddLabel(n5, "Black Party");
-      var n6 = graph.CreateNode(new RectD(100, 100, 30, 30), tag: redParty);
+      var n6 = graph.CreateNode(new RectD(100, 100, 30, 30), tag : redParty);
       graph.AddLabel(n6, "Red Party");
-      var n7 = graph.CreateNode(new RectD(100, 200, 30, 30), tag: yellowParty);
+      var n7 = graph.CreateNode(new RectD(100, 200, 30, 30), tag : yellowParty);
       graph.AddLabel(n7, "Yellow Party");
-      var n8 = graph.CreateNode(new RectD(100, 300, 30, 30), tag: greenParty);
+      var n8 = graph.CreateNode(new RectD(100, 300, 30, 30), tag : greenParty);
       graph.AddLabel(n8, "Green Party");
-      var n9 = graph.CreateNode(new RectD(100, 400, 30, 30), tag: purpleParty);
+      var n9 = graph.CreateNode(new RectD(100, 400, 30, 30), tag : purpleParty);
       graph.AddLabel(n9, "Purple Party");
-      var n10 = graph.CreateNode(new RectD(100, 500, 30, 30), tag: nonVoters);
+      var n10 = graph.CreateNode(new RectD(100, 500, 30, 30), tag : nonVoters);
       graph.AddLabel(n10, "Non-voter");
-      var n11 = graph.CreateNode(new RectD(200, 0, 30, 30), tag: blackParty);
+      var n11 = graph.CreateNode(new RectD(200, 0, 30, 30), tag : blackParty);
       graph.AddLabel(n11, "Black Party");
-      var n12 = graph.CreateNode(new RectD(200, 100, 30, 30), tag: redParty);
+      var n12 = graph.CreateNode(new RectD(200, 100, 30, 30), tag : redParty);
       graph.AddLabel(n12, "Red Party");
-      var n13 = graph.CreateNode(new RectD(200, 200, 30, 30), tag: yellowParty);
+      var n13 = graph.CreateNode(new RectD(200, 200, 30, 30), tag : yellowParty);
       graph.AddLabel(n13, "Yellow Party");
-      var n14 = graph.CreateNode(new RectD(200, 300, 30, 30), tag: greenParty);
+      var n14 = graph.CreateNode(new RectD(200, 300, 30, 30), tag : greenParty);
       graph.AddLabel(n14, "Green Party");
-      var n15 = graph.CreateNode(new RectD(200, 400, 30, 30), tag: purpleParty);
+      var n15 = graph.CreateNode(new RectD(200, 400, 30, 30), tag : purpleParty);
       graph.AddLabel(n15, "Purple Party");
-      var n16 = graph.CreateNode(new RectD(200, 500, 30, 30), tag: blueParty);
+      var n16 = graph.CreateNode(new RectD(200, 500, 30, 30), tag : blueParty);
       graph.AddLabel(n16, "Blue Party");
-      var n17 = graph.CreateNode(new RectD(200, 600, 30, 30), tag: nonVoters);
+      var n17 = graph.CreateNode(new RectD(200, 600, 30, 30), tag : nonVoters);
       graph.AddLabel(n17, "Non-voter");
 
       var e0 = graph.CreateEdge(n0, n5);
@@ -331,10 +326,7 @@ namespace SankeyLayout
 
       // assign node styles
       foreach (var node in graph.Nodes) {
-        graph.SetStyle(node, new ShapeNodeStyle {
-          Brush = ((CustomTag)node.Tag).brush,
-          Pen = null
-        });
+        graph.SetStyle(node, new ShapeNodeStyle { Brush = ((CustomTag) node.Tag).brush, Pen = null });
 
         foreach (var edge in graph.OutEdgesAt(node)) {
           edge.Tag = CustomTag.NewEdgeTag((CustomTag) node.Tag);
@@ -349,6 +341,7 @@ namespace SankeyLayout
       // normalize the edges' thickness and run a new layout
       NormalizeThickness();
     }
+
     #endregion
 
     private async Task RunLayout() {
@@ -357,19 +350,19 @@ namespace SankeyLayout
         return;
       }
       if (sankeyLayout == null) {
-        sankeyLayout = new Demo.yFiles.Layout.Sankey.SankeyLayout(graphControl);
+        sankeyLayout = new Demo.yFiles.Layout.Sankey.SankeyLayout();
       }
       inLayout = true;
       SetUiDisabled(true);
 
       // configure the layout algorithm
       var fromSketchMode = useDrawingAsSketch.IsChecked == true;
-      var hierarchicLayout = sankeyLayout.ConfigureHierarchicLayout(fromSketchMode);
-      var hierarchicLayoutData = sankeyLayout.CreateHierarchicLayoutData();
+      var hierarchicalLayout = sankeyLayout.ConfigureHierarchicalLayout(fromSketchMode);
+      var hierarchicalLayoutData = sankeyLayout.CreateHierarchicalLayoutData();
 
       // run the layout and animate the result
       try {
-        await graphControl.MorphLayout(hierarchicLayout, TimeSpan.FromSeconds(1), hierarchicLayoutData);
+        await graphControl.ApplyLayoutAnimated(hierarchicalLayout, TimeSpan.FromSeconds(1), hierarchicalLayoutData);
       } finally {
         SetUiDisabled(false);
         inLayout = false;
@@ -418,8 +411,7 @@ namespace SankeyLayout
           var value = Math.Max(0, double.Parse(labels[0].Text));
           var thicknessScale = (largestThickness - smallestThickness) / diff;
           edge.Tag = new CustomTag {
-              thickness = Math.Floor(smallestThickness + (value - min) * thicknessScale),
-              brush = oldTag.brush
+              thickness = Math.Floor(smallestThickness + (value - min) * thicknessScale), brush = oldTag.brush
           };
         }
         var tagUndoUnit = new TagUndoUnit("Thickness changed", "Thickness changed", oldTag, edge.Tag, edge);
@@ -431,10 +423,7 @@ namespace SankeyLayout
       // set the default style for the node labels
       var tag = ((IEdge) label.Owner).GetSourceNode().Tag;
       var brush = ((CustomTag) tag).brush;
-      graphControl.Graph.SetStyle(label, new DefaultLabelStyle
-      {
-        TextBrush = brush
-      });
+      graphControl.Graph.SetStyle(label, new LabelStyle { TextBrush = brush });
     }
 
     private async Task OnLabelChanged(ILabel label) {
@@ -464,24 +453,22 @@ namespace SankeyLayout
   }
 
   /// <summary>
-  /// A custom tag that holds style information
+  ///   A custom tag that holds style information
   /// </summary>
-  class CustomTag
+  internal class CustomTag
   {
     public double thickness;
 
     public SolidColorBrush brush;
 
     public static CustomTag NewNodeTag(byte r, byte g, byte b) {
-      return new CustomTag {
-        brush = (SolidColorBrush) new SolidColorBrush(Color.FromRgb(r, g, b)).GetAsFrozen()
-      };
+      return new CustomTag { brush = (SolidColorBrush) new SolidColorBrush(Color.FromRgb(r, g, b)).GetAsFrozen() };
     }
 
     public static CustomTag NewEdgeTag(CustomTag prototype) {
       return new CustomTag {
-        thickness = 1,
-        brush = (SolidColorBrush) new SolidColorBrush { Color = prototype.brush.Color, Opacity = 0.5 }.GetAsFrozen()
+          thickness = 1,
+          brush = (SolidColorBrush) new SolidColorBrush { Color = prototype.brush.Color, Opacity = 0.5 }.GetAsFrozen()
       };
     }
   }

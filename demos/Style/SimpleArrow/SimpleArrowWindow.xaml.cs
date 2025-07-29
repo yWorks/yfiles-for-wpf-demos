@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -28,7 +28,6 @@
  ***************************************************************************/
 
 using System.Windows;
-using System.Windows.Ink;
 using System.Windows.Markup;
 using System.Windows.Media;
 using Demo.yFiles.Toolkit;
@@ -88,10 +87,9 @@ namespace Demo.yFiles.Graph.SimpleArrow
       for (var i = 0; i < heights.Length; i++) {
         var height = heights[i];
         var width = edgeThicknesses[i];
-        var arrow = new TaperedArrow() { Width = width, Length = 20, Fill = edgeColor };
+        var arrow = new TaperedArrow { Width = width, Length = 20, Fill = edgeColor };
         Graph.CreateEdge(node1, node2,
-            new BridgeEdgeStyle()
-            {
+            new BridgeEdgeStyle {
               Pen = (Pen) new Pen(edgeColor, width).GetAsFrozen(),
               Height = height,
               FanLength = 0.4,
@@ -115,7 +113,7 @@ namespace Demo.yFiles.Graph.SimpleArrow
     }
 
     /// <summary>
-    /// Gets the currently registered IGraph instance from the GraphControl.
+    /// Gets the currently registered <see cref="IGraph"/> instance from the GraphControl.
     /// </summary>
     public IGraph Graph {
       get { return graphControl.Graph; }

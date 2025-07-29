@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--Created by yFiles WPF 2.1-->
-<graphml xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/3.0" xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/3.0/xaml" xmlns:y="http://www.yworks.com/xml/yfiles-common/3.0" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml.wpf/2.0/ygraphml.xsd " xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://graphml.graphdrawing.org/xmlns">
+<graphml xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/3.0" xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/4.0/xaml" xmlns:y="http://www.yworks.com/xml/yfiles-common/3.0"  xmlns:yx="http://www.yworks.com/xml/yfiles-common/4.0" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml.wpf/2.0/ygraphml.xsd " xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://graphml.graphdrawing.org/xmlns">
   <key id="d3" for="node" attr.name="NodeLabels" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeLabels" />
   <key id="d4" for="node" attr.name="NodeGeometry" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeGeometry" />
   <key id="d5" for="node" attr.name="NodeStyle" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeStyle" />
@@ -20,9 +20,13 @@
   <data key="d13">
     <y:SharedData>
       <yed:VectorNodeStyle xmlns:yed="http://www.yworks.com/yfiles-wpf/2.1/demos/GraphEditor/Styles" x:Key="1" TemplateKey="Movies" />
-      <y:SandwichParameter x:Key="2" Position="South"/>
-      <ywpf:DefaultLabelStyle x:Key="3" Typeface="Arial,Normal,Normal,Normal" TextBrush="Black"/>
-      <ywpf:PolylineEdgeStyle x:Key="4" TargetArrow="Default"/>
+      <yx:ExteriorNodeLabelModelParameter x:Key="2" Position="Bottom"/>
+      <ywpf:LabelStyle x:Key="3" Typeface="Arial,Normal,Normal,Normal" TextBrush="Black"/>
+      <ywpf:PolylineEdgeStyle x:Key="4">
+        <ywpf:PolylineEdgeStyle.TargetArrow>
+         <ywpf:Arrow Type="Stealth"/>
+        </ywpf:PolylineEdgeStyle.TargetArrow>
+      </ywpf:PolylineEdgeStyle>
     </y:SharedData>
   </data>
   <graph id="G" edgedefault="directed">

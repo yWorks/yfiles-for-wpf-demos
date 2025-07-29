@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -27,7 +27,6 @@
  ** 
  ***************************************************************************/
 
-using System;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Shapes;
@@ -64,13 +63,13 @@ namespace Demo.yFiles.Graph.SimpleCustomStyle
                             };
 
       // and arrange it
-      visual.SetCanvasArrangeRect(new Rect(GetLocation(port) + new PointD(-Width * 0.5, -Height * 0.5), new SizeD(Width, Height)));
+      visual.SetCanvasArrangeRect(new Rect((GetLocation(port) + new PointD(-Width * 0.5, -Height * 0.5)).ToPoint(), new Size(Width, Height)));
       return visual;
     }
 
     protected override Ellipse UpdateVisual(IRenderContext context, Ellipse oldVisual, IPort port) {
       // arrange the old ellipse
-      oldVisual.SetCanvasArrangeRect(new Rect(GetLocation(port) + new PointD(-Width * 0.5, -Height * 0.5), new SizeD(Width, Height)));
+      oldVisual.SetCanvasArrangeRect(new Rect((GetLocation(port) + new PointD(-Width * 0.5, -Height * 0.5)).ToPoint(), new Size(Width, Height)));
       return oldVisual;
     }
 

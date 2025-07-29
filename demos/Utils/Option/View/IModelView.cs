@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -28,66 +28,66 @@
  ***************************************************************************/
 
 using Demo.yFiles.Option.Handler;
-using yWorks.Graph;
+using yWorks.Utils;
 
 namespace Demo.yFiles.Option.View
 {
   /// <summary>
-  /// Interface for classes that present a specialized view on an OptionHandler.
+  ///   Interface for classes that present a specialized view on an OptionHandler.
   /// </summary>
-  /// <remarks>Each view is associatiated with one OptionHandler, whereas a single OptionHandler
-  /// can have many views on it.</remarks>
+  /// <remarks>
+  ///   Each view is associated with one OptionHandler, whereas a single OptionHandler
+  ///   can have many views on it.
+  /// </remarks>
   public interface IModelView : ILookup
   {
     /// <summary>
-    /// Adopt values from the underlying OptionHandler.
+    ///   Adopt values from the underlying OptionHandler.
     /// </summary>
     void AdoptValues();
 
     /// <summary>
-    /// Propagate all values to the underlying OptionHandler
+    ///   Propagate all values to the underlying OptionHandler
     /// </summary>
     void CommitValues();
 
     /// <summary>
-    /// Enable or disable automatic value adoption from the underlying OptionHandler
+    ///   Enable or disable automatic value adoption from the underlying OptionHandler
     /// </summary>
     bool IsAutoAdopt { get; set; }
 
     /// <summary>
-    /// Enable or disable automatic value propagation to the underlying OptionHandler
+    ///   Enable or disable automatic value propagation to the underlying OptionHandler
     /// </summary>
     bool IsAutoCommit { get; set; }
 
     /// <summary>
-    /// Return the <see cref="OptionHandler"/> instance where this view is currently registered.
+    ///   Return the <see cref="OptionHandler"/> instance where this view is currently registered.
     /// </summary>
-    OptionHandler Handler {
-      get;
-    }
+    OptionHandler Handler { get; }
 
     /// <summary>
-    /// Get the structural item that corresponds to <paramref name="item"/> in the original
-    /// option handler.
+    ///   Get the structural item that corresponds to <paramref name="item"/> in the original
+    ///   option handler.
     /// </summary>
     /// <param name="item">The item in the original option handler.</param>
     /// <returns>the structural item that corresponds to <paramref name="item"/></returns>
     IOptionItem GetViewItem(IOptionItem item);
 
     /// <summary>
-    /// This method resets all values of a view to a backup value.
+    ///   This method resets all values of a view to a backup value.
     /// </summary>
     /// <remarks>
-    /// Which value will be used as backup value depends on the specific view implementation.
+    ///   Which value will be used as backup value depends on the specific view implementation.
     /// </remarks>
     void ResetValues();
 
 
     /// <summary>
-    /// This method resets the value of the provided item to a backup value.
+    ///   This method resets the value of the provided item to a backup value.
     /// </summary>
     /// <remarks>
-    /// Which value will be used as backup value depends on the specific view implementation.
+    ///   Which value will be used as backup value depends on the specific view implementation.
     /// </remarks>
     void ResetValue(IOptionItem item);
   }

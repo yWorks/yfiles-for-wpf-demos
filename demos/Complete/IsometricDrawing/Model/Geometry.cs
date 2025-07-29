@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -35,17 +35,17 @@ namespace Demo.yFiles.Complete.IsometricDrawing.Model
   public class Geometry
   {
     /// <summary>
-    /// Gets or sets the value an item extends along the x-axe.
+    /// Gets or sets the value an item extends along the x-axis.
     /// </summary>
     public double Width { get; set; }
 
     /// <summary>
-    /// Gets or sets the value an item protrudes out of the x-y-plane.
+    /// Gets or sets the value an item protrudes out of the x-y plane.
     /// </summary>
     public double Height { get; set; }
 
     /// <summary>
-    /// Gets or sets the value an item extends along the y-axe.
+    /// Gets or sets the value an item extends along the y-axis.
     /// </summary>
     public double Depth { get; set; }
   }

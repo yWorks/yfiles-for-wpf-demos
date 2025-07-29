@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -37,79 +37,80 @@ using yWorks.Controls.Input;
 using yWorks.Geometry;
 using yWorks.Graph;
 using yWorks.Graph.Styles;
+using yWorks.Utils;
 
-namespace Demo.yFiles.Graph.Bpmn.Styles {
-
+namespace Demo.yFiles.Graph.Bpmn.Styles
+{
   /// <summary>
-  /// An <see cref="IPortStyle"/> implementation representing an Event attached to an Activity boundary according to the BPMN.
+  ///   An <see cref="IPortStyle"/> implementation representing an Event attached to an Activity boundary according to the
+  ///   BPMN.
   /// </summary>
   [Obfuscation(StripAfterObfuscation = false, Exclude = true, ApplyToMembers = false)]
-  public class EventPortStyle : IPortStyle {
-    private readonly IPortStyleRenderer renderer;
-
+  public sealed class EventPortStyle : IPortStyle
+  {
     #region Properties
 
     /// <summary>
-    /// Gets or sets the event type for this style.
+    ///   Gets or sets the event type for this style.
     /// </summary>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     [DefaultValue(EventType.Compensation)]
     public EventType Type {
-      get { return EventNodeStyle.Type; }
-      set { EventNodeStyle.Type = value; }
+      get => EventNodeStyle.Type;
+      set => EventNodeStyle.Type = value;
     }
 
     /// <summary>
-    /// Gets or sets the event characteristic for this style.
+    ///   Gets or sets the event characteristic for this style.
     /// </summary>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     [DefaultValue(EventCharacteristic.BoundaryInterrupting)]
     public EventCharacteristic Characteristic {
-      get { return EventNodeStyle.Characteristic; }
-      set { EventNodeStyle.Characteristic = value; }
+      get => EventNodeStyle.Characteristic;
+      set => EventNodeStyle.Characteristic = value;
     }
 
     /// <summary>
-    /// Gets or sets the size the port style is rendered with.
+    ///   Gets or sets the size the port style is rendered with.
     /// </summary>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     [DefaultValue(typeof(SizeD), "20,20")]
     public SizeD RenderSize {
-      get { return adapter.RenderSize; }
-      set { adapter.RenderSize = value; }
+      get => adapter.RenderSize;
+      set => adapter.RenderSize = value;
     }
 
     /// <summary>
-    /// Gets or sets the background color of the event.
+    ///   Gets or sets the background color of the event.
     /// </summary>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     [DefaultValue(typeof(BpmnConstants), "DefaultEventBackground")]
     public Brush Background {
-      get { return EventNodeStyle.Background; }
-      set { EventNodeStyle.Background = value; }
+      get => EventNodeStyle.Background;
+      set => EventNodeStyle.Background = value;
     }
 
     /// <summary>
-    /// Gets or sets the outline color of the event.
+    ///   Gets or sets the outline color of the event.
     /// </summary>
     /// <remarks>
-    /// If this is set to <see langword="null"/>, the outline color is automatic, based on the <see cref="Characteristic"/>.
+    ///   If this is set to <see langword="null"/>, the outline color is automatic, based on the <see cref="Characteristic"/>.
     /// </remarks>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     [DefaultValue(typeof(BpmnConstants), "DefaultEventOutline")]
     public Brush Outline {
-      get { return EventNodeStyle.Outline; }
-      set { EventNodeStyle.Outline = value; }
+      get => EventNodeStyle.Outline;
+      set => EventNodeStyle.Outline = value;
     }
 
     /// <summary>
-    /// Gets or sets the primary color for icons and markers.
+    ///   Gets or sets the primary color for icons and markers.
     /// </summary>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     [DefaultValue(typeof(BpmnConstants), "DefaultIconColor")]
     public Brush IconColor {
-      get { return EventNodeStyle.IconColor; }
-      set { EventNodeStyle.IconColor = value; }
+      get => EventNodeStyle.IconColor;
+      set => EventNodeStyle.IconColor = value;
     }
 
     #endregion
@@ -117,22 +118,16 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
     private readonly NodeStylePortStyleAdapter adapter;
 
     /// <summary>
-    /// Creates a new instance.
+    ///   Creates a new instance.
     /// </summary>
     public EventPortStyle() {
-      adapter = new NodeStylePortStyleAdapter(new EventNodeStyle
-      {
-          Characteristic = EventCharacteristic.BoundaryInterrupting,
-          Type = EventType.Compensation
+      adapter = new NodeStylePortStyleAdapter(new EventNodeStyle {
+          Characteristic = EventCharacteristic.BoundaryInterrupting, Type = EventType.Compensation
       }) { RenderSize = BpmnConstants.EventPortSize };
-      renderer = EventPortStyleRenderer.Instance;
+      Renderer = EventPortStyleRenderer.Instance;
     }
 
-    internal EventNodeStyle EventNodeStyle {
-      get {
-        return (EventNodeStyle) adapter.NodeStyle;
-      }
-    }
+    internal EventNodeStyle EventNodeStyle => (EventNodeStyle) adapter.NodeStyle;
 
     /// <inheritdoc/>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
@@ -142,52 +137,57 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
 
     /// <inheritdoc/>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
-    public IPortStyleRenderer Renderer {
-      get { return renderer; }
-    }
+    public IPortStyleRenderer Renderer { get; }
 
 
     /// <summary>
-    /// Renderer used by <see cref="EventPortStyle"/>.
+    ///   Renderer used by <see cref="EventPortStyle"/>.
     /// </summary>
-    private class EventPortStyleRenderer : IPortStyleRenderer, ILookup {
-      public static readonly EventPortStyleRenderer Instance = new EventPortStyleRenderer();
+    private sealed class EventPortStyleRenderer : IPortStyleRenderer, ILookup
+    {
+      public static readonly EventPortStyleRenderer Instance = new();
 
       private ILookup fallbackLookup;
 
       /// <inheritdoc/>
       public IVisualCreator GetVisualCreator(IPort item, IPortStyle style) {
-        var adapter = ((EventPortStyle)style).adapter;
+        var adapter = ((EventPortStyle) style).adapter;
         return adapter.Renderer.GetVisualCreator(item, adapter);
       }
 
       /// <inheritdoc/>
       public IBoundsProvider GetBoundsProvider(IPort item, IPortStyle style) {
-        var adapter = ((EventPortStyle)style).adapter;
+        var adapter = ((EventPortStyle) style).adapter;
         return adapter.Renderer.GetBoundsProvider(item, adapter);
       }
 
       /// <inheritdoc/>
       public IVisibilityTestable GetVisibilityTestable(IPort item, IPortStyle style) {
-        var adapter = ((EventPortStyle)style).adapter;
+        var adapter = ((EventPortStyle) style).adapter;
         return adapter.Renderer.GetVisibilityTestable(item, adapter);
       }
 
       /// <inheritdoc/>
       public IHitTestable GetHitTestable(IPort item, IPortStyle style) {
-        var adapter = ((EventPortStyle)style).adapter;
+        var adapter = ((EventPortStyle) style).adapter;
         return adapter.Renderer.GetHitTestable(item, adapter);
       }
 
       /// <inheritdoc/>
       public IMarqueeTestable GetMarqueeTestable(IPort item, IPortStyle style) {
-        var adapter = ((EventPortStyle)style).adapter;
+        var adapter = ((EventPortStyle) style).adapter;
         return adapter.Renderer.GetMarqueeTestable(item, adapter);
       }
 
       /// <inheritdoc/>
+      public ILassoTestable GetLassoTestable(IPort item, IPortStyle style) {
+        var adapter = ((EventPortStyle) style).adapter;
+        return adapter.Renderer.GetLassoTestable(item, adapter);
+      }
+
+      /// <inheritdoc/>
       public ILookup GetContext(IPort item, IPortStyle style) {
-        var adapter = ((EventPortStyle)style).adapter;
+        var adapter = ((EventPortStyle) style).adapter;
         fallbackLookup = adapter.Renderer.GetContext(item, adapter);
         return this;
       }
@@ -202,10 +202,11 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
     }
 
     /// <summary>
-    /// IEdgePathCropper instance that crops the edge at the circular port bounds.
+    ///   IEdgePathCropper instance that crops the edge at the circular port bounds.
     /// </summary>
-    private sealed class EventPortEdgePathCropper : DefaultEdgePathCropper {
-      public static readonly EventPortEdgePathCropper CalculatorInstance = new EventPortEdgePathCropper();
+    private sealed class EventPortEdgePathCropper : EdgePathCropper
+    {
+      public static readonly EventPortEdgePathCropper CalculatorInstance = new();
 
       private EventPortEdgePathCropper() {
         CropAtPort = true;

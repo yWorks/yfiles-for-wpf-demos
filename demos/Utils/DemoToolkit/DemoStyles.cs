@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -39,30 +39,49 @@ namespace Demo.yFiles.Toolkit
   public static class DemoStyles
   {
     /// <summary>
-    /// Initializes graph defaults with nicely configured built-in yFiles styles.
+    ///   Initializes graph defaults with nicely configured built-in yFiles styles.
     /// </summary>
-    /// <param name="graph">The graph on which the default styles and style-related setting are set.</param>
-    /// <param name="nodeTheme">Optional color set names for demo node styles. The default is <see cref="Themes.PaletteOrange"/>.</param>
+    /// <param name="graph">The graph on which the default styles and style-related settings are set.</param>
+    /// <param name="nodeTheme">
+    ///   Optional color set names for demo node styles. The default is
+    ///   <see cref="Themes.PaletteOrange"/>.
+    /// </param>
     /// <param name="nodeLabelTheme">Optional color set names for demo node label styles. The default is the node theme.</param>
-    /// <param name="edgeTheme">Optional color set names for demo edge styles. The default is <see cref="Themes.PaletteOrange"/>.</param>
+    /// <param name="edgeTheme">
+    ///   Optional color set names for demo edge styles. The default is
+    ///   <see cref="Themes.PaletteOrange"/>.
+    /// </param>
     /// <param name="edgeLabelTheme">Optional color set names for demo edge label styles. The default is the edge theme.</param>
-    /// <param name="groupTheme">Optional color set names for demo group node styles. The default is <see cref="Themes.Palette12"/>.</param>
-    /// <param name="groupLabelTheme">Optional color set names for demo group node label styles. The default is group node theme.</param>
-    /// <param name="foldingEnabled">whether to use collapsable group node style.</param>
-    /// <param name="extraCropLength">the extra crop length for the <see cref="DefaultEdgePathCropper"/>.</param>
-    /// <param name="shape">the optional shape of the node style, if <see langword="null"/> a <see cref="RectangleNodeStyle"/> is used.</param>
+    /// <param name="groupTheme">
+    ///   Optional color set names for demo group node styles. The default is
+    ///   <see cref="Themes.Palette12"/>.
+    /// </param>
+    /// <param name="groupLabelTheme">
+    ///   Optional color set names for demo group node label styles. The default is group node
+    ///   theme.
+    /// </param>
+    /// <param name="foldingEnabled">Whether to use collapsible group node style.</param>
+    /// <param name="extraCropLength">The extra crop length for the <see cref="EdgePathCropper"/>.</param>
+    /// <param name="shape">
+    ///   The optional shape of the node style, if <see langword="null"/> a <see cref="RectangleNodeStyle"/>
+    ///   is used.
+    /// </param>
+    /// <param name="orthogonalEdgeEditing">
+    ///   Whether orthogonal edge editing should be enabled for the edge style
+    ///   if the style supports it.
+    /// </param>
     public static void InitDemoStyles(
-      IGraph graph,
-      Palette nodeTheme = null,
-      Palette nodeLabelTheme = null,
-      Palette edgeTheme = null,
-      Palette edgeLabelTheme = null,
-      Palette groupTheme = null,
-      Palette groupLabelTheme = null,
-      bool foldingEnabled = false,
-      double extraCropLength = 2.0,
-      ShapeNodeShape? shape = null
-    ) {
+        IGraph graph,
+        Palette nodeTheme = null,
+        Palette nodeLabelTheme = null,
+        Palette edgeTheme = null,
+        Palette edgeLabelTheme = null,
+        Palette groupTheme = null,
+        Palette groupLabelTheme = null,
+        bool foldingEnabled = false,
+        double extraCropLength = 2.0,
+        ShapeNodeShape? shape = null,
+        bool orthogonalEdgeEditing = false) {
       nodeTheme = nodeTheme ?? Themes.PaletteOrange;
       nodeLabelTheme = nodeLabelTheme ?? nodeTheme;
       edgeTheme = edgeTheme ?? Themes.PaletteOrange;
@@ -71,122 +90,127 @@ namespace Demo.yFiles.Toolkit
       groupLabelTheme = groupLabelTheme ?? groupTheme;
 
       graph.NodeDefaults.Style = shape == null
-          ? (INodeStyle) CreateDemoNodeStyle(nodeTheme)
+          ? CreateDemoNodeStyle(nodeTheme)
           : CreateDemoShapeNodeStyle(shape.Value, nodeTheme);
       graph.NodeDefaults.Labels.Style = CreateDemoNodeLabelStyle(nodeLabelTheme);
 
       graph.GroupNodeDefaults.Style = CreateDemoGroupStyle(groupTheme, foldingEnabled);
       graph.GroupNodeDefaults.Labels.Style = CreateDemoGroupLabelStyle(groupLabelTheme);
-      graph.GroupNodeDefaults.Labels.LayoutParameter =
-          new GroupNodeLabelModel().CreateTabBackgroundParameter();
+      graph.GroupNodeDefaults.Labels.LayoutParameter = new GroupNodeLabelModel().CreateTabBackgroundParameter();
 
-      graph.EdgeDefaults.Style = CreateDemoEdgeStyle(edgeTheme);
-      graph.GetDecorator().PortDecorator.EdgePathCropperDecorator.SetImplementation(
-        new DefaultEdgePathCropper { CropAtPort = false, ExtraCropLength = extraCropLength });
+      graph.EdgeDefaults.Style = CreateDemoEdgeStyle(edgeTheme, extraCropLength : extraCropLength,
+          orthogonalEditing : orthogonalEdgeEditing);
       graph.EdgeDefaults.Labels.Style = CreateDemoEdgeLabelStyle(edgeLabelTheme);
     }
 
     /// <summary>
-    /// Creates a new rectangular node style whose colors match the given palette.
+    ///   Creates a new rectangular node style whose colors match the given palette.
     /// </summary>
     public static RectangleNodeStyle CreateDemoNodeStyle(Palette palette = null) {
       palette = palette ?? Themes.PaletteOrange;
       return new RectangleNodeStyle {
-        Brush = palette.Fill,
-        Pen = (Pen) new Pen(palette.Stroke, 1.5).GetAsFrozen(),
-        CornerStyle = CornerStyle.Round,
-        CornerSize = 3.5
+          Brush = palette.Fill,
+          Pen = (Pen) new Pen(palette.Stroke, 1.5).GetAsFrozen(),
+          CornerStyle = CornerStyle.Round,
+          CornerSize = 3.5
       };
     }
 
     /// <summary>
-    /// Creates a new node style with the given shape whose colors match the given palette.
+    ///   Creates a new node style with the given shape whose colors match the given palette.
     /// </summary>
-    public static ShapeNodeStyle CreateDemoShapeNodeStyle( ShapeNodeShape shape, Palette palette = null ) {
+    public static ShapeNodeStyle CreateDemoShapeNodeStyle(ShapeNodeShape shape, Palette palette = null) {
       palette = palette ?? Themes.PaletteOrange;
       return new ShapeNodeStyle {
-        Shape = shape,
-        Brush = palette.Fill,
-        Pen = (Pen) new Pen(palette.Stroke, 1.5).GetAsFrozen()
+          Shape = shape, Brush = palette.Fill, Pen = (Pen) new Pen(palette.Stroke, 1.5).GetAsFrozen()
       };
     }
 
     /// <summary>
-    /// Creates a new polyline edge style whose colors match the given palette.
+    ///   Creates a new polyline edge style whose colors match the given palette.
     /// </summary>
-    public static PolylineEdgeStyle CreateDemoEdgeStyle(Palette palette = null, bool showTargetArrow = true) {
+    public static PolylineEdgeStyle CreateDemoEdgeStyle(
+        Palette palette = null,
+        bool showTargetArrow = true,
+        double extraCropLength = 2,
+        bool cropAtPorts = false,
+        bool orthogonalEditing = false) {
       palette = palette ?? Themes.PaletteOrange;
       return new PolylineEdgeStyle {
-        Pen = (Pen) new Pen(palette.Stroke, 1.5).GetAsFrozen(),
-        TargetArrow = showTargetArrow
-          ? new Arrow() { Brush = palette.Stroke, Type = ArrowType.Triangle }
-          : Arrows.None
+          Pen = (Pen) new Pen(palette.Stroke, 1.5).GetAsFrozen(),
+          SourceArrow = new Arrow(type : ArrowType.None, cropLength : extraCropLength),
+          TargetArrow =
+              showTargetArrow
+                  ? new Arrow(type : ArrowType.Triangle, brush : palette.Stroke, cropLength : extraCropLength,
+                      cropAtPort : cropAtPorts)
+                  : Arrow.None,
+          OrthogonalEditing = orthogonalEditing
       };
     }
 
     /// <summary>
-    /// Creates a new node label style whose colors match the given palette.
+    ///   Creates a new node label style whose colors match the given palette.
     /// </summary>
-    public static DefaultLabelStyle CreateDemoNodeLabelStyle(Palette palette = null) {
+    public static LabelStyle CreateDemoNodeLabelStyle(Palette palette = null) {
       palette = palette ?? Themes.PaletteOrange;
-      var labelStyle = new DefaultLabelStyle();
+      var labelStyle = new LabelStyle();
       labelStyle.Shape = LabelShape.RoundRectangle;
       labelStyle.BackgroundBrush = palette.NodeLabelFill;
       labelStyle.TextBrush = palette.Text;
       labelStyle.VerticalTextAlignment = VerticalAlignment.Center;
       labelStyle.TextAlignment = TextAlignment.Center;
-      labelStyle.Insets = new InsetsD(4, 2, 4, 1);
+      labelStyle.Padding = new InsetsD(4, 2, 4, 1);
       return labelStyle;
     }
 
     /// <summary>
-    /// Creates a new edge label style whose colors match the given palette.
+    ///   Creates a new edge label style whose colors match the given palette.
     /// </summary>
-    public static DefaultLabelStyle CreateDemoEdgeLabelStyle(Palette palette = null) {
+    public static LabelStyle CreateDemoEdgeLabelStyle(Palette palette = null) {
       palette = palette ?? Themes.PaletteOrange;
-      var labelStyle = new DefaultLabelStyle();
+      var labelStyle = new LabelStyle();
       labelStyle.Shape = LabelShape.RoundRectangle;
       labelStyle.BackgroundBrush = palette.EdgeLabelFill;
       labelStyle.TextBrush = palette.Text;
       labelStyle.VerticalTextAlignment = VerticalAlignment.Center;
       labelStyle.TextAlignment = TextAlignment.Center;
-      labelStyle.Insets = new InsetsD(4, 2, 4, 1);
+      labelStyle.Padding = new InsetsD(4, 2, 4, 1);
       return labelStyle;
     }
 
     /// <summary>
-    /// Creates a new group label style whose colors match the given palette.
+    ///   Creates a new group label style whose colors match the given palette.
     /// </summary>
     public static ILabelStyle CreateDemoGroupLabelStyle(Palette palette = null) {
       palette = palette ?? Themes.Palette12;
-      return new DefaultLabelStyle {
-        VerticalTextAlignment = VerticalAlignment.Center,
-        TextAlignment = TextAlignment.Left,
-        ClipText = false,
-        TextWrapping = TextWrapping.Wrap,
-        TextBrush = palette.NodeLabelFill
+      return new LabelStyle {
+          VerticalTextAlignment = VerticalAlignment.Center,
+          TextAlignment = TextAlignment.Left,
+          ClipText = false,
+          TextWrapping = TextWrapping.Wrap,
+          TextBrush = palette.NodeLabelFill
       };
     }
 
     /// <summary>
-    /// Creates a new group node style whose colors match the given palette.
+    ///   Creates a new group node style whose colors match the given palette.
     /// </summary>
     public static GroupNodeStyle CreateDemoGroupStyle(Palette palette = null, bool foldingEnabled = false) {
       palette = palette ?? Themes.Palette12;
       return new GroupNodeStyle {
-        GroupIcon = foldingEnabled ? GroupNodeStyleIconType.Minus : GroupNodeStyleIconType.None,
-        FolderIcon = GroupNodeStyleIconType.Plus,
-        TabBrush = foldingEnabled ? palette.NodeLabelFill : palette.Fill,
-        Pen = (Pen) new Pen(palette.Fill, 2.0).GetAsFrozen(),
-        TabBackgroundBrush = foldingEnabled ? palette.Fill : null,
-        TabPosition = foldingEnabled ? GroupNodeStyleTabPosition.TopTrailing : GroupNodeStyleTabPosition.Top,
-        TabWidth = 30.0,
-        TabHeight = 20.0,
-        TabInset = 3.0,
-        IconOffset = 2.0,
-        IconSize = 14.0,
-        IconForegroundBrush = palette.Fill,
-        HitTransparentContentArea = true
+          GroupIcon = foldingEnabled ? GroupNodeStyleIconType.Minus : GroupNodeStyleIconType.None,
+          FolderIcon = GroupNodeStyleIconType.Plus,
+          TabBrush = foldingEnabled ? palette.NodeLabelFill : palette.Fill,
+          Pen = (Pen) new Pen(palette.Fill, 2.0).GetAsFrozen(),
+          TabBackgroundBrush = foldingEnabled ? palette.Fill : null,
+          TabPosition = foldingEnabled ? GroupNodeStyleTabPosition.TopTrailing : GroupNodeStyleTabPosition.Top,
+          TabWidth = 30.0,
+          TabHeight = 20.0,
+          TabPadding = 3.0,
+          IconOffset = 2.0,
+          IconSize = 14.0,
+          IconForegroundBrush = palette.Fill,
+          HitTransparentContentArea = true
       };
     }
   }

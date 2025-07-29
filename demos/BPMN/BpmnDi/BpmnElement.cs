@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -44,7 +44,7 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
     /// List of all children of this element
     /// </summary>
     public List<BpmnElement> Children { get; set; }
-    
+
     /// <summary>
     /// List of all <see cref="XNode"/> that were children of this element but have a different namespace then
     /// <see cref="BpmnNamespaceManager.Bpmn"/> or <see cref="BpmnNamespaceManager.BpmnDi"/>.
@@ -140,7 +140,7 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
       ForeignChildren = new List<XNode>();
       Attributes = new Dictionary<string, string>();
 
-      //Initialize blank Label
+      // Initialize blank Label
       Label = "";
 
       // Parsing all Attributes
@@ -199,7 +199,6 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
     /// Returns true, if a child with the given name exists
     /// </summary>
     /// <param name="name">The name</param>
-    /// <returns></returns>
     public bool HasChild(string name) {
       foreach (var child in Children) {
         if (child.Name == name) {
@@ -214,7 +213,6 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
     /// </summary>
     /// <param name="name">The name</param>
     /// <param name="attribute">The Attribute</param>
-    /// <returns></returns>
     public string GetChildAttribute(string name, string attribute) {
       string value = null;
       foreach (var child in Children) {
@@ -229,7 +227,6 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
     /// Returns the first child with the given name
     /// </summary>
     /// <param name="name">The name</param>
-    /// <returns></returns>
     public BpmnElement GetChild(string name) {
       foreach (var child in Children) {
         if (child.Name == name) {
@@ -243,7 +240,6 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
     /// Returns all children with the given name
     /// </summary>
     /// <param name="name">The name</param>
-    /// <returns></returns>
     public IEnumerable<BpmnElement> GetChildren(string name) {
       var retChildren = new List<BpmnElement>();
       foreach (var child in Children) {
@@ -312,7 +308,6 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
     /// <summary>
     /// Returns the Loop Characteristics of this Element
     /// </summary>
-    /// <returns></returns>
     public LoopCharacteristic GetLoopCharacteristics() {
       if (HasChild(BpmnDiConstants.MultiInstanceLoopCharacteristicsElement)) {
         if (GetChildAttribute(BpmnDiConstants.MultiInstanceLoopCharacteristicsElement, BpmnDiConstants.IsSequentialAttribute) == "true") {

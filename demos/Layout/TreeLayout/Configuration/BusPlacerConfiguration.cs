@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -32,16 +32,25 @@ using yWorks.Layout.Tree;
 namespace Demo.yFiles.Layout.Tree.Configuration
 {
   /// <summary>
-  /// Configuration handler for <see cref="BusNodePlacer"/>
+  /// Configuration handler for <see cref="BusSubtreePlacer"/>
   /// </summary>
-  public sealed class BusPlacerConfiguration : RotatableNodePlacerConfigurationBase<BusNodePlacer>
+  public sealed class BusPlacerConfiguration : RotatableSubtreePlacerConfigurationBase<BusSubtreePlacer>
   {
     public BusPlacerConfiguration() {
-      AdoptSettings(new BusNodePlacer());
+      AdoptSettings(new BusSubtreePlacer());
     }
 
-    protected override BusNodePlacer CreatePlacerCore() {
-      return new BusNodePlacer(ModificationMatrix);
+    protected override BusSubtreePlacer CreatePlacerCore() {
+      return new BusSubtreePlacer { Transformation = Transform };
+    }
+
+    public override void AdoptSettings(BusSubtreePlacer subtreePlacer) {
+      Spacing = subtreePlacer.Spacing;
+      Transform = subtreePlacer.Transformation;
+    }
+
+    protected override void ConfigurePlacer(BusSubtreePlacer placer) {
+      placer.Spacing = Spacing;
     }
   }
 }

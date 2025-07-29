@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -31,21 +31,22 @@ using yWorks.Controls;
 using yWorks.Controls.Input;
 using yWorks.Graph;
 using yWorks.Graph.Styles;
+using yWorks.Utils;
 
 namespace Demo.yFiles.Graph.LargeGraphs.Styles
 {
   /// <summary>
-  ///   Simple <see cref="IEdgeStyle" /> wrapper to simplify changing every edge's style.
+  ///   Simple <see cref="IEdgeStyle"/> wrapper to simplify changing every edge's style.
   /// </summary>
   /// <remarks>
-  ///   This class also implements <see cref="IEdgeStyleRenderer" /> because renderer instances are tightly integrated with
+  ///   This class also implements <see cref="IEdgeStyleRenderer"/> because renderer instances are tightly integrated with
   ///   their styles and we cannot simply return another style's renderer from here.
   /// </remarks>
   public class WrapperEdgeStyle : IEdgeStyle, IEdgeStyleRenderer
   {
     /// <summary>
-    ///   Initializes a new instance of the <see cref="WrapperEdgeStyle" /> class, wrapping the given
-    ///   <see cref="IEdgeStyle" />.
+    ///   Initializes a new instance of the <see cref="WrapperEdgeStyle"/> class, wrapping the given
+    ///   <see cref="IEdgeStyle"/>.
     /// </summary>
     /// <param name="style">The style to wrap.</param>
     public WrapperEdgeStyle(IEdgeStyle style) {
@@ -59,51 +60,54 @@ namespace Demo.yFiles.Graph.LargeGraphs.Styles
 
     #region IEdgeStyle
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     public object Clone() {
       return MemberwiseClone();
     }
 
-    /// <inheritdoc />
-    public IEdgeStyleRenderer Renderer {
-      get { return this; }
-    }
+    /// <inheritdoc/>
+    public IEdgeStyleRenderer Renderer => this;
 
     #endregion
 
     #region IEdgeStyleRenderer
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     public IVisualCreator GetVisualCreator(IEdge edge, IEdgeStyle style) {
       return Style.Renderer.GetVisualCreator(edge, Style);
     }
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     public IBoundsProvider GetBoundsProvider(IEdge edge, IEdgeStyle style) {
       return Style.Renderer.GetBoundsProvider(edge, Style);
     }
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     public IVisibilityTestable GetVisibilityTestable(IEdge edge, IEdgeStyle style) {
       return Style.Renderer.GetVisibilityTestable(edge, Style);
     }
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     public IHitTestable GetHitTestable(IEdge edge, IEdgeStyle style) {
       return Style.Renderer.GetHitTestable(edge, Style);
     }
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     public IMarqueeTestable GetMarqueeTestable(IEdge edge, IEdgeStyle style) {
       return Style.Renderer.GetMarqueeTestable(edge, Style);
     }
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
+    public ILassoTestable GetLassoTestable(IEdge edge, IEdgeStyle style) {
+      return Style.Renderer.GetLassoTestable(edge, Style);
+    }
+
+    /// <inheritdoc/>
     public ILookup GetContext(IEdge edge, IEdgeStyle style) {
       return Style.Renderer.GetContext(edge, Style);
     }
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     public IPathGeometry GetPathGeometry(IEdge edge, IEdgeStyle style) {
       return Style.Renderer.GetPathGeometry(edge, Style);
     }

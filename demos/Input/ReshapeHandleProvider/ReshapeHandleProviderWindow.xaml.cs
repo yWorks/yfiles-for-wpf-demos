@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -39,25 +39,25 @@ using yWorks.Graph.Styles;
 namespace Demo.yFiles.Graph.Input.ReshapeHandleProvider
 {
   /// <summary>
-  /// Shows how to implement a custom <code>IReshapeHandleProvider</code> for <code>IPort</code>s using a
-  /// <code>NodeStylePortStyleAdapter</code>.
+  ///   Shows how to implement a custom <code>IReshapeHandleProvider</code> for <code>IPort</code>s using a
+  ///   <code>NodeStylePortStyleAdapter</code>.
   /// </summary>
-  public partial class ReshapeHandleProviderWindow {
-
+  public partial class ReshapeHandleProviderWindow
+  {
     /// <summary>
-    /// Registers a callback function as decorator that provides a customized <see cref="IReshapeHandleProvider"/> for
-    /// each port with a <see cref="NodeStylePortStyleAdapter"/>.
+    ///   Registers a callback function as a decorator that provides a customized <see cref="IReshapeHandleProvider"/> for
+    ///   each port with a <see cref="NodeStylePortStyleAdapter"/>.
     /// </summary>
     /// <remarks>
-    /// This callback function is called whenever a port in the graph is queried
-    /// for its <c>IReshapeHandleProvider</c>. In this case, the 'port'
-    /// parameter will be set to that port.
+    ///   This callback function is called whenever a port in the graph is queried
+    ///   for its <c>IReshapeHandleProvider</c>. In this case, the 'port'
+    ///   parameter will be set to that port.
     /// </remarks>
     public void RegisterReshapeHandleProvider() {
-      graphControl.Graph.GetDecorator().PortDecorator.GetDecoratorFor<IReshapeHandleProvider>().SetFactory(
+      graphControl.Graph.GetDecorator().Ports.GetDecoratorFor<IReshapeHandleProvider>().AddFactory(
           port => port.Style is NodeStylePortStyleAdapter,
-          port => port.Style is NodeStylePortStyleAdapter adapter 
-              ? new PortReshapeHandlerProvider(port, adapter) { MinimumSize = new SizeD(5, 5) } 
+          port => port.Style is NodeStylePortStyleAdapter adapter
+              ? new PortReshapeHandleProvider(port, adapter) { MinimumSize = new SizeD(5, 5) }
               : null);
     }
 
@@ -68,46 +68,36 @@ namespace Demo.yFiles.Graph.Input.ReshapeHandleProvider
     }
 
     private void OnWindowLoaded(object sender, RoutedEventArgs e) {
-      IGraph graph = graphControl.Graph;
+      var graph = graphControl.Graph;
 
       // initialize graph defaults
       var adaptedStyle = new ShapeNodeStyle {
-        Brush = (Brush) new SolidColorBrush(Color.FromRgb(0x61, 0xA0, 0x44)).GetAsFrozen(),
-        Pen = Pens.Transparent
+          Brush = (Brush) new SolidColorBrush(Color.FromRgb(0x61, 0xA0, 0x44)).GetAsFrozen(), Pen = Pens.Transparent
       };
-      graph.NodeDefaults.Ports.Style = new NodeStylePortStyleAdapter(adaptedStyle) {
-        RenderSize = new SizeD(7, 7)
-      };
+      graph.NodeDefaults.Ports.Style = new NodeStylePortStyleAdapter(adaptedStyle) { RenderSize = new SizeD(7, 7) };
       // each port needs its own style instance to have its own render size
       graph.NodeDefaults.Ports.ShareStyleInstance = false;
       // disable removing ports when all attached edges have been removed
       graph.NodeDefaults.Ports.AutoCleanUp = false;
 
       graph.EdgeDefaults.Style = new PolylineEdgeStyle {
-        Pen = (Pen) new Pen(new SolidColorBrush(Color.FromRgb(0x2E, 0x28, 0x2A)), 3).GetAsFrozen()
+          Pen = (Pen) new Pen(new SolidColorBrush(Color.FromRgb(0x2E, 0x28, 0x2A)), 3).GetAsFrozen(),
+          OrthogonalEditing = true
       };
-      
+
       // create a default editor input mode
-      GraphEditorInputMode geim = new GraphEditorInputMode();
+      var geim = new GraphEditorInputMode();
 
       // ports are preferred for clicks
-      geim.ClickHitTestOrder = new []{
-          GraphItemTypes.Port,
-          GraphItemTypes.PortLabel,
-          GraphItemTypes.Bend,
-          GraphItemTypes.EdgeLabel,
-          GraphItemTypes.Edge,
-          GraphItemTypes.Node,
-          GraphItemTypes.NodeLabel,
+      geim.ClickHitTestOrder = new[] {
+          GraphItemTypes.Port, GraphItemTypes.PortLabel, GraphItemTypes.Bend, GraphItemTypes.EdgeLabel,
+          GraphItemTypes.Edge, GraphItemTypes.Node, GraphItemTypes.NodeLabel
       };
-      // enable orthogonal edge editing
-      geim.OrthogonalEdgeEditingContext = new OrthogonalEdgeEditingContext();
-
-      // PortReshapeHandlerProvider considers pressed Ctrl keys. Whenever Ctrl is pressed or released, 
+      // PortReshapeHandlerProvider considers pressed Ctrl keys. Whenever Ctrl is pressed or released,
       // we force GraphEditorInputMode to requery the handles of selected items
       graphControl.KeyDown += UpdateHandles;
       graphControl.KeyUp += UpdateHandles;
-      
+
       // finally, set the input mode to the graph control.
       graphControl.InputMode = geim;
 
@@ -125,6 +115,5 @@ namespace Demo.yFiles.Graph.Input.ReshapeHandleProvider
     }
 
     #endregion
-
   }
 }

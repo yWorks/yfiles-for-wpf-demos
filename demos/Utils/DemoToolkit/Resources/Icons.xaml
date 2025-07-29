@@ -1,6 +1,6 @@
 <!-- ************************************************************************ -->
-<!-- This demo file is part of yFiles WPF 3.6.                           -->
-<!-- Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
+<!-- This demo file is part of yFiles WPF 4.0.                           -->
+<!-- Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
 <!-- 72070 Tuebingen, Germany. All rights reserved.                           -->
 <!--                                                                          -->
 <!-- yFiles demo files exhibit yFiles WPF functionalities. Any redistribution  -->
@@ -192,7 +192,7 @@
         <GeometryDrawing Pen="{StaticResource ThinIconPen}" Geometry="M8,2L14,5L14,11L8,14L2,11L2,5z"/>
     </DrawingGroup>
 
-    <DrawingGroup x:Key="layout-hierarchic-16">
+    <DrawingGroup x:Key="layout-hierarchical-16">
         <GeometryDrawing Brush="Transparent" Geometry="M0,0h16v16h-16z z"/>
         <GeometryDrawing Brush="{StaticResource IconBrush}" Geometry="M5.5,0h5v5h-5z M0,11h5v5h-5z M11,11h5v5h-5z"/>
         <GeometryDrawing Pen="{StaticResource ThinIconPen}" Geometry="M2.5,11V8H6.5V4 M13.5,11V8H9.5V4"/>

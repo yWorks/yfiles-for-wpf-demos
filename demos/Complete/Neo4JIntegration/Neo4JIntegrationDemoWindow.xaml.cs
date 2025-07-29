@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -28,12 +28,17 @@
  ***************************************************************************/
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Navigation;
+using Demo.yFiles.Toolkit;
 using Neo4j.Driver;
+using yWorks.Controls;
 using yWorks.Controls.Input;
 using yWorks.Geometry;
 using yWorks.Graph;
@@ -41,48 +46,39 @@ using yWorks.Graph.DataBinding;
 using yWorks.Graph.LabelModels;
 using yWorks.Graph.Styles;
 using yWorks.Layout;
+using yWorks.Layout.Labeling;
 using yWorks.Layout.Organic;
 using yWorks.Layout.Router;
-using INode = yWorks.Graph.INode;
+using EdgeSides = yWorks.Graph.LabelModels.EdgeSides;
 using INeo4jNode = Neo4j.Driver.INode;
-using Scope = yWorks.Layout.Organic.Scope;
-using yWorks.Layout.Labeling;
-using yWorks.Controls;
-using System.Collections;
-using System.Diagnostics;
-using System.Windows.Navigation;
-using Demo.yFiles.Toolkit;
+using INode = yWorks.Graph.INode;
 
 namespace Neo4JIntegration
 {
   /// <summary>
-  /// Interaction logic for Neo4JIntegrationDemoWindow.xaml
+  ///   Interaction logic for Neo4JIntegrationDemoWindow.xaml
   /// </summary>
   public partial class Neo4JIntegrationDemo
   {
-
     private GraphBuilder graphBuilder;
     private NodesSource<INeo4jNode> nodesSource;
     private EdgesSource<IRelationship> edgesSource;
     private List<INeo4jNode> nodes;
     private List<IRelationship> edges;
+
     /// <summary>Nodes that should be laid out incrementally.</summary>
-    private readonly HashSet<INode> incrementalNodes = new HashSet<INode>();
+    private readonly HashSet<INode> incrementalNodes = new();
 
     /// <summary>
-    /// Database connection information.
+    ///   Database connection information.
     /// </summary>
-    public DBInformation ConnectionInfo { get; } = new DBInformation
-    {
-      // Set some default values for the database connection
-      Url = "neo4j+s://demo.neo4jlabs.com",
-      Db = "movies",
-      Username = "movies",
-      Password = "movies"
+    public DBInformation ConnectionInfo { get; } = new() {
+        // Set some default values for the database connection
+        Url = "neo4j+s://demo.neo4jlabs.com", Db = "movies", Username = "movies", Password = "movies"
     };
 
     /// <summary>
-    /// Database session for queries to the Neo4J database.
+    ///   Database session for queries to the Neo4J database.
     /// </summary>
     private static IAsyncSession Session { get; set; }
 
@@ -94,10 +90,10 @@ namespace Neo4JIntegration
       gvim.PopulateItemContextMenu += (sender, e) => {
         if (e.Item is INode node) {
           // Add a context menu entry; it will load all neighbors to the graph
-          var showNeighbors = new MenuItem() { Header = "Show neighbors" };
+          var showNeighbors = new MenuItem { Header = "Show neighbors" };
           showNeighbors.Click += async delegate { await LoadNeighbors(node); };
 
-          var shortestPath = new MenuItem() { Header = "Calculate shortest path" };
+          var shortestPath = new MenuItem { Header = "Calculate shortest path" };
           shortestPath.Click += delegate { ShowPathViewer(node); };
 
           e.Menu.Items.Add(showNeighbors);
@@ -113,7 +109,7 @@ namespace Neo4JIntegration
     }
 
     /// <summary>
-    /// Loads neighbors of the given node and shows them in the graph.
+    ///   Loads neighbors of the given node and shows them in the graph.
     /// </summary>
     private async Task LoadNeighbors(INode n) {
       var id = ((INeo4jNode) n.Tag).Id;
@@ -130,7 +126,7 @@ namespace Neo4JIntegration
     }
 
     /// <summary>
-    /// Shows a separate window that allows to visualize the shortest path between any two nodes.
+    ///   Shows a separate window that allows to visualize the shortest path between any two nodes.
     /// </summary>
     private async void ShowPathViewer(INode n) {
       // Create a small window to choose the target for the shortest path search
@@ -138,8 +134,8 @@ namespace Neo4JIntegration
       if (dialog.ShowDialog() == true) {
         try {
           var (nodes, edges) = await LoadDataFromDatabaseAsync(
-            $"MATCH (n1),(n2), path = shortestPath((n1)-[*..100]-(n2)) WHERE id(n1) = {dialog.FromItem.Id} AND id(n2) = {dialog.ToItem.Id} RETURN path",
-            ConnectionInfo);
+              $"MATCH (n1),(n2), path = shortestPath((n1)-[*..100]-(n2)) WHERE id(n1) = {dialog.FromItem.Id} AND id(n2) = {dialog.ToItem.Id} RETURN path",
+              ConnectionInfo);
 
           if (nodes.Count == 0) {
             MessageBox.Show("No path found!");
@@ -148,7 +144,6 @@ namespace Neo4JIntegration
 
           var pathViewer = new PathViewer(nodes, edges);
           pathViewer.Show();
-
         } catch (Exception e) {
           MessageBox.Show("Could not load the graph. Please check the database or the query.\n\n" + e.Message);
           ConnectionInfoPanel.Visibility = Visibility.Visible;
@@ -157,7 +152,7 @@ namespace Neo4JIntegration
     }
 
     /// <summary>
-    /// Connect to a database and show an initial set of nodes and edges.
+    ///   Connect to a database and show an initial set of nodes and edges.
     /// </summary>
     private async void Connect_OnClick(object sender, RoutedEventArgs e) {
       try {
@@ -177,7 +172,7 @@ namespace Neo4JIntegration
     }
 
     /// <summary>
-    /// Run a custom query and visualize the result.
+    ///   Run a custom query and visualize the result.
     /// </summary>
     private async void RunQuery_OnClick(object sender, RoutedEventArgs e) {
       loadingIndicator.Visibility = Visibility.Visible;
@@ -189,13 +184,17 @@ namespace Neo4JIntegration
     }
 
     /// <summary>
-    /// Executes a query and populates the graph with the result.
+    ///   Executes a query and populates the graph with the result.
     /// </summary>
     /// <param name="query">The query to execute.</param>
     /// <param name="dbInformation">The connection information.</param>
     /// <param name="clearGraph">A value indicating whether to replace the graph with the result of the query.</param>
     /// <param name="desiredLocation">An optional location where newly-created nodes should appear.</param>
-    private async Task LoadGraphAsync(string query, DBInformation dbInformation, bool clearGraph = false, PointD desiredLocation = default) {
+    private async Task LoadGraphAsync(
+        string query,
+        DBInformation dbInformation,
+        bool clearGraph = false,
+        PointD desiredLocation = default) {
       try {
         loadingIndicator.Visibility = Visibility.Visible;
         var (nodes, edges) = await LoadDataFromDatabaseAsync(query, dbInformation);
@@ -208,18 +207,20 @@ namespace Neo4JIntegration
     }
 
     /// <summary>
-    /// Fetches nodes and edges from the database
+    ///   Fetches nodes and edges from the database.
     /// </summary>
     /// <param name="query">The query to execute.</param>
     /// <param name="dbInformation">The connection information.</param>
     /// <returns>A tuple of nodes and edges returned from the database.</returns>
-    public static async Task<(List<INeo4jNode>, List<IRelationship>)> LoadDataFromDatabaseAsync(string query, DBInformation dbInformation) {
-      //Connect to database
+    public static async Task<(List<INeo4jNode>, List<IRelationship>)> LoadDataFromDatabaseAsync(
+        string query,
+        DBInformation dbInformation) {
+      // Connect to database
       if (Session == null) {
         StartSession(dbInformation);
       }
 
-      //Ask for the result
+      // Ask for the result
       var result = await Session.RunAsync(query);
 
       // Collect nodes and edges from the result
@@ -239,7 +240,7 @@ namespace Neo4JIntegration
     }
 
     /// <summary>
-    /// Unpack potentially nested values from the result into a set of nodes and edges.
+    ///   Unpack potentially nested values from the result into a set of nodes and edges.
     /// </summary>
     /// <param name="value">The value to recursively unpack.</param>
     /// <param name="nodes">A set of nodes to populate.</param>
@@ -269,34 +270,37 @@ namespace Neo4JIntegration
     }
 
     /// <summary>
-    /// Opens the database connection.
+    ///   Opens the database connection.
     /// </summary>
     /// <param name="dbInformation"></param>
     private static void StartSession(DBInformation dbInformation) {
       var authToken = AuthTokens.Basic(dbInformation.Username, dbInformation.Password);
       var driver = GraphDatabase.Driver(dbInformation.Url, authToken);
-      Session =
-        dbInformation.Db == "default"
+      Session = dbInformation.Db == "default"
           ? driver.AsyncSession(builder => builder.WithDefaultAccessMode(AccessMode.Read))
-          : driver.AsyncSession(builder => builder.WithDefaultAccessMode(AccessMode.Read).WithDatabase(dbInformation.Db));
+          : driver.AsyncSession(
+              builder => builder.WithDefaultAccessMode(AccessMode.Read).WithDatabase(dbInformation.Db));
     }
 
     /// <summary>
-    /// Constructs the yFiles graph from the database results.
+    ///   Constructs the yFiles graph from the database results.
     /// </summary>
     /// <param name="nodes">A list of nodes from the database.</param>
     /// <param name="edges">A list of edges from the database.</param>
     /// <param name="clearGraph">A value indicating whether the current graph should be replaced.</param>
     /// <param name="initialLocation">The initial location of newly-created nodes.</param>
-    private async Task BuildGraphAsync(List<INeo4jNode> nodes, List<IRelationship> edges, bool clearGraph, PointD initialLocation) {
+    private async Task BuildGraphAsync(
+        List<INeo4jNode> nodes,
+        List<IRelationship> edges,
+        bool clearGraph,
+        PointD initialLocation) {
       if (graphBuilder == null || clearGraph) {
         Graph.Clear();
         this.nodes = nodes;
         this.edges = edges;
         (graphBuilder, nodesSource, edgesSource) = CreateGraphBuilder(graphControl, Graph, nodes, edges);
         // Move new nodes back in z-order to make it look like they show up from underneath the neighboring node
-        graphBuilder.NodeCreated += (sender, e) => graphControl.GraphModelManager.GetCanvasObject(e.Item).ToBack();
-
+        graphBuilder.NodeCreated += (sender, e) => graphControl.GraphModelManager.GetRenderTreeElement(e.Item).ToBack();
       } else {
         // Add new data to existing data
         nodes = this.nodes.Concat(nodes).Distinct(IdEqualityComparer<INeo4jNode>.Instance).ToList();
@@ -334,9 +338,13 @@ namespace Neo4JIntegration
     }
 
     /// <summary>
-    /// Creates a GraphBuilder instance that's preconfigured with our demo's styles.
+    ///   Creates a GraphBuilder instance that's preconfigured with our demo's styles.
     /// </summary>
-    internal static (GraphBuilder, NodesSource<INeo4jNode>, EdgesSource<IRelationship>) CreateGraphBuilder(GraphControl graphControl, IGraph graph, List<INeo4jNode> nodes, List<IRelationship> edges) {
+    internal static (GraphBuilder, NodesSource<INeo4jNode>, EdgesSource<IRelationship>) CreateGraphBuilder(
+        GraphControl graphControl,
+        IGraph graph,
+        List<INeo4jNode> nodes,
+        List<IRelationship> edges) {
       var builder = new GraphBuilder(graph);
       var nodesSource = builder.CreateNodesSource(nodes, n => n.Id);
       nodesSource.NodeCreator.TagProvider = n => n;
@@ -345,79 +353,77 @@ namespace Neo4JIntegration
       var edgesSource = builder.CreateEdgesSource(edges, e => e.StartNodeId, e => e.EndNodeId, e => e.Id);
       var style58 = Themes.Palette58;
       var demoEdgeStyle = DemoStyles.CreateDemoEdgeStyle(style58);
-      edgesSource.EdgeCreator.Defaults.Style = new BezierEdgeStyle { TargetArrow = demoEdgeStyle.TargetArrow, Pen = demoEdgeStyle.Pen };
+      edgesSource.EdgeCreator.Defaults.Style =
+          new BezierEdgeStyle { TargetArrow = demoEdgeStyle.TargetArrow, Pen = demoEdgeStyle.Pen };
       var labelBinding = edgesSource.EdgeCreator.CreateLabelBinding(item => item.Type);
-      labelBinding.Defaults.LayoutParameter = new EdgeSegmentLabelModel().CreateParameterFromSource(0, 0, EdgeSides.AboveEdge);
+      labelBinding.Defaults.LayoutParameter =
+          new EdgeSegmentLabelModel().CreateParameterFromSource(0, 0, EdgeSides.AboveEdge);
       labelBinding.Defaults.Style = DemoStyles.CreateDemoEdgeLabelStyle(style58);
 
       var context = graphControl.CreateRenderContext();
-      builder.NodeCreated +=
-        (sender, e) => {
-          // Ensure that nodes have the correct size
-          e.Graph.SetNodeLayout(e.Item, RectD.FromCenter(e.Item.Layout.GetCenter(), nodeStyle.GetPreferredSize(context, e.Item)));
-        };
+      builder.NodeCreated += (sender, e) => {
+        // Ensure that nodes have the correct size
+        e.Graph.SetNodeLayout(e.Item,
+            RectD.FromCenter(e.Item.Layout.GetCenter(), nodeStyle.GetPreferredSize(context, e.Item)));
+      };
       return (builder, nodesSource, edgesSource);
     }
 
     /// <summary>
-    /// Lays out the graph with nodes that are laid out incrementally.
+    ///   Lays out the graph with nodes that are laid out incrementally.
     /// </summary>
     /// <param name="incrementalNodes">Nodes that should be inserted into the graph incrementally.</param>
     private async Task ApplyLayout(HashSet<INode> incrementalNodes) {
       toolBar.IsEnabled = false;
 
       // We'll use an OrganicLayout with OrganicEdgeRouter to get a pleasing image for most databases
-      var layout = new OrganicLayout
-      {
-        NodeEdgeOverlapAvoided = true,
-        NodeOverlapsAllowed = false,
-        PreferredEdgeLength = 180,
-        MinimumNodeDistance = 80,
-        StarSubstructureStyle = StarSubstructureStyle.Radial,
-        StarSubstructureSize = 3,
-        ConsiderNodeSizes = true,
-        CycleSubstructureStyle = CycleSubstructureStyle.Circular,
-        StarSubstructureTypeSeparation = false,
-        LabelingEnabled = true,
-        ParallelEdgeRouterEnabled = true,
-        Scope = incrementalNodes.Count > 0 ? Scope.MainlySubset : Scope.All
+      var layout = new OrganicLayout {
+          AvoidNodeEdgeOverlap = true,
+          AllowNodeOverlaps = false,
+          DefaultPreferredEdgeLength = 180,
+          DefaultMinimumNodeDistance = 80,
+          StarSubstructureStyle = StarSubstructureStyle.Radial,
+          StarSubstructureSize = 3,
+          CycleSubstructureStyle = CycleSubstructureStyle.Circular,
+          StarSubstructureTypeSeparation = false,
+          ParallelEdgeRouter = { Enabled = true },
+          // we append the labeling stage later
+          GenericLabeling = { Enabled = false }
       };
 
-      layout.PrependStage(new OrganicEdgeRouter()
-      {
-        ConsiderExistingBends = false,
-        KeepExistingBends = false,
-        EdgeNodeOverlapAllowed = false,
-        RouteAllEdges = false,
-        MinimumDistance = 10
+      layout.LayoutStages.Prepend(new OrganicEdgeRouter {
+          ConsiderExistingBends = false,
+          KeepExistingBends = false,
+          AllowEdgeNodeOverlaps = false,
+          RouteAllEdges = false,
+          MinimumDistance = 10
       });
 
-      // GenericLabeling ensures that labels don't overlap
-      layout.PrependStage(new GenericLabeling { RemoveNodeOverlaps = true });
-
       // CurveFittingLayoutStage adds Bézier control points so we can use BezierEdgeStyle to render the edges
-      layout.PrependStage(new CurveFittingLayoutStage());
+      layout.LayoutStages.Prepend(new CurveFittingStage());
+      
+      // GenericLabeling ensures that labels don't overlap
+      // we apply this as final step
+      var labeling = new GenericLabeling();
+      layout.LayoutStages.Prepend(labeling);
 
-      var layoutData = new CompositeLayoutData(
-        new OrganicLayoutData
-        {
-          NodeTypes = { Delegate = node => ((INeo4jNode) node.Tag).Labels[0] },
-          AffectedNodes = { Source = incrementalNodes },
-        },
-        new LabelingData
-        {
-          EdgeLabelPreferredPlacement = {
-            Constant = new PreferredPlacementDescriptor
-            {
-              AngleReference = LabelAngleReferences.RelativeToEdgeFlow,
-              PlaceAlongEdge = LabelPlacements.AtSource,
-              SideOfEdge = LabelPlacements.RightOfEdge | LabelPlacements.LeftOfEdge
-            }
-          }
-        }
-        );
+      var organicLayoutData = layout.CreateLayoutData(graphControl.Graph);
+      organicLayoutData.NodeTypes.MapperFunction = node => ((INeo4jNode) node.Tag).Labels[0];
+      if (incrementalNodes.Count > 0) {
+        organicLayoutData.Scope.ScopeModes.MapperFunction = node =>
+            this.incrementalNodes.Contains(node) ? OrganicScope.IncludeExtendedNeighborhood : OrganicScope.Fixed;
+      } else {
+        organicLayoutData.Scope.ScopeModes.Constant = OrganicScope.Affected;
+      }
+      var labelingData = labeling.CreateLayoutData(graphControl.Graph);
+      labelingData.EdgeLabelPreferredPlacements.Constant = new EdgeLabelPreferredPlacement {
+          AngleReference = LabelAngleReferences.RelativeToEdgeFlow,
+          PlacementAlongEdge = LabelAlongEdgePlacements.AtSource,
+          EdgeSide = LabelEdgeSides.RightOfEdge | LabelEdgeSides.LeftOfEdge
+      };
+      var layoutData = graphControl.Graph.CreateCompositeLayoutData(organicLayoutData, labelingData);
 
-      await graphControl.MorphLayout(layout, TimeSpan.FromMilliseconds(700), layoutData);
+      await graphControl.ApplyLayoutAnimated(layout, TimeSpan.FromMilliseconds(700), layoutData);
       toolBar.IsEnabled = true;
     }
 
@@ -428,10 +434,10 @@ namespace Neo4JIntegration
     }
 
     /// <summary>
-    /// Close the database connection again when closing the window.
+    ///   Close the database connection again when closing the window.
     /// </summary>
     private void OnUnloaded(object sender, RoutedEventArgs e) {
-      //Close the session
+      // Close the session
       Session?.CloseAsync();
     }
 
@@ -443,24 +449,33 @@ namespace Neo4JIntegration
   }
 
   /// <summary>
-  /// Stores database connection information.
+  ///   Stores database connection information.
   /// </summary>
   public class DBInformation
   {
     public string Url { get; set; }
+
     public string Db { get; set; }
+
     public string Username { get; set; }
+
     public string Password { get; set; }
   }
 
   /// <summary>
-  /// Equality comparer to deduplicate nodes and edges by their ID
+  ///   Equality comparer to deduplicate nodes and edges by their ID
   /// </summary>
   /// <typeparam name="T"></typeparam>
   internal sealed class IdEqualityComparer<T> : IEqualityComparer<T> where T : IEntity
   {
-    public static readonly IdEqualityComparer<T> Instance = new IdEqualityComparer<T>();
-    public bool Equals(T x, T y) => EqualityComparer<long>.Default.Equals(x.Id, y.Id);
-    public int GetHashCode(T obj) => obj.Id.GetHashCode();
+    public static readonly IdEqualityComparer<T> Instance = new();
+
+    public bool Equals(T x, T y) {
+      return EqualityComparer<long>.Default.Equals(x.Id, y.Id);
+    }
+
+    public int GetHashCode(T obj) {
+      return obj.Id.GetHashCode();
+    }
   }
 }

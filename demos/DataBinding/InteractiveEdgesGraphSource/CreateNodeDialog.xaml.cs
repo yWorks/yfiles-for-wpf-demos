@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -55,7 +55,7 @@ namespace Demo.yFiles.DataBinding.InteractiveEdgesGraphSource
       Type = GetItemType((string) typeCombobox.SelectedItem);
 
       // parse the text of the events textbox
-      string[] events = eventsBox.Text.Split(new[] { '\n', '\r', ',', ';', ' ' });
+      string[] events = eventsBox.Text.Split('\n', '\r', ',', ';', ' ');
       var evts =
         from evt in events
         where evt.Trim().Length > 0
@@ -63,15 +63,15 @@ namespace Demo.yFiles.DataBinding.InteractiveEdgesGraphSource
       eventsList = evts.ToList();
 
       // parse the text of the methods textbox
-      string[] methods = methodsBox.Text.Split(new[] { '\n', '\r', ',', ';', ' ' });
+      string[] methods = methodsBox.Text.Split('\n', '\r', ',', ';', ' ');
       var mths =
         from method in methods
         where method.Trim().Length > 0
         select method.Trim();
       methodsList = mths.ToList();
 
-      this.DialogResult = !string.IsNullOrWhiteSpace(NodeName);
-      this.Close();
+      DialogResult = !string.IsNullOrWhiteSpace(NodeName);
+      Close();
     }
 
     private static ItemType GetItemType(string s) {
@@ -102,6 +102,6 @@ namespace Demo.yFiles.DataBinding.InteractiveEdgesGraphSource
       Class,
       Interface,
       Undefined
-    } ;
+    }
   }
 }

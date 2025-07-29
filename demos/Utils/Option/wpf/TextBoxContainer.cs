@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -34,7 +34,6 @@ namespace Demo.yFiles.Option.View
 {
   public class TextBoxContainer : Decorator
   {
-
     static TextBoxContainer() {
       FocusableProperty.OverrideMetadata(typeof(TextBoxContainer), new FrameworkPropertyMetadata(false));
     }
@@ -45,12 +44,10 @@ namespace Demo.yFiles.Option.View
         child.Measure(constraint);
         if (child is FrameworkElement) {
           return new Size(((FrameworkElement) child).MinWidth, child.DesiredSize.Height);
-        } else {
-          return child.DesiredSize;
         }
-      } else {
-        return new Size(0, 0);
+        return child.DesiredSize;
       }
+      return new Size(0, 0);
     }
 
     protected override Size ArrangeOverride(Size arrangeSize) {
@@ -59,7 +56,7 @@ namespace Demo.yFiles.Option.View
         if (child is FrameworkElement) {
           ((FrameworkElement) child).Width = arrangeSize.Width;
         }
-        child.Arrange(new Rect(0,0,arrangeSize.Width, arrangeSize.Height));
+        child.Arrange(new Rect(0, 0, arrangeSize.Width, arrangeSize.Height));
       }
       return arrangeSize;
     }

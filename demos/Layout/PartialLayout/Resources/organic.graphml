@@ -1,8 +1,8 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <!--Created by yFiles WPF 2.1-->
-<graphml xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/3.0" xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/3.0/xaml" xmlns:y="http://www.yworks.com/xml/yfiles-common/3.0" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml.wpf/2.0/ygraphml.xsd " xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://graphml.graphdrawing.org/xmlns">
+<graphml xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/3.0" xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/4.0/xaml" xmlns:y="http://www.yworks.com/xml/yfiles-common/3.0"  xmlns:yx="http://www.yworks.com/xml/yfiles-common/4.0" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml.wpf/2.0/ygraphml.xsd " xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://graphml.graphdrawing.org/xmlns">
   <key id="d0" for="all" attr.name="UserTags" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/UserTags" />
-  <key id="d1" for="node" attr.type="boolean" attr.name="AffectedNodesDpKey">
+  <key id="d1" for="node" attr.type="boolean" attr.name="yWorks.Layout.Partial.PartialLayout.NodeScopeDataKey">
     <default>false</default>
   </key>
   <key id="d2" for="node" attr.name="NodeLabels" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeLabels" />
@@ -11,7 +11,7 @@
     <default>true</default>
   </key>
   <key id="d6" for="node" attr.name="NodeViewState" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/folding/1.1/NodeViewState" />
-  <key id="d7" for="edge" attr.type="boolean" attr.name="AffectedEdgesDpKey">
+  <key id="d7" for="edge" attr.type="boolean" attr.name="yWorks.Layout.Partial.PartialLayout.EdgeScopeDataKey">
     <default>false</default>
   </key>
   <key id="d8" for="edge" attr.name="EdgeLabels" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/EdgeLabels" />
@@ -26,11 +26,11 @@
   <key id="d15" attr.name="SharedData" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/SharedData" />
   <data key="d15">
     <y:SharedData>
-      <y:InteriorLabelModelParameter x:Key="2" Position="Center">
-        <y:InteriorLabelModelParameter.Model>
-          <y:InteriorLabelModel />
-        </y:InteriorLabelModelParameter.Model>
-      </y:InteriorLabelModelParameter>
+      <yx:InteriorNodeLabelModelParameter x:Key="2" Position="Center">
+        <yx:InteriorNodeLabelModelParameter.Model>
+          <yx:InteriorNodeLabelModel />
+        </yx:InteriorNodeLabelModelParameter.Model>
+      </yx:InteriorNodeLabelModelParameter>
     </y:SharedData>
   </data>
   <graph id="G" edgedefault="directed">

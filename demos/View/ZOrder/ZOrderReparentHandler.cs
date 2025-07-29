@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -27,16 +27,14 @@
  ** 
  ***************************************************************************/
 
-using System;
 using System.Linq;
-using yWorks.Controls;
 using yWorks.Controls.Input;
 using yWorks.Graph;
 
 namespace Demo.yFiles.Graph.ZOrder
 {
   /// <summary>
-  ///  Delegates reparenting to an external callback function. 
+  ///  Delegates reparenting to an external callback function.
   /// </summary>
   /// <remarks>
   /// The callback function is intended to provide pre- and post-processing only.
@@ -53,11 +51,11 @@ namespace Demo.yFiles.Graph.ZOrder
     }
 
     public bool IsReparentGesture(IInputModeContext context, INode node) {
-      return this.handler.IsReparentGesture(context, node);
+      return handler.IsReparentGesture(context, node);
     }
 
     public bool IsValidParent(IInputModeContext context, INode node, INode newParent) {
-      return this.handler.IsValidParent(context, node, newParent);
+      return handler.IsValidParent(context, node, newParent);
     }
 
     public void Reparent(IInputModeContext context, INode node, INode newParent) {
@@ -72,7 +70,7 @@ namespace Demo.yFiles.Graph.ZOrder
       var masterParent = newParent != null ? zOrderSupport.GetMasterNode(newParent) : null;
 
       // reparent the node
-      this.handler.Reparent(context, node, newParent);
+      handler.Reparent(context, node, newParent);
 
       // update the node's z-order index
       var zIndex = CalculateNewZIndex(zOrderSupport.MasterGraph, masterNode, masterParent);
@@ -85,7 +83,7 @@ namespace Demo.yFiles.Graph.ZOrder
     }
 
     public bool ShouldReparent(IInputModeContext context, INode node) {
-      return this.handler.ShouldReparent(context, node);
+      return handler.ShouldReparent(context, node);
     }
 
     /// <summary>

@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -30,21 +30,20 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Demo.yFiles.Option.DataBinding;
-using yWorks.Graph;
+using yWorks.Utils;
 
 namespace Demo.yFiles.Option.DataBinding
 {
   /// <summary>
-  /// Interface for classes that manage a list of virtual properties for a specific context.
+  ///   Interface for classes that manage a list of virtual properties for a specific context.
   /// </summary>
   /// <remarks>
-  /// The context is implicitly held by implementations of this interface.
+  ///   The context is implicitly held by implementations of this interface.
   /// </remarks>
   public interface IPropertyMap
   {
     /// <summary>
-    /// Create and add a new virtual property with the given parameters to this map.
+    ///   Create and add a new virtual property with the given parameters to this map.
     /// </summary>
     /// <param name="virtualPropertyName">The name of the property</param>
     /// <param name="getter">The getter that is used to retrieve the value from the property</param>
@@ -53,55 +52,65 @@ namespace Demo.yFiles.Option.DataBinding
     IPropertyItem AddEntry(string virtualPropertyName, IValueGetter getter, IValueSetter setter);
 
     /// <summary>
-    /// Retrieve the specified virtual property.
+    ///   Retrieve the specified virtual property.
     /// </summary>
     /// <param name="virtualPropertyName">The virtual name of the property.</param>
     /// <returns>The property item with the virtual name or <see langword="null"/></returns>
     IPropertyItem GetEntry(string virtualPropertyName);
 
     /// <summary>
-    /// Retrieve an anumeration of the fully qualified property names in this map (prefix+property name)
+    ///   Retrieve an enumeration of the fully qualified property names in this map (prefix + property name)
     /// </summary>
     IEnumerable<string> VirtualProperties { get; }
 
     /// <summary>
-    /// Create and add a new virtual property with the given parameters to this map.
+    ///   Create and add a new virtual property with the given parameters to this map.
     /// </summary>
     /// <param name="virtualPropertyName">The name of the property</param>
     /// <param name="getter">The getter that is used to retrieve the value from the property</param>
     /// <param name="setter">The setter that is used to set the value on the property</param>
+    /// <param name="comparer">
+    ///   An optional comparer that is used instead of object equality for forming the composites and
+    ///   write back
+    /// </param>
     /// <returns>The item that has been added to the map.</returns>
-    /// <param name="comparer">An optional comparer that is used instead of object equality for forming the composites and write back</param>
-    IPropertyItem AddEntry(string virtualPropertyName, IValueGetter getter, IValueSetter setter,
-                           IEqualityComparer comparer);
+    IPropertyItem AddEntry(
+        string virtualPropertyName,
+        IValueGetter getter,
+        IValueSetter setter,
+        IEqualityComparer comparer);
   }
 
   /// <summary>
-  /// Default implementation of <see cref="IPropertyMap"/>
+  ///   Default implementation of <see cref="IPropertyMap"/>
   /// </summary>
   internal sealed class DefaultPropertyMap : IPropertyMap
   {
-    private IDictionary<string, IPropertyItem> internalMap;
-    
+    private readonly IDictionary<string, IPropertyItem> internalMap;
+
     public DefaultPropertyMap() {
       internalMap = new Dictionary<string, IPropertyItem>();
     }
 
 
     #region IPropertyMap Members
+
     /// <inheritdoc/>
     public IPropertyItem AddEntry(string virtualPropertyName, IValueGetter getter, IValueSetter setter) {
       return AddEntry(virtualPropertyName, getter, setter, null);
     }
 
     /// <inheritdoc/>
-    public IPropertyItem AddEntry(string virtualPropertyName, IValueGetter getter,
-                                          IValueSetter setter, IEqualityComparer comparer) {
-        DefaultPropertyItem item = new DefaultPropertyItem(getter, setter, comparer);
-        internalMap[virtualPropertyName] = item;
-        return item;     
+    public IPropertyItem AddEntry(
+        string virtualPropertyName,
+        IValueGetter getter,
+        IValueSetter setter,
+        IEqualityComparer comparer) {
+      var item = new DefaultPropertyItem(getter, setter, comparer);
+      internalMap[virtualPropertyName] = item;
+      return item;
     }
-        
+
     /// <inheritdoc/>
     public IPropertyItem GetEntry(string virtualPropertyName) {
       IPropertyItem retval;
@@ -110,40 +119,27 @@ namespace Demo.yFiles.Option.DataBinding
     }
 
     /// <inheritdoc/>
-    public IEnumerable<string> VirtualProperties {
-      get {
-        return internalMap.Keys;
-      }
-    }
+    public IEnumerable<string> VirtualProperties => internalMap.Keys;
 
     #endregion
 
     private class DefaultPropertyItem : IPropertyItem
     {
-      private IValueGetter getter;
-      private IValueSetter setter;
-      private readonly IEqualityComparer equalityComparer;
-      private ILookup myLookup = Lookups.Empty;
+      private readonly ILookup myLookup = Lookups.Empty;
 
       public DefaultPropertyItem(IValueGetter getter, IValueSetter setter, IEqualityComparer equalityComparer) {
-        this.getter = getter;
-        this.setter = setter;
-        this.equalityComparer = equalityComparer;
+        Getter = getter;
+        Setter = setter;
+        EqualityComparer = equalityComparer;
       }
 
       #region IPropertyItem Members
 
-      public IValueGetter Getter {
-        get { return getter; }
-      }
+      public IValueGetter Getter { get; }
 
-      public IValueSetter Setter {
-        get { return setter; }
-      }
+      public IValueSetter Setter { get; }
 
-      public IEqualityComparer EqualityComparer {
-        get { return equalityComparer; }
-      }
+      public IEqualityComparer EqualityComparer { get; }
 
       #endregion
 
@@ -158,51 +154,52 @@ namespace Demo.yFiles.Option.DataBinding
   }
 
   /// <summary>
-  /// This is the interface that is implemented by classes that create a map of 
-  /// named properties for a given 
-  /// <see cref="IPropertyBuildContext{TSubject}.CurrentInstance">dynamically retrieved</see>
-  /// instance.
+  ///   This is the interface that is implemented by classes that create a map of
+  ///   named properties for a given
+  ///   <see cref="IPropertyBuildContext{TSubject}.CurrentInstance">dynamically retrieved</see>
+  ///   instance.
   /// </summary>
   /// <remarks>
-  /// Note that most implementations should derive from the abstract base class
-  /// <see cref="PropertyMapBuilderBase{TSubject}"/> which provides a much more
-  /// easily to implement interface.
+  ///   Note that most implementations should derive from the abstract base class
+  ///   <see cref="PropertyMapBuilderBase{TSubject}"/> which provides a much more
+  ///   easily implementable interface.
   /// </remarks>
   /// <seealso cref="PropertyMapBuilderBase{TSubject}"/>
   /// <seealso cref="PropertyMapBuilderBase{TSubject}.BuildPropertyMapImpl"/>
   public interface IPropertyMapBuilder
   {
     /// <summary>
-    /// Populates the map of properties via the methods provided by the <paramref name="builder"/>.
+    ///   Populates the map of properties via the methods provided by the <paramref name="builder"/>.
     /// </summary>
     /// <remarks>
-    /// Implementations need to always use the <see cref="IPropertyBuildContext{TSubject}.CurrentInstance"/>
-    /// to retrieve the values from and use <see cref="IPropertyBuildContext{TSubject}.SetNewInstance"/>
-    /// to propagate referential changes. If the builder demands a <see cref="IPropertyBuildContext{TSubject}.Policy"/>
-    /// of type <see cref="AssignmentPolicy.CreateNewInstance"/> the implementation needs to 
-    /// ensure that the state of the <see cref="IPropertyBuildContext{TSubject}.CurrentInstance"/>
-    /// is not changed upon a call to the setters. Instead the setter implementations need to create
-    /// a copy of the subject and publish the copy via the <see cref="IPropertyBuildContext{TSubject}.SetNewInstance"/>
-    /// method.
+    ///   Implementations need to always use the <see cref="IPropertyBuildContext{TSubject}.CurrentInstance"/>
+    ///   to retrieve the values from and use <see cref="IPropertyBuildContext{TSubject}.SetNewInstance"/>
+    ///   to propagate referential changes. If the builder demands a <see cref="IPropertyBuildContext{TSubject}.Policy"/>
+    ///   of type <see cref="AssignmentPolicy.CreateNewInstance"/>, the implementation needs to
+    ///   ensure that the state of the <see cref="IPropertyBuildContext{TSubject}.CurrentInstance"/>
+    ///   is not changed upon a call to the setters. Instead, the setter implementations need to create
+    ///   a copy of the subject and publish the copy via the <see cref="IPropertyBuildContext{TSubject}.SetNewInstance"/>
+    ///   method.
     /// </remarks>
     /// <typeparam name="T">The type of the builder context that is passed to this method.</typeparam>
     /// <param name="builder">The builder to use for populating the property map.</param>
     /// <seealso cref="PropertyMapBuilderBase{TSubject}"/>
     /// <seealso cref="PropertyMapBuilderBase{TSubject}.BuildPropertyMapImpl"/>
-    void BuildPropertyMap<T>(IPropertyBuildContext<T> builder) where T: class;
+    void BuildPropertyMap<T>(IPropertyBuildContext<T> builder) where T : class;
   }
 
   /// <summary>
-  /// The delegate that is used by <see cref="IPropertyBuildContext{TSubject}"/>'s
-  /// <see cref="IPropertyBuildContext{TSubject}.CreateChildContext{TChild}"/> method.
+  ///   The delegate that is used by <see cref="IPropertyBuildContext{TSubject}"/>'s
+  ///   <see cref="IPropertyBuildContext{TSubject}.CreateChildContext{TChild}"/> method.
   /// </summary>
   /// <typeparam name="T">The type of the instance that is retrieved via this getter.</typeparam>
   /// <returns>The value of the instance.</returns>
   /// <seealso cref="IPropertyBuildContext{TSubject}.CreateChildContext{TChild}"/>
   public delegate T GetInstanceDelegate<T>();
+
   /// <summary>
-  /// The delegate that is used by <see cref="IPropertyBuildContext{TSubject}"/>'s
-  /// <see cref="IPropertyBuildContext{TSubject}.CreateChildContext{TChild}"/> method.
+  ///   The delegate that is used by <see cref="IPropertyBuildContext{TSubject}"/>'s
+  ///   <see cref="IPropertyBuildContext{TSubject}.CreateChildContext{TChild}"/> method.
   /// </summary>
   /// <typeparam name="T">The type of the instance that will be set via this setter.</typeparam>
   /// <param name="newInstance">The new instance or value to set.</param>

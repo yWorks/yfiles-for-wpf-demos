@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -32,13 +32,10 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading;
 using System.Windows;
 using System.Windows.Automation;
 using System.Windows.Controls;
-using System.Windows.Media;
 using Demo.yFiles.Toolkit;
-using yWorks.Controls;
 using yWorks.Controls.Input;
 using yWorks.Geometry;
 using yWorks.Graph;
@@ -49,7 +46,7 @@ using Condition = System.Windows.Automation.Condition;
 // Some features in the demo require low-level input. Since this is not provided natively by UI Automation (which
 // instead focuses on handling controls and patterns), we have to include a 3rd-party solution. The demo is written
 // against two of the more popular frameworks for doing so: Microsoft.TestApi and TestStack.White. Add either of those
-// as references to the project (e.g. via nuget) and define either the 'TestApi' or 'White' symbol in the project 
+// as references to the project (e.g. via nuget) and define either the 'TestApi' or 'White' symbol in the project
 // properties for the compiler:
 
 #if TestApi
@@ -84,7 +81,7 @@ namespace Demo.yFiles.Graph.UIAutomation
 
     private void OnWindowLoaded(object sender, RoutedEventArgs e) {
       InitializeGraph();
-      graphControl.InputMode = new GraphEditorInputMode { AllowGroupingOperations = true };
+      graphControl.InputMode = new GraphEditorInputMode();
 
       graphControl.Graph.NodeCreated += RefreshUiaInterface;
       graphControl.Graph.NodeStyleChanged += RefreshUiaInterface;
@@ -130,25 +127,11 @@ namespace Demo.yFiles.Graph.UIAutomation
       // Initialize defaults
       DemoStyles.InitDemoStyles(graph, foldingEnabled: true);
 
-      // Mapper for using custom AutomationIds. This is just a sample that shows how to add a mapper that returns
-      // an automation ID from the model item's tag. In practice you might return a property of the tag object if that
-      // identifies your model item uniquely.
-      graph.MapperRegistry.CreateDelegateMapper(GraphControl.AutomationIdKey,
-          (IModelItem key) => {
-            if (key.Tag == null) {
-              return null;
-            }
-            if (key.Tag is string) {
-              return key.Tag as string;
-            }
-            return null;
-          });
-
       // create sample graph
       var node1 = graph.CreateNode(new RectD(0, 0, 100, 30));
       graph.AddLabel(node1, "Node with label");
       // Use a custom AutomationId for that node. We just set the tag to a string here, which then gets picked up by
-      // the mapper we added above.
+      // the overridden GetAutomationId method in AutomationGraphControl.
       node1.Tag = "Custom Automation ID";
 
       var node2 = graph.CreateNode(new PointD(90, 70));
@@ -650,7 +633,7 @@ namespace Demo.yFiles.Graph.UIAutomation
             // wrong as soon as there is an edge overlapping a node. The AutomationPeer sees the edge and determines
             // that the clickable point is invalid and throws an exception.
             // To work around that we use the same default logic AutomationPeers have for determining a clickable
-            // point: Just take the center of the bounding box. It should work most of the time, and in this case we
+            // point: Just take the center of the bounds. It should work most of the time, and in this case we
             // don't particularly care whether an edge overlays the *target* node, for example. The edge doesn't react
             // in that case anyway. And even if it overlays the source node there's still a good chance that our
             // initial drag point will work.

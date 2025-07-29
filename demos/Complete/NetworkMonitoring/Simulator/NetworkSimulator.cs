@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -80,7 +80,7 @@ namespace Demo.yFiles.Graph.NetworkMonitoring.Simulator
     }
 
     /// <summary>
-    /// Gets or sets a value indicating whether random failures of nodes and edges should happen.
+    /// Gets or sets a value indicating whether random failures of nodes and edges should occur.
     /// </summary>
     public bool FailuresEnabled {
       get { return failuresEnabled; }
@@ -321,12 +321,12 @@ namespace Demo.yFiles.Graph.NetworkMonitoring.Simulator
   /// <summary>
   /// Simple data structure to model a packet moving through the network.
   /// </summary>
-  public struct Packet
+  public readonly struct Packet
   {
-    public long Time { get; set; }
-    public ModelNode Start { get; set; }
-    public ModelNode End { get; set; }
-    public ModelEdge Edge { get; set; }
+    public long Time { get; }
+    public ModelNode Start { get; }
+    public ModelNode End { get; }
+    public ModelEdge Edge { get; }
 
     public Packet(ModelNode start, ModelNode end, ModelEdge edge, long time) : this() {
       Time = time;

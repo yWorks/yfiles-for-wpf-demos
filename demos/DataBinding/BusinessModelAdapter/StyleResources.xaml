@@ -1,6 +1,6 @@
 <!-- ************************************************************************ -->
-<!-- This demo file is part of yFiles WPF 3.6.                           -->
-<!-- Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
+<!-- This demo file is part of yFiles WPF 4.0.                           -->
+<!-- Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
 <!-- 72070 Tuebingen, Germany. All rights reserved.                           -->
 <!--                                                                          -->
 <!-- yFiles demo files exhibit yFiles WPF functionalities. Any redistribution  -->
@@ -27,7 +27,7 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
                     xmlns:BusinessModelAdapter="clr-namespace:Demo.yFiles.Graph.BusinessModelAdapter;assembly=" 
-                    xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/3.0/xaml">
+                    xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/4.0/xaml">
 	<ResourceDictionary.MergedDictionaries>
 		<ResourceDictionary Source="pack://application:,,,/DemoToolkit;component/StyleResources.xaml" />
 		<ResourceDictionary Source="pack://application:,,,/DemoToolkit;component/Resources/DemoStyle.xaml" />
@@ -39,6 +39,12 @@
 			<Border.BorderBrush>
 				<SolidColorBrush x:Name="Borderbrush" Color="#249AE7" />
 			</Border.BorderBrush>
+            <Border.Background>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="#CCFFFF" Offset="0" />
+                    <GradientStop Color="#249AE7" Offset="1" />
+                </LinearGradientBrush>
+            </Border.Background>
 
 			<Grid>
 				<Grid.RowDefinitions>
@@ -50,12 +56,6 @@
 					<ColumnDefinition Width="Auto" />
 					<ColumnDefinition Width="0.936*" />
 				</Grid.ColumnDefinitions>
-				<Grid.Background>
-					<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-						<GradientStop x:Name="BackgroundColor1" Color="#CCFFFF" Offset="0" />
-						<GradientStop x:Name="BackgroundColor2" Color="#249AE7" Offset="1" />
-					</LinearGradientBrush>
-				</Grid.Background>
 				<TextBox Margin="0,0,3,2" Grid.Column="2" Text="{Binding Name}" TextWrapping="NoWrap" VerticalAlignment="Bottom" Background="#7FFFFFFF" Grid.ColumnSpan="2" />
 				<TextBox Margin="0,0,3,3" Grid.Column="2" Grid.Row="1" Text="{Binding Age}" TextWrapping="NoWrap" VerticalAlignment="Bottom" Background="#7EFFFFFF" Grid.ColumnSpan="2" />
 				<Border Margin="3,3,3,3" Grid.RowSpan="2" BorderThickness="0" Width="42" Height="42">

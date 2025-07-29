@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -31,23 +31,24 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-//using System.Diagnostics;
 using Demo.yFiles.Option.Handler;
 using Demo.yFiles.Option.View;
+
+//using System.Diagnostics;
 
 namespace Demo.yFiles.Option.Constraint
 {
   /// <summary>
-  /// Abstract implementation of <see cref="ICondition"/> that provides
-  /// the basic infrastructure for correct installation of this condition in 
-  /// a <see cref="IModelView"/>. 
+  ///   Abstract implementation of <see cref="ICondition"/> that provides
+  ///   the basic infrastructure for correct installation of this condition in
+  ///   an <see cref="IModelView"/>.
   /// </summary>
   public abstract class ConditionBase : ICondition
   {
-    private List<INotifyPropertyChanged> inputs;
+    private readonly List<INotifyPropertyChanged> inputs;
 
     /// <summary>
-    /// Create a new instance for the given list of <paramref name="inputs"/>
+    ///   Create a new instance for the given list of <paramref name="inputs"/>
     /// </summary>
     /// <param name="inputs">The initial inputs for this condition</param>
     protected ConditionBase(List<INotifyPropertyChanged> inputs) {
@@ -60,14 +61,14 @@ namespace Demo.yFiles.Option.Constraint
     }
 
     /// <summary>
-    /// Create a new instance with an empty input list.
+    ///   Create a new instance with an empty input list.
     /// </summary>
     protected ConditionBase() {
       inputs = new List<INotifyPropertyChanged>();
     }
 
     /// <summary>
-    /// Create a new instance for the given array of <paramref name="inputs"/>
+    ///   Create a new instance for the given array of <paramref name="inputs"/>
     /// </summary>
     /// <param name="inputs">The initial inputs for this condition</param>
     protected ConditionBase(params INotifyPropertyChanged[] inputs) {
@@ -97,49 +98,51 @@ namespace Demo.yFiles.Option.Constraint
     }
 
     /// <inheritdoc/>
-    public ReadOnlyCollection<INotifyPropertyChanged> Inputs {
-      get { return inputs.AsReadOnly(); }
-    }
+    public ReadOnlyCollection<INotifyPropertyChanged> Inputs => inputs.AsReadOnly();
 
     #region ICondition Members
 
     /// <summary>
-    ///This method provides ensures correct installation of this condition in 
-    /// a <see cref="IModelView"/>. 
+    ///   This method ensures correct installation of this condition in
+    ///   a <see cref="IModelView"/>.
     /// </summary>
     public virtual ICondition InstallInView(IModelView view) {
       IList<INotifyPropertyChanged> copiedItems = new List<INotifyPropertyChanged>();
-      foreach (INotifyPropertyChanged item in inputs) {
-        //get corresponding item in view
-        INotifyPropertyChanged viewItem = GetItemCopy(view, item);
+      foreach (var item in inputs) {
+        // get corresponding item in view
+        var viewItem = GetItemCopy(view, item);
         if (viewItem != null) {
           copiedItems.Add(viewItem);
         }
       }
-      INotifyPropertyChanged[] cp = new INotifyPropertyChanged[copiedItems.Count];
+      var cp = new INotifyPropertyChanged[copiedItems.Count];
       copiedItems.CopyTo(cp, 0);
-      ICondition copy = CreateCopy(cp);
-      foreach (INotifyPropertyChanged input in copiedItems) {
+      var copy = CreateCopy(cp);
+      foreach (var input in copiedItems) {
         input.PropertyChanged += copy.SourceValueChangedHandler;
       }
       return copy;
     }
 
     /// <summary>
-    /// This method is needed to find the correct item in <paramref name="view"/> that corresponds
-    /// to the original input source <paramref name="item"/>. It is called by 
-    /// <see cref="InstallInView"/> to correctly determine the new event inputs for the copied
-    /// condition.
+    ///   This method is needed to find the correct item in <paramref name="view"/> that corresponds
+    ///   to the original input source <paramref name="item"/>. It is called by
+    ///   <see cref="InstallInView"/> to correctly determine the new event inputs for the copied
+    ///   condition.
     /// </summary>
-    /// <remarks>This implementation just queries <see cref="IModelView.GetViewItem"/> for
-    /// <paramref name="item"/>, and returns the result from this call, or <see langword="null"/>
-    /// if <paramref name="item"/> does not implement <see cref="IOptionItem"/>.</remarks>
+    /// <remarks>
+    ///   This implementation just queries <see cref="IModelView.GetViewItem"/> for
+    ///   <paramref name="item"/>, and returns the result from this call, or <see langword="null"/>
+    ///   if <paramref name="item"/> does not implement <see cref="IOptionItem"/>.
+    /// </remarks>
     /// <param name="view">The view where the condition is currently installed</param>
-    /// <param name="item"></param>
-    /// <returns>A <see cref="INotifyPropertyChanged"/> instance that corresponds
-    /// to <paramref name="item"/> in <paramref name="view"/>.</returns>
+    /// <param name="item">The item to find in the view</param>
+    /// <returns>
+    ///   A <see cref="INotifyPropertyChanged"/> instance that corresponds
+    ///   to <paramref name="item"/> in <paramref name="view"/>.
+    /// </returns>
     protected virtual INotifyPropertyChanged GetItemCopy(IModelView view, INotifyPropertyChanged item) {
-      IOptionItem viewItem = item as IOptionItem;
+      var viewItem = item as IOptionItem;
       if (viewItem != null) {
         return view.GetViewItem(viewItem);
       }
@@ -147,14 +150,14 @@ namespace Demo.yFiles.Option.Constraint
     }
 
     /// <summary>
-    /// Called <see cref="ConditionTriggered"/> whenever a source input value
-    /// raises a <see cref="PropertyChanged"/> event.
+    ///   Called <see cref="ConditionTriggered"/> whenever a source input value
+    ///   raises a <see cref="PropertyChanged"/> event.
     /// </summary>
     /// <remarks>
-    /// This event handler delegates its work to <see cref="OnConditionSuccessful"/> 
-    /// or <see cref="OnConditionFailed"/>, depending on whether <see cref="IsTrue"/> 
-    /// returns <see langword="true"/>
-    /// resp. <see langword="false"/>.
+    ///   This event handler delegates its work to <see cref="OnConditionSuccessful"/>
+    ///   or <see cref="OnConditionFailed"/>, depending on whether <see cref="IsTrue"/>
+    ///   returns <see langword="true"/>
+    ///   resp. <see langword="false"/>.
     /// </remarks>
     /// <param name="sender"></param>
     /// <param name="e"></param>
@@ -170,15 +173,17 @@ namespace Demo.yFiles.Option.Constraint
     public event ConditionTriggeredEventHandler ConditionTriggered;
 
     /// <summary>
-    /// Should be called to trigger the successful result event of this condition
+    ///   Should be called to trigger the successful result event of this condition
     /// </summary>
-    /// <remarks>This method raises <see cref="ConditionTriggered"/> with 
-    /// status <see langword="true"/>. Additionally, a <see cref="PropertyChanged"/>
-    /// event is raised for the property <see cref="IsTrue"/></remarks>
+    /// <remarks>
+    ///   This method raises <see cref="ConditionTriggered"/> with
+    ///   status <see langword="true"/>. Additionally, a <see cref="PropertyChanged"/>
+    ///   event is raised for the property <see cref="IsTrue"/>
+    /// </remarks>
     protected virtual void OnConditionSuccessful() {
-      //if there are subscribers to this event
+      // if there are subscribers to this event
       if (PropertyChanged != null) {
-        //fire the event
+        // fire the event
         PropertyChanged(this, new PropertyChangedEventArgs("IsTrue"));
       }
       if (ConditionTriggered != null) {
@@ -187,15 +192,17 @@ namespace Demo.yFiles.Option.Constraint
     }
 
     /// <summary>
-    /// Should be called to trigger the failed result event of this condition
+    ///   Should be called to trigger the failed result event of this condition
     /// </summary>
-    /// <remarks>This method raises <see cref="ConditionTriggered"/> with 
-    /// status <see langword="false"/>. Additionally, a <see cref="PropertyChanged"/>
-    /// event is raised for the property <see cref="IsTrue"/></remarks>
+    /// <remarks>
+    ///   This method raises <see cref="ConditionTriggered"/> with
+    ///   status <see langword="false"/>. Additionally, a <see cref="PropertyChanged"/>
+    ///   event is raised for the property <see cref="IsTrue"/>
+    /// </remarks>
     protected virtual void OnConditionFailed() {
-      //if there are subscribers to this event
+      // if there are subscribers to this event
       if (PropertyChanged != null) {
-        //fire the event
+        // fire the event
         PropertyChanged(this, new PropertyChangedEventArgs("IsTrue"));
       }
       if (ConditionTriggered != null) {
@@ -205,26 +212,28 @@ namespace Demo.yFiles.Option.Constraint
 
     #endregion
 
-    ///<summary>
-    ///Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-    ///</summary>
-    ///<filterpriority>2</filterpriority>
+    /// <summary>
+    ///   Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    /// <filterpriority>2</filterpriority>
     public virtual void Dispose() {
-//      Trace.WriteLine("Disposing condition");
-      //disconnect from source
-      foreach (INotifyPropertyChanged item in inputs) {
+      //      Trace.WriteLine("Disposing condition");
+      // disconnect from source
+      foreach (var item in inputs) {
         item.PropertyChanged -= SourceValueChangedHandler;
       }
       inputs.Clear();
     }
 
     /// <summary>
-    /// Create a new copy of this condition for the correct type of the condition, but
-    /// with the copied input list instead of the original one.
+    ///   Create a new copy of this condition for the correct type of the condition, but
+    ///   with the copied input list instead of the original one.
     /// </summary>
-    /// <remarks>This method is needed since constructors can't be virtual. Usually, it
-    /// is sufficient just to return <c>new MyConditionType(copiedInput)</c> here.</remarks>
-    /// <param name="copiedInput">array of  copied inputs for this condition.</param>
+    /// <remarks>
+    ///   This method is needed since constructors can't be virtual. Usually, it
+    ///   is sufficient just to return <c>new MyConditionType(copiedInput)</c> here.
+    /// </remarks>
+    /// <param name="copiedInput">array of copied inputs for this condition.</param>
     /// <returns> a new copy of this condition for the copied input list.</returns>
     protected abstract ICondition CreateCopy(params INotifyPropertyChanged[] copiedInput);
 

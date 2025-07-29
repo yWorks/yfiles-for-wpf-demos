@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -34,17 +34,17 @@ using yWorks.Graph.LabelModels;
 namespace Demo.yFiles.Layout.LogicGate
 {
   /// <summary>
-  /// Helper class that describes properties that are necessary to create port candidates in this demo. 
+  /// Helper class that describes properties that are necessary to create port candidates in this demo.
   /// </summary>
   public class PortDescriptor
   {
     /// <summary>
-    /// Relative x coordinate of the port
+    /// Relative x-coordinate of the port
     /// </summary>
     public double X { get; set; }
 
     /// <summary>
-    /// Relative y coordinate of the port
+    /// Relative y-coordinate of the port
     /// </summary>
     public double Y { get; set; }
 
@@ -65,9 +65,9 @@ namespace Demo.yFiles.Layout.LogicGate
     /// <param name="logicGateType"></param>
     public static IEnumerable<PortDescriptor> CreatePortDescriptors(LogicGateType logicGateType) {
       var inside = new InsideOutsidePortLabelModel().CreateInsideParameter();
-      var aboveEdgeLeft = FreePortLabelModel.Instance.CreateParameter(new PointD(-5, -3), new PointD(1, 1), PointD.Origin, 0);
-      var aboveEdgeRight = FreePortLabelModel.Instance.CreateParameter(new PointD(5, -3), new PointD(0, 1), PointD.Origin, 0);
-      var belowEdgeLeft = FreePortLabelModel.Instance.CreateParameter(new PointD(-5, 3), new PointD(1, 0), PointD.Origin, 0);
+      var aboveEdgeLeft = FreePortLabelModel.Instance.CreateParameter(new PointD(-5, -3), new PointD(1, 1), PointD.Origin);
+      var aboveEdgeRight = FreePortLabelModel.Instance.CreateParameter(new PointD(5, -3), new PointD(0, 1), PointD.Origin);
+      var belowEdgeLeft = FreePortLabelModel.Instance.CreateParameter(new PointD(-5, 3), new PointD(1, 0), PointD.Origin);
       switch (logicGateType) {
         default:
         case LogicGateType.And:

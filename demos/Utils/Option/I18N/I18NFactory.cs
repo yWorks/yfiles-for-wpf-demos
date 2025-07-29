@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -29,48 +29,53 @@
 
 using System.Collections.Generic;
 using System.Resources;
-using Demo.yFiles.Option.Handler;
 
 namespace Demo.yFiles.Option.I18N
 {
   /// <summary>
-  /// Interface for classes that support localization of OptionHandler components.
+  ///   Interface for classes that support localization of OptionHandler components.
   /// </summary>
   public interface I18NFactory
   {
     /// <summary>
-    /// Return the localized string for the given <paramref name="key"/> in the
-    /// specified <paramref name="context"/>.
+    ///   Return the localized string for the given <paramref name="key"/> in the
+    ///   specified <paramref name="context"/>.
     /// </summary>
-    /// <param name="context">The context where the localization is searched. This allows
-    /// for duplicate <paramref name="key"/> values in different contexts</param>
+    /// <param name="context">
+    ///   The context where the localization is searched. This allows
+    ///   for duplicate <paramref name="key"/> values in different contexts
+    /// </param>
     /// <param name="key">The key value for which a localization is needed.</param>
     /// <returns>A localized string for the given <paramref name="key"/></returns>
     string GetString(string context, string key);
   }
 
   /// <summary>
-  /// Wraps a .NET <see cref="ResourceManager"/> into a <see cref="I18NFactory"/> instance.
+  ///   Wraps a .NET <see cref="ResourceManager"/> into an <see cref="I18NFactory"/> instance.
   /// </summary>
-  /// <remarks><note>
-  /// Most support classes like <b>YModule</b> handle the registering of
-  /// the resources themselves, please refer to the documentation for these classes for more details.</note></remarks>
-  /// <example> This sample shows how associate a standard .NET resource bundle to an option handler.
-  /// <code lang="C#">
-  ///   class ConstraintDemo 
+  /// <remarks>
+  ///   <note>
+  ///     Most support classes like <b>YModule</b> handle the registering of
+  ///     the resources themselves, please refer to the documentation for these classes for more details.
+  ///   </note>
+  /// </remarks>
+  /// <example>
+  ///   This sample shows how to associate a standard .NET resource bundle with an option handler.
+  ///   <code lang="C#">
+  ///   class ConstraintDemo
   ///   {
-  ///      public static int Main() 
+  ///      public static int Main()
   ///      {
   ///         oh = new OptionHandler("SETTINGS");
-  ///         //add various simple items directly to the handler            
+  ///         // add various simple items directly to the handler
   ///         oh.AddString(null, "STRING", "foo");
   ///         oh.AddInt(null, "INT", 3);
-  ///         //add nested items
+  ///         // add nested items
   ///         OptionGroup g = new OptionGroup("GROUP");
   ///         g.AddOptionItem(new GenericOptionItem&lt;Color>("COLOR"));
   ///         oh.AddOptionItem(g);
-  ///         //localization is supported for most aspects, usually you only need to register a .NET
-  ///         //ResourceManager to your OptionHandler
+  ///         // localization is supported for most aspects, usually you only need to register a .NET
+  ///         // ResourceManager to your OptionHandler
   ///         ResourceManager rm =
   ///             new ResourceManager("Demo.Option.OptionHandler.OptionHandlerDemoI18N",
   ///                                  Assembly.GetExecutingAssembly());
@@ -78,14 +83,14 @@ namespace Demo.yFiles.Option.I18N
   ///         // bind the resource manager to this specific option handler
   ///         rmf.AddResourceManager(oh.Name, rm);
   ///         //  set the factory
-  ///         oh.I18nFactory = rmf;  
+  ///         oh.I18nFactory = rmf;
   ///       }
   ///    }
   /// </code>
-  /// The framework constructs lookup keys from the full path name of an option item, i.e. 
-  /// <c>HandlerName.Group1Name....GroupNName.ItemName</c>,
-  /// so this example uses a resource file like:
-  /// <code>
+  ///   The framework constructs lookup keys from the full path name of an option item, i.e.
+  ///   <c>HandlerName.Group1Name....GroupNName.ItemName</c>,
+  ///   so this example uses a resource file like:
+  ///   <code>
   /// SETTINGS="Settings"
   /// SETTINGS.STRING="String"
   /// SETTINGS.INT="Int"
@@ -95,23 +100,25 @@ namespace Demo.yFiles.Option.I18N
   /// </example>
   public class ResourceManagerI18NFactory : I18NFactory
   {
-    private Dictionary<string, IList<ResourceManager>> resources;
+    private readonly Dictionary<string, IList<ResourceManager>> resources;
 
     /// <summary>
-    /// Create a new factory.
+    ///   Create a new factory.
     /// </summary>
     public ResourceManagerI18NFactory() {
       resources = new Dictionary<string, IList<ResourceManager>>();
     }
 
     /// <summary>
-    /// Add a ResourceManager to the given <paramref name="context"/>.
+    ///   Add a ResourceManager to the given <paramref name="context"/>.
     /// </summary>
-    /// <param name="context">The context where this ResourceManager is bound to. Typically
-    /// the name of an OptionHandler for which the ResourceManaer is responsible</param>
+    /// <param name="context">
+    ///   The context where this ResourceManager is bound to. Typically
+    ///   the name of an OptionHandler for which the ResourceManager is responsible
+    /// </param>
     /// <param name="manager">The new resource manager</param>
     public void AddResourceManager(string context, ResourceManager manager) {
-      //retrieve list
+      // retrieve list
       IList<ResourceManager> resList;
 
       resources.TryGetValue(context, out resList);
@@ -123,54 +130,57 @@ namespace Demo.yFiles.Option.I18N
     }
 
     /// <summary>
-    /// Return the localized string for the given <paramref name="key"/> in the
-    /// specified <paramref name="context"/>.
+    ///   Return the localized string for the given <paramref name="key"/> in the
+    ///   specified <paramref name="context"/>.
     /// </summary>
-    /// <remarks>The factory first tries to get the value from the <see cref="ResourceManager"/>
-    /// that is bound to the context <paramref name="context"/>. If this fails, it tries the same lookup without the leading context, if this also fails,
-    /// it tries to return values for several well known keys (for button descriptions etc.).
-    /// If this also fails, it returns the unmodified <paramref name="key"/>.</remarks>
-    /// <param name="context">The context where the localization is searched. This allows
-    /// for duplicate <paramref name="key"/> values in different contexts</param>
+    /// <remarks>
+    ///   The factory first tries to get the value from the <see cref="ResourceManager"/>
+    ///   that is bound to the context <paramref name="context"/>. If this fails, it tries the same lookup without the leading
+    ///   context, if this also fails,
+    ///   it tries to return values for several well-known keys (for button descriptions etc.).
+    ///   If this also fails, it returns the unmodified <paramref name="key"/>.
+    /// </remarks>
+    /// <param name="context">
+    ///   The context where the localization is searched. This allows
+    ///   for duplicate <paramref name="key"/> values in different contexts
+    /// </param>
     /// <param name="key">The key value for which a localization is needed.</param>
     /// <returns>A localized string for the given <paramref name="key"/></returns>
     public string GetString(string context, string key) {
       string retval = null;
 
-      //first try to find string in specific context
+      // first try to find string in specific context
       IList<ResourceManager> rmsForContext;
       if (context != null && resources.TryGetValue(context, out rmsForContext)) {
-        foreach (ResourceManager manager in rmsForContext) {
+        foreach (var manager in rmsForContext) {
           try {
             retval = manager.GetString(key);
             if (retval != null) {
               return retval;
             }
-          } catch
-            (MissingManifestResourceException) {
-            //just skip this exception
+          } catch (MissingManifestResourceException) {
+            // just skip this exception
           }
         }
       }
       if (retval == null && context != null && context != key && key.StartsWith(context)) {
-        string str = key.Substring(context.Length+1);
-        //prefix with context...
+        var str = key.Substring(context.Length + 1);
+        // prefix with context...
         if (resources.TryGetValue(context, out rmsForContext)) {
-          foreach (ResourceManager manager in rmsForContext) {
+          foreach (var manager in rmsForContext) {
             try {
               retval = manager.GetString(str);
               if (retval != null) {
                 return retval;
               }
-            } catch
-              (MissingManifestResourceException) {
-              //just skip this exception
+            } catch (MissingManifestResourceException) {
+              // just skip this exception
             }
           }
         }
       }
-      //last resort
-//      retval = OptionHandler.FallBackI18NFactory.GetString(context, key);
+      // last resort
+      //      retval = OptionHandler.FallBackI18NFactory.GetString(context, key);
       return retval == null ? key : retval;
     }
   }

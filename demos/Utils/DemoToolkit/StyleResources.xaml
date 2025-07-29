@@ -1,6 +1,6 @@
 <!-- ************************************************************************ -->
-<!-- This demo file is part of yFiles WPF 3.6.                           -->
-<!-- Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
+<!-- This demo file is part of yFiles WPF 4.0.                           -->
+<!-- Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
 <!-- 72070 Tuebingen, Germany. All rights reserved.                           -->
 <!--                                                                          -->
 <!-- yFiles demo files exhibit yFiles WPF functionalities. Any redistribution  -->
@@ -24,7 +24,7 @@
 <!-- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.             -->
 <!--                                                                          -->
 <!-- ************************************************************************ -->
-<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:y="http://www.yworks.com/xml/yfiles-wpf/3.0/xaml">
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:y="http://www.yworks.com/xml/yfiles-wpf/4.0/xaml">
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="pack://application:,,,/DemoToolkit;component/Resources/DemoStyle.xaml"/>
         <ResourceDictionary Source="pack://application:,,,/DemoToolkit;component/Resources/Icons.xaml"/>
@@ -79,7 +79,7 @@
     <DrawingImage x:Key="SettingsWrenchIcon" x:Shared="false" Drawing="{StaticResource settings2-16}"/>
     <DrawingImage x:Key="LayoutIcon" x:Shared="false" Drawing="{StaticResource reload-16}"/>
     <DrawingImage x:Key="LayoutCircularIcon" x:Shared="false" Drawing="{StaticResource layout-circular-16}"/>
-    <DrawingImage x:Key="LayoutHierarchicIcon" x:Shared="false" Drawing="{StaticResource layout-hierarchic-16}"/>
+    <DrawingImage x:Key="LayoutHierarchicalIcon" x:Shared="false" Drawing="{StaticResource layout-hierarchical-16}"/>
     <DrawingImage x:Key="LayoutOrganicIcon" x:Shared="false" Drawing="{StaticResource layout-organic-16}"/>
     <DrawingImage x:Key="LayoutOrthogonalIcon" x:Shared="false" Drawing="{StaticResource layout-orthogonal-16}"/>
     <DrawingImage x:Key="LayoutTreeIcon" x:Shared="false" Drawing="{StaticResource layout-tree-16}"/>
@@ -116,12 +116,12 @@
                 <Setter Property="ContentTemplate" Value="{StaticResource ImageButtonContentTemplate}"/>
                 <Setter Property="Margin" Value="0"/>
             </DataTrigger>
-            <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=Self},Path=Command}" Value="{x:Static y:GraphControl.FitGraphBoundsCommand}">
+            <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=Self},Path=Command}" Value="{x:Static y:GraphCommands.FitGraphBounds}">
                 <Setter Property="Content" Value="{StaticResource FitContentIcon}"/>
                 <Setter Property="ContentTemplate" Value="{StaticResource ImageButtonContentTemplate}"/>
                 <Setter Property="Margin" Value="0"/>
             </DataTrigger>
-            <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=Self},Path=Command}" Value="{x:Static y:CanvasControl.FitContentCommand}">
+            <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=Self},Path=Command}" Value="{x:Static y:GraphCommands.FitContent}">
                 <Setter Property="Content" Value="{StaticResource FitContentIcon}"/>
                 <Setter Property="ContentTemplate" Value="{StaticResource ImageButtonContentTemplate}"/>
                 <Setter Property="Margin" Value="0"/>

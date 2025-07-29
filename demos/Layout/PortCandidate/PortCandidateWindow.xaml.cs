@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -36,23 +36,25 @@ using yWorks.Controls;
 using yWorks.Controls.Input;
 using yWorks.Geometry;
 using yWorks.Graph;
+using yWorks.Graph.LabelModels;
 using yWorks.Graph.Styles;
 using yWorks.Layout;
-using yWorks.Layout.Hierarchic;
-using yWorks.Graph.LabelModels;
+using yWorks.Layout.Hierarchical;
 
-[assembly : XmlnsDefinition("http://www.yworks.com/yfilesWPF/2.2/demos/PortCandidateWindow", "Demo.yFiles.Layout.PortCandidateDemo")]
+[assembly :
+    XmlnsDefinition("http://www.yworks.com/yfilesWPF/2.2/demos/PortCandidateWindow",
+        "Demo.yFiles.Layout.PortCandidateDemo")]
 [assembly : XmlnsPrefix("http://www.yworks.com/yfilesWPF/2.2/demos/PortCandidateWindow", "demo")]
 
 namespace Demo.yFiles.Layout.PortCandidateDemo
 {
   /// <summary>
-  /// This demo shows how to use PortCandidateSets in conjunction with <see cref="HierarchicLayout"/>.
+  ///   This demo shows how to use PortCandidateSets in conjunction with <see cref="HierarchicalLayout"/>.
   /// </summary>
   public partial class PortCandidateWindow
   {
     /// <summary>
-    /// Create a new instance of this class.
+    ///   Create a new instance of this class.
     /// </summary>
     public PortCandidateWindow() {
       InitializeComponent();
@@ -63,64 +65,55 @@ namespace Demo.yFiles.Layout.PortCandidateDemo
     #region Graph creation and layout
 
     /// <summary>
-    /// Perform the layout operation
+    ///   Perform the layout operation
     /// </summary>
     private async Task ApplyLayout() {
       // layout starting, disable button
       layoutButton.IsEnabled = false;
 
       // create the layout algorithm
-      var layout = new HierarchicLayout
-      {
-        OrthogonalRouting = true,
-        LayoutOrientation = LayoutOrientation.TopToBottom
-      };
+      var layout = new HierarchicalLayout { LayoutOrientation = LayoutOrientation.TopToBottom };
 
       // do the layout
-      await graphControl.MorphLayout(layout,
-        TimeSpan.FromSeconds(1),
-        new HierarchicLayoutData {
-          //Automatically determine port constraints for source and target
-          NodePortCandidateSets = {
-            Delegate = node => {
-              var candidateSet = new PortCandidateSet();
-              // iterate the port descriptors
-              var descriptors = PortDescriptor.CreatePortDescriptors(((FlowChartNodeStyle)node.Style).FlowChartType);
-              foreach (var portDescriptor in descriptors) {
-                PortCandidate candidate;
-                // isn't a fixed port candidate (location is variable)
-                if (portDescriptor.X == int.MaxValue) {
-                  // create a port candidate at the specified side (east, west, north, south) and apply a cost to it
-                  candidate = PortCandidate.CreateCandidate(portDescriptor.Side, portDescriptor.Cost);
-                } else {
-                  // create a candidate at a fixed location and side
-                  var x = portDescriptor.X - node.Layout.Width / 2;
-                  var y = portDescriptor.Y - node.Layout.Height / 2;
-                  candidate = PortCandidate.CreateCandidate(x, y, portDescriptor.Side, portDescriptor.Cost);
-                }
-                candidateSet.Add(candidate, portDescriptor.Capacity);
-              }
-              return candidateSet;
-            }
-          },
-          SourceGroupIds = { Delegate = edge => {
-            // create bus-like edge groups for outgoing edges at Start nodes
-            var sourceNode = edge.SourcePort.Owner as INode;
-            if (sourceNode != null && ((((FlowChartNodeStyle)sourceNode.Style).FlowChartType)) == FlowChartType.Start) {
-              return sourceNode;
-            }
-            return null;
-          }},
+      var hlData = layout.CreateLayoutData(graphControl.Graph);
+      // Automatically determine port constraints for source and target
+      hlData.Ports.NodePortCandidates.MapperFunction = node => {
+        var candidateSet = new NodePortCandidates();
+        // iterate the port descriptors
+        var descriptors = PortDescriptor.CreatePortDescriptors(((FlowChartNodeStyle) node.Style).FlowChartType);
+        foreach (var portDescriptor in descriptors) {
+          // isn't a fixed port candidate (location is variable)
+          if (portDescriptor.X == int.MaxValue) {
+            // create a port candidate at the specified side (right, left, top, bottom) and apply a cost to it
+            candidateSet.AddFreeCandidate(portDescriptor.Side, portDescriptor.Cost);
+          } else {
+            // create a candidate at a fixed location and side
+            var x = portDescriptor.X - node.Layout.Width / 2;
+            var y = portDescriptor.Y - node.Layout.Height / 2;
+            var offset = new PointD(x, y);
+            candidateSet.AddFixedCandidate(portDescriptor.Side, offset, portDescriptor.Cost);
+          }
+        }
+        return candidateSet;
+      };
+      hlData.SourceGroupIds.MapperFunction = edge => {
+        // create bus-like edge groups for outgoing edges at Start nodes
+        var sourceNode = edge.SourcePort.Owner as INode;
+        if (sourceNode != null && ((((FlowChartNodeStyle) sourceNode.Style).FlowChartType)) == FlowChartType.Start) {
+          return sourceNode;
+        }
+        return null;
+      };
 
-          TargetGroupIds = { Delegate = edge => {
-            // create bus-like edge groups for incoming edges at Branch nodes
-            var targetNode = edge.TargetPort.Owner as INode;
-            if (targetNode != null && (((FlowChartNodeStyle)targetNode.Style).FlowChartType) == FlowChartType.Branch) {
-              return targetNode;
-            }
-            return null;
-          }}
-        });
+      hlData.TargetGroupIds.MapperFunction = edge => {
+        // create bus-like edge groups for incoming edges at Branch nodes
+        var targetNode = edge.TargetPort.Owner as INode;
+        if (targetNode != null && (((FlowChartNodeStyle) targetNode.Style).FlowChartType) == FlowChartType.Branch) {
+          return targetNode;
+        }
+        return null;
+      };
+      await graphControl.ApplyLayoutAnimated(layout, TimeSpan.FromSeconds(1), hlData);
 
       // enable button again
       layoutButton.IsEnabled = true;
@@ -132,13 +125,13 @@ namespace Demo.yFiles.Layout.PortCandidateDemo
     #region Initialization
 
     /// <summary>
-    /// The default style
+    ///   The default style
     /// </summary>
-    private readonly FlowChartNodeStyle defaultStyle = new FlowChartNodeStyle();
+    private readonly FlowChartNodeStyle defaultStyle = new();
 
     /// <summary>
-    /// Called upon loading of the form.
-    /// This method initializes the graph and the input mode.
+    ///   Called upon loading of the form.
+    ///   This method initializes the graph and the input mode.
     /// </summary>
     /// <seealso cref="InitializeInputModes"/>
     /// <seealso cref="InitializeGraph"/>
@@ -151,24 +144,23 @@ namespace Demo.yFiles.Layout.PortCandidateDemo
     }
 
     /// <summary>
-    /// Initializes the graph instance setting default styles
-    /// and creating a small sample graph.
+    ///   Initializes the graph instance setting default styles
+    ///   and creating a small sample graph.
     /// </summary>
     protected virtual async Task InitializeGraph() {
-      IGraph graph = graphControl.Graph;
+      var graph = graphControl.Graph;
       // set the style as the default for all new nodes
       graph.NodeDefaults.Style = defaultStyle;
 
       // set the default style for all new node labels
-      graph.NodeDefaults.Labels.Style = new DefaultLabelStyle {Typeface = new Typeface("Arial")};
+      graph.NodeDefaults.Labels.Style = new LabelStyle { Typeface = new Typeface("Arial") };
 
       // set the default style for all new edge labels
-      graph.EdgeDefaults.Style = new PolylineEdgeStyle
-                                   {
-                                     SourceArrow = new Arrow {Type = ArrowType.None},
-                                     TargetArrow = new Arrow {Type = ArrowType.None},
-                                     Pen = new Pen(Brushes.DarkSlateGray, 1)
-                                   };
+      graph.EdgeDefaults.Style = new PolylineEdgeStyle {
+          SourceArrow = Arrow.None,
+          TargetArrow = Arrow.None,
+          Pen = new Pen(Brushes.DarkSlateGray, 1)
+      };
 
       // edges should be painted last - be at the highest layer
       graphControl.GraphModelManager.EdgeGroup.ToFront();
@@ -177,10 +169,10 @@ namespace Demo.yFiles.Layout.PortCandidateDemo
       graph.NodeDefaults.Ports.AutoCleanUp = false;
 
       // newly created edges will always connect to the node's center
-      graph.GetDecorator().NodeDecorator.PortCandidateProviderDecorator.SetFactory(
-        PortCandidateProviders.FromNodeCenter);
+      graph.GetDecorator().Nodes.PortCandidateProvider
+          .AddFactory(PortCandidateProviders.FromNodeCenter);
 
-      //Read initial graph from embedded resource
+      // Read initial graph from embedded resource
       graphControl.ImportFromGraphML("Resources\\defaultGraph.graphml");
 
       // make sure the graph fits
@@ -191,46 +183,45 @@ namespace Demo.yFiles.Layout.PortCandidateDemo
     }
 
     /// <summary>
-    /// Calls <see cref="CreateEditorMode"/> and registers
-    /// the result as the <see cref="CanvasControl.InputMode"/>.
+    ///   Calls <see cref="CreateEditorMode"/> and registers
+    ///   the result as the <see cref="CanvasControl.InputMode"/>.
     /// </summary>
     protected virtual void InitializeInputModes() {
       graphControl.InputMode = CreateEditorMode();
     }
 
     /// <summary>
-    /// Creates the default input mode for the GraphControl,
-    /// a <see cref="GraphEditorInputMode"/>.
+    ///   Creates the default input mode for the GraphControl,
+    ///   a <see cref="GraphEditorInputMode"/>.
     /// </summary>
     /// <remarks>
-    /// The control uses a custom node creation callback that creates business objects for newly
-    /// created nodes.
+    ///   The control uses a custom node creation callback that creates business objects for newly
+    ///   created nodes.
     /// </remarks>
     /// <returns>a new GraphEditorInputMode instance</returns>
     protected virtual IInputMode CreateEditorMode() {
-      GraphEditorInputMode mode = new GraphEditorInputMode {
-        // don't allow nodes to be created using a mouse click
-        AllowCreateNode = false,
-        // disable node resizing
-        ShowHandleItems = GraphItemTypes.Bend | GraphItemTypes.Edge,
-        // edge creation - uncomment to allow edges only to be created orthogonally
-        // CreateEdgeInputMode = {OrthogonalEdgeCreation = true},
-        // OrthogonalEdgeEditingContext = new OrthogonalEdgeEditingContext(),
-        // enable drag and drop
-        NodeDropInputMode = {Enabled = true}
+      var mode = new GraphEditorInputMode {
+          // don't allow nodes to be created using a mouse click
+          AllowCreateNode = false,
+          // disable node resizing
+          ShowHandleItems = GraphItemTypes.Bend | GraphItemTypes.Edge,
+          // edge creation - uncomment to allow edges only to be created orthogonally
+          // CreateEdgeInputMode = {OrthogonalEdgeCreation = true},
+          // OrthogonalEdgeEditingContext = new OrthogonalEdgeEditingContext(),
+          // enable drag and drop
+          NodeDropInputMode = { Enabled = true }
       };
       // wrap the original node creator so it removes the label from the dragged node
       var originalNodeCreator = mode.NodeDropInputMode.ItemCreator;
-      mode.NodeDropInputMode.ItemCreator =
-        (context, graph, draggedNode, dropTarget, layout) =>
-        {
-          return originalNodeCreator(context, graph, new SimpleNode { Style = draggedNode.Style, Layout = draggedNode.Layout }, dropTarget, layout);
-        };
+      mode.NodeDropInputMode.ItemCreator = (context, graph, draggedNode, dropTarget, layout) => {
+        return originalNodeCreator(context, graph,
+            new SimpleNode { Style = draggedNode.Style, Layout = draggedNode.Layout }, dropTarget, layout);
+      };
       return mode;
     }
 
     /// <summary>
-    /// Fill the node list that acts as a source for nodes.
+    ///   Fill the node list that acts as a source for nodes.
     /// </summary>
     private void PopulateNodesList() {
       // Create a new Graph in which the palette nodes live
@@ -245,21 +236,21 @@ namespace Demo.yFiles.Layout.PortCandidateDemo
       CreateNode(nodeContainer, PointD.Origin, FlowChartType.End);
 
       // Add nodes to listview
-      foreach (INode n in nodeContainer.Nodes) {
+      foreach (var n in nodeContainer.Nodes) {
         var type = ((FlowChartNodeStyle) n.Style).FlowChartType;
-        nodeContainer.AddLabel(n, type.ToString(), ExteriorLabelModel.South);
+        nodeContainer.AddLabel(n, type.ToString(), ExteriorNodeLabelModel.Bottom);
         styleListBox.Items.Add(n);
       }
     }
 
     /// <summary>
-    /// Method that creates a node of the specified type. The method will specify the ports
-    /// that the node should have based on its type.
+    ///   Method that creates a node of the specified type. The method will specify the ports
+    ///   that the node should have based on its type.
     /// </summary>
     private void CreateNode(IGraph graph, PointD location, FlowChartType type) {
       var size = FlowChartNodeStyle.GetNodeTypeSize(type);
-      RectD newBounds = new RectD(location, size);
-      graph.CreateNode(newBounds, new FlowChartNodeStyle {FlowChartType = type});
+      var newBounds = new RectD(location, size);
+      graph.CreateNode(newBounds, new FlowChartNodeStyle { FlowChartType = type });
     }
 
     #endregion
@@ -267,31 +258,31 @@ namespace Demo.yFiles.Layout.PortCandidateDemo
     #region Event handler implementation
 
     /// <summary>
-    /// Exits the demo.
+    ///   Exits the demo.
     /// </summary>
     private void ExitMenuItemClick(object sender, EventArgs e) {
       Application.Current.Shutdown();
     }
 
     /// <summary>
-    /// Formats the current graph.
+    ///   Formats the current graph.
     /// </summary>
     private async void OnLayoutClick(object sender, EventArgs e) {
       await ApplyLayout();
     }
 
     /// <summary>
-    /// Initializes drag and drop behavior on the node list to the left
+    ///   Initializes drag and drop behavior on the node list to the left
     /// </summary>
     private void OnTemplateMouseDown(object sender, RoutedEventArgs e) {
       // Initialize the information for a drag & drop from the node style list.
-      FrameworkElement o = e.OriginalSource as FrameworkElement;
+      var o = e.OriginalSource as FrameworkElement;
       if (o != null) {
         if (o.DataContext is INode) {
           var node = o.DataContext as INode;
 
-          DataObject dao = new DataObject();
-          dao.SetData(typeof (INode), node);
+          var dao = new DataObject();
+          dao.SetData(typeof(INode), node);
           DragDrop.DoDragDrop(o, dao, DragDropEffects.Link | DragDropEffects.Copy | DragDropEffects.Move);
         }
       }
@@ -303,7 +294,7 @@ namespace Demo.yFiles.Layout.PortCandidateDemo
   #region Business logic
 
   /// <summary>
-  /// Specifies the type of the node.
+  ///   Specifies the type of the node.
   /// </summary>
   public enum FlowChartType
   {

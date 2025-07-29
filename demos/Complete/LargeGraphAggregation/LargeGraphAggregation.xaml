@@ -1,6 +1,6 @@
 <!-- ************************************************************************ -->
-<!-- This demo file is part of yFiles WPF 3.6.                           -->
-<!-- Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
+<!-- This demo file is part of yFiles WPF 4.0.                           -->
+<!-- Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
 <!-- 72070 Tuebingen, Germany. All rights reserved.                           -->
 <!--                                                                          -->
 <!-- yFiles demo files exhibit yFiles WPF functionalities. Any redistribution  -->
@@ -27,7 +27,7 @@
 <Window x:Name="Window" x:Class="Demo.yFiles.Complete.LargeGraphAggregation.LargeGraphAggregationWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/3.0/xaml"
+        xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/4.0/xaml"
         xmlns:largeGraphAggregation="clr-namespace:Demo.yFiles.Complete.LargeGraphAggregation"
         xmlns:optionHandler="clr-namespace:Demo.yFiles.Toolkit.OptionHandler;assembly=option-handler"
         Title="Demo.yFiles.Complete.LargeGraphAggregation" Height="473" Width="1021"
@@ -43,7 +43,7 @@
                         ContentTemplate="{StaticResource ImageButtonContentTemplate}"
                         Content="{StaticResource Zoom100Icon}" />
                 <Button Command="DecreaseZoom" CommandTarget="{Binding ElementName=graphControl}" />
-                <Button Command="{x:Static ywpf:GraphControl.FitGraphBoundsCommand}"
+                <Button Command="{x:Static ywpf:GraphCommands.FitGraphBounds}"
                         CommandTarget="{Binding ElementName=graphControl}" />
             </ToolBar>
         </ToolBarTray>
@@ -80,7 +80,7 @@
                                 </Paragraph>
                                 <Paragraph>
                                     The <Run Style="{StaticResource HtmlCode}">NodeAggregation</Run> algorithm consolidates 
-                                    nodes of a graph and thus creates clusters of node based on user-specified constraints.
+                                    nodes of a graph and thus creates clusters of nodes based on user-specified constraints.
                                 </Paragraph>
                                 <Paragraph>
                                     The demo shows aggregated nodes in a gray style, while original nodes of the data are 
@@ -103,8 +103,8 @@
                                         <Paragraph>
                                             Switch between the
                                             <Bold>two layout styles</Bold> offered for visualizing the aggregated graph (i.e.
-                                            <Run Style="{StaticResource HtmlCode}">BalloonLayout</Run> and
-                                            <Run Style="{StaticResource HtmlCode}">CactusGroupLayout</Run>). This re-runs the aggregation as well.
+                                            <Run Style="{StaticResource HtmlCode}">RadialTreeLayout</Run> and
+                                            <Run Style="{StaticResource HtmlCode}">RadialGroupLayout</Run>). This re-runs the aggregation as well.
                                         </Paragraph>
                                     </ListItem>
                                     <ListItem>
@@ -114,7 +114,7 @@
                                     </ListItem>
                                     <ListItem>
                                         <Paragraph>
-                                            Click on an separated node to <Bold>hide</Bold> its children in the aggregation hierarchy.
+                                            Click on a separated node to <Bold>hide</Bold> its children in the aggregation hierarchy.
                                         </Paragraph>
                                     </ListItem>
                                     <ListItem>

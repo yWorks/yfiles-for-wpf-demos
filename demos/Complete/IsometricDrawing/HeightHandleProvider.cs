@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -50,10 +50,10 @@ namespace Demo.yFiles.Complete.IsometricDrawing
 
     public IEnumerable<IHandle> GetHandles(IInputModeContext context) {
       var result = new List<IHandle>();
-      if (this.delegateHandler != null) {
-        result.AddRange(this.delegateHandler.GetHandles(context));
+      if (delegateHandler != null) {
+        result.AddRange(delegateHandler.GetHandles(context));
       }
-      result.Add(new HeightHandle(this.node, context, this.minimumHeight));
+      result.Add(new HeightHandle(node, context, minimumHeight));
       return result;
     }
   }

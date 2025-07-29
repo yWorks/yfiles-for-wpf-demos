@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -183,23 +183,23 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
             if (attr != null) {
                 X = double.Parse(attr, CultureInfo.InvariantCulture);
             }
-            
+
             attr = BpmnNM.GetAttributeValue(xBounds, BpmnNM.Dc, BpmnDiConstants.YAttribute);
             if (attr != null) {
                 Y = double.Parse(attr, CultureInfo.InvariantCulture);
             }
-            
+
             attr = BpmnNM.GetAttributeValue(xBounds, BpmnNM.Dc, BpmnDiConstants.HeightAttribute);
             if (attr != null) {
                 Height = double.Parse(attr, CultureInfo.InvariantCulture);
             }
-            
+
             attr = BpmnNM.GetAttributeValue(xBounds, BpmnNM.Dc, BpmnDiConstants.WidthAttribute);
             if (attr != null) {
                 Width = double.Parse(attr, CultureInfo.InvariantCulture);
             }
-            
-            //Check for size 0
+
+            // Check for size 0
             if (Height == 0) {
                 Height = 30;
             }
@@ -258,7 +258,6 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
     /// Returns the value of the given attribute of the linked <see cref="BpmnElement"/>, or null
     /// </summary>
     /// <param name="attribute">The attribute to receive</param>
-    /// <returns></returns>
     public string GetAttribute(string attribute) {
       return Element.GetValue(attribute);
     }
@@ -272,7 +271,7 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
     }
 
     /// <summary>
-    /// Returns true, if the top left point of the bounds is not 0/0 (standard case) 
+    /// Returns true, if the top left point of the bounds is not 0/0 (standard case)
     /// </summary>
     /// <returns>True, if the label position is 0/0</returns>
     public bool HasLabelPosition() {

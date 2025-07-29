@@ -1,3 +1,3 @@
 # SelectionStyling
 
-Demonstrates customized selecting painting of nodes, edges and labels by decorating these items with a corresponding style.
+Demonstrates customized selecting rendering of nodes, edges and labels by decorating these items with a corresponding style.

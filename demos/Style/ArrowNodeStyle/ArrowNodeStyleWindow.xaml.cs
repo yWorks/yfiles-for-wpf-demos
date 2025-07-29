@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -30,7 +30,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using Demo.yFiles.Option.Handler;
@@ -41,33 +40,33 @@ using yWorks.Geometry;
 using yWorks.Graph;
 using yWorks.Graph.LabelModels;
 using yWorks.Graph.Styles;
+using yWorks.Utils;
 
 namespace Demo.yFiles.Graph.ArrowNodeStyle
 {
   /// <summary>
-  /// A demo that showcases how different properties of <see cref="ArrowNodeStyle"/> change the visualization.
+  ///   A demo that showcases how different properties of <see cref="ArrowNodeStyle"/> change the visualization.
   /// </summary>
   /// <remarks>
-  /// Several nodes with different <see cref="ArrowNodeStyle"/> configurations are provided on startup and the
-  /// configuration of a style can be changed via an option panel.
-  /// <para>
-  /// The properties, that can be changed, include:
-  /// <list type="bullet">
-  ///   <item>the basic shape of the style</item>
-  ///   <item>the direction the shape is pointing to</item>
-  ///   <item>the angle of the arrow tip</item>
-  ///   <item>the thickness of the arrow shaft as ratio of the node size</item>
-  /// </list>
-  /// </para>
+  ///   Several nodes with different <see cref="ArrowNodeStyle"/> configurations are provided on startup and the
+  ///   configuration of a style can be changed via an option panel.
+  ///   <para>
+  ///     The properties, that can be changed, include:
+  ///     <list type="bullet">
+  ///       <item>the basic shape of the style</item>
+  ///       <item>the direction the shape is pointing to</item>
+  ///       <item>the angle of the arrow tip</item>
+  ///       <item>the thickness of the arrow shaft as ratio of the node size</item>
+  ///     </list>
+  ///   </para>
   /// </remarks>
   public partial class ArrowNodeStyleWindow
   {
-
     #region Initialization
 
     /// <summary>
-    /// Wires up the UI components and adds a
-    /// <see cref="GraphControl"/> to the form.
+    ///   Wires up the UI components and adds a
+    ///   <see cref="GraphControl"/> to the form.
     /// </summary>
     public ArrowNodeStyleWindow() {
       InitializeComponent();
@@ -78,7 +77,7 @@ namespace Demo.yFiles.Graph.ArrowNodeStyle
     }
 
     /// <summary>
-    /// Center the sample graph in the visible area.
+    ///   Center the sample graph in the visible area.
     /// </summary>
     /// <seealso cref="InitializeStyleDefaults"/>
     protected virtual void OnLoaded(object source, EventArgs e) {
@@ -86,7 +85,7 @@ namespace Demo.yFiles.Graph.ArrowNodeStyle
     }
 
     /// <summary>
-    /// Initializes the default styles.
+    ///   Initializes the default styles.
     /// </summary>
     private void InitializeStyleDefaults() {
       var orange = Themes.PaletteOrange;
@@ -96,26 +95,26 @@ namespace Demo.yFiles.Graph.ArrowNodeStyle
       Graph.NodeDefaults.ShareStyleInstance = false;
       Graph.NodeDefaults.Labels.Style = CreateLabelStyle(orange);
       Graph.NodeDefaults.Labels.LayoutParameter =
-          new ExteriorLabelModel { Insets = new InsetsD(30) }.CreateParameter(ExteriorLabelModel.Position.South);
+          new ExteriorNodeLabelModel { Margins = new InsetsD(30) }.CreateParameter(ExteriorNodeLabelModel.Position.Bottom);
     }
 
     /// <summary>
-    /// Creates a new node label style with colors from the given palette.
+    ///   Creates a new node label style with colors from the given palette.
     /// </summary>
     private static ILabelStyle CreateLabelStyle(Palette palette) {
-      return new DefaultLabelStyle {
+      return new LabelStyle {
           Shape = LabelShape.RoundRectangle,
           BackgroundBrush = palette.NodeLabelFill,
           TextBrush = palette.Text,
           VerticalTextAlignment = VerticalAlignment.Center,
           TextAlignment = TextAlignment.Left,
-          Insets = new InsetsD(8, 4, 8, 4),
+          Padding = new InsetsD(8, 4, 8, 4),
           TextSize = 14
       };
     }
 
     /// <summary>
-    /// Creates the initial sample graph.
+    ///   Creates the initial sample graph.
     /// </summary>
     private void CreateSampleGraph() {
       // create nodes with different shapes, angles and shaft ratios
@@ -127,47 +126,47 @@ namespace Demo.yFiles.Graph.ArrowNodeStyle
     }
 
     /// <summary>
-    /// Creates several nodes with the given shape and different angles and shaft ratios.
-    /// <param name="xOffset">The x-location where to place the nodes.</param>
-    /// <param name="shape">The shape to use for the arrow.</param>
-    /// <param name="palette">The colors to use for nodes and labels.</param>
+    ///   Creates several nodes with the given shape and different angles and shaft ratios.
+    ///   <param name="xOffset">The x-location where to place the nodes.</param>
+    ///   <param name="shape">The shape to use for the arrow.</param>
+    ///   <param name="palette">The colors to use for nodes and labels.</param>
     /// </summary>
     private void CreateNodes(double xOffset, ArrowStyleShape shape, Palette palette) {
       var angleFactor = shape == ArrowStyleShape.Parallelogram || shape == ArrowStyleShape.Trapezoid ? 0.5 : 1;
 
       yWorks.Graph.Styles.ArrowNodeStyle[] styles = {
           // small angle and shaft ratio pointing left
-          new yWorks.Graph.Styles.ArrowNodeStyle {
+          new() {
               Shape = shape,
               Direction = ArrowNodeDirection.Left,
-              Angle = (angleFactor * Math.PI) / 8,
+              Angle = angleFactor * Math.PI / 8,
               ShaftRatio = 0.25,
               Brush = palette.Fill,
               Pen = new Pen(palette.Stroke, 1)
           },
           // default angle and shaft ratio pointing up
-          new yWorks.Graph.Styles.ArrowNodeStyle {
+          new() {
               Shape = shape,
               Direction = ArrowNodeDirection.Up,
-              Angle = (angleFactor * Math.PI) / 4,
+              Angle = angleFactor * Math.PI / 4,
               ShaftRatio = 1.0 / 3,
               Brush = palette.Fill,
               Pen = new Pen(palette.Stroke, 1)
           },
           // bigger angle and shaft ratio pointing right
-          new yWorks.Graph.Styles.ArrowNodeStyle {
+          new() {
               Shape = shape,
               Direction = ArrowNodeDirection.Right,
-              Angle = (angleFactor * Math.PI * 3) / 8,
+              Angle = angleFactor * Math.PI * 3 / 8,
               ShaftRatio = 0.75,
               Brush = palette.Fill,
               Pen = new Pen(palette.Stroke, 1)
           },
           // negative angle and max shaft ratio pointing right
-          new yWorks.Graph.Styles.ArrowNodeStyle {
+          new() {
               Shape = shape,
               Direction = ArrowNodeDirection.Right,
-              Angle = (angleFactor * -Math.PI) / 8,
+              Angle = angleFactor * -Math.PI / 8,
               ShaftRatio = 1,
               Brush = palette.Fill,
               Pen = new Pen(palette.Stroke, 1)
@@ -182,9 +181,9 @@ namespace Demo.yFiles.Graph.ArrowNodeStyle
         var height = i == 1 ? 200 : 100;
         var style = styles[i];
         Graph.AddLabel(
-            Graph.CreateNode(new Rect(x, y, width, height), style),
+            Graph.CreateNode(new RectD(x, y, width, height), style),
             StyleToText(style),
-            new ExteriorLabelModel { Insets = new InsetsD(30) }.CreateParameter(ExteriorLabelModel.Position.South),
+            new ExteriorNodeLabelModel { Margins = new InsetsD(30) }.CreateParameter(ExteriorNodeLabelModel.Position.Bottom),
             CreateLabelStyle(palette)
         );
         y += height + 250;
@@ -194,87 +193,76 @@ namespace Demo.yFiles.Graph.ArrowNodeStyle
     private void InitializeInteraction() {
       // reserve some space for the angle adjustment handle
       GraphControl.ContentMargins = new InsetsD(20);
-      
+
       var inputMode = new GraphEditorInputMode {
-        AllowCreateEdge = false, AllowAddLabel = false, AllowEditLabel = false, SelectableItems = GraphItemTypes.Node
+          AllowCreateEdge = false, EditLabelInputMode = { Enabled = false }, SelectableItems = GraphItemTypes.Node
       };
       GraphControl.InputMode = inputMode;
 
       // add a label to newly created node that shows the current style settings
-      inputMode.NodeCreated += ((sender, evt) => {
+      inputMode.NodeCreated += (sender, evt) => {
         var node = evt.Item;
         Graph.AddLabel(node, StyleToText(node.Style as yWorks.Graph.Styles.ArrowNodeStyle));
-      });
-      
-      // listen for selection changes to update the option handler for the style properties
-      GraphControl.Selection.ItemSelectionChanged += (sender, e) => {
-        if (e.ItemSelected) {
-          AdjustOptionPanel((INode) e.Item);
-        }
       };
 
-      var nodeDecorator = graphControl.Graph.GetDecorator().NodeDecorator;
+      // listen for selection changes to update the option handler for the style properties
+      GraphControl.Selection.Nodes.ItemAdded += (sender, e) =>  {
+        AdjustOptionPanel(e.Item);
+      };
+
+      var nodeDecorator = graphControl.Graph.GetDecorator().Nodes;
 
       // add handle that enables the user to change the angle and shaft ratio of a node style
-      nodeDecorator.HandleProviderDecorator.SetImplementationWrapper(
-          n => n.Style is yWorks.Graph.Styles.ArrowNodeStyle,
-          (node, delegateProvider) =>
-              new ArrowNodeStyleHandleProvider(node, () => {
-                AdjustOptionPanel(node);
-                var style = (yWorks.Graph.Styles.ArrowNodeStyle) node.Style;
-                if (node.Labels.Count == 0) {
-                  Graph.AddLabel(node, StyleToText(style));
-                } else {
-                  Graph.SetLabelText(node.Labels.First(), StyleToText(style));
-                }
-              }, delegateProvider)
-      );
+      nodeDecorator.HandleProvider.AddWrapperFactory(n => n.Style is yWorks.Graph.Styles.ArrowNodeStyle,
+          (node, delegateProvider) => new ArrowNodeStyleHandleProvider(node, () => {
+            AdjustOptionPanel(node);
+            var style = (yWorks.Graph.Styles.ArrowNodeStyle) node.Style;
+            if (node.Labels.Count == 0) {
+              Graph.AddLabel(node, StyleToText(style));
+            } else {
+              Graph.SetLabelText(node.Labels[0], StyleToText(style));
+            }
+          }, delegateProvider));
 
       // only provide reshape handles for the east, south and south-east sides so they don't clash with the custom handles
-      nodeDecorator.ReshapeHandleProviderDecorator.SetFactory(node =>
-          new NodeReshapeHandleProvider(node, node.Lookup<IReshapeHandler>(),
-              HandlePositions.East | HandlePositions.South | HandlePositions.SouthEast));
+      nodeDecorator.ReshapeHandleProvider.AddFactory(node => new NodeReshapeHandleProvider(node,
+          node.Lookup<IReshapeHandler>(),
+          HandlePositions.Right | HandlePositions.Bottom | HandlePositions.BottomRight));
 
-      nodeDecorator.SelectionDecorator.HideImplementation();
+      nodeDecorator.SelectionRenderer.Hide();
     }
 
     private static string StyleToText(yWorks.Graph.Styles.ArrowNodeStyle style) {
-      return
-          "Shape: " + Enum.GetName(typeof(ArrowStyleShape), style.Shape) + "\n" +
-          "Direction: " + Enum.GetName(typeof(ArrowNodeDirection), style.Direction) + "\n" +
-          "Angle: " + Math.Round(ToDegrees(style.Angle), 0) + "\n" +
-          "Shaft Ratio: " + Math.Round(style.ShaftRatio, 1);
+      return "Shape: " + Enum.GetName(typeof(ArrowStyleShape), style.Shape) + "\n" + "Direction: " +
+          Enum.GetName(typeof(ArrowNodeDirection), style.Direction) + "\n" + "Angle: " +
+          Math.Round(ToDegrees(style.Angle), 0) + "\n" + "Shaft Ratio: " + Math.Round(style.ShaftRatio, 1);
     }
 
     /// <summary>
-    /// Returns the given angle in degrees.
+    ///   Returns the given angle in degrees.
     /// </summary>
     private static double ToDegrees(double radians) {
-      return (radians * 180) / Math.PI;
+      return radians * 180 / Math.PI;
     }
 
     /// <summary>
-    /// Returns the given angle in radians.
+    ///   Returns the given angle in radians.
     /// </summary>
     private static double ToRadians(double degrees) {
-      return (degrees / 180) * Math.PI;
+      return degrees / 180 * Math.PI;
     }
 
     #endregion
 
     /// <summary>
-    /// Returns the GraphControl instance used in the form.
+    ///   Returns the GraphControl instance used in the form.
     /// </summary>
-    public GraphControl GraphControl {
-      get { return graphControl; }
-    }
+    public GraphControl GraphControl => graphControl;
 
     /// <summary>
-    /// Gets the currently registered IGraph instance from the GraphControl.
+    ///   Gets the currently registered <see cref="IGraph"/> instance from the GraphControl.
     /// </summary>
-    public IGraph Graph {
-      get { return GraphControl.Graph; }
-    }
+    public IGraph Graph => GraphControl.Graph;
 
     #region Option Handler For Node Style Properties
 
@@ -293,7 +281,7 @@ namespace Demo.yFiles.Graph.ArrowNodeStyle
     private IOptionItem shaftRatioItem;
 
     /// <summary>
-    /// Initializes the OptionHandler for changing the node style properties and assigns it to the option panel.
+    ///   Initializes the OptionHandler for changing the node style properties and assigns it to the option panel.
     /// </summary>
     private void InitializeOptionSettings() {
       SetupHandler();
@@ -304,25 +292,19 @@ namespace Demo.yFiles.Graph.ArrowNodeStyle
       handler = new OptionHandler(ArrowNodeStyleProperties);
       var propertyGroup = handler.AddGroup(ArrowNodeStyleProperties);
 
-      arrowStyleShapeItem = propertyGroup.AddOptionItem(
-          new CollectionOptionItem<ArrowStyleShape>(ArrowStyleShapeName,
-              new List<ArrowStyleShape> {
-                  ArrowStyleShape.Arrow,
-                  ArrowStyleShape.DoubleArrow,
-                  ArrowStyleShape.NotchedArrow,
-                  ArrowStyleShape.Parallelogram,
-                  ArrowStyleShape.Trapezoid
-              },
-              ArrowStyleShape.Arrow
-          ));
+      arrowStyleShapeItem = propertyGroup.AddOptionItem(new CollectionOptionItem<ArrowStyleShape>(ArrowStyleShapeName,
+          new List<ArrowStyleShape> {
+              ArrowStyleShape.Arrow,
+              ArrowStyleShape.DoubleArrow,
+              ArrowStyleShape.NotchedArrow,
+              ArrowStyleShape.Parallelogram,
+              ArrowStyleShape.Trapezoid
+          }, ArrowStyleShape.Arrow));
       arrowStyleShapeItem.PropertyChanged += OnArrowShapeChanged;
-      directionItem = propertyGroup.AddOptionItem(
-          new CollectionOptionItem<ArrowNodeDirection>(DirectionName,
-              new List<ArrowNodeDirection> {
-                  ArrowNodeDirection.Right, ArrowNodeDirection.Down, ArrowNodeDirection.Left, ArrowNodeDirection.Up,
-              },
-              ArrowNodeDirection.Right
-          ));
+      directionItem = propertyGroup.AddOptionItem(new CollectionOptionItem<ArrowNodeDirection>(DirectionName,
+          new List<ArrowNodeDirection> {
+              ArrowNodeDirection.Right, ArrowNodeDirection.Down, ArrowNodeDirection.Left, ArrowNodeDirection.Up
+          }, ArrowNodeDirection.Right));
       directionItem.PropertyChanged += OnDirectionChanged;
       angleItem = propertyGroup.AddDouble(AngleName, 90, -180, 180);
       angleItem.PropertyChanged += OnAngleChanged;
@@ -333,8 +315,8 @@ namespace Demo.yFiles.Graph.ArrowNodeStyle
     private bool optionsUpdating;
 
     /// <summary>
-    /// Applies the arrow shape setting from the option panel to the styles of all selected nodes as well as to the
-    /// default style used for new nodes.
+    ///   Applies the arrow shape setting from the option panel to the styles of all selected nodes as well as to the
+    ///   default style used for new nodes.
     /// </summary>
     private void OnArrowShapeChanged(object sender = null, PropertyChangedEventArgs e = null) {
       var newShape = (ArrowStyleShape) arrowStyleShapeItem.Value;
@@ -342,8 +324,8 @@ namespace Demo.yFiles.Graph.ArrowNodeStyle
     }
 
     /// <summary>
-    /// Applies the direction setting from the option panel to the styles of all selected nodes as well as to the
-    /// default style used for new nodes.
+    ///   Applies the direction setting from the option panel to the styles of all selected nodes as well as to the
+    ///   default style used for new nodes.
     /// </summary>
     private void OnDirectionChanged(object sender = null, PropertyChangedEventArgs e = null) {
       var newDirection = (ArrowNodeDirection) directionItem.Value;
@@ -351,8 +333,8 @@ namespace Demo.yFiles.Graph.ArrowNodeStyle
     }
 
     /// <summary>
-    /// Applies the angle setting from the option panel to the styles of all selected nodes as well as to the
-    /// default style used for new nodes.
+    ///   Applies the angle setting from the option panel to the styles of all selected nodes as well as to the
+    ///   default style used for new nodes.
     /// </summary>
     private void OnAngleChanged(object sender = null, PropertyChangedEventArgs e = null) {
       var newAngle = Math.Round((double) angleItem.Value, 0);
@@ -361,8 +343,8 @@ namespace Demo.yFiles.Graph.ArrowNodeStyle
     }
 
     /// <summary>
-    /// Applies the shaft ratio setting from the option panel to the styles of all selected nodes as well as to the
-    /// default style used for new nodes.
+    ///   Applies the shaft ratio setting from the option panel to the styles of all selected nodes as well as to the
+    ///   default style used for new nodes.
     /// </summary>
     private void OnShaftRatioChanged(object sender = null, PropertyChangedEventArgs e = null) {
       var newShaftRatio = Math.Round((double) shaftRatioItem.Value, 1);
@@ -374,13 +356,13 @@ namespace Demo.yFiles.Graph.ArrowNodeStyle
       if (optionsUpdating) {
         return;
       }
-      foreach (var node in GraphControl.Selection.SelectedNodes) {
+      foreach (var node in GraphControl.Selection.Nodes) {
         if (node.Style is yWorks.Graph.Styles.ArrowNodeStyle style) {
           adjustStyle(style);
           if (node.Labels.Count == 0) {
             Graph.AddLabel(node, StyleToText(style));
           } else {
-            Graph.SetLabelText(node.Labels.First(), StyleToText(style));
+            Graph.SetLabelText(node.Labels[0], StyleToText(style));
           }
         }
       }
@@ -392,7 +374,7 @@ namespace Demo.yFiles.Graph.ArrowNodeStyle
     }
 
     /// <summary>
-    /// Adjusts the option panel to show the style settings of a newly selected node.
+    ///   Adjusts the option panel to show the style settings of a newly selected node.
     /// </summary>
     private void AdjustOptionPanel(INode node) {
       var style = node.Style as yWorks.Graph.Styles.ArrowNodeStyle;

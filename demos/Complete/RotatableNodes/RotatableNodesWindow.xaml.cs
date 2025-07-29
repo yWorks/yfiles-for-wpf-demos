@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -44,19 +44,19 @@ using yWorks.Graph.Styles;
 using yWorks.GraphML;
 using yWorks.Layout;
 using yWorks.Layout.Circular;
-using yWorks.Layout.Hierarchic;
+using yWorks.Layout.Hierarchical;
 using yWorks.Layout.Organic;
 using yWorks.Layout.Orthogonal;
 using yWorks.Layout.Radial;
 using yWorks.Layout.Router;
-using yWorks.Layout.Router.Polyline;
 using yWorks.Layout.Tree;
+using Path = System.IO.Path;
 
 namespace Demo.yFiles.Complete.RotatableNodes
 {
   /// <summary>
-  /// Demo code that shows how support for rotated node visualizations can be implemented on top of the yFiles library.
-  /// A custom <see cref="INodeStyle"/> implementation is used to encapsulate most of the added functionality.
+  ///   Demo code that shows how support for rotated node visualizations can be implemented on top of the yFiles library.
+  ///   A custom <see cref="INodeStyle"/> implementation is used to encapsulate most of the added functionality.
   /// </summary>
   public partial class RotatableNodesWindow
   {
@@ -67,44 +67,50 @@ namespace Demo.yFiles.Complete.RotatableNodes
     }
 
     private void OnWindowLoaded(object sender, RoutedEventArgs e) {
-      
       InitializeInputMode();
       InitializeGraphML();
       InitializeGraph();
       LoadGraph("sine");
     }
-        
+
     /// <summary>
-    /// Initializes the interaction with the graph.
+    ///   Initializes the interaction with the graph.
     /// </summary>
     private void InitializeInputMode() {
-      graphControl.InputMode = new GraphEditorInputMode
-      {
-        // Enable orthogonal edge editing
-        OrthogonalEdgeEditingContext = new OrthogonalEdgeEditingContext(),
+      var graphEditorInputMode = new GraphEditorInputMode {
+          SnapContext = new GraphSnapContext {
+              Enabled = true,
+              SnappableItems = SnappableItems.Node,
+              CollectNodePairSegmentSnapLines = false,
+              CollectNodePairSnapLines = false,
+              CollectEdgeSnapReferences = false,
+              CollectNodeSnapReferences = false,
+              CollectPortSnapReferences = false,
+              CollectNodeSizes = false
+          }
+      };
+      graphControl.InputMode = graphEditorInputMode;
 
-        // enable snapping only for the resizing of nodes and only to the same sizes of other nodes.
-        SnapContext = new GraphSnapContext
-        {
-          Enabled = false,
-          CollectNodePairSegmentSnapLines = false,
-          CollectNodePairSnapLines = false,
-          CollectEdgeSnapLines = false,
-          CollectNodeSnapLines = false,
-          CollectPortSnapLines = false,
-          SnapBendAdjacentSegments = false,
-          CollectNodeSizes = true,
-        },
-        LabelSnapContext = new LabelSnapContext {
-          Enabled = false
-        },
-        AllowClipboardOperations = true,
-        AllowGroupingOperations = true,
+      var handleInputMode = graphEditorInputMode.HandleInputMode;
+      handleInputMode.Dragged += (sender, args) => {
+        if (args.Context.InputMode is not HandleInputMode handleInputMode) {
+          return;
+        }
+        if (handleInputMode.CurrentHandle is not NodeRotateHandle) {
+          return;
+        }
+        var node = handleInputMode.AffectedItems.FirstOrDefault(item => item is INode);
+        if (node is INode {
+                Style: RotatableNodeStyleDecorator rotatableNodeStyleDecorator, Labels: { Count: 1 }
+            } rotatedNode && rotatedNode.Labels.First()!.Text.EndsWith("°")) {
+          args.Context.GetGraph()!.SetLabelText(rotatedNode.Labels.First()!,
+              $"{rotatableNodeStyleDecorator.Angle:F0}°");
+        }
       };
     }
 
     /// <summary>
-    /// Initialize loading from and saving to graphml-files.
+    ///   Initialize loading from and saving to graphml-files.
     /// </summary>
     private void InitializeGraphML() {
       // initialize (de-)serialization for load/save commands
@@ -116,11 +122,16 @@ namespace Demo.yFiles.Complete.RotatableNodes
           if (!(node.Style is RotatableNodeStyleDecorator)) {
             graph.SetStyle(node, new RotatableNodeStyleDecorator(node.Style));
           }
-          foreach (var label in node.Labels.Where(label => !(label.LayoutParameter.Model is RotatableNodeLabelModelDecorator))) {
-            graph.SetLabelLayoutParameter(label, new RotatableNodeLabelModelDecorator(label.LayoutParameter.Model).CreateWrappingParameter(label.LayoutParameter));
+          foreach (var label in node.Labels.Where(label =>
+              !(label.LayoutParameter.Model is RotatableNodeLabelModelDecorator))) {
+            graph.SetLabelLayoutParameter(label,
+                new RotatableNodeLabelModelDecorator(label.LayoutParameter.Model).CreateWrappingParameter(
+                    label.LayoutParameter));
           }
-          foreach (var port in node.Ports.Where(port => !(port.LocationParameter.Model is RotatablePortLocationModelDecorator))) {
-            graph.SetPortLocationParameter(port, RotatablePortLocationModelDecorator.Instance.CreateWrappingParameter(port.LocationParameter));
+          foreach (var port in node.Ports.Where(port =>
+              !(port.LocationParameter.Model is RotatablePortLocationModelDecorator))) {
+            graph.SetPortLocationParameter(port,
+                RotatablePortLocationModelDecorator.Instance.CreateWrappingParameter(port.LocationParameter));
           }
         }
       };
@@ -129,7 +140,7 @@ namespace Demo.yFiles.Complete.RotatableNodes
     }
 
     /// <summary>
-    /// Initializes styles and decorators for the graph.
+    ///   Initializes styles and decorators for the graph.
     /// </summary>
     private void InitializeGraph() {
       var foldingManager = new FoldingManager();
@@ -139,36 +150,37 @@ namespace Demo.yFiles.Complete.RotatableNodes
 
       // For rotated nodes, need to provide port candidates that are backed by a rotatable port location model
       // If you want to support non-rotated port candidates, you can just provide undecorated instances here
-      decorator.NodeDecorator.PortCandidateProviderDecorator.SetFactory(
+      decorator.Nodes.PortCandidateProvider.AddFactory(
           node => node.Style is RotatableNodeStyleDecorator, CreatePortCandidateProvider);
 
-      decorator.PortDecorator.EdgePathCropperDecorator.SetImplementation(new AdjustOutlinePortInsidenessEdgePathCropper());
-      decorator.NodeDecorator.GroupBoundsCalculatorDecorator.SetImplementation(new RotationAwareGroupBoundsCalculator());
+      decorator.Ports.EdgePathCropper.AddConstant(new AdjustOutlinePortInsidenessEdgePathCropper());
+      decorator.Nodes.GroupBoundsCalculator.AddFactory(node => new RotationAwareGroupBoundsCalculator(node));
 
       graph.NodeDefaults.Style = new RotatableNodeStyleDecorator(DemoStyles.CreateDemoNodeStyle());
       graph.NodeDefaults.ShareStyleInstance = false;
       graph.NodeDefaults.Size = new SizeD(100, 50);
 
-      var coreLabelModel = new InteriorLabelModel();
+      var coreLabelModel = new InteriorNodeLabelModel();
       graph.NodeDefaults.Labels.Style = DemoStyles.CreateDemoNodeLabelStyle();
       graph.NodeDefaults.Labels.LayoutParameter =
-          new RotatableNodeLabelModelDecorator(coreLabelModel).CreateWrappingParameter(InteriorLabelModel.Center);
-      
+          new RotatableNodeLabelModelDecorator(coreLabelModel).CreateWrappingParameter(InteriorNodeLabelModel.Center);
+
       // Make ports visible
-      graph.NodeDefaults.Ports.Style = new NodeStylePortStyleAdapter(new ShapeNodeStyle {
+      graph.NodeDefaults.Ports.Style = new ShapePortStyle {
           Shape = ShapeNodeShape.Ellipse,
           Brush = new SolidColorBrush(Color.FromRgb(0x66, 0x2b, 0x00)),
           Pen = new Pen(new SolidColorBrush(Color.FromRgb(0x66, 0x2b, 0x00)), 1.5)
-      });
+      };
       // Use a rotatable port model as default
       graph.NodeDefaults.Ports.LocationParameter =
-          new RotatablePortLocationModelDecorator().CreateWrappingParameter(FreeNodePortLocationModel.NodeTopAnchored);
+          new RotatablePortLocationModelDecorator().CreateWrappingParameter(FreeNodePortLocationModel.Top);
 
-      graph.GroupNodeDefaults.Style = DemoStyles.CreateDemoGroupStyle(foldingEnabled:true);
+      graph.GroupNodeDefaults.Style = DemoStyles.CreateDemoGroupStyle(foldingEnabled : true);
 
-      graph.EdgeDefaults.Style = DemoStyles.CreateDemoEdgeStyle();
+      // enable orthogonal edge editing
+      graph.EdgeDefaults.Style = DemoStyles.CreateDemoEdgeStyle(orthogonalEditing : true);
       graph.EdgeDefaults.Labels.Style = DemoStyles.CreateDemoEdgeLabelStyle();
-      graph.EdgeDefaults.Labels.LayoutParameter = new EdgePathLabelModel { Distance = 10 }.CreateDefaultParameter();
+      graph.EdgeDefaults.Labels.LayoutParameter = new EdgePathLabelModel { Distance = 10 }.CreateRatioParameter();
 
       // enable undo
       foldingManager.MasterGraph.SetUndoEngineEnabled(true);
@@ -177,7 +189,7 @@ namespace Demo.yFiles.Complete.RotatableNodes
     }
 
     /// <summary>
-    /// Creates an <see cref="IPortCandidateProvider"/> that considers the node's shape and rotation.
+    ///   Creates an <see cref="IPortCandidateProvider"/> that considers the node's shape and rotation.
     /// </summary>
     private static IPortCandidateProvider CreatePortCandidateProvider(INode node) {
       var rotatedPortModel = RotatablePortLocationModelDecorator.Instance;
@@ -187,106 +199,103 @@ namespace Demo.yFiles.Complete.RotatableNodes
       var wrapped = rnsd.Wrapped;
       var sns = wrapped as ShapeNodeStyle;
 
-#pragma warning disable CS0618 // still support the obsolete styles
-      if (wrapped is ShinyPlateNodeStyle || wrapped is BevelNodeStyle ||
-#pragma warning restore CS0618
-          sns != null && sns.Shape == ShapeNodeShape.RoundRectangle) {
+      if (sns != null && sns.Shape == ShapeNodeShape.RoundRectangle) {
         return PortCandidateProviders.Combine(
-            //Take all existing ports - these are assumed to have the correct port location model
+            // Take all existing ports - these are assumed to have the correct port location model
             PortCandidateProviders.FromUnoccupiedPorts(node),
-            //Provide explicit candidates - these are all backed by a rotatable port location model
+            // Provide explicit candidates - these are all backed by a rotatable port location model
             PortCandidateProviders.FromCandidates(
-                //Port candidates at the corners that are slightly inset
-                new DefaultPortCandidate(node, rotatedPortModel.CreateWrappingParameter(freeModel.CreateParameter(new PointD(0, 0), new PointD(5, 5)))),
-                new DefaultPortCandidate(node, rotatedPortModel.CreateWrappingParameter(freeModel.CreateParameter(new PointD(0, 1), new PointD(5, -5)))),
-                new DefaultPortCandidate(node, rotatedPortModel.CreateWrappingParameter(freeModel.CreateParameter(new PointD(1, 0), new PointD(-5, 5)))),
-                new DefaultPortCandidate(node, rotatedPortModel.CreateWrappingParameter(freeModel.CreateParameter(new PointD(1, 1), new PointD(-5, -5)))),
-                //Port candidates at the sides and the center
-                new DefaultPortCandidate(node, rotatedPortModel.CreateWrappingParameter(FreeNodePortLocationModel.NodeLeftAnchored)),
-                new DefaultPortCandidate(node, rotatedPortModel.CreateWrappingParameter(FreeNodePortLocationModel.NodeBottomAnchored)),
-                new DefaultPortCandidate(node, rotatedPortModel.CreateWrappingParameter(FreeNodePortLocationModel.NodeCenterAnchored)),
-                new DefaultPortCandidate(node, rotatedPortModel.CreateWrappingParameter(FreeNodePortLocationModel.NodeTopAnchored)),
-                new DefaultPortCandidate(node, rotatedPortModel.CreateWrappingParameter(FreeNodePortLocationModel.NodeRightAnchored))
-                ));
+                // Port candidates at the corners that are slightly inset
+                new PortCandidate(node,
+                    rotatedPortModel.CreateWrappingParameter(freeModel.CreateParameter(new PointD(0, 0),
+                        new PointD(5, 5)))),
+                new PortCandidate(node,
+                    rotatedPortModel.CreateWrappingParameter(freeModel.CreateParameter(new PointD(0, 1),
+                        new PointD(5, -5)))),
+                new PortCandidate(node,
+                    rotatedPortModel.CreateWrappingParameter(freeModel.CreateParameter(new PointD(1, 0),
+                        new PointD(-5, 5)))),
+                new PortCandidate(node,
+                    rotatedPortModel.CreateWrappingParameter(freeModel.CreateParameter(new PointD(1, 1),
+                        new PointD(-5, -5)))),
+                // Port candidates at the sides and the center
+                new PortCandidate(node, rotatedPortModel.CreateWrappingParameter(FreeNodePortLocationModel.Left)),
+                new PortCandidate(node, rotatedPortModel.CreateWrappingParameter(FreeNodePortLocationModel.Bottom)),
+                new PortCandidate(node, rotatedPortModel.CreateWrappingParameter(FreeNodePortLocationModel.Center)),
+                new PortCandidate(node, rotatedPortModel.CreateWrappingParameter(FreeNodePortLocationModel.Top)),
+                new PortCandidate(node, rotatedPortModel.CreateWrappingParameter(FreeNodePortLocationModel.Right))));
       }
       if (wrapped is RectangleNodeStyle rns) {
         // Rectangle: create ports in the corners and
         var cornerSize = rns.CornerSize * (rns.CornerStyle == CornerStyle.Cut ? 0.5 : 0.3);
         return PortCandidateProviders.Combine(
-            //Take all existing ports - these are assumed to have the correct port location model
+            // Take all existing ports - these are assumed to have the correct port location model
             PortCandidateProviders.FromUnoccupiedPorts(node),
-            //Provide explicit candidates - these are all backed by a rotatable port location model
+            // Provide explicit candidates - these are all backed by a rotatable port location model
             PortCandidateProviders.FromCandidates(
-                //Port candidates at the corners
-                new DefaultPortCandidate(node, rotatedPortModel.CreateWrappingParameter(
-                    (rns.Corners & Corners.TopLeft) == Corners.TopLeft 
-                        ? freeModel.CreateParameter(new PointD(0, 0), new PointD(cornerSize, cornerSize)) 
-                        : FreeNodePortLocationModel.NodeTopLeftAnchored)),
-                new DefaultPortCandidate(node, rotatedPortModel.CreateWrappingParameter(
-                    (rns.Corners & Corners.BottomLeft) == Corners.BottomLeft 
-                        ? freeModel.CreateParameter(new PointD(0, 1), new PointD(cornerSize, -cornerSize)) 
-                        : FreeNodePortLocationModel.NodeBottomLeftAnchored)),
-                new DefaultPortCandidate(node, rotatedPortModel.CreateWrappingParameter(
-                    (rns.Corners & Corners.TopRight) == Corners.TopRight 
-                        ? freeModel.CreateParameter(new PointD(1, 0), new PointD(-cornerSize, cornerSize)) 
-                        : FreeNodePortLocationModel.NodeTopRightAnchored)),
-                new DefaultPortCandidate(node, rotatedPortModel.CreateWrappingParameter(
-                    (rns.Corners & Corners.BottomRight) == Corners.BottomRight 
-                        ? freeModel.CreateParameter(new PointD(1, 1), new PointD(-cornerSize, -cornerSize)) 
-                        : FreeNodePortLocationModel.NodeBottomRightAnchored)),
-                //Port candidates at the sides and the center
-                new DefaultPortCandidate(node, rotatedPortModel.CreateWrappingParameter(FreeNodePortLocationModel.NodeLeftAnchored)),
-                new DefaultPortCandidate(node, rotatedPortModel.CreateWrappingParameter(FreeNodePortLocationModel.NodeBottomAnchored)),
-                new DefaultPortCandidate(node, rotatedPortModel.CreateWrappingParameter(FreeNodePortLocationModel.NodeCenterAnchored)),
-                new DefaultPortCandidate(node, rotatedPortModel.CreateWrappingParameter(FreeNodePortLocationModel.NodeTopAnchored)),
-                new DefaultPortCandidate(node, rotatedPortModel.CreateWrappingParameter(FreeNodePortLocationModel.NodeRightAnchored))
-                ));
+                // Port candidates at the corners
+                new PortCandidate(node,
+                    rotatedPortModel.CreateWrappingParameter((rns.Corners & Corners.TopLeft) == Corners.TopLeft
+                        ? freeModel.CreateParameter(new PointD(0, 0), new PointD(cornerSize, cornerSize))
+                        : FreeNodePortLocationModel.TopLeft)),
+                new PortCandidate(node,
+                    rotatedPortModel.CreateWrappingParameter((rns.Corners & Corners.BottomLeft) == Corners.BottomLeft
+                        ? freeModel.CreateParameter(new PointD(0, 1), new PointD(cornerSize, -cornerSize))
+                        : FreeNodePortLocationModel.BottomLeft)),
+                new PortCandidate(node,
+                    rotatedPortModel.CreateWrappingParameter((rns.Corners & Corners.TopRight) == Corners.TopRight
+                        ? freeModel.CreateParameter(new PointD(1, 0), new PointD(-cornerSize, cornerSize))
+                        : FreeNodePortLocationModel.TopRight)),
+                new PortCandidate(node,
+                    rotatedPortModel.CreateWrappingParameter((rns.Corners & Corners.BottomRight) == Corners.BottomRight
+                        ? freeModel.CreateParameter(new PointD(1, 1), new PointD(-cornerSize, -cornerSize))
+                        : FreeNodePortLocationModel.BottomRight)),
+                // Port candidates at the sides and the center
+                new PortCandidate(node, rotatedPortModel.CreateWrappingParameter(FreeNodePortLocationModel.Left)),
+                new PortCandidate(node, rotatedPortModel.CreateWrappingParameter(FreeNodePortLocationModel.Bottom)),
+                new PortCandidate(node, rotatedPortModel.CreateWrappingParameter(FreeNodePortLocationModel.Center)),
+                new PortCandidate(node, rotatedPortModel.CreateWrappingParameter(FreeNodePortLocationModel.Top)),
+                new PortCandidate(node, rotatedPortModel.CreateWrappingParameter(FreeNodePortLocationModel.Right))));
       }
       if (sns != null && sns.Shape == ShapeNodeShape.Rectangle) {
-        return PortCandidateProviders.Combine(
-            PortCandidateProviders.FromUnoccupiedPorts(node),
+        return PortCandidateProviders.Combine(PortCandidateProviders.FromUnoccupiedPorts(node),
             PortCandidateProviders.FromCandidates(
-                //Port candidates at the corners
-                new DefaultPortCandidate(node, rotatedPortModel.CreateWrappingParameter(FreeNodePortLocationModel.NodeTopLeftAnchored)),
-                new DefaultPortCandidate(node, rotatedPortModel.CreateWrappingParameter(FreeNodePortLocationModel.NodeTopRightAnchored)),
-                new DefaultPortCandidate(node, rotatedPortModel.CreateWrappingParameter(FreeNodePortLocationModel.NodeBottomLeftAnchored)),
-                new DefaultPortCandidate(node, rotatedPortModel.CreateWrappingParameter(FreeNodePortLocationModel.NodeBottomRightAnchored)),
-                //Port candidates at the sides and the center
-                new DefaultPortCandidate(node, rotatedPortModel.CreateWrappingParameter(FreeNodePortLocationModel.NodeLeftAnchored)),
-                new DefaultPortCandidate(node, rotatedPortModel.CreateWrappingParameter(FreeNodePortLocationModel.NodeBottomAnchored)),
-                new DefaultPortCandidate(node, rotatedPortModel.CreateWrappingParameter(FreeNodePortLocationModel.NodeCenterAnchored)),
-                new DefaultPortCandidate(node, rotatedPortModel.CreateWrappingParameter(FreeNodePortLocationModel.NodeTopAnchored)),
-                new DefaultPortCandidate(node, rotatedPortModel.CreateWrappingParameter(FreeNodePortLocationModel.NodeRightAnchored))
-                ));
+                // Port candidates at the corners
+                new PortCandidate(node, rotatedPortModel.CreateWrappingParameter(FreeNodePortLocationModel.TopLeft)),
+                new PortCandidate(node, rotatedPortModel.CreateWrappingParameter(FreeNodePortLocationModel.TopRight)),
+                new PortCandidate(node, rotatedPortModel.CreateWrappingParameter(FreeNodePortLocationModel.BottomLeft)),
+                new PortCandidate(node,
+                    rotatedPortModel.CreateWrappingParameter(FreeNodePortLocationModel.BottomRight)),
+                // Port candidates at the sides and the center
+                new PortCandidate(node, rotatedPortModel.CreateWrappingParameter(FreeNodePortLocationModel.Left)),
+                new PortCandidate(node, rotatedPortModel.CreateWrappingParameter(FreeNodePortLocationModel.Bottom)),
+                new PortCandidate(node, rotatedPortModel.CreateWrappingParameter(FreeNodePortLocationModel.Center)),
+                new PortCandidate(node, rotatedPortModel.CreateWrappingParameter(FreeNodePortLocationModel.Top)),
+                new PortCandidate(node, rotatedPortModel.CreateWrappingParameter(FreeNodePortLocationModel.Right))));
       }
       // Can be an arbitrary style
-      var dummyNode = new SimpleNode {
-          Style = wrapped,
-          Layout = node.Layout
-      };
+      var dummyNode = new SimpleNode { Style = wrapped, Layout = node.Layout };
       // candidates at the corners and in the middle of each side
       var shapeProvider = PortCandidateProviders.FromShapeGeometry(dummyNode, 0, 0.5);
       var shapeCandidates = shapeProvider.GetTargetPortCandidates(null);
-      var rotatingCandidates =
-          shapeCandidates.Select(c =>
-              new DefaultPortCandidate(node, rotatedPortModel.CreateWrappingParameter(c.LocationParameter)));
-      return PortCandidateProviders.Combine(
-          PortCandidateProviders.FromUnoccupiedPorts(node),
+      var rotatingCandidates = shapeCandidates.Select(c =>
+          new PortCandidate(node, rotatedPortModel.CreateWrappingParameter(c.LocationParameter)));
+      return PortCandidateProviders.Combine(PortCandidateProviders.FromUnoccupiedPorts(node),
           PortCandidateProviders.FromCandidates(rotatingCandidates));
     }
 
     /// <summary>
-    /// Loads the graph from the 'Resources' folder.
+    ///   Loads the graph from the 'Resources' folder.
     /// </summary>
-    private void LoadGraph(String graphName) {
-      string fileName = string.Format("Resources" + System.IO.Path.DirectorySeparatorChar + "{0}.graphml", graphName);
+    private void LoadGraph(string graphName) {
+      var fileName = string.Format("Resources" + Path.DirectorySeparatorChar + "{0}.graphml", graphName);
       graphControl.Graph.Clear();
-      using (StreamReader reader = new StreamReader(fileName)) {
+      using (var reader = new StreamReader(fileName)) {
         var ioHandler = graphControl.GraphMLIOHandler;
         ioHandler.Read(graphControl.Graph, reader);
       }
       graphControl.FitGraphBounds();
-      
+
       // clear undo-queue
       graphControl.Graph.GetUndoEngine().Clear();
     }
@@ -306,13 +315,14 @@ namespace Demo.yFiles.Complete.RotatableNodes
     }
 
     /// <summary>
-    /// Runs a layout algorithm which is configured to consider node rotations.
+    ///   Runs a layout algorithm which is configured to consider node rotations.
     /// </summary>
     public async Task ApplyLayout() {
       var graph = graphControl.Graph;
 
       // provide the rotated outline and layout for the layout algorithm
-      graph.MapperRegistry.CreateDelegateMapper(RotatedNodeLayoutStage.RotatedNodeLayoutDpKey, node => {
+      var layoutData = graph.CreateGenericLayoutData();
+      layoutData.AddItemMapping(RotatedNodeLayoutStage.RotatedNodeLayoutDataKey).MapperFunction = node => {
         var style = node.Style;
         var outline = style.Renderer.GetShapeGeometry(node, style).GetOutline();
         if (outline == null) {
@@ -322,66 +332,67 @@ namespace Demo.yFiles.Complete.RotatableNodes
         return new RotatedNodeLayoutStage.RotatedNodeShape(outline,
             style is RotatableNodeStyleDecorator
                 ? ((RotatableNodeStyleDecorator) style).GetRotatedLayout(node)
-                : (IOrientedRectangle) new OrientedRectangle(node.Layout));
-      });
+                : new OrientedRectangle(node.Layout));
+      };
 
       // get the selected layout algorithm
       var layout = GetLayoutAlgorithm();
 
       // wrap the algorithm in RotatedNodeLayoutStage to make it aware of the node rotations
-      var rotatedLayout = new RotatedNodeLayoutStage(layout) {EdgeRoutingMode = GetRoutingMode()};
+      var rotatedLayout = new RotatedNodeLayoutStage(layout) { EdgeRoutingMode = GetRoutingMode() };
 
-      // apply the layout
-      await graphControl.MorphLayout(rotatedLayout, TimeSpan.FromMilliseconds(700));
-      
-      // clean up mapper registry
-      graph.MapperRegistry.RemoveMapper(RotatedNodeLayoutStage.RotatedNodeLayoutDpKey);
+      // apply the layout (disable RunInThread because PortAdjustmentStage wouldn't work with custom RotatableNodeStyle)
+      var executor = new LayoutExecutor(graphControl, rotatedLayout) {
+          RunInThread = false, AnimationDuration = TimeSpan.FromMilliseconds(700), LayoutData = layoutData
+      };
+      await executor.Start();
     }
 
     /// <summary>
-    /// Gets the layout algorithm selected by the user.
+    ///   Gets the layout algorithm selected by the user.
     /// </summary>
-    /// <returns></returns>
     private ILayoutAlgorithm GetLayoutAlgorithm() {
       var graph = graphControl.Graph;
       var item = layoutChooserBox.SelectedItem as ComboBoxItem;
-      var layoutName = item != null ? item.Tag as String: null;
-      ILayoutAlgorithm layout = new HierarchicLayout();
+      var layoutName = item != null ? item.Tag as string : null;
+      ILayoutAlgorithm layout = new HierarchicalLayout();
       if (layoutName != null) {
-        if (layoutName == "hierarchic") {
-          layout = new HierarchicLayout();
+        if (layoutName == "hierarchical") {
+          layout = new HierarchicalLayout();
         } else if (layoutName == "organic") {
-          layout = new OrganicLayout {PreferredEdgeLength = 1.5 * Math.Max(graph.NodeDefaults.Size.Width, graph.NodeDefaults.Size.Height)};
+          layout = new OrganicLayout {
+              DefaultPreferredEdgeLength = 1.5 * Math.Max(graph.NodeDefaults.Size.Width, graph.NodeDefaults.Size.Height)
+          };
         } else if (layoutName == "orthogonal") {
           layout = new OrthogonalLayout();
         } else if (layoutName == "circular") {
           layout = new CircularLayout();
         } else if (layoutName == "tree") {
-          layout = new TreeReductionStage(new TreeLayout()) {NonTreeEdgeRouter = new OrganicEdgeRouter()};
-        } else if (layoutName == "balloon") {
-          layout = new TreeReductionStage(new BalloonLayout()) {NonTreeEdgeRouter = new OrganicEdgeRouter()};
+          layout = new TreeLayout { TreeReductionStage = { NonTreeEdgeRouter = new OrganicEdgeRouter() } };
+        } else if (layoutName == "radial-tree") {
+          layout = new RadialTreeLayout { TreeReductionStage = { NonTreeEdgeRouter = new OrganicEdgeRouter() } };
         } else if (layoutName == "radial") {
           layout = new RadialLayout();
         } else if (layoutName == "router-polyline") {
           layout = new EdgeRouter();
         } else if (layoutName == "router-organic") {
-          layout = new OrganicEdgeRouter {EdgeNodeOverlapAllowed = false};
+          layout = new OrganicEdgeRouter { AllowEdgeNodeOverlaps = false };
         }
       }
       return layout;
     }
 
     /// <summary>
-    /// Get the routing mode that suits the selected layout algorithm.
+    ///   Get the routing mode that suits the selected layout algorithm.
     /// </summary>
     /// <remarks>
-    /// Layout algorithm that place edge ports in the center of the node don't need to add a routing step.
+    ///   Layout algorithm that place edge ports in the center of the node don't need to add a routing step.
     /// </remarks>
     private RotatedNodeLayoutStage.RoutingMode GetRoutingMode() {
       var item = layoutChooserBox.SelectedItem as ComboBoxItem;
-      var layoutName = item != null ? item.Tag as String : null;
-      if (layoutName != null && (layoutName == "hierarchic" || layoutName == "orthogonal" || layoutName == "tree" ||
-            layoutName == "router-polyline")) {
+      var layoutName = item != null ? item.Tag as string : null;
+      if (layoutName != null && (layoutName == "hierarchical" || layoutName == "orthogonal" || layoutName == "tree" ||
+          layoutName == "router-polyline")) {
         return RotatedNodeLayoutStage.RoutingMode.ShortestStraightPathToBorder;
       }
       return RotatedNodeLayoutStage.RoutingMode.NoRouting;
@@ -390,28 +401,28 @@ namespace Demo.yFiles.Complete.RotatableNodes
     #endregion
 
     /// <summary>
-    /// Toggle snapping.
+    ///   Toggle snapping.
     /// </summary>
     private void SnappingButtonClick(object sender, EventArgs e) {
       ((GraphEditorInputMode) graphControl.InputMode).SnapContext.Enabled = snappingButton.IsChecked == true;
-      ((GraphEditorInputMode) graphControl.InputMode).LabelSnapContext.Enabled = snappingButton.IsChecked == true;
     }
 
     /// <summary>
-    /// Toggle orthogonal edge editing.
+    ///   Toggle orthogonal edge editing.
     /// </summary>
     private void OrthogonalEditingButtonClick(object sender, EventArgs e) {
-      ((GraphEditorInputMode) graphControl.InputMode).OrthogonalEdgeEditingContext.Enabled = orthogonalEditingButton.IsChecked == true;
+      ((GraphEditorInputMode) graphControl.InputMode).OrthogonalEdgeEditingContext.Enabled =
+          orthogonalEditingButton.IsChecked == true;
     }
 
     /// <summary>
-    /// Load the selected graph.
+    ///   Load the selected graph.
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
     private void GraphChooserBoxSelectedIndexChanged(object sender, SelectionChangedEventArgs e) {
       var comboBoxItem = graphChooserBox.SelectedItem as ComboBoxItem;
-      var graphName = comboBoxItem != null ? comboBoxItem.Tag as String : null;
+      var graphName = comboBoxItem != null ? comboBoxItem.Tag as string : null;
       if (graphName != null && graphControl != null) {
         LoadGraph(graphName);
       }

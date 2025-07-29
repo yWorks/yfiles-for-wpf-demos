@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -36,20 +36,22 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using yWorks.Analysis;
+using yWorks.Controls;
 using yWorks.Controls.Input;
 using yWorks.Geometry;
 using yWorks.Graph;
+using yWorks.Graph.LabelModels;
 using yWorks.Graph.Styles;
 using yWorks.Layout;
-using yWorks.Controls;
-using yWorks.Graph.LabelModels;
 using yWorks.Layout.Labeling;
 using yWorks.Layout.Organic;
+using yWorks.Utils;
+using EdgeSides = yWorks.Graph.LabelModels.EdgeSides;
 
 namespace Demo.yFiles.Algorithms.GraphAnalysis
 {
   /// <summary>
-  /// This demo showcases a selection of algorithms to analyze the structure of a graph.
+  ///   This demo showcases a selection of algorithms to analyze the structure of a graph.
   /// </summary>
   public partial class GraphAnalysisWindow
   {
@@ -61,16 +63,16 @@ namespace Demo.yFiles.Algorithms.GraphAnalysis
     private DictionaryMapper<INode, bool> incrementalNodesMapper;
     private bool preventLayout;
     private DictionaryMapper<INode, bool> incrementalElements;
-    private readonly Random random = new Random();
+    private readonly Random random = new();
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="GraphAnalysisWindow"/> class.
+    ///   Initializes a new instance of the <see cref="GraphAnalysisWindow"/> class.
     /// </summary>
     public GraphAnalysisWindow() {
       InitializeComponent();
     }
 
-    public Sample CurrentSample { get;set; }
+    public Sample CurrentSample { get; set; }
 
     public AlgorithmConfiguration CurrentConfig { get; set; }
 
@@ -87,15 +89,11 @@ namespace Demo.yFiles.Algorithms.GraphAnalysis
           new Sample("Sample: Connected Components", "Connectivity"),
           new Sample("Sample: Biconnected Components", "Connectivity"),
           new Sample("Sample: Strongly Connected Components", "Connectivity"),
-          new Sample("Sample: Reachability", "Connectivity"),
-          new Sample("Sample: Shortest Paths", "Paths"),
-          new Sample("Sample: All Paths", "Paths"),
-          new Sample("Sample: All Chains", "Paths"),
-          new Sample("Sample: Single Source", "Paths"),
-          new Sample("Sample: Cycles", "Cycles"),
-          new Sample("Sample: Degree Centrality", "Centrality"),
-          new Sample("Sample: Weight Centrality", "Centrality"),
-          new Sample("Sample: Graph Centrality", "Centrality"),
+          new Sample("Sample: Reachability", "Connectivity"), new Sample("Sample: Shortest Paths", "Paths"),
+          new Sample("Sample: k-Shortest Paths", "k-ShortestPaths"), new Sample("Sample: All Paths", "Paths"),
+          new Sample("Sample: All Chains", "Paths"), new Sample("Sample: Single Source", "Paths"),
+          new Sample("Sample: Cycles", "Cycles"), new Sample("Sample: Degree Centrality", "Centrality"),
+          new Sample("Sample: Weight Centrality", "Centrality"), new Sample("Sample: Graph Centrality", "Centrality"),
           new Sample("Sample: Node Edge Betweenness Centrality", "Centrality"),
           new Sample("Sample: Closeness Centrality", "Centrality"),
           new Sample("Sample: Independent Sets", "MinimumSpanningTree")
@@ -124,55 +122,62 @@ namespace Demo.yFiles.Algorithms.GraphAnalysis
 
       // Enable undo support
       graph.SetUndoEngineEnabled(true);
+      var undoEngine = graph.GetUndoEngine()!;
+      undoEngine.UnitUndone += (_, _) => UpdateGraphInformation();
+      undoEngine.UnitRedone += (_, _) => UpdateGraphInformation();
 
       // set some nice defaults
-      // use a node style renderer which highlights the node based on its tag.
-      graph.NodeDefaults.Style = new ShapeNodeStyle(new AnalysisShapeNodeStyleRenderer()) {
-          Shape = ShapeNodeShape.Ellipse
-      };
-      // use an ede style renderer which highlights the edge based on its tag.
-      graph.EdgeDefaults.Style = new PolylineEdgeStyle(new AnalysisPolylineEdgeStyleRenderer());
+      // use a node style which highlights the node based on its tag.
+      graph.NodeDefaults.Style = new AnalysisShapeNodeStyle();
+      // use an ede style which highlights the edge based on its tag.
+      graph.EdgeDefaults.Style = new AnalysisPolylineEdgeStyle();
 
       // use a special decorator for selection
-      var selectionNodeStyle = new IndicatorNodeStyleDecorator(
-          new ShapeNodeStyle
-              { Shape = ShapeNodeShape.Ellipse, Pen = (Pen) new Pen(Brushes.Gray, 5).GetAsFrozen(), Brush = null }
-      );
+      var selectionNodeStyle = new NodeStyleIndicatorRenderer {
+          NodeStyle = new ShapeNodeStyle {
+              Shape = ShapeNodeShape.Ellipse, Pen = (Pen) new Pen(Brushes.Gray, 5).GetAsFrozen(), Brush = null
+          }
+      };
 
       // use a special decorator for focus
-      var focusNodeStyle = new IndicatorNodeStyleDecorator(
-          new ShapeNodeStyle {
+      var focusNodeStyle = new NodeStyleIndicatorRenderer {
+          NodeStyle = new ShapeNodeStyle {
               Shape = ShapeNodeShape.Ellipse,
               Pen = (Pen) new Pen(Brushes.LightGray, 3) { DashStyle = DashStyles.Dash }.GetAsFrozen(),
               Brush = null
           }
-      );
-      
-      graphControl.SelectionIndicatorManager = new GraphSelectionIndicatorManager {NodeStyle = selectionNodeStyle};;
-      graphControl.FocusIndicatorManager = new GraphFocusIndicatorManager { NodeStyle = focusNodeStyle };
+      };
 
-      graph.EdgeDefaults.Labels.LayoutParameter = FreeEdgeLabelModel.Instance.CreateDefaultParameter();
+      graphControl.Graph.GetDecorator().Nodes.SelectionRenderer.AddConstant(selectionNodeStyle);
+      graphControl.Graph.GetDecorator().Nodes.FocusRenderer.AddConstant(focusNodeStyle);
 
-      graph.EdgeDefaults.Labels.Style = new DefaultLabelStyle {
+      graph.EdgeDefaults.Labels.LayoutParameter = FreeEdgeLabelModel.Instance.CreateParameter();
+      graph.NodeDefaults.Labels.LayoutParameter = FreeNodeLabelModel.Center;
+
+      graph.EdgeDefaults.Labels.Style = new LabelStyle {
           TextSize = 10,
           BackgroundBrush = Brushes.AliceBlue,
           BackgroundPen = (Pen) new Pen(Brushes.LightSkyBlue, 2).GetAsFrozen(),
           AutoFlip = false,
-          Insets = new InsetsD(3, 5, 3, 5) 
+          Padding = new InsetsD(3, 5, 3, 5)
       };
     }
 
     /// <summary>
-    /// Creates the list with the available algorithms to be set as items of the algorithm combo box.
+    ///   Creates the list with the available algorithms to be set as items of the algorithm combo box.
     /// </summary>
     private void InitializeAlgorithms() {
       var algorithms = new[] {
           new Algorithm("Algorithm: Minimum Spanning Tree", new MinimumSpanningTreeConfig()),
-          new Algorithm("Algorithm: Connected Components", new ConnectivityConfig(ConnectivityMode.ConnectedComponents)),
-          new Algorithm("Algorithm: Biconnected Components", new ConnectivityConfig(ConnectivityMode.BiconnectedComponents)),
-          new Algorithm("Algorithm: Strongly Connected Components", new ConnectivityConfig(ConnectivityMode.StronglyConnectedComponents)),
+          new Algorithm("Algorithm: Connected Components",
+              new ConnectivityConfig(ConnectivityMode.ConnectedComponents)),
+          new Algorithm("Algorithm: Biconnected Components",
+              new ConnectivityConfig(ConnectivityMode.BiconnectedComponents)),
+          new Algorithm("Algorithm: Strongly Connected Components",
+              new ConnectivityConfig(ConnectivityMode.StronglyConnectedComponents)),
           new Algorithm("Algorithm: Reachability", new ReachabilityConfig()),
           new Algorithm("Algorithm: Shortest Paths", new PathsConfig(PathsMode.ShortestPaths)),
+          new Algorithm("Algorithm: k-Shortest Paths", new PathsConfig(PathsMode.KShortestPaths)),
           new Algorithm("Algorithm: All Paths", new PathsConfig(PathsMode.AllPaths)),
           new Algorithm("Algorithm: All Chains", new PathsConfig(PathsMode.AllChains)),
           new Algorithm("Algorithm: Single Source", new PathsConfig(PathsMode.SingleSource)),
@@ -180,7 +185,8 @@ namespace Demo.yFiles.Algorithms.GraphAnalysis
           new Algorithm("Algorithm: Degree Centrality", new CentralityConfig(CentralityMode.Degree)),
           new Algorithm("Algorithm: Weight Centrality", new CentralityConfig(CentralityMode.Weight)),
           new Algorithm("Algorithm: Graph Centrality", new CentralityConfig(CentralityMode.Graph)),
-          new Algorithm("Algorithm: Node Edge Betweenness Centrality", new CentralityConfig(CentralityMode.NodeEdgeBetweenness)),
+          new Algorithm("Algorithm: Node Edge Betweenness Centrality",
+              new CentralityConfig(CentralityMode.NodeEdgeBetweenness)),
           new Algorithm("Algorithm: Closeness Centrality", new CentralityConfig(CentralityMode.Closeness)),
           new Algorithm("Algorithm: Independent Sets", new IndependentSetConfig())
       };
@@ -189,7 +195,7 @@ namespace Demo.yFiles.Algorithms.GraphAnalysis
     }
 
     /// <summary>
-    /// Set up the input mode and other aspects of interaction.
+    ///   Set up the input mode and other aspects of interaction.
     /// </summary>
     private void InitializeInteraction() {
       incrementalElements = new DictionaryMapper<INode, bool> { DefaultValue = false };
@@ -204,19 +210,19 @@ namespace Demo.yFiles.Algorithms.GraphAnalysis
         var selection = (IGraphSelection) e.Selection;
         CurrentConfig.EdgeRemoved = true;
         var graph = e.Context.GetGraph();
-        foreach (var node in selection.SelectedNodes) {
+        foreach (var node in selection.Nodes) {
           foreach (var edge in graph.EdgesAt(node)) {
-            if (!selection.IsSelected(edge.Opposite(node))) {
+            if (!selection.Contains(edge.Opposite(node))) {
               incrementalNodesMapper[(INode) edge.Opposite(node)] = true;
             }
           }
         }
-        foreach (var edge in selection.SelectedEdges) {
-          if (!selection.IsSelected(edge.GetSourceNode())) {
+        foreach (var edge in selection.Edges) {
+          if (!selection.Contains(edge.GetSourceNode())) {
             incrementalNodesMapper[edge.GetSourceNode()] = true;
             incrementalElements[edge.GetSourceNode()] = true;
           }
-          if (!selection.IsSelected(edge.GetTargetNode())) {
+          if (!selection.Contains(edge.GetTargetNode())) {
             incrementalNodesMapper[edge.GetTargetNode()] = true;
             incrementalElements[edge.GetTargetNode()] = true;
           }
@@ -267,7 +273,7 @@ namespace Demo.yFiles.Algorithms.GraphAnalysis
         SetUiDisabled(false);
       };
 
-      inputMode.LabelTextChanged += (sender, e) => {
+      inputMode.LabelEdited += (sender, e) => {
         // prevent a new layout from starting and disable the UI's buttons
         inLayout = true;
         SetUiDisabled(true);
@@ -304,43 +310,40 @@ namespace Demo.yFiles.Algorithms.GraphAnalysis
     }
 
     /// <summary>
-    /// Button handler to run a layout algorithm.
+    ///   Button handler to run a layout algorithm.
     /// </summary>
     /// <remarks>
-    /// Runs a layout without re-executing the algorithm.
+    ///   Runs a layout without re-executing the algorithm.
     /// </remarks>
     private async void RunLayout(object sender, EventArgs e) {
       await RunLayout(false, false, false);
     }
 
     /// <summary>
-    /// Run a layout and an analysis algorithm if wanted.
+    ///   Run a layout and an analysis algorithm if wanted.
     /// </summary>
     /// <param name="incremental">Whether to run in incremental mode, i.e. only moving new items.</param>
     /// <param name="clearUndo">Whether to clear the undo queue after the layout.</param>
     /// <param name="runAlgorithm">Whether to apply the <see cref="CurrentConfig">current analysis algorithm</see>, too.</param>
-    /// <returns></returns>
     private async Task RunLayout(bool incremental, bool clearUndo, bool runAlgorithm) {
       // the actual organic layout
       var layout = new OrganicLayout {
           Deterministic = true,
-          ConsiderNodeSizes = true,
-          Scope = incremental ? Scope.MainlySubset : Scope.All,
-          LabelingEnabled = false,
-          PreferredEdgeLength = 100,
-          MinimumNodeDistance = 10
+          GenericLabeling = { Enabled = false },
+          DefaultPreferredEdgeLength = 100,
+          DefaultMinimumNodeDistance = 10
       };
-      ((ComponentLayout) layout.ComponentLayout).Style = ComponentArrangementStyles.None | ComponentArrangementStyles.ModifierNoOverlap;
+      layout.ComponentLayout.Style = ComponentArrangementStyle.TryKeepCenters;
 
-      OrganicLayoutData layoutData = null;
+      var layoutData = layout.CreateLayoutData(graphControl.Graph);
       if (incremental && incrementalNodesMapper != null) {
-        layoutData = new OrganicLayoutData();
-        layoutData.AffectedNodes.Mapper = incrementalNodesMapper;
+        layoutData.Scope.ScopeModes.MapperFunction = node =>
+            incrementalNodesMapper[node] ? OrganicScope.IncludeExtendedNeighborhood : OrganicScope.Fixed;
       }
       inLayout = true;
       SetUiDisabled(true);
       // run the layout in an asynchronous, animated fashion
-      await graphControl.MorphLayout(layout, TimeSpan.FromSeconds(0.5), layoutData);
+      await graphControl.ApplyLayoutAnimated(layout, TimeSpan.FromSeconds(0.5), layoutData);
 
       // run algorithm
       if (runAlgorithm) {
@@ -349,24 +352,20 @@ namespace Demo.yFiles.Algorithms.GraphAnalysis
         var algorithm = algorithmComboBox.SelectedItem as Algorithm;
         if (algorithm != null && algorithm.DisplayName.EndsWith("Centrality")) {
           // since centrality changes the node sizes, node overlaps need to be removed
-          await graphControl.MorphLayout(new OrganicRemoveOverlapsStage(), TimeSpan.FromSeconds(0.2));
+          await graphControl.ApplyLayoutAnimated(
+              new RemoveOverlapsStage { OverlapRemovalPolicy = OverlapRemovalPolicy.PreserveRelativeLocations },
+              TimeSpan.FromSeconds(0.2));
         }
       }
 
       // labeling: place labels after the layout and the analysis (which might have generated or changed labels)
-      var labeling = new GenericLabeling {
-          PlaceEdgeLabels = true,
-          PlaceNodeLabels = false,
-          Deterministic = true
-      };
-      var labelingData = new LabelingData {
-          EdgeLabelPreferredPlacement = {
-              Delegate = label => "Centrality".Equals(label.Tag)
-                  ? new EdgePathLabelModel(0, 0, 0, true, EdgeSides.OnEdge).ToDescriptor()
-                  : new EdgePathLabelModel(5, 0, 0, true, EdgeSides.RightOfEdge | EdgeSides.LeftOfEdge).ToDescriptor()
-          }
-      };
-      await graphControl.MorphLayout(labeling, TimeSpan.FromSeconds(0.2), labelingData);
+      var labeling = new GenericLabeling { Scope = LabelingScope.EdgeLabels, Deterministic = true };
+      var labelingData = labeling.CreateLayoutData(graphControl.Graph);
+      labelingData.EdgeLabelPreferredPlacements.MapperFunction = label => "Centrality".Equals(label.Tag)
+          ? new EdgePathLabelModel(0, 0, 0, true, EdgeSides.OnEdge).ToPreferredPlacement()
+          : new EdgePathLabelModel(5, 0, 0, true, EdgeSides.RightOfEdge | EdgeSides.LeftOfEdge).ToPreferredPlacement();
+
+      await graphControl.ApplyLayoutAnimated(labeling, TimeSpan.FromSeconds(0.2), labelingData);
 
       // cleanup
       if (clearUndo) {
@@ -382,24 +381,24 @@ namespace Demo.yFiles.Algorithms.GraphAnalysis
     }
 
     /// <summary>
-    /// Load the previous sample graph in the list.
+    ///   Load the previous sample graph in the list.
     /// </summary>
     private void PreviousSample(object sender, RoutedEventArgs e) {
       sampleComboBox.SelectedIndex--;
     }
 
     /// <summary>
-    /// Load the next sample graph in the list.
+    ///   Load the next sample graph in the list.
     /// </summary>
     private void NextSample(object sender, RoutedEventArgs e) {
       sampleComboBox.SelectedIndex++;
     }
 
     /// <summary>
-    /// The selected sample in the combo box has changed.
+    ///   The selected sample in the combo box has changed.
     /// </summary>
     /// <remarks>
-    /// Load the sample and apply the corresponding analysis algorithm.
+    ///   Load the sample and apply the corresponding analysis algorithm.
     /// </remarks>
     private async void OnSampleChanged(object sender, RoutedEventArgs e) {
       if (inLayout || inLoadSample) {
@@ -409,7 +408,9 @@ namespace Demo.yFiles.Algorithms.GraphAnalysis
       var sampleSelectedIndex = sampleComboBox.SelectedIndex;
 
       if (CurrentConfig != null) {
-        directed = CurrentConfig.SupportsDirectedAndUndirected ? directionComboBox.SelectedIndex == 1 : CurrentConfig.Directed;
+        directed = CurrentConfig.SupportsDirectedAndUndirected
+            ? directionComboBox.SelectedIndex == 1
+            : CurrentConfig.Directed;
       }
 
       var sample = (Sample) sampleComboBox.SelectedItem;
@@ -430,7 +431,7 @@ namespace Demo.yFiles.Algorithms.GraphAnalysis
     }
 
     /// <summary>
-    /// Apply the algorithm which is appropriate for the selected graph.
+    ///   Apply the algorithm which is appropriate for the selected graph.
     /// </summary>
     /// <param name="sampleSelectedIndex">The index to use.</param>
     private async Task ApplyAlgorithmForKey(int sampleSelectedIndex) {
@@ -459,12 +460,26 @@ namespace Demo.yFiles.Algorithms.GraphAnalysis
     }
 
     /// <summary>
-    /// The selected analysis algorithm changed.
+    ///   Runs the previous algorithm in the list.
+    /// </summary>
+    private void PreviousAlgorithm(object sender, RoutedEventArgs e) {
+      algorithmComboBox.SelectedIndex--;
+    }
+
+    /// <summary>
+    ///   Runs the next algorithm in the list.
+    /// </summary>
+    private void NextAlgorithm(object sender, RoutedEventArgs e) {
+      algorithmComboBox.SelectedIndex++;
+    }
+
+    /// <summary>
+    ///   The selected analysis algorithm changed.
     /// </summary>
     private async void OnAlgorithmChanged(object sender, RoutedEventArgs e) {
       CurrentConfig = ((Algorithm) algorithmComboBox.SelectedItem).Configuration;
 
-      // if the algorithm doesn't support to chose between directed and undirected edges
+      // if the algorithm doesn't support choosing between directed and undirected edges
       // set the combobox to the only mode the algorithm supports
       if (!CurrentConfig.SupportsDirectedAndUndirected) {
         directionComboBox.SelectedIndex = CurrentConfig.Directed ? 1 : 0;
@@ -482,7 +497,7 @@ namespace Demo.yFiles.Algorithms.GraphAnalysis
     }
 
     /// <summary>
-    /// Whether the graph is directed has been toggled.
+    ///   Whether the graph is directed has been toggled.
     /// </summary>
     private async void OnDirectedChanged(object sender, RoutedEventArgs e) {
       if (directionComboBox.IsEnabled) {
@@ -492,17 +507,29 @@ namespace Demo.yFiles.Algorithms.GraphAnalysis
     }
 
     /// <summary>
-    /// Whether to use uniform edge weights has been changed.
+    ///   Whether to use uniform edge weights has been changed.
     /// </summary>
     private async void OnUniformEdgeWeightsChanged(object sender, RoutedEventArgs e) {
-      if (uniformEdgeWeightsComboBox.IsEnabled) {
-        useUniformWeights = uniformEdgeWeightsComboBox.SelectedIndex == 0;
+      if (!uniformEdgeWeightsComboBox.IsEnabled) {
+        return;
+      }
+
+      useUniformWeights = uniformEdgeWeightsComboBox.SelectedIndex == 0;
+      if (useUniformWeights) {
+        // remove weight labels
+        var graph = graphControl.Graph;
+        foreach (var edge in graph.Edges) {
+          foreach (var label in edge.Labels.Where(l => Equals(l.Tag, "Weight")).ToList()) {
+            graph.Remove(label);
+          }
+        }
+      } else {
         await GenerateEdgeLabels();
       }
     }
 
     /// <summary>
-    /// Updates the table that holds information about the graph.
+    ///   Updates the table that holds information about the graph.
     /// </summary>
     private void UpdateGraphInformation() {
       // clear table
@@ -514,17 +541,8 @@ namespace Demo.yFiles.Algorithms.GraphAnalysis
       var graph = graphControl.Graph;
 
       var captions = new[] {
-          "Number of Nodes",
-          "Number of Edges",
-          "Acyclic",
-          "Bipartite",
-          "Connected",
-          "Biconnected",
-          "Strongly Connected",
-           "Planar",
-          "Tree",
-          "Self-Loops",
-          "Parallel Edges"
+          "Number of Nodes", "Number of Edges", "Acyclic", "Bipartite", "Connected", "Biconnected",
+          "Strongly Connected", "Planar", "Tree", "Self-Loops", "Parallel Edges"
       };
       var analyzer = graph.GetStructureAnalyzer();
       foreach (var caption in captions) {
@@ -550,9 +568,7 @@ namespace Demo.yFiles.Algorithms.GraphAnalysis
         } else {
           var tableCell = new TableCell();
           row.Cells.Add(tableCell);
-          var para = new Paragraph {
-              Margin = new Thickness(0)
-          };
+          var para = new Paragraph { Margin = new Thickness(0) };
           tableCell.Blocks.Add(para);
           var textBlock = new TextBlock();
           para.Inlines.Add(textBlock);
@@ -561,9 +577,7 @@ namespace Demo.yFiles.Algorithms.GraphAnalysis
 
           var tableCell2 = new TableCell();
           row.Cells.Add(tableCell2);
-          var para2 = new Paragraph {
-              Margin = new Thickness(0)
-          };
+          var para2 = new Paragraph { Margin = new Thickness(0) };
           tableCell2.Blocks.Add(para2);
           var textBlock2 = new TextBlock();
           para2.Inlines.Add(textBlock2);
@@ -581,54 +595,49 @@ namespace Demo.yFiles.Algorithms.GraphAnalysis
      *
      * @returns {boolean, Object, string}
      */
-    SingleGraphInfo GetGraphInformation(IGraph graph, GraphStructureAnalyzer analyzer, string type) {
+    private SingleGraphInfo GetGraphInformation(IGraph graph, GraphStructureAnalyzer analyzer, string type) {
       switch (type) {
         case "Number of Nodes":
           return new SingleGraphInfo(false, graph.Nodes.Count, null);
         case "Number of Edges":
           return new SingleGraphInfo(false, graph.Edges.Count, null);
         case "Acyclic":
-          return new SingleGraphInfo(true, analyzer.IsAcyclic(true),
-              "https://en.wikipedia.org/wiki/Cycle_(graph_theory)");
+          return new SingleGraphInfo(true, analyzer.IsAcyclic(), "https://en.wikipedia.org/wiki/Cycle_(graph_theory)");
         case "Bipartite":
-          return new SingleGraphInfo(true, analyzer.IsBipartite(),
-              "https://en.wikipedia.org/wiki/Bipartite_graph");
+          return new SingleGraphInfo(true, analyzer.IsBipartite(), "https://en.wikipedia.org/wiki/Bipartite_graph");
         case "Connected":
           return new SingleGraphInfo(true, analyzer.IsConnected(),
               "https://en.wikipedia.org/wiki/Connectivity_(graph_theory)");
         case "Biconnected":
-          return new SingleGraphInfo(true, analyzer.IsBiconnected(),
-              "https://en.wikipedia.org/wiki/Biconnected_graph");
+          return new SingleGraphInfo(true, analyzer.IsBiconnected(), "https://en.wikipedia.org/wiki/Biconnected_graph");
         case "Strongly Connected":
           return new SingleGraphInfo(true, analyzer.IsStronglyConnected(),
               "https://en.wikipedia.org/wiki/Strongly_connected_component");
         case "Planar":
-          return new SingleGraphInfo(true, analyzer.IsPlanar(),
-            "https://en.wikipedia.org/wiki/Planar_graph");
+          return new SingleGraphInfo(true, analyzer.IsPlanar(), "https://en.wikipedia.org/wiki/Planar_graph");
         case "Tree":
-          return new SingleGraphInfo(true, analyzer.IsTree(false),
-              "https://en.wikipedia.org/wiki/Tree_(graph_theory)");
+          return new SingleGraphInfo(true, analyzer.IsTree(false), "https://en.wikipedia.org/wiki/Tree_(graph_theory)");
         case "Self-Loops":
           return new SingleGraphInfo(true, analyzer.HasSelfLoops(),
               "https://en.wikipedia.org/wiki/Loop_(graph_theory)");
         case "Parallel Edges":
-          return new SingleGraphInfo(true, analyzer.HasMultipleEdges(),
-              "https://en.wikipedia.org/wiki/Multiple_edges");
+          return new SingleGraphInfo(true, analyzer.HasMultiEdges(), "https://en.wikipedia.org/wiki/Multiple_edges");
         default:
           return new SingleGraphInfo(false, graph.Nodes.Count, null);
       }
     }
 
     /// <summary>
-    /// Resets the styles of the nodes and edges to the default style.
+    ///   Resets the styles of the nodes and edges to the default style.
     /// </summary>
     private void ResetStyles() {
       var graph = graphControl.Graph;
-      var defaultEdgeStyle = graph.EdgeDefaults.Style;
-      ((PolylineEdgeStyle) defaultEdgeStyle).TargetArrow = directed ? Arrows.Default : Arrows.None;
+      if (graph.EdgeDefaults.Style is AnalysisPolylineEdgeStyle defaultEdgeStyle) {
+        defaultEdgeStyle.TargetArrow = directed ? new Arrow(ArrowType.Stealth) : Arrow.None;
 
-      foreach (var edge in graph.Edges) {
-        graph.SetStyle(edge, defaultEdgeStyle);
+        foreach (var edge in graph.Edges) {
+          graph.SetStyle(edge, defaultEdgeStyle);
+        }
       }
 
       DeleteEdgeLabels();
@@ -656,13 +665,14 @@ namespace Demo.yFiles.Algorithms.GraphAnalysis
 
     private void DeleteCustomEdgeLabels() {
       var graph = graphControl.Graph;
-      foreach (var label in graph.GetEdgeLabels().Where(l => Equals(l.Tag, "Weight") || Equals(l.Tag, "Centrality")).ToList()) {
+      foreach (var label in graph.GetEdgeLabels().Where(l => Equals(l.Tag, "Weight") || Equals(l.Tag, "Centrality"))
+          .ToList()) {
         graph.Remove(label);
       }
     }
 
     /// <summary>
-    /// Remove Edge Labels button has been pressed.
+    ///   Remove Edge Labels button has been pressed.
     /// </summary>
     private async void RemoveEdgeLabels(object sender, RoutedEventArgs e) {
       DeleteCustomEdgeLabels();
@@ -670,29 +680,27 @@ namespace Demo.yFiles.Algorithms.GraphAnalysis
     }
 
     /// <summary>
-    /// Generate Edge Label button has been pressed.
+    ///   Generate Edge Label button has been pressed.
     /// </summary>
     private async void GenerateEdgeLabels(object sender, RoutedEventArgs e) {
       await GenerateEdgeLabels();
     }
 
     /// <summary>
-    /// Generates custom edge labels with a random value which denotes the edge weight.
+    ///   Generates custom edge labels with a random value which denotes the edge weight.
     /// </summary>
     private async Task GenerateEdgeLabels() {
       var graph = graphControl.Graph;
-      
+
       DeleteCustomEdgeLabels();
 
       foreach (var edge in graph.Edges) {
-        var weightLabelStyle = new DefaultLabelStyle {
-            TextSize = 10,
-            TextBrush = Brushes.Gray
-        };
+        var weightLabelStyle = new LabelStyle { TextSize = 10, TextBrush = Brushes.Gray };
 
         // select a weight from 1 to 20
         var weight = useUniformWeights ? 1 : random.Next(1, 21);
-        graph.AddLabel(edge, weight.ToString(), FreeEdgeLabelModel.Instance.CreateDefaultParameter(), weightLabelStyle, tag : "Weight");
+        graph.AddLabel(edge, weight.ToString(), FreeEdgeLabelModel.Instance.CreateParameter(), weightLabelStyle,
+            tag : "Weight");
       }
 
       await RunLayout(true, false, true);
@@ -706,22 +714,26 @@ namespace Demo.yFiles.Algorithms.GraphAnalysis
     private void SetUiDisabled(bool disabled) {
       var enabled = !disabled;
       sampleComboBox.IsEnabled = enabled;
-      nextButton.IsEnabled = enabled;
-      previousButton.IsEnabled = enabled;
+      nextSampleButton.IsEnabled = enabled;
+      previousSampleButton.IsEnabled = enabled;
       directionComboBox.IsEnabled = enabled;
+      nextAlgorithmButton.IsEnabled = enabled;
+      previousAlgorithmButton.IsEnabled = enabled;
       algorithmComboBox.IsEnabled = enabled;
       uniformEdgeWeightsComboBox.IsEnabled = enabled;
       generateEdgeLabelsButton.IsEnabled = enabled;
       removeEdgeLabelsButton.IsEnabled = enabled;
       layoutButton.IsEnabled = enabled;
-      graphControl.InputMode.InputModeContext.Lookup<WaitInputMode>().Waiting = disabled;
+      ((GraphInputMode) graphControl.InputMode).WaitInputMode.Waiting = disabled;
     }
 
     private void UpdateUiState() {
       sampleComboBox.IsEnabled = true;
       algorithmComboBox.IsEnabled = true;
-      nextButton.IsEnabled = sampleComboBox.SelectedIndex < sampleComboBox.Items.Count - 1;
-      previousButton.IsEnabled = sampleComboBox.SelectedIndex > 0;
+      nextSampleButton.IsEnabled = sampleComboBox.SelectedIndex < sampleComboBox.Items.Count - 1;
+      previousSampleButton.IsEnabled = sampleComboBox.SelectedIndex > 0;
+      nextAlgorithmButton.IsEnabled = algorithmComboBox.SelectedIndex < algorithmComboBox.Items.Count - 1;
+      previousAlgorithmButton.IsEnabled = algorithmComboBox.SelectedIndex > 0;
       directionComboBox.IsEnabled = configOptionsValid && !inLayout && CurrentConfig.SupportsDirectedAndUndirected;
       uniformEdgeWeightsComboBox.IsEnabled = configOptionsValid && !inLayout && CurrentConfig.SupportsWeights;
       generateEdgeLabelsButton.IsEnabled = configOptionsValid && !inLayout && CurrentConfig.SupportsWeights;
@@ -730,7 +742,7 @@ namespace Demo.yFiles.Algorithms.GraphAnalysis
     }
 
     /// <summary>
-    /// Execute the new command.
+    ///   Execute the new command.
     /// </summary>
     private void ExecuteNew(object sender, ExecutedRoutedEventArgs e) {
       graphControl.Graph.Clear();
@@ -738,10 +750,10 @@ namespace Demo.yFiles.Algorithms.GraphAnalysis
     }
 
     /// <summary>
-    /// Whether the new command can be executed.
+    ///   Whether the new command can be executed.
     /// </summary>
     /// <remarks>
-    /// Enables/Disables the new button according to the state of the <see cref="WaitInputMode"/>.
+    ///   Enables/Disables the new button according to the state of the <see cref="WaitInputMode"/>.
     /// </remarks>
     /// <param name="sender"></param>
     /// <param name="e"></param>
@@ -749,12 +761,12 @@ namespace Demo.yFiles.Algorithms.GraphAnalysis
       var mode = graphControl != null ? graphControl.InputMode as GraphEditorInputMode : null;
       e.CanExecute = mode != null && !mode.WaitInputMode.Waiting;
     }
-    
+
     /// <summary>
-    /// Represents a sample graph.
+    ///   Represents a sample graph.
     /// </summary>
     /// <remarks>
-    /// Has a display name and the actual file name of the graph.
+    ///   Has a display name and the actual file name of the graph.
     /// </remarks>
     public sealed class Sample
     {
@@ -764,14 +776,15 @@ namespace Demo.yFiles.Algorithms.GraphAnalysis
       }
 
       public string DisplayName { get; set; }
+
       public string FileName { get; set; }
     }
 
     /// <summary>
-    /// Represents an analysis algorithm.
+    ///   Represents an analysis algorithm.
     /// </summary>
     /// <remarks>
-    /// Has a display name and the <see cref="AlgorithmConfiguration"/> for the algorithm.
+    ///   Has a display name and the <see cref="AlgorithmConfiguration"/> for the algorithm.
     /// </remarks>
     private sealed class Algorithm
     {
@@ -780,8 +793,9 @@ namespace Demo.yFiles.Algorithms.GraphAnalysis
         Configuration = configuration;
       }
 
-      public string DisplayName { get; set; }
-      public AlgorithmConfiguration Configuration { get; set; }
+      public string DisplayName { get; }
+
+      public AlgorithmConfiguration Configuration { get; }
     }
 
     private sealed class SingleGraphInfo
@@ -796,6 +810,5 @@ namespace Demo.yFiles.Algorithms.GraphAnalysis
         this.url = url;
       }
     }
-
   }
 }

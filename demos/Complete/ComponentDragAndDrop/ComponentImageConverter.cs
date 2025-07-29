@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -39,7 +39,7 @@ namespace Demo.yFiles.Graph.ComponentDragAndDrop
 {
   /// <summary>
   /// Converts from a <see cref="IGraph">component</see> to an image that shows the visual
-  /// representation of the component.  
+  /// representation of the component.
   /// </summary>
   /// <remarks>
   /// Used in the palette view.
@@ -56,8 +56,8 @@ namespace Demo.yFiles.Graph.ComponentDragAndDrop
 
       graphControl.Graph = graph;
       graphControl.FitGraphBounds();
-      var size = graphControl.ContentRect;
-      var cc = new ContextConfigurator(graphControl.ContentRect);
+      var size = graphControl.ContentBounds;
+      var cc = new ContextConfigurator(graphControl.ContentBounds);
       cc.Scale = Math.Min(cc.CalculateScaleForWidth(size.Width), cc.CalculateScaleForHeight(size.Height));
 
       var renderContext = cc.CreateRenderContext(graphControl);

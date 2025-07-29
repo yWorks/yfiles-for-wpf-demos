@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -30,51 +30,41 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using Demo.yFiles.Option.Constraint;
-using Demo.yFiles.Option.Handler;
-using Demo.yFiles.Option.I18N;
 using Demo.yFiles.Option.View;
-using System.Diagnostics;
 
 namespace Demo.yFiles.Option.Editor
 {
-
   public sealed class TablePanel : Panel
   {
-
     static TablePanel() {
-      UIElement.FocusableProperty.OverrideMetadata(typeof(TablePanel), new FrameworkPropertyMetadata(false));
+      FocusableProperty.OverrideMetadata(typeof(TablePanel), new FrameworkPropertyMetadata(false));
     }
 
-    private readonly List<double> minWidths = new List<double>(){0,0};
-    private readonly List<double> currentWidths = new List<double>(){0,0};
+    private readonly List<double> minWidths = new() { 0, 0 };
+    private readonly List<double> currentWidths = new() { 0, 0 };
 
     public TablePanel() {
       HorizontalAlignment = HorizontalAlignment.Stretch;
       VerticalAlignment = VerticalAlignment.Top;
     }
 
-    public IList<double> MinWidths {
-      get { return minWidths; }
-    }
+    public IList<double> MinWidths => minWidths;
 
-    public IList<double> CurrentWidths {
-      get { return currentWidths; }
-    }
+    public IList<double> CurrentWidths => currentWidths;
 
     protected override Size MeasureOverride(Size availableSize) {
       var oldWidths = minWidths.ToArray();
-      for (int index = 0; index < minWidths.Count; index++) {
+      for (var index = 0; index < minWidths.Count; index++) {
         minWidths[index] = -1;
       }
 
       double minHeight = 0;
-      double minWidth = MinWidth;
+      var minWidth = MinWidth;
       foreach (UIElement c in new ArrayList(Children)) {
         c.Measure(availableSize);
         minHeight += c.DesiredSize.Height;
@@ -83,7 +73,7 @@ namespace Demo.yFiles.Option.Editor
 
       double columnWidths = 0;
 
-      for (int index = 0; index < minWidths.Count; index++) {
+      for (var index = 0; index < minWidths.Count; index++) {
         if (minWidths[index] < 0) {
           minWidths[index] = oldWidths[index];
         }
@@ -91,7 +81,7 @@ namespace Demo.yFiles.Option.Editor
       }
 
       if (columnWidths < minWidth) {
-        minWidths[minWidths.Count - 1] += (minWidth - columnWidths);
+        minWidths[minWidths.Count - 1] += minWidth - columnWidths;
       }
       minWidth = Math.Max(minWidth, columnWidths);
 
@@ -99,10 +89,9 @@ namespace Demo.yFiles.Option.Editor
     }
 
     protected override Size ArrangeOverride(Size finalSize) {
+      var columnWidths = minWidths.Sum();
 
-      double columnWidths = minWidths.Sum();
-
-      for (int i = 0; i < minWidths.Count; i++) {
+      for (var i = 0; i < minWidths.Count; i++) {
         currentWidths[i] = minWidths[i];
       }
 
@@ -122,9 +111,8 @@ namespace Demo.yFiles.Option.Editor
 
   public class RowPanel : Panel
   {
-
     static RowPanel() {
-      UIElement.FocusableProperty.OverrideMetadata(typeof(RowPanel), new FrameworkPropertyMetadata(false));
+      FocusableProperty.OverrideMetadata(typeof(RowPanel), new FrameworkPropertyMetadata(false));
     }
 
 
@@ -133,15 +121,13 @@ namespace Demo.yFiles.Option.Editor
     }
 
 
-
-
     protected override Size MeasureOverride(Size availableSize) {
-      TablePanel tablePanel = this.GetVisualAncestors().OfType<TablePanel>().FirstOrDefault();
+      var tablePanel = GetVisualAncestors().OfType<TablePanel>().FirstOrDefault();
 
-      double minHeight = MinHeight;
+      var minHeight = MinHeight;
       double minWidth = 0;
 
-      int columnCount = 0;
+      var columnCount = 0;
       foreach (UIElement child in Children) {
         child.Measure(availableSize);
         var width = child.DesiredSize.Width;
@@ -165,10 +151,10 @@ namespace Demo.yFiles.Option.Editor
     }
 
     protected override Size ArrangeOverride(Size finalSize) {
-      TablePanel tablePanel = this.GetVisualAncestors().OfType<TablePanel>().FirstOrDefault();
+      var tablePanel = GetVisualAncestors().OfType<TablePanel>().FirstOrDefault();
       double minWidth = 0;
       // TODO - use ColumnMinWidth / quantify
-      int columnCount = 0;
+      var columnCount = 0;
       var widths = tablePanel != null ? tablePanel.CurrentWidths : null;
       foreach (UIElement child in Children) {
         var width = child.DesiredSize.Width;
@@ -185,39 +171,40 @@ namespace Demo.yFiles.Option.Editor
   }
 
   /// <summary>
-  /// Abstract base class for factories that can create visual representations of OptionHandlers
+  ///   Abstract base class for factories that can create visual representations of OptionHandlers
   /// </summary>
-  /// <remarks>This class can either create a complete standalone editor form together with the
-  /// necessary buttons for applying/adopting/canceling, or just the bare core
-  /// <see cref="EditorControl"/> for the OptionHandler. An instance of <see cref="IModelView"/>
-  /// is created implicitly to control the synchronization and optionally ensure
-  /// that the <see cref="ConstraintManager"/> is correctly registered with the editor.</remarks>
-  /// <example> This sample shows how create a standalone editor form for a simple option handler
-  /// that is automatic synchronization state.
-  /// <code lang="C#">
-  ///   class ConstraintDemo 
+  /// <remarks>
+  ///   This class can either create a complete standalone editor form together with the
+  ///   necessary buttons for applying/adopting/canceling, or just the bare core
+  ///   <see cref="EditorControl"/> for the OptionHandler. An instance of <see cref="IModelView"/>
+  ///   is created implicitly to control the synchronization and optionally ensure
+  ///   that the <see cref="ConstraintManager"/> is correctly registered with the editor.
+  /// </remarks>
+  /// <example>
+  ///   This sample shows how to create a standalone editor form for a simple option handler
+  ///   that is in automatic synchronization state.
+  ///   <code lang="C#">
+  ///   class ConstraintDemo
   ///   {
-  ///      public static int Main() 
+  ///      public static int Main()
   ///      {
-  ///         oh = new OptionHandler("Settings);
-  ///         //add various simple items directly to the handler            
+  ///         oh = new OptionHandler("Settings");
+  ///         // add various simple items directly to the handler
   ///         IOptionItem stringItem = oh.AddString(null, "String", "foo");
   ///         oh.AddInt(null, "Int", 3);
-  ///         
-  ///         //this will show a PropertyGrid like editor
-  ///         //synchronization properties can be set
+  ///
+  ///         // this will show a PropertyGrid like editor
+  ///         // synchronization properties can be set
   ///         EditorForm form = (new TableEditorFactory()).CreateEditor(oh, true, true);
-  ///         //use the editor as modal dialog
+  ///         // use the editor as modal dialog
   ///         if (form.ShowDialog() == true){
   ///            MessageBox.Show("Dialog has been accepted");
   ///         }  else {
   ///            MessageBox.Show("Dialog has been canceled");
-  ///         }  
+  ///         }
   ///       }
   ///    }
   /// </code>
   /// </example>
-  public abstract class EditorFactory
-  {
-  }
+  public abstract class EditorFactory { }
 }

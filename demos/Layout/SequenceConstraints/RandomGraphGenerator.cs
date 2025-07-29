@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -29,29 +29,30 @@
 
 using System;
 using yWorks.Graph;
+using yWorks.Utils;
 
 namespace Demo.yFiles.Layout.SequenceConstraints
 {
-  ///<summary>
-  /// A class that creates random graphs. The size of the graph and other options
-  /// may be specified. These options influence the properties of the created
-  /// graph.
-  ///</summary>
+  /// <summary>
+  ///   A class that creates random graphs. The size of the graph and other options
+  ///   may be specified. These options influence the properties of the created
+  ///   graph.
+  /// </summary>
   public class RandomGraphGenerator
   {
     private readonly Random random;
 
     /// <summary>
-    /// Constructs a new random graph generator
+    ///   Constructs a new random graph generator
     /// </summary>
-    public RandomGraphGenerator() : this(DateTime.Now.Millisecond) {}
+    public RandomGraphGenerator() : this(DateTime.Now.Millisecond) { }
 
     public Func<IGraph, INode> NodeCreator { get; set; }
 
     /// <summary>
-    /// Constructs a new random graph generator that uses
-    /// the given random seed to initialize.
-    /// </summary> 
+    ///   Constructs a new random graph generator that uses
+    ///   the given random seed to initialize.
+    /// </summary>
     public RandomGraphGenerator(int seed) {
       NodeCreator = graph => graph.CreateNode();
       random = new Random(seed);
@@ -62,73 +63,73 @@ namespace Demo.yFiles.Layout.SequenceConstraints
       AllowMultipleEdges = false;
     }
 
-    ///<summary>
-    /// Gets or sets the node count of the graph to be generated.
-    /// The default value is 30.
-    ///</summary>
+    /// <summary>
+    ///   Gets or sets the node count of the graph to be generated.
+    ///   The default value is 30.
+    /// </summary>
     public int NodeCount { get; set; }
 
-    ///<summary>
-    /// Gets or sets the edge count of the graph to be generated.
-    /// The default value is 40. If the edge count is 
-    /// higher than it is theoretically possible by the 
-    /// generator options set, then the highest possible
-    /// edge count is applied instead.
-    ///</summary>
+    /// <summary>
+    ///   Gets or sets the edge count of the graph to be generated.
+    ///   The default value is 40. If the edge count is
+    ///   higher than it is theoretically possible by the
+    ///   generator options set, then the highest possible
+    ///   edge count is applied instead.
+    /// </summary>
     public int EdgeCount { get; set; }
 
-    ///<summary>
-    /// Whether or not to allow the generation of cyclic graphs, i.e. 
-    /// graphs that contain directed cyclic paths. If allowed 
-    /// it still could happen by chance that the generated
-    /// graph is acyclic. By default allowed.
-    ///</summary>
+    /// <summary>
+    ///   Whether or not to allow the generation of cyclic graphs, i.e.
+    ///   graphs that contain directed cyclic paths. If allowed,
+    ///   it could still happen by chance that the generated
+    ///   graph is acyclic. By default, allowed.
+    /// </summary>
     public bool AllowCycles { get; set; }
 
-    ///<summary>
-    /// Whether or not to allow the generation of selfloops, i.e.
-    /// edges with same source and target nodes.
-    /// If allowed it still could happen by chance that
-    /// the generated graph contains no selfloops.
-    /// By default disallowed.
-    ///</summary>
+    /// <summary>
+    ///   Whether or not to allow the generation of self-loops, i.e.
+    ///   edges with the same source and target nodes.
+    ///   If allowed, it still could happen by chance that
+    ///   the generated graph contains no self-loops.
+    ///   By default, disallowed.
+    /// </summary>
     public bool AllowSelfLoops { get; set; }
 
-    ///<summary>
-    /// Whether or not to allow the generation of graphs that contain multiple
-    /// edges, i.e. graphs that has more than one edge that connect the same pair
-    /// of nodes. If allowed it still could happen by chance that
-    /// the generated graph does not contain multiple edges.
-    /// By default disallowed.
-    ///</summary>
+    /// <summary>
+    ///   Whether or not to allow the generation of graphs that contain multiple
+    ///   edges, i.e. graphs that have more than one edge that connect the same pair
+    ///   of nodes. If allowed it still could happen by chance that
+    ///   the generated graph does not contain multiple edges.
+    ///   By default disallowed.
+    /// </summary>
     public bool AllowMultipleEdges { get; set; }
 
-    ///<summary>
-    /// Returns a newly created random graph that obeys the specified settings.
-    ///</summary>
+    /// <summary>
+    ///   Returns a newly created random graph that obeys the specified settings.
+    /// </summary>
     public IGraph Generate() {
       IGraph graph = new DefaultGraph();
       Generate(graph);
       return graph;
     }
 
-    ///<summary>
-    ///Clears the given graph and generates new nodes and edges for it,
-    /// so that the specified settings are obeyed.
-    ///</summary>
+    /// <summary>
+    ///   Clears the given graph and generates new nodes and edges for it,
+    ///   so that the specified settings are obeyed.
+    /// </summary>
     public void Generate(IGraph graph) {
       if (AllowMultipleEdges) {
         GenerateMultipleGraph(graph);
-      } else if (NodeCount > 1 && EdgeCount > 10 && Math.Log(NodeCount)*NodeCount < EdgeCount) {
+      } else if (NodeCount > 1 && EdgeCount > 10 && Math.Log(NodeCount) * NodeCount < EdgeCount) {
         GenerateDenseGraph(graph);
       } else {
         GenerateSparseGraph(graph);
       }
     }
 
-    ///<summary>
-    /// Random graph generator in case multiple edges are allowed.
-    ///</summary>
+    /// <summary>
+    ///   Random graph generator in case multiple edges are allowed.
+    /// </summary>
     private void GenerateMultipleGraph(IGraph graph) {
       int n = NodeCount;
       int m = EdgeCount;
@@ -169,9 +170,9 @@ namespace Demo.yFiles.Layout.SequenceConstraints
       }
     }
 
-    ///<summary>
-    /// Random graph generator for dense graphs.
-    ///</summary>
+    /// <summary>
+    ///   Random graph generator for dense graphs.
+    /// </summary>
     private void GenerateDenseGraph(IGraph graph) {
       graph.Clear();
       INode[] nodes = new INode[NodeCount];
@@ -185,7 +186,7 @@ namespace Demo.yFiles.Layout.SequenceConstraints
       int m = Math.Min(GetMaxEdges(), EdgeCount);
       int n = NodeCount;
 
-      int adder = (AllowSelfLoops && AllowCycles) ? 0 : 1;
+      int adder = AllowSelfLoops && AllowCycles ? 0 : 1;
 
       bool[] edgeWanted = RandomSupport.GetBoolArray(random, GetMaxEdges(), m);
       for (int i = 0, k = 0; i < n; i++) {
@@ -201,9 +202,9 @@ namespace Demo.yFiles.Layout.SequenceConstraints
       }
     }
 
-    ///<summary>
-    /// Random graph generator for sparse graphs.
-    ///</summary>
+    /// <summary>
+    ///   Random graph generator for sparse graphs.
+    /// </summary>
     private void GenerateSparseGraph(IGraph graph) {
       graph.Clear();
       IMapper<IPortOwner, int> index = new DictionaryMapper<IPortOwner, int>();
@@ -249,15 +250,15 @@ namespace Demo.yFiles.Layout.SequenceConstraints
       return NodeCreator(graph);
     }
 
-    ///<summary>
-    /// Helper method that returns the maximum number of edges
-    /// of a graph that still obeys the set structural constraints.
-    ///</summary>
+    /// <summary>
+    ///   Helper method that returns the maximum number of edges
+    ///   of a graph that still obeys the set structural constraints.
+    /// </summary>
     private int GetMaxEdges() {
       if (AllowMultipleEdges) {
         return int.MaxValue;
       }
-      int maxEdges = NodeCount*(NodeCount - 1)/2;
+      int maxEdges = NodeCount * (NodeCount - 1) / 2;
       if (AllowCycles && AllowSelfLoops) {
         maxEdges += NodeCount;
       }
@@ -267,9 +268,9 @@ namespace Demo.yFiles.Layout.SequenceConstraints
 
   internal static class RandomSupport
   {
-    ///<summary>
-    /// Permutates the positions of the elements within the given array.
-    ///</summary>
+    /// <summary>
+    ///   Permutates the positions of the elements within the given array.
+    /// </summary>
     public static void Permutate(Random rnd, object[] a) {
       // forth...
       for (int i = 0; i < a.Length; i++) {
@@ -287,12 +288,12 @@ namespace Demo.yFiles.Layout.SequenceConstraints
       }
     }
 
-    ///<summary>
-    /// Returns an array of <paramref name="n"/> unique random integers that 
-    /// lie within the range <paramref name="min"/> (inclusive) and
-    /// <paramref name="max"/> (exclusive). If <c>max - min &lt; n</c>
-    /// then <see langword="null"/> is returned.
-    ///</summary>
+    /// <summary>
+    ///   Returns an array of <paramref name="n"/> unique random integers that
+    ///   lie within the range <paramref name="min"/> (inclusive) and
+    ///   <paramref name="max"/> (exclusive). If <c>max - min &lt; n</c>
+    ///   then <see langword="null"/> is returned.
+    /// </summary>
     public static int[] GetUniqueArray(Random rnd, int n, int min, int max) {
       max--;
 
@@ -315,12 +316,12 @@ namespace Demo.yFiles.Layout.SequenceConstraints
       return ret;
     }
 
-    ///<summary>
-    /// Returns an array of <paramref name="n"/> randomly chosen boolean values
-    /// of which <paramref name="trueCount"/> of them are <see langword="true"/>.
-    /// If the requested numbers of <see langword="true"/> values is bigger than the number
-    /// of requested boolean values, an Exception is raised.
-    ///</summary>
+    /// <summary>
+    ///   Returns an array of <paramref name="n"/> randomly chosen boolean values
+    ///   of which <paramref name="trueCount"/> of them are <see langword="true"/>.
+    ///   If the requested numbers of <see langword="true"/> values is bigger than the number
+    ///   of requested boolean values, an Exception is raised.
+    /// </summary>
     public static bool[] GetBoolArray(Random rnd, int n, int trueCount) {
       if (trueCount > n) {
         throw new ArgumentException("RandomSupport.GetBoolArray( " + n + ", " + trueCount + " )");
@@ -336,5 +337,4 @@ namespace Demo.yFiles.Layout.SequenceConstraints
       return b;
     }
   }
-
 }

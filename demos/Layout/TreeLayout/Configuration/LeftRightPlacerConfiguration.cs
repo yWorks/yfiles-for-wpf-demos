@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -32,31 +32,31 @@ using yWorks.Layout.Tree;
 namespace Demo.yFiles.Layout.Tree.Configuration
 {
   /// <summary>
-  /// Configuration handler for <see cref="LeftRightNodePlacer"/>
+  /// Configuration handler for <see cref="LeftRightSubtreePlacer"/>
   /// </summary>
-  public sealed class LeftRightPlacerConfiguration : RotatableNodePlacerConfigurationBase<LeftRightNodePlacer>
+  public sealed class LeftRightPlacerConfiguration : RotatableSubtreePlacerConfigurationBase<LeftRightSubtreePlacer>
   {
     public LeftRightPlacerConfiguration() {
-      AdoptSettings(new LeftRightNodePlacer());
+      AdoptSettings(new LeftRightSubtreePlacer());
     }
 
     public bool LastOnBottom { get; set; }
 
-    #region INodePlacerConfiguration Members
+    #region ISubtreePlacerConfiguration Members
 
-    protected override void ConfigurePlacer(LeftRightNodePlacer placer) {
-      base.ConfigurePlacer(placer);
+    protected override void ConfigurePlacer(LeftRightSubtreePlacer placer) {
+      placer.Spacing = Spacing;
       placer.PlaceLastOnBottom = LastOnBottom;
     }
 
-    public override void AdoptSettings(INodePlacer nodePlacer) {
-      base.AdoptSettings(nodePlacer);
-      var dnp = (LeftRightNodePlacer) nodePlacer;
-      LastOnBottom = dnp.PlaceLastOnBottom;
+    public override void AdoptSettings(LeftRightSubtreePlacer subtreePlacer) {
+      Spacing = subtreePlacer.Spacing;
+      Transform = subtreePlacer.Transformation;
+      LastOnBottom = subtreePlacer.PlaceLastOnBottom;
     }
 
-    protected override LeftRightNodePlacer CreatePlacerCore() {
-      return new LeftRightNodePlacer(ModificationMatrix);
+    protected override LeftRightSubtreePlacer CreatePlacerCore() {
+      return new LeftRightSubtreePlacer { Transformation = Transform };
     }
 
     #endregion

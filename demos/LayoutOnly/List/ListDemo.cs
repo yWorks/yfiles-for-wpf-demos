@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -28,76 +28,74 @@
  ***************************************************************************/
 
 using System;
-using System.Collections.Generic;
-using yWorks.Algorithms;
+using yWorks.Utils;
 
 namespace Demo.Base.List
 {
   /// <summary>
-  /// Demonstrates how to use the linked list data type YList and the ICursor interface.
+  ///   Demonstrates how to use the linked list data type YList and the ICursor interface.
   /// </summary>
   public class ListDemo
   {
     public static void Main() {
-      //create new YList instance
-      YList list = new YList();
+      // create new YList instance
+      YList<string> list = new YList<string>();
 
-      //add numbered String elements to list 
+      // add numbered String elements to list
       for (int i = 0; i < 20; i++) {
         list.AddLast("" + i);
       }
 
-      //iterate over list from first to last
+      // iterate over list from first to last
       Console.WriteLine("List elements from front to back");
-      for (ICursor c = list.Cursor(); c.Ok; c.Next()) {
-        //output element at cursor position
-        Console.WriteLine(c.Current);
+      foreach (var item in list) {
+        // output element at cursor position
+        Console.WriteLine(item);
       }
 
-      //iterate over list from last to first
+      // iterate over list from last to first
       Console.WriteLine("List elements from back to front");
-      ICursor rc = list.Cursor();
-      for (rc.ToLast(); rc.Ok; rc.Prev()) {
-        //output element at cursor position
-        Console.WriteLine(rc.Current);
+      for (var cell = list.LastCell; cell != null; cell = cell.Previous) {
+        // output element at cursor position
+        Console.WriteLine(cell.Info);
       }
 
-      //sort list lexicografically
-      list.Sort(new LexicographicComparer());
+      // sort list lexicografically
+      list.Sort((x, y) => String.Compare(x, y, StringComparison.Ordinal));
 
-      //iterate over list from first to last
+      // iterate over list from first to last
       Console.WriteLine("Lexicographically sorted list");
-      for (ICursor c = list.Cursor(); c.Ok; c.Next()) {
-        //output element at cursor position
-        Console.WriteLine(c.Current);
+      foreach (var item in list) {
+        // output element at cursor position
+        Console.WriteLine(item);
       }
 
-      //low level iteration on list cells (non-const iteration)
-      for (ListCell cell = list.FirstCell; cell != null; cell = cell.Succ()) {
-        String s = (String) cell.Info;
-        //remove all Strings from list that have length == 1 
+      // low level iteration on list cells (non-const iteration)
+      for (ListCell<string> cell = list.FirstCell; cell != null; cell = cell.Next) {
+        var s = cell.Info;
+        // remove all Strings from list that have length == 1
         if (s.Length == 1) {
           list.RemoveCell(cell);
-          //note that cell is still half-valid, i.e it's Succ() and Pred()
-          //pointers are still unchanged. therefore cell = cell.Succ() is
-          //valid in the for-statement
+          // note that cell is still half-valid, i.e. its Previous and Next
+          // pointers are still unchanged. Therefore, cell = cell.Next is
+          // valid in the for-statement.
         }
       }
 
       Console.WriteLine("list after element removal");
       Console.WriteLine(list);
 
-      //initialize list2 with the elements from list
-      YList list2 = new YList(list.Cursor());
+      // initialize list2 with the elements from list
+      YList<string> list2 = new YList<string>(list);
       Console.WriteLine("list2 after creation");
       Console.WriteLine(list2);
 
-      //reverse element order in list2
+      // reverse element order in list2
       list2.Reverse();
       Console.WriteLine("list2 after reversal");
       Console.WriteLine(list2);
 
-      //move all elements of list2 to the end of list
+      // move all elements of list2 to the end of list
       list.Splice(list2);
 
       Console.WriteLine("list after splicing");
@@ -107,13 +105,6 @@ namespace Demo.Base.List
 
       Console.WriteLine("\nPress key to end demo.");
       Console.ReadKey();
-    }
-  }
-
-  internal class LexicographicComparer : IComparer<Object>
-  {
-    public int Compare(object x, object y) {
-      return String.Compare(x.ToString(), y.ToString(), StringComparison.Ordinal);
     }
   }
 }

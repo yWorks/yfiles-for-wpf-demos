@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -30,20 +30,32 @@
 using yWorks.Controls.Input;
 using yWorks.Geometry;
 using yWorks.Graph;
+using yWorks.Utils;
 
 namespace Demo.yFiles.Complete.RotatableNodes
 {
   /// <summary>
-  /// Calculates group bounds taking the rotated layout for nodes which <see cref="RotatableNodeStyleDecorator">support rotation</see>.
+  ///   Calculates group bounds taking the rotated layout for nodes which
+  ///   <see cref="RotatableNodeStyleDecorator">support rotation</see>.
   /// </summary>
-  class RotationAwareGroupBoundsCalculator : IGroupBoundsCalculator {
-    
+  internal class RotationAwareGroupBoundsCalculator : IGroupBoundsCalculator
+  {
+    private readonly INode node;
+
     /// <summary>
-    /// Calculates the minimum bounds for the given group node to enclose all its children plus insets.
+    ///   Creates a new instance for the given node.
     /// </summary>
-    public RectD CalculateBounds(IGraph graph, INode groupNode) {
+    /// <param name="node">The group node to calculate the bounds for.</param>
+    public RotationAwareGroupBoundsCalculator(INode node) {
+      this.node = node;
+    }
+
+    /// <summary>
+    ///   Calculates the minimum bounds to enclose all its children plus padding.
+    /// </summary>
+    public RectD CalculateBounds(IGraph graph) {
       var bounds = RectD.Empty;
-      foreach (var node in graph.GetChildren(groupNode)) {
+      foreach (var node in graph.GetChildren(node)) {
         var rotatableWrapper = node.Style as RotatableNodeStyleDecorator;
         if (rotatableWrapper != null) {
           // if the node supports rotation: add the outer bounds of the rotated layout
@@ -53,18 +65,18 @@ namespace Demo.yFiles.Complete.RotatableNodes
           bounds += node.Layout.ToRectD();
         }
       }
-      // if we have content: add insets
-      return bounds.IsEmpty ? bounds : bounds.GetEnlarged(GetInsets(groupNode));
+      // if we have content: add padding
+      return bounds.IsEmpty() ? bounds : bounds.GetEnlarged(GetPadding(node));
     }
 
     /// <summary>
-    /// Returns insets to add to apply to the given groupNode.
+    ///   Returns padding to add to apply to the given groupNode.
     /// </summary>
-    private static InsetsD GetInsets(INode groupNode) {
-      var provider = groupNode.Lookup<INodeInsetsProvider>();
+    private static InsetsD GetPadding(INode groupNode) {
+      var provider = groupNode.Lookup<IGroupPaddingProvider>();
       if (provider != null) {
-        // get the insets from the node's insets provider if there is one
-        return provider.GetInsets(groupNode);
+        // get the padding from the node's padding provider if there is one
+        return provider.GetPadding();
       }
       // otherwise add 5 to each border
       return new InsetsD(5);

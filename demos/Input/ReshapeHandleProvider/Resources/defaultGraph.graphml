@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--Created by yFiles WPF 3.5-->
-<graphml xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/3.0" xmlns:y="http://www.yworks.com/xml/yfiles-common/3.0" xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/3.0/xaml" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml.wpf/3.0/ygraphml.xsd " xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://graphml.graphdrawing.org/xmlns">
+<graphml xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/3.0" xmlns:y="http://www.yworks.com/xml/yfiles-common/3.0"  xmlns:yx="http://www.yworks.com/xml/yfiles-common/4.0" xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/4.0/xaml" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml.wpf/3.0/ygraphml.xsd " xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://graphml.graphdrawing.org/xmlns">
   <key id="d0" attr.name="NodeLabels" for="node" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeLabels" />
   <key id="d1" attr.name="NodeGeometry" for="node" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeGeometry" />
   <key id="d4" attr.name="EdgeLabels" for="edge" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/EdgeLabels" />
@@ -21,29 +21,28 @@
   <data key="d10">
     <y:SharedData>
       <ywpf:Typeface x:Key="1" />
-      <ywpf:DefaultLabelStyle x:Key="3" Typeface="{y:GraphMLReference 1}" />
-      <y:PortAnchoredLabelModelParameter x:Key="5" LocationOffset="5,-3" LabelRatio="0,1" />
-      <ywpf:DefaultLabelStyle x:Key="7" Typeface="{y:GraphMLReference 1}" />
-      <y:PortAnchoredLabelModelParameter x:Key="10" LocationOffset="5,-3" LabelRatio="0,1" />
-      <y:PortAnchoredLabelModelParameter x:Key="12" LocationOffset="-5,-3" LabelRatio="1,1" />
-      <y:PortAnchoredLabelModelParameter x:Key="14" LocationOffset="-5,3" LabelRatio="1,0" />
-      <y:PortAnchoredLabelModelParameter x:Key="16" LocationOffset="5,-3" LabelRatio="0,1" />
-      <y:PortAnchoredLabelModelParameter x:Key="19" LocationOffset="5,-3" LabelRatio="0,1" />
-      <y:PortAnchoredLabelModelParameter x:Key="22" LocationOffset="-5,-3" LabelRatio="1,1" />
-      <y:InsideOutsidePortLabelModelParameter x:Key="24" Outside="False">
-        <y:InsideOutsidePortLabelModelParameter.Model>
-          <y:InsideOutsidePortLabelModel Distance="5" />
-        </y:InsideOutsidePortLabelModelParameter.Model>
-      </y:InsideOutsidePortLabelModelParameter>
-      <y:InsideOutsidePortLabelModelParameter x:Key="33" Outside="False">
-        <y:InsideOutsidePortLabelModelParameter.Model>
-          <y:InsideOutsidePortLabelModel Distance="5" />
-        </y:InsideOutsidePortLabelModelParameter.Model>
-      </y:InsideOutsidePortLabelModelParameter>
-      <y:PortAnchoredLabelModelParameter x:Key="42" LocationOffset="-5,-3" LabelRatio="1,1" />
-      <y:PortAnchoredLabelModelParameter x:Key="43" LocationOffset="-5,3" LabelRatio="1,0" />
-      <ywpf:Arrow x:Key="44" Type="None" />
-      <ywpf:PolylineEdgeStyle x:Key="45" TargetArrow="{y:GraphMLReference 44}" SourceArrow="{y:GraphMLReference 44}">
+      <ywpf:LabelStyle x:Key="3" Typeface="{y:GraphMLReference 1}" />
+      <yx:FreePortLabelModelParameter x:Key="5" LocationOffset="5,-3" LabelRatio="0,1" />
+      <ywpf:LabelStyle x:Key="7" Typeface="{y:GraphMLReference 1}" />
+      <yx:FreePortLabelModelParameter x:Key="10" LocationOffset="5,-3" LabelRatio="0,1" />
+      <yx:FreePortLabelModelParameter x:Key="12" LocationOffset="-5,-3" LabelRatio="1,1" />
+      <yx:FreePortLabelModelParameter x:Key="14" LocationOffset="-5,3" LabelRatio="1,0" />
+      <yx:FreePortLabelModelParameter x:Key="16" LocationOffset="5,-3" LabelRatio="0,1" />
+      <yx:FreePortLabelModelParameter x:Key="19" LocationOffset="5,-3" LabelRatio="0,1" />
+      <yx:FreePortLabelModelParameter x:Key="22" LocationOffset="-5,-3" LabelRatio="1,1" />
+      <yx:InsideOutsidePortLabelModelParameter x:Key="24" Outside="False">
+        <yx:InsideOutsidePortLabelModelParameter.Model>
+          <yx:InsideOutsidePortLabelModel Distance="5" />
+        </yx:InsideOutsidePortLabelModelParameter.Model>
+      </yx:InsideOutsidePortLabelModelParameter>
+      <yx:InsideOutsidePortLabelModelParameter x:Key="33" Outside="False">
+        <yx:InsideOutsidePortLabelModelParameter.Model>
+          <yx:InsideOutsidePortLabelModel Distance="5" />
+        </yx:InsideOutsidePortLabelModelParameter.Model>
+      </yx:InsideOutsidePortLabelModelParameter>
+      <yx:FreePortLabelModelParameter x:Key="42" LocationOffset="-5,-3" LabelRatio="1,1" />
+      <yx:FreePortLabelModelParameter x:Key="43" LocationOffset="-5,3" LabelRatio="1,0" />
+      <ywpf:PolylineEdgeStyle x:Key="45" TargetArrow="None" SourceArrow="None" OrthogonalEditing="true">
         <ywpf:PolylineEdgeStyle.Pen>
           <Pen Brush="#2E282A" Thickness="3" StartLineCap="Square" EndLineCap="Square" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" />
         </ywpf:PolylineEdgeStyle.Pen>
@@ -56,7 +55,7 @@
     <node id="n0">
       <data key="d0">
         <x:List>
-          <y:Label LayoutParameter="{x:Static y:InteriorLabelModel.Center}" Style="{y:GraphMLReference 7}">
+          <y:Label LayoutParameter="{x:Static yx:InteriorNodeLabelModel.Center}" Style="{y:GraphMLReference 7}">
             <y:Label.Text>AND</y:Label.Text>
           </y:Label>
         </x:List>
@@ -70,11 +69,11 @@
             <y:Label Style="{y:GraphMLReference 3}">
               <y:Label.Text>in1</y:Label.Text>
               <y:Label.LayoutParameter>
-                <y:InsideOutsidePortLabelModelParameter>
-                  <y:InsideOutsidePortLabelModelParameter.Model>
-                    <y:InsideOutsidePortLabelModel Distance="5" />
-                  </y:InsideOutsidePortLabelModelParameter.Model>
-                </y:InsideOutsidePortLabelModelParameter>
+                <yx:InsideOutsidePortLabelModelParameter>
+                  <yx:InsideOutsidePortLabelModelParameter.Model>
+                    <yx:InsideOutsidePortLabelModel Distance="5" />
+                  </yx:InsideOutsidePortLabelModelParameter.Model>
+                </yx:InsideOutsidePortLabelModelParameter>
               </y:Label.LayoutParameter>
             </y:Label>
           </x:List>
@@ -94,11 +93,11 @@
             <y:Label Style="{y:GraphMLReference 3}">
               <y:Label.Text>in2</y:Label.Text>
               <y:Label.LayoutParameter>
-                <y:InsideOutsidePortLabelModelParameter>
-                  <y:InsideOutsidePortLabelModelParameter.Model>
-                    <y:InsideOutsidePortLabelModel Distance="5" />
-                  </y:InsideOutsidePortLabelModelParameter.Model>
-                </y:InsideOutsidePortLabelModelParameter>
+                <yx:InsideOutsidePortLabelModelParameter>
+                  <yx:InsideOutsidePortLabelModelParameter.Model>
+                    <yx:InsideOutsidePortLabelModel Distance="5" />
+                  </yx:InsideOutsidePortLabelModelParameter.Model>
+                </yx:InsideOutsidePortLabelModelParameter>
               </y:Label.LayoutParameter>
             </y:Label>
           </x:List>
@@ -133,7 +132,7 @@
     <node id="n1">
       <data key="d0">
         <x:List>
-          <y:Label LayoutParameter="{x:Static y:InteriorLabelModel.Center}" Style="{y:GraphMLReference 7}">
+          <y:Label LayoutParameter="{x:Static yx:InteriorNodeLabelModel.Center}" Style="{y:GraphMLReference 7}">
             <y:Label.Text>NAND</y:Label.Text>
           </y:Label>
         </x:List>
@@ -147,11 +146,11 @@
             <y:Label Style="{y:GraphMLReference 3}">
               <y:Label.Text>in1</y:Label.Text>
               <y:Label.LayoutParameter>
-                <y:InsideOutsidePortLabelModelParameter>
-                  <y:InsideOutsidePortLabelModelParameter.Model>
-                    <y:InsideOutsidePortLabelModel Distance="5" />
-                  </y:InsideOutsidePortLabelModelParameter.Model>
-                </y:InsideOutsidePortLabelModelParameter>
+                <yx:InsideOutsidePortLabelModelParameter>
+                  <yx:InsideOutsidePortLabelModelParameter.Model>
+                    <yx:InsideOutsidePortLabelModel Distance="5" />
+                  </yx:InsideOutsidePortLabelModelParameter.Model>
+                </yx:InsideOutsidePortLabelModelParameter>
               </y:Label.LayoutParameter>
             </y:Label>
           </x:List>
@@ -171,11 +170,11 @@
             <y:Label Style="{y:GraphMLReference 3}">
               <y:Label.Text>in2</y:Label.Text>
               <y:Label.LayoutParameter>
-                <y:InsideOutsidePortLabelModelParameter>
-                  <y:InsideOutsidePortLabelModelParameter.Model>
-                    <y:InsideOutsidePortLabelModel Distance="5" />
-                  </y:InsideOutsidePortLabelModelParameter.Model>
-                </y:InsideOutsidePortLabelModelParameter>
+                <yx:InsideOutsidePortLabelModelParameter>
+                  <yx:InsideOutsidePortLabelModelParameter.Model>
+                    <yx:InsideOutsidePortLabelModel Distance="5" />
+                  </yx:InsideOutsidePortLabelModelParameter.Model>
+                </yx:InsideOutsidePortLabelModelParameter>
               </y:Label.LayoutParameter>
             </y:Label>
           </x:List>
@@ -210,7 +209,7 @@
     <node id="n2">
       <data key="d0">
         <x:List>
-          <y:Label LayoutParameter="{x:Static y:InteriorLabelModel.Center}" Style="{y:GraphMLReference 7}">
+          <y:Label LayoutParameter="{x:Static yx:InteriorNodeLabelModel.Center}" Style="{y:GraphMLReference 7}">
             <y:Label.Text>NOR</y:Label.Text>
           </y:Label>
         </x:List>
@@ -273,7 +272,7 @@
     <node id="n3">
       <data key="d0">
         <x:List>
-          <y:Label LayoutParameter="{x:Static y:InteriorLabelModel.Center}" Style="{y:GraphMLReference 7}">
+          <y:Label LayoutParameter="{x:Static yx:InteriorNodeLabelModel.Center}" Style="{y:GraphMLReference 7}">
             <y:Label.Text>NOT</y:Label.Text>
           </y:Label>
         </x:List>
@@ -287,11 +286,11 @@
             <y:Label Style="{y:GraphMLReference 3}">
               <y:Label.Text>in</y:Label.Text>
               <y:Label.LayoutParameter>
-                <y:InsideOutsidePortLabelModelParameter>
-                  <y:InsideOutsidePortLabelModelParameter.Model>
-                    <y:InsideOutsidePortLabelModel Distance="5" />
-                  </y:InsideOutsidePortLabelModelParameter.Model>
-                </y:InsideOutsidePortLabelModelParameter>
+                <yx:InsideOutsidePortLabelModelParameter>
+                  <yx:InsideOutsidePortLabelModelParameter.Model>
+                    <yx:InsideOutsidePortLabelModel Distance="5" />
+                  </yx:InsideOutsidePortLabelModelParameter.Model>
+                </yx:InsideOutsidePortLabelModelParameter>
               </y:Label.LayoutParameter>
             </y:Label>
           </x:List>
@@ -326,7 +325,7 @@
     <node id="n4">
       <data key="d0">
         <x:List>
-          <y:Label LayoutParameter="{x:Static y:InteriorLabelModel.Center}" Style="{y:GraphMLReference 7}">
+          <y:Label LayoutParameter="{x:Static yx:InteriorNodeLabelModel.Center}" Style="{y:GraphMLReference 7}">
             <y:Label.Text>NOT</y:Label.Text>
           </y:Label>
         </x:List>
@@ -372,7 +371,7 @@
     <node id="n5">
       <data key="d0">
         <x:List>
-          <y:Label LayoutParameter="{x:Static y:InteriorLabelModel.Center}" Style="{y:GraphMLReference 7}">
+          <y:Label LayoutParameter="{x:Static yx:InteriorNodeLabelModel.Center}" Style="{y:GraphMLReference 7}">
             <y:Label.Text>NOR</y:Label.Text>
           </y:Label>
         </x:List>
@@ -435,7 +434,7 @@
     <node id="n6">
       <data key="d0">
         <x:List>
-          <y:Label LayoutParameter="{x:Static y:InteriorLabelModel.Center}" Style="{y:GraphMLReference 7}">
+          <y:Label LayoutParameter="{x:Static yx:InteriorNodeLabelModel.Center}" Style="{y:GraphMLReference 7}">
             <y:Label.Text>555</y:Label.Text>
           </y:Label>
         </x:List>
@@ -524,11 +523,11 @@
             <y:Label Style="{y:GraphMLReference 3}">
               <y:Label.Text>Vcc</y:Label.Text>
               <y:Label.LayoutParameter>
-                <y:InsideOutsidePortLabelModelParameter>
-                  <y:InsideOutsidePortLabelModelParameter.Model>
-                    <y:InsideOutsidePortLabelModel Distance="5" />
-                  </y:InsideOutsidePortLabelModelParameter.Model>
-                </y:InsideOutsidePortLabelModelParameter>
+                <yx:InsideOutsidePortLabelModelParameter>
+                  <yx:InsideOutsidePortLabelModelParameter.Model>
+                    <yx:InsideOutsidePortLabelModel Distance="5" />
+                  </yx:InsideOutsidePortLabelModelParameter.Model>
+                </yx:InsideOutsidePortLabelModelParameter>
               </y:Label.LayoutParameter>
             </y:Label>
           </x:List>
@@ -597,7 +596,7 @@
     <node id="n7">
       <data key="d0">
         <x:List>
-          <y:Label LayoutParameter="{x:Static y:InteriorLabelModel.Center}" Style="{y:GraphMLReference 7}">
+          <y:Label LayoutParameter="{x:Static yx:InteriorNodeLabelModel.Center}" Style="{y:GraphMLReference 7}">
             <y:Label.Text><![CDATA[2-bit A/D
 Converter]]></y:Label.Text>
           </y:Label>
@@ -636,11 +635,11 @@ Converter]]></y:Label.Text>
             <y:Label Style="{y:GraphMLReference 3}">
               <y:Label.Text>gnd</y:Label.Text>
               <y:Label.LayoutParameter>
-                <y:InsideOutsidePortLabelModelParameter>
-                  <y:InsideOutsidePortLabelModelParameter.Model>
-                    <y:InsideOutsidePortLabelModel Distance="5" />
-                  </y:InsideOutsidePortLabelModelParameter.Model>
-                </y:InsideOutsidePortLabelModelParameter>
+                <yx:InsideOutsidePortLabelModelParameter>
+                  <yx:InsideOutsidePortLabelModelParameter.Model>
+                    <yx:InsideOutsidePortLabelModel Distance="5" />
+                  </yx:InsideOutsidePortLabelModelParameter.Model>
+                </yx:InsideOutsidePortLabelModelParameter>
               </y:Label.LayoutParameter>
             </y:Label>
           </x:List>
@@ -677,11 +676,11 @@ Converter]]></y:Label.Text>
             <y:Label Style="{y:GraphMLReference 3}">
               <y:Label.Text>clk</y:Label.Text>
               <y:Label.LayoutParameter>
-                <y:InsideOutsidePortLabelModelParameter>
-                  <y:InsideOutsidePortLabelModelParameter.Model>
-                    <y:InsideOutsidePortLabelModel Distance="5" />
-                  </y:InsideOutsidePortLabelModelParameter.Model>
-                </y:InsideOutsidePortLabelModelParameter>
+                <yx:InsideOutsidePortLabelModelParameter>
+                  <yx:InsideOutsidePortLabelModelParameter.Model>
+                    <yx:InsideOutsidePortLabelModel Distance="5" />
+                  </yx:InsideOutsidePortLabelModelParameter.Model>
+                </yx:InsideOutsidePortLabelModelParameter>
               </y:Label.LayoutParameter>
             </y:Label>
           </x:List>
@@ -750,7 +749,7 @@ Converter]]></y:Label.Text>
     <node id="n8">
       <data key="d0">
         <x:List>
-          <y:Label LayoutParameter="{x:Static y:InteriorLabelModel.Center}" Style="{y:GraphMLReference 7}">
+          <y:Label LayoutParameter="{x:Static yx:InteriorNodeLabelModel.Center}" Style="{y:GraphMLReference 7}">
             <y:Label.Text>NOR</y:Label.Text>
           </y:Label>
         </x:List>
@@ -764,11 +763,11 @@ Converter]]></y:Label.Text>
             <y:Label Style="{y:GraphMLReference 3}">
               <y:Label.Text>in1</y:Label.Text>
               <y:Label.LayoutParameter>
-                <y:InsideOutsidePortLabelModelParameter>
-                  <y:InsideOutsidePortLabelModelParameter.Model>
-                    <y:InsideOutsidePortLabelModel Distance="5" />
-                  </y:InsideOutsidePortLabelModelParameter.Model>
-                </y:InsideOutsidePortLabelModelParameter>
+                <yx:InsideOutsidePortLabelModelParameter>
+                  <yx:InsideOutsidePortLabelModelParameter.Model>
+                    <yx:InsideOutsidePortLabelModel Distance="5" />
+                  </yx:InsideOutsidePortLabelModelParameter.Model>
+                </yx:InsideOutsidePortLabelModelParameter>
               </y:Label.LayoutParameter>
             </y:Label>
           </x:List>
@@ -820,7 +819,7 @@ Converter]]></y:Label.Text>
     <node id="n9">
       <data key="d0">
         <x:List>
-          <y:Label LayoutParameter="{x:Static y:InteriorLabelModel.Center}" Style="{y:GraphMLReference 7}">
+          <y:Label LayoutParameter="{x:Static yx:InteriorNodeLabelModel.Center}" Style="{y:GraphMLReference 7}">
             <y:Label.Text>NOT</y:Label.Text>
           </y:Label>
         </x:List>
@@ -866,7 +865,7 @@ Converter]]></y:Label.Text>
     <node id="n10">
       <data key="d0">
         <x:List>
-          <y:Label LayoutParameter="{x:Static y:InteriorLabelModel.Center}" Style="{y:GraphMLReference 7}">
+          <y:Label LayoutParameter="{x:Static yx:InteriorNodeLabelModel.Center}" Style="{y:GraphMLReference 7}">
             <y:Label.Text>NAND</y:Label.Text>
           </y:Label>
         </x:List>
@@ -914,11 +913,11 @@ Converter]]></y:Label.Text>
             <y:Label Style="{y:GraphMLReference 3}">
               <y:Label.Text>out</y:Label.Text>
               <y:Label.LayoutParameter>
-                <y:InsideOutsidePortLabelModelParameter>
-                  <y:InsideOutsidePortLabelModelParameter.Model>
-                    <y:InsideOutsidePortLabelModel Distance="5" />
-                  </y:InsideOutsidePortLabelModelParameter.Model>
-                </y:InsideOutsidePortLabelModelParameter>
+                <yx:InsideOutsidePortLabelModelParameter>
+                  <yx:InsideOutsidePortLabelModelParameter.Model>
+                    <yx:InsideOutsidePortLabelModel Distance="5" />
+                  </yx:InsideOutsidePortLabelModelParameter.Model>
+                </yx:InsideOutsidePortLabelModelParameter>
               </y:Label.LayoutParameter>
             </y:Label>
           </x:List>

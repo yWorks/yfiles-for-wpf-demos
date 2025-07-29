@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -32,29 +32,37 @@ using System;
 namespace Demo.yFiles.Option.DataBinding
 {
   /// <summary>
-  /// Interface for classes that check whether an option item should be <see cref="OptionItemValidities.ReadWrite"/>, <see cref="OptionItemValidities.ReadOnly"/> or
-  /// <see cref="OptionItemValidities.Invalid"/>, based on the capabilities of the items in a given <see cref="ISelectionProvider{T}"/>.
+  ///   Interface for classes that check whether an option item should be <see cref="OptionItemValidities.ReadWrite"/>,
+  ///   <see cref="OptionItemValidities.ReadOnly"/> or
+  ///   <see cref="OptionItemValidities.Invalid"/>, based on the capabilities of the items in a given
+  ///   <see cref="ISelectionProvider{T}"/>.
   /// </summary>
   public interface IOptionItemFilter<T>
   {
     /// <summary>
-    /// Check whether an option item should be <see cref="OptionItemValidities.ReadWrite"/>, <see cref="OptionItemValidities.ReadOnly"/> or
-    /// <see cref="OptionItemValidities.Invalid"/>, based on the capabilities of the items in <paramref name="selection"/>.
+    ///   Check whether an option item should be <see cref="OptionItemValidities.ReadWrite"/>,
+    ///   <see cref="OptionItemValidities.ReadOnly"/> or
+    ///   <see cref="OptionItemValidities.Invalid"/>, based on the capabilities of the items in <paramref name="selection"/>.
     /// </summary>
-    /// <param name="selection">The selectiion</param>
-    /// <returns>An enumeration value from <see cref="OptionItemValidities"/>, depending on the items in <paramref name="selection"/></returns>
+    /// <param name="selection">The selection</param>
+    /// <returns>
+    ///   An enumeration value from <see cref="OptionItemValidities"/>, depending on the items in
+    ///   <paramref name="selection"/>
+    /// </returns>
     OptionItemValidities CheckValidity(ISelectionProvider<T> selection);
   }
 
   /// <summary>
-  /// Default implementation that determines the state by the presence of valid getters and setters for a given virtual property
+  ///   Default implementation that determines the state by the presence of valid getters and setters for a given virtual
+  ///   property
   /// </summary>
   internal class DefaultOptionItemFilter<T> : IOptionItemFilter<T>
-  {    
+  {
     private readonly string virtualPropertyName;
 
     /// <summary>
-    /// Create a new filter that filters based on the capabilities/existence of the specified virtual property for each selection item.
+    ///   Create a new filter that filters based on the capabilities/existence of the specified virtual property for each
+    ///   selection item.
     /// </summary>
     /// <param name="virtualPropertyName">The name of the virtual property</param>
     public DefaultOptionItemFilter(string virtualPropertyName) {
@@ -68,25 +76,24 @@ namespace Demo.yFiles.Option.DataBinding
       if (selection.Selection.Count == 0) {
         return OptionItemValidities.Invalid;
       }
-      OptionItemValidities retval = OptionItemValidities.ReadWrite;
-      foreach (IPropertyItemDescriptor<T> descriptor in selection.Selection) {
-
-        IPropertyMap map = descriptor.Properties;
-        if(map == null) {
+      var retval = OptionItemValidities.ReadWrite;
+      foreach (var descriptor in selection.Selection) {
+        var map = descriptor.Properties;
+        if (map == null) {
           return OptionItemValidities.Invalid;
         }
-        IPropertyItem item = map.GetEntry(virtualPropertyName);
+        var item = map.GetEntry(virtualPropertyName);
         if (item != null) {
-          IValueGetter getter = item.Getter;
-          IValueSetter setter = item.Setter;
+          var getter = item.Getter;
+          var setter = item.Setter;
 
           if (getter != null && getter.CanGet()) {
             if (setter == null || !setter.CanSet()) {
-              //readonly item...
+              // readonly item...
               retval = OptionItemValidities.ReadOnly;
             }
           } else {
-            //we can't even get the values :-(
+            // we can't even get the values :-(
             return OptionItemValidities.Invalid;
           }
         } else {
@@ -100,21 +107,23 @@ namespace Demo.yFiles.Option.DataBinding
   }
 
   /// <summary>
-  /// Enumeration that describes the capabilities that an option item should have.
+  ///   Enumeration that describes the capabilities that an option item should have.
   /// </summary>
   [Flags]
   public enum OptionItemValidities : short
   {
     /// <summary>
-    /// The item is invalid for the selection
+    ///   The item is invalid for the selection
     /// </summary>
     Invalid = 0,
+
     /// <summary>
-    /// The item should be set for the selection
+    ///   The item should be set for the selection.
     /// </summary>
     ReadOnly = 1,
+
     /// <summary>
-    /// The item should be set read-write for the selection
+    ///   The item should be set as read-write for the selection
     /// </summary>
     ReadWrite = 2
   }

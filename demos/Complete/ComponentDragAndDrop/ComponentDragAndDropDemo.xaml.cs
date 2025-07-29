@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -42,25 +42,23 @@ using yWorks.Utils;
 namespace Demo.yFiles.Graph.ComponentDragAndDrop
 {
   /// <summary>
-  /// A demo that shows how to make space for a subgraph that ia dragged and dropped from a palette
-  /// onto the canvas.
+  ///   A demo that shows how to make space for a subgraph that is dragged and dropped from a palette
+  ///   onto the canvas.
   /// </summary>
   public partial class ComponentDragAndDropDemo
   {
     /// <summary>
-    /// Performs layout and animation during the drag and drop operation.
+    ///   Performs layout and animation during the drag and drop operation.
     /// </summary>
     private ClearAreaLayoutHelper layoutHelper;
 
     /// <summary>
-    /// Gets the currently registered IGraph instance from the GraphControl.
+    ///   Gets the currently registered IGraph instance from the GraphControl.
     /// </summary>
-    private IGraph Graph {
-      get { return GraphControl.Graph; }
-    }
+    private IGraph Graph => GraphControl.Graph;
 
     /// <summary>
-    /// Components that should not be modified by the layout.
+    ///   Components that should not be modified by the layout.
     /// </summary>
     private readonly DictionaryMapper<INode, object> components;
 
@@ -68,7 +66,7 @@ namespace Demo.yFiles.Graph.ComponentDragAndDrop
     #region Initialization
 
     /// <summary>
-    /// Wires up the UI components.
+    ///   Wires up the UI components.
     /// </summary>
     public ComponentDragAndDropDemo() {
       InitializeComponent();
@@ -76,7 +74,7 @@ namespace Demo.yFiles.Graph.ComponentDragAndDrop
     }
 
     /// <summary>
-    /// Initializes the graph and the input mode.
+    ///   Initializes the graph and the input mode.
     /// </summary>
     private void OnLoad(object sender, EventArgs e) {
       InitializeInputModes();
@@ -85,8 +83,8 @@ namespace Demo.yFiles.Graph.ComponentDragAndDrop
     }
 
     /// <summary>
-    /// Registers the <see cref="GraphEditorInputMode"/> as the <see cref="CanvasControl.InputMode"/>
-    /// and initializes the input mode for dropping components.
+    ///   Registers the <see cref="GraphEditorInputMode"/> as the <see cref="CanvasControl.InputMode"/>
+    ///   and initializes the input mode for dropping components.
     /// </summary>
     private void InitializeInputModes() {
       // create a GraphEditorInputMode instance
@@ -103,24 +101,20 @@ namespace Demo.yFiles.Graph.ComponentDragAndDrop
     }
 
     /// <summary>
-    /// Enables undo/redo support and initializes the default styles.
+    ///   Enables undo/redo support and initializes the default styles.
     /// </summary>
     protected virtual void InitializeGraph() {
       GraphControl.Graph.SetUndoEngineEnabled(true);
-      
+
       Graph.NodeDefaults.Style = new ShapeNodeStyle {
-          Shape = ShapeNodeShape.Ellipse,
-          Brush = Brushes.DarkGray,
-          Pen = null
+          Shape = ShapeNodeShape.Ellipse, Brush = Brushes.DarkGray, Pen = null
       };
 
-      Graph.EdgeDefaults.Style = new PolylineEdgeStyle {
-          Pen = new Pen(Brushes.DarkGray, 5)
-      };
+      Graph.EdgeDefaults.Style = new PolylineEdgeStyle { Pen = new Pen(Brushes.DarkGray, 5) };
     }
 
     /// <summary>
-    /// Populates the palette with the graphs stored in the resources folder.
+    ///   Populates the palette with the graphs stored in the resources folder.
     /// </summary>
     private void PopulatePalette() {
       var ioHandler = new GraphMLIOHandler();
@@ -136,32 +130,33 @@ namespace Demo.yFiles.Graph.ComponentDragAndDrop
     #region Dragging the component
 
     /// <summary>
-    /// The component is upon to be moved or resized.
+    ///   The component is upon to be moved or resized.
     /// </summary>
     private void OnDragStarting(object sender, InputModeEventArgs e) {
       var graphDropInputMode = sender as ComponentDropInputMode;
       if (graphDropInputMode != null) {
         var component = graphDropInputMode.DropData as IGraph;
-        layoutHelper = new ClearAreaLayoutHelper(GraphControl, component, ConsiderComponents.IsChecked == true ? components : null);
+        layoutHelper = new ClearAreaLayoutHelper(GraphControl, component,
+            ConsiderComponents.IsChecked == true ? components : null);
         layoutHelper.InitializeLayout();
       }
     }
 
     /// <summary>
-    /// The component is currently be moved or resized.
-    /// For each drag a new layout is calculated and applied if the previous one is completed.
+    ///   The component is currently being moved or resized.
+    ///   For each drag a new layout is calculated and applied if the previous one is completed.
     /// </summary>
     private void OnDragged(object sender, InputModeEventArgs e) {
       var graphDropInputMode = sender as ComponentDropInputMode;
       if (graphDropInputMode != null) {
-        layoutHelper.Location = graphDropInputMode.MousePosition.ToPointD();
+        layoutHelper.Location = graphDropInputMode.PointerPosition.ToPointD();
         layoutHelper.RunLayout();
       }
     }
 
     /// <summary>
-    /// Dragging the component has been canceled.
-    /// The state before the gesture must be restored.
+    ///   Dragging the component has been canceled.
+    ///   The state before the gesture must be restored.
     /// </summary>
     private void OnDragCanceled(object sender, InputModeEventArgs e) {
       var graphDropInputMode = sender as ComponentDropInputMode;
@@ -171,10 +166,10 @@ namespace Demo.yFiles.Graph.ComponentDragAndDrop
     }
 
     /// <summary>
-    /// The component has been dropped.
-    /// We execute the layout to the final state.
+    ///   The component has been dropped.
+    ///   We execute the layout to the final state.
     /// </summary>
-    private void OnDragFinished(object sender, ItemEventArgs<IGraph> itemEventArgs) {
+    private void OnDragFinished(object sender, InputModeItemEventArgs<IGraph> itemEventArgs) {
       var graphDropInputMode = sender as ComponentDropInputMode;
       if (graphDropInputMode != null) {
         layoutHelper.Location = graphDropInputMode.DropLocation;
@@ -191,7 +186,7 @@ namespace Demo.yFiles.Graph.ComponentDragAndDrop
     #endregion
 
     /// <summary>
-    /// Initializes the information for a drag and drop operation from the component list.
+    ///   Initializes the information for a drag and drop operation from the component list.
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>

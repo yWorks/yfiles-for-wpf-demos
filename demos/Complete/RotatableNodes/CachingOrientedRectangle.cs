@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -34,11 +34,11 @@ using yWorks.Geometry;
 namespace Demo.yFiles.Complete.RotatableNodes
 {
   /// <summary>
-  /// An oriented rectangle that specifies the location, size and rotation angle of a rotated node.
+  ///   An oriented rectangle that specifies the location, size, and rotation angle of a rotated node.
   /// </summary>
   /// <remarks>
-  /// This class is used mainly for performance reasons. It provides cached values. In principle, it would be enough to 
-  /// store just the rotation angle but then, we would have to recalculate all the properties of this class very often.
+  ///   This class is used mainly for performance reasons. It provides cached values. In principle, it would be enough to
+  ///   store just the rotation angle, but then, we would have to recalculate all the properties of this class very often.
   /// </remarks>
   public class CachingOrientedRectangle : IOrientedRectangle
   {
@@ -48,12 +48,12 @@ namespace Demo.yFiles.Complete.RotatableNodes
     private PointD upVector;
 
     /// <summary>
-    /// Creates a new instance with an empty layout.
+    ///   Creates a new instance with an empty layout.
     /// </summary>
-    public CachingOrientedRectangle() : this(RectD.Empty) {}
+    public CachingOrientedRectangle() : this(RectD.Empty) { }
 
     /// <summary>
-    /// Creates a new instance with the given layout.
+    ///   Creates a new instance with the given layout.
     /// </summary>
     public CachingOrientedRectangle(RectD layout) {
       upVector = new PointD(0, -1);
@@ -63,101 +63,108 @@ namespace Demo.yFiles.Complete.RotatableNodes
     }
 
     /// <summary>
-    /// Gets or sets the rotation angle.
+    ///   Gets or sets the rotation angle.
     /// </summary>
     [DefaultValue(0d)]
     public double Angle {
-      get { return angle; }
+      get => angle;
       set {
         angle = NormalizeAngle(value);
         cachedOrientedRect.Angle = ToRadians(value);
-        cachedOrientedRect.SetCenter(cachedLayout.Center);
-        upVector = cachedOrientedRect.GetUp();
+        cachedOrientedRect.SetCenter(cachedLayout.GetCenter());
+        upVector = cachedOrientedRect.GetUpVector();
       }
     }
 
     /// <summary>
-    /// The width of the rectangle.
+    ///   The width of the rectangle.
     /// </summary>
-    public double Width { get { return cachedLayout.Width; } }
+    public double Width => cachedLayout.Width;
 
     /// <summary>
-    /// The height of the rectangle.
+    ///   The height of the rectangle.
     /// </summary>
-    public double Height { get { return cachedLayout.Height; } }
+    public double Height => cachedLayout.Height;
 
     /// <summary>
-    /// Returns the x-coordinate of the rectangle's anchor point.
+    ///   Returns the x-coordinate of the rectangle's anchor point.
     /// </summary>
-    public double AnchorX { get { return cachedOrientedRect.AnchorX; } }
+    public double AnchorX => cachedOrientedRect.AnchorX;
 
     /// <summary>
-    /// Returns the y-coordinate of the rectangle's anchor point.
+    ///   Returns the y-coordinate of the rectangle's anchor point.
     /// </summary>
-    public double AnchorY { get { return cachedOrientedRect.AnchorY; } }
+    public double AnchorY => cachedOrientedRect.AnchorY;
 
     /// <summary>
-    /// Returns the x-coordinate of the rectangle's up vector.
+    ///   Returns the x-coordinate of the rectangle's up vector.
     /// </summary>
-    public double UpX { get { return cachedOrientedRect.UpX; } }
+    public double UpX => cachedOrientedRect.UpX;
 
     /// <summary>
-    /// Returns the y-coordinate of the rectangle's up vector.
+    ///   Returns the y-coordinate of the rectangle's up vector.
     /// </summary>
-    public double UpY { get { return cachedOrientedRect.UpY; } }
+    public double UpY => cachedOrientedRect.UpY;
 
     /// <summary>
-    /// Returns the rectangle's up vector.
+    ///   Returns the rectangle's up vector.
     /// </summary>
     public PointD UpVector {
-      get { return upVector; }
+      get => upVector;
       set {
         upVector = value;
         cachedOrientedRect.SetUpVector(value.X, value.Y);
-        cachedOrientedRect.SetCenter(cachedLayout.Center);
+        cachedOrientedRect.SetCenter(cachedLayout.GetCenter());
         angle = ToDegrees(cachedOrientedRect.Angle);
       }
     }
 
     /// <summary>
-    /// Returns the angle in radians.
+    ///   Returns the bounds of the cached rectangle.
+    /// </summary>
+    public RectD Bounds => cachedOrientedRect.Bounds;
+
+    /// <summary>
+    ///   Returns the angle in radians.
     /// </summary>
     public double GetRadians() {
       return ToRadians(angle);
     }
 
     /// <summary>
-    /// Updates the layout in the cache.
+    ///   Updates the layout in the cache.
     /// </summary>
     public void UpdateCache(RectD layout) {
-      if (layout.Equals(cachedLayout) && upVector.Equals(cachedOrientedRect.GetUp())) {
+      if (layout.Equals(cachedLayout) && upVector.Equals(cachedOrientedRect.GetUpVector())) {
         return;
       }
       cachedLayout = layout;
       cachedOrientedRect.SetUpVector(upVector.X, upVector.Y);
       cachedOrientedRect.Width = Width;
       cachedOrientedRect.Height = Height;
-      cachedOrientedRect.SetCenter(cachedLayout.Center);
+      cachedOrientedRect.SetCenter(cachedLayout.GetCenter());
     }
 
     /// <summary>
-    /// Normalizes the angle to 0–360°.
+    ///   Normalizes the angle to 0–360°.
     /// </summary>
     internal static double NormalizeAngle(double angle) {
       angle %= 360;
-      if (angle < 0) angle += 360;
+      if (angle < 0) {
+        angle += 360;
+      }
       return angle;
     }
-    
+
     /// <summary>
-    /// Converts degrees to radians.
+    ///   Converts degrees to radians.
     /// </summary>
     internal static double ToRadians(double degrees) {
       return degrees / 180 * Math.PI;
     }
 
     /// <summary>
-    /// Converts radians to degrees.
+    ///   Converts radians to degrees.
     /// </summary>
     internal static double ToDegrees(double radians) {
       return radians * 180 / Math.PI;

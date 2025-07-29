@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -32,32 +32,31 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
+using System.Windows.Input;
 using System.Windows.Markup;
 using System.Windows.Media;
 using yWorks.Controls.Input;
 using yWorks.Geometry;
 using yWorks.Graph;
 using yWorks.Graph.Styles;
-using yWorks.GraphML;
 using yWorks.Utils;
 
-[assembly: XmlnsDefinition("http://www.yworks.com/yfilesWPF/2.1/demos/GraphUndoWindow", "Demo.yFiles.Graph.Undo")]
-[assembly: XmlnsPrefix("http://www.yworks.com/yfilesWPF/2.1/demos/GraphUndoWindow", "demo")]
+[assembly : XmlnsDefinition("http://www.yworks.com/yfilesWPF/2.1/demos/GraphUndoWindow", "Demo.yFiles.Graph.Undo")]
+[assembly : XmlnsPrefix("http://www.yworks.com/yfilesWPF/2.1/demos/GraphUndoWindow", "demo")]
 
 namespace Demo.yFiles.Graph.Undo
 {
   /// <summary>
-  /// This demo presents Undo/Redo functionality.
+  ///   This demo presents Undo/Redo functionality.
   /// </summary>
   /// <remarks>
-  /// This demo shows how to use the undo/redo framework in yFiles WPF both for predefined
-  /// Undo/Redo operations (e.g. structural modifications) as well as for custom undo functionality.
+  ///   This demo shows how to use the undo/redo framework in yFiles WPF both for predefined
+  ///   Undo/Redo operations (e.g. structural modifications) as well as for custom undo functionality.
   /// </remarks>
   public partial class GraphUndoWindow
   {
-
     /// <summary>
-    /// Create a new instance of this class.
+    ///   Create a new instance of this class.
     /// </summary>
     public GraphUndoWindow() {
       InitializeComponent();
@@ -66,47 +65,48 @@ namespace Demo.yFiles.Graph.Undo
     #region Initialization
 
     /// <summary>
-    /// The default style
+    ///   The default style
     /// </summary>
-    private readonly NodeControlNodeStyle defaultStyle = new NodeControlNodeStyle("UndoNodeControlStyle") { StyleTag = Colors.Blue };
+    private readonly NodeControlNodeStyle defaultStyle = new("UndoNodeControlStyle") { StyleTag = Colors.Blue };
 
     /// <summary>
-    /// Called upon loading of the form.
-    /// This method initializes the graph and the input mode.
+    ///   Called upon loading of the form.
+    ///   This method initializes the graph and the input mode.
     /// </summary>
     /// <seealso cref="InitializeInputModes"/>
     /// <seealso cref="InitializeGraph"/>
     protected void OnLoaded(object source, RoutedEventArgs e) {
-
-      //Keep shared instances of copied node styles
-      graphControl.Clipboard.FromClipboardCopier.Clone = graphControl.Clipboard.FromClipboardCopier.Clone & ~GraphCopier.CloneTypes.NodeStyle;
-      graphControl.Clipboard.ToClipboardCopier.Clone = graphControl.Clipboard.ToClipboardCopier.Clone & ~GraphCopier.CloneTypes.NodeStyle;
+      // Keep shared instances of copied node styles
+      graphControl.Clipboard.FromClipboardCopier.CloneTypes &= ~CloneTypes.NodeStyle;
+      graphControl.Clipboard.ToClipboardCopier.CloneTypes &= ~CloneTypes.NodeStyle;
 
       // write symbolic style name in graphml to make the nodes use the default style when imported, not the specific style instance
       // otherwise, 'change color' wouldn't work on imported nodes
-      graphControl.GraphMLIOHandler.QueryReferenceId += delegate(object sender, QueryReferenceIdEventArgs args) { if (args.Value == defaultStyle) {
-        args.ReferenceId = "defaultStyle";
-      } };
+      graphControl.GraphMLIOHandler.QueryReferenceId += (_, args) => {
+        if (args.Value == defaultStyle) {
+          args.ReferenceId = "defaultStyle";
+        }
+      };
 
       // if node style is string "defaultStyle" in graphml, assign defaultStyle
-      graphControl.GraphMLIOHandler.ResolveReference += delegate(object sender, ResolveReferenceEventArgs args) { if (args.ReferenceId == "defaultStyle") {
-        args.Value = defaultStyle;
-      } };
+      graphControl.GraphMLIOHandler.ResolveReference += (_, args) => {
+        if (args.ReferenceId == "defaultStyle") {
+          args.Value = defaultStyle;
+        }
+      };
 
       graphControl.Graph.SetUndoEngineEnabled(true);
-      UndoEngine engine = graphControl.Graph.GetUndoEngine();
+      var engine = graphControl.Graph.GetUndoEngine();
       if (engine != null) {
         engine.AutoMergeTime = TimeSpan.FromMilliseconds(100);
-        engine.PropertyChanged += delegate {
-          UpdateUndoState();
-        };
+        engine.PropertyChanged += delegate { UpdateUndoState(); };
       }
       UpdateUndoState();
 
       // Add some more interesting port candidates.
-      GraphDecorator decorator = graphControl.Graph.GetDecorator();
-      decorator.NodeDecorator.PortCandidateProviderDecorator.SetFactory(
-        node => PortCandidateProviders.FromShapeGeometry(node));
+      var decorator = graphControl.Graph.GetDecorator();
+      decorator.Nodes.PortCandidateProvider.AddFactory(node =>
+          PortCandidateProviders.FromShapeGeometry(node));
 
       graphControl.Graph.NodeCreated += OnNodeCreated;
       graphControl.Graph.NodeRemoved += OnNodeRemoved;
@@ -122,85 +122,82 @@ namespace Demo.yFiles.Graph.Undo
     }
 
     /// <summary>
-    /// Initializes the graph instance setting default styles
-    /// and creating a small sample graph.
+    ///   Initializes the graph instance setting default styles
+    ///   and creating a small sample graph.
     /// </summary>
     protected virtual void InitializeGraph() {
-      IGraph graph = graphControl.Graph;
+      var graph = graphControl.Graph;
       // set the style as the default for all new nodes
       graph.NodeDefaults.Style = defaultStyle;
       graph.NodeDefaults.Size = new SizeD(100, 60);
 
-      DefaultLabelStyle labelStyle = new DefaultLabelStyle();
+      var labelStyle = new LabelStyle();
       labelStyle.Typeface = new Typeface("Arial");
       labelStyle.BackgroundBrush = Brushes.LightBlue;
 
       // set the style as the default for all new node labels
       graph.NodeDefaults.Labels.Style = labelStyle;
 
-      graph.CreateNode(RectD.FromCenter(new PointD(200, 100), graph.NodeDefaults.Size), graph.NodeDefaults.GetStyleInstance(), new MyBusinessObject(0.3));
+      graph.CreateNode(RectD.FromCenter(new PointD(200, 100), graph.NodeDefaults.Size),
+          graph.NodeDefaults.GetStyleInstance(), new MyBusinessObject(0.3));
     }
 
     /// <summary>
-    /// When a node is created, we add a handler for the custom edit event
+    ///   When a node is created, we add a handler for the custom edit event
     /// </summary>
     private void OnNodeCreated(object source, ItemEventArgs<INode> evt) {
-      MyBusinessObject tag = evt.Item.Tag as MyBusinessObject;
+      var tag = evt.Item.Tag as MyBusinessObject;
       if (tag != null) {
         tag.MyEditEvent += OnUndoEventHandler;
       }
     }
 
     /// <summary>
-    /// When a node is removed, we detach the event handler.
+    ///   When a node is removed, we detach the event handler.
     /// </summary>
     private void OnNodeRemoved(object source, ItemEventArgs<INode> evt) {
-      MyBusinessObject tag = evt.Item.Tag as MyBusinessObject;
+      var tag = evt.Item.Tag as MyBusinessObject;
       if (tag != null) {
         tag.MyEditEvent -= OnUndoEventHandler;
       }
     }
 
     /// <summary>
-    /// The edit event that is dispatched by the business object contains a 
-    /// undo unit which is added to the undo engine here.
+    ///   The edit event that is dispatched by the business object contains a
+    ///   undo unit which is added to the undo engine here.
     /// </summary>
     private void OnUndoEventHandler(object o, MyEditEventHandlerArgs args) {
-      UndoEngine engine = graphControl.Graph.GetUndoEngine();
+      var engine = graphControl.Graph.GetUndoEngine();
       engine.AddUnit(args.UndoUnit);
     }
 
     /// <summary>
-    /// Calls <see cref="CreateEditorMode"/> and registers
-    /// the result as the <see cref="CanvasControl.InputMode"/>.
+    ///   Calls <see cref="CreateEditorMode"/> and registers
+    ///   the result as the <see cref="InputMode"/>.
     /// </summary>
     protected virtual void InitializeInputModes() {
       graphControl.InputMode = CreateEditorMode();
     }
 
     /// <summary>
-    /// Creates the default input mode for the GraphControl,
-    /// a <see cref="GraphEditorInputMode"/>.
+    ///   Creates the default input mode for the GraphControl,
+    ///   a <see cref="GraphEditorInputMode"/>.
     /// </summary>
     /// <remarks>
-    /// The control uses a custom node creation callback that creates business objects for newly
-    /// created nodes.
+    ///   The control uses a custom node creation callback that creates business objects for newly
+    ///   created nodes.
     /// </remarks>
     /// <returns>a new GraphEditorInputMode instance</returns>
     protected virtual IInputMode CreateEditorMode() {
-      GraphEditorInputMode mode = new GraphEditorInputMode
-      {
-        NodeCreator = CreateNodeCallback,
-        AllowGroupingOperations = true
-      };
+      var mode = new GraphEditorInputMode { NodeCreator = CreateNodeCallback };
       return mode;
     }
 
     /// <summary>
-    /// Callback that actually creates the node and its business object
+    ///   Callback that actually creates the node and its business object
     /// </summary>
     private INode CreateNodeCallback(IInputModeContext context, IGraph graph, PointD location, INode parent) {
-      RectD newBounds = RectD.FromCenter(location, graph.NodeDefaults.Size);
+      var newBounds = RectD.FromCenter(location, graph.NodeDefaults.Size);
       var node = graph.CreateNode(newBounds, graph.NodeDefaults.GetStyleInstance(), new MyBusinessObject(0.3));
       return node;
     }
@@ -208,104 +205,67 @@ namespace Demo.yFiles.Graph.Undo
     #endregion
 
     /// <summary>
-    /// Callback method that updates the state of the Undo related UI elements
+    ///   Callback method that updates the state of the Undo related UI elements
     /// </summary>
     private void UpdateUndoState() {
-      UndoEngine engine = graphControl.Graph.GetUndoEngine();
+      var engine = graphControl.Graph.GetUndoEngine();
       undoButton.ToolTip = engine != null ? engine.UndoName : string.Empty;
       redoButton.ToolTip = engine != null ? engine.RedoName : string.Empty;
     }
 
     /// <summary>
-    /// Clears the undo queue.
+    ///   Clears the undo queue.
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
-    private void ClearUndoClicked (object sender, EventArgs e) {
-      UndoEngine engine = graphControl.Graph.GetUndoEngine();
-      if(engine != null) {
+    private void ClearUndoClicked(object sender, EventArgs e) {
+      var engine = graphControl.Graph.GetUndoEngine();
+      if (engine != null) {
         engine.Clear();
       }
     }
 
     /// <summary>
-    /// Exits the demo.
+    ///   Exits the demo.
     /// </summary>
     private void ExitMenuItem_Click(object sender, EventArgs e) {
       Application.Current.Shutdown();
     }
 
     // Random Generator to create random color
-    private readonly Random rnd = new Random();
+    private readonly Random rnd = new();
+
     private readonly Color[] backgroundColors = {
-      Color.FromRgb(0x11,0x1d,0x4a),
-      Color.FromRgb(0x0b,0x71,0x89),
-      Color.FromRgb(0xff,0x6c,0x00),
-      Color.FromRgb(0xab,0x23,0x46),
-      Color.FromRgb(0x62,0x1b,0x00),
-      Color.FromRgb(0x17,0xbe,0xbb),
-      Color.FromRgb(0xff,0xc9,0x14),
-      Color.FromRgb(0xff,0x6c,0x00),
-      Color.FromRgb(0x2e,0x28,0x2a),
-      Color.FromRgb(0x76,0xb0,0x41),
-      Color.FromRgb(0x67,0xb7,0xdc),
-      Color.FromRgb(0x67,0x71,0xdc),
-      Color.FromRgb(0x24,0x22,0x65),
-      Color.FromRgb(0xdc,0x67,0xce),
-      Color.FromRgb(0xa3,0x67,0xdc),
-      Color.FromRgb(0x36,0x30,0x20),
-      Color.FromRgb(0x60,0x5c,0x4e),
-      Color.FromRgb(0xa4,0x99,0x66),
-      Color.FromRgb(0xc7,0xc7,0xa6),
-      Color.FromRgb(0xea,0xff,0xda),
-      Color.FromRgb(0xa4,0x77,0x8b),
-      Color.FromRgb(0xaa,0x45,0x86),
-      Color.FromRgb(0x17,0x7e,0x89),
-      Color.FromRgb(0xf2,0x64,0x19),
-      Color.FromRgb(0xe0,0x1a,0x4f),
-      Color.FromRgb(0x01,0xba,0xff),
-      Color.FromRgb(0xff,0x6c,0x00),
-      Color.FromRgb(0x24,0x22,0x65),
-      Color.FromRgb(0x56,0x92,0x6e),
-      Color.FromRgb(0x6d,0xbc,0x8d),
-      Color.FromRgb(0x6c,0x4f,0x77),
-      Color.FromRgb(0x42,0x81,0xa4),
-      Color.FromRgb(0xe0,0xe0,0x4f),
-      Color.FromRgb(0xc1,0xc1,0xc1),
-      Color.FromRgb(0xdb,0x3a,0x34),
-      Color.FromRgb(0xf0,0xc8,0x08),
-      Color.FromRgb(0x2d,0x4d,0x3a),
-      Color.FromRgb(0xab,0x23,0x46),
-      Color.FromRgb(0x76,0xb0,0x41),
-      Color.FromRgb(0xa3,0x67,0xdc),
-      Color.FromRgb(0xc1,0xc1,0xc1),
-      Color.FromRgb(0xff,0x6c,0x00),
-      Color.FromRgb(0xff,0xc9,0x14),
-      Color.FromRgb(0xff,0x6c,0x00),
-      Color.FromRgb(0x76,0xb0,0x41),
-      Color.FromRgb(0x2d,0x72,0x8f),
-      Color.FromRgb(0xc1,0xc1,0xc1),
-      Color.FromRgb(0x24,0x22,0x65),
-      Color.FromRgb(0x01,0xba,0xff),
-      Color.FromRgb(0xf2,0x64,0x19),
-      Color.FromRgb(0xfd,0xca,0x40),
-      Color.FromRgb(0xff,0x6c,0x00),
-      Color.FromRgb(0x24,0x22,0x65),
-      Color.FromRgb(0x61,0xa0,0x44),
-      Color.FromRgb(0xa3,0x7a,0xb3),
-      Color.FromRgb(0xca,0x0c,0x3b),
-      Color.FromRgb(0x46,0xa8,0xd5),
+        Color.FromRgb(0x11, 0x1d, 0x4a), Color.FromRgb(0x0b, 0x71, 0x89), Color.FromRgb(0xff, 0x6c, 0x00),
+        Color.FromRgb(0xab, 0x23, 0x46), Color.FromRgb(0x62, 0x1b, 0x00), Color.FromRgb(0x17, 0xbe, 0xbb),
+        Color.FromRgb(0xff, 0xc9, 0x14), Color.FromRgb(0xff, 0x6c, 0x00), Color.FromRgb(0x2e, 0x28, 0x2a),
+        Color.FromRgb(0x76, 0xb0, 0x41), Color.FromRgb(0x67, 0xb7, 0xdc), Color.FromRgb(0x67, 0x71, 0xdc),
+        Color.FromRgb(0x24, 0x22, 0x65), Color.FromRgb(0xdc, 0x67, 0xce), Color.FromRgb(0xa3, 0x67, 0xdc),
+        Color.FromRgb(0x36, 0x30, 0x20), Color.FromRgb(0x60, 0x5c, 0x4e), Color.FromRgb(0xa4, 0x99, 0x66),
+        Color.FromRgb(0xc7, 0xc7, 0xa6), Color.FromRgb(0xea, 0xff, 0xda), Color.FromRgb(0xa4, 0x77, 0x8b),
+        Color.FromRgb(0xaa, 0x45, 0x86), Color.FromRgb(0x17, 0x7e, 0x89), Color.FromRgb(0xf2, 0x64, 0x19),
+        Color.FromRgb(0xe0, 0x1a, 0x4f), Color.FromRgb(0x01, 0xba, 0xff), Color.FromRgb(0xff, 0x6c, 0x00),
+        Color.FromRgb(0x24, 0x22, 0x65), Color.FromRgb(0x56, 0x92, 0x6e), Color.FromRgb(0x6d, 0xbc, 0x8d),
+        Color.FromRgb(0x6c, 0x4f, 0x77), Color.FromRgb(0x42, 0x81, 0xa4), Color.FromRgb(0xe0, 0xe0, 0x4f),
+        Color.FromRgb(0xc1, 0xc1, 0xc1), Color.FromRgb(0xdb, 0x3a, 0x34), Color.FromRgb(0xf0, 0xc8, 0x08),
+        Color.FromRgb(0x2d, 0x4d, 0x3a), Color.FromRgb(0xab, 0x23, 0x46), Color.FromRgb(0x76, 0xb0, 0x41),
+        Color.FromRgb(0xa3, 0x67, 0xdc), Color.FromRgb(0xc1, 0xc1, 0xc1), Color.FromRgb(0xff, 0x6c, 0x00),
+        Color.FromRgb(0xff, 0xc9, 0x14), Color.FromRgb(0xff, 0x6c, 0x00), Color.FromRgb(0x76, 0xb0, 0x41),
+        Color.FromRgb(0x2d, 0x72, 0x8f), Color.FromRgb(0xc1, 0xc1, 0xc1), Color.FromRgb(0x24, 0x22, 0x65),
+        Color.FromRgb(0x01, 0xba, 0xff), Color.FromRgb(0xf2, 0x64, 0x19), Color.FromRgb(0xfd, 0xca, 0x40),
+        Color.FromRgb(0xff, 0x6c, 0x00), Color.FromRgb(0x24, 0x22, 0x65), Color.FromRgb(0x61, 0xa0, 0x44),
+        Color.FromRgb(0xa3, 0x7a, 0xb3), Color.FromRgb(0xca, 0x0c, 0x3b), Color.FromRgb(0x46, 0xa8, 0xd5)
     };
 
     /// <summary>
-    /// This changes all node's color to a random value.
+    ///   This changes all node's color to a random value.
     /// </summary>
     /// <remarks>The modification is remembered in the undo engine</remarks>
     private void ModifyColorButton_Click(object sender, EventArgs e) {
       var oldColor = (Color) defaultStyle.StyleTag;
 
       // Generate random color
-      Color newColor = oldColor;
+      var newColor = oldColor;
       while (newColor == oldColor) {
         newColor = backgroundColors[rnd.Next(backgroundColors.Length)];
       }
@@ -313,34 +273,33 @@ namespace Demo.yFiles.Graph.Undo
       defaultStyle.StyleTag = newColor;
 
       // Add new undo unit to remember old color in the undo engine
-      // As only the tag value change has to be undone, the AddUndoUnit extension method on IGraph is used  
-      graphControl.Graph.AddUndoUnit("Change Color", "Change Color",
-          () => defaultStyle.StyleTag = oldColor,
+      // As only the tag value change has to be undone, the AddUndoUnit extension method on IGraph is used
+      graphControl.Graph.AddUndoUnit("Change Color", "Change Color", () => defaultStyle.StyleTag = oldColor,
           () => defaultStyle.StyleTag = newColor);
-      
+
       // redraw nodes
       graphControl.Invalidate();
     }
   }
 
   /// <summary>
-  /// A custom business object that dispatches an edit event when a property changes, 
-  /// in order to enqueue the changes in the graph control's undo engine.
+  ///   A custom business object that dispatches an edit event when a property changes,
+  ///   in order to enqueue the changes in the graph control's undo engine.
   /// </summary>
   public class MyBusinessObject : INotifyPropertyChanged
   {
     // some value to be displayed
     private double value;
-    private static readonly PropertyChangedEventArgs valueChangedArgs = new PropertyChangedEventArgs("Value");
+    private static readonly PropertyChangedEventArgs valueChangedArgs = new("Value");
 
-    public MyBusinessObject() {}
+    public MyBusinessObject() { }
 
     public MyBusinessObject(double value) {
-      this.Value = value;
+      Value = value;
     }
 
     public double Value {
-      get { return value; }
+      get => value;
       set {
         // constain value to 0..1
         if (value < 0) {
@@ -348,7 +307,7 @@ namespace Demo.yFiles.Graph.Undo
         } else if (value > 1) {
           value = 1;
         }
-        double oldVal = this.value;
+        var oldVal = this.value;
         this.value = value;
         if (MyEditEvent != null) {
           // raise an event to add this change to the undo engine
@@ -364,45 +323,56 @@ namespace Demo.yFiles.Graph.Undo
     public event MyEditEventHandler MyEditEvent;
 
     /// <summary>
-    /// A custom undo unit that allows for undo/redo of changes 
-    /// to the business object's name property.
+    ///   A custom undo unit that allows for undo/redo of changes
+    ///   to the business object's name property.
     /// </summary>
-    class MyUndoUnit : UndoUnitBase
+    private class MyUndoUnit : IUndoUnit
     {
       private readonly double oldValue;
       private readonly MyBusinessObject businessObject;
       private double newValue;
 
-      public MyUndoUnit(MyBusinessObject businessObject, double oldValue)
-        : base("Change Value") {
+      public MyUndoUnit(MyBusinessObject businessObject, double oldValue) {
+        UndoName = "Change Value";
+        RedoName = "Change Value";
         this.businessObject = businessObject;
         this.oldValue = oldValue;
-        this.newValue = businessObject.Value;
+        newValue = businessObject.Value;
       }
 
-      public override void Undo() {
+      public string UndoName { get; }
+
+      public string RedoName { get; }
+
+      public void Undo() {
         businessObject.Value = oldValue;
       }
 
-      public override void Redo() {
+      public void Redo() {
         businessObject.Value = newValue;
       }
 
       /// <summary>
-      /// Adds the last undo unit change to the current undo unit.
+      ///   Adds the last undo unit change to the current undo unit.
       /// </summary>
-      /// <remarks>This is done to prevent every value change to get undone. 
-      /// Only the last value change in a series is remembered.</remarks>
+      /// <remarks>
+      ///   This is done to prevent every value change to get undone.
+      ///   Only the last value change in a series is remembered.
+      /// </remarks>
       /// <param name="unit"></param>
-      /// <returns></returns>
-      public override bool TryMergeUnit(IUndoUnit unit) {
+      public bool TryMergeUnit(IUndoUnit unit) {
         if (unit is MyUndoUnit) {
           newValue = ((MyUndoUnit) unit).newValue;
           return true;
-        } else {
-          return false;
         }
+        return false;
       }
+
+      public bool TryReplaceUnit(IUndoUnit unit) {
+        return false;
+      }
+
+      public void Dispose() { }
     }
 
     public event PropertyChangedEventHandler PropertyChanged;
@@ -411,19 +381,16 @@ namespace Demo.yFiles.Graph.Undo
   public delegate void MyEditEventHandler(object sender, MyEditEventHandlerArgs args);
 
   /// <summary>
-  /// The edit event contains a undo unit that can be added to the 
-  /// graph control's undo engine.
+  ///   The edit event contains an undo unit that can be added to the
+  ///   graph control's undo engine.
   /// </summary>
   public class MyEditEventHandlerArgs
   {
-    private readonly IUndoUnit undoUnit;
     public MyEditEventHandlerArgs(IUndoUnit undoUnit) {
-      this.undoUnit = undoUnit;
+      UndoUnit = undoUnit;
     }
 
-    public IUndoUnit UndoUnit {
-      get { return undoUnit; }
-    }
+    public IUndoUnit UndoUnit { get; }
   }
 
   public class BackgroundColorConverter : IValueConverter
@@ -438,16 +405,17 @@ namespace Demo.yFiles.Graph.Undo
       return null;
     }
 
-    ///<summary>
-    /// Mixes two colors using the provided ratio.
-    ///</summary>
+    /// <summary>
+    ///   Mixes two colors using the provided ratio.
+    /// </summary>
     private static Color Mix(Color color0, Color color1, double ratio) {
-      double iratio = 1 - ratio;
-      double a = color0.A*ratio + color1.A*iratio;
-      double r = color0.R*ratio + color1.R*iratio;
-      double g = color0.G*ratio + color1.G*iratio;
-      double b = color0.B*ratio + color1.B*iratio;
-      return Color.FromArgb(System.Convert.ToByte(Math.Round(a)), System.Convert.ToByte(Math.Round(r)), System.Convert.ToByte(Math.Round(g)), System.Convert.ToByte(Math.Round(b)));
+      var iratio = 1 - ratio;
+      var a = color0.A * ratio + color1.A * iratio;
+      var r = color0.R * ratio + color1.R * iratio;
+      var g = color0.G * ratio + color1.G * iratio;
+      var b = color0.B * ratio + color1.B * iratio;
+      return Color.FromArgb(System.Convert.ToByte(Math.Round(a)), System.Convert.ToByte(Math.Round(r)),
+          System.Convert.ToByte(Math.Round(g)), System.Convert.ToByte(Math.Round(b)));
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {

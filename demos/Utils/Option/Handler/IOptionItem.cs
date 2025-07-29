@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -28,66 +28,63 @@
  ***************************************************************************/
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Reflection;
-using System.Windows;
-using System.Xml;
-using yWorks.Graph;
+using yWorks.Utils;
 
 namespace Demo.yFiles.Option.Handler
 {
   /// <summary>
-  /// This implements the basic interface for an atomic item in an <see cref="OptionHandler"/>
+  ///   This implements the basic interface for an atomic item in an <see cref="OptionHandler"/>
   /// </summary>
   [Obfuscation(StripAfterObfuscation = false, Exclude = true, ApplyToMembers = true)]
   public interface IOptionItem : INotifyPropertyChanged, ILookup
   {
     /// <summary>
-    /// Get or set whether this item is enabled or not.
+    ///   Get or set whether this item is enabled or not.
     /// </summary>
-    /// <remarks>This only affects the status in GUI editors, directly setting
-    /// the item's value with <see cref="Value"/> works regardless of this property.</remarks>
+    /// <remarks>
+    ///   This only affects the status in GUI editors, directly setting
+    ///   the item's value with <see cref="Value"/> works regardless of this property.
+    /// </remarks>
     bool Enabled { get; set; }
 
     /// <summary>
-    /// Get the canonical name for this item, which will be used for i18n lookups and
-    /// item identification
+    ///   Get the canonical name for this item, which will be used for i18n lookups and
+    ///   item identification.
     /// </summary>
     string Name { get; }
 
     /// <summary>
     /// This event should be fired whenever an attribute value has been changed.
     /// </summary>
-//    event AttributeChangedHandler AttributeChanged;
+    //    event AttributeChangedHandler AttributeChanged;
 
     /// <summary>
-    /// The actual type that this item can contain.
+    ///   The actual type that this item can contain.
     /// </summary>
-    /// <remarks>This is needed since <see cref="Value"/> can only handle  <see cref="object"/>
-    /// values in its interface. It is used to determine the GUI editors and converters.</remarks>
+    /// <remarks>
+    ///   This is needed since <see cref="Value"/> can only handle <see cref="object"/>
+    ///   values in its interface. It is used to determine the GUI editors and converters.
+    /// </remarks>
     Type Type { get; }
 
     /// <summary>
-    /// The actual value that is currently stored in this item.
+    ///   The actual value that is currently stored in this item.
     /// </summary>
     object Value { get; set; }
 
     /// <summary>
-    /// Get or set the owning group of an item
+    ///   Get or set the owning group of an item.
     /// </summary>
-    IOptionGroup Owner {
-      get; set;
-    }
+    IOptionGroup Owner { get; set; }
 
     /// <summary>
-    /// Gets the attribute map of this item
+    ///   Gets the attribute map of this item
     /// </summary>
-    /// <remarks>Attributes control various aspects of an item's behaviour, such as custom
-    /// UI editors, converters, whether null or undefined values are allowed etc.
+    /// <remarks>
+    ///   Attributes control various aspects of an item's behavior, such as custom
+    ///   UI editors, converters, whether null or undefined values are allowed etc.
     /// </remarks>
     /// <returns>The map for storing and retrieving attributes</returns>
     IMapper<string, object> Attributes { get; }

@@ -13,7 +13,7 @@ You will find the following programming samples in this package:
 |**ComponentDragAndDrop** | A demo that shows how to make space for components by dragging them from a DnD palette onto the canvas. |
 |**FillAreaAfterDeletion** | A demo that shows how to fill free space after deleting nodes. |
 |**GraphAnalysis** | Demonstrates the most important graph analysis algorithms from the Layout and Analysis part of yFiles WPF. |
-|**HierarchicGrouping** | A demo that demonstrates how to automatically trigger an incremental layout when opening or closing groups. |
+|**HierarchicalGrouping** | A demo that demonstrates how to automatically trigger an incremental layout when opening or closing groups. |
 |**InteractiveClearArea** | A demo that shows how to interactively move graph elements within a rectangular area in a given graph layout so that the modifications in the graph are minimal. |
 |**IsometricDrawing** | Sample application that displays graphs in an isometric fashion to create an impression of a 3-dimensional view. |
 |**LargeGraphAggregation** | This demo shows how to use the smart NodeAggregation algorithm for drill down exploration of a large graph. |

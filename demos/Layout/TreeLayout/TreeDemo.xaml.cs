@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -36,52 +36,53 @@ using System.Windows.Controls;
 using System.Xml.Linq;
 using Demo.yFiles.Layout.Tree.Configuration;
 using Demo.yFiles.Toolkit;
+using yWorks.Analysis;
 using yWorks.Controls.Input;
-using yWorks.Controls;
 using yWorks.Geometry;
 using yWorks.Graph;
 using yWorks.Graph.Styles;
 using yWorks.Layout;
-using yWorks.Utils;
-using yWorks.Algorithms;
 using yWorks.Layout.Tree;
+using yWorks.Utils;
 
 namespace Demo.yFiles.Layout.Tree
 {
-  ///<summary>This demo demonstrates the different <see cref="INodePlacer"/> implementations for the
-  /// <see cref="TreeLayout"/>.
+  /// <summary>
+  ///   This demo demonstrates the different <see cref="ISubtreePlacer"/> implementations for the
+  ///   <see cref="TreeLayout"/>.
   /// </summary>
-  ///<remarks>
-  /// An <see cref="INodePlacer"/> can be assigned to each node separately. It arranges the node it is
-  ///assigned to and its sub trees. In this demo all nodes of the same layer have the same node placer.</remarks>
+  /// <remarks>
+  ///   An <see cref="ISubtreePlacer"/> can be assigned to each node separately. It arranges the node it is
+  ///   assigned to and its subtrees. In this demo all nodes of the same layer have the same subtree placer.
+  /// </remarks>
   public partial class TreeDemo
   {
     public TreeDemo() {
       InitializeComponent();
-      nodePlacerPanel.ReloadConfiguration += delegate { UpdatePlacerList(); };
-      nodePlacerPanel.ApplyConfiguration += async delegate { await ApplyConfigurations(); };
+      subtreePlacerPanel.ReloadConfiguration += delegate { UpdatePlacerList(); };
+      subtreePlacerPanel.ApplyConfiguration += async delegate { await ApplyConfigurations(); };
     }
 
-    ///<summary>
-    /// Apply the current settings to the graph.
-    ///</summary>
+    /// <summary>
+    ///   Apply the current settings to the graph.
+    /// </summary>
     private async Task ApplyConfigurations() {
-      IGraph graph = graphControl.Graph;
+      var graph = graphControl.Graph;
       // Get the root node of the tree.
-      var graphAdapter = new YGraphAdapter(graph);
-      INode root = graphAdapter.GetOriginalNode(Trees.GetRoot(graphAdapter.YGraph));
+      var graphAdapter = new StructureGraphAdapter(graph);
+      var root = graphAdapter.GetOriginalNode(LayoutGraphAlgorithms.FindRoot(graphAdapter.StructureGraph));
       // apply the current setting to all nodes of the same layer.
       ApplySettingsRecursively(graph, root, 0);
       await ApplyLayout();
     }
 
-    ///<summary>
-    /// Apply the new settings to the selected layer and descend recursively
+    /// <summary>
+    ///   Apply the new settings to the selected layer and descend recursively
     /// </summary>
     private void ApplySettingsRecursively(IGraph graph, INode root, int layer) {
-      INodePlacer placer = nodePlacerPanel.NodePlacers[layer].Configuration.CreateNodePlacer();
+      var placer = subtreePlacerPanel.SubtreePlacers[layer].Configuration.CreateSubtreePlacer();
       placers[root] = placer;
-      foreach (IEdge edge in graph.EdgesAt(root, AdjacencyTypes.Outgoing)) {
+      foreach (var edge in graph.EdgesAt(root, AdjacencyTypes.Outgoing)) {
         var target = (INode) edge.TargetPort.Owner;
         ApplySettingsRecursively(graph, target, layer + 1);
       }
@@ -92,45 +93,25 @@ namespace Demo.yFiles.Layout.Tree
       InitializeInputModes();
     }
 
-    private IMapper<INode, INodePlacer> placers;
+    private IMapper<INode, ISubtreePlacer> placers;
     private IMapper<INode, bool> assistants;
 
 
     private void InitializeGraphDefaults() {
-      IGraph graph = graphControl.Graph;
+      var graph = graphControl.Graph;
 
       DemoStyles.InitDemoStyles(graph, Themes.Palette58);
       graph.NodeDefaults.Size = new SizeD(60, 40);
 
       graph.SetUndoEngineEnabled(true);
 
-      // The map for the node placers
-      placers = new MyWrappedLeafMapper(graph);
+      // The map for the subtree placers
+      placers = new DictionaryMapper<INode, ISubtreePlacer>();
       // The map for "assistant" nodes. This map has only an effect
-      // if an AssistantPlacer is chosen as node placer
+      // if an AssistantPlacer is chosen as subtree placer
       assistants = new DictionaryMapper<INode, bool>();
 
       sampleComboBox.SelectedIndex = 0;
-    }
-
-    /// <summary>
-    /// Customized IMapper that always returns null node placers for leaf nodes.
-    /// </summary>
-    private class MyWrappedLeafMapper: IMapper<INode, INodePlacer>
-    {
-      private readonly IMapper<INode, INodePlacer> coreMapper = new DictionaryMapper<INode, INodePlacer>();
-      private readonly IGraph graph;
-
-      public MyWrappedLeafMapper(IGraph graph) {
-        this.graph = graph;
-      }
-
-      public INodePlacer this[INode key] {
-        get {
-          return graph.EdgesAt(key, AdjacencyTypes.Outgoing).Count == 0 ? null : coreMapper[key];
-        }
-        set { coreMapper[key] = value; }
-      }
     }
 
     private void InitializeInputModes() {
@@ -147,14 +128,14 @@ namespace Demo.yFiles.Layout.Tree
       geim.PopulateItemContextMenu += ContextMenuInputModePopulateContextMenu;
       geim.DeletingSelection += GeimDeletingSelection;
       geim.DeletedSelection += async delegate {
-        //And trigger new layout
+        // And trigger new layout
         await ApplyLayout();
       };
-      //Disallow multi selection
+      // Disallow multi selection
       geim.MarqueeSelectionInputMode.Enabled = false;
       geim.MultiSelectionRecognizer = EventRecognizers.Never;
-      
-      graphControl.Selection.ItemSelectionChanged += ItemSelectionChanged;
+
+      graphControl.Selection.ItemAdded += ItemSelectionChanged;
 
       // Modify edge creation to always create a new target node
 
@@ -168,27 +149,27 @@ namespace Demo.yFiles.Layout.Tree
       // ignore port candidates and don't show highlights:
       // we don't want to connect to existing nodes
       createEdgeInputMode.ForceSnapToCandidate = false;
-      createEdgeInputMode.SnapToTargetCandidate = false;
+      createEdgeInputMode.SnapToEndCandidate = false;
       createEdgeInputMode.ShowPortCandidates = ShowPortCandidates.None;
-      createEdgeInputMode.AllowSelfloops = false;
-      graphControl.Graph.GetDecorator().NodeDecorator.HighlightDecorator.HideImplementation();
+      createEdgeInputMode.AllowSelfLoops = false;
+      graphControl.Graph.GetDecorator().Nodes.HighlightRenderer.Hide();
 
       // display the new target node during edge creation
       // provide the default size
-      createEdgeInputMode.DummyEdgeGraph.NodeDefaults.Size = graphControl.Graph.NodeDefaults.Size;
+      createEdgeInputMode.PreviewGraph.NodeDefaults.Size = graphControl.Graph.NodeDefaults.Size;
       // set the style according to the layer
       createEdgeInputMode.GestureStarted += (sender, args) => {
-        int layer = GetLayer((INode) createEdgeInputMode.SourcePortCandidate.Owner) + 1;
-        createEdgeInputMode.DummyEdgeGraph.SetStyle(createEdgeInputMode.DummyTargetNode, NewNodeStyle(layer));
+        var layer = GetLayer((INode) createEdgeInputMode.StartPortCandidate.Owner) + 1;
+        createEdgeInputMode.PreviewGraph.SetStyle(createEdgeInputMode.PreviewEndNode, NewNodeStyle(layer));
       };
 
       // let the EdgeCreator create a new target node and connect the new edge to it
       createEdgeInputMode.EdgeCreator = (context, graph, sourcePortCandidate, targetPortCandidate, dummyEdge) => {
         // copy the style from the dummy node
-        var dummyTargetNode = createEdgeInputMode.DummyTargetNode;
+        var dummyTargetNode = createEdgeInputMode.PreviewEndNode;
         var node = graph.CreateNode(dummyTargetNode.Layout.ToRectD(), dummyTargetNode.Style, dummyTargetNode.Tag);
         // create a port at the center
-        var targetPort = graph.AddPort(node, createEdgeInputMode.DummyTargetNodePort.LocationParameter);
+        var targetPort = graph.AddPort(node, createEdgeInputMode.PreviewEndNodePort.LocationParameter);
         // create the edge from the source port candidate to the new node
         return graph.CreateEdge(sourcePortCandidate.CreatePort(context), targetPort, dummyEdge.Style);
       };
@@ -196,89 +177,89 @@ namespace Demo.yFiles.Layout.Tree
       // run a new layout after the edge has been created
       createEdgeInputMode.EdgeCreated += InteractiveEdgeCreated;
     }
-    
-    private async void InteractiveEdgeCreated(object sender, EdgeEventArgs e) {
-      INode node = (INode) e.Item.TargetPort.Owner;
-      int layer = GetLayer(node);
-      IGraph graph = graphControl.Graph;
+
+    private async void InteractiveEdgeCreated(object sender, InputModeItemEventArgs<IEdge> e) {
+      var node = (INode) e.Item.TargetPort.Owner;
+      var layer = GetLayer(node);
+      var graph = graphControl.Graph;
 
       // set the correct color for the layer
       graph.SetStyle(node, NewNodeStyle(layer));
       // and the correct placer for the layer
-      INodePlacer placer = null;
-      if (layer >= nodePlacerPanel.NodePlacers.Count) {
-        nodePlacerPanel.NodePlacers.Add(NodePlacerConfigurations.None);
+      ISubtreePlacer placer = null;
+      if (layer >= subtreePlacerPanel.SubtreePlacers.Count) {
+        subtreePlacerPanel.SubtreePlacers.Add(SubtreePlacerConfigurations.None);
       } else {
-        INodePlacerConfiguration nodePlacerConfiguration = nodePlacerPanel.NodePlacers[layer].Configuration;
-        placer = nodePlacerConfiguration.CreateNodePlacer();
+        var subtreePlacerConfiguration = subtreePlacerPanel.SubtreePlacers[layer].Configuration;
+        placer = subtreePlacerConfiguration.CreateSubtreePlacer();
       }
-      placers[node] = placer ?? new DefaultNodePlacer();
+      placers[node] = placer ?? new SingleLayerSubtreePlacer();
       // execute the layout
       await ApplyLayout();
       // set the placer panel to the node's layer
-      nodePlacerPanel.Level = layer;
+      subtreePlacerPanel.Level = layer;
     }
-    
-    private void ItemSelectionChanged(object source, ItemSelectionChangedEventArgs<IModelItem> evt) {
-      if (evt.ItemSelected) {
-        var selectedNode = evt.Item as INode;
-        if (selectedNode != null) {
-          int layer = GetLayer(selectedNode);
-          nodePlacerPanel.Level = layer;
-        }
+
+    private void ItemSelectionChanged(object source, ItemEventArgs<IModelItem> evt) {
+      var selectedNode = evt.Item as INode;
+      if (selectedNode != null) {
+        var layer = GetLayer(selectedNode);
+        subtreePlacerPanel.Level = layer;
       }
     }
 
     private int GetLayer(INode n) {
-      int layer = 0;
-      INode node = n;
+      var layer = 0;
+      var node = n;
       while (true) {
-        IListEnumerable<IEdge> inEdges = graphControl.Graph.EdgesAt(node, AdjacencyTypes.Incoming);
+        var inEdges = graphControl.Graph.EdgesAt(node, AdjacencyTypes.Incoming);
         if (inEdges.Count == 0) {
           break;
-        } else {
-          node = (INode) inEdges.First().SourcePort.Owner;
-          layer++;
         }
+        node = (INode) inEdges.First().SourcePort.Owner;
+        layer++;
       }
       return layer;
     }
 
     /// <summary>
-    /// Before deleting the selection, we mark the whole subtree as selected, too. This will ensure the whole subtree will be deleted
+    ///   Before deleting the selection, we mark the whole subtree as selected, too. This will ensure the whole subtree will be
+    ///   deleted
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
     private void GeimDeletingSelection(object sender, SelectionEventArgs<IModelItem> e) {
       var selectedNodes = e.Selection.OfType<INode>();
       var nodesToDelete = new List<INode>();
-      foreach (INode selectedNode in selectedNodes) {
+      foreach (var selectedNode in selectedNodes) {
         CollectSubtreeNodes(selectedNode, nodesToDelete);
       }
-      foreach (INode node in nodesToDelete) {
-        e.Selection.SetSelected(node, true);
+      foreach (var node in nodesToDelete) {
+        e.Selection.Add(node);
       }
     }
 
     private void CollectSubtreeNodes(INode selectedNode, List<INode> nodesToDelete) {
       nodesToDelete.Add(selectedNode);
-      IListEnumerable<IEdge> outEdges = graphControl.Graph.EdgesAt(selectedNode, AdjacencyTypes.Outgoing);
-      foreach (IEdge outEdge in outEdges) {
+      var outEdges = graphControl.Graph.EdgesAt(selectedNode, AdjacencyTypes.Outgoing);
+      foreach (var outEdge in outEdges) {
         var target = (INode) outEdge.TargetPort.Owner;
         CollectSubtreeNodes(target, nodesToDelete);
       }
     }
 
-    private void ContextMenuInputModePopulateContextMenu(object sender, PopulateItemContextMenuEventArgs<IModelItem> e) {
+    private void ContextMenuInputModePopulateContextMenu(
+        object sender,
+        PopulateItemContextMenuEventArgs<IModelItem> e) {
       var node = e.Item as INode;
       // create a menu item to toggle the assistant status
-      bool assistant = assistants[node];
+      var assistant = assistants[node];
 
-      var menuItem = new MenuItem {Header = "Set as " + (assistant ? "normal" : "assistant")};
+      var menuItem = new MenuItem { Header = "Set as " + (assistant ? "normal" : "assistant") };
       menuItem.Click += async delegate {
-        //Toggle the value in the map and set the style to indicate an assistant node
+        // Toggle the value in the map and set the style to indicate an assistant node
         assistants[node] = !assistant;
-        var layer = GetLayer(node); 
+        var layer = GetLayer(node);
         graphControl.Graph.SetStyle(node, assistant ? NewNodeStyle(layer) : NewAssistantStyle(layer));
         await ApplyLayout();
       };
@@ -288,10 +269,9 @@ namespace Demo.yFiles.Layout.Tree
     }
 
     private void OnReloadSampleButtonClicked(object sender, RoutedEventArgs e) {
-      MessageBoxResult messageBoxResult = MessageBox.Show(this,
-        "This will reload the current sample graph and reset all custom node placer configurations. Do you really want to continue?",
-        "Reload Sample", MessageBoxButton.OKCancel,
-        MessageBoxImage.Warning, MessageBoxResult.OK);
+      var messageBoxResult = MessageBox.Show(this,
+          "This will reload the current sample graph and reset all custom subtree placer configurations. Do you really want to continue?",
+          "Reload Sample", MessageBoxButton.OKCancel, MessageBoxImage.Warning, MessageBoxResult.OK);
       if (messageBoxResult == MessageBoxResult.OK) {
         SampleComboBoxSelectedValueChanged(this, null);
       }
@@ -306,91 +286,86 @@ namespace Demo.yFiles.Layout.Tree
           CreateOrgChart(graphControl.Graph);
           break;
       }
-      //Update the placer configuration
+      // Update the placer configuration
       UpdatePlacerList();
-      //Center the graph to prevent the initial layout fading in from the top left corner
+      // Center the graph to prevent the initial layout fading in from the top left corner
       await graphControl.FitGraphBounds();
-      //And trigger new layout
+      // And trigger new layout
       await ApplyLayout();
-      //Clear the undo engine afterwards
+      // Clear the undo engine afterwards
       var undoEngine = graphControl.Graph.GetUndoEngine();
       if (undoEngine != null) {
         undoEngine.Clear();
       }
-      nodePlacerPanel.SetLevel(0);
+      subtreePlacerPanel.SetLevel(0);
     }
 
     /// <summary>
-    /// Update the node placer configurations in the <see cref="NodePlacerPanel"/>
+    ///   Update the subtree placer configurations in the <see cref="SubtreePlacerPanel"/>
     /// </summary>
-    /// <returns></returns>
     public void UpdatePlacerList() {
-      IGraph graph = graphControl.Graph;
+      var graph = graphControl.Graph;
 
-      // Determine the root node of the tree:  
-      var graphAdapter = new YGraphAdapter(graph);
-      INode root = graphAdapter.GetOriginalNode(Trees.GetRoot(graphAdapter.YGraph));
+      // Determine the root node of the tree:
+      var graphAdapter = new StructureGraphAdapter(graph);
+      var root = graphAdapter.GetOriginalNode(LayoutGraphAlgorithms.FindRoot(graphAdapter.StructureGraph));
 
-      nodePlacerPanel.NodePlacers.Clear();
+      subtreePlacerPanel.SubtreePlacers.Clear();
       // Fill the Array recursively
-      UpdatePlacerListRecursively(graph, placers, nodePlacerPanel.NodePlacers, root, 0);
+      UpdatePlacerListRecursively(graph, placers, subtreePlacerPanel.SubtreePlacers, root, 0);
     }
 
     /// <summary>
-    /// Fill the placer Array recursively.
+    ///   Fill the placer Array recursively.
     /// </summary>
     /// <param name="graph">The current graph</param>
-    /// <param name="map">The node placer map</param>
+    /// <param name="map">The subtree placer map</param>
     /// <param name="placers">The placer Array to fill.</param>
-    /// <param name="root">The root node of the sub tree</param>
+    /// <param name="root">The root node of the subtree</param>
     /// <param name="layer">The index of the current layer.</param>
-    private static void UpdatePlacerListRecursively(IGraph graph, IMapper<INode, INodePlacer> map,
-                                                    IList<NodePlacerDescriptor> placers, INode root, int layer) {
+    private static void UpdatePlacerListRecursively(
+        IGraph graph,
+        IMapper<INode, ISubtreePlacer> map,
+        IList<SubtreePlacerDescriptor> placers,
+        INode root,
+        int layer) {
       // create and set the holder for the current root node
-      INodePlacer placer = map[root];
+      var placer = map[root];
       if (layer >= placers.Count) {
-        placers.Add(NodePlacerConfigurations.GetDescriptor(placer));
+        placers.Add(SubtreePlacerConfigurations.GetDescriptor(placer));
       } else {
-        placers[layer] = NodePlacerConfigurations.GetDescriptor(placer);
+        placers[layer] = SubtreePlacerConfigurations.GetDescriptor(placer);
       }
       // do the same for the subtrees
-      foreach (IEdge edge in graph.EdgesAt(root, AdjacencyTypes.Outgoing)) {
+      foreach (var edge in graph.EdgesAt(root, AdjacencyTypes.Outgoing)) {
         UpdatePlacerListRecursively(graph, map, placers, edge.TargetPort.Owner as INode, layer + 1);
       }
     }
 
-    ///<summary>
-    /// Execute the layout algorithm.
+    /// <summary>
+    ///   Execute the layout algorithm.
     /// </summary>
     private async Task ApplyLayout() {
       var treeLayout = new TreeLayout();
+      var treeLayoutData = treeLayout.CreateLayoutData(graphControl.Graph);
+      treeLayoutData.SubtreePlacers.Mapper = placers;
+      treeLayoutData.AssistantNodes.Mapper = assistants;
+      treeLayoutData.ChildOrder.OutEdgeComparables.MapperFunction = e => GetOrdinal(e);
+
       var executor = new LayoutExecutor(graphControl, treeLayout) {
-        AnimateViewport = true,
-        Duration = TimeSpan.FromMilliseconds(500),
-        UpdateContentRect = true,
-        LayoutData = new TreeLayoutData {
-          NodePlacers = { Mapper = placers },
-          AssistantNodes = { Mapper = assistants },
-          OutEdgeComparers = {
-            Constant = (edge1, edge2) => {
-              var value1 = GetOrdinal(edge1);
-              int value2 = GetOrdinal(edge2);
-              return value1 - value2;
-            }
-          }
-        }
+          AnimationDuration = TimeSpan.FromMilliseconds(500),
+          LayoutData = treeLayoutData
       };
 
       try {
         await executor.Start();
       } catch (Exception e) {
-        MessageBox.Show(this,
-          "Layout did not complete successfully.\n" + e.Message);
+        MessageBox.Show(this, "Layout did not complete successfully.\n" + e.Message);
       }
     }
 
     private static int GetOrdinal(IEdge edge) {
-      int value = 0;
+      var value = 0;
       var targetLabels = ((INode) edge.TargetPort.Owner).Labels;
       if (targetLabels.Count > 0) {
         int.TryParse(targetLabels[0].Text, out value);
@@ -400,43 +375,43 @@ namespace Demo.yFiles.Layout.Tree
 
     #region sample graph creation
 
-    private static readonly int[] NumChildren = {1, 2, 3, 5};
+    private static readonly int[] NumChildren = { 1, 2, 3, 5 };
 
-    ///<summary>
-    /// Create a sample graph: a simple tree with SimpleNodePlacers assigned to each node.
-    /// This implementation creates three layers with three children each.
-    ///</summary>
+    /// <summary>
+    ///   Create a sample graph: a simple tree with <see cref="SimpleSubtreePlacer"/>s assigned to each node.
+    ///   This implementation creates three layers with three children each.
+    /// </summary>
     private void CreateSampleGraph(IGraph graph) {
       graph.Clear();
-      INode root = graph.CreateNode();
+      var root = graph.CreateNode();
       graph.SetStyle(root, NewNodeStyle(0));
-      var placer = new DefaultNodePlacer { ChildPlacement = ChildPlacement.HorizontalDownward };
+      var placer = new SingleLayerSubtreePlacer { Transformation = SubtreeTransform.None };
       placers[root] = placer;
-      CreateSubTree(graph, root, 1, 2);
+      CreateSubtree(graph, root, 1, 2);
     }
 
-    ///<summary>
-    /// Recursively builds a sub tree
-    ///</summary>summary>
-    private void CreateSubTree(IGraph graph, INode root, int layer, int layers) {
-      int children = NumChildren[layer];
+    /// <summary>
+    ///   Recursively builds a subtree
+    /// </summary>
+    private void CreateSubtree(IGraph graph, INode root, int layer, int layers) {
+      var children = NumChildren[layer];
 
-      for (int i = 0; i < children; i++) {
-        INode child = graph.CreateNode();
+      for (var i = 0; i < children; i++) {
+        var child = graph.CreateNode();
         graph.CreateEdge(root, child);
         graph.SetStyle(child, NewNodeStyle(layer));
 
-        var placer = new DefaultNodePlacer { ChildPlacement = ChildPlacement.HorizontalDownward };
+        var placer = new SingleLayerSubtreePlacer { Transformation = SubtreeTransform.None };
         placers[child] = placer;
 
         if (layers > 0) {
-          CreateSubTree(graph, child, layer + 1, layers - 1);
+          CreateSubtree(graph, child, layer + 1, layers - 1);
         }
       }
     }
 
     private static INodeStyle NewAssistantStyle(int layer) {
-      return NodePlacerPanel.NewAssistantStyle(GetLayerPalette(layer));
+      return SubtreePlacerPanel.NewAssistantStyle(GetLayerPalette(layer));
     }
 
     private static INodeStyle NewNodeStyle(int layer) {
@@ -444,29 +419,29 @@ namespace Demo.yFiles.Layout.Tree
     }
 
     private static Palette GetLayerPalette(int layer) {
-      return NodePlacerPanel.LayerPalettes[layer % NodePlacerPanel.LayerPalettes.Length];
+      return SubtreePlacerPanel.LayerPalettes[layer % SubtreePlacerPanel.LayerPalettes.Length];
     }
 
     /////////////////////////// Org Chart ///////////////////////////////////
 
-    ///<summary>
-    /// Create the organization chart using an XML file.
-    ///</summary>
+    /// <summary>
+    ///   Create the organization chart using an XML file.
+    /// </summary>
     private void CreateOrgChart(IGraph graph) {
       graph.Clear();
       var orgChartModel = XDocument.Load("Resources\\orgchartmodel.xml");
-      CreateOrgChartSubTree(graph, null, orgChartModel.Root, 0);
+      CreateOrgChartSubtree(graph, null, orgChartModel.Root, 0);
     }
 
-    ///<summary>
-    /// Create a sub tree of the organization chart
-    ///</summary>
-    private void CreateOrgChartSubTree(IGraph graph, INode parent, XElement xml, int layer) {
-      // The root of the sub tree
+    /// <summary>
+    ///   Create a subtree of the organization chart
+    /// </summary>
+    private void CreateOrgChartSubtree(IGraph graph, INode parent, XElement xml, int layer) {
+      // The root of the subtree
       var node = graph.CreateNode();
       // Whether it is an assistant
       var assistantAttribute = xml.Attribute("assistant");
-      var assistant = assistantAttribute == null ? false : Boolean.Parse(assistantAttribute.Value);
+      var assistant = assistantAttribute == null ? false : bool.Parse(assistantAttribute.Value);
       assistants[node] = assistant;
 
       // Set a style according to the layer and the assistant status
@@ -477,36 +452,35 @@ namespace Demo.yFiles.Layout.Tree
       }
       // Create a placer with the layout which is defined in the xml
       var layoutAttribute = xml.Attribute("layout");
-      string layout = layoutAttribute == null ? "" : layoutAttribute.Value;
-      var placer = new AssistantNodePlacer();
+      var layout = layoutAttribute == null ? "" : layoutAttribute.Value;
+      var placer = new AssistantSubtreePlacer();
       switch (layout) {
         case "left_below":
-          placer.ChildNodePlacer = new DefaultNodePlacer {
-            ChildPlacement = ChildPlacement.VerticalToLeft,
-            RootAlignment = RootAlignment.LeadingOnBus,
-            RoutingStyle = RoutingStyle.ForkAtRoot
+          placer.ChildSubtreePlacer = new SingleLayerSubtreePlacer {
+              Transformation = SubtreeTransform.RotateRight,
+              RootAlignment = SingleLayerSubtreePlacerRootAlignment.LeadingOnBus,
+              EdgeRoutingStyle = SingleLayerSubtreePlacerRoutingStyle.OrthogonalAtRoot
           };
           break;
         case "right_below":
-          placer.ChildNodePlacer = new DefaultNodePlacer {
-            ChildPlacement = ChildPlacement.VerticalToRight,
-            RootAlignment = RootAlignment.LeadingOnBus,
-            RoutingStyle = RoutingStyle.ForkAtRoot
+          placer.ChildSubtreePlacer = new SingleLayerSubtreePlacer {
+              Transformation = SubtreeTransform.RotateLeftFlipY,
+              RootAlignment = SingleLayerSubtreePlacerRootAlignment.LeadingOnBus,
+              EdgeRoutingStyle = SingleLayerSubtreePlacerRoutingStyle.OrthogonalAtRoot
           };
           break;
         case "below":
-          placer.ChildNodePlacer = new LeftRightNodePlacer {PlaceLastOnBottom = false};
+          placer.ChildSubtreePlacer = new LeftRightSubtreePlacer { PlaceLastOnBottom = false };
           break;
         default:
-          placer.ChildNodePlacer = new DefaultNodePlacer {
-            ChildPlacement = ChildPlacement.HorizontalDownward,
-            RootAlignment = RootAlignment.Median
+          placer.ChildSubtreePlacer = new SingleLayerSubtreePlacer {
+              Transformation = SubtreeTransform.None, RootAlignment = SingleLayerSubtreePlacerRootAlignment.Median
           };
           break;
       }
       placers[node] = placer;
       foreach (var xElement in xml.Elements()) {
-        CreateOrgChartSubTree(graph, node, xElement, layer + 1);
+        CreateOrgChartSubtree(graph, node, xElement, layer + 1);
       }
     }
 

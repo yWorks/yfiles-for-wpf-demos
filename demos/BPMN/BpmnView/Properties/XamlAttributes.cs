@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -28,11 +28,12 @@
  ***************************************************************************/
 
 using System.Windows.Markup;
+using Demo.yFiles.Graph.Bpmn.Util;
 
 // Legacy namespace
-[assembly: XmlnsDefinition(Demo.yFiles.Graph.Bpmn.Util.BpmnConstants.YfilesBpmnLegacyNS, "Demo.yFiles.Graph.Bpmn.Legacy")]
+[assembly: XmlnsDefinition(BpmnConstants.YfilesBpmnLegacyNS10, "Demo.yFiles.Graph.Bpmn.Legacy")]
 
-[assembly: XmlnsDefinition(Demo.yFiles.Graph.Bpmn.Util.BpmnConstants.YfilesBpmnNS, "Demo.yFiles.Graph.Bpmn")]
-[assembly: XmlnsDefinition(Demo.yFiles.Graph.Bpmn.Util.BpmnConstants.YfilesBpmnNS, "Demo.yFiles.Graph.Bpmn.Layout")]
-[assembly: XmlnsDefinition(Demo.yFiles.Graph.Bpmn.Util.BpmnConstants.YfilesBpmnNS, "Demo.yFiles.Graph.Bpmn.Styles")]
-[assembly: XmlnsPrefix(Demo.yFiles.Graph.Bpmn.Util.BpmnConstants.YfilesBpmnNS, Demo.yFiles.Graph.Bpmn.Util.BpmnConstants.YfilesBpmnPrefix)]
+[assembly: XmlnsDefinition(BpmnConstants.YfilesBpmnNS, "Demo.yFiles.Graph.Bpmn")]
+[assembly: XmlnsDefinition(BpmnConstants.YfilesBpmnNS, "Demo.yFiles.Graph.Bpmn.Layout")]
+[assembly: XmlnsDefinition(BpmnConstants.YfilesBpmnNS, "Demo.yFiles.Graph.Bpmn.Styles")]
+[assembly: XmlnsPrefix(BpmnConstants.YfilesBpmnNS, BpmnConstants.YfilesBpmnPrefix)]

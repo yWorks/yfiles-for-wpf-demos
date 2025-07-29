@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -42,15 +42,15 @@ using yWorks.Controls.Input;
 using yWorks.Geometry;
 using yWorks.Graph;
 using yWorks.Graph.Styles;
+using yWorks.Utils;
 
 namespace Demo.yFiles.Graph.Viewer
 {
   /// <summary>
-  /// This demo shows how to display a graph with the GraphViewer component.
+  ///   This demo shows how to display a graph with the GraphViewer component.
   /// </summary>
   public partial class GraphViewerWindow
   {
-
     private FoldingManager manager;
 
     public GraphViewerWindow() {
@@ -64,35 +64,28 @@ namespace Demo.yFiles.Graph.Viewer
 
       InitializeInputMode();
 
-      IGraph graph = graphControl.Graph;
+      var graph = graphControl.Graph;
 
       graphControl.FileOperationsEnabled = true;
-
-      IMapperRegistry masterRegistry = graph.GetFoldingView().Manager.MasterGraph.MapperRegistry;
-      masterRegistry.CreateWeakMapper<INode, string>("ToolTip");
-      masterRegistry.CreateWeakMapper<INode, string>("Description");
-      masterRegistry.CreateWeakMapper<INode, string>("Url");
-      masterRegistry.CreateWeakMapper<IGraph, string>("GraphDescription");
 
       graphControl.CurrentItemChanged += OnCurrentItemChanged;
 
       var ioHandler = graphControl.GraphMLIOHandler;
 
-      ioHandler.AddGraphOutputData("GraphDescription", (g) => graphDescriptionTextBlock.Text);
-      ioHandler.AddGraphInputData<string>("GraphDescription", (g, v) => graphDescriptionTextBlock.Text = v);
+      ioHandler.AddGraphOutputData("GraphDescription", _ => graphDescriptionTextBlock.Text);
+      ioHandler.AddGraphInputData<string>("GraphDescription", (_, v) => graphDescriptionTextBlock.Text = v);
 
-      ioHandler.AddRegistryInputMapper<INode, string>("Description");
-      ioHandler.AddRegistryOutputMapper<INode, string>("Description", "Description");
-      ioHandler.AddRegistryInputMapper<INode, string>("ToolTip");
-      ioHandler.AddRegistryOutputMapper<INode, string>("ToolTip", "ToolTip");
-      ioHandler.AddRegistryInputMapper<INode, string>("Url");
-      ioHandler.AddRegistryOutputMapper<INode, string>("Url", "Url");
-      
-      graphChooserBox.ItemsSource = new[]
-                                      {
-                                        "computer-network", "movies", "family-tree", "hierarchy", "nesting",
-                                        "social-network", "uml-diagram", "large-tree",
-                                      };
+      ioHandler.AddInputMapper("Description", DescriptionMapper);
+      ioHandler.AddOutputMapper("Description", DescriptionMapper);
+      ioHandler.AddInputMapper("ToolTip", ToolTipMapper);
+      ioHandler.AddOutputMapper("ToolTip", ToolTipMapper);
+      ioHandler.AddInputMapper("Url", UrlMapper);
+      ioHandler.AddOutputMapper("Url", UrlMapper);
+
+      graphChooserBox.ItemsSource = new[] {
+          "computer-network", "movies", "family-tree", "hierarchy", "nesting", "social-network", "uml-diagram",
+          "large-tree"
+      };
       graphChooserBox.SelectedIndex = 0;
       graphControl.FitGraphBounds();
     }
@@ -107,35 +100,27 @@ namespace Demo.yFiles.Graph.Viewer
 
       // now decorate the nodes and edges with custom hover highlight styles
       // nodes should be given a rectangular orange rectangle highlight shape
-      var highlightShape = new ShapeNodeStyle {
-          Shape = ShapeNodeShape.RoundRectangle,
-          Pen = orangePen,
-          Brush = null
-      };
+      var highlightShape = new ShapeNodeStyle { Shape = ShapeNodeShape.RoundRectangle, Pen = orangePen, Brush = null };
 
       // that should be slightly larger than the real node
-      var nodeStyleHighlight = new IndicatorNodeStyleDecorator(highlightShape) {
-          Padding = new InsetsD(5), 
-          ZoomPolicy = StyleDecorationZoomPolicy.ViewCoordinates
+      var nodeStyleHighlight = new NodeStyleIndicatorRenderer {
+          NodeStyle = highlightShape, Margins = new InsetsD(5), ZoomPolicy = StyleIndicatorZoomPolicy.ViewCoordinates
       };
 
-      // a similar style for the edges, however cropped by the highlight's insets
-      var dummyCroppingArrow = new Arrow {
-          Type = ArrowType.None,
-          CropLength = 5
-      };
+      // a similar style for the edges, however cropped by the highlight's margins
+      var dummyCroppingArrow = new Arrow(ArrowType.None, cropLength : 5);
       var edgeStyle = new PolylineEdgeStyle {
-          Pen = orangePen,
-          TargetArrow = dummyCroppingArrow,
-          SourceArrow = dummyCroppingArrow
+          Pen = orangePen, TargetArrow = dummyCroppingArrow, SourceArrow = dummyCroppingArrow
       };
-      var edgeStyleHighlight = new IndicatorEdgeStyleDecorator(edgeStyle) {
-          ZoomPolicy = StyleDecorationZoomPolicy.ViewCoordinates
+      var edgeStyleHighlight = new EdgeStyleIndicatorRenderer {
+          EdgeStyle = edgeStyle, ZoomPolicy = StyleIndicatorZoomPolicy.ViewCoordinates
       };
       // register it as the default implementation for all nodes
-      graphControl.HighlightIndicatorManager = new GraphHighlightIndicatorManager {
-          NodeStyle = nodeStyleHighlight, EdgeStyle = edgeStyleHighlight
-      };
+      graphControl.Graph.GetDecorator().Nodes.HighlightRenderer.AddConstant(nodeStyleHighlight);
+      graphControl.Graph.GetDecorator().Edges.HighlightRenderer.AddConstant(edgeStyleHighlight);
+
+      // show the focused item
+      graphControl.FocusIndicatorManager.ShowFocusPolicy = ShowFocusPolicy.WhenFocused;
     }
 
     private void InitializeInputMode() {
@@ -145,8 +130,7 @@ namespace Demo.yFiles.Graph.Viewer
       // -focusing (via keyboard navigation) of nodes
       // -no selection
       // -no marquee
-      var graphViewerInputMode = new GraphViewerInputMode
-      {
+      var graphViewerInputMode = new GraphViewerInputMode {
           ToolTipItems = GraphItemTypes.LabelOwner,
           ClickableItems = GraphItemTypes.Node,
           FocusableItems = GraphItemTypes.Node,
@@ -171,9 +155,6 @@ namespace Demo.yFiles.Graph.Viewer
       graphViewerInputMode.ItemHoverInputMode.Enabled = true;
       // set the items to be reported
       graphViewerInputMode.ItemHoverInputMode.HoverItems = GraphItemTypes.Edge | GraphItemTypes.Node;
-      // if there are other items (most importantly labels) in front of edges or nodes
-      // they should be discarded, rather than be reported as "null"
-      graphViewerInputMode.ItemHoverInputMode.DiscardInvalidItems = false;
       // whenever the currently hovered item changes call our method
       graphViewerInputMode.ItemHoverInputMode.HoveredItemChanged += OnHoveredItemChanged;
 
@@ -192,34 +173,37 @@ namespace Demo.yFiles.Graph.Viewer
 
     private void OnHoveredItemChanged(object sender, HoveredItemChangedEventArgs e) {
       // we use the highlight manager of the GraphComponent to highlight related items
-      var manager = graphControl.HighlightIndicatorManager;
-
       // first remove previous highlights
-      manager.ClearHighlights();
+      var highlights = graphControl.Highlights;
+      highlights.Clear();
       // then see where we are hovering over, now
       var newItem = e.Item;
       if (newItem != null) {
         // we highlight the item itself
-        manager.AddHighlight(newItem);
+        highlights.Add(newItem);
         var node = newItem as INode;
         var edge = newItem as IEdge;
         if (node != null) {
           // and if it's a node, we highlight all adjacent edges, too
           foreach (var adjacentEdge in graphControl.Graph.EdgesAt(node)) {
-            manager.AddHighlight(adjacentEdge);
+            highlights.Add(adjacentEdge);
           }
         } else if (edge != null) {
           // if it's an edge - we highlight the adjacent nodes
-          manager.AddHighlight(edge.GetSourceNode());
-          manager.AddHighlight(edge.GetTargetNode());
+          highlights.Add(edge.GetSourceNode());
+          highlights.Add(edge.GetTargetNode());
         }
       }
     }
 
     private void OnClickInputModeOnClicked(object sender, ClickEventArgs args) {
+      if (args.ClickCount != 1) {
+        return;
+      }
       if (!graphControl.GraphModelManager.HitElementsAt(args.Location).Any()) { // nothing hit
-        if ((args.Modifiers & (ModifierKeys.Shift | ModifierKeys.Control)) == (ModifierKeys.Shift | ModifierKeys.Control)) {
-          if (GraphCommands.ExitGroup.CanExecute(null, graphControl) && !args.Handled) {
+        if ((args.Modifiers & (ModifierKeys.Shift | ModifierKeys.Control)) ==
+            (ModifierKeys.Shift | ModifierKeys.Control)) {
+          if (GraphCommands.ExitGroup.CanExecute(null, graphControl) && !args.Handled){
             GraphCommands.ExitGroup.Execute(null, graphControl);
             args.Handled = true;
           }
@@ -228,13 +212,13 @@ namespace Demo.yFiles.Graph.Viewer
     }
 
     /// <summary>
-    /// Enable folding - change the GraphControls graph to a managed view
-    /// that provides the actual collapse/expand state.
+    ///   Enable folding - change the GraphControls graph to a managed view
+    ///   that provides the actual collapse/expand state.
     /// </summary>
     private void EnableFolding() {
       // create the manager
       manager = new FoldingManager();
-      DemoStyles.InitDemoStyles(manager.MasterGraph, foldingEnabled: true);
+      DemoStyles.InitDemoStyles(manager.MasterGraph, foldingEnabled : true);
       // replace the displayed graph with a managed view
       graphControl.Graph = manager.CreateFoldingView().Graph;
     }
@@ -242,8 +226,8 @@ namespace Demo.yFiles.Graph.Viewer
 
     private void OnCurrentItemChanged(object sender, EventArgs propertyChangedEventArgs) {
       var currentItem = graphControl.CurrentItem;
-      if (currentItem is INode) {
-        var node = (INode)currentItem;
+      if (currentItem is INode node) {
+        node = graphControl.Graph.GetFoldingView()?.GetMasterItem(node) ?? node;
         nodeDescriptionTextBlock.Text = DescriptionMapper[node] ?? string.Empty;
         nodeLabelTextBlock.Text = node.Labels.Count > 0 ? node.Labels[0].Text : string.Empty;
         var url = UrlMapper[node];
@@ -255,8 +239,7 @@ namespace Demo.yFiles.Graph.Viewer
           nodeUrlButton.Content = "";
           nodeUrlButton.IsEnabled = false;
         }
-      }
-      else {
+      } else {
         nodeDescriptionTextBlock.Text = "";
         nodeLabelTextBlock.Text = "";
         nodeUrlButton.Content = null;
@@ -268,17 +251,18 @@ namespace Demo.yFiles.Graph.Viewer
     private void OnItemClicked(object sender, ItemClickedEventArgs<IModelItem> e) {
       if (e.Item is INode) {
         graphControl.CurrentItem = e.Item;
-        if ((LastModifierKeys & (ModifierKeys.Shift | ModifierKeys.Control)) == (ModifierKeys.Shift | ModifierKeys.Control)) {
-          if (GraphCommands.EnterGroup.CanExecute(e.Item, graphControl)) {
-            GraphCommands.EnterGroup.Execute(e.Item, graphControl);
+        if ((LastModifierKeys & (ModifierKeys.Shift | ModifierKeys.Control)) ==
+            (ModifierKeys.Shift | ModifierKeys.Control)) {
+          if (GraphCommands.EnterGroup.CanExecute(null, graphControl)) {
+            GraphCommands.EnterGroup.Execute(null, graphControl);
             e.Handled = true;
           }
         } else if ((LastModifierKeys & ModifierKeys.Shift) == ModifierKeys.Shift) {
-          var url = UrlMapper[(INode)e.Item];
+          var url = UrlMapper[(INode) e.Item];
           var descriptionWindow = new DescriptionWindow();
           if (url != null) {
             descriptionWindow.Uri = new Uri(url);
-            descriptionWindow.Description = DescriptionMapper[(INode)e.Item];
+            descriptionWindow.Description = DescriptionMapper[(INode) e.Item];
             descriptionWindow.ShowDialog();
             e.Handled = true;
           }
@@ -288,23 +272,18 @@ namespace Demo.yFiles.Graph.Viewer
 
     private ModifierKeys LastModifierKeys {
       get {
-        var mouse2DEventArgs = graphControl.LastInputEvent as Mouse2DEventArgs;
-        if (mouse2DEventArgs != null) {
-          return mouse2DEventArgs.Modifiers;
-        }
-        var touch2DEventArgs = graphControl.LastInputEvent as Touch2DEventArgs;
-        if (touch2DEventArgs != null) {
-          return touch2DEventArgs.Modifiers;
+        var pointerEventArgs = graphControl.LastPointerEvent;
+        if (pointerEventArgs != null) {
+          return pointerEventArgs.Modifiers;
         }
         return ModifierKeys.None;
       }
     }
 
     private void OnQueryItemToolTip(object sender, QueryItemToolTipEventArgs<IModelItem> queryItemToolTipEventArgs) {
-      if (queryItemToolTipEventArgs.Item is INode && !queryItemToolTipEventArgs.Handled) {
-        INode node = (INode)queryItemToolTipEventArgs.Item;
-        IMapper<INode, string> descriptionMapper = DescriptionMapper;
-        var toolTip = ToolTipMapper[node] ?? (descriptionMapper != null ? descriptionMapper[node] : null);
+      if (queryItemToolTipEventArgs.Item is INode node && !queryItemToolTipEventArgs.Handled) {
+        node = graphControl.Graph.GetFoldingView()?.GetMasterItem(node) ?? node;
+        var toolTip = ToolTipMapper[node] ?? DescriptionMapper?[node];
         if (toolTip != null) {
           queryItemToolTipEventArgs.ToolTip = toolTip;
           queryItemToolTipEventArgs.Handled = true;
@@ -312,19 +291,16 @@ namespace Demo.yFiles.Graph.Viewer
       }
     }
 
-    private IMapper<INode, string> DescriptionMapper {
-      get { return graphControl.Graph.MapperRegistry.GetMapper<INode, string>("Description"); }
-    }
-    private IMapper<INode, string> ToolTipMapper {
-      get { return graphControl.Graph.MapperRegistry.GetMapper<INode, string>("ToolTip"); }
-    }
-    private IMapper<INode, string> UrlMapper {
-      get { return graphControl.Graph.MapperRegistry.GetMapper<INode, string>("Url"); }
-    }
+    private IMapper<INode, string> DescriptionMapper { get; } = new WeakDictionaryMapper<INode, string>();
+
+    private IMapper<INode, string> ToolTipMapper { get; } = new WeakDictionaryMapper<INode, string>();
+
+    private IMapper<INode, string> UrlMapper { get; } = new WeakDictionaryMapper<INode, string>();
 
 
     private void ReadSampleGraph() {
-      string fileName = string.Format("Resources" + Path.DirectorySeparatorChar + "{0}.graphml", graphChooserBox.SelectedItem.ToString());
+      var fileName = string.Format("Resources" + Path.DirectorySeparatorChar + "{0}.graphml",
+          graphChooserBox.SelectedItem);
       graphControl.Graph.Clear();
       using (var reader = new StreamReader(fileName)) {
         graphControl.ImportFromGraphML(reader);
@@ -367,12 +343,12 @@ namespace Demo.yFiles.Graph.Viewer
   public class ZoomConverter : IValueConverter
   {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
-      double v = (double)value;
+      var v = (double) value;
       return Math.Log(v, 1.2);
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
-      return Math.Pow(1.2, (double)value);
+      return Math.Pow(1.2, (double) value);
     }
   }
 }

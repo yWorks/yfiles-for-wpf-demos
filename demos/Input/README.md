@@ -7,6 +7,7 @@ You will find the following programming samples in this package:
 
 | Name | Description |
 |:---|:---|
+|**CircleSnapping** | Shows how to enable circular and angle snapping (guidelines) for interactive changes. |
 |**ContextMenu** | Demo code that shows how to customize the `ContextMenu` behavior of `GraphEditorInputMode`'s `ContextMenuInputMode` elegantly. |
 |**CustomLabelModel** | This demo show how to create and use a custom `ILabelModel`. |
 |**CustomPortModel** | This demo show how to create and use a custom `IPortLocationModel`. |

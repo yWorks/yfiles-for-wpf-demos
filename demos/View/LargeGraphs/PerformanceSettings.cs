@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -28,7 +28,6 @@
  ***************************************************************************/
 
 using System.ComponentModel;
-using Demo.yFiles.Graph.LargeGraphs.Styles;
 using Demo.yFiles.Graph.LargeGraphs.Styles.Fast;
 using Demo.yFiles.Graph.LargeGraphs.Styles.LevelOfDetail;
 using Demo.yFiles.Graph.LargeGraphs.Styles.Selection;
@@ -60,7 +59,6 @@ namespace Demo.yFiles.Graph.LargeGraphs
     private bool selectionHandlesDisabled;
     private bool customSelectionDecoratorEnabled;
     private bool labelModelBakingEnabled;
-    private bool dirtyHandlingOptimizationEnabled;
 
     #endregion
 
@@ -92,9 +90,9 @@ namespace Demo.yFiles.Graph.LargeGraphs
     /// </summary>
     /// <remarks>
     ///   <para>
-    ///     A large portion of rendering time is spent with creating and updating visuals of graph items via their styles. Most
+    ///     A large portion of rendering time is spent creating and updating visuals of graph items via their styles. Most
     ///     default styles are intended for larger zoom levels and graphs of about a few hundred elements. With very large
-    ///     graphs simplifying the appearance (and even drawing nothing at times) at lower zoom levels is a viable strategy to
+    ///     graphs, simplifying the appearance (and even drawing nothing at times) at lower zoom levels is a viable strategy to
     ///     improve performance (and also readability of the graph). In this regard, features with a large performance impact
     ///     are:
     ///   </para>
@@ -172,7 +170,7 @@ namespace Demo.yFiles.Graph.LargeGraphs
     /// <remarks>
     ///   <para>This setting has no effect unless <see cref="FastStylesEnabled" /> is <see langword="true" />.</para>
     ///   <para>
-    ///     Below this zoom level edge labels are hidden. Above it, edge labels will be rendered in a simplified appearance
+    ///     Below this zoom level, edge labels are hidden. Above it, edge labels will be rendered in a simplified appearance
     ///     (see <see cref="FastLabelStyle" />).
     ///   </para>
     /// </remarks>
@@ -191,7 +189,7 @@ namespace Demo.yFiles.Graph.LargeGraphs
     /// <remarks>
     ///   <para>This setting has no effect unless <see cref="FastStylesEnabled" /> is <see langword="true" />.</para>
     ///   <para>
-    ///     Below this zoom level node labels are hidden. Above it, node labels will be rendered in a simplified appearance
+    ///     Below this zoom level, node labels are hidden. Above it, node labels will be rendered in a simplified appearance
     ///     (see <see cref="FastLabelStyle" />).
     ///   </para>
     /// </remarks>
@@ -229,7 +227,7 @@ namespace Demo.yFiles.Graph.LargeGraphs
     /// <remarks>
     ///   <para>This setting has no effect unless <see cref="FastStylesEnabled" /> is <see langword="true" />.</para>
     ///   <para>
-    ///     Below this zoom level node labels are rendered in a simplified appearance (<see cref="FastLabelStyle" />). Above
+    ///     Below this zoom level, node labels are rendered in a simplified appearance (<see cref="FastLabelStyle" />). Above
     ///     it, node labels will be rendered in full fidelity and readable.
     ///   </para>
     /// </remarks>
@@ -277,7 +275,7 @@ namespace Demo.yFiles.Graph.LargeGraphs
     ///   <para>
     ///     Virtualization in <see cref="CanvasControl" /> trims the WPF visual tree to the elements that are actually
     ///     visible. This works well when only a few hundred visuals need to be removed or added at a time but results in
-    ///     significant stutter if thousands of elements are affected. The later happens typically while panning or zooming in
+    ///     significant stutter if thousands of elements are affected. The latter happens typically while panning or zooming in
     ///     large graph at low zoom level.
     ///   </para>
     ///   <para>
@@ -368,7 +366,7 @@ namespace Demo.yFiles.Graph.LargeGraphs
     /// <remarks>
     ///   The default selection decorators are somewhat slow to draw. This doesn't matter with selections of a few elements,
     ///   but when you select thousands of items there is a noticeable impact. This setting enables the use of custom-written
-    ///   selection decorators (implemented as node, edge and label styles) instead of the default ones.
+    ///   selection decorators (implemented as node, edge, and label styles) instead of the default ones.
     /// </remarks>
     /// <seealso cref="FastNodeSelectionStyle" />
     /// <seealso cref="FastEdgeSelectionStyle" />
@@ -392,7 +390,7 @@ namespace Demo.yFiles.Graph.LargeGraphs
     /// <remarks>
     ///   Positioning labels can be expensive, since they are usually anchored to their owner. Thus, to determine a label's
     ///   position (which is needed for hit-testing and visibility checks) the owner's position needs to be known, too. If the
-    ///   graph is known to be static (or changes to the graph are tightly controlled) we can simply replace all label's models
+    ///   graph is known to be static (or changes to the graph are tightly controlled) we can simply replace all labels' models
     ///   with instances of <see cref="FreeLabelModel" /> which records an absolute position and thus is much cheaper to
     ///   calculate.
     /// </remarks>
@@ -402,47 +400,6 @@ namespace Demo.yFiles.Graph.LargeGraphs
       set {
         labelModelBakingEnabled = value;
         OnPropertyChanged("LabelModelBakingEnabled");
-      }
-    }
-
-    /// <summary>
-    ///   Gets or sets a value indicating whether a custom descriptor with optimized dirty handling should be used.
-    /// </summary>
-    /// <remarks>
-    ///   <para>
-    ///     If the graph is known to be static (or changes to the graph are tightly controlled) this represents a
-    ///     last-resort optimization at a low level. Every object in a <see cref="CanvasControl" /> is placed in a tree of
-    ///     <see cref="ICanvasObject" />s, each of which has an <see cref="ICanvasObjectDescriptor" /> that handles hit-testing,
-    ///     visibility checks, creating/updating visuals, etc. For the most part that descriptor looks very similar to a style,
-    ///     and by default in fact delegates to an item's style. The default descriptor also always returns
-    ///     <see langword="true" /> for its <see cref="ICanvasObjectDescriptor.IsDirty" /> implementation, which means that the
-    ///     object is always queried for visibility and updates.
-    ///   </para>
-    ///   <para>
-    ///     By writing a custom descriptor that mostly returns false for <c>IsDirty</c> we can side-step almost all
-    ///     visibility checks and calls to <c>UpdateVisual</c>. This greatly increases rendering speed as almost nothing needs
-    ///     to be done anymore. The caveat is that we have to manually intervene whenever we want the visuals to change. This
-    ///     includes the following situations:
-    ///   </para>
-    ///   <list type="bullet">
-    ///     <item>The level-of-detail style changes from one level to another.</item>
-    ///     <item>
-    ///       An item (node, edge, label) has changed (moved, resized), e.g. when the user (or code) makes edits to the
-    ///       graph.
-    ///     </item>
-    ///   </list>
-    ///   <para>
-    ///     Getting all situations right where something changes can be a lot of work. In this demo only the first case is
-    ///     handled for simplicity reasons. This optimization should not be performed if the other options already provide
-    ///     adequate performance.
-    ///   </para>
-    /// </remarks>
-    /// <seealso cref="LargeGraphsWindow.UpdateDirtyHandlingOptimizationSetting"/>
-    public bool DirtyHandlingOptimizationEnabled {
-      get { return dirtyHandlingOptimizationEnabled; }
-      set {
-        dirtyHandlingOptimizationEnabled = value;
-        OnPropertyChanged("DirtyHandlingOptimizationEnabled");
       }
     }
 

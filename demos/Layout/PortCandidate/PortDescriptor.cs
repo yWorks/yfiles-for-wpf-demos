@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -34,98 +34,112 @@ using yWorks.Layout;
 namespace Demo.yFiles.Layout.PortCandidateDemo
 {
   /// <summary>
-  /// A PortDescriptor describes a port, i.e. its location relative to its node, its capacity, its cost and its direction.
+  ///   A PortDescriptor describes a port, i.e. its location relative to its node, its capacity, its cost, and its direction.
   /// </summary>
   public class PortDescriptor
   {
-    private int x = int.MaxValue;
-
     /// <summary>
-    /// Relative x coordinate of the port
+    ///   Relative x-coordinate of the port
     /// </summary>
     [DefaultValue(int.MaxValue)]
-    public int X {
-      get { return x; }
-      set { x = value; }
-    }
-
-    private int y = int.MaxValue;
+    public int X { get; set; } = int.MaxValue;
 
     /// <summary>
-    /// Relative y coordinate of the port
+    ///   Relative y-coordinate of the port
     /// </summary>
     [DefaultValue(int.MaxValue)]
-    public int Y {
-      get { return y; }
-      set { y = value; }
-    }
+    public int Y { get; set; } = int.MaxValue;
 
-    private int capacity = int.MaxValue;
     /// <summary>
-    /// Specifies how many edges this port can hold
+    ///   Specifies how many edges this port can hold.
     /// </summary>
     [DefaultValue(int.MaxValue)]
-    public int Capacity {
-      get { return capacity; }
-      set { capacity = value; }
-    }
+    public int Capacity { get; set; } = int.MaxValue;
 
     /// <summary>
-    /// Specifies the cost for this candidate
+    ///   Specifies the cost for this candidate
     /// </summary>
     [DefaultValue(0)]
     public int Cost { get; set; }
 
-    private PortDirections side = PortDirections.Any;
     /// <summary>
-    /// Specified which direction edges located in this port should have.
+    ///   Specifies at which side the port should be located
     /// </summary>
-    [DefaultValue(PortDirections.Any)]
-    public PortDirections Side {
-      get { return side; }
-      set { side = value; }
-    }
+    [DefaultValue(PortSides.Any)]
+    public PortSides Side { get; set; } = PortSides.Any;
 
     /// <summary>
-    /// Creates an enumerable of all edges belonging to the type of the node as specified by its
-    /// <see cref="FlowChartType"/> set as its tag or an empty list if there is no
-    /// <see cref="FlowChartType"/>.
+    ///   Creates an enumerable of all edges belonging to the type of the node as specified by its
+    ///   <see cref="FlowChartType"/> set as its tag or an empty list if there is no
+    ///   <see cref="FlowChartType"/>.
     /// </summary>
     /// <param name="flowChartType"></param>
-    /// <returns></returns>
     public static IEnumerable<PortDescriptor> CreatePortDescriptors(FlowChartType flowChartType) {
       switch (flowChartType) {
         default:
         case FlowChartType.Start:
-          return new List<PortDescriptor>
-                   {
-                     new PortDescriptor {X = 15, Y = 15, Side = PortDirections.Any}
-                   };
+          return new List<PortDescriptor> { new() { X = 15, Y = 15, Side = PortSides.Any } };
         case FlowChartType.Operation:
-          return new List<PortDescriptor>
-                   {
-                     new PortDescriptor {Side = PortDirections.North},
-                     new PortDescriptor {Side = PortDirections.South}
-                   };
+          return new List<PortDescriptor> { new() { Side = PortSides.Top }, new() { Side = PortSides.Bottom } };
         case FlowChartType.Branch:
-          return new List<PortDescriptor>
-                   {
-                     new PortDescriptor {X = 30, Y = 0, Side = PortDirections.North, Capacity = 1, Cost = 0},
-                     new PortDescriptor {X = 30, Y = 30, Side = PortDirections.South, Capacity = 1, Cost = 0},
-                     new PortDescriptor {X = 60, Y = 15, Side = PortDirections.East, Capacity = 1, Cost = 0},
-                     new PortDescriptor {X = 0, Y = 15, Side = PortDirections.West, Capacity = 1, Cost = 0},
-                     new PortDescriptor {X = 30, Y = 0, Side = PortDirections.North, Cost = 1},
-                     new PortDescriptor {X = 30, Y = 30, Side = PortDirections.South, Cost = 1}
-                   };
+          return new List<PortDescriptor> {
+              new() {
+                  X = 30,
+                  Y = 0,
+                  Side = PortSides.Top,
+                  Capacity = 1,
+                  Cost = 0
+              },
+              new() {
+                  X = 30,
+                  Y = 30,
+                  Side = PortSides.Bottom,
+                  Capacity = 1,
+                  Cost = 0
+              },
+              new() {
+                  X = 60,
+                  Y = 15,
+                  Side = PortSides.Right,
+                  Capacity = 1,
+                  Cost = 0
+              },
+              new() {
+                  X = 0,
+                  Y = 15,
+                  Side = PortSides.Left,
+                  Capacity = 1,
+                  Cost = 0
+              },
+              new() { X = 30, Y = 0, Side = PortSides.Top, Cost = 1 },
+              new() { X = 30, Y = 30, Side = PortSides.Bottom, Cost = 1 }
+          };
         case FlowChartType.End:
-          return new List<PortDescriptor>
-                   {
-                     new PortDescriptor {X = 15, Y = 0, Side = PortDirections.North, Capacity = 1, Cost = 0},
-                     new PortDescriptor {X = 30, Y = 15, Side = PortDirections.East, Capacity = 1, Cost = 1},
-                     new PortDescriptor {X = 0, Y = 15, Side = PortDirections.West, Capacity = 1, Cost = 1},
-                     new PortDescriptor {X = 30, Y = 15, Side = PortDirections.East, Cost = 2},
-                     new PortDescriptor {X = 0, Y = 15, Side = PortDirections.West, Cost = 2}
-                   };
+          return new List<PortDescriptor> {
+              new() {
+                  X = 15,
+                  Y = 0,
+                  Side = PortSides.Top,
+                  Capacity = 1,
+                  Cost = 0
+              },
+              new() {
+                  X = 30,
+                  Y = 15,
+                  Side = PortSides.Right,
+                  Capacity = 1,
+                  Cost = 1
+              },
+              new() {
+                  X = 0,
+                  Y = 15,
+                  Side = PortSides.Left,
+                  Capacity = 1,
+                  Cost = 1
+              },
+              new() { X = 30, Y = 15, Side = PortSides.Right, Cost = 2 },
+              new() { X = 0, Y = 15, Side = PortSides.Left, Cost = 2 }
+          };
       }
     }
   }

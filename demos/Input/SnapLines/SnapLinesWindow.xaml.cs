@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -31,16 +31,15 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
-using yWorks.Controls.Input;
 using Demo.yFiles.Option.Handler;
 using Demo.yFiles.Toolkit;
 using yWorks.Controls;
-using yWorks.Graph;
+using yWorks.Controls.Input;
 
 namespace Demo.yFiles.Graph.Input.SnapLines
 {
   /// <summary>
-  /// Interaction logic for SnapLinesWindow
+  ///   Interaction logic for SnapLinesWindow
   /// </summary>
   public partial class SnapLinesWindow
   {
@@ -84,9 +83,8 @@ namespace Demo.yFiles.Graph.Input.SnapLines
 
     #region private fields
 
-    private OptionHandler handler;
     private GraphSnapContext snapContext;
-    private GridVisualCreator grid;
+    private GridRenderer grid;
     private GridInfo gridInfo;
     private GraphEditorInputMode graphEditorInputMode;
 
@@ -97,29 +95,21 @@ namespace Demo.yFiles.Graph.Input.SnapLines
       SetupOptions();
     }
 
-    private void OnLoaded(object source, EventArgs args){
-
-      snapContext = new GraphSnapContext();
-
+    private void OnLoaded(object source, EventArgs args) {
       // intialize input mode
-      graphEditorInputMode = new GraphEditorInputMode()
-                               {
-                                 AllowGroupingOperations = true,
-                                 OrthogonalEdgeEditingContext = new OrthogonalEdgeEditingContext(),
-                                 SnapContext = snapContext
-                               };
+      graphEditorInputMode = new GraphEditorInputMode();
       GraphControl.InputMode = graphEditorInputMode;
 
-      GraphControl.Graph.GetDecorator().EdgeDecorator.EdgeReconnectionPortCandidateProviderDecorator.SetImplementation(
-        edge => true, EdgeReconnectionPortCandidateProviders.AllNodeCandidates);
-
       // initialize grid
-      this.gridInfo = new GridInfo { HorizontalSpacing = 30, VerticalSpacing = 30};
-      grid = new GridVisualCreator(gridInfo);
-      GraphControl.BackgroundGroup.AddChild(grid);
+      gridInfo = new GridInfo { HorizontalSpacing = 30, VerticalSpacing = 30 };
+      grid = new GridRenderer();
+      var renderTree = GraphControl.RenderTree;
+      renderTree.CreateElement(renderTree.BackgroundGroup, gridInfo, grid);
 
-      snapContext.NodeGridConstraintProvider = new GridConstraintProvider<INode>(gridInfo);
-      snapContext.BendGridConstraintProvider = new GridConstraintProvider<IBend>(gridInfo);
+      snapContext = graphEditorInputMode.SnapContext;
+      snapContext.Enabled = true;
+      snapContext.NodeGridConstraintProvider = new GridConstraintProvider(gridInfo);
+      snapContext.BendGridConstraintProvider = new GridConstraintProvider(gridInfo);
 
       // initialize current values
       OnSnappingChanged(this, null);
@@ -130,8 +120,8 @@ namespace Demo.yFiles.Graph.Input.SnapLines
       GraphControl.ZoomChanged += delegate { UpdateGrid(); };
       GraphControl.ViewportChanged += delegate { UpdateGrid(); };
 
-      DemoStyles.InitDemoStyles(GraphControl.Graph);
-      
+      DemoStyles.InitDemoStyles(GraphControl.Graph, orthogonalEdgeEditing : true);
+
       InitializeGraph();
     }
 
@@ -171,9 +161,7 @@ namespace Demo.yFiles.Graph.Input.SnapLines
 
     #region Snapping Options
 
-    public OptionHandler Handler {
-      get { return handler; }
-    }
+    public OptionHandler Handler { get; private set; }
 
     private void SetupOptions() {
       SetupHandler();
@@ -185,8 +173,8 @@ namespace Demo.yFiles.Graph.Input.SnapLines
     }
 
     private void SetupHandler() {
-      handler = new OptionHandler(SnappingConfiguration);
-      OptionGroup currentGroup = handler.AddGroup(CollectSnapLinesGroup);
+      Handler = new OptionHandler(SnappingConfiguration);
+      var currentGroup = Handler.AddGroup(CollectSnapLinesGroup);
       currentGroup.AddBool(CollectNodePairSnapLines, true).PropertyChanged += OnSnappingChanged;
       currentGroup.AddBool(CollectNodePairCenterSnapLines, true).PropertyChanged += OnSnappingChanged;
       currentGroup.AddBool(CollectSameSizeSnapLines, true).PropertyChanged += OnSnappingChanged;
@@ -195,69 +183,90 @@ namespace Demo.yFiles.Graph.Input.SnapLines
       currentGroup.AddBool(CollectPortSnapLines, true).PropertyChanged += OnSnappingChanged;
       currentGroup.AddBool(OrthogonalMovement, false).PropertyChanged += OnSnappingChanged;
 
-      OptionGroup innerGroup = currentGroup.AddGroup(SnappingDistancesGroup);
+      var innerGroup = currentGroup.AddGroup(SnappingDistancesGroup);
       innerGroup.AddDouble(NodeToNode, 50).PropertyChanged += OnSnappingChanged;
       innerGroup.AddDouble(NodeToEdge, 30).PropertyChanged += OnSnappingChanged;
       innerGroup.AddDouble(EdgeToEdge, 40).PropertyChanged += OnSnappingChanged;
 
-      currentGroup = handler.AddGroup(OrthogonalSnappingGroup);
+      currentGroup = Handler.AddGroup(OrthogonalSnappingGroup);
       currentGroup.AddBool(OrthogonalPorts, true).PropertyChanged += OnSnappingChanged;
       currentGroup.AddBool(OrthogonalBends, true).PropertyChanged += OnSnappingChanged;
       currentGroup.AddBool(OrthogonalEdgeCreation, true).PropertyChanged += OnSnappingChanged;
       currentGroup.AddBool(OrthogonalEdgeEditing, false).PropertyChanged += OnSnappingChanged;
 
-      currentGroup = handler.AddGroup(SnappingElementsGroup);
+      currentGroup = Handler.AddGroup(SnappingElementsGroup);
       currentGroup.AddBool(SnapNodes, true).PropertyChanged += OnSnappingChanged;
       currentGroup.AddBool(SnapBends, true).PropertyChanged += OnSnappingChanged;
-      currentGroup.AddBool(SnapAdjacentBends, true).PropertyChanged += OnSnappingChanged;
       currentGroup.AddBool(SnapSegments, true).PropertyChanged += OnSnappingChanged;
 
-      currentGroup = handler.AddGroup(GridGroup);
-      currentGroup.AddOptionItem(
-          new CollectionOptionItem<GridSnapTypes>(GridSnapping,
-              new List<GridSnapTypes> { GridSnapTypes.All, GridSnapTypes.GridPoints, GridSnapTypes.Lines, GridSnapTypes.VerticalLines, GridSnapTypes.HorizontalLines, GridSnapTypes.None },
+      currentGroup = Handler.AddGroup(GridGroup);
+      currentGroup.AddOptionItem(new CollectionOptionItem<GridSnapTypes>(GridSnapping,
+          new List<GridSnapTypes> {
+              GridSnapTypes.All,
+              GridSnapTypes.GridPoints,
+              GridSnapTypes.Lines,
+              GridSnapTypes.VerticalLines,
+              GridSnapTypes.HorizontalLines,
               GridSnapTypes.None
-          )).PropertyChanged += OnSnappingChanged;
+          }, GridSnapTypes.None)).PropertyChanged += OnSnappingChanged;
       currentGroup.AddInt(GridHorizontalWidth, 50).PropertyChanged += OnGridHorizontalWidthChanged;
       currentGroup.AddInt(GridVerticalWidth, 50).PropertyChanged += OnGridVerticalWidthChanged;
       currentGroup.AddInt(GridSnapDistance, 10).PropertyChanged += OnGridSnapDistanceChanged;
     }
 
     private void OnSnappingChanged(object sender, PropertyChangedEventArgs e) {
-      snapContext.CollectNodePairCenterSnapLines = (bool)Handler.GetValue(CollectSnapLinesGroup, CollectNodePairCenterSnapLines);
-      snapContext.CollectNodePairSnapLines = (bool)Handler.GetValue(CollectSnapLinesGroup, CollectNodePairSnapLines);
-      snapContext.CollectNodeSizes = (bool) Handler.GetValue(SnappingElementsGroup, SnapNodes) && (bool) Handler.GetValue(CollectSnapLinesGroup, CollectSameSizeSnapLines);
-      snapContext.CollectNodeSnapLines = (bool)Handler.GetValue(CollectSnapLinesGroup, CollectNodeSnapLines);
-      snapContext.CollectEdgeSnapLines = (bool)Handler.GetValue(CollectSnapLinesGroup, CollectEdgeSnapLines);
-      snapContext.CollectPortSnapLines = (bool)Handler.GetValue(CollectSnapLinesGroup, CollectPortSnapLines);
-      
-      snapContext.NodeToNodeDistance = (double)Handler.GetValue(CollectSnapLinesGroup + "." + SnappingDistancesGroup, NodeToNode);
-      snapContext.NodeToEdgeDistance = (double)Handler.GetValue(CollectSnapLinesGroup + "." + SnappingDistancesGroup, NodeToEdge);
-      snapContext.EdgeToEdgeDistance = (double)Handler.GetValue(CollectSnapLinesGroup + "." + SnappingDistancesGroup, EdgeToEdge);
+      snapContext.CollectNodePairCenterSnapLines =
+          (bool) Handler.GetValue(CollectSnapLinesGroup, CollectNodePairCenterSnapLines);
+      snapContext.CollectNodePairSnapLines = (bool) Handler.GetValue(CollectSnapLinesGroup, CollectNodePairSnapLines);
+      snapContext.CollectNodeSizes = (bool) Handler.GetValue(SnappingElementsGroup, SnapNodes) &&
+          (bool) Handler.GetValue(CollectSnapLinesGroup, CollectSameSizeSnapLines);
+      snapContext.CollectNodeSnapReferences = (bool) Handler.GetValue(CollectSnapLinesGroup, CollectNodeSnapLines);
+      snapContext.CollectEdgeSnapReferences = (bool) Handler.GetValue(CollectSnapLinesGroup, CollectEdgeSnapLines);
+      snapContext.CollectPortSnapReferences = (bool) Handler.GetValue(CollectSnapLinesGroup, CollectPortSnapLines);
 
-      snapContext.SnapOrthogonalMovement = (bool)Handler.GetValue(CollectSnapLinesGroup, OrthogonalMovement);
+      snapContext.NodeDistance =
+          (double) Handler.GetValue(CollectSnapLinesGroup + "." + SnappingDistancesGroup, NodeToNode);
+      snapContext.NodeToEdgeDistance =
+          (double) Handler.GetValue(CollectSnapLinesGroup + "." + SnappingDistancesGroup, NodeToEdge);
+      snapContext.EdgeDistance =
+          (double) Handler.GetValue(CollectSnapLinesGroup + "." + SnappingDistancesGroup, EdgeToEdge);
 
-      snapContext.SnapPortAdjacentSegments = (bool)Handler.GetValue(OrthogonalSnappingGroup, OrthogonalPorts);
-      snapContext.SnapBendAdjacentSegments = (bool)Handler.GetValue(OrthogonalSnappingGroup, OrthogonalBends);
-      
-      snapContext.SnapNodesToSnapLines = (bool)Handler.GetValue(SnappingElementsGroup, SnapNodes);
-      snapContext.SnapBendsToSnapLines = (bool)Handler.GetValue(SnappingElementsGroup, SnapBends);
-      snapContext.SnapBendAdjacentSegments = (bool)Handler.GetValue(SnappingElementsGroup, SnapAdjacentBends);
-      snapContext.SnapSegmentsToSnapLines = (bool)Handler.GetValue(SnappingElementsGroup, SnapSegments);
+      var snapOrthogonalMovement = (bool) Handler.GetValue(CollectSnapLinesGroup, OrthogonalMovement)
+          ? SnappableItems.OrthogonalMovement
+          : SnappableItems.None;
 
-      snapContext.GridSnapType = (GridSnapTypes)Handler.GetValue(GridGroup, GridSnapping);
+      var snapPortAdjacentSegments = (bool) Handler.GetValue(OrthogonalSnappingGroup, OrthogonalPorts)
+          ? SnappableItems.PortAdjacentSegment
+          : SnappableItems.None;
+      var snapBendAdjacentSegments = (bool) Handler.GetValue(OrthogonalSnappingGroup, OrthogonalBends)
+          ? SnappableItems.BendAdjacentSegment
+          : SnappableItems.None;
+
+      var snapNodes = (bool) Handler.GetValue(SnappingElementsGroup, SnapNodes)
+          ? SnappableItems.Node
+          : SnappableItems.None;
+      var snapBends = (bool) Handler.GetValue(SnappingElementsGroup, SnapBends)
+          ? SnappableItems.Bend
+          : SnappableItems.None;
+      var snapOrthogonalSegments = (bool) Handler.GetValue(SnappingElementsGroup, SnapSegments)
+          ? SnappableItems.OrthogonalSegment
+          : SnappableItems.None;
+      snapContext.SnappableItems = snapOrthogonalMovement | snapPortAdjacentSegments | snapBendAdjacentSegments |
+          snapNodes | snapBends | snapOrthogonalSegments;
+
+      snapContext.GridSnapType = (GridSnapTypes) Handler.GetValue(GridGroup, GridSnapping);
 
       graphEditorInputMode.OrthogonalEdgeEditingContext.Enabled =
-        (bool)Handler.GetValue(OrthogonalSnappingGroup, OrthogonalEdgeEditing);
+          (bool) Handler.GetValue(OrthogonalSnappingGroup, OrthogonalEdgeEditing);
       graphEditorInputMode.CreateEdgeInputMode.OrthogonalEdgeCreation =
-          (bool)Handler.GetValue(OrthogonalSnappingGroup, OrthogonalEdgeCreation)
+          (bool) Handler.GetValue(OrthogonalSnappingGroup, OrthogonalEdgeCreation)
               ? OrthogonalEdgeEditingPolicy.Always
               : OrthogonalEdgeEditingPolicy.Never;
       UpdateGrid();
     }
 
     private void OnGridHorizontalWidthChanged(object sender, PropertyChangedEventArgs e) {
-      int width = (int)Handler.GetValue(GridGroup, GridHorizontalWidth);
+      var width = (int) Handler.GetValue(GridGroup, GridHorizontalWidth);
       if (gridInfo != null) {
         gridInfo.HorizontalSpacing = width;
       }
@@ -265,7 +274,7 @@ namespace Demo.yFiles.Graph.Input.SnapLines
     }
 
     private void OnGridVerticalWidthChanged(object sender, PropertyChangedEventArgs e) {
-      int width = (int)Handler.GetValue(GridGroup, GridVerticalWidth);
+      var width = (int) Handler.GetValue(GridGroup, GridVerticalWidth);
       if (gridInfo != null) {
         gridInfo.VerticalSpacing = width;
       }
@@ -273,7 +282,7 @@ namespace Demo.yFiles.Graph.Input.SnapLines
     }
 
     private void OnGridSnapDistanceChanged(object sender, PropertyChangedEventArgs e) {
-      int width = (int)Handler.GetValue(GridGroup, GridSnapDistance);
+      var width = (int) Handler.GetValue(GridGroup, GridSnapDistance);
       snapContext.GridSnapDistance = width;
     }
 
@@ -282,16 +291,16 @@ namespace Demo.yFiles.Graph.Input.SnapLines
     #region read initial graph
 
     /// <summary>
-    /// Reads the graph from a file with given file name.
+    ///   Reads the graph from a file with the given file name.
     /// </summary>
     protected virtual void ReadGraph(string filename) {
-      using(var streamReader = new StreamReader(filename)) {
+      using (var streamReader = new StreamReader(filename)) {
         ReadGraph(streamReader);
       }
     }
 
     /// <summary>
-    /// Reads the graph from a given Reader instance.
+    ///   Reads the graph from a given Reader instance.
     /// </summary>
     protected virtual void ReadGraph(TextReader reader) {
       GraphControl.ImportFromGraphML(reader);
@@ -299,18 +308,6 @@ namespace Demo.yFiles.Graph.Input.SnapLines
 
     #endregion
 
-    private GraphControl GraphControl {
-      get {
-        return graphControl;
-      }
-    }
-  }
-
-
-  public class MovePortHandleProvider : IEdgePortHandleProvider
-  {
-    public IHandle GetHandle(IInputModeContext context, IEdge edge, bool sourceHandle) {
-      return sourceHandle ? edge.SourcePort.Lookup<IHandle>() : edge.TargetPort.Lookup<IHandle>();
-    }
+    private GraphControl GraphControl => graphControl;
   }
 }

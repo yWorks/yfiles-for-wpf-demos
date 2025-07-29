@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -28,64 +28,64 @@
  ***************************************************************************/
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
-using System.Linq;
 using System.Reflection;
 using System.Windows.Markup;
 using yWorks.Annotations;
 using yWorks.Geometry;
 using yWorks.Graph;
-using yWorks.GraphML;
 using yWorks.Graph.LabelModels;
+using yWorks.GraphML;
 using yWorks.Utils;
 
-namespace Demo.yFiles.Graph.Bpmn.Styles {
-
+namespace Demo.yFiles.Graph.Bpmn.Styles
+{
   /// <summary>
-  /// A label model for nodes using a <see cref="ChoreographyNodeStyle"/> that position labels on the participant or task name bands.
+  ///   A label model for nodes using a <see cref="ChoreographyNodeStyle"/> that positions labels on the participant or task
+  ///   name bands.
   /// </summary>
   [Obfuscation(StripAfterObfuscation = false, Exclude = true, ApplyToMembers = false)]
-  public class ChoreographyLabelModel : ILabelModel, ILabelModelParameterProvider {
-
+  public class ChoreographyLabelModel : ILabelModel
+  {
     #region Initialize static fields
 
     /// <summary>
-    /// The <see cref="ChoreographyLabelModel"/> singleton.
+    ///   The <see cref="ChoreographyLabelModel"/> singleton.
     /// </summary>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     public static readonly ChoreographyLabelModel Instance;
 
     /// <summary>
-    /// A singleton for labels placed centered on the task name band.
+    ///   A singleton for labels placed centered on the task name band.
     /// </summary>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
-    public static readonly ILabelModelParameter TaskNameBand;
+    public static readonly TaskNameBandParameter TaskNameBand;
 
     /// <summary>
-    /// A singleton for message labels placed north of the node.
+    ///   A singleton for message labels placed at the top of the node.
     /// </summary>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
-    public static readonly ILabelModelParameter NorthMessage;
+    public static readonly MessageParameter TopMessage;
 
     /// <summary>
-    /// A singleton for message labels placed south of the node.
+    ///   A singleton for message labels placed at the bottom of the node.
     /// </summary>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
-    public static readonly ILabelModelParameter SouthMessage;
+    public static readonly MessageParameter BottomMessage;
 
-    //private static readonly InteriorLabelModel interiorModel = new InteriorLabelModel();
-    private static readonly InteriorStretchLabelModel interiorStretchModel = new InteriorStretchLabelModel {Insets = new InsetsD(3, 3, 3, 3)};
-    private static readonly SimpleNode dummyNode = new SimpleNode();
-    private static readonly SimpleLabel dummyLabel = new SimpleLabel(dummyNode, "", InteriorStretchLabelModel.Center);
+    //private static readonly InteriorNodeLabelModel interiorModel = new InteriorNodeLabelModel();
+    private static readonly StretchNodeLabelModel interiorStretchModel = new() { Padding = new InsetsD(3, 3, 3, 3) };
+
+    private static readonly SimpleNode dummyNode = new();
+    private static readonly SimpleLabel dummyLabel = new(dummyNode, "", StretchNodeLabelModel.Center);
 
     static ChoreographyLabelModel() {
       Instance = new ChoreographyLabelModel();
       TaskNameBand = new TaskNameBandParameter();
-      NorthMessage = new MessageParameter {North = true};
-      SouthMessage = new MessageParameter {North = false};
+      TopMessage = new MessageParameter(true);
+      BottomMessage = new MessageParameter(false);
     }
 
     #endregion
@@ -93,43 +93,42 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
     ///<inheritdoc/>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     public IOrientedRectangle GetGeometry(ILabel label, ILabelModelParameter parameter) {
-      if (parameter is ChoreographyParameter && label.Owner is INode && ((INode) label.Owner).Style is ChoreographyNodeStyle) {
-        return ((ChoreographyParameter) parameter).GetGeometry(label);
-      } else if (label.Owner is INode) {
-        var layout = ((INode) label.Owner).Layout;
-        return new OrientedRectangle(layout.X, layout.Y + layout.Height, layout.Width, layout.Height);
+      if (parameter is not ChoreographyParameter choreographyParameter) {
+        throw new ArgumentException("The parameter is not supported by this model.", nameof(parameter));
       }
-      return OrientedRectangle.Empty;
+      if (!DefaultGraph.HasOwner(label)) {
+        throw new ArgumentException("The label has no valid owner.", nameof(label));
+      }
+      if (label.Owner is not INode node) {
+        throw new ArgumentException("This model only supports node labels.", nameof(label));
+      }
+      if (node.Style is ChoreographyNodeStyle) {
+        return choreographyParameter.GetGeometry(label);
+      }
+      var layout = node.Layout;
+      return new OrientedRectangle(layout.X, layout.Y + layout.Height, layout.Width, layout.Height);
     }
 
     /// <summary>
-    /// Returns <see cref="TaskNameBand"/> as default parameter.
+    ///   Creates the parameter for the participant at the given position.
     /// </summary>
-    /// <returns></returns>
-    [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
-    public ILabelModelParameter CreateDefaultParameter() {
-      return TaskNameBand;
-    }
-
-    /// <summary>
-    /// Creates the parameter for the participant at the given position.
-    /// </summary>
-    /// <param name="top">Whether the index refers to <see cref="ChoreographyNodeStyle.TopParticipants"/> or <see cref="ChoreographyNodeStyle.BottomParticipants"/>.</param>
+    /// <param name="top">
+    ///   Whether the index refers to <see cref="ChoreographyNodeStyle.TopParticipants"/> or
+    ///   <see cref="ChoreographyNodeStyle.BottomParticipants"/>.
+    /// </param>
     /// <param name="index">The index of the participant band the label shall be placed in.</param>
-    /// <returns></returns>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
-    public ILabelModelParameter CreateParticipantParameter(bool top, int index) {
+    public ParticipantParameter CreateParticipantParameter(bool top, int index) {
       return new ParticipantParameter(top, index);
     }
 
     /// <summary>
-    /// Determines, if these two parameters are equal.
+    ///   Determines if these two parameters are equal.
     /// </summary>
-    /// <returns></returns>
     public static bool GetEqualParameters(ILabelModelParameter parameter1, ILabelModelParameter parameter2) {
       if (parameter1 is ParticipantParameter && parameter2 is ParticipantParameter) {
-        if (((ParticipantParameter) parameter1).index == ((ParticipantParameter) parameter2).index && 
-            ((ParticipantParameter) parameter1).top == ((ParticipantParameter) parameter2).top) {
+        if (((ParticipantParameter) parameter1).Index == ((ParticipantParameter) parameter2).Index &&
+            ((ParticipantParameter) parameter1).Top == ((ParticipantParameter) parameter2).Top) {
           return true;
         }
       }
@@ -139,38 +138,28 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
       }
 
       if (parameter1 is MessageParameter && parameter2 is MessageParameter) {
-        if (((MessageParameter) parameter1).North == ((MessageParameter) parameter2).North) {
+        if (((MessageParameter) parameter1).Top == ((MessageParameter) parameter2).Top) {
           return true;
         }
       }
-      
+
       return false;
     }
 
     ///<inheritdoc/>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
-    public ILookup GetContext(ILabel label, ILabelModelParameter parameter) {
-      return InteriorLabelModel.Center.Model.GetContext(label, parameter);
+    public ILookup GetContext(ILabel label) {
+      return new ChoreographyLabelModelLookup(label, this);
     }
 
-    ///<inheritdoc/>
+    /// <summary>
+    ///   Returns an enumerator over a set of possible <see cref="ILabelModelParameter"/>
+    ///   instances that can be used for the given label.
+    /// </summary>
+    /// <param name="label">The label instance to use.</param>
+    /// <returns>A possibly empty enumerator over a set of label model parameters.</returns>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
-    public object Lookup(Type type) {
-      if (type == typeof(ILabelModelParameterProvider)) {
-        return this;
-      }
-      if (type == typeof(ILabelModelParameterFinder)) {
-        return DefaultLabelModelParameterFinder.Instance;
-      }
-      if (type == typeof(ILabelCandidateDescriptorProvider)) {
-        return ConstantLabelCandidateDescriptorProvider.InternalDescriptorProvider;
-      }
-      return null;
-    }
-
-    /// <inheritdoc/>
-    [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
-    public IEnumerable<ILabelModelParameter> GetParameters(ILabel label, ILabelModel model) {
+    public IEnumerable<ILabelModelParameter> GetParameters(ILabel label) {
       var parameters = new List<ILabelModelParameter>();
       var node = label.Owner as INode;
       if (node != null && node.Style is ChoreographyNodeStyle) {
@@ -182,8 +171,8 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
         for (var i = 0; i < nodeStyle.BottomParticipants.Count; i++) {
           parameters.Add(CreateParticipantParameter(false, i));
         }
-        parameters.Add(NorthMessage);
-        parameters.Add(SouthMessage);
+        parameters.Add(TopMessage);
+        parameters.Add(BottomMessage);
       }
 
       return parameters;
@@ -211,13 +200,13 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
 
               if (parameter is ParticipantParameter) {
                 var pp = parameter as ParticipantParameter;
-                if (!pp.top) {
+                if (!pp.Top) {
                   index += topParticipantCount;
                 }
-                index += pp.index;
+                index += pp.Index;
               } else {
                 index += topParticipantCount + bottomParticipantCount;
-                if (!((MessageParameter) parameter).North) {
+                if (!((MessageParameter) parameter).Top) {
                   index++;
                 }
               }
@@ -241,7 +230,7 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
               return CreateParticipantParameter(false, i);
             }
             i -= bottomParticipantCount;
-            return i == 0 ? NorthMessage : SouthMessage;
+            return i == 0 ? TopMessage : BottomMessage;
           }
         }
       }
@@ -250,31 +239,28 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
 
     #region Parameters
 
-    private abstract class ChoreographyParameter : ILabelModelParameter
+    public abstract class ChoreographyParameter : ILabelModelParameter
     {
-      public ILabelModel Model { get { return Instance; } }
+      public ILabelModel Model => Instance;
 
       public abstract IOrientedRectangle GetGeometry(ILabel label);
-
-      public bool Supports(ILabel label) {
-        return label.Owner is INode;
-      }
 
       public abstract object Clone();
     }
 
     [TypeConverter(typeof(ParticipantParameterConverter))]
-    private sealed class ParticipantParameter : ChoreographyParameter
+    public sealed class ParticipantParameter : ChoreographyParameter
     {
-      private static readonly InteriorLabelModel ilm = new InteriorLabelModel { Insets = new InsetsD(3) };
-      private static readonly ILabelModelParameter placement = ilm.CreateParameter(InteriorLabelModel.Position.North);
+      private static readonly InteriorNodeLabelModel ilm = new() { Padding = new InsetsD(3) };
+      private static readonly ILabelModelParameter placement = ilm.CreateParameter(InteriorNodeLabelModel.Position.Top);
 
-      internal readonly int index;
-      internal readonly bool top;
+      public int Index { get; }
+
+      public bool Top { get; }
 
       public ParticipantParameter(bool top, int index) {
-        this.top = top;
-        this.index = index;
+        Top = top;
+        Index = index;
       }
 
       public override IOrientedRectangle GetGeometry(ILabel label) {
@@ -286,18 +272,19 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
           return OrientedRectangle.Empty;
         }
         var style = (ChoreographyNodeStyle) node.Style;
-        dummyNode.Layout = style.GetParticipantBandBounds(node, index, top);
+        dummyNode.Layout = style.GetParticipantBandBounds(node, Index, Top);
         dummyLabel.PreferredSize = label.PreferredSize;
         return ilm.GetGeometry(dummyLabel, placement);
       }
-      
-    public override object Clone() {
+
+      public override object Clone() {
         return this;
       }
     }
 
     /// <xamlhelper/>
-    public sealed class ParticipantParameterConverter : TypeConverter {
+    public sealed class ParticipantParameterConverter : TypeConverter
+    {
       /// <xamlhelper/>
       public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType) {
         if (destinationType == typeof(MarkupExtension)) {
@@ -307,59 +294,66 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
       }
 
       /// <xamlhelper/>
-      public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value,
-                                       Type destinationType) {
+      public override object ConvertTo(
+          ITypeDescriptorContext context,
+          CultureInfo culture,
+          object value,
+          Type destinationType) {
         var participantParameter = value as ParticipantParameter;
         if (destinationType == typeof(MarkupExtension) && participantParameter != null) {
-          return new ParticipantLabelModelParameterExtension
-          {
-            Index = participantParameter.index,
-            Top = participantParameter.top
+          return new ParticipantLabelModelParameterExtension {
+              Index = participantParameter.Index, Top = participantParameter.Top
           };
         }
         return base.ConvertTo(context, culture, value, destinationType);
       }
     }
 
-    [SingletonSerialization(ContainerTypes = new[] { typeof(ChoreographyLabelModel) })]
-    private sealed class TaskNameBandParameter : ChoreographyParameter
+    [GraphML(SingletonContainers = new[] { typeof(ChoreographyLabelModel) })]
+    public sealed class TaskNameBandParameter : ChoreographyParameter
     {
       public override IOrientedRectangle GetGeometry(ILabel label) {
         if (!(label.Owner is INode)) {
           return OrientedRectangle.Empty;
         }
-        var node = (INode)label.Owner;
+        var node = (INode) label.Owner;
         if (!(node.Style is ChoreographyNodeStyle)) {
           return OrientedRectangle.Empty;
         }
-        var style = (ChoreographyNodeStyle)node.Style;
+        var style = (ChoreographyNodeStyle) node.Style;
         var bandBounds = style.GetTaskNameBandBounds(node);
         dummyNode.Layout = bandBounds;
         dummyLabel.PreferredSize = label.PreferredSize;
-        return interiorStretchModel.GetGeometry(dummyLabel, InteriorStretchLabelModel.Center);
+        return interiorStretchModel.GetGeometry(dummyLabel, StretchNodeLabelModel.Center);
       }
 
       public override object Clone() {
         return this;
       }
-    }    
-    
-    [SingletonSerialization(ContainerTypes = new[] { typeof(ChoreographyLabelModel) })]
-    private sealed class MessageParameter : ChoreographyParameter
+    }
+
+    [GraphML(SingletonContainers = new[] { typeof(ChoreographyLabelModel) })]
+    public sealed class MessageParameter : ChoreographyParameter
     {
-      private static readonly ILabelModelParameter northParameter;
-      private static readonly ILabelModelParameter southParameter;
+      private static readonly ILabelModelParameter topParameter;
+      private static readonly ILabelModelParameter bottomParameter;
 
       static MessageParameter() {
-        var slm = new SandwichLabelModel { YOffset = 32 };
-        northParameter = slm.CreateNorthParameter();
-        southParameter = slm.CreateSouthParameter();
+        var sandwichModel = new CompositeLabelModel();
+        var exteriorModel = new ExteriorNodeLabelModel { Margins = new InsetsD(32) };
+        topParameter = sandwichModel.AddParameter(exteriorModel.CreateParameter(ExteriorNodeLabelModel.Position.Top));
+        bottomParameter =
+            sandwichModel.AddParameter(exteriorModel.CreateParameter(ExteriorNodeLabelModel.Position.Bottom));
       }
 
-      public bool North { get; set; }
+      public MessageParameter(bool top) {
+        Top = top;
+      }
+
+      public bool Top { get; }
 
       public override IOrientedRectangle GetGeometry(ILabel label) {
-        var parameter = North ? northParameter : southParameter;
+        var parameter = Top ? topParameter : bottomParameter;
         return parameter.Model.GetGeometry(label, parameter);
       }
 
@@ -369,14 +363,38 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
     }
 
     #endregion
+
+    private sealed class ChoreographyLabelModelLookup : ILookup, ILabelModelParameterProvider
+    {
+      private readonly ILabel label;
+      private readonly ChoreographyLabelModel model;
+
+      public ChoreographyLabelModelLookup(ILabel label, ChoreographyLabelModel model) {
+        this.label = label;
+        this.model = model;
+      }
+
+      public object Lookup(Type type) {
+        if (type == typeof(ILabelModelParameterProvider)) {
+          return this;
+        }
+        return InteriorNodeLabelModel.Center.Model.GetContext(label).Lookup(type);
+      }
+
+      /// <inheritdoc/>
+      [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
+      public IEnumerable<ILabelModelParameter> GetParameters() {
+        return model.GetParameters(label);
+      }
+    }
   }
 
   /// <xamlhelper/>
   [EditorBrowsable(EditorBrowsableState.Advanced)]
   [MarkupExtensionReturnType(typeof(ILabelModelParameter))]
   [Obfuscation(StripAfterObfuscation = false, Exclude = true, ApplyToMembers = true)]
-  public class ParticipantLabelModelParameterExtension : MarkupExtension {
-
+  public class ParticipantLabelModelParameterExtension : MarkupExtension
+  {
     /// <xamlhelper/>
     public int Index { get; set; }
 

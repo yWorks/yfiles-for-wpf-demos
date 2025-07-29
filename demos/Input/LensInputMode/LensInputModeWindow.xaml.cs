@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -36,7 +36,7 @@ using yWorks.Graph;
 namespace Demo.yFiles.Graph.Input.LensInputMode
 {
   /// <summary>
-  /// Shows how to use a special LensInputMode to magnify the currently hovered over part of the graph.
+  /// Shows how to use a special LensInputMode to magnify the currently hovered-over part of the graph.
   /// </summary>
   public partial class LensInputModeWindow
   {
@@ -110,7 +110,7 @@ namespace Demo.yFiles.Graph.Input.LensInputMode
     }
 
     private void SizePresetChanged(object sender, RoutedPropertyChangedEventArgs<double> e) {
-      lensInputMode.Size = new Size(e.NewValue, e.NewValue);
+      lensInputMode.Size = new SizeD(e.NewValue, e.NewValue);
     }
 
     private void DisableProjection(object sender, RoutedEventArgs e) {

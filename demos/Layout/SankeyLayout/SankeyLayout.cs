@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -28,72 +28,57 @@
  ***************************************************************************/
 
 using SankeyLayout;
-using yWorks.Controls;
+using yWorks.Graph;
 using yWorks.Layout;
-using yWorks.Layout.Hierarchic;
-using yWorks.Layout.Labeling;
+using yWorks.Layout.Hierarchical;
 
 namespace Demo.yFiles.Layout.Sankey
 {
   public class SankeyLayout
   {
-    private readonly GraphControl graphControl;
-
-    public SankeyLayout(GraphControl graphControl) {
-      this.graphControl = graphControl;
-    }
-
-    public HierarchicLayout ConfigureHierarchicLayout(bool fromSketchMode) {
-      var hierarchicLayout = new HierarchicLayout
-      {
-        LayoutOrientation = LayoutOrientation.LeftToRight,
-        LayoutMode = fromSketchMode ? LayoutMode.Incremental : LayoutMode.FromScratch,
-        NodeToNodeDistance = 30,
-        BackLoopRouting = true,
-        EdgeLayoutDescriptor =
-        {
-          MinimumFirstSegmentLength = 120,
-          MinimumLastSegmentLength = 120,
-        },
+    public HierarchicalLayout ConfigureHierarchicalLayout(bool fromSketchMode) {
+      var hierarchicalLayout = new HierarchicalLayout {
+          LayoutOrientation = LayoutOrientation.LeftToRight,
+          FromSketchMode = fromSketchMode,
+          NodeDistance = 30,
+          DefaultEdgeDescriptor = {
+              MinimumFirstSegmentLength = 120,
+              MinimumLastSegmentLength = 120,
+              RoutingStyleDescriptor = new RoutingStyleDescriptor(RoutingStyle.Polyline),
+              BackLoopRouting = true
+          }
       };
 
-      // a port border gap ratio of zero means that ports can be placed directly on the corners of the nodes
-      var portBorderRatio = 1;
-      hierarchicLayout.NodeLayoutDescriptor.PortBorderGapRatios = portBorderRatio;
-      // configures the generic labeling algorithm which produces more compact results, here
-      var genericLabeling = (GenericLabeling) hierarchicLayout.Labeling;
-      genericLabeling.ReduceAmbiguity = false;
-      genericLabeling.PlaceNodeLabels = false;
-      genericLabeling.PlaceEdgeLabels = true;
-      hierarchicLayout.LabelingEnabled = true;
+      // a border gap to port gap ratio of zero means that ports can be placed directly on the corners of the nodes
+      var borderToPortGapRatio = 1;
+      hierarchicalLayout.DefaultNodeDescriptor.BorderToPortGapRatio = borderToPortGapRatio;
+      // configures the hierarchical layout to use the generic labeling algorithm which produces more compact results
+      hierarchicalLayout.EdgeLabelPlacement = EdgeLabelPlacement.Generic;
 
       // for Sankey diagrams, the nodes should be adjusted to the incoming/outgoing flow (enlarged if necessary)
       // -> use NodeResizingStage for that purpose
-      var nodeResizingStage = new NodeResizingStage(hierarchicLayout);
-      nodeResizingStage.LayoutOrientation = hierarchicLayout.LayoutOrientation;
-      nodeResizingStage.PortBorderGapRatio = portBorderRatio;
-      hierarchicLayout.PrependStage(nodeResizingStage);
+      var nodeResizingStage = new NodeResizingStage(hierarchicalLayout);
+      nodeResizingStage.LayoutOrientation = hierarchicalLayout.LayoutOrientation;
+      nodeResizingStage.PortBorderGapRatio = borderToPortGapRatio;
+      hierarchicalLayout.LayoutStages.Prepend(nodeResizingStage);
 
-      return hierarchicLayout;
+      return hierarchicalLayout;
     }
 
-    public LayoutData CreateHierarchicLayoutData() {
+    public LayoutData<INode, IEdge, ILabel, ILabel> CreateHierarchicalLayoutData() {
       // create the layout data
-      return new HierarchicLayoutData
-      {
-        // maps each edge with its thickness so that the layout algorithm takes the edge thickness under consideration
-        EdgeThickness = { Delegate = edge => ((CustomTag)edge.Tag).thickness },
-        // since orientation is LEFT_TO_RIGHT, we add port constraints so that the edges leave the source node at its
-        // right side and enter the target node at its left side
-        SourcePortConstraints = { Delegate = edge => PortConstraint.Create(PortSide.East, false) },
-        TargetPortConstraints = { Delegate = edge => PortConstraint.Create(PortSide.West, false) },
-        EdgeLabelPreferredPlacement =
-        {
-          Constant = new PreferredPlacementDescriptor
-          {
-            PlaceAlongEdge = LabelPlacements.AtSource
+      return new HierarchicalLayoutData<INode, IEdge, IModelItem, ILabel, ILabel> {
+          // maps each edge with its thickness so that the layout algorithm takes the edge thickness under consideration
+          EdgeThickness = { MapperFunction = edge => ((CustomTag) edge.Tag).thickness },
+          // since orientation is LEFT_TO_RIGHT, we add port constraints so that the edges leave the source node at its
+          // right side and enter the target node at its left side
+          Ports = {
+              SourcePortCandidates = { MapperFunction = edge => new EdgePortCandidates().AddFreeCandidate(PortSides.Right) },
+              TargetPortCandidates = { MapperFunction = edge => new EdgePortCandidates().AddFreeCandidate(PortSides.Left) }
+          },
+          EdgeLabelPreferredPlacements = {
+              Constant = new EdgeLabelPreferredPlacement { PlacementAlongEdge = LabelAlongEdgePlacements.AtSource }
           }
-        }
       };
     }
   }

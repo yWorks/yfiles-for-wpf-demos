@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--Created by yFiles WPF 3.0-->
-<graphml xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/3.0/xaml" xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/3.0" xmlns:y="http://www.yworks.com/xml/yfiles-common/3.0" xmlns:bpmn="http://www.yworks.com/xml/yfiles-bpmn/1.0" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml.wpf/2.0/ygraphml.xsd " xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://graphml.graphdrawing.org/xmlns">
+<!--Created by yFiles WPF 4.0-->
+<graphml xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/4.0/xaml" xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/3.0" xmlns:y="http://www.yworks.com/xml/yfiles-common/3.0"  xmlns:yx="http://www.yworks.com/xml/yfiles-common/4.0" xmlns:bpmn="http://www.yworks.com/xml/yfiles-bpmn/3.0" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml.wpf/2.0/ygraphml.xsd " xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://graphml.graphdrawing.org/xmlns">
   <key id="d0" attr.type="boolean" attr.name="Expanded" for="node" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/folding/Expanded">
     <default>true</default>
   </key>
@@ -27,7 +27,7 @@
   <key id="d13" attr.name="SharedData" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/SharedData" />
   <data key="d13">
     <y:SharedData>
-      <ywpf:Typeface xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/3.0/xaml" x:Key="1" />
+      <ywpf:Typeface xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/4.0/xaml" x:Key="1" />
       <bpmn:BpmnEdgeStyle x:Key="2" />
     </y:SharedData>
   </data>
@@ -56,14 +56,14 @@
             <y:Label.Text><![CDATA[Identify
 Demand]]></y:Label.Text>
             <y:Label.LayoutParameter>
-              <y:InteriorLabelModelParameter Position="Center">
-                <y:InteriorLabelModelParameter.Model>
-                  <y:InteriorLabelModel />
-                </y:InteriorLabelModelParameter.Model>
-              </y:InteriorLabelModelParameter>
+              <yx:InteriorNodeLabelModelParameter Position="Center">
+                <yx:InteriorNodeLabelModelParameter.Model>
+                  <yx:InteriorNodeLabelModel />
+                </yx:InteriorNodeLabelModelParameter.Model>
+              </yx:InteriorNodeLabelModelParameter>
             </y:Label.LayoutParameter>
             <y:Label.Style>
-              <ywpf:DefaultLabelStyle Typeface="{y:GraphMLReference 1}" TextSize="10" />
+              <ywpf:LabelStyle Typeface="{y:GraphMLReference 1}" TextSize="10" />
             </y:Label.Style>
           </y:Label>
         </x:List>
@@ -93,14 +93,14 @@ Demand]]></y:Label.Text>
           <y:Label PreferredSize="55,12">
             <y:Label.Text><![CDATA[Obtain Offer]]></y:Label.Text>
             <y:Label.LayoutParameter>
-              <y:InteriorLabelModelParameter Position="NorthWest">
-                <y:InteriorLabelModelParameter.Model>
-                  <y:InteriorLabelModel Insets="10" />
-                </y:InteriorLabelModelParameter.Model>
-              </y:InteriorLabelModelParameter>
+              <yx:InteriorNodeLabelModelParameter Position="TopLeft">
+                <yx:InteriorNodeLabelModelParameter.Model>
+                  <yx:InteriorNodeLabelModel Padding="10" />
+                </yx:InteriorNodeLabelModelParameter.Model>
+              </yx:InteriorNodeLabelModelParameter>
             </y:Label.LayoutParameter>
             <y:Label.Style>
-              <ywpf:DefaultLabelStyle Typeface="{y:GraphMLReference 1}" TextSize="10" />
+              <ywpf:LabelStyle Typeface="{y:GraphMLReference 1}" TextSize="10" />
             </y:Label.Style>
           </y:Label>
         </x:List>
@@ -132,14 +132,14 @@ Demand]]></y:Label.Text>
                 <y:Label.Text><![CDATA[Select
 Supplier]]></y:Label.Text>
                 <y:Label.LayoutParameter>
-                  <y:InteriorLabelModelParameter Position="Center">
-                    <y:InteriorLabelModelParameter.Model>
-                      <y:InteriorLabelModel />
-                    </y:InteriorLabelModelParameter.Model>
-                  </y:InteriorLabelModelParameter>
+                  <yx:InteriorNodeLabelModelParameter Position="Center">
+                    <yx:InteriorNodeLabelModelParameter.Model>
+                      <yx:InteriorNodeLabelModel />
+                    </yx:InteriorNodeLabelModelParameter.Model>
+                  </yx:InteriorNodeLabelModelParameter>
                 </y:Label.LayoutParameter>
                 <y:Label.Style>
-                  <ywpf:DefaultLabelStyle Typeface="{y:GraphMLReference 1}" TextSize="10" />
+                  <ywpf:LabelStyle Typeface="{y:GraphMLReference 1}" TextSize="10" />
                 </y:Label.Style>
               </y:Label>
             </x:List>
@@ -169,14 +169,14 @@ Supplier]]></y:Label.Text>
                 <y:Label.Text><![CDATA[Request
 Offer]]></y:Label.Text>
                 <y:Label.LayoutParameter>
-                  <y:InteriorLabelModelParameter Position="Center">
-                    <y:InteriorLabelModelParameter.Model>
-                      <y:InteriorLabelModel />
-                    </y:InteriorLabelModelParameter.Model>
-                  </y:InteriorLabelModelParameter>
+                  <yx:InteriorNodeLabelModelParameter Position="Center">
+                    <yx:InteriorNodeLabelModelParameter.Model>
+                      <yx:InteriorNodeLabelModel />
+                    </yx:InteriorNodeLabelModelParameter.Model>
+                  </yx:InteriorNodeLabelModelParameter>
                 </y:Label.LayoutParameter>
                 <y:Label.Style>
-                  <ywpf:DefaultLabelStyle Typeface="{y:GraphMLReference 1}" TextSize="10" />
+                  <ywpf:LabelStyle Typeface="{y:GraphMLReference 1}" TextSize="10" />
                 </y:Label.Style>
               </y:Label>
             </x:List>
@@ -206,14 +206,14 @@ Offer]]></y:Label.Text>
                 <y:Label.Text><![CDATA[Offer
 received]]></y:Label.Text>
                 <y:Label.LayoutParameter>
-                  <y:ExteriorLabelModelParameter Position="North">
-                    <y:ExteriorLabelModelParameter.Model>
-                      <y:ExteriorLabelModel />
-                    </y:ExteriorLabelModelParameter.Model>
-                  </y:ExteriorLabelModelParameter>
+                  <yx:ExteriorNodeLabelModelParameter Position="Top">
+                    <yx:ExteriorNodeLabelModelParameter.Model>
+                      <yx:ExteriorNodeLabelModel />
+                    </yx:ExteriorNodeLabelModelParameter.Model>
+                  </yx:ExteriorNodeLabelModelParameter>
                 </y:Label.LayoutParameter>
                 <y:Label.Style>
-                  <ywpf:DefaultLabelStyle Typeface="{y:GraphMLReference 1}" TextSize="10" />
+                  <ywpf:LabelStyle Typeface="{y:GraphMLReference 1}" TextSize="10" />
                 </y:Label.Style>
               </y:Label>
             </x:List>
@@ -259,14 +259,14 @@ received]]></y:Label.Text>
               <y:Label PreferredSize="54,12">
                 <y:Label.Text><![CDATA[Check Offer]]></y:Label.Text>
                 <y:Label.LayoutParameter>
-                  <y:InteriorLabelModelParameter Position="Center">
-                    <y:InteriorLabelModelParameter.Model>
-                      <y:InteriorLabelModel />
-                    </y:InteriorLabelModelParameter.Model>
-                  </y:InteriorLabelModelParameter>
+                  <yx:InteriorNodeLabelModelParameter Position="Center">
+                    <yx:InteriorNodeLabelModelParameter.Model>
+                      <yx:InteriorNodeLabelModel />
+                    </yx:InteriorNodeLabelModelParameter.Model>
+                  </yx:InteriorNodeLabelModelParameter>
                 </y:Label.LayoutParameter>
                 <y:Label.Style>
-                  <ywpf:DefaultLabelStyle Typeface="{y:GraphMLReference 1}" TextSize="10" />
+                  <ywpf:LabelStyle Typeface="{y:GraphMLReference 1}" TextSize="10" />
                 </y:Label.Style>
               </y:Label>
             </x:List>
@@ -353,14 +353,14 @@ received]]></y:Label.Text>
             <y:Label.Text><![CDATA[Place
 Order]]></y:Label.Text>
             <y:Label.LayoutParameter>
-              <y:InteriorLabelModelParameter Position="Center">
-                <y:InteriorLabelModelParameter.Model>
-                  <y:InteriorLabelModel />
-                </y:InteriorLabelModelParameter.Model>
-              </y:InteriorLabelModelParameter>
+              <yx:InteriorNodeLabelModelParameter Position="Center">
+                <yx:InteriorNodeLabelModelParameter.Model>
+                  <yx:InteriorNodeLabelModel />
+                </yx:InteriorNodeLabelModelParameter.Model>
+              </yx:InteriorNodeLabelModelParameter>
             </y:Label.LayoutParameter>
             <y:Label.Style>
-              <ywpf:DefaultLabelStyle Typeface="{y:GraphMLReference 1}" TextSize="10" />
+              <ywpf:LabelStyle Typeface="{y:GraphMLReference 1}" TextSize="10" />
             </y:Label.Style>
           </y:Label>
         </x:List>

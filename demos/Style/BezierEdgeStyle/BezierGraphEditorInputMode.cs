@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -32,15 +32,15 @@ using System.Linq;
 using yWorks.Controls.Input;
 using yWorks.Geometry;
 using yWorks.Graph;
-using yWorks.Utils;
 
 namespace Demo.yFiles.Graph.BezierEdgeStyle {
   internal sealed class BezierGraphEditorInputMode : GraphEditorInputMode
   {
-    private readonly BezierEdgeStyleWindow bezierEdgeStyleWindow;
-
-    public BezierGraphEditorInputMode(BezierEdgeStyleWindow bezierEdgeStyleWindow) {
-      this.bezierEdgeStyleWindow = bezierEdgeStyleWindow;
+    public BezierGraphEditorInputMode() {
+      this.CreateBendInputMode = new BezierCreateBendInputMode { Priority = base.CreateBendInputMode.Priority };
+      this.CreateEdgeInputMode = new BezierCreateEdgeInputMode {
+          Priority = base.CreateEdgeInputMode.Priority
+      };
     }
 
     /// <summary>
@@ -58,36 +58,36 @@ namespace Demo.yFiles.Graph.BezierEdgeStyle {
                                    .Where(b => b.Owner.Style is yWorks.Graph.Styles.BezierEdgeStyle && b.Owner.Bends.Count % 3 == 2 &&
                                                b.GetIndex() % 3 == 2).ToList();
       foreach (var selectedCurveBend in selectedCurveBends) {
-        args.Selection.SetSelected(selectedCurveBend.Owner.Bends[selectedCurveBend.GetIndex() - 1], true);
-        args.Selection.SetSelected(selectedCurveBend.Owner.Bends[selectedCurveBend.GetIndex() + 1], true);
+        args.Selection.Add(selectedCurveBend.Owner.Bends[selectedCurveBend.GetIndex() - 1]);
+        args.Selection.Add(selectedCurveBend.Owner.Bends[selectedCurveBend.GetIndex() + 1]);
       }
-      //Remove remaining single control points from the list...
+      // Remove remaining single control points from the list...
       var singularControlPoints
           = args.Selection.OfType<IBend>()
                 .Where(b => b.Owner.Style is yWorks.Graph.Styles.BezierEdgeStyle && b.Owner.Bends.Count % 3 == 2 &&
                             (
-                                (b.GetIndex() == 0) ||
-                                (b.GetIndex() == b.Owner.Bends.Count - 1) ||
+                                b.GetIndex() == 0 ||
+                                b.GetIndex() == b.Owner.Bends.Count - 1 ||
                                 (b.GetIndex() % 3 == 1 &&
-                                 !args.Selection.IsSelected(b.Owner.Bends[b.GetIndex() + 1])) ||
-                                (b.GetIndex() % 3 == 0 && !args.Selection.IsSelected(b.Owner.Bends[b.GetIndex() + -1]))
+                                 !args.Selection.Contains(b.Owner.Bends[b.GetIndex() + 1])) ||
+                                (b.GetIndex() % 3 == 0 && !args.Selection.Contains(b.Owner.Bends[b.GetIndex() + -1]))
                             )
                 )
                 .ToList();
       foreach (var singularControlPoint in singularControlPoints) {
         if (singularControlPoint.Owner.Bends.Count > 2) {
-          args.Selection.SetSelected(singularControlPoint, false);
+          args.Selection.Remove(singularControlPoint);
         } else {
-          //Special case: Remove both of the last control points
-          args.Selection.SetSelected(singularControlPoint.Owner.Bends[0], true);
-          args.Selection.SetSelected(singularControlPoint.Owner.Bends[1], true);
+          // Special case: Remove both of the last control points
+          args.Selection.Add(singularControlPoint.Owner.Bends[0]);
+          args.Selection.Add(singularControlPoint.Owner.Bends[1]);
         }
       }
 
       base.OnDeletingSelection(args);
     }
 
-    protected override void OnCreateBendInputModeBendCreated(object sender, ItemEventArgs<IBend> e) {
+    protected override void OnCreateBendInputModeDragSegmentFinished(object sender, InputModeItemEventArgs<IBend> e) {
       var bend = e.Item;
       if (bend != null) {
         var edge = bend.Owner;
@@ -103,7 +103,7 @@ namespace Demo.yFiles.Graph.BezierEdgeStyle {
             handler.Dragged();
           }
         } else {
-          base.OnCreateBendInputModeBendCreated(sender, e);
+          base.OnCreateBendInputModeDragSegmentFinished(sender, e);
         }
       }
     }
@@ -112,14 +112,14 @@ namespace Demo.yFiles.Graph.BezierEdgeStyle {
     /// This class removes the dragged bend when the handle input mode is canceled.
     /// </summary>
     /// <remarks>
-    /// This is to support the <see cref="GraphEditorInputMode.OnCreateBendInputModeBendCreated"/>
+    /// This is to support the <see cref="GraphEditorInputMode.OnCreateBendInputModeDragSegmentFinished"/>
     /// implementation for bends that are created during the gesture and the user wants to cancel
     /// the gesture, not only moving the bend back to the original location, but also removing
     /// the newly created bend.
     ///
     /// This implementation also removes the additionally created bends for a bezier edge and resets the positions of the control points.
     /// </remarks>
-    private sealed class BendCreationHandler 
+    private sealed class BendCreationHandler
     {
       private readonly IBend bend;
       private readonly IGraph graph;
@@ -166,14 +166,14 @@ namespace Demo.yFiles.Graph.BezierEdgeStyle {
             nextNextBend = edge.Bends[bendIndex + 2];
           }
           graph.Remove(bend);
-          //Also remove the additional bends
+          // Also remove the additional bends
           if (previousBend != null) {
             graph.Remove(previousBend);
           }
           if (nextBend != null) {
             graph.Remove(nextBend);
           }
-          //And roll back the position change of the adjacent bends
+          // And roll back the position change of the adjacent bends
           if (prevPrevBend != null) {
             PointD oldLocation;
             if (bendInputMode.LocationMementos.TryGetValue(prevPrevBend, out oldLocation)) {
@@ -206,14 +206,6 @@ namespace Demo.yFiles.Graph.BezierEdgeStyle {
       }
     }
 
-    protected override CreateBendInputMode CreateCreateBendInputMode() {
-      return new BezierCreateBendInputMode{Priority = 42};
-    }
-
-    protected override CreateEdgeInputMode CreateCreateEdgeInputMode() {
-      return new BezierCreateEdgeInputMode {Priority = 45, CreateSmoothSplines = bezierEdgeStyleWindow.SmoothEditing};
-    }
-
     /// <summary>
     /// Custom input mode implementation that temporarily remembers all bend locations of the affected edge.
     /// </summary>
@@ -221,7 +213,7 @@ namespace Demo.yFiles.Graph.BezierEdgeStyle {
     private sealed class BezierCreateBendInputMode : CreateBendInputMode
     {
       private readonly IDictionary<IBend, PointD> locationMementos = new Dictionary<IBend, PointD>();
-        
+
       public IDictionary<IBend, PointD> LocationMementos {
         get {
           return locationMementos;

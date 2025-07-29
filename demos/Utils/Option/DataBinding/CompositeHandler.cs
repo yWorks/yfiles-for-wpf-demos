@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -27,8 +27,6 @@
  ** 
  ***************************************************************************/
 
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using Demo.yFiles.Option.Handler;
@@ -37,32 +35,36 @@ namespace Demo.yFiles.Option.DataBinding
 {
   internal sealed class CompositeHandler<T>
   {
-    private ISelectionProvider<T> selection;
-//    private WeakReference optionItem;
+    private readonly ISelectionProvider<T> selection;
+
+    //    private WeakReference optionItem;
     //    private WeakReference propertyItem;
-    private string virtualPropertyName;
+    private readonly string virtualPropertyName;
+
     //    private string propertyPrefix;
-    private bool inUpdate = false;
+    private bool inUpdate;
 
     private CompositeHandler(ISelectionProvider<T> selection, string virtualPropertyName, IOptionItem currentItem) {
       this.selection = selection;
       //      this.propertyPrefix = propertyPrefix;
       this.virtualPropertyName = virtualPropertyName;
       //      this.propertyItem = new WeakReference(propertyItem);
-//      this.optionItem = new WeakReference(currentItem);
+      //      this.optionItem = new WeakReference(currentItem);
       UpdateOptionItem(currentItem);
       currentItem.PropertyChanged += currentItem_PropertyChanged;
     }
 
     private void currentItem_PropertyChanged(object sender, PropertyChangedEventArgs e) {
       if (e.PropertyName.Equals("Value")) {
-        UpdateSelection(((IOptionItem)sender).Value);
+        UpdateSelection(((IOptionItem) sender).Value);
       }
     }
 
-    public static CompositeHandler<T> Create(ISelectionProvider<T> selection, string virtualPropertyName,
-                                          IOptionItem currentItem) {
-      CompositeHandler<T> handler = new CompositeHandler<T>(selection, virtualPropertyName, currentItem);
+    public static CompositeHandler<T> Create(
+        ISelectionProvider<T> selection,
+        string virtualPropertyName,
+        IOptionItem currentItem) {
+      var handler = new CompositeHandler<T>(selection, virtualPropertyName, currentItem);
       return handler;
     }
 
@@ -70,11 +72,11 @@ namespace Demo.yFiles.Option.DataBinding
       if (inUpdate) {
         return;
       }
-//      if (!optionItem.IsAlive) {
-//        return;
-//      }
-//
-//      IOptionItem oi = (IOptionItem)optionItem.Target;
+      //      if (!optionItem.IsAlive) {
+      //        return;
+      //      }
+      //
+      //      IOptionItem oi = (IOptionItem)optionItem.Target;
       //lock...
       inUpdate = true;
 
@@ -85,35 +87,34 @@ namespace Demo.yFiles.Option.DataBinding
         inUpdate = false;
         return;
       }
-      bool filled = false;
+      var filled = false;
       object accumulatedValue = null;
 
+      foreach (var descriptor in descriptors) {
+        // get the propertyItem from the current lookup
 
-      foreach (IPropertyItemDescriptor<T> descriptor in descriptors) {
-        //get the propertyItem from the current lookup
-
-        IPropertyMap map = descriptor.Properties;
+        var map = descriptor.Properties;
         if (map == null) {
           continue;
         }
-        IPropertyItem item = map.GetEntry(virtualPropertyName);
+        var item = map.GetEntry(virtualPropertyName);
         if (item == null) {
           continue;
         }
-        //get value from current selection item
-        IValueGetter getter = item.Getter;
+        // get value from current selection item
+        var getter = item.Getter;
         if (getter == null || !getter.CanGet()) {
           continue;
         }
 
-        object value = getter.GetValue();
+        var value = getter.GetValue();
         if (!filled) {
-          //first value
+          // first value
           accumulatedValue = value;
           filled = true;
         } else {
-          //check if value is different?
-          IEqualityComparer comparer = item.EqualityComparer;
+          // check if value is different?
+          var comparer = item.EqualityComparer;
           if (comparer != null) {
             if (!comparer.Equals(accumulatedValue, value)) {
               SetUndefinedValue(oi);
@@ -125,7 +126,8 @@ namespace Demo.yFiles.Option.DataBinding
               SetUndefinedValue(oi);
               inUpdate = false;
               return;
-            } else if (accumulatedValue == null && value != null) {
+            }
+            if (accumulatedValue == null && value != null) {
               SetUndefinedValue(oi);
               inUpdate = false;
               return;
@@ -134,7 +136,7 @@ namespace Demo.yFiles.Option.DataBinding
         }
       }
       if (accumulatedValue == null) {
-        if ((bool)oi.Attributes[OptionItem.SupportNullValueAttribute]) {
+        if ((bool) oi.Attributes[OptionItem.SupportNullValueAttribute]) {
           oi.Value = accumulatedValue;
         }
       } else {
@@ -145,8 +147,8 @@ namespace Demo.yFiles.Option.DataBinding
 
 
     public void SetUndefinedValue(IOptionItem item) {
-      if ((bool)item.Attributes[OptionItem.SupportUndefinedValueAttribute]) {
-        //this should not be reached
+      if ((bool) item.Attributes[OptionItem.SupportUndefinedValueAttribute]) {
+        // this should not be reached
         item.Value = OptionItem.ValueUndefined;
       }
     }
@@ -155,30 +157,30 @@ namespace Demo.yFiles.Option.DataBinding
       if (inUpdate) {
         return;
       }
-      object value = newValue;
+      var value = newValue;
       if (value == OptionItem.ValueUndefined) {
-        //no change
+        // no change
         return;
       }
       try {
         inUpdate = true;
-        //lock selection for the duration of our update
+        // lock selection for the duration of our update
         selection.BeginValueUpdate();
 
         ICollection<IPropertyItemDescriptor<T>> descriptors;
         descriptors = selection.Selection;
 
-        bool hasChanged = false;
-        foreach (IPropertyItemDescriptor<T> descriptor in descriptors) {
-          //get the propertyItem from the current lookup
-          IPropertyMap map = descriptor.Properties;
+        var hasChanged = false;
+        foreach (var descriptor in descriptors) {
+          // get the propertyItem from the current lookup
+          var map = descriptor.Properties;
           if (map == null) {
             continue;
           }
 
-          //get value from current selection item
-          IPropertyItem item = map.GetEntry(virtualPropertyName);
-          IValueSetter setter = item != null ? item.Setter : null;
+          // get value from current selection item
+          var item = map.GetEntry(virtualPropertyName);
+          var setter = item != null ? item.Setter : null;
           if (setter == null || !setter.CanSet()) {
             continue;
           }

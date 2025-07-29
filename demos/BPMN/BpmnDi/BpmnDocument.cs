@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -232,7 +232,7 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
         if (shape.Element != null) {
           plane.AddShape(shape);
         } else {
-          Messages.Add("Error in parsing shape " + (shape.Id) + ", could not find corresponding BPMNElement.");
+          Messages.Add("Error in parsing shape " + shape.Id + ", could not find corresponding BPMNElement.");
           continue;
         }
 
@@ -255,7 +255,7 @@ namespace Demo.yFiles.Graph.Bpmn.BpmnDi
         if (edge.Element != null) {
           plane.AddEdge(edge);
         } else {
-          Messages.Add("Error in parsing edge " + (edge.Id) + ", could not find corresponding BPMNElement.");
+          Messages.Add("Error in parsing edge " + edge.Id + ", could not find corresponding BPMNElement.");
           continue;
         }
 

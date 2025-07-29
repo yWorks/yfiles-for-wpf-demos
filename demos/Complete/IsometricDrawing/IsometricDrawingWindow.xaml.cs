@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -32,7 +32,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Input;
 using System.Windows.Media;
 using Demo.yFiles.Complete.IsometricDrawing.Model;
 using yWorks.Controls;
@@ -45,33 +44,35 @@ using yWorks.Graph.PortLocationModels;
 using yWorks.Graph.Styles;
 using yWorks.GraphML;
 using yWorks.Layout;
-using yWorks.Layout.Hierarchic;
+using yWorks.Layout.Hierarchical;
 using yWorks.Layout.Orthogonal;
 using Geometry = Demo.yFiles.Complete.IsometricDrawing.Model.Geometry;
 
 namespace Demo.yFiles.Complete.IsometricDrawing
 {
   /// <summary>
-  /// This demo displays graphs in an isometric fashion to create an impression of a 3-dimensional view.
+  ///   This demo displays graphs in an isometric fashion to create an impression of a three-dimensional view.
   /// </summary>
   public partial class IsometricDrawingWindow
   {
-    private const string LayoutHierarchic = "Hierarchic";
+    private const string LayoutHierarchical = "Hierarchical";
     private const string LayoutOrthogonal = "Orthogonal";
-    private String layoutType = LayoutHierarchic;
+    private string layoutType = LayoutHierarchical;
 
     // A flag that signals whether or not a layout is currently running to prevent re-entrant layout calculations.
     private bool layoutRunning;
 
     private const double MinimumNodeHeight = 3;
-    
+
+    private IsometricComparer isometricComparer;
+
     /// <summary>
-    /// Called upon loading of the form.
+    ///   Called upon loading of the form.
     /// </summary>
     private async void OnLoad(object sender, EventArgs e) {
       // set an isometric projection and a GraphModelManager that considers the isometric render order
       InitializeProjection();
-      
+
       // configure the GraphML loading
       InitializeLoadingFiles();
 
@@ -88,7 +89,7 @@ namespace Demo.yFiles.Complete.IsometricDrawing
     }
 
     /// <summary>
-    /// Sets an isometric projection and a GraphModelManager that considers the isometric render order.
+    ///   Sets an isometric projection and a GraphModelManager that considers the isometric render order.
     /// </summary>
     private void InitializeProjection() {
       // set an isometric projection
@@ -96,29 +97,31 @@ namespace Demo.yFiles.Complete.IsometricDrawing
       // configure the GraphModelManager to render the nodes in their correct z-order
       ConfigureGraphModelManager();
     }
-    
+
     /// <summary>
-    /// Enables and configures folding.
+    ///   Enables and configures folding.
     /// </summary>
     private void InitializeFolding() {
       var manager = new FoldingManager(graphControl.Graph) {
-          FolderNodeConverter = new DefaultFolderNodeConverter {
-              CopyFirstLabel = true,
-              CloneNodeStyle = true,
-              FolderNodeSize = new SizeD(210, 120),
-              FolderNodeStyle = new CollapsibleNodeStyleDecorator(new IsometricGroupNodeStyle()) {
-                  ButtonPlacement = InteriorLabelModel.SouthWest
+          FolderNodeConverter = new FolderNodeConverter {
+              FolderNodeDefaults = {
+                  CopyLabels = true,
+                  ShareStyleInstance = false,
+                  Size = new SizeD(210, 120),
+                  Style = new CollapsibleNodeStyleDecorator(new IsometricGroupNodeStyle()) {
+                      ButtonPlacement = InteriorNodeLabelModel.BottomLeft
+                  }
               }
           },
-          FoldingEdgeConverter = new DefaultFoldingEdgeConverter { CopyFirstLabel = true }
+          FoldingEdgeConverter = new FoldingEdgeConverter { FoldingEdgeDefaults = { CopyLabels = true } }
       };
 
       graphControl.Graph = manager.CreateFoldingView().Graph;
       graphControl.Graph.IsGroupNodeChanged += (sender, args) => AdaptGroupNodes();
     }
-    
+
     /// <summary>
-    /// Adapt the group node height and colors: group nodes should be flat and use a pen for the bounds.
+    ///   Adapt the group node height and colors: group nodes should be flat and use a pen for the bounds.
     /// </summary>
     private void AdaptGroupNodes() {
       var graph = graphControl.Graph;
@@ -131,10 +134,10 @@ namespace Demo.yFiles.Complete.IsometricDrawing
       graphControl.Invalidate();
     }
 
-    private readonly Random random = new Random();
-    
+    private readonly Random random = new();
+
     /// <summary>
-    /// Ensures that the node has geometry and color information present in its tag.
+    ///   Ensures that the node has geometry and color information present in its tag.
     /// </summary>
     /// <param name="node">The node to check.</param>
     private void EnsureNodeTag(INode node) {
@@ -146,80 +149,67 @@ namespace Demo.yFiles.Complete.IsometricDrawing
         node.Tag = nodeData;
       }
       if (nodeData.Geometry == null) {
-        nodeData.Geometry = new Geometry {
-            Height = MinimumNodeHeight + Math.Round(random.NextDouble() * 30)
-        };
+        nodeData.Geometry = new Geometry { Height = MinimumNodeHeight + Math.Round(random.NextDouble() * 30) };
       }
     }
 
     /// <summary>
-    /// Initialize interaction including snapping and orthogonal edge editing.
+    ///   Initialize interaction including snapping.
     /// </summary>
     private void InitializeInputMode() {
       // initialize interaction
-      var geim = new GraphEditorInputMode() {
+      var geim = new GraphEditorInputMode {
           NavigationInputMode = {
-              FitContentAfterGroupActions = false, 
-              AutoGroupNodeAlignmentPolicy = NodeAlignmentPolicy.BottomLeft 
+              FitContentAfterGroupActions = false, AutoGroupNodeAlignmentPolicy = NodeAlignmentPolicy.BottomLeft
           }
       };
 
-      // we use orthogonal edge editing and snapping, both very helpful for editing in isometric views
-      geim.OrthogonalEdgeEditingContext = new OrthogonalEdgeEditingContext();
-      geim.SnapContext = new GraphSnapContext();
-
-      // allow expand/collapse for group nodes
-      geim.AllowGroupingOperations = true;
+      // we use snapping, which is very helpful for editing in isometric views
+      geim.SnapContext.Enabled = true;
 
       // add listeners to invoke an incremental layout when collapsing/expanding a group
       geim.NavigationInputMode.GroupCollapsed += async (source, args) => await RunLayout(args.Item);
       geim.NavigationInputMode.GroupExpanded += async (source, args) => await RunLayout(args.Item);
-      
+
       // ensure that every node has geometry and color information
-      geim.NodeCreated += ((sender, evt) => {
+      geim.NodeCreated += (sender, evt) => {
         EnsureNodeTag(evt.Item);
         if (graphControl.Graph.IsGroupNode(evt.Item)) {
           AdaptGroupNodes();
         }
-      });
+      };
       graphControl.InputMode = geim;
 
       // changing a node's layout may require to adjust its render order
-      graphControl.Graph.NodeLayoutChanged += (source, n, layout) => {
-        graphControl.GraphModelManager.Update(n);
-      };
-      
+      graphControl.Graph.NodeLayoutChanged += (source, n, layout) => { graphControl.GraphModelManager.Update(n); };
+
       // add handle that enables the user to change the height of a (non-group) node
-      graphControl.Graph.GetDecorator().NodeDecorator.HandleProviderDecorator.SetImplementationWrapper(
-          n => {
-            var foldingView = graphControl.Graph.GetFoldingView();
-            return !foldingView.Manager.MasterGraph.IsGroupNode(foldingView.GetMasterItem(n));
-          },
-          (node, delegateProvider) => new HeightHandleProvider(node, delegateProvider, MinimumNodeHeight)
-      );
+      graphControl.Graph.GetDecorator().Nodes.HandleProvider.AddWrapperFactory(n => {
+        var foldingView = graphControl.Graph.GetFoldingView();
+        return !foldingView.Manager.MasterGraph.IsGroupNode(foldingView.GetMasterItem(n));
+      }, (node, delegateProvider) => new HeightHandleProvider(node, delegateProvider, MinimumNodeHeight));
     }
 
     /// <summary>
-    /// Initializes the visualization of the grid feature.
+    ///   Initializes the visualization of the grid feature.
     /// </summary>
     private void InitializeGridVisual() {
-      var grid = new GridVisualCreator(new GridInfo()) {
-          GridStyle = GridStyle.Lines,
-          Pen = new Pen(Brushes.LightGray, 0.5),
-          VisibilityThreshold = 10,
+      var grid = new GridRenderer {
+          GridStyle = GridStyle.Lines, Pen = new Pen(Brushes.LightGray, 0.5), VisibilityThreshold = 10
       };
-      graphControl.BackgroundGroup.AddChild(grid, CanvasObjectDescriptors.AlwaysDirtyInstance);
+      var renderTree = graphControl.RenderTree;
+      renderTree.CreateElement(renderTree.BackgroundGroup, new GridInfo(), grid);
     }
 
     #region Layout
 
     /// <summary>
-    /// Invokes a layout specified by the current layout type. 
+    ///   Invokes a layout specified by the current layout type.
     /// </summary>
     /// <remarks>
-    /// If there is a fixed node, the layout is calculated incrementally.
+    ///   If there is a fixed node, the layout is calculated incrementally.
     /// </remarks>
-    /// <param name="fixedNode">If defined, the layout will be incrementally and this node remains at its location.</param>
+    /// <param name="fixedNode">If defined, the layout will be calculated incrementally and this node remains at its location.</param>
     public async Task RunLayout(INode fixedNode = null) {
       if (layoutRunning) {
         return;
@@ -228,26 +218,21 @@ namespace Demo.yFiles.Complete.IsometricDrawing
       var incremental = fixedNode != null;
 
       // configure layout
-      var layout = layoutType == LayoutHierarchic ? (ILayoutAlgorithm) GetHierarchicLayout(incremental) : GetOrthogonalLayout();
-      var layoutData = layoutType == LayoutHierarchic ? (LayoutData) GetHierarchicLayoutData() : GetOrthogonalLayoutData();
-
-      if (incremental) {
-        // fixate the location of the given fixed node
-        layout = new FixNodeLayoutStage(layout) { FixPointPolicy = FixPointPolicy.LowerLeft };
-        layoutData = new CompositeLayoutData(layoutData,
-            new FixNodeLayoutData { FixedNodes = new ItemCollection<INode> { Item = fixedNode } }
-        );
-      }
+      GetLayoutAndData(layoutType, fixedNode, out var layout, out var layoutData);
 
       EnableUI(false);
 
       // configure layout execution to not move the view port
       var executor = new LayoutExecutor(graphControl, layout) {
-          LayoutData = layoutData, 
-          AnimateViewport = !incremental, 
-          Duration = TimeSpan.FromMilliseconds(500), 
-          UpdateContentRect = true
+          LayoutData = layoutData,
+          AnimateViewport = !incremental,
+          AnimationDuration = TimeSpan.FromMilliseconds(500),
+          UpdateContentBounds = true
       };
+      if (incremental) {
+        // fixate the location of the given fixed node
+        executor.AnchoredItems.Mapper[fixedNode] = LayoutAnchoringPolicy.LowerLeft;
+      }
 
       // start layout
       await executor.Start();
@@ -255,92 +240,110 @@ namespace Demo.yFiles.Complete.IsometricDrawing
       EnableUI(true);
     }
 
+    public void GetLayoutAndData(
+        string layoutType,
+        INode fixedNode,
+        out ILayoutAlgorithm layout,
+        out LayoutData<INode, IEdge, ILabel, ILabel> layoutData) {
+      if (layoutType == LayoutHierarchical) {
+        var incremental = fixedNode != null;
+        var hierarchicalLayout = GetHierarchicalLayout(incremental);
+        layout = hierarchicalLayout;
+        layoutData = GetHierarchicalLayoutData(hierarchicalLayout);
+      } else {
+        var orthogonalLayout = GetOrthogonalLayout();
+        layout = orthogonalLayout;
+        layoutData = GetOrthogonalLayoutData(orthogonalLayout);
+      }
+    }
+
     /// <summary>
-    /// Creates a configured hierarchic layout data.
+    ///   Creates a configured hierarchical layout data.
     /// </summary>
     /// <param name="incremental"><code>true</code> in case the layout should be calculated incrementally.</param>
-    public HierarchicLayout GetHierarchicLayout(bool incremental) {
-      var layout = new HierarchicLayout {
-          OrthogonalRouting = true,
+    public HierarchicalLayout GetHierarchicalLayout(bool incremental) {
+      var layout = new HierarchicalLayout {
           NodeToEdgeDistance = 50,
           MinimumLayerDistance = 40,
-          LabelingEnabled = false,
-          IntegratedEdgeLabeling = true,
-          ConsiderNodeLabels = true,
+          EdgeLabelPlacement = EdgeLabelPlacement.Integrated,
+          NodeLabelPlacement = NodeLabelPlacement.Consider,
           GridSpacing = 10
       };
-
       if (incremental) {
-        layout.LayoutMode = LayoutMode.Incremental;
+        layout.FromSketchMode = true;
       }
       return layout;
     }
 
     /// <summary>
-    /// Creates a configured hierarchic layout data.
+    ///   Creates a configured hierarchical layout data.
     /// </summary>
-    public HierarchicLayoutData GetHierarchicLayoutData() {
+    public HierarchicalLayoutData<INode, IEdge, IModelItem, ILabel, ILabel> GetHierarchicalLayoutData(
+        HierarchicalLayout layout) {
+      var layoutData = layout.CreateLayoutData(graphControl.Graph);
       // use preferred placement descriptors to place the labels vertically on the edges
-      var layoutData = new HierarchicLayoutData {
-          EdgeLabelPreferredPlacement = new ItemMapping<ILabel, PreferredPlacementDescriptor> { Constant = GetPreferredLabelPlacement() },
-          IncrementalHints = new IncrementalHintItemMapping {
-              ContextDelegate = (item, hintsFactory) =>
-                  item is IEdge ? hintsFactory.CreateSequenceIncrementallyHint(item) : null
-          }
-      };
+      layoutData.EdgeLabelPreferredPlacements.Constant = GetPreferredLabelPlacement();
+      layoutData.IncrementalEdges.Predicate = _ => true;
       return layoutData;
     }
 
     /// <summary>
-    /// Creates a configured orthogonal layout.
+    ///   Creates a configured orthogonal layout.
     /// </summary>
     public OrthogonalLayout GetOrthogonalLayout() {
       return new OrthogonalLayout {
-          IntegratedEdgeLabeling = true, 
-          ConsiderNodeLabels = true,
+          EdgeLabelPlacement = EdgeLabelPlacement.Integrated,
+          NodeLabelPlacement = NodeLabelPlacement.Consider,
           GridSpacing = 10
       };
     }
 
     /// <summary>
-    /// Creates a configured orthogonal layout data.
+    ///   Creates a configured orthogonal layout data.
     /// </summary>
-    public OrthogonalLayoutData GetOrthogonalLayoutData() {
-      return new OrthogonalLayoutData() {
-          EdgeLabelPreferredPlacement = new ItemMapping<ILabel, PreferredPlacementDescriptor> {
-              Constant = GetPreferredLabelPlacement()
-          }
+    public OrthogonalLayoutData<INode, IEdge, ILabel, ILabel>
+        GetOrthogonalLayoutData(OrthogonalLayout orthogonalLayout) {
+      var layoutData = orthogonalLayout.CreateLayoutData(graphControl.Graph);
+      layoutData.EdgeLabelPreferredPlacements.Constant = GetPreferredLabelPlacement();
+      return layoutData;
+    }
+
+    private EdgeLabelPreferredPlacement GetPreferredLabelPlacement() {
+      return new EdgeLabelPreferredPlacement {
+          Angle = 0,
+          AngleReference = LabelAngleReferences.RelativeToEdgeFlow,
+          EdgeSide = LabelEdgeSides.LeftOfEdge,
+          SideReference = LabelSideReferences.AbsoluteWithRightAbove
       };
     }
 
-    private PreferredPlacementDescriptor GetPreferredLabelPlacement() {
-      return new PreferredPlacementDescriptor {
-          Angle = 0,
-          AngleReference = LabelAngleReferences.RelativeToEdgeFlow, 
-          SideOfEdge = LabelPlacements.LeftOfEdge, 
-          SideReference = LabelSideReferences.AbsoluteWithRightInNorth
-      };
-    }
-    
     #endregion
 
     /// <summary>
-    /// Loads a graph from <see cref="IsometricData"/> using a <see cref="GraphBuilder"/> and initializes
-    /// all styles and isometric data.
+    ///   Loads a graph from <see cref="IsometricData"/> using a <see cref="GraphBuilder"/> and initializes
+    ///   all styles and isometric data.
     /// </summary>
     /// <remarks>
-    /// The graph also gets an initial layout.
+    ///   The graph also gets an initial layout.
     /// </remarks>
     private async Task LoadInitialGraph() {
       var graph = graphControl.Graph;
 
       graph.NodeDefaults.Style = new IsometricNodeStyle();
-      graph.NodeDefaults.Labels.LayoutParameter = ExteriorLabelModel.South;
-      graph.GroupNodeDefaults.Style = new CollapsibleNodeStyleDecorator(new IsometricGroupNodeStyle()) { ButtonPlacement = InteriorLabelModel.SouthWest, };
-      graph.GroupNodeDefaults.Labels.Style = new DefaultLabelStyle { TextAlignment = TextAlignment.Right, Insets = new InsetsD(3) };
-      graph.GroupNodeDefaults.Labels.LayoutParameter = InteriorLabelModel.SouthEast;
-      graph.EdgeDefaults.Labels.Style = new DefaultLabelStyle { Insets = new InsetsD(3) };
-      graph.EdgeDefaults.Labels.LayoutParameter = new EdgeSegmentLabelModel() { AutoRotation = true }.CreateDefaultParameter();
+      graph.NodeDefaults.Labels.LayoutParameter = ExteriorNodeLabelModel.Bottom;
+      graph.GroupNodeDefaults.Style =
+          new CollapsibleNodeStyleDecorator(new IsometricGroupNodeStyle()) {
+              ButtonPlacement = InteriorNodeLabelModel.BottomLeft
+          };
+      graph.GroupNodeDefaults.Labels.Style =
+          new LabelStyle { TextAlignment = TextAlignment.Right, Padding = new InsetsD(3) };
+      graph.GroupNodeDefaults.Labels.LayoutParameter = InteriorNodeLabelModel.BottomRight;
+      // we activate orthogonal edge editing, which is very helpful for editing in isometric views
+      graph.EdgeDefaults.Style =
+          new PolylineEdgeStyle { TargetArrow = new Arrow(ArrowType.Stealth), OrthogonalEditing = true };
+      graph.EdgeDefaults.Labels.Style = new LabelStyle { Padding = new InsetsD(3) };
+      graph.EdgeDefaults.Labels.LayoutParameter =
+          new EdgeSegmentLabelModel { AutoRotation = true }.CreateParameterFromSource(0);
 
       var graphBuilder = new GraphBuilder(graph);
       var nodesSource = graphBuilder.CreateNodesSource(IsometricData.NodesData, item => item.Id);
@@ -362,15 +365,13 @@ namespace Demo.yFiles.Complete.IsometricDrawing
     }
 
     /// <summary>
-    /// Configures the <see cref="GraphMLIOHandler"/> used to load the graph.
+    ///   Configures the <see cref="GraphMLIOHandler"/> used to load the graph.
     /// </summary>
     private void InitializeLoadingFiles() {
       // ignore deserialization errors when loading graphs that use different styles
       // the styles will be replaced with isometric styles later
       graphControl.GraphMLIOHandler.DeserializationPropertyOverrides.Set(
-          SerializationProperties.IgnoreXamlDeserializationErrors,
-          true
-      );
+          SerializationProperties.IgnoreXamlDeserializationErrors, true);
       graphControl.GraphMLIOHandler.Parsing += (sender, args) => EnableUI(false);
       graphControl.GraphMLIOHandler.Parsed += async (sender, args) => {
         // after loading apply isometric styles and geometry to the nodes and labels
@@ -380,7 +381,7 @@ namespace Demo.yFiles.Complete.IsometricDrawing
     }
 
     private async void OnHLLayoutClick(object sender, RoutedEventArgs e) {
-      layoutType = LayoutHierarchic;
+      layoutType = LayoutHierarchical;
       await RunLayout();
     }
 
@@ -390,11 +391,11 @@ namespace Demo.yFiles.Complete.IsometricDrawing
     }
 
     /// <summary>
-    /// Adds isometric styles and geometry data to nodes and labels of the graph.
+    ///   Adds isometric styles and geometry data to nodes and labels of the graph.
     /// </summary>
     /// <remarks>
-    /// Also free label and port location models are applied to retrieve the correct positions calculated by the
-    /// layout algorithm.
+    ///   Also free label and port location models are applied to retrieve the correct positions calculated by the
+    ///   layout algorithm.
     /// </remarks>
     public void ApplyIsometricStyles() {
       var foldingManager = graphControl.Graph.GetFoldingView().Manager;
@@ -405,14 +406,20 @@ namespace Demo.yFiles.Complete.IsometricDrawing
         if (group) {
           ((NodeData) node.Tag).Color = Color.FromArgb(128, 202, 236, 255);
           ((NodeData) node.Tag).Pen = IsometricGroupNodeStyle.BorderPen;
-          graph.SetStyle(node, new CollapsibleNodeStyleDecorator(new IsometricGroupNodeStyle()) { ButtonPlacement = InteriorLabelModel.SouthWest, });
+          graph.SetStyle(node,
+              new CollapsibleNodeStyleDecorator(new IsometricGroupNodeStyle()) {
+                  ButtonPlacement = InteriorNodeLabelModel.BottomLeft
+              });
           var folderNodeState = foldingManager.GetFolderNodeState(node);
-          folderNodeState.Style = new CollapsibleNodeStyleDecorator(new IsometricGroupNodeStyle()) { ButtonPlacement = InteriorLabelModel.SouthWest, };
+          folderNodeState.Style =
+              new CollapsibleNodeStyleDecorator(new IsometricGroupNodeStyle()) {
+                  ButtonPlacement = InteriorNodeLabelModel.BottomLeft
+              };
           var firstLabel = node.Labels.FirstOrDefault();
           if (firstLabel != null) {
             var layout = firstLabel.GetLayout();
             UpdateGeometry(firstLabel, layout.GetSize(), layout.Height, new InsetsD(3));
-            graph.SetStyle(firstLabel, new DefaultLabelStyle() { TextAlignment = TextAlignment.Right, Insets = new InsetsD(3) });
+            graph.SetStyle(firstLabel, new LabelStyle { TextAlignment = TextAlignment.Right, Padding = new InsetsD(3) });
             graph.SetLabelLayoutParameter(firstLabel, graph.GroupNodeDefaults.Labels.LayoutParameter);
           }
           var firstFolderLabel = folderNodeState.Labels.FirstOrDefault();
@@ -420,7 +427,7 @@ namespace Demo.yFiles.Complete.IsometricDrawing
             var label = firstFolderLabel.AsLabel();
             var layout = label.GetLayout();
             UpdateGeometry(label, layout.GetSize(), layout.Height, new InsetsD(3));
-            firstFolderLabel.Style = new DefaultLabelStyle { TextAlignment = TextAlignment.Right, Insets = new InsetsD(3) };
+            firstFolderLabel.Style = new LabelStyle { TextAlignment = TextAlignment.Right, Padding = new InsetsD(3) };
             firstFolderLabel.LayoutParameter = graph.GroupNodeDefaults.Labels.LayoutParameter;
           }
         } else {
@@ -429,24 +436,26 @@ namespace Demo.yFiles.Complete.IsometricDrawing
         }
       }
       foreach (var edge in graph.Edges) {
-        graph.SetStyle(edge, new PolylineEdgeStyle());
+        // we activate orthogonal edge editing, which is very helpful for editing in isometric views
+        graph.SetStyle(edge, new PolylineEdgeStyle { OrthogonalEditing = true });
         foreach (var label in edge.Labels) {
           var layout = label.GetLayout();
           UpdateGeometry(label, layout.GetSize(), layout.Height, new InsetsD(3));
-          graph.SetStyle(label, new DefaultLabelStyle { Insets = new InsetsD(3) });
-          graph.SetLabelLayoutParameter(label, new EdgeSegmentLabelModel { AutoRotation = true }.CreateDefaultParameter());
+          graph.SetStyle(label, new LabelStyle { Padding = new InsetsD(3) });
+          graph.SetLabelLayoutParameter(label,
+              new EdgeSegmentLabelModel { AutoRotation = true }.CreateParameterFromSource(0));
         }
       }
       foreach (var port in graph.Ports) {
-        graph.SetPortLocationParameter(port, FreeNodePortLocationModel.NodeCenterAnchored);
+        graph.SetPortLocationParameter(port, FreeNodePortLocationModel.Center);
       }
     }
 
     /// <summary>
-    /// Updates the tag of the given item with geometry data. 
+    ///   Updates the tag of the given item with geometry data.
     /// </summary>
     /// <remarks>
-    /// In case the tag already contains valid geometry data, it stays unchanged.
+    ///   In case the tag already contains valid geometry data, it stays unchanged.
     /// </remarks>
     /// <param name="item">The item for which the tag is updated.</param>
     /// <param name="layout">The 2D-geometry for the item.</param>
@@ -459,8 +468,8 @@ namespace Demo.yFiles.Complete.IsometricDrawing
       }
       var inset = insets ?? InsetsD.Empty;
       var geometry = new Geometry {
-          Width = layout.Width + inset.Left + inset.Right, 
-          Height = height, 
+          Width = layout.Width + inset.Left + inset.Right,
+          Height = height,
           Depth = layout.Height + inset.Top + inset.Bottom
       };
       if (nodeData != null) {
@@ -471,7 +480,7 @@ namespace Demo.yFiles.Complete.IsometricDrawing
     }
 
     /// <summary>
-    /// Enables or disables the buttons in the toolbar.
+    ///   Enables or disables the buttons in the toolbar.
     /// </summary>
     /// <param name="enabled">Whether to enable or disable the buttons.</param>
     private void EnableUI(bool enabled) {
@@ -482,43 +491,41 @@ namespace Demo.yFiles.Complete.IsometricDrawing
     }
 
     private void OnRotationSldChanged(object sender, RoutedPropertyChangedEventArgs<double> e) {
-      graphControl.Projection = new TransformGroup { Children = {
-          new RotateTransform(e.NewValue), 
-          Projections.Isometric
-      } };
+      graphControl.Projection =
+          new TransformGroup { Children = { new RotateTransform(e.NewValue), Projections.Isometric } };
       UpdateZOrder();
     }
 
     #region Handle visual overlaps
 
-    
     /// <summary>
-    /// Configure the graph model manager to render the nodes in their correct z-order.
+    ///   Configure the graph model manager to render the nodes in their correct z-order.
     /// </summary>
     /// <remarks>
-    /// Renders nodes which should be hidden by other nodes in the current projection
-    /// behind these nodes.
+    ///   Renders nodes which should be hidden by other nodes in the current projection
+    ///   behind these nodes.
     /// </remarks>
     private void ConfigureGraphModelManager() {
       var manager = graphControl.GraphModelManager;
-      manager.HierarchicNestingPolicy = HierarchicNestingPolicy.GroupNodes;
+      manager.HierarchicalNestingPolicy = HierarchicalNestingPolicy.GroupNodes;
       manager.NodeLabelLayerPolicy = LabelLayerPolicy.AtOwner;
       manager.EdgeLabelLayerPolicy = LabelLayerPolicy.AtOwner;
       // use a custom comparer to render nodes which appear in the background of the current perspective first.
-      manager.NodeManager.Comparer = new IsometricComparer(graphControl);
-      // The comparer needs the user object (=node) to be set on the main canvas object
-      manager.ProvideUserObjectOnMainCanvasObject = true;
+      isometricComparer = new IsometricComparer(graphControl);
+      manager.NodeManager.Comparer = isometricComparer.Compare;
+      // The comparer needs the tag (=node) to be set on the main render tree element
+      manager.ProvideRenderTagOnMainRenderTreeElement = true;
     }
-    
+
     /// <summary>
-    /// Update the z-order of model items according to new rotation.
+    ///   Update the z-order of model items according to new rotation.
     /// </summary>
     /// <remarks>
-    /// Has to be done each time the projection changes.
-    /// Can be omitted in application which do not change the projection.
+    ///   Has to be done each time the projection changes.
+    ///   Can be omitted in application which do not change the projection.
     /// </remarks>
     private void UpdateZOrder() {
-      ((IsometricComparer)graphControl.GraphModelManager.NodeManager.Comparer).Update();
+      isometricComparer.Update();
       foreach (var node in graphControl.Graph.Nodes) {
         graphControl.GraphModelManager.NodeManager.Update(node);
       }
@@ -526,12 +533,13 @@ namespace Demo.yFiles.Complete.IsometricDrawing
     }
 
     /// <summary>
-    /// An <see cref="IComparer{T}"/> for nodes that determines their render order in an isometric view.
+    ///   An <see cref="IComparer{T}"/> for nodes that determines their render order in an isometric view.
     /// </summary>
     /// <remarks>
-    /// This heuristic assumes that all nodes have a cubical form and no two nodes have overlapping <see cref="INode.Layout"/>. 
+    ///   This heuristic assumes that all nodes have a cubical form and no two nodes have overlapping
+    ///   <see cref="INode.Layout"/>.
     /// </remarks>
-    sealed class IsometricComparer : IComparer<INode>
+    private sealed class IsometricComparer : IComparer<INode>
     {
       private readonly CanvasControl control;
       private Transform projection;
@@ -545,10 +553,10 @@ namespace Demo.yFiles.Complete.IsometricDrawing
       }
 
       /// <summary>
-      /// Updates which faces are visible and therefore which corners should be used for the z-order comparison.
+      ///   Updates which faces are visible and therefore which corners should be used for the z-order comparison.
       /// </summary>
       /// <remarks>
-      /// This method has to be called when the <see cref="CanvasControl.Projection"/> has changed.
+      ///   This method has to be called when the <see cref="CanvasControl.Projection"/> has changed.
       /// </remarks>
       internal void Update() {
         if (control.Projection != projection) {
@@ -600,7 +608,7 @@ namespace Demo.yFiles.Complete.IsometricDrawing
         var sgnX = leftFaceVisible ? -1 : 1;
         var sgnY = backFaceVisible ? -1 : 1;
 
-        var dViewCenter = ((PointD) projection.Transform(yViewCenter)) - ((PointD) projection.Transform(xViewCenter));
+        var dViewCenter = projection.Transform(yViewCenter.ToPoint()) - projection.Transform(xViewCenter.ToPoint());
         // determine order in two steps:
         // 1) compare view coordinates of ViewCenter values to determine which node corners to compare in step 2
         // 2) compare the world coordinates of the corners found in step 1 considering which faces are visible
@@ -608,30 +616,28 @@ namespace Demo.yFiles.Complete.IsometricDrawing
           var vector = yViewRight - xViewLeft;
           if (vector.X * sgnX > 0 && vector.Y * sgnY > 0) {
             return -1;
-          } else {
-            return 1;
           }
-        } else if (dViewCenter.X > 0 && dViewCenter.Y > 0) {
+          return 1;
+        }
+        if (dViewCenter.X > 0 && dViewCenter.Y > 0) {
           var vector = yViewLeft - xViewRight;
           if (vector.X * sgnX < 0 && vector.Y * sgnY < 0) {
             return 1;
-          } else {
-            return -1;
           }
-        } else if (dViewCenter.X > 0) {
+          return -1;
+        }
+        if (dViewCenter.X > 0) {
           var vector = yViewCenter - xViewRight;
           if (vector.X * sgnX > 0 && vector.Y * sgnY > 0) {
             return -1;
-          } else {
-            return 1;
           }
+          return 1;
         } else {
           var vector = yViewRight - xViewCenter;
           if (vector.X * sgnX < 0 && vector.Y * sgnY < 0) {
             return 1;
-          } else {
-            return -1;
           }
+          return -1;
         }
       }
     }

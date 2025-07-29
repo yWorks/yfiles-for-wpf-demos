@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -27,111 +27,102 @@
  ** 
  ***************************************************************************/
 
+using System;
 using System.ComponentModel;
 using System.Reflection;
 using Demo.yFiles.Toolkit.OptionHandler;
 using yWorks.Controls;
 using yWorks.Layout.Router;
-using yWorks.Layout.Router.Polyline;
 
 namespace Demo.yFiles.Layout.MazeRouting
 {
   /// <summary>
-  /// Configuration options for the <see cref="EdgeRouter"/> algorithm.
+  ///   Configuration options for the <see cref="EdgeRouter"/> algorithm.
   /// </summary>
   [Obfuscation(StripAfterObfuscation = false, Exclude = true, ApplyToMembers = true)]
   [Label("PolylineEdgeRouter")]
   public class PolylineEdgeRouterCustomConfig
   {
     /// <summary>
-    /// Setup default values for various configuration parameters.
+    ///   Setup default values for various configuration parameters.
     /// </summary>
     public PolylineEdgeRouterCustomConfig() {
       var router = new EdgeRouter();
 
-      ScopeItem = router.Scope;
+      ScopeItem = Scope.RouteAllEdges;
       OptimizationStrategyItem = EnumStrategies.Balanced;
       MonotonicRestrictionItem = EnumMonotonyFlags.None;
       EnableReroutingItem = router.Rerouting;
-      MaximumDurationItem = 30;
+      StopDurationItem = 30;
 
-      var descriptor = router.DefaultEdgeLayoutDescriptor;
-      MinimumEdgeToEdgeDistanceItem = descriptor.MinimumEdgeToEdgeDistance;
+      var descriptor = router.DefaultEdgeDescriptor;
+      MinimumEdgeDistanceItem = descriptor.MinimumEdgeDistance;
       MinimumNodeToEdgeDistanceItem = router.MinimumNodeToEdgeDistance;
       MinimumNodeCornerDistanceItem = descriptor.MinimumNodeCornerDistance;
       MinimumFirstSegmentLengthItem = descriptor.MinimumFirstSegmentLength;
       MinimumLastSegmentLengthItem = descriptor.MinimumLastSegmentLength;
 
-      var grid = router.Grid;
-      GridEnabledItem = grid != null;
-      GridSpacingItem = grid != null ? grid.Spacing : 10;
+      var gridSpacing = router.GridSpacing;
+      GridEnabledItem = gridSpacing > 0;
+      GridSpacingItem = gridSpacing > 0 ? gridSpacing : 10;
 
-      RoutingStyleItem = EdgeRoutingStyle.Octilinear;
-      PreferredOctilinearSegmentLengthItem = router.DefaultEdgeLayoutDescriptor.PreferredOctilinearSegmentLength;
+      RoutingStyleItem = RoutingStyle.Octilinear;
+      PreferredOctilinearSegmentLengthItem = router.DefaultEdgeDescriptor.PreferredOctilinearSegmentLength;
     }
 
     public EdgeRouter CreateConfiguredLayout(GraphControl graphControl) {
-      var router = new EdgeRouter(); 
-      var descriptor = router.DefaultEdgeLayoutDescriptor;
-
-      router.Scope = ScopeItem;
+      var router = new EdgeRouter();
+      var descriptor = router.DefaultEdgeDescriptor;
 
       if (OptimizationStrategyItem == EnumStrategies.Balanced) {
-        descriptor.PenaltySettings = PenaltySettings.OptimizationBalanced;
-      }
-      else if (OptimizationStrategyItem == EnumStrategies.MinimizeBends) {
-        descriptor.PenaltySettings = PenaltySettings.OptimizationEdgeBends;
-      }
-      else if (OptimizationStrategyItem == EnumStrategies.MinimizeEdgeLength) {
-        descriptor.PenaltySettings = PenaltySettings.OptimizationEdgeLengths;
-      }
-      else {
-        descriptor.PenaltySettings = PenaltySettings.OptimizationEdgeCrossings;
+        descriptor.EdgeRouterCosts = EdgeRouterCosts.BalancedOptimization;
+      } else if (OptimizationStrategyItem == EnumStrategies.MinimizeBends) {
+        descriptor.EdgeRouterCosts = EdgeRouterCosts.EdgeBendsOptimization;
+      } else if (OptimizationStrategyItem == EnumStrategies.MinimizeEdgeLength) {
+        descriptor.EdgeRouterCosts = EdgeRouterCosts.EdgeLengthsOptimization;
+      } else {
+        descriptor.EdgeRouterCosts = EdgeRouterCosts.EdgeCrossingsOptimization;
       }
 
       if (MonotonicRestrictionItem == EnumMonotonyFlags.Horizontal) {
-        descriptor.MonotonicPathRestriction = MonotonicPathRestriction.Horizontal;
-      }
-      else if (MonotonicRestrictionItem == EnumMonotonyFlags.Vertical) {
-        descriptor.MonotonicPathRestriction = MonotonicPathRestriction.Vertical;
-      }
-      else if (MonotonicRestrictionItem == EnumMonotonyFlags.Both) {
-        descriptor.MonotonicPathRestriction = MonotonicPathRestriction.Both;
-      }
-      else {
-        descriptor.MonotonicPathRestriction = MonotonicPathRestriction.None;
+        descriptor.MonotonicPathRestriction = MonotonicPathRestrictions.Horizontal;
+      } else if (MonotonicRestrictionItem == EnumMonotonyFlags.Vertical) {
+        descriptor.MonotonicPathRestriction = MonotonicPathRestrictions.Vertical;
+      } else if (MonotonicRestrictionItem == EnumMonotonyFlags.Both) {
+        descriptor.MonotonicPathRestriction = MonotonicPathRestrictions.Both;
+      } else {
+        descriptor.MonotonicPathRestriction = MonotonicPathRestrictions.None;
       }
 
-      descriptor.MinimumEdgeToEdgeDistance = MinimumEdgeToEdgeDistanceItem;
+      descriptor.MinimumEdgeDistance = MinimumEdgeDistanceItem;
       router.MinimumNodeToEdgeDistance = MinimumNodeToEdgeDistanceItem;
       descriptor.MinimumNodeCornerDistance = MinimumNodeCornerDistanceItem;
       descriptor.MinimumFirstSegmentLength = MinimumFirstSegmentLengthItem;
       descriptor.MinimumLastSegmentLength = MinimumLastSegmentLengthItem;
 
       if (GridEnabledItem) {
-        router.Grid = new Grid(0, 0, GridSpacingItem);
-      }
-      else {
-        router.Grid = null;
+        router.GridSpacing = GridSpacingItem;
+      } else {
+        router.GridSpacing = 0;
       }
 
       router.Rerouting = EnableReroutingItem;
 
-      router.DefaultEdgeLayoutDescriptor.RoutingStyle = RoutingStyleItem;
-      router.DefaultEdgeLayoutDescriptor.PreferredOctilinearSegmentLength = PreferredOctilinearSegmentLengthItem;
-      router.MaximumDuration = MaximumDurationItem * 1000;
+      router.DefaultEdgeDescriptor.RoutingStyle = RoutingStyleItem;
+      router.DefaultEdgeDescriptor.PreferredOctilinearSegmentLength = PreferredOctilinearSegmentLengthItem;
+      router.StopDuration = TimeSpan.FromSeconds(StopDurationItem);
 
       return router;
     }
 
-   
+
     // ReSharper disable UnusedMember.Global
     // ReSharper disable InconsistentNaming
     [Label("Description")]
     [OptionGroup("RootGroup", 5)]
     [ComponentType(ComponentTypes.OptionGroup)]
-    public object DescriptionGroup;    
-    
+    public object DescriptionGroup;
+
     [Label("Layout")]
     [OptionGroup("RootGroup", 10)]
     [ComponentType(ComponentTypes.OptionGroup)]
@@ -154,72 +145,76 @@ namespace Demo.yFiles.Layout.MazeRouting
 
     // ReSharper restore UnusedMember.Global
     // ReSharper restore InconsistentNaming
+
     [OptionGroup("DescriptionGroup", 10)]
     [ComponentType(ComponentTypes.FormattedText)]
-    public string DescriptionText {
-      get {
-        return "<Paragraph>Polyline edge routing calculates polyline edge paths for a diagram's edges. "
-               + "The positions of the nodes are not changed by this algorithm.</Paragraph>"
-               + "<Paragraph>Edges will be routed orthogonally, that is each edge path consists of horizontal and vertical segments, or octilinear."
-               + " Octilinear means that the slope of each segment of an edge path is a multiple of 45 degrees.</Paragraph>"
-               + "<Paragraph>This type of edge routing is especially well suited for technical diagrams.</Paragraph>";
-      }
-    } 
+    public string DescriptionText =>
+        "<Paragraph>Polyline edge routing calculates polyline edge paths for a diagram's edges. " +
+        "The positions of the nodes are not changed by this algorithm.</Paragraph>" +
+        "<Paragraph>Edges will be routed orthogonally, that is each edge path consists of horizontal and vertical segments, or octilinear." +
+        " Octilinear means that the slope of each segment of an edge path is a multiple of 45 degrees.</Paragraph>" +
+        "<Paragraph>This type of edge routing is especially well suited for technical diagrams.</Paragraph>";
 
     public enum EnumStrategies
     {
-      Balanced, MinimizeBends, MinimizeCrossings, MinimizeEdgeLength
+      Balanced,
+      MinimizeBends,
+      MinimizeCrossings,
+      MinimizeEdgeLength
     }
 
     public enum EnumMonotonyFlags
     {
-      None,Horizontal,Vertical,Both
+      None,
+      Horizontal,
+      Vertical,
+      Both
     }
 
     [Label("Scope")]
     [OptionGroup("LayoutGroup", 10)]
     [DefaultValue(Scope.RouteAllEdges)]
     [EnumValue("All Edges", Scope.RouteAllEdges)]
-    [EnumValue("Selected Edges",Scope.RouteAffectedEdges)]
-    [EnumValue("Edges at Selected Nodes",Scope.RouteEdgesAtAffectedNodes)]
+    [EnumValue("Selected Edges", Scope.RouteAffectedEdges)]
+    [EnumValue("Edges at Selected Nodes", Scope.RouteEdgesAtAffectedNodes)]
     public Scope ScopeItem { get; set; }
 
     [Label("Optimization Strategy")]
     [OptionGroup("LayoutGroup", 20)]
     [DefaultValue(EnumStrategies.Balanced)]
     [EnumValue("Balanced", EnumStrategies.Balanced)]
-    [EnumValue("Less Bends",EnumStrategies.MinimizeBends)]
-    [EnumValue("Less Crossings",EnumStrategies.MinimizeCrossings)]
-    [EnumValue("Shorter Edges",EnumStrategies.MinimizeEdgeLength)]
+    [EnumValue("Less Bends", EnumStrategies.MinimizeBends)]
+    [EnumValue("Less Crossings", EnumStrategies.MinimizeCrossings)]
+    [EnumValue("Shorter Edges", EnumStrategies.MinimizeEdgeLength)]
     public EnumStrategies OptimizationStrategyItem { get; set; }
 
     [Label("Monotonic Restriction")]
     [OptionGroup("LayoutGroup", 30)]
     [DefaultValue(EnumMonotonyFlags.None)]
     [EnumValue("None", EnumMonotonyFlags.None)]
-    [EnumValue("Horizontal",EnumMonotonyFlags.Horizontal )]
-    [EnumValue("Vertical",EnumMonotonyFlags.Vertical )]
-    [EnumValue("Both",EnumMonotonyFlags.Both )]
-    public EnumMonotonyFlags MonotonicRestrictionItem { get; set; }    
+    [EnumValue("Horizontal", EnumMonotonyFlags.Horizontal)]
+    [EnumValue("Vertical", EnumMonotonyFlags.Vertical)]
+    [EnumValue("Both", EnumMonotonyFlags.Both)]
+    public EnumMonotonyFlags MonotonicRestrictionItem { get; set; }
 
     [Label("Reroute Crossing Edges")]
     [OptionGroup("LayoutGroup", 60)]
     [DefaultValue(false)]
     public bool EnableReroutingItem { get; set; }
 
-    [Label("Maximum Duration")]
+    [Label("Stop Duration (sec)")]
     [OptionGroup("LayoutGroup", 70)]
     [DefaultValue(30)]
     [MinMax(Min = 0, Max = 150)]
     [ComponentType(ComponentTypes.Slider)]
-    public int MaximumDurationItem { get; set; }
+    public int StopDurationItem { get; set; }
 
     [Label("Edge to Edge")]
     [OptionGroup("DistancesGroup", 10)]
     [DefaultValue(3.0d)]
     [MinMax(Min = 0, Max = 100)]
     [ComponentType(ComponentTypes.Slider)]
-    public double MinimumEdgeToEdgeDistanceItem { get; set; }
+    public double MinimumEdgeDistanceItem { get; set; }
 
     [Label("Node to Edge")]
     [OptionGroup("DistancesGroup", 20)]
@@ -261,16 +256,14 @@ namespace Demo.yFiles.Layout.MazeRouting
     [ComponentType(ComponentTypes.Slider)]
     public double GridSpacingItem { get; set; }
 
-    public bool ShouldDisableGridSpacingItem {
-      get { return GridEnabledItem == false; }
-    }
+    public bool ShouldDisableGridSpacingItem => GridEnabledItem == false;
 
     [Label("Routing Style")]
     [OptionGroup("PolylineGroup", 10)]
-    [DefaultValue(EdgeRoutingStyle.Octilinear)]
-    [EnumValue("Octilinear", EdgeRoutingStyle.Octilinear)]
-    [EnumValue("Orthogonal",EdgeRoutingStyle.Orthogonal )]
-    public EdgeRoutingStyle RoutingStyleItem { get; set; }
+    [DefaultValue(RoutingStyle.Octilinear)]
+    [EnumValue("Octilinear", RoutingStyle.Octilinear)]
+    [EnumValue("Orthogonal", RoutingStyle.Orthogonal)]
+    public RoutingStyle RoutingStyleItem { get; set; }
 
     [Label("Preferred Octilinear Segment Length")]
     [OptionGroup("PolylineGroup", 20)]
@@ -279,8 +272,13 @@ namespace Demo.yFiles.Layout.MazeRouting
     [ComponentType(ComponentTypes.Slider)]
     public double PreferredOctilinearSegmentLengthItem { get; set; }
 
-    public bool ShouldDisablePreferredOctilinearSegmentLengthItem {
-      get { return RoutingStyleItem != EdgeRoutingStyle.Octilinear; }
-    }
+    public bool ShouldDisablePreferredOctilinearSegmentLengthItem => RoutingStyleItem != RoutingStyle.Octilinear;
+  }
+
+  public enum Scope
+  {
+    RouteAllEdges,
+    RouteAffectedEdges,
+    RouteEdgesAtAffectedNodes
   }
 }

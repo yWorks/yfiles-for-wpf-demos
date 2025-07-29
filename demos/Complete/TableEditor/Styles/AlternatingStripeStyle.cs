@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -39,103 +39,102 @@ using yWorks.Graph.Styles;
 namespace Demo.yFiles.Graph.TableEditor.Style
 {
   /// <summary>
-  /// Custom stripe style that alternates the visualizations for the leaf nodes and uses a different style for all parent stripes.
+  ///   Custom stripe style that alternates the visualizations for the leaf nodes and uses a different style for all parent
+  ///   stripes.
   /// </summary>
   public class AlternatingLeafStripeStyle : StripeStyleBase<VisualGroup>
   {
     /// <summary>
-    /// Visualization for all leaf stripes that have an even index
+    ///   Visualization for all leaf stripes that have an even index
     /// </summary>
     public StripeDescriptor EvenLeafDescriptor { get; set; }
 
     /// <summary>
-    /// Visualization for all stripes that are not leafs
+    ///   Visualization for all stripes that are not leaves
     /// </summary>
     public StripeDescriptor ParentDescriptor { get; set; }
 
     /// <summary>
-    /// Visualization for all leaf stripes that have an odd index
+    ///   Visualization for all leaf stripes that have an odd index
     /// </summary>
     public StripeDescriptor OddLeafDescriptor { get; set; }
 
     protected override VisualGroup CreateVisual(IRenderContext context, IStripe stripe) {
       var layout = stripe.Layout.ToRectD();
-      var cc = new VisualGroup() { AllowDrop = true };
-      Thickness stripeInsets;
+      var cc = new VisualGroup { AllowDrop = true };
+      Thickness stripePadding;
 
       StripeDescriptor descriptor;
-      //Depending on the stripe type, we need to consider horizontal or vertical insets
+      // Depending on the stripe type, we need to consider horizontal or vertical padding
       if (stripe is IColumn) {
         var col = (IColumn) stripe;
-        stripeInsets = new Thickness(0, col.GetActualInsets().Top, 0, col.GetActualInsets().Bottom);
+        stripePadding = new Thickness(0, col.GetTotalPadding().Top, 0, col.GetTotalPadding().Bottom);
       } else {
         var row = (IRow) stripe;
-        stripeInsets = new Thickness(row.GetActualInsets().Left, 0, row.GetActualInsets().Right, 0);
+        stripePadding = new Thickness(row.GetTotalPadding().Left, 0, row.GetTotalPadding().Right, 0);
       }
 
       Thickness actualBorderThickness;
 
       if (stripe.GetChildStripes().Any()) {
-        //Parent stripe - use the parent descriptor
+        // Parent stripe - use the parent descriptor
         descriptor = ParentDescriptor;
         actualBorderThickness = descriptor.BorderThickness;
       } else {
         int index;
         if (stripe is IColumn) {
           var col = (IColumn) stripe;
-          //Get all leaf columns
+          // Get all leaf columns
           var leafs = col.Table.RootColumn.GetLeaves().ToList();
-          //Determine the index
-          index = leafs.FindIndex((curr) => col == curr);
-          //Use the correct descriptor
+          // Determine the index
+          index = leafs.FindIndex(curr => col == curr);
+          // Use the correct descriptor
           descriptor = index % 2 == 0 ? EvenLeafDescriptor : OddLeafDescriptor;
           actualBorderThickness = descriptor.BorderThickness;
         } else {
           var row = (IRow) stripe;
           var leafs = row.Table.RootRow.GetLeaves().ToList();
-          index = leafs.FindIndex((curr) => row == curr);
+          index = leafs.FindIndex(curr => row == curr);
           descriptor = index % 2 == 0 ? EvenLeafDescriptor : OddLeafDescriptor;
           actualBorderThickness = descriptor.BorderThickness;
         }
       }
 
       {
-        cc.Add(new Border
-        {
-          Background = descriptor.BackgroundBrush,
-          BorderBrush = descriptor.InsetBrush,
-          BorderThickness = stripeInsets,
-          Width = layout.Width,
-          Height = layout.Height,
-          AllowDrop = true
+        cc.Add(new Border {
+            Background = descriptor.BackgroundBrush,
+            BorderBrush = descriptor.InsetBrush,
+            BorderThickness = stripePadding,
+            Width = layout.Width,
+            Height = layout.Height,
+            AllowDrop = true
         });
-        cc.Add(new Border
-        {
-          Background = Brushes.Transparent,
-          BorderBrush = descriptor.BorderBrush,
-          BorderThickness = actualBorderThickness,
-          Width = layout.Width,
-          Height = layout.Height,
-          AllowDrop = true
+        cc.Add(new Border {
+            Background = Brushes.Transparent,
+            BorderBrush = descriptor.BorderBrush,
+            BorderThickness = actualBorderThickness,
+            Width = layout.Width,
+            Height = layout.Height,
+            AllowDrop = true
         });
       }
-      cc.SetCanvasArrangeRect(layout.ToRectD());
-      var renderData = CreateRenderDataCache(context, descriptor, stripe, stripeInsets);
+      cc.SetCanvasArrangeRect(layout.ToRect());
+      var renderData = CreateRenderDataCache(context, descriptor, stripe, stripePadding);
       cc.SetRenderDataCache(renderData);
       return cc;
     }
 
     protected override VisualGroup UpdateVisual(IRenderContext context, VisualGroup oldVisual, IStripe stripe) {
       var layout = stripe.Layout.ToRectD();
-      Thickness stripeInsets;
-      //Check if values have changed - then update everything
+      Thickness stripePadding;
+      // Check if values have changed - then update everything
       StripeDescriptor descriptor;
       if (stripe is IColumn) {
         var col = (IColumn) stripe;
-        stripeInsets = new Thickness(0, col.GetActualInsets().Top, 0, col.GetActualInsets().Bottom);
+        stripePadding = new Thickness(0, col.GetTotalPadding().Top, 0, col.GetTotalPadding().Bottom);
       } else {
         var row = (IRow) stripe;
-        stripeInsets = new Thickness(row.GetActualInsets().Left, 0, row.GetActualInsets().Right, 0);
+        stripePadding = new Thickness(row.GetTotalPadding().Left, 0, row.GetTotalPadding().Right, 0);
       }
 
       Thickness actualBorderThickness;
@@ -148,22 +147,22 @@ namespace Demo.yFiles.Graph.TableEditor.Style
         if (stripe is IColumn) {
           var col = (IColumn) stripe;
           var leafs = col.Table.RootColumn.GetLeaves().ToList();
-          index = leafs.FindIndex((curr) => col == curr);
+          index = leafs.FindIndex(curr => col == curr);
           descriptor = index % 2 == 0 ? EvenLeafDescriptor : OddLeafDescriptor;
           actualBorderThickness = descriptor.BorderThickness;
         } else {
           var row = (IRow) stripe;
           var leafs = row.Table.RootRow.GetLeaves().ToList();
-          index = leafs.FindIndex((curr) => row == curr);
+          index = leafs.FindIndex(curr => row == curr);
           descriptor = index % 2 == 0 ? EvenLeafDescriptor : OddLeafDescriptor;
           actualBorderThickness = descriptor.BorderThickness;
         }
       }
 
-      // get the data with which the oldvisual was created
+      // get the data with which the old visual was created
       var oldCache = oldVisual.GetRenderDataCache<RenderDataCache>();
       // get the data for the new visual
-      RenderDataCache newCache = CreateRenderDataCache(context, descriptor, stripe, stripeInsets);
+      var newCache = CreateRenderDataCache(context, descriptor, stripe, stripePadding);
 
       // check if something changed except for the location of the node
       if (!newCache.Equals(oldCache)) {
@@ -171,49 +170,39 @@ namespace Demo.yFiles.Graph.TableEditor.Style
         return CreateVisual(context, stripe);
       }
 
-      Border borderVisual = (Border) oldVisual.Children[0];
+      var borderVisual = (Border) oldVisual.Children[0];
       borderVisual.Width = layout.Width;
       borderVisual.Height = layout.Height;
-      borderVisual.BorderThickness = stripeInsets;
+      borderVisual.BorderThickness = stripePadding;
 
-      Border stripeVisual = (Border) oldVisual.Children[1];
+      var stripeVisual = (Border) oldVisual.Children[1];
       stripeVisual.Width = layout.Width;
       stripeVisual.Height = layout.Height;
       stripeVisual.BorderThickness = actualBorderThickness;
-      oldVisual.SetCanvasArrangeRect(layout.ToRectD());
+      oldVisual.SetCanvasArrangeRect(layout.ToRect());
       return oldVisual;
     }
 
 #pragma warning disable 659
     /// <summary>
-    /// Helper class to cache rendering related data
+    ///   Helper class to cache rendering related data
     /// </summary>
     private sealed class RenderDataCache
     {
-      private readonly StripeDescriptor descriptor;
-      private readonly Thickness insets;
-      private readonly IStripe stripe;
+      public StripeDescriptor Descriptor { get; }
 
-      public StripeDescriptor Descriptor {
-        get { return descriptor; }
-      }
+      public Thickness Padding { get; }
 
-      public Thickness Insets {
-        get { return insets; }
-      }
+      public IStripe Stripe { get; }
 
-      public IStripe Stripe {
-        get { return stripe; }
-      }
-
-      public RenderDataCache(StripeDescriptor descriptor, IStripe stripe, Thickness insets) {
-        this.descriptor = descriptor;
-        this.stripe = stripe;
-        this.insets = insets;
+      public RenderDataCache(StripeDescriptor descriptor, IStripe stripe, Thickness padding) {
+        this.Descriptor = descriptor;
+        this.Stripe = stripe;
+        this.Padding = padding;
       }
 
       public bool Equals(RenderDataCache other) {
-        return other.Descriptor == Descriptor && other.Insets == Insets && other.Stripe == Stripe;
+        return other.Descriptor == Descriptor && other.Padding == Padding && other.Stripe == Stripe;
       }
 
 
@@ -224,13 +213,17 @@ namespace Demo.yFiles.Graph.TableEditor.Style
         if (obj.GetType() != typeof(RenderDataCache)) {
           return false;
         }
-        return Equals((RenderDataCache)obj);
+        return Equals((RenderDataCache) obj);
       }
     }
 #pragma warning restore 659
 
-    private static RenderDataCache CreateRenderDataCache(IRenderContext context, StripeDescriptor descriptor, IStripe stripe, Thickness insets) {
-      return new RenderDataCache(descriptor, stripe, insets);
+    private static RenderDataCache CreateRenderDataCache(
+        IRenderContext context,
+        StripeDescriptor descriptor,
+        IStripe stripe,
+        Thickness padding) {
+      return new RenderDataCache(descriptor, stripe, padding);
     }
   }
 }

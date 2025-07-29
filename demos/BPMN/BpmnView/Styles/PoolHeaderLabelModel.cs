@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -34,98 +34,93 @@ using yWorks.Geometry;
 using yWorks.Graph;
 using yWorks.Graph.LabelModels;
 using yWorks.GraphML;
+using yWorks.Utils;
 
-namespace Demo.yFiles.Graph.Bpmn.Styles {
-
+namespace Demo.yFiles.Graph.Bpmn.Styles
+{
   /// <summary>
-  /// A label model for nodes using a <see cref="PoolNodeStyle"/> that position labels inside the <see cref="ITable.Insets">table insets</see>.
+  ///   A label model for nodes using a <see cref="PoolNodeStyle"/> that positions labels inside the
+  ///   table <see cref="ITable.Padding"/>.
   /// </summary>
   [Obfuscation(StripAfterObfuscation = false, Exclude = true, ApplyToMembers = false)]
-  public class PoolHeaderLabelModel : ILabelModel, ILabelModelParameterProvider {
-
+  public class PoolHeaderLabelModel : ILabelModel
+  {
     #region Initialize static fields
 
     /// <summary>
-    /// The <see cref="PoolHeaderLabelModel"/> singleton.
+    ///   The <see cref="PoolHeaderLabelModel"/> singleton.
     /// </summary>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
-    public static readonly PoolHeaderLabelModel Instance = new PoolHeaderLabelModel();
+    public static readonly PoolHeaderLabelModel Instance = new();
 
     /// <summary>
-    /// A parameter instance using the north insets of the pool node.
+    ///   A parameter instance using the top padding of the pool node.
     /// </summary>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
-    public static readonly ILabelModelParameter North = new PoolHeaderParameter(0);
+    public static readonly PoolHeaderParameter Top = new(0);
 
     /// <summary>
-    /// A parameter instance using the east insets of the pool node.
+    ///   A parameter instance using the right padding of the pool node.
     /// </summary>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
-    public static readonly ILabelModelParameter East = new PoolHeaderParameter(1);
+    public static readonly PoolHeaderParameter Right = new(1);
 
     /// <summary>
-    /// A parameter instance using the south insets of the pool node.
+    ///   A parameter instance using the bottom padding of the pool node.
     /// </summary>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
-    public static readonly ILabelModelParameter South = new PoolHeaderParameter(2);
+    public static readonly PoolHeaderParameter Bottom = new(2);
 
     /// <summary>
-    /// A parameter instance using the west insets of the pool node.
+    ///   A parameter instance using the left padding of the pool node.
     /// </summary>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
-    public static readonly ILabelModelParameter West = new PoolHeaderParameter(3);
+    public static readonly PoolHeaderParameter Left = new(3);
 
-    private static readonly IEnumerable<ILabelModelParameter> parameters = new[] { North, East, South, West };
+    private static readonly IEnumerable<ILabelModelParameter> parameters = new[] { Top, Right, Bottom, Left };
 
     #endregion
 
 
-    /// <inheritdoc/>
-    [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
-    public virtual object Lookup(Type type) {
-      if (type == typeof(ILabelModelParameterProvider)) {
-        return this;
-      }
-      if (type == typeof(ILabelModelParameterFinder)) {
-        return DefaultLabelModelParameterFinder.Instance;
-      }
-      if (type == typeof(ILabelCandidateDescriptorProvider)) {
-        return ConstantLabelCandidateDescriptorProvider.InternalDescriptorProvider;
-      }
-      return null;
-    }
-
     ///<inheritdoc/>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     public IOrientedRectangle GetGeometry(ILabel label, ILabelModelParameter parameter) {
-      var php = parameter as PoolHeaderParameter;
-      INode owner = (INode)label.Owner;
-      if (php == null || owner == null) {
-        return null;
+      if (parameter is not PoolHeaderParameter php) {
+        throw new ArgumentException("The parameter is not supported by this label model.", nameof(parameter));
+      }
+      if (!DefaultGraph.HasOwner(label)) {
+        throw new ArgumentException("The label has no valid owner.", nameof(label));
+      }
+      if (label.Owner is not INode node) {
+        throw new ArgumentException("This model only supports node labels.", nameof(label));
       }
 
-      ITable table = owner.Lookup<ITable>();
-      InsetsD insets = table != null && table.Insets != InsetsD.Empty ? table.Insets : new InsetsD(0);
+      var table = node.Lookup<ITable>();
+      var padding = table != null && table.Padding != InsetsD.Empty ? table.Padding : new InsetsD(0);
 
       var orientedRectangle = new OrientedRectangle();
-      orientedRectangle.Resize(label.PreferredSize);
+      orientedRectangle.Size = label.PreferredSize;
       switch (php.Side) {
-        case 0: // North
+        case 0: // Top
           orientedRectangle.SetUpVector(0, -1);
-          orientedRectangle.SetCenter(new PointD(owner.Layout.X + owner.Layout.Width/2, owner.Layout.Y + insets.Top/2));
+          orientedRectangle.SetCenter(new PointD(node.Layout.X + node.Layout.Width / 2,
+              node.Layout.Y + padding.Top / 2));
           break;
-        case 1: // East
+        case 1: // Right
           orientedRectangle.SetUpVector(1, 0);
-          orientedRectangle.SetCenter(new PointD(owner.Layout.GetMaxX() - insets.Right/2, owner.Layout.Y + owner.Layout.Height/2));
+          orientedRectangle.SetCenter(new PointD(node.Layout.GetMaxX() - padding.Right / 2,
+              node.Layout.Y + node.Layout.Height / 2));
           break;
-        case 2: // South
+        case 2: // Bottom
           orientedRectangle.SetUpVector(0, -1);
-          orientedRectangle.SetCenter(new PointD(owner.Layout.X + owner.Layout.Width/2, owner.Layout.GetMaxY() - insets.Bottom/2));
+          orientedRectangle.SetCenter(new PointD(node.Layout.X + node.Layout.Width / 2,
+              node.Layout.GetMaxY() - padding.Bottom / 2));
           break;
-        case 3: // West
+        case 3: // Left
         default:
           orientedRectangle.SetUpVector(-1, 0);
-          orientedRectangle.SetCenter(new PointD(owner.Layout.X + insets.Left/2, owner.Layout.Y + owner.Layout.Height/2));
+          orientedRectangle.SetCenter(new PointD(node.Layout.X + padding.Left / 2,
+              node.Layout.Y + node.Layout.Height / 2));
           break;
       }
 
@@ -134,44 +129,36 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
 
     /// <inheritdoc/>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
-    public ILabelModelParameter CreateDefaultParameter() {
-      return West;
+    public ILookup GetContext(ILabel label) {
+      return new PoolHeaderLabelModelLookup();
     }
 
-    /// <inheritdoc/>
-    [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
-    public ILookup GetContext(ILabel label, ILabelModelParameter parameter) {
-      return Lookups.Empty;
-    }
-
-    /// <inheritdoc/>
-    [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
-    public IEnumerable<ILabelModelParameter> GetParameters(ILabel label, ILabelModel model) {
-      return parameters;
-    }
-
-    [SingletonSerialization(ContainerTypes = new[] { typeof(PoolHeaderLabelModel) })]
-    internal class PoolHeaderParameter : ILabelModelParameter
+    private sealed class PoolHeaderLabelModelLookup : ILookup, ILabelModelParameterProvider
     {
-      private readonly byte side;
-
-      public byte Side {
-        get { return side; }
+      public object Lookup(Type type) {
+        return type == typeof(ILabelModelParameterProvider) ? this : null;
       }
 
+      /// <inheritdoc/>
+      public IEnumerable<ILabelModelParameter> GetParameters() {
+        return parameters;
+      }
+    }
+
+    [GraphML(SingletonContainers = new[] { typeof(PoolHeaderLabelModel) })]
+    public class PoolHeaderParameter : ILabelModelParameter
+    {
+      public byte Side { get; }
+
       public PoolHeaderParameter(byte side) {
-        this.side = side;
+        Side = side;
       }
 
       public object Clone() {
         return this;
       }
 
-      public ILabelModel Model { get { return Instance; } }
-
-      public bool Supports(ILabel label) {
-        return label.Owner.Lookup<ITable>() != null;
-      }
+      public ILabelModel Model => Instance;
     }
   }
 }

@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -43,24 +43,24 @@ using yWorks.Graph.Styles;
 namespace Demo.yFiles.Graph.RenderPolicies
 {
   /// <summary>
-  /// This demo shows the effect of different render policies on the z-order of nodes, edges, labels and ports.
+  ///   This demo shows the effect of different render policies on the z-order of nodes, edges, labels, and ports.
   /// </summary>
   public partial class RenderPoliciesWindow
   {
     /// <summary>
-    /// Initializes the components of this demo.
+    ///   Initializes the components of this demo.
     /// </summary>
     public RenderPoliciesWindow() {
       InitializeComponent();
     }
 
     /// <summary>
-    /// Initializes the application.
+    ///   Initializes the application.
     /// </summary>
     protected virtual void OnLoaded(object src, RoutedEventArgs e) {
       // Initialize:
       // ... the input mode
-      graphControl.InputMode = new GraphEditorInputMode { AllowGroupingOperations = true };
+      graphControl.InputMode = new GraphEditorInputMode();
 
       // ...the defaults for new graph items
       SetGraphDefaults();
@@ -70,7 +70,7 @@ namespace Demo.yFiles.Graph.RenderPolicies
       graphControl.GraphModelManager.EdgeLabelLayerPolicy = LabelLayerPolicy.SeparateLayer;
       graphControl.GraphModelManager.PortLabelLayerPolicy = LabelLayerPolicy.SeparateLayer;
       graphControl.GraphModelManager.PortLayerPolicy = PortLayerPolicy.SeparateLayer;
-      graphControl.GraphModelManager.HierarchicNestingPolicy = HierarchicNestingPolicy.NodesAndEdges;
+      graphControl.GraphModelManager.HierarchicalNestingPolicy = HierarchicalNestingPolicy.NodesAndEdges;
       graphControl.GraphModelManager.EdgeGroup.Below(graphControl.GraphModelManager.NodeGroup);
 
       // ... the undo engine
@@ -81,10 +81,10 @@ namespace Demo.yFiles.Graph.RenderPolicies
     }
 
     /// <summary>
-    /// Switches between pre-defined rendering order settings for common use cases.
+    ///   Switches between pre-defined rendering order settings for common use cases.
     /// </summary>
     /// <remarks>
-    /// The settings may also be combined in different ways.
+    ///   The settings may also be combined in different ways.
     /// </remarks>
     private void RenderingOrderBoxChanged(object sender, SelectionChangedEventArgs e) {
       if (graphControl == null) {
@@ -98,7 +98,7 @@ namespace Demo.yFiles.Graph.RenderPolicies
       graphControl.GraphModelManager.EdgeLabelLayerPolicy = LabelLayerPolicy.SeparateLayer;
       graphControl.GraphModelManager.PortLabelLayerPolicy = LabelLayerPolicy.SeparateLayer;
       graphControl.GraphModelManager.PortLayerPolicy = PortLayerPolicy.SeparateLayer;
-      graphControl.GraphModelManager.HierarchicNestingPolicy = HierarchicNestingPolicy.NodesAndEdges;
+      graphControl.GraphModelManager.HierarchicalNestingPolicy = HierarchicalNestingPolicy.NodesAndEdges;
       graphControl.GraphModelManager.EdgeGroup.Below(graphControl.GraphModelManager.NodeGroup);
 
       switch (selectedItem) {
@@ -118,38 +118,38 @@ namespace Demo.yFiles.Graph.RenderPolicies
           graphControl.GraphModelManager.EdgeLabelLayerPolicy = LabelLayerPolicy.AtOwner;
           graphControl.GraphModelManager.PortLabelLayerPolicy = LabelLayerPolicy.AtOwner;
           graphControl.GraphModelManager.PortLayerPolicy = PortLayerPolicy.AtOwner;
-          graphControl.GraphModelManager.HierarchicNestingPolicy = HierarchicNestingPolicy.Nodes;
+          graphControl.GraphModelManager.HierarchicalNestingPolicy = HierarchicalNestingPolicy.Nodes;
           graphControl.GraphModelManager.EdgeGroup.Above(graphControl.GraphModelManager.NodeGroup);
           break;
         case 3:
           // group nodes
-          graphControl.GraphModelManager.HierarchicNestingPolicy = HierarchicNestingPolicy.GroupNodes;
+          graphControl.GraphModelManager.HierarchicalNestingPolicy = HierarchicalNestingPolicy.GroupNodes;
           break;
         case 4:
           // none
-          graphControl.GraphModelManager.HierarchicNestingPolicy = HierarchicNestingPolicy.None;
+          graphControl.GraphModelManager.HierarchicalNestingPolicy = HierarchicalNestingPolicy.None;
           break;
       }
     }
 
     /// <summary>
-    /// Initializes the node, label and port defaults used in this demo.
+    ///   Initializes the node, label and port defaults used in this demo.
     /// </summary>
     private void SetGraphDefaults() {
       var graph = graphControl.Graph;
       DemoStyles.InitDemoStyles(graph);
 
-      graph.NodeDefaults.Ports.Style = new NodeStylePortStyleAdapter(new ShapeNodeStyle {
-        Brush = (Brush) new SolidColorBrush(Color.FromRgb(0x11, 0x1D, 0x4A)).GetAsFrozen(),
-        Shape = ShapeNodeShape.Ellipse
-      });
+      graph.NodeDefaults.Ports.Style = new ShapePortStyle {
+          Brush = (Brush) new SolidColorBrush(Color.FromRgb(0x11, 0x1D, 0x4A)).GetAsFrozen(),
+          Shape = ShapeNodeShape.Ellipse
+      };
     }
 
     /// <summary>
-    /// Loads the sample graph for this demo.
+    ///   Loads the sample graph for this demo.
     /// </summary>
     /// <remarks>
-    /// It contains several different demo cases so that overlapping can be tested for different layer policies.
+    ///   It contains several different demo cases so that overlapping can be tested for different layer policies.
     /// </remarks>
     private void CreateGraph() {
       CreateOverlappingLabelSample(new PointD(-290, 0));
@@ -162,7 +162,7 @@ namespace Demo.yFiles.Graph.RenderPolicies
     }
 
     /// <summary>
-    /// creates a graph example with a nested group
+    ///   creates a graph example with a nested group
     /// </summary>
     private void CreateNestedGroupSample(PointD origin) {
       var graph = graphControl.Graph;
@@ -197,7 +197,7 @@ namespace Demo.yFiles.Graph.RenderPolicies
     }
 
     /// <summary>
-    /// creates a graph example with overlapping edges
+    ///   creates a graph example with overlapping edges
     /// </summary>
     private void CreateOverlappingEdgeSample(PointD origin) {
       var graph = graphControl.Graph;
@@ -217,7 +217,7 @@ namespace Demo.yFiles.Graph.RenderPolicies
     }
 
     /// <summary>
-    /// creates a graph example with overlapping nodes
+    ///   creates a graph example with overlapping nodes
     /// </summary>
     private void CreateOverlappingNodeSample(PointD origin) {
       var graph = graphControl.Graph;
@@ -234,17 +234,16 @@ namespace Demo.yFiles.Graph.RenderPolicies
 
       // overlapping nodes with ports
       var back2 = graph.CreateNode(new RectD(origin.X + 120, origin.Y + 20, 50, 50), graph.NodeDefaults.Style);
-      var middle2 =
-          graph.CreateNode(new RectD(origin.X + 140, origin.Y + 35, 50, 50), graph.NodeDefaults.Style);
+      var middle2 = graph.CreateNode(new RectD(origin.X + 140, origin.Y + 35, 50, 50), graph.NodeDefaults.Style);
       var front2 = graph.CreateNode(new RectD(origin.X + 160, origin.Y + 50, 50, 50), graph.NodeDefaults.Style);
 
       var nodeList = new List<INode> { back2, middle2, front2 };
 
       foreach (var node in nodeList) {
-        graph.AddPort(node, FreeNodePortLocationModel.NodeBottomAnchored);
-        graph.AddPort(node, FreeNodePortLocationModel.NodeTopAnchored);
-        graph.AddPort(node, FreeNodePortLocationModel.NodeLeftAnchored);
-        graph.AddPort(node, FreeNodePortLocationModel.NodeRightAnchored);
+        graph.AddPort(node, FreeNodePortLocationModel.Bottom);
+        graph.AddPort(node, FreeNodePortLocationModel.Top);
+        graph.AddPort(node, FreeNodePortLocationModel.Left);
+        graph.AddPort(node, FreeNodePortLocationModel.Right);
       }
 
       var edge1 = graph.CreateEdge(back1, back2);
@@ -261,23 +260,22 @@ namespace Demo.yFiles.Graph.RenderPolicies
     }
 
     /// <summary>
-    /// creates a graph example with overlapping labels
+    ///   creates a graph example with overlapping labels
     /// </summary>
     private void CreateOverlappingLabelSample(PointD origin) {
       var graph = graphControl.Graph;
 
       var firstNode = graph.CreateNode(new RectD(origin.X, origin.Y + 50, 50, 50), graph.NodeDefaults.Style);
-      var secondNode =
-          graph.CreateNode(new RectD(origin.X + 60, origin.Y + 80, 50, 50), graph.NodeDefaults.Style);
+      var secondNode = graph.CreateNode(new RectD(origin.X + 60, origin.Y + 80, 50, 50), graph.NodeDefaults.Style);
 
-      graph.AddLabel(firstNode, "External Node Label 1", ExteriorLabelModel.South);
-      graph.AddLabel(secondNode, "External Node Label 2", ExteriorLabelModel.South);
+      graph.AddLabel(firstNode, "External Node Label 1", ExteriorNodeLabelModel.Bottom);
+      graph.AddLabel(secondNode, "External Node Label 2", ExteriorNodeLabelModel.Bottom);
 
       AddBorderVisual(new RectD(origin.X - 50, origin.Y - 20, 210, 250), "Try 'Default'");
     }
 
     /// <summary>
-    /// Adds a border with the given size and description.
+    ///   Adds a border with the given size and description.
     /// </summary>
     /// <remarks>Used to describe the different portions of the graph.</remarks>
     private void AddBorderVisual(RectD bounds, string text) {
@@ -286,13 +284,11 @@ namespace Demo.yFiles.Graph.RenderPolicies
           Style = new ShapeNodeStyle {
               Shape = ShapeNodeShape.Rectangle,
               Brush = null,
-              Pen = new Pen(Brushes.Gray, 4) {
-                  DashStyle = DashStyles.Dot
-              }
+              Pen = new Pen(Brushes.Gray, 4) { DashStyle = DashStyles.Dot }
           }
       };
-      var label = new SimpleLabel(rect, text, ExteriorLabelModel.North) {
-          Style = new DefaultLabelStyle {
+      var label = new SimpleLabel(rect, text, ExteriorNodeLabelModel.Top) {
+          Style = new LabelStyle {
               TextBrush = Brushes.Gray,
               TextAlignment = TextAlignment.Center,
               TextSize = 18,
@@ -301,12 +297,13 @@ namespace Demo.yFiles.Graph.RenderPolicies
           },
           PreferredSize = new SizeD(bounds.Width, 30)
       };
-      graphControl.BackgroundGroup.AddChild(rect, GraphModelManager.DefaultNodeDescriptor);
-      graphControl.BackgroundGroup.AddChild(label, GraphModelManager.DefaultLabelDescriptor);
+      var renderTree = graphControl.RenderTree;
+      renderTree.CreateElement(renderTree.BackgroundGroup, rect, GraphModelManager.DefaultNodeRenderer);
+      renderTree.CreateElement(renderTree.BackgroundGroup, label, GraphModelManager.DefaultLabelRenderer);
     }
 
     /// <summary>
-    /// Reset the graph to its initial state.
+    ///   Reset the graph to its initial state.
     /// </summary>
     private void ResetGraph(object sender, RoutedEventArgs e) {
       graphControl.Graph.Clear();

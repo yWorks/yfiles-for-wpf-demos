@@ -11,7 +11,7 @@
     <bpmn:messageFlow id="MessageFlow_1kszyaz" name="Employment Contract&#10;" sourceRef="Task_0ckc7en" targetRef="Task_05lu7oz" />
     <bpmn:messageFlow id="MessageFlow_0r2ml3e" name="Signed Employment Contract&#10;" sourceRef="Task_0geay7y" targetRef="Task_0ka1ufc" />
   </bpmn:collaboration>
-  <bpmn:process id="Process_1s9k2z1">
+  <bpmn:process id="Process_1s9k2z1" name="Header?">
     <bpmn:task id="Task_1i3xu57" name="Write Job Application&#10;">
       <bpmn:incoming>SequenceFlow_1e6p6fl</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_06dak7e</bpmn:outgoing>

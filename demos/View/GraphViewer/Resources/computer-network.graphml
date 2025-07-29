@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <!--Created by yFiles WPF 2.1-->
-<graphml xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/3.0" xmlns:y="http://www.yworks.com/xml/yfiles-common/3.0" xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/3.0/xaml" xmlns:yed="http://www.yworks.com/yfiles-wpf/2.1/demos/GraphEditor/Styles" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml.wpf/2.0/ygraphml.xsd " xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://graphml.graphdrawing.org/xmlns">
+<graphml xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/3.0" xmlns:y="http://www.yworks.com/xml/yfiles-common/3.0"  xmlns:yx="http://www.yworks.com/xml/yfiles-common/4.0" xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/4.0/xaml" xmlns:yed="http://www.yworks.com/yfiles-wpf/2.1/demos/GraphEditor/Styles" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml.wpf/2.0/ygraphml.xsd " xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://graphml.graphdrawing.org/xmlns">
   <key id="GraphDescription" for="graph" attr.name="GraphDescription" attr.type="string"/>
   <key id="d0" for="all" attr.name="UserTags" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/UserTags" />
   <key id="d1" for="node" attr.name="NodeLabels" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeLabels" />
@@ -28,7 +28,7 @@
   <key id="d13" attr.name="SharedData" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/SharedData" />
   <data key="d13">
     <y:SharedData>
-      <ywpf:DefaultLabelStyle x:Key="1" Typeface="Arial,Normal,Normal,Normal"/>
+      <ywpf:LabelStyle x:Key="1" Typeface="Arial,Normal,Normal,Normal"/>
       <yed:VectorNodeStyle x:Key="2" TemplateKey="Computer" />
       <yed:VectorNodeStyle x:Key="3" TemplateKey="Printer" />
       <yed:VectorNodeStyle x:Key="4" TemplateKey="Scanner" />
@@ -46,7 +46,7 @@
       </data>
       <data key="d1">
         <x:List>
-          <y:Label LayoutParameter="{x:Static y:ExteriorLabelModel.East}" Style="{y:GraphMLReference 1}" PreferredSize="29,14">
+          <y:Label LayoutParameter="{x:Static yx:ExteriorNodeLabelModel.Right}" Style="{y:GraphMLReference 1}" PreferredSize="29,14">
             <y:Label.Text>oschi</y:Label.Text>
           </y:Label>
         </x:List>
@@ -63,7 +63,7 @@
       </data>
       <data key="d1">
         <x:List>
-          <y:Label LayoutParameter="{x:Static y:ExteriorLabelModel.North}" Style="{y:GraphMLReference 1}" PreferredSize="43,14">
+          <y:Label LayoutParameter="{x:Static yx:ExteriorNodeLabelModel.Top}" Style="{y:GraphMLReference 1}" PreferredSize="43,14">
             <y:Label.Text>scanner</y:Label.Text>
           </y:Label>
         </x:List>
@@ -79,7 +79,7 @@
       </data>
       <data key="d1">
         <x:List>
-          <y:Label LayoutParameter="{x:Static y:ExteriorLabelModel.West}" Style="{y:GraphMLReference 1}" PreferredSize="32,14">
+          <y:Label LayoutParameter="{x:Static yx:ExteriorNodeLabelModel.Left}" Style="{y:GraphMLReference 1}" PreferredSize="32,14">
             <y:Label.Text>router</y:Label.Text>
           </y:Label>
         </x:List>
@@ -101,7 +101,7 @@
       </data>
       <data key="d1">
         <x:List>
-          <y:Label LayoutParameter="{x:Static y:ExteriorLabelModel.West}" Style="{y:GraphMLReference 1}" PreferredSize="25,14">
+          <y:Label LayoutParameter="{x:Static yx:ExteriorNodeLabelModel.Left}" Style="{y:GraphMLReference 1}" PreferredSize="25,14">
             <y:Label.Text>klotz</y:Label.Text>
           </y:Label>
         </x:List>
@@ -117,7 +117,7 @@
       </data>
       <data key="d1">
         <x:List>
-          <y:Label LayoutParameter="{x:Static y:ExteriorLabelModel.West}" Style="{y:GraphMLReference 1}" PreferredSize="49,14">
+          <y:Label LayoutParameter="{x:Static yx:ExteriorNodeLabelModel.Left}" Style="{y:GraphMLReference 1}" PreferredSize="49,14">
             <y:Label.Text>brummer</y:Label.Text>
           </y:Label>
         </x:List>
@@ -133,7 +133,7 @@
       </data>
       <data key="d1">
         <x:List>
-          <y:Label LayoutParameter="{x:Static y:ExteriorLabelModel.West}" Style="{y:GraphMLReference 1}" PreferredSize="47,14">
+          <y:Label LayoutParameter="{x:Static yx:ExteriorNodeLabelModel.Left}" Style="{y:GraphMLReference 1}" PreferredSize="47,14">
             <y:Label.Text>schnucki</y:Label.Text>
           </y:Label>
         </x:List>
@@ -151,7 +151,7 @@
       </data>
       <data key="d1">
         <x:List>
-          <y:Label LayoutParameter="{x:Static y:ExteriorLabelModel.South}" Style="{y:GraphMLReference 1}" PreferredSize="33,14">
+          <y:Label LayoutParameter="{x:Static yx:ExteriorNodeLabelModel.Bottom}" Style="{y:GraphMLReference 1}" PreferredSize="33,14">
             <y:Label.Text>power</y:Label.Text>
           </y:Label>
         </x:List>
@@ -167,7 +167,7 @@
       </data>
       <data key="d1">
         <x:List>
-          <y:Label LayoutParameter="{x:Static y:ExteriorLabelModel.East}" Style="{y:GraphMLReference 1}" PreferredSize="27,14">
+          <y:Label LayoutParameter="{x:Static yx:ExteriorNodeLabelModel.Right}" Style="{y:GraphMLReference 1}" PreferredSize="27,14">
             <y:Label.Text>color</y:Label.Text>
           </y:Label>
         </x:List>
@@ -183,7 +183,7 @@
       </data>
       <data key="d1">
         <x:List>
-          <y:Label LayoutParameter="{x:Static y:ExteriorLabelModel.South}" Style="{y:GraphMLReference 1}" PreferredSize="39,14">
+          <y:Label LayoutParameter="{x:Static yx:ExteriorNodeLabelModel.Bottom}" Style="{y:GraphMLReference 1}" PreferredSize="39,14">
             <y:Label.Text>deskjet</y:Label.Text>
           </y:Label>
         </x:List>
@@ -199,7 +199,7 @@
       </data>
       <data key="d1">
         <x:List>
-          <y:Label LayoutParameter="{x:Static y:ExteriorLabelModel.East}" Style="{y:GraphMLReference 1}" PreferredSize="27,14">
+          <y:Label LayoutParameter="{x:Static yx:ExteriorNodeLabelModel.Right}" Style="{y:GraphMLReference 1}" PreferredSize="27,14">
             <y:Label.Text>laser</y:Label.Text>
           </y:Label>
         </x:List>
@@ -215,7 +215,7 @@
       </data>
       <data key="d1">
         <x:List>
-          <y:Label LayoutParameter="{x:Static y:ExteriorLabelModel.South}" Style="{y:GraphMLReference 1}" PreferredSize="43,14">
+          <y:Label LayoutParameter="{x:Static yx:ExteriorNodeLabelModel.Bottom}" Style="{y:GraphMLReference 1}" PreferredSize="43,14">
             <y:Label.Text>scanner</y:Label.Text>
           </y:Label>
         </x:List>
@@ -231,7 +231,7 @@
       </data>
       <data key="d1">
         <x:List>
-          <y:Label LayoutParameter="{x:Static y:ExteriorLabelModel.East}" Style="{y:GraphMLReference 1}" PreferredSize="34,14">
+          <y:Label LayoutParameter="{x:Static yx:ExteriorNodeLabelModel.Right}" Style="{y:GraphMLReference 1}" PreferredSize="34,14">
             <y:Label.Text>switch</y:Label.Text>
           </y:Label>
         </x:List>
@@ -251,7 +251,7 @@
       </data>
       <data key="d1">
         <x:List>
-          <y:Label LayoutParameter="{x:Static y:ExteriorLabelModel.East}" Style="{y:GraphMLReference 1}" PreferredSize="34,14">
+          <y:Label LayoutParameter="{x:Static yx:ExteriorNodeLabelModel.Right}" Style="{y:GraphMLReference 1}" PreferredSize="34,14">
             <y:Label.Text>trumm</y:Label.Text>
           </y:Label>
         </x:List>
@@ -268,7 +268,7 @@
       </data>
       <data key="d1">
         <x:List>
-          <y:Label LayoutParameter="{x:Static y:ExteriorLabelModel.South}" Style="{y:GraphMLReference 1}" PreferredSize="33,14">
+          <y:Label LayoutParameter="{x:Static yx:ExteriorNodeLabelModel.Bottom}" Style="{y:GraphMLReference 1}" PreferredSize="33,14">
             <y:Label.Text>garelli</y:Label.Text>
           </y:Label>
         </x:List>
@@ -284,7 +284,7 @@
       </data>
       <data key="d1">
         <x:List>
-          <y:Label LayoutParameter="{x:Static y:ExteriorLabelModel.East}" Style="{y:GraphMLReference 1}" PreferredSize="43,14">
+          <y:Label LayoutParameter="{x:Static yx:ExteriorNodeLabelModel.Right}" Style="{y:GraphMLReference 1}" PreferredSize="43,14">
             <y:Label.Text>brocken</y:Label.Text>
           </y:Label>
         </x:List>
@@ -302,7 +302,7 @@
       </data>
       <data key="d1">
         <x:List>
-          <y:Label LayoutParameter="{x:Static y:ExteriorLabelModel.East}" Style="{y:GraphMLReference 1}" PreferredSize="40,14">
+          <y:Label LayoutParameter="{x:Static yx:ExteriorNodeLabelModel.Right}" Style="{y:GraphMLReference 1}" PreferredSize="40,14">
             <y:Label.Text>kreidler</y:Label.Text>
           </y:Label>
         </x:List>
@@ -319,7 +319,7 @@
       </data>
       <data key="d1">
         <x:List>
-          <y:Label LayoutParameter="{x:Static y:ExteriorLabelModel.North}" Style="{y:GraphMLReference 1}" PreferredSize="37,14">
+          <y:Label LayoutParameter="{x:Static yx:ExteriorNodeLabelModel.Top}" Style="{y:GraphMLReference 1}" PreferredSize="37,14">
             <y:Label.Text>phaser</y:Label.Text>
           </y:Label>
         </x:List>
@@ -335,7 +335,7 @@
       </data>
       <data key="d1">
         <x:List>
-          <y:Label LayoutParameter="{x:Static y:ExteriorLabelModel.North}" Style="{y:GraphMLReference 1}" PreferredSize="37,14">
+          <y:Label LayoutParameter="{x:Static yx:ExteriorNodeLabelModel.Top}" Style="{y:GraphMLReference 1}" PreferredSize="37,14">
             <y:Label.Text>phaser</y:Label.Text>
           </y:Label>
         </x:List>
@@ -351,7 +351,7 @@
       </data>
       <data key="d1">
         <x:List>
-          <y:Label LayoutParameter="{x:Static y:ExteriorLabelModel.West}" Style="{y:GraphMLReference 1}" PreferredSize="27,14">
+          <y:Label LayoutParameter="{x:Static yx:ExteriorNodeLabelModel.Left}" Style="{y:GraphMLReference 1}" PreferredSize="27,14">
             <y:Label.Text>protz</y:Label.Text>
           </y:Label>
         </x:List>

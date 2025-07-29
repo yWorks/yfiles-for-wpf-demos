@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -28,48 +28,46 @@
  ***************************************************************************/
 
 using System;
-using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media;
+using Demo.yFiles.Toolkit;
+using yWorks.Annotations;
 using yWorks.Controls;
 using yWorks.Controls.Input;
-using yWorks.Annotations;
 using yWorks.Geometry;
 using yWorks.Graph;
 
-namespace Demo.yFiles.Graph.Input.HandleProvider {
-
+namespace Demo.yFiles.Graph.Input.HandleProvider
+{
   /// <summary>
-  /// A custom <see cref="IHandle"/> implementation that implements the functionality 
-  /// needed for resizing a label.
+  ///   A custom <see cref="IHandle"/> implementation that implements the functionality
+  ///   needed for resizing a label.
   /// </summary>
   public class LabelResizeHandle : IHandle
   {
     private readonly ILabel label;
+
     // whether to use the temporary dummy bounds or the actual label bounds
     private bool emulate;
+
     // the dummy bounds for displaying the size indicator during a resize gesture
     private SizeD dummyPreferredSize;
     private PointD dummyLocation;
 
-    private readonly bool symmetricResize = true;
-    private ICanvasObject sizeIndicator;
+    private IRenderTreeElement sizeIndicator;
 
-    public LabelResizeHandle(ILabel label, bool symmetricResize) {
+    public LabelResizeHandle(ILabel label, bool symmetricResize = true) {
       this.label = label;
-      this.symmetricResize = symmetricResize;
+      SymmetricResize = symmetricResize;
     }
 
-    public bool SymmetricResize {
-      get { return symmetricResize; }
-    }
+    public bool SymmetricResize { get; }
 
-    public HandleTypes Type {
-      get { return HandleTypes.Resize; }
-    }
+    public HandleType Type => HandleType.Resize;
 
-    public Cursor Cursor {
-      get { return Cursors.SizeWE; }
-    }
+    public object Tag => null;
+
+    public Cursor Cursor => Cursors.SizeWE;
 
     public void HandleClick(ClickEventArgs eventArgs) {
       // ignore clicks
@@ -77,24 +75,20 @@ namespace Demo.yFiles.Graph.Input.HandleProvider {
 
     private IPoint location;
 
-    public IPoint Location {
-      get {
-        if (location == null) {
-          location = new LabelResizeHandleLivePoint(this);
-        }
-        return location;
-      }
-    }
+    public IPoint Location => location ??= new LabelResizeHandleLivePoint(this);
 
     public void InitializeDrag(IInputModeContext context) {
       // start using the calculated dummy bounds
       emulate = true;
       dummyPreferredSize = label.PreferredSize;
-      dummyLocation = label.GetLayout().GetAnchorLocation();
-      var canvasControl = context.CanvasControl;
-      if (canvasControl != null) {
+      dummyLocation = label.GetLayout().GetAnchor();
+      if (context.CanvasControl is GraphControl graphControl) {
         // install the visual size indicator in the SelectionGroup of the canvas
-        sizeIndicator = new LabelResizeIndicatorInstaller(this).AddCanvasObject(canvasControl.CanvasContext, ((GraphControl) canvasControl).SelectionGroup, this);
+        var renderer =
+            new OrientedRectangleRenderer<LabelResizeHandle>(handle =>
+                handle.GetCurrentLabelLayout().GetEnlarged(new InsetsD(1))) { Pen = new Pen(Brushes.LightGray, 4) };
+        var renderTree = graphControl.RenderTree;
+        sizeIndicator = renderTree.CreateElement(renderTree.SelectionGroup, this, renderer);
       }
     }
 
@@ -107,13 +101,14 @@ namespace Demo.yFiles.Graph.Input.HandleProvider {
       var delta = upNormal.ScalarProduct(newLocation - originalLocation);
 
       // max with minus half the label size - because the label width can't shrink below zero
-      delta = Math.Max(delta, -layout.Width*(symmetricResize?0.5:1));
+      delta = Math.Max(delta, -layout.Width * (SymmetricResize ? 0.5 : 1));
 
       // add one or two times delta to the width to expand the label right and left
-      var newWidth = layout.Width + delta*(symmetricResize?2:1);
+      var newWidth = layout.Width + delta * (SymmetricResize ? 2 : 1);
       dummyPreferredSize = new SizeD(newWidth, dummyPreferredSize.Height);
       // calculate the new location
-      dummyLocation = layout.GetAnchorLocation() - (symmetricResize?new PointD(upNormal.X * delta, upNormal.Y * delta):new PointD());
+      dummyLocation = layout.GetAnchor() -
+          (SymmetricResize ? new PointD(upNormal.X * delta, upNormal.Y * delta) : new PointD());
     }
 
     public void CancelDrag(IInputModeContext context, PointD originalLocation) {
@@ -121,7 +116,7 @@ namespace Demo.yFiles.Graph.Input.HandleProvider {
       emulate = false;
       // remove the visual size indicator
       if (sizeIndicator != null) {
-        sizeIndicator.Remove();
+        context.CanvasControl!.RenderTree.Remove(sizeIndicator);
         sizeIndicator = null;
       }
     }
@@ -138,10 +133,11 @@ namespace Demo.yFiles.Graph.Input.HandleProvider {
     private OrientedRectangle GetCurrentLabelLayout() {
       var labelLayout = label.GetLayout();
       if (emulate) {
-        return new OrientedRectangle(dummyLocation.X, dummyLocation.Y, dummyPreferredSize.Width, dummyPreferredSize.Height, labelLayout.UpX, labelLayout.UpY);
-      } else {
-        return new OrientedRectangle(labelLayout.AnchorX, labelLayout.AnchorY, label.PreferredSize.Width, label.PreferredSize.Height, labelLayout.UpX, labelLayout.UpY);
+        return new OrientedRectangle(dummyLocation.X, dummyLocation.Y, dummyPreferredSize.Width,
+            dummyPreferredSize.Height, labelLayout.UpX, labelLayout.UpY);
       }
+      return new OrientedRectangle(labelLayout.AnchorX, labelLayout.AnchorY, label.PreferredSize.Width,
+          label.PreferredSize.Height, labelLayout.UpX, labelLayout.UpY);
     }
 
     #region live location
@@ -157,39 +153,26 @@ namespace Demo.yFiles.Graph.Input.HandleProvider {
       public double X {
         get {
           var layout = outerThis.label.GetLayout();
-          var up = layout.GetUp();
+          var up = layout.GetUpVector();
           var preferredSize = outerThis.emulate ? outerThis.dummyPreferredSize : outerThis.label.PreferredSize;
-          var anchor = outerThis.emulate ? outerThis.dummyLocation : layout.GetAnchorLocation();
+          var anchor = outerThis.emulate ? outerThis.dummyLocation : layout.GetAnchor();
           // calculate the location of the handle from the anchor, the size and the orientation
-          return anchor.X + up.X*preferredSize.Height*0.5 + -up.Y*preferredSize.Width;
+          return anchor.X + up.X * preferredSize.Height * 0.5 + -up.Y * preferredSize.Width;
         }
       }
 
       public double Y {
         get {
           var layout = outerThis.label.GetLayout();
-          var up = layout.GetUp();
+          var up = layout.GetUpVector();
           var preferredSize = outerThis.emulate ? outerThis.dummyPreferredSize : outerThis.label.PreferredSize;
-          var anchor = outerThis.emulate ? outerThis.dummyLocation : layout.GetAnchorLocation();
+          var anchor = outerThis.emulate ? outerThis.dummyLocation : layout.GetAnchor();
           // calculate the location of the handle from the anchor, the size and the orientation
-          return anchor.Y + up.Y*preferredSize.Height*0.5 + up.X*preferredSize.Width;
+          return anchor.Y + up.Y * preferredSize.Height * 0.5 + up.X * preferredSize.Width;
         }
       }
     }
 
     #endregion
-
-    private class LabelResizeIndicatorInstaller : OrientedRectangleIndicatorInstaller {
-
-      private readonly LabelResizeHandle outerThis;
-
-      public LabelResizeIndicatorInstaller(LabelResizeHandle outerThis) : base(null, SelectionTemplateKey) {
-        this.outerThis = outerThis;
-      }
-
-      protected override IOrientedRectangle GetRectangle(object item) {
-        return outerThis.GetCurrentLabelLayout();
-      }
-    }
   }
 }

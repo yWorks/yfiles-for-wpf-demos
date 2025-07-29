@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -33,106 +33,107 @@ using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using Demo.yFiles.Toolkit.OptionHandler;
-using yWorks.Algorithms;
-using yWorks.Algorithms.Util;
 using yWorks.Controls;
 using yWorks.Graph;
 using yWorks.Layout;
+using yWorks.Layout.Graph;
 using yWorks.Layout.Labeling;
 using yWorks.Layout.Router;
-using yWorks.Layout.Router.Polyline;
 using yWorks.Layout.Tree;
-using GroupingSupport = yWorks.Layout.Grouping.GroupingSupport;
+using yWorks.Utils;
 
 namespace Demo.yFiles.Layout.Configurations
 {
   /// <summary>
-  /// Configuration options for the layout algorithm of the same name.
+  ///   Configuration options for the layout algorithm of the same name.
   /// </summary>
   [Obfuscation(StripAfterObfuscation = false, Exclude = true, ApplyToMembers = true)]
   [Label("TreeLayout")]
   public class TreeLayoutConfig : LayoutConfiguration
   {
-
     /// <summary>
-    /// Setup default values for various configuration parameters.
+    ///   Setup default values for various configuration parameters.
     /// </summary>
     public TreeLayoutConfig() {
-      var aspectRatioNodePlacer = new AspectRatioNodePlacer();
-      
+      var aspectRatioSubtreePlacer = new AspectRatioSubtreePlacer();
+
       RoutingStyleForNonTreeEdgesItem = EnumRoute.Orthogonal;
       EdgeBundlingStrengthItem = 0.95;
       ActOnSelectionOnlyItem = false;
 
       DefaultLayoutOrientationItem = LayoutOrientation.TopToBottom;
-      
-      ConsiderNodeLabelsItem = false;
-      
-      NodePlacerItem = EnumNodePlacer.Default;
 
-      SpacingItem = 20;
+      NodeLabelingItem = NodeLabelPlacement.Consider;
+
+      SubtreePlacerItem = EnumSubtreePlacer.SingleLayer;
+
+      SpacingItem = 30;
       RootAlignmentItem = EnumRootAlignment.Center;
       AlignPortsItem = false;
       AllowMultiParentsItem = false;
-      PortAssignmentItem = PortAssignmentMode.None;
-      
-      NodePlacerAspectRatioItem = aspectRatioNodePlacer.AspectRatio;
-      
-      EdgeLabelingItem = EnumEdgeLabeling.None;
+      PortAssignmentItem = PortAssignment.Center;
+
+      SubtreePlacerAspectRatioItem = aspectRatioSubtreePlacer.AspectRatio;
+
+      EdgeLabelingItem = EdgeLabelPlacement.Integrated;
       LabelPlacementAlongEdgeItem = EnumLabelPlacementAlongEdge.Centered;
       LabelPlacementSideOfEdgeItem = EnumLabelPlacementSideOfEdge.OnEdge;
       LabelPlacementOrientationItem = EnumLabelPlacementOrientation.Horizontal;
       LabelPlacementDistanceItem = 10;
     }
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     protected override ILayoutAlgorithm CreateConfiguredLayout(GraphControl graphControl) {
-      var layout = NodePlacerItem != EnumNodePlacer.HV 
+      var layout = SubtreePlacerItem != EnumSubtreePlacer.HV
           ? ConfigureDefaultLayout()
           // use a default TreeLayout to show the 'Horizontal-Vertical' style
           : new TreeLayout();
 
-      layout.ParallelEdgeRouterEnabled = false;
-      ((ComponentLayout) layout.ComponentLayout).Style = ComponentArrangementStyles.MultiRows;
-      layout.SubgraphLayoutEnabled = ActOnSelectionOnlyItem;
+      layout.ParallelEdgeRouter.Enabled = false;
+      layout.ComponentLayout.Style = ComponentArrangementStyle.MultiRows;
 
-      layout.PrependStage(CreateTreeReductionStage());
+      var subgraphLayout = layout.LayoutStages.Get<SubgraphLayoutStage>();
+      subgraphLayout.Enabled = ActOnSelectionOnlyItem;
 
-      var placeLabels = EdgeLabelingItem == EnumEdgeLabeling.Integrated || EdgeLabelingItem == EnumEdgeLabeling.Generic;
+      ConfigureTreeReductionStage(layout.TreeReductionStage);
+
+      var placeLabels = EdgeLabelingItem == EdgeLabelPlacement.Integrated ||
+          EdgeLabelingItem == EdgeLabelPlacement.Generic;
 
       // required to prevent WrongGraphStructure exception which may be thrown by TreeLayout if there are edges
       // between group nodes
-      layout.PrependStage(new HandleEdgesBetweenGroupsStage(placeLabels));
+      layout.LayoutStages.Prepend(new HandleEdgesBetweenGroupsStage(placeLabels));
 
-      layout.ConsiderNodeLabels = ConsiderNodeLabelsItem;
+      layout.NodeLabelPlacement = NodeLabelingItem;
 
-      if (EdgeLabelingItem == EnumEdgeLabeling.Generic) {
-        layout.IntegratedEdgeLabeling = false;
+      if (EdgeLabelingItem == EdgeLabelPlacement.Generic) {
+        layout.EdgeLabelPlacement = EdgeLabelPlacement.Generic;
 
-        var labeling = new GenericLabeling();
-        labeling.PlaceEdgeLabels = true;
-        labeling.PlaceNodeLabels = false;
-        labeling.ReduceAmbiguity = ReduceAmbiguityItem;
-        layout.LabelingEnabled = true;
-        layout.Labeling = labeling;
-      } else if (EdgeLabelingItem == EnumEdgeLabeling.Integrated) {
-        layout.IntegratedEdgeLabeling = true;
+        var labeling = layout.LayoutStages.Get<GenericLabeling>();
+        labeling.Scope = LabelingScope.EdgeLabels;
+        if (ReduceAmbiguityItem) {
+          labeling.DefaultEdgeLabelingCosts.AmbiguousPlacementCost = 1.0;
+        }
+      } else if (EdgeLabelingItem == EdgeLabelPlacement.Integrated) {
+        layout.EdgeLabelPlacement = EdgeLabelPlacement.Integrated;
       }
 
       return layout;
     }
 
-    protected override LayoutData CreateConfiguredLayoutData(GraphControl graphControl, ILayoutAlgorithm layout) {
-      LayoutData layoutData;
-      if (NodePlacerItem == EnumNodePlacer.HV) {
+    protected override LayoutData<INode, IEdge, ILabel, ILabel> CreateConfiguredLayoutData(
+        GraphControl graphControl,
+        ILayoutAlgorithm layout) {
+      TreeLayoutData<INode, IEdge, ILabel, ILabel> layoutData;
+      if (SubtreePlacerItem == EnumSubtreePlacer.HV) {
         layoutData = CreateLayoutDataHorizontalVertical(graphControl);
-      } else if (NodePlacerItem == EnumNodePlacer.DelegatingLayered) {
-        layoutData = CreateLayoutDataDelegatingPlacer(graphControl);
+      } else if (SubtreePlacerItem == EnumSubtreePlacer.SingleSplitLayered) {
+        layoutData = CreateLayoutDataSingleSplitPlacer(graphControl);
       } else {
         var graph = graphControl.Graph;
-        layoutData = new TreeLayoutData {
-            GridNodePlacerRowIndices = {
-                Delegate = node => {
+        layoutData = new TreeLayoutData<INode, IEdge, ILabel, ILabel> {
+            MultiLayerSubtreePlacerLayerIndices = {
+                MapperFunction = node => {
                   var predecessors = graph.Predecessors(node);
                   var parent = predecessors.FirstOrDefault();
                   if (parent != null) {
@@ -142,8 +143,8 @@ namespace Demo.yFiles.Layout.Configurations
                   return 0;
                 }
             },
-            LeftRightNodePlacerLeftNodes = {
-                Delegate = node => {
+            LeftRightSubtreePlacerLeftNodes = {
+                Predicate = node => {
                   var predecessors = graph.Predecessors(node);
                   var parent = predecessors.FirstOrDefault();
                   if (parent != null) {
@@ -153,35 +154,61 @@ namespace Demo.yFiles.Layout.Configurations
                   return false;
                 }
             },
-            CompactNodePlacerStrategyMementos = new DictionaryMapper<INode, object>(),
+            CompactSubtreePlacerStrategyMementos = new DictionaryMapper<INode, object>()
             // AssistantNodes = {Delegate = node => node.Tag != null ? node.Tag.Assistant : null}
         };
       }
 
-      return layoutData.CombineWith(
-          CreateLabelingLayoutData(
-              graphControl.Graph,
-              LabelPlacementAlongEdgeItem,
-              LabelPlacementSideOfEdgeItem,
-              LabelPlacementOrientationItem,
-              LabelPlacementDistanceItem
-          )
-      );
+      if (PortAssignmentItem != PortAssignment.Center) {
+        layoutData.Ports.SourcePortCandidates.Constant = CreatePortCandidate(PortAssignmentItem);
+        layoutData.Ports.TargetPortCandidates.Constant = CreatePortCandidate(PortAssignmentItem);
+      }
+
+      var combinedData = layoutData.CombineWith(CreateLabelingLayoutData(graphControl.Graph,
+          LabelPlacementAlongEdgeItem, LabelPlacementSideOfEdgeItem, LabelPlacementOrientationItem,
+          LabelPlacementDistanceItem));
+      if (ActOnSelectionOnlyItem) {
+        combinedData = combinedData.CombineWith(CreateSubgraphLayoutData(graphControl));
+      }
+      return combinedData;
     }
 
-    private LayoutData CreateLayoutDataHorizontalVertical(GraphControl graphControl) {
-      return new TreeLayoutData {
-          NodePlacers = {
-              Delegate = node => {
+    private EdgePortCandidates CreatePortCandidate(PortAssignment portAssignment) {
+      switch (portAssignment) {
+        case PortAssignment.Center:
+          throw new ArgumentException("Center cannot be translated to port side");
+        case PortAssignment.DistributedTop:
+          return new EdgePortCandidates().AddFreeCandidate(PortSides.Top);
+          break;
+        case PortAssignment.DistributedBottom:
+          return new EdgePortCandidates().AddFreeCandidate(PortSides.Bottom);
+          break;
+        case PortAssignment.DistributedLeft:
+          return new EdgePortCandidates().AddFreeCandidate(PortSides.Left);
+          break;
+        case PortAssignment.DistributedRight:
+          return new EdgePortCandidates().AddFreeCandidate(PortSides.Right);
+          break;
+        default:
+          throw new ArgumentOutOfRangeException(nameof(portAssignment), portAssignment, null);
+      }
+    }
+
+    private TreeLayoutData<INode, IEdge, ILabel, ILabel> CreateLayoutDataHorizontalVertical(GraphControl graphControl) {
+      return new TreeLayoutData<INode, IEdge, ILabel, ILabel> {
+          SubtreePlacers = {
+              MapperFunction = node => {
                 // children of selected nodes should be placed vertical and to the right of their child nodes, while
                 // the children of non-selected horizontal downwards
-                var childPlacement = graphControl.Selection.IsSelected(node)
-                    ? ChildPlacement.VerticalToRight
-                    : ChildPlacement.HorizontalDownward;
+                var subtreeTransform = graphControl.Selection.Contains(node)
+                    ? SubtreeTransform.RotateLeftFlipY
+                    : SubtreeTransform.None;
 
-                var defaultNodePlacer = new DefaultNodePlacer(childPlacement, RootAlignment.LeadingOnBus, SpacingItem, SpacingItem);
-                defaultNodePlacer.AlignPorts = AlignPortsItem;
-                return defaultNodePlacer;
+                var singleLayerSubtreePlacer = new SingleLayerSubtreePlacer(subtreeTransform,
+                    SingleLayerSubtreePlacerRootAlignment.LeadingOnBus, verticalDistance : SpacingItem,
+                    horizontalDistance : SpacingItem);
+                singleLayerSubtreePlacer.AlignPorts = AlignPortsItem;
+                return singleLayerSubtreePlacer;
               }
           }
       };
@@ -189,12 +216,17 @@ namespace Demo.yFiles.Layout.Configurations
     }
 
 
-    private TreeLayoutData CreateLayoutDataDelegatingPlacer(GraphControl graphComponent) {
+    private TreeLayoutData<INode, IEdge, ILabel, ILabel>
+        CreateLayoutDataSingleSplitPlacer(GraphControl graphComponent) {
       var graph = graphComponent.Graph;
-      //half the subtrees are delegated to the left placer and half to the right placer
+      // half the subtrees are delegated to the left placer and half to the right placer
       var leftNodes = new HashSet<INode>();
-      var root = graph.Nodes.First(node => graph.InDegree(node) == 0);
+
+      // note that the given graph may be a non-tree structure
+      var root = graph.Nodes.FirstOrDefault(node => graph.InDegree(node) == 0) ?? graph.Nodes.First();
       var left = true;
+      var seenNodes = new HashSet<INode>();
+      seenNodes.Add(root);
       foreach (var successor in graph.Successors(root)) {
         var stack = new List<INode> { successor };
         while (stack.Count > 0) {
@@ -203,24 +235,29 @@ namespace Demo.yFiles.Layout.Configurations
           if (left) {
             leftNodes.Add(child);
           } // else: right node
-          //push successors on stack -> whole subtree is either left or right
-          stack.AddRange(graph.Successors(child));
+
+          // push successors on stack -> whole subtree is either left or right
+          foreach (var succSucc in graph.Successors(child)) {
+            if (seenNodes.Add(succSucc)) {
+              stack.Add(succSucc);
+            }
+          }
         }
         left = !left;
       }
 
-      var layoutData = new TreeLayoutData {
-          DelegatingNodePlacerPrimaryNodes = { Delegate = node => leftNodes.Contains(node) },
-          // tells the layout which node placer to use for a node
-          NodePlacers = {
-              Delegate = node => {
+      var layoutData = new TreeLayoutData<INode, IEdge, ILabel, ILabel> {
+          SingleSplitSubtreePlacerPrimaryNodes = { Predicate = node => leftNodes.Contains(node) },
+          // tells the layout which subtree placer to use for a node
+          SubtreePlacers = {
+              MapperFunction = node => {
                 if (node == root) {
-                  return delegatingRootPlacer;
+                  return singleSplitRootPlacer;
                 }
                 if (leftNodes.Contains(node)) {
-                  return delegatingLeftPlacer;
+                  return singleSplitLeftPlacer;
                 }
-                return delegatingRightPlacer;
+                return singleSplitRightPlacer;
               }
           }
       };
@@ -229,177 +266,177 @@ namespace Demo.yFiles.Layout.Configurations
     }
 
     /// <summary>
-    /// Configures the tree reduction stage that will handle edges that do not belong to the tree.
+    ///   Configures the tree reduction stage that will handle edges that do not belong to the tree.
     /// </summary>
-    private TreeReductionStage CreateTreeReductionStage() {
-      var reductionStage = new TreeReductionStage();
-      if (EdgeLabelingItem == EnumEdgeLabeling.Integrated) {
-        reductionStage.NonTreeEdgeLabelingAlgorithm = new GenericLabeling();
+    /// <param name="reductionStage"></param>
+    private void ConfigureTreeReductionStage(TreeReductionStage reductionStage) {
+      if (EdgeLabelingItem == EdgeLabelPlacement.Integrated) {
+        reductionStage.NonTreeEdgeLabeling = new GenericLabeling();
       }
-      reductionStage.MultiParentAllowed = 
-          (NodePlacerItem == EnumNodePlacer.Default ||
-           NodePlacerItem == EnumNodePlacer.Bus ||
-           NodePlacerItem == EnumNodePlacer.LeftRight ||
-           NodePlacerItem == EnumNodePlacer.Dendrogram) &&
-          AllowMultiParentsItem;
+      reductionStage.AllowMultiParent = (SubtreePlacerItem == EnumSubtreePlacer.SingleLayer ||
+          SubtreePlacerItem == EnumSubtreePlacer.Bus || SubtreePlacerItem == EnumSubtreePlacer.LeftRight ||
+          SubtreePlacerItem == EnumSubtreePlacer.Dendrogram) && AllowMultiParentsItem;
 
       if (RoutingStyleForNonTreeEdgesItem == EnumRoute.Organic) {
         reductionStage.NonTreeEdgeRouter = new OrganicEdgeRouter();
-        reductionStage.NonTreeEdgeSelectionKey = OrganicEdgeRouter.AffectedEdgesDpKey;
       } else if (RoutingStyleForNonTreeEdgesItem == EnumRoute.Orthogonal) {
-        var edgeRouter = new EdgeRouter { Rerouting = true, Scope = Scope.RouteAffectedEdges };
+        var edgeRouter = new EdgeRouter { Rerouting = true };
         reductionStage.NonTreeEdgeRouter = edgeRouter;
-        reductionStage.NonTreeEdgeSelectionKey = edgeRouter.AffectedEdgesDpKey;
       } else if (RoutingStyleForNonTreeEdgesItem == EnumRoute.StraightLine) {
-        reductionStage.NonTreeEdgeRouter = reductionStage.CreateStraightLineRouter();
+        reductionStage.NonTreeEdgeRouter = new StraightLineEdgeRouter();
       } else if (RoutingStyleForNonTreeEdgesItem == EnumRoute.Bundled) {
         var ebc = reductionStage.EdgeBundling;
         ebc.BundlingStrength = EdgeBundlingStrengthItem;
         ebc.DefaultBundleDescriptor = new EdgeBundleDescriptor { Bundled = true };
       }
-      return reductionStage;
     }
 
     private TreeLayout ConfigureDefaultLayout() {
       var layout = new TreeLayout {
-          LayoutOrientation = NodePlacerItem == EnumNodePlacer.AspectRatio
-          ? LayoutOrientation.TopToBottom
-          : DefaultLayoutOrientationItem
+          LayoutOrientation = SubtreePlacerItem == EnumSubtreePlacer.AspectRatio
+              ? LayoutOrientation.TopToBottom
+              : DefaultLayoutOrientationItem
       };
 
-      RootAlignment rootAlignment1 = RootAlignment.Center;
-      RotatableNodePlacerBase.RootAlignment rootAlignment2 = RotatableNodePlacerBase.RootAlignment.Center;
+      var rootAlignment1 = SingleLayerSubtreePlacerRootAlignment.Center;
+      var rootAlignment2 = SubtreeRootAlignment.Center;
       switch (RootAlignmentItem) {
         case EnumRootAlignment.Center:
-          rootAlignment1 = RootAlignment.Center;
-          rootAlignment2 = RotatableNodePlacerBase.RootAlignment.Center;
+          rootAlignment1 = SingleLayerSubtreePlacerRootAlignment.Center;
+          rootAlignment2 = SubtreeRootAlignment.Center;
           break;
         case EnumRootAlignment.Median:
-          rootAlignment1 = RootAlignment.Median;
-          rootAlignment2 = RotatableNodePlacerBase.RootAlignment.Median;
+          rootAlignment1 = SingleLayerSubtreePlacerRootAlignment.Median;
+          rootAlignment2 = SubtreeRootAlignment.Median;
           break;
         case EnumRootAlignment.Left:
-          rootAlignment1 = RootAlignment.Leading;
-          rootAlignment2 = RotatableNodePlacerBase.RootAlignment.Left;
+          rootAlignment1 = SingleLayerSubtreePlacerRootAlignment.Left;
+          rootAlignment2 = SubtreeRootAlignment.Left;
           break;
         case EnumRootAlignment.Leading:
-          rootAlignment1 = RootAlignment.LeadingOffset;
-          rootAlignment2 = RotatableNodePlacerBase.RootAlignment.Leading;
+          rootAlignment1 = SingleLayerSubtreePlacerRootAlignment.Leading;
+          rootAlignment2 = SubtreeRootAlignment.Leading;
           break;
         case EnumRootAlignment.Right:
-          rootAlignment1 = RootAlignment.Trailing;
-          rootAlignment2 = RotatableNodePlacerBase.RootAlignment.Right;
+          rootAlignment1 = SingleLayerSubtreePlacerRootAlignment.Right;
+          rootAlignment2 = SubtreeRootAlignment.Right;
           break;
         case EnumRootAlignment.Trailing:
-          rootAlignment1 = RootAlignment.TrailingOffset;
-          rootAlignment2 = RotatableNodePlacerBase.RootAlignment.Trailing;
+          rootAlignment1 = SingleLayerSubtreePlacerRootAlignment.Trailing;
+          rootAlignment2 = SubtreeRootAlignment.Trailing;
           break;
       }
 
       var allowMultiParents = AllowMultiParentsItem;
 
-      switch (NodePlacerItem) {
-        case EnumNodePlacer.Default:
-          layout.DefaultNodePlacer = new DefaultNodePlacer {
-              HorizontalDistance = SpacingItem, VerticalDistance = SpacingItem, RootAlignment = rootAlignment1, AlignPorts = AlignPortsItem
-          };
-          layout.MultiParentAllowed = allowMultiParents;
-          break;
-        case EnumNodePlacer.Simple:
-          layout.DefaultNodePlacer = new SimpleNodePlacer { Spacing = SpacingItem, RootAlignment = rootAlignment2, AlignPorts = AlignPortsItem};
-          break;
-        case EnumNodePlacer.Bus:
-          layout.DefaultNodePlacer = new BusNodePlacer { Spacing = SpacingItem, AlignPorts = AlignPortsItem };
-          layout.MultiParentAllowed = allowMultiParents;
-          break;
-        case EnumNodePlacer.DoubleLine:
-          layout.DefaultNodePlacer = new DoubleLineNodePlacer { Spacing = SpacingItem, RootAlignment = rootAlignment2, AlignPorts = AlignPortsItem };
-          break;
-        case EnumNodePlacer.LeftRight:
-          layout.DefaultNodePlacer = new LeftRightNodePlacer { Spacing = SpacingItem, AlignPorts = AlignPortsItem };
-          layout.MultiParentAllowed = allowMultiParents;
-          break;
-        case EnumNodePlacer.Layered:
-          layout.DefaultNodePlacer = new LayeredNodePlacer {
-              Spacing = SpacingItem, LayerSpacing = SpacingItem, RootAlignment = rootAlignment2, AlignPorts = AlignPortsItem
-          };
-          break;
-        case EnumNodePlacer.AspectRatio:
-          layout.DefaultNodePlacer = new AspectRatioNodePlacer {
-              HorizontalDistance = SpacingItem, VerticalDistance = SpacingItem, AspectRatio = NodePlacerAspectRatioItem
-          };
-          break;
-        case EnumNodePlacer.Dendrogram:
-          layout.DefaultNodePlacer = new DendrogramNodePlacer {
-              MinimumRootDistance = SpacingItem, MinimumSubtreeDistance = SpacingItem,
-          };
-          layout.MultiParentAllowed = allowMultiParents;
-          break;
-        case EnumNodePlacer.Grid:
-          layout.DefaultNodePlacer = new GridNodePlacer { Spacing = SpacingItem, RootAlignment = rootAlignment2, AlignPorts = AlignPortsItem };
-          break;
-        case EnumNodePlacer.Compact:
-          layout.DefaultNodePlacer = new CompactNodePlacer {
+      switch (SubtreePlacerItem) {
+        case EnumSubtreePlacer.SingleLayer:
+          layout.DefaultSubtreePlacer = new SingleLayerSubtreePlacer {
               HorizontalDistance = SpacingItem,
               VerticalDistance = SpacingItem,
-              PreferredAspectRatio = NodePlacerAspectRatioItem
+              RootAlignment = rootAlignment1,
+              AlignPorts = AlignPortsItem
+          };
+          layout.AllowMultiParent = allowMultiParents;
+          break;
+        case EnumSubtreePlacer.Bus:
+          layout.DefaultSubtreePlacer = new BusSubtreePlacer { Spacing = SpacingItem };
+          layout.AllowMultiParent = allowMultiParents;
+          break;
+        case EnumSubtreePlacer.DoubleLayer:
+          layout.DefaultSubtreePlacer = new DoubleLayerSubtreePlacer {
+              Spacing = SpacingItem, RootAlignment = rootAlignment2, AlignPorts = AlignPortsItem
           };
           break;
-        case EnumNodePlacer.DelegatingLayered:
-          this.delegatingLeftPlacer =
-              new LayeredNodePlacer(RotatableNodePlacerBase.Matrix.Rot270, RotatableNodePlacerBase.Matrix.Rot270) {
-                  VerticalAlignment = 0,
-                  RoutingStyle = LayeredRoutingStyle.Orthogonal,
-                  Spacing = SpacingItem,
-                  LayerSpacing = SpacingItem,
-                  RootAlignment = rootAlignment2,
-                  AlignPorts = AlignPortsItem
-              };
+        case EnumSubtreePlacer.LeftRight:
+          layout.DefaultSubtreePlacer =
+              new LeftRightSubtreePlacer { Spacing = SpacingItem, AlignPorts = AlignPortsItem };
+          layout.AllowMultiParent = allowMultiParents;
+          break;
+        case EnumSubtreePlacer.LevelAligned:
+          layout.DefaultSubtreePlacer = new LevelAlignedSubtreePlacer {
+              Spacing = SpacingItem,
+              LayerSpacing = SpacingItem,
+              RootAlignment = rootAlignment2,
+              AlignPorts = AlignPortsItem
+          };
+          break;
+        case EnumSubtreePlacer.AspectRatio:
+          layout.DefaultSubtreePlacer = new AspectRatioSubtreePlacer {
+              HorizontalDistance = SpacingItem,
+              VerticalDistance = SpacingItem,
+              AspectRatio = SubtreePlacerAspectRatioItem
+          };
+          break;
+        case EnumSubtreePlacer.Dendrogram:
+          layout.DefaultSubtreePlacer = new DendrogramSubtreePlacer {
+              MinimumRootDistance = SpacingItem, MinimumSubtreeDistance = SpacingItem
+          };
+          layout.AllowMultiParent = allowMultiParents;
+          break;
+        case EnumSubtreePlacer.MultiLayer:
+          layout.DefaultSubtreePlacer = new MultiLayerSubtreePlacer {
+              Spacing = SpacingItem, RootAlignment = (MultiLayerSubtreePlacerRootAlignment) rootAlignment2
+          };
+          break;
+        case EnumSubtreePlacer.Compact:
+          layout.DefaultSubtreePlacer = new CompactSubtreePlacer {
+              HorizontalDistance = SpacingItem,
+              VerticalDistance = SpacingItem,
+              PreferredAspectRatio = SubtreePlacerAspectRatioItem
+          };
+          break;
+        case EnumSubtreePlacer.SingleSplitLayered:
+          singleSplitLeftPlacer = new LevelAlignedSubtreePlacer(SubtreeTransform.RotateRight) {
+              Transformation = SubtreeTransform.RotateRight,
+              VerticalAlignment = 0,
+              EdgeRoutingStyle = LevelAlignedSubtreePlacerRoutingStyle.Orthogonal,
+              Spacing = SpacingItem,
+              LayerSpacing = SpacingItem,
+              RootAlignment = rootAlignment2,
+              AlignPorts = AlignPortsItem
+          };
 
-          this.delegatingRightPlacer =
-              new LayeredNodePlacer(RotatableNodePlacerBase.Matrix.Rot90, RotatableNodePlacerBase.Matrix.Rot90) {
-                  VerticalAlignment = 0,
-                  RoutingStyle = LayeredRoutingStyle.Orthogonal,
-                  LayerSpacing = SpacingItem,
-                  RootAlignment = rootAlignment2,
-                  AlignPorts = AlignPortsItem
-              };
+          singleSplitRightPlacer = new LevelAlignedSubtreePlacer(SubtreeTransform.RotateLeft) {
+              Transformation = SubtreeTransform.RotateLeft,
+              VerticalAlignment = 0,
+              EdgeRoutingStyle = LevelAlignedSubtreePlacerRoutingStyle.Orthogonal,
+              LayerSpacing = SpacingItem,
+              RootAlignment = rootAlignment2,
+              AlignPorts = AlignPortsItem
+          };
 
-          var delegatingRootPlacer = new DelegatingNodePlacer(RotatableNodePlacerBase.Matrix.Default,
-              this.delegatingLeftPlacer,
-              this.delegatingRightPlacer
-          );
-          delegatingRootPlacer.AlignPorts = AlignPortsItem;
-          this.delegatingRootPlacer = delegatingRootPlacer;
+          singleSplitRootPlacer = new SingleSplitSubtreePlacer(singleSplitLeftPlacer, singleSplitRightPlacer);
           break;
       }
 
-      layout.DefaultPortAssignment = new DefaultPortAssignment(PortAssignmentItem);
-      layout.GroupingSupported = true;
+      layout.DefaultPortAssigner = new TreeLayoutPortAssigner(PortAssignmentItem == PortAssignment.Center
+          ? PortAssignmentMode.Center
+          : PortAssignmentMode.Distributed);
 
       return layout;
     }
 
-    private INodePlacer delegatingRootPlacer;
-    private INodePlacer delegatingLeftPlacer;
-    private INodePlacer delegatingRightPlacer;
+    private ISubtreePlacer singleSplitRootPlacer;
+    private ISubtreePlacer singleSplitLeftPlacer;
+    private ISubtreePlacer singleSplitRightPlacer;
 
     // ReSharper disable UnusedMember.Global
     // ReSharper disable InconsistentNaming
     [Label("Description")]
     [OptionGroup("RootGroup", 5)]
     [ComponentType(ComponentTypes.OptionGroup)]
-    public object DescriptionGroup;     
+    public object DescriptionGroup;
 
     [Label("General")]
     [OptionGroup("RootGroup", 10)]
     [ComponentType(ComponentTypes.OptionGroup)]
     public object GeneralGroup;
-   
-    [Label("Node Placer")]
+
+    [Label("Subtree Placer")]
     [OptionGroup("RootGroup", 20)]
     [ComponentType(ComponentTypes.OptionGroup)]
-    public object NodePlacerGroup;
+    public object SubtreePlacerGroup;
 
     [Label("Edges")]
     [OptionGroup("RootGroup", 30)]
@@ -436,100 +473,108 @@ namespace Demo.yFiles.Layout.Configurations
 
     public enum EnumRoute
     {
-      Orthogonal, Organic, StraightLine, Bundled
+      Orthogonal,
+      Organic,
+      StraightLine,
+      Bundled
     }
 
-    public enum EnumEdgeLabeling
+    public enum EnumSubtreePlacer
     {
-      None, Integrated, Generic
-    }
-    
-    public enum EnumNodePlacer
-    {
-      Default, Simple, Bus, DoubleLine, LeftRight, Layered, AspectRatio, Dendrogram, Grid, Compact, HV, DelegatingLayered
+      SingleLayer,
+      Bus,
+      DoubleLayer,
+      LeftRight,
+      LevelAligned,
+      AspectRatio,
+      Dendrogram,
+      MultiLayer,
+      Compact,
+      HV,
+      SingleSplitLayered
     }
 
     public enum EnumRootAlignment
     {
-      Center, Median, Left, Leading, Right, Trailing
+      Center,
+      Median,
+      Left,
+      Leading,
+      Right,
+      Trailing
     }
 
     /// <summary>
-    /// Gets the description text.
+    ///   Gets the description text.
     /// </summary>
     /// <value>
-    /// The description text.
+    ///   The description text.
     /// </value>
     [OptionGroup("DescriptionGroup", 10)]
     [ComponentType(ComponentTypes.FormattedText)]
-    public string DescriptionText {
-      get {
-        return "<Paragraph>The various flavors of the tree layout styles are great for highlighting child-parent relationships in graphs that form one or more trees, "
-               + "or trees with only few additional edges.</Paragraph>"
-               + "<Paragraph>The need to visualize directed or undirected trees arises in many application areas, for example</Paragraph>"
-               + "<List>"
-               + "<ListItem><Paragraph>Dataflow analysis</Paragraph></ListItem>"
-               + "<ListItem><Paragraph>Software engineering</Paragraph></ListItem>"
-               + "<ListItem><Paragraph>Network management</Paragraph></ListItem>"
-               + "<ListItem><Paragraph>Bioinformatics</Paragraph></ListItem>"
-               + "</List>";
-      }
-    }
-    
+    public string DescriptionText =>
+        "<Paragraph>The various flavors of the tree layout styles are great for highlighting child-parent relationships in graphs that form one or more trees, " +
+        "or trees with only few additional edges.</Paragraph>" +
+        "<Paragraph>The need to visualize directed or undirected trees arises in many application areas, for example</Paragraph>" +
+        "<List>" + "<ListItem><Paragraph>Dataflow analysis</Paragraph></ListItem>" +
+        "<ListItem><Paragraph>Software engineering</Paragraph></ListItem>" +
+        "<ListItem><Paragraph>Network management</Paragraph></ListItem>" +
+        "<ListItem><Paragraph>Bioinformatics</Paragraph></ListItem>" + "</List>";
+
     [Label("Routing Style for Non-Tree Edges")]
     [OptionGroup("NonTreeEdgesGroup", 10)]
     [DefaultValue(EnumRoute.Bundled)]
     [EnumValue("Orthogonal", EnumRoute.Orthogonal)]
-    [EnumValue("Organic",EnumRoute.Organic)]
-    [EnumValue("Straight-Line",EnumRoute.StraightLine)]
-    [EnumValue("Bundled",EnumRoute.Bundled)]
+    [EnumValue("Organic", EnumRoute.Organic)]
+    [EnumValue("Straight-Line", EnumRoute.StraightLine)]
+    [EnumValue("Bundled", EnumRoute.Bundled)]
     public EnumRoute RoutingStyleForNonTreeEdgesItem { get; set; }
-    
+
     [Label("Bundling Strength")]
     [OptionGroup("NonTreeEdgesGroup", 20)]
     [DefaultValue(0.95d)]
     [MinMax(Min = 0.0d, Max = 1.0d, Step = 0.01d)]
     [ComponentType(ComponentTypes.Slider)]
     public double EdgeBundlingStrengthItem { get; set; }
-    
-    public bool ShouldDisableEdgeBundlingStrengthItem {
-      get { return RoutingStyleForNonTreeEdgesItem != EnumRoute.Bundled; }
-    }
+
+    public bool ShouldDisableEdgeBundlingStrengthItem => RoutingStyleForNonTreeEdgesItem != EnumRoute.Bundled;
 
     [Label("Act on Selection Only")]
     [OptionGroup("GeneralGroup", 10)]
     [DefaultValue(false)]
     public bool ActOnSelectionOnlyItem { get; set; }
-    
-    [Label("Consider Node Labels")]
+
+    [Label("Node Labeling")]
     [OptionGroup("NodePropertiesGroup", 10)]
-    [DefaultValue(false)]
-    public bool ConsiderNodeLabelsItem { get; set; }
-    
-    [Label("Node Placer")]
-    [OptionGroup("NodePlacerGroup", 10)]
-    [EnumValue("Default", EnumNodePlacer.Default)]
-    [EnumValue("Simple", EnumNodePlacer.Simple)]
-    [EnumValue("Bus", EnumNodePlacer.Bus)]
-    [EnumValue("Double-Line", EnumNodePlacer.DoubleLine)]
-    [EnumValue("Left-Right", EnumNodePlacer.LeftRight)]
-    [EnumValue("Layered", EnumNodePlacer.Layered)]
-    [EnumValue("Aspect Ratio", EnumNodePlacer.AspectRatio)]
-    [EnumValue("Dendrogram", EnumNodePlacer.Dendrogram)]
-    [EnumValue("Grid", EnumNodePlacer.Grid)]
-    [EnumValue("Compact", EnumNodePlacer.Compact)]
-    [EnumValue("Horizontal-Vertical", EnumNodePlacer.HV)]
-    [EnumValue("Delegating & Layered", EnumNodePlacer.DelegatingLayered)]
-    public EnumNodePlacer NodePlacerItem { get; set; }
-    
+    [DefaultValue(NodeLabelPlacement.Consider)]
+    [EnumValue("Consider", NodeLabelPlacement.Consider)]
+    [EnumValue("Generic", NodeLabelPlacement.Generic)]
+    [EnumValue("Ignore", NodeLabelPlacement.Ignore)]
+    public NodeLabelPlacement NodeLabelingItem { get; set; }
+
+    [Label("Subtree Placer")]
+    [OptionGroup("SubtreePlacerGroup", 10)]
+    [EnumValue("Single Layer", EnumSubtreePlacer.SingleLayer)]
+    [EnumValue("Compact", EnumSubtreePlacer.Compact)]
+    [EnumValue("Bus", EnumSubtreePlacer.Bus)]
+    [EnumValue("Double Layer", EnumSubtreePlacer.DoubleLayer)]
+    [EnumValue("Left-Right", EnumSubtreePlacer.LeftRight)]
+    [EnumValue("Level-Aligned", EnumSubtreePlacer.LevelAligned)]
+    [EnumValue("Aspect Ratio", EnumSubtreePlacer.AspectRatio)]
+    [EnumValue("Dendrogram", EnumSubtreePlacer.Dendrogram)]
+    [EnumValue("Multi-Layer", EnumSubtreePlacer.MultiLayer)]
+    [EnumValue("Horizontal-Vertical", EnumSubtreePlacer.HV)]
+    [EnumValue("Single Split Layered", EnumSubtreePlacer.SingleSplitLayered)]
+    public EnumSubtreePlacer SubtreePlacerItem { get; set; }
+
     [Label("Spacing")]
-    [OptionGroup("NodePlacerGroup", 20)]
+    [OptionGroup("SubtreePlacerGroup", 20)]
     [MinMax(Min = 0, Max = 500)]
     [ComponentType(ComponentTypes.Slider)]
     public double SpacingItem { get; set; }
 
     [Label("Root Alignment")]
-    [OptionGroup("NodePlacerGroup", 30)]
+    [OptionGroup("SubtreePlacerGroup", 30)]
     [EnumValue("Center", EnumRootAlignment.Center)]
     [EnumValue("Median", EnumRootAlignment.Median)]
     [EnumValue("Left", EnumRootAlignment.Left)]
@@ -537,182 +582,151 @@ namespace Demo.yFiles.Layout.Configurations
     [EnumValue("Right", EnumRootAlignment.Right)]
     [EnumValue("Trailing", EnumRootAlignment.Trailing)]
     public EnumRootAlignment RootAlignmentItem { get; set; }
-    
-    public bool ShouldDisableRootAlignmentItem {
-      get {
-        return NodePlacerItem == EnumNodePlacer.AspectRatio ||
-               NodePlacerItem == EnumNodePlacer.Bus ||
-               NodePlacerItem == EnumNodePlacer.Dendrogram ||
-               NodePlacerItem == EnumNodePlacer.Compact;
-      }
-    }
+
+    public bool ShouldDisableRootAlignmentItem =>
+        SubtreePlacerItem == EnumSubtreePlacer.AspectRatio || SubtreePlacerItem == EnumSubtreePlacer.Bus ||
+        SubtreePlacerItem == EnumSubtreePlacer.Dendrogram || SubtreePlacerItem == EnumSubtreePlacer.Compact;
 
     [Label("Align Ports")]
-    [OptionGroup("NodePlacerGroup", 40)]
+    [OptionGroup("SubtreePlacerGroup", 40)]
     [DefaultValue(false)]
     public bool AlignPortsItem { get; set; }
 
-    public bool ShouldDisableAlignPortsItem {
-      get {
-        return
-            (NodePlacerItem != EnumNodePlacer.Default &&
-             NodePlacerItem != EnumNodePlacer.Simple &&
-             NodePlacerItem != EnumNodePlacer.Bus &&
-             NodePlacerItem != EnumNodePlacer.DoubleLine &&
-             NodePlacerItem != EnumNodePlacer.LeftRight &&
-             NodePlacerItem != EnumNodePlacer.Layered &&
-             NodePlacerItem != EnumNodePlacer.Grid &&
-             NodePlacerItem != EnumNodePlacer.DelegatingLayered &&
-             NodePlacerItem != EnumNodePlacer.HV) ||
-            (RootAlignmentItem != EnumRootAlignment.Center &&
-             RootAlignmentItem != EnumRootAlignment.Median &&
-             RootAlignmentItem != EnumRootAlignment.Left &&
-             RootAlignmentItem != EnumRootAlignment.Right);
-      }
-    }
+    public bool ShouldDisableAlignPortsItem =>
+        (SubtreePlacerItem != EnumSubtreePlacer.SingleLayer && SubtreePlacerItem != EnumSubtreePlacer.Bus &&
+            SubtreePlacerItem != EnumSubtreePlacer.DoubleLayer && SubtreePlacerItem != EnumSubtreePlacer.LeftRight &&
+            SubtreePlacerItem != EnumSubtreePlacer.LevelAligned && SubtreePlacerItem != EnumSubtreePlacer.MultiLayer &&
+            SubtreePlacerItem != EnumSubtreePlacer.SingleSplitLayered && SubtreePlacerItem != EnumSubtreePlacer.HV) ||
+        (RootAlignmentItem != EnumRootAlignment.Center && RootAlignmentItem != EnumRootAlignment.Median &&
+            RootAlignmentItem != EnumRootAlignment.Left && RootAlignmentItem != EnumRootAlignment.Right);
 
     [Label("Orientation")]
     [OptionGroup("GeneralGroup", 5)]
     [EnumValue("Top to Bottom", LayoutOrientation.TopToBottom)]
-    [EnumValue("Left to Right", LayoutOrientation.LeftToRight )]
-    [EnumValue("Bottom to Top", LayoutOrientation.BottomToTop )]
-    [EnumValue("Right to Left", LayoutOrientation.RightToLeft )]
-    public LayoutOrientation DefaultLayoutOrientationItem { get;set; }
-    
-    public bool ShouldDisableDefaultLayoutOrientationItem {
-      get { return NodePlacerItem == EnumNodePlacer.AspectRatio || NodePlacerItem == EnumNodePlacer.Compact; }
-    }
-    
+    [EnumValue("Left to Right", LayoutOrientation.LeftToRight)]
+    [EnumValue("Bottom to Top", LayoutOrientation.BottomToTop)]
+    [EnumValue("Right to Left", LayoutOrientation.RightToLeft)]
+    public LayoutOrientation DefaultLayoutOrientationItem { get; set; }
+
+    public bool ShouldDisableDefaultLayoutOrientationItem =>
+        SubtreePlacerItem == EnumSubtreePlacer.AspectRatio || SubtreePlacerItem == EnumSubtreePlacer.Compact;
+
     [Label("Aspect Ratio")]
-    [OptionGroup("NodePlacerGroup", 50)]
+    [OptionGroup("SubtreePlacerGroup", 50)]
     [MinMax(Min = 0.1, Max = 4, Step = 0.01)]
     [ComponentType(ComponentTypes.Slider)]
-    public double NodePlacerAspectRatioItem { get; set; }
-    
-    public bool ShouldDisableNodePlacerAspectRatioItem {
-      get { return NodePlacerItem != EnumNodePlacer.AspectRatio && NodePlacerItem != EnumNodePlacer.Compact; }
-    }
+    public double SubtreePlacerAspectRatioItem { get; set; }
+
+    public bool ShouldDisableSubtreePlacerAspectRatioItem =>
+        SubtreePlacerItem != EnumSubtreePlacer.AspectRatio && SubtreePlacerItem != EnumSubtreePlacer.Compact;
 
     [Label("Allow Multi-Parents")]
-    [OptionGroup("NodePlacerGroup", 60)]
+    [OptionGroup("SubtreePlacerGroup", 60)]
     public bool AllowMultiParentsItem { get; set; }
-    
-    public bool ShouldDisableAllowMultiParentsItem {
-      get {
-        return NodePlacerItem != EnumNodePlacer.Default &&
-               NodePlacerItem != EnumNodePlacer.Dendrogram &&
-               NodePlacerItem != EnumNodePlacer.Bus &&
-               NodePlacerItem != EnumNodePlacer.LeftRight;
-      }
-    }
-    
+
+    public bool ShouldDisableAllowMultiParentsItem =>
+        SubtreePlacerItem != EnumSubtreePlacer.SingleLayer && SubtreePlacerItem != EnumSubtreePlacer.Dendrogram &&
+        SubtreePlacerItem != EnumSubtreePlacer.Bus && SubtreePlacerItem != EnumSubtreePlacer.LeftRight;
+
     [Label("Port Assignment")]
     [OptionGroup("EdgesGroup", 10)]
-    [EnumValue("None", PortAssignmentMode.None)]
-    [EnumValue("Distributed North", PortAssignmentMode.DistributedNorth)]
-    [EnumValue("Distributed South", PortAssignmentMode.DistributedSouth)]
-    [EnumValue("Distributed East", PortAssignmentMode.DistributedEast)]
-    [EnumValue("Distributed West", PortAssignmentMode.DistributedWest)]
-    public PortAssignmentMode PortAssignmentItem { get; set; }
-    
-    private EnumEdgeLabeling edgeLabelingItem;
-    
+    [EnumValue("None", PortAssignment.Center)]
+    [EnumValue("Distributed Top", PortAssignment.DistributedTop)]
+    [EnumValue("Distributed Bottom", PortAssignment.DistributedBottom)]
+    [EnumValue("Distributed Right", PortAssignment.DistributedRight)]
+    [EnumValue("Distributed Left", PortAssignment.DistributedLeft)]
+    public PortAssignment PortAssignmentItem { get; set; }
+
+    private EdgeLabelPlacement edgeLabelingItem;
+
     [Label("Edge Labeling")]
     [OptionGroup("EdgePropertiesGroup", 10)]
-    [DefaultValue(EnumEdgeLabeling.None)]
-    [EnumValue("None", EnumEdgeLabeling.None)]
-    [EnumValue("Integrated", EnumEdgeLabeling.Integrated)]
-    [EnumValue("Generic", EnumEdgeLabeling.Generic)]
-    public EnumEdgeLabeling EdgeLabelingItem {
-      get { return edgeLabelingItem; }
+    [DefaultValue(EdgeLabelPlacement.Ignore)]
+    [EnumValue("Ignore", EdgeLabelPlacement.Ignore)]
+    [EnumValue("Integrated", EdgeLabelPlacement.Integrated)]
+    [EnumValue("Generic", EdgeLabelPlacement.Generic)]
+    public EdgeLabelPlacement EdgeLabelingItem {
+      get => edgeLabelingItem;
       set {
         edgeLabelingItem = value;
-        if (value == EnumEdgeLabeling.Integrated) {
+        if (value == EdgeLabelPlacement.Integrated) {
           LabelPlacementOrientationItem = EnumLabelPlacementOrientation.Parallel;
           LabelPlacementAlongEdgeItem = EnumLabelPlacementAlongEdge.AtTarget;
           LabelPlacementDistanceItem = 0;
         }
       }
     }
-    
+
     [Label("Reduce Ambiguity")]
     [OptionGroup("EdgePropertiesGroup", 20)]
     public bool ReduceAmbiguityItem { get; set; }
-    
-    public bool ShouldDisableReduceAmbiguityItem {
-      get { return EdgeLabelingItem != EnumEdgeLabeling.Generic; }
-    }
-    
+
+    public bool ShouldDisableReduceAmbiguityItem => EdgeLabelingItem != EdgeLabelPlacement.Generic;
+
     [Label("Orientation")]
     [OptionGroup("PreferredPlacementGroup", 10)]
     [DefaultValue(EnumLabelPlacementOrientation.Horizontal)]
     [EnumValue("Parallel", EnumLabelPlacementOrientation.Parallel)]
-    [EnumValue("Orthogonal",EnumLabelPlacementOrientation.Orthogonal)]
-    [EnumValue("Horizontal",EnumLabelPlacementOrientation.Horizontal)]
-    [EnumValue("Vertical",EnumLabelPlacementOrientation.Vertical)]
+    [EnumValue("Orthogonal", EnumLabelPlacementOrientation.Orthogonal)]
+    [EnumValue("Horizontal", EnumLabelPlacementOrientation.Horizontal)]
+    [EnumValue("Vertical", EnumLabelPlacementOrientation.Vertical)]
     public EnumLabelPlacementOrientation LabelPlacementOrientationItem { get; set; }
-    
-    public bool ShouldDisableLabelPlacementOrientationItem {
-      get { return EdgeLabelingItem == EnumEdgeLabeling.None; }
-    }
-    
+
+    public bool ShouldDisableLabelPlacementOrientationItem => EdgeLabelingItem == EdgeLabelPlacement.Ignore;
+
     [Label("Along Edge")]
     [OptionGroup("PreferredPlacementGroup", 20)]
     [DefaultValue(EnumLabelPlacementAlongEdge.Centered)]
     [EnumValue("Anywhere", EnumLabelPlacementAlongEdge.Anywhere)]
-    [EnumValue("At Source",EnumLabelPlacementAlongEdge.AtSource)]
-    [EnumValue("At Source Port",EnumLabelPlacementAlongEdge.AtSourcePort)]
-    [EnumValue("At Target",EnumLabelPlacementAlongEdge.AtTarget)]
-    [EnumValue("At Target Port",EnumLabelPlacementAlongEdge.AtTargetPort)]
-    [EnumValue("Centered",EnumLabelPlacementAlongEdge.Centered)]
+    [EnumValue("At Source", EnumLabelPlacementAlongEdge.AtSource)]
+    [EnumValue("At Source Port", EnumLabelPlacementAlongEdge.AtSourcePort)]
+    [EnumValue("At Target", EnumLabelPlacementAlongEdge.AtTarget)]
+    [EnumValue("At Target Port", EnumLabelPlacementAlongEdge.AtTargetPort)]
+    [EnumValue("Centered", EnumLabelPlacementAlongEdge.Centered)]
     public EnumLabelPlacementAlongEdge LabelPlacementAlongEdgeItem { get; set; }
-    
-    public bool ShouldDisableLabelPlacementAlongEdgeItem {
-      get { return EdgeLabelingItem == EnumEdgeLabeling.None; }
-    }
-    
+
+    public bool ShouldDisableLabelPlacementAlongEdgeItem => EdgeLabelingItem == EdgeLabelPlacement.Ignore;
+
     [Label("Side of Edge")]
     [OptionGroup("PreferredPlacementGroup", 30)]
     [DefaultValue(EnumLabelPlacementSideOfEdge.OnEdge)]
     [EnumValue("Anywhere", EnumLabelPlacementSideOfEdge.Anywhere)]
-    [EnumValue("On Edge",EnumLabelPlacementSideOfEdge.OnEdge)]
-    [EnumValue("Left",EnumLabelPlacementSideOfEdge.Left)]
-    [EnumValue("Right",EnumLabelPlacementSideOfEdge.Right)]
-    [EnumValue("Left or Right",EnumLabelPlacementSideOfEdge.LeftOrRight)]
+    [EnumValue("On Edge", EnumLabelPlacementSideOfEdge.OnEdge)]
+    [EnumValue("Left", EnumLabelPlacementSideOfEdge.Left)]
+    [EnumValue("Right", EnumLabelPlacementSideOfEdge.Right)]
+    [EnumValue("Left or Right", EnumLabelPlacementSideOfEdge.LeftOrRight)]
     public EnumLabelPlacementSideOfEdge LabelPlacementSideOfEdgeItem { get; set; }
-    
-    public bool ShouldDisableLabelPlacementSideOfEdgeItem {
-      get { return EdgeLabelingItem == EnumEdgeLabeling.None; }
-    }
-    
+
+    public bool ShouldDisableLabelPlacementSideOfEdgeItem => EdgeLabelingItem == EdgeLabelPlacement.Ignore;
+
     [Label("Distance")]
     [OptionGroup("PreferredPlacementGroup", 40)]
     [DefaultValue(10.0d)]
     [MinMax(Min = 0.0d, Max = 40.0d)]
     [ComponentType(ComponentTypes.Slider)]
     public double LabelPlacementDistanceItem { get; set; }
-    
-    public bool ShouldDisableLabelPlacementDistanceItem {
-      get { return EdgeLabelingItem == EnumEdgeLabeling.None || LabelPlacementSideOfEdgeItem == EnumLabelPlacementSideOfEdge.OnEdge; }
-    }
+
+    public bool ShouldDisableLabelPlacementDistanceItem =>
+        EdgeLabelingItem == EdgeLabelPlacement.Ignore ||
+        LabelPlacementSideOfEdgeItem == EnumLabelPlacementSideOfEdge.OnEdge;
 
     /// <summary>
-    /// This stage temporarily removes edges that are incident to group nodes.
+    ///   This stage temporarily removes edges that are incident to group nodes.
     /// </summary>
     /// <remarks>
-    /// The stage must be prepended to the layout algorithm and applies the following three steps:
-    /// <list type="number">
-    /// <item>Removes edges from the graph that are incident to group nodes.</item>
-    /// <item>Invokes the core layout algorithm on the reduced graph.</item>
-    /// <item>Re-inserts all previously removed edges and optionally places their labels.</item>
-    /// </list>
-    /// This stage can be useful for layout algorithms or stages that cannot handle edges between group nodes,
-    /// e.g., <see cref="TreeReductionStage"/>. Optionally, <see cref="HandleEdgesBetweenGroupsStage"/> can also
-    /// place the labels of the edges that were temporarily removed right after they are restored back to the graph.
-    /// <para>
-    /// The routing of the temporarily hidden edges can be customized by specifying an
-    /// <see cref="MarkedEdgeRouter">edge routing algorithm</see> for those edges.
-    /// </para>
+    ///   The stage must be prepended to the layout algorithm and applies the following three steps:
+    ///   <list type="number">
+    ///     <item>Removes edges from the graph that are incident to group nodes.</item>
+    ///     <item>Invokes the core layout algorithm on the reduced graph.</item>
+    ///     <item>Re-inserts all previously removed edges and optionally places their labels.</item>
+    ///   </list>
+    ///   This stage can be useful for layout algorithms or stages that cannot handle edges between group nodes,
+    ///   e.g., <see cref="TreeReductionStage"/>. Optionally, <see cref="HandleEdgesBetweenGroupsStage"/> can also
+    ///   place the labels of the edges that were temporarily removed right after they are restored back to the graph.
+    ///   <para>
+    ///     The routing of the temporarily hidden edges can be customized by specifying an
+    ///     <see cref="MarkedEdgeRouter">edge routing algorithm</see> for those edges.
+    ///   </para>
     /// </remarks>
     private class HandleEdgesBetweenGroupsStage : LayoutStageBase
     {
@@ -721,56 +735,50 @@ namespace Demo.yFiles.Layout.Configurations
       }
 
       /// <summary>
-      /// Gets or sets the key to register a data provider that will be used by the edge routing
-      /// algorithm to determine the edges that need to be routed.
-      /// </summary>
-      public object EdgeSelectionKey { get; set; }
-
-      /// <summary>
-      /// Gets or sets the edge routing algorithm that is applied to the set of marked edges.
+      ///   Gets or sets the edge routing algorithm that is applied to the set of marked edges.
       /// </summary>
       /// <remarks>
-      /// Note that is required that a suitable edge selection key is specified and the router's scope
-      /// is reduced to the affected edges.
+      ///   Note that is required that a suitable edge selection key is specified and the router's scope
+      ///   is reduced to the affected edges.
       /// </remarks>
-      public ILayoutAlgorithm MarkedEdgeRouter { get; set; }
+      public ILayoutAlgorithm MarkedEdgeRouter { get; }
 
       /// <summary>
-      /// Gets or sets a value indicating whether the stage should place the labels of the edges that
-      /// have been temporarily hidden, when these edges will be restored back.
+      ///   Gets or sets a value indicating whether the stage should place the labels of the edges that
+      ///   have been temporarily hidden, when these edges will be restored back.
       /// </summary>
-      public bool ConsiderEdgeLabels { get; set; }
+      public bool ConsiderEdgeLabels { get; }
 
       /// <summary>
-      /// Removes all edges that are incident to group nodes and passes it to the core layout algorithm.
+      ///   Removes all edges that are incident to group nodes and passes it to the core layout algorithm.
       /// </summary>
       /// <remarks>
-      /// This stage removes some edges from the graph such that no edges incident to group nodes
-      /// exist. Then, it applies the core layout algorithm to the reduced graph.
-      /// After it produces the result, it re-inserts the previously removed edges and routes them.
+      ///   This stage removes some edges from the graph such that no edges incident to group nodes
+      ///   exist. Then, it applies the core layout algorithm to the reduced graph.
+      ///   After it produces the result, it re-inserts the previously removed edges and routes them.
       /// </remarks>
-      public override void ApplyLayout(LayoutGraph graph) {
-        var groupingSupport = new yWorks.Layout.Grouping.GroupingSupport(graph);
+      protected override void ApplyLayoutImpl(LayoutGraph graph) {
+        var groupingSupport = LayoutGraphGrouping.CreateReadOnlyView(graph);
 
-        if (!GroupingSupport.IsGrouped(graph)) {
-          ApplyLayoutCore(graph);
+        if (!LayoutGraphGrouping.IsGrouped(graph)) {
+          CoreLayout?.ApplyLayout(graph);
         } else {
-          var hiddenEdgesMap = Maps.CreateHashedEdgeMap();
+          var hiddenEdgesMap = new DictionaryMapper<Edge, bool>();
 
           var edgeHider = new LayoutGraphHider(graph);
 
           var existHiddenEdges = false;
           foreach (var edge in graph.Edges) {
             if (groupingSupport.IsGroupNode(edge.Source) || groupingSupport.IsGroupNode(edge.Target)) {
-              hiddenEdgesMap.Set(edge, true);
+              hiddenEdgesMap[edge] = true;
               edgeHider.Hide(edge);
               existHiddenEdges = true;
             } else {
-              hiddenEdgesMap.Set(edge, false);
+              hiddenEdgesMap[edge] = false;
             }
           }
 
-          ApplyLayoutCore(graph);
+          CoreLayout?.ApplyLayout(graph);
 
           if (existHiddenEdges) {
             edgeHider.UnhideAll();
@@ -780,61 +788,45 @@ namespace Demo.yFiles.Layout.Configurations
 
             if (ConsiderEdgeLabels) {
               // all labels of hidden edges should be marked
-              var affectedLabelsDpKey = "affectedLabelsDpKey";
-              var nonTreeLabelsMap = Maps.CreateHashedDataMap();
+              var affectedLabelsDataKey = new EdgeLabelDataKey<bool>(
+                  "Demo.yFiles.Layout.Configurations.TreeLayoutConfig.HandleEdgesBetweenGroupsStage.AffectedLabelsDataKey");
+              var nonTreeLabelsMap = new DictionaryMapper<EdgeLabel, bool>();
 
               foreach (var edge in graph.Edges) {
-                var ell = graph.GetLabelLayout(edge);
-                foreach (var labelLayout in ell) {
-                  nonTreeLabelsMap.Set(labelLayout, hiddenEdgesMap.Get(edge));
+                foreach (var edgeLabel in edge.Labels) {
+                  nonTreeLabelsMap[edgeLabel] = hiddenEdgesMap[edge];
                 }
               }
 
-              // add selection marker
-              graph.AddDataProvider(affectedLabelsDpKey, nonTreeLabelsMap);
-
               // place marked labels
-              var labeling = new GenericLabeling {
-                  PlaceNodeLabels = false,
-                  PlaceEdgeLabels = true,
-                  AffectedLabelsDpKey = affectedLabelsDpKey,
-              };
-              labeling.ApplyLayout(graph);
-
-              // dispose selection key
-              graph.RemoveDataProvider(affectedLabelsDpKey);
+              var labeling = new GenericLabeling { Scope = LabelingScope.EdgeLabels };
+              var labelingData = labeling.CreateLayoutData(graph);
+              labelingData.Scope.EdgeLabels.Mapper = nonTreeLabelsMap;
+              graph.ApplyLayout(labeling, labelingData);
             }
           }
         }
       }
 
-      private void RouteMarkedEdges(LayoutGraph graph, IDataMap markedEdgesMap) {
+      private void RouteMarkedEdges(LayoutGraph graph, IMapper<Edge, bool> markedEdgesMap) {
         if (MarkedEdgeRouter == null) {
           return;
         }
+        // temporarily add the selected edges to the layout context
+        var contextStage = new ContextModificationStage(MarkedEdgeRouter);
+        contextStage.AddReplacementMap(LayoutKeys.RouteEdgesDataKey, markedEdgesMap);
 
-        IDataProvider backupDp = null;
-        if (EdgeSelectionKey != null) {
-          backupDp = graph.GetDataProvider(EdgeSelectionKey);
-          graph.AddDataProvider(EdgeSelectionKey, markedEdgesMap);
-        }
-        if (MarkedEdgeRouter is StraightLineEdgeRouter) {
-          var router = (StraightLineEdgeRouter) MarkedEdgeRouter;
-          router.Scope = Scope.RouteAffectedEdges;
-          router.AffectedEdgesDpKey = EdgeSelectionKey;
-        }
-
-        MarkedEdgeRouter.ApplyLayout(graph);
-
-        if (EdgeSelectionKey != null) {
-          graph.RemoveDataProvider(EdgeSelectionKey);
-
-          if (backupDp != null) {
-            graph.AddDataProvider(EdgeSelectionKey, backupDp);
-          }
-        }
+        contextStage.ApplyLayout(graph);
       }
     }
-  }
 
+    public enum PortAssignment
+    {
+      Center,
+      DistributedTop,
+      DistributedBottom,
+      DistributedLeft,
+      DistributedRight
+    }
+  }
 }

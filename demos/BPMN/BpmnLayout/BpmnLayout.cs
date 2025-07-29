@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -27,176 +27,191 @@
  ** 
  ***************************************************************************/
 
-using yWorks.Algorithms;
+using System;
+using System.Linq;
+using yWorks.Layout.Graph;
 using yWorks.Layout.Grid;
-using yWorks.Layout.Hierarchic;
+using yWorks.Layout.Hierarchical;
 using yWorks.Layout.Labeling;
+using yWorks.Utils;
 
 namespace yWorks.Layout.Bpmn
 {
   /// <summary>
-  /// An automatic layout algorithm for BPMN diagrams.
+  ///   An automatic layout algorithm for BPMN diagrams.
   /// </summary>
   /// <remarks>
-  /// <p>
-  /// Some elements have to be marked with the DataProvider keys
-  /// <see cref="SequenceFlowEdgesDpKey"/> and <see cref="BoundaryInterruptingEdgesDpKey"/>.
-  /// </p>
+  ///   <p>
+  ///     Some elements have to be marked with the data keys
+  ///     <see cref="SequenceFlowEdgesDataKey"/> and <see cref="BoundaryInterruptingEdgesDataKey"/>.
+  ///   </p>
   /// </remarks>
   public class BpmnLayout : ILayoutAlgorithm
   {
     /// <summary>
-    /// <see cref="yWorks.Algorithms.IDataProvider"/> key used to store if an edge represents a sequence flow, default flow or conditional flow.
+    ///   <see cref="IMapper{K,V}"/> key used to store if an edge represents a sequence flow, default flow
+    ///   or conditional flow.
     /// </summary>
-    public static readonly EdgeDpKey<bool> SequenceFlowEdgesDpKey = new EdgeDpKey<bool>(typeof(BpmnLayout), "com.yworks.yfiles.bpmn.layout.BpmnLayout.SequenceFlowEdgesDpKey");
+    public static readonly EdgeDataKey<bool> SequenceFlowEdgesDataKey =
+        new("yWorks.Layout.Bpmn.BpmnLayout.SequenceFlowEdgesDataKey");
 
     /// <summary>
-    /// <see cref="yWorks.Algorithms.IDataProvider"/> key used to store if an edge starts at a boundary interrupting event.
+    ///   <see cref="IMapper{K,V}"/> key used to store if an edge starts at a boundary interrupting event.
     /// </summary>
-    public static readonly EdgeDpKey<bool> BoundaryInterruptingEdgesDpKey = new EdgeDpKey<bool>(typeof (BpmnLayout), "com.yworks.yfiles.bpmn.layout.BpmnLayout.BoundaryInterruptingEdgesDpKey");
-
-    /// <summary>
-    /// <see cref="yWorks.Algorithms.IDataProvider"/> key used to store which labels shall be positioned by the labeling algorithm.
-    /// </summary>
-    public static readonly ILabelLayoutDpKey<bool> AffectedLabelsDpKey = new ILabelLayoutDpKey<bool>(typeof(BpmnLayout), "com.yworks.yfiles.bpmn.layout.BpmnLayout.AffectedLabelsDpKey");
+    public static readonly EdgeDataKey<bool> BoundaryInterruptingEdgesDataKey =
+        new("yWorks.Layout.Bpmn.BpmnLayout.BoundaryInterruptingEdgesDataKey");
 
     public BpmnLayout() {
       Scope = Scope.AllElements;
-      LaneInsets = 10;
+      LanePadding = 10;
       LayoutOrientation = LayoutOrientation.LeftToRight;
       MinimumNodeDistance = 40;
     }
 
     /// <summary>
-    /// The Scope that is laid out.
+    ///   The Scope that is laid out.
     /// </summary>
     /// <remarks>
-    /// Possible values are <see cref="Bpmn.Scope.AllElements"/>
-    /// and <see cref="Bpmn.Scope.SelectedElements"/>.
-    /// <p>
-    /// Defaults to <see cref="Bpmn.Scope.AllElements"/>.
-    /// </p>
-    /// <p>
-    /// Note, if the scope is set to <see cref="Bpmn.Scope.SelectedElements"/>,
-    /// non-selected elements may also be moved. However the layout algorithm uses the initial position of
-    /// such elements as sketch.
-    /// </p>
+    ///   Possible values are <see cref="Bpmn.Scope.AllElements"/> and <see cref="Bpmn.Scope.SelectedElements"/>.
+    ///   <p>
+    ///     Defaults to <see cref="Bpmn.Scope.AllElements"/>.
+    ///   </p>
+    ///   <p>
+    ///     Note, if the scope is set to <see cref="Bpmn.Scope.SelectedElements"/>,
+    ///     non-selected elements may also be moved. However, the layout algorithm uses the initial position of
+    ///     such elements as a sketch.
+    ///   </p>
     /// </remarks>
     public Scope Scope { get; set; }
 
     /// <summary>
-    /// The insets used for swim lanes.
+    ///   The padding used for swimlanes.
     /// </summary>
     /// <remarks>
-    /// The insets for swim lanes, that is the distance between a graph element
-    /// and the border of its enclosing swim lane.
-    /// <p>
-    /// Defaults to <c>10.0</c>.
-    /// </p>
+    ///   The padding for swimlanes, that is the distance between a graph element
+    ///   and the border of its enclosing swimlane.
+    ///   <p>
+    ///     Defaults to <c>10.0</c>.
+    ///   </p>
     /// </remarks>
-    public double LaneInsets { get; set; }
+    public double LanePadding { get; set; }
 
     /// <summary>
-    /// The minimum distance between two node elements.
+    ///   The minimum distance between two node elements.
     /// </summary>
     /// <remarks>
-    /// Defaults to <c>40.0</c>
+    ///   Defaults to <c>40.0</c>
     /// </remarks>
     public double MinimumNodeDistance { get; set; }
 
     /// <summary>
-    /// The layout orientation.
+    ///   The layout orientation.
     /// </summary>
     /// <remarks>
-    /// Defaults to <see cref="yWorks.Layout.Bpmn.LayoutOrientation.LeftToRight"/>.
+    ///   Defaults to <see cref="yWorks.Layout.Bpmn.LayoutOrientation.LeftToRight"/>.
     /// </remarks>
     public LayoutOrientation LayoutOrientation { get; set; }
 
+    /// <summary>
+    ///   The hierarchical layout used as core layout algorithm.
+    /// </summary>
+    public HierarchicalLayout HierarchicalLayout { get; } = InitializeHierarchicalLayout();
 
     /// <summary>Lays out the specified graph.</summary>
     public virtual void ApplyLayout(LayoutGraph graph) {
-      if (graph.Empty) {
+      if (graph.IsEmpty) {
         return;
       }
-      // set the laneInsets to all partition grid columns and rows
-      ConfigurePartitionGrid(graph);
+      // set the lanePadding to all layout grid columns and rows
+      ConfigureLayoutGrid(graph);
 
       // run core layout
-      ApplyHierarchicLayout(graph);
+      ApplyHierarchicalLayout(graph);
 
       // apply generic labeling
       ApplyLabeling(graph);
-      
+
       // adjust endpoints of edges
       new PortLocationAdjuster().ApplyLayout(graph);
 
-      //remove data provider for CriticalEdgePriorityDpKey that was added by BalancingPortOptimizer
-      graph.RemoveDataProvider(HierarchicLayout.CriticalEdgePriorityDpKey);
+      // remove data provider for CriticalEdgePriorityDataKey that was added by BalancingPortOptimizer
+      graph.Context.Remove(HierarchicalLayout.CriticalEdgePriorityDataKey);
     }
 
-    private void ConfigurePartitionGrid(LayoutGraph graph) {
-      PartitionGrid grid = PartitionGrid.GetPartitionGrid(graph);
+    private void ConfigureLayoutGrid(LayoutGraph graph) {
+      var cellDescriptors = graph.Context.GetItemData(LayoutGrid.LayoutGridCellDescriptorDataKey);
+      if (cellDescriptors == null) {
+        return;
+      }
+      var grid = graph.Nodes.Select(node => cellDescriptors[node]).FirstOrDefault(cell => cell != null)?.LayoutGrid;
       if (grid != null) {
         foreach (var column in grid.Columns) {
-          column.LeftInset = column.LeftInset + LaneInsets;
-          column.RightInset = column.RightInset + LaneInsets;
+          column.LeftPadding += LanePadding;
+          column.RightPadding += LanePadding;
         }
         foreach (var row in grid.Rows) {
-          row.TopInset = row.TopInset + LaneInsets;
-          row.BottomInset = row.BottomInset + LaneInsets;
+          row.TopPadding += LanePadding;
+          row.BottomPadding += LanePadding;
         }
       }
     }
 
-    private void ApplyHierarchicLayout(LayoutGraph graph) {
-      HierarchicLayout hl = new HierarchicLayout();
-      hl.OrthogonalRouting = true;
-      hl.RecursiveGroupLayering = false;
-      hl.ComponentLayoutEnabled = false;
-      hl.FromScratchLayerer = new BackLoopLayerer();
+    private void ApplyHierarchicalLayout(LayoutGraph graph) {
+      var hl = HierarchicalLayout;
+      hl.EdgeLabelPlacement = EdgeLabelPlacement.Ignore;
       hl.MinimumLayerDistance = MinimumNodeDistance;
-      hl.NodeToNodeDistance = MinimumNodeDistance;
-      ((SimplexNodePlacer)hl.NodePlacer).BarycenterMode = true;
-      ((SimplexNodePlacer)hl.NodePlacer).StraightenEdges = true;
+      hl.NodeDistance = MinimumNodeDistance;
       hl.LayoutOrientation = LayoutOrientation == LayoutOrientation.LeftToRight
-        ? Layout.LayoutOrientation.LeftToRight
-        : Layout.LayoutOrientation.TopToBottom;
-      hl.HierarchicLayoutCore.PortConstraintOptimizer = new BalancingPortOptimizer(new PortCandidateOptimizer());
+          ? Layout.LayoutOrientation.LeftToRight
+          : Layout.LayoutOrientation.TopToBottom;
+      hl.Core.PortCandidateSelector = new BalancingPortSelector(new PortCandidateSelector());
       if (Scope == Scope.SelectedElements) {
-        hl.FixedElementsLayerer = new AsIsLayerer {MaximumNodeSize = 5};
-        hl.LayoutMode = LayoutMode.Incremental;
+        hl.Core.FixedElementsLayerAssigner = new FromSketchLayerAssigner { MaximumNodeSize = 5 };
+        hl.FromSketchMode = true;
       }
       hl.ApplyLayout(graph);
     }
 
+    private static HierarchicalLayout InitializeHierarchicalLayout() {
+      var hl = new HierarchicalLayout();
+      hl.GroupLayeringPolicy = GroupLayeringPolicy.IgnoreGroups;
+      hl.ComponentLayout.Enabled = false;
+      hl.Core.FromScratchLayerAssigner = new BackLoopLayerAssigner();
+      hl.CoordinateAssigner.SymmetryOptimizationStrategy = SymmetryOptimizationStrategy.Strong;
+      hl.CoordinateAssigner.StraightenEdges = true;
+      return hl;
+    }
+
     private void ApplyLabeling(LayoutGraph graph) {
-      GenericLabeling labeling = new GenericLabeling();
-      labeling.MaximumDuration = 0;
-      labeling.ReduceAmbiguity = true;
-      labeling.PlaceNodeLabels = true;
-      labeling.PlaceEdgeLabels = true;
-      labeling.AffectedLabelsDpKey = AffectedLabelsDpKey;
-      labeling.ProfitModel = new BpmnLabelProfitModel(graph);
-      labeling.CustomProfitModelRatio = 0.15;
+      var labeling = new GenericLabeling {
+          StopDuration = TimeSpan.Zero,
+          Scope = LabelingScope.All,
+          DefaultNodeLabelingCosts = { AmbiguousPlacementCost = 1.0 },
+          DefaultEdgeLabelingCosts = { AmbiguousPlacementCost = 1.0 }
+      };
+
+      graph.Context.AddItemData(GenericLabeling.NodeLabelCandidateProcessorDataKey,
+          _ => BpmnLabelWeightModel.NodeLabelWeightDelegate);
       labeling.ApplyLayout(graph);
+      graph.Context.Remove(GenericLabeling.NodeLabelCandidateProcessorDataKey);
     }
 
     /// <summary>
-    /// Returns if the edge represents a sequence flow, default flow or conditional flow.
+    ///   Returns if the edge represents a sequence flow, default flow, or conditional flow.
     /// </summary>
-    /// <seealso cref="SequenceFlowEdgesDpKey"/>
-    public static bool IsSequenceFlow(Edge edge, Graph graph) {
-      var flowDP = graph.GetDataProvider(SequenceFlowEdgesDpKey);
-      return flowDP != null && flowDP.GetBool(edge);
+    /// <seealso cref="SequenceFlowEdgesDataKey"/>
+    public static bool IsSequenceFlow(Edge edge, LayoutGraph graph) {
+      var flowDP = graph.Context.GetItemData(SequenceFlowEdgesDataKey);
+      return flowDP != null && flowDP[edge];
     }
 
     /// <summary>
-    /// Returns if the edge is attached to a boundary interrupting event.
+    ///   Returns if the edge is attached to a boundary interrupting event.
     /// </summary>
-    /// <seealso cref="BoundaryInterruptingEdgesDpKey"/>.
+    /// <seealso cref="BoundaryInterruptingEdgesDataKey"/>
     public static bool IsBoundaryInterrupting(Edge edge, LayoutGraph graph) {
-      var isInterruptingDP = graph.GetDataProvider(BoundaryInterruptingEdgesDpKey);
-      return isInterruptingDP != null && isInterruptingDP.GetBool(edge);
+      var isInterruptingDP = graph.Context.GetItemData(BoundaryInterruptingEdgesDataKey);
+      return isInterruptingDP != null && isInterruptingDP[edge];
     }
   }
 }

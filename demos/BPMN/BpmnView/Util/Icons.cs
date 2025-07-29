@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -30,7 +30,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Windows;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using yWorks.Controls;
@@ -38,7 +37,7 @@ using yWorks.Controls.Input;
 using yWorks.Geometry;
 using yWorks.Graph;
 using yWorks.Graph.LabelModels;
-using Rectangle = System.Windows.Shapes.Rectangle;
+using yWorks.Utils;
 
 namespace Demo.yFiles.Graph.Bpmn.Util
 {
@@ -92,7 +91,7 @@ namespace Demo.yFiles.Graph.Bpmn.Util
       container.Add(visual);
 
       container.SetRenderDataCache(new PathIconState(Bounds.Width, Bounds.Height, Pen, Brush));
-      container.SetCanvasArrangeRect(Bounds.ToRectD());
+      container.SetCanvasArrangeRect(Bounds.ToRect());
       return container;
     }
 
@@ -109,14 +108,14 @@ namespace Demo.yFiles.Graph.Bpmn.Util
       }
 
       if (!Equals(lastState.pen, Pen)) {
-        path.SetPen(Pen);  
+        path.SetPen(Pen);
       }
       if (!Equals(lastState.brush, Brush)) {
         path.Fill = Brush;
       }
-      
+
       // arrange visual
-      container.SetCanvasArrangeRect(Bounds.ToRectD());
+      container.SetCanvasArrangeRect(Bounds.ToRect());
       return container;
     }
   }
@@ -126,7 +125,7 @@ namespace Demo.yFiles.Graph.Bpmn.Util
   {
 
     private readonly IList<IIcon> icons;
-    
+
     public CombinedIcon(IList<IIcon> icons) {
       this.icons = icons;
     }
@@ -143,7 +142,7 @@ namespace Demo.yFiles.Graph.Bpmn.Util
         container.Add(icon.CreateVisual(context));
       }
 
-      container.SetCanvasArrangeRect(Bounds.ToRectD());
+      container.SetCanvasArrangeRect(Bounds.ToRect());
       container.SetRenderDataCache(Bounds.ToRectD());
 
       return container;
@@ -156,7 +155,7 @@ namespace Demo.yFiles.Graph.Bpmn.Util
       }
       var cache = container.GetRenderDataCache<RectD>();
 
-      if (cache.Size != Bounds.ToSizeD()) {
+      if (cache.GetSize() != Bounds.ToSizeD()) {
         // size changed -> we have to update the icons
         var iconBounds = new RectD(PointD.Origin, Bounds.ToSizeD());
         int index = 0;
@@ -171,11 +170,11 @@ namespace Demo.yFiles.Graph.Bpmn.Util
           }
           index++;
         }
-      } else if (cache.TopLeft == Bounds.GetTopLeft()) {
+      } else if (cache.GetTopLeft() == Bounds.GetTopLeft()) {
         // bounds didn't change at all
         return container;
       }
-      container.SetCanvasArrangeRect(Bounds.ToRectD());
+      container.SetCanvasArrangeRect(Bounds.ToRect());
       container.SetRenderDataCache(Bounds.ToRectD());
 
       return container;
@@ -212,7 +211,7 @@ namespace Demo.yFiles.Graph.Bpmn.Util
         container.Add(pathIcon.CreateVisual(context));
         offset += innerIconSize.Width + gap;
       }
-      container.SetCanvasArrangeRect(Bounds.ToRectD());
+      container.SetCanvasArrangeRect(Bounds.ToRect());
       container.SetRenderDataCache(Bounds.GetTopLeft());
 
       return container;
@@ -226,7 +225,7 @@ namespace Demo.yFiles.Graph.Bpmn.Util
 
       var cache = container.GetRenderDataCache<PointD>();
       if (cache != Bounds.GetTopLeft()) {
-        container.SetCanvasArrangeRect(Bounds.ToRectD());
+        container.SetCanvasArrangeRect(Bounds.ToRect());
         container.SetRenderDataCache(Bounds.GetTopLeft());
       }
       return container;
@@ -281,7 +280,7 @@ namespace Demo.yFiles.Graph.Bpmn.Util
       container.Add(rectangle);
 
       container.SetRenderDataCache(new PathIconState(Bounds.Width, Bounds.Height, Pen, Brush));
-      container.SetCanvasArrangeRect(Bounds.ToRectD());
+      container.SetCanvasArrangeRect(Bounds.ToRect());
       return container;
     }
 
@@ -304,7 +303,7 @@ namespace Demo.yFiles.Graph.Bpmn.Util
       }
 
       // arrange
-      container.SetCanvasArrangeRect(Bounds.ToRectD());
+      container.SetCanvasArrangeRect(Bounds.ToRect());
       return container;
     }
 
@@ -352,7 +351,7 @@ namespace Demo.yFiles.Graph.Bpmn.Util
       container.Add(pathVisual);
 
       container.SetRenderDataCache(new PathIconState(width, height, Pen, Brush));
-      container.SetCanvasArrangeRect(bounds.ToRectD());
+      container.SetCanvasArrangeRect(bounds.ToRect());
       return container;
     }
 
@@ -370,7 +369,7 @@ namespace Demo.yFiles.Graph.Bpmn.Util
       }
 
       // arrange
-      container.SetCanvasArrangeRect(Bounds.ToRectD());
+      container.SetCanvasArrangeRect(Bounds.ToRect());
       return container;
     }
   }
@@ -407,7 +406,7 @@ namespace Demo.yFiles.Graph.Bpmn.Util
       container.Add(path.CreatePath(null, Pen, new Matrix2D(), FillMode.Never));
 
       container.SetRenderDataCache(new PathIconState(width, height, Pen, Brush));
-      container.SetCanvasArrangeRect(bounds.ToRectD());
+      container.SetCanvasArrangeRect(bounds.ToRect());
       return container;
     }
 
@@ -436,7 +435,7 @@ namespace Demo.yFiles.Graph.Bpmn.Util
       collapsedIcon.SetBounds(new RectD(PointD.Origin, Bounds.GetSize()));
       expandedIcon.SetBounds(new RectD(PointD.Origin, Bounds.GetSize()));
       var button = CreateButton(context, node, collapsedIcon.CreateVisual(context), expandedIcon.CreateVisual(context));
-      button.SetCanvasArrangeRect(Bounds.ToRectD());
+      button.SetCanvasArrangeRect(Bounds.ToRect());
       return button;
     }
 
@@ -452,7 +451,7 @@ namespace Demo.yFiles.Graph.Bpmn.Util
       button.CheckedVisual = collapsedIcon.UpdateVisual(context, button.CheckedVisual);
       button.UncheckedVisual = expandedIcon.UpdateVisual(context, button.UncheckedVisual);
 
-      button.SetCanvasArrangeRect(Bounds.ToRectD());
+      button.SetCanvasArrangeRect(Bounds.ToRect());
       return button;
     }
 
@@ -460,19 +459,18 @@ namespace Demo.yFiles.Graph.Bpmn.Util
       var button = new VisualToggleButton {CommandParameter = item, Command = GraphCommands.ToggleExpansionState, CheckedVisual = collapsedVisual, UncheckedVisual = expandedVisual, Background = iconBrush};
 
       bool expanded = true;
-      var canvas = context != null ? context.CanvasControl : null;
+      var canvas = context.CanvasControl;
 
-      if (canvas != null) {
-        button.CommandTarget = canvas;
+      button.CommandTarget = canvas;
 
-        IGraph graph = canvas.Lookup(typeof(IGraph)) as IGraph;
-        if (graph != null) {
-          IFoldingView foldingView = graph.Lookup<IFoldingView>();
-          if (foldingView != null && foldingView.Graph.Contains(item)) {
-            expanded = foldingView.IsExpanded(item);
-          }
+      var graph = canvas.Lookup<IGraph>();
+      if (graph != null) {
+        var foldingView = graph.GetFoldingView();
+        if (foldingView != null && foldingView.Graph.Contains(item)) {
+          expanded = foldingView.IsExpanded(item);
         }
-      } else {
+      }
+      else {
         button.Content = "+";
       }
 

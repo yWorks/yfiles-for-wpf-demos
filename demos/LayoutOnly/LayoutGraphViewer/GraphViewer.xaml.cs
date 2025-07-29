@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -27,20 +27,20 @@
  ** 
  ***************************************************************************/
 
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using Microsoft.Win32;
-using yWorks.Algorithms.Geometry;
-using yWorks.Layout;
-using yWorks.Layout.Grouping;
+using yWorks.Geometry;
+using yWorks.Layout.Graph;
 
 namespace Demo.Layout.LayoutGraphViewer
 {
   /// <summary>
-  /// Interaction logic for GraphViewer.xaml
+  ///   Interaction logic for GraphViewer.xaml
   /// </summary>
   public partial class GraphViewer : Window
   {
@@ -49,108 +49,95 @@ namespace Demo.Layout.LayoutGraphViewer
     }
 
     public void AddLayoutGraph(LayoutGraph graph, string hierarchicalLayoutStyle) {
-      TabItem tab = new TabItem { Header = hierarchicalLayoutStyle};
+      var tab = new TabItem { Header = hierarchicalLayoutStyle };
       tab.Content = new GraphCanvas(graph);
       TC_Graphs.Items.Add(tab);
     }
 
     /// <summary>
-    /// Helper class that displays a LayoutGraph
+    ///   Helper class that displays a LayoutGraph
     /// </summary>
-    class GraphCanvas : Canvas
+    private class GraphCanvas : Canvas
     {
       private static readonly Brush NodeFill = (Brush) new SolidColorBrush(Color.FromRgb(255, 108, 0)).GetAsFrozen();
       private static readonly Brush NodeStroke = (Brush) new SolidColorBrush(Color.FromRgb(102, 43, 0)).GetAsFrozen();
-      private static readonly Brush GroupNodeStroke = (Brush) new SolidColorBrush(Color.FromRgb(19, 112, 136)).GetAsFrozen();
+
+      private static readonly Brush GroupNodeStroke =
+          (Brush) new SolidColorBrush(Color.FromRgb(19, 112, 136)).GetAsFrozen();
+
       private static readonly Brush LabelFill = (Brush) new SolidColorBrush(Color.FromRgb(255, 195, 152)).GetAsFrozen();
       private static readonly Brush EdgeStroke = (Brush) new SolidColorBrush(Color.FromRgb(102, 47, 1)).GetAsFrozen();
 
-      private int _padding = 50;
+      private readonly int _padding = 50;
       private double scale = 1;
+
       public double Scale {
-        get {return scale;}
+        get => scale;
         set {
           scale = value;
 
-          var scaleTransform = new ScaleTransform() {
-            ScaleX = value,
-            ScaleY = value
-          };
+          var scaleTransform = new ScaleTransform { ScaleX = value, ScaleY = value };
           var translateTransform = new TranslateTransform(_padding, _padding);
 
           var transformGroup = new TransformGroup();
           transformGroup.Children.Add(scaleTransform);
           transformGroup.Children.Add(translateTransform);
-          this.RenderTransform = transformGroup;
+          RenderTransform = transformGroup;
         }
       }
 
       public GraphCanvas(LayoutGraph graph) {
-        this.RenderTransform = new TranslateTransform(_padding,_padding);
-        var grouping = new GroupingSupport(graph);
+        RenderTransform = new TranslateTransform(_padding, _padding);
+        var grouping = LayoutGraphGrouping.CreateReadOnlyView(graph);
 
         // Add all edges
         foreach (var edge in graph.Edges) {
-          IEdgeLayout el = graph.GetLayout(edge);
-          var l = new Polyline
-          {
-            Stroke = EdgeStroke,
-            StrokeThickness = 1.5
-          };
-          l.Points.Add(new Point(graph.GetSourcePointAbs(edge).X, graph.GetSourcePointAbs(edge).Y));
-          for (int i = 0; i < el.PointCount(); i++) {
-            Point p = new Point(el.GetPoint(i).X, el.GetPoint(i).Y);
-            l.Points.Add(p);
+          var l = new Polyline { Stroke = EdgeStroke, StrokeThickness = 1.5 };
+          l.Points.Add(new Point(edge.SourcePortLocation.X, edge.SourcePortLocation.Y));
+          foreach (var edgeBend in edge.Bends) {
+            l.Points.Add(new Point(edgeBend.X, edgeBend.Y));
           }
-          l.Points.Add(new Point(graph.GetTargetPointAbs(edge).X, graph.GetTargetPointAbs(edge).Y));
-          this.Children.Add(l);
-          this.Children.Add(GetArrowhead(l));
+          l.Points.Add(new Point(edge.TargetPortLocation.X, edge.TargetPortLocation.Y));
+          Children.Add(l);
+          Children.Add(GetArrowhead(l));
 
           // edge labels
-          var edgeLabelLayout = graph.GetLabelLayout(edge);
-          foreach (var labelLayout in edgeLabelLayout) {
-            var orientedRectangle = labelLayout.LabelModel.GetLabelPlacement(
-                labelLayout.BoundingBox,
-                graph.GetLayout(edge),
-                graph.GetLayout(edge.Source),
-                graph.GetLayout(edge.Target),
-                labelLayout.ModelParameter);
-            this.Children.Add(GetPolygon(orientedRectangle));
+          foreach (var label in edge.Labels) {
+            Children.Add(GetPolygon(label.Layout));
           }
         }
 
         // add all nodes
         foreach (var node in graph.Nodes) {
-          INodeLayout nl = graph.GetLayout(node);
+          var nl = node.Layout;
 
           var isGroupNode = grouping.IsGroupNode(node);
           var stroke = isGroupNode ? GroupNodeStroke : NodeStroke;
-          var rect = new Rectangle
-          {
-            RadiusX = 3.5,
-            RadiusY = 3.5,
-            StrokeThickness = isGroupNode ? 5 : 1.5,
-            Stroke = stroke,
-            Fill = isGroupNode ? null : NodeFill,
-            Width = nl.Width,
-            Height = nl.Height
+          var rect = new Rectangle {
+              RadiusX = 3.5,
+              RadiusY = 3.5,
+              StrokeThickness = isGroupNode ? 5 : 1.5,
+              Stroke = stroke,
+              Fill = isGroupNode ? null : NodeFill,
+              Width = nl.Width,
+              Height = nl.Height
           };
-          this.Children.Add(rect);
-          Canvas.SetTop(rect, nl.Y);
-          Canvas.SetLeft(rect, nl.X);
+          Children.Add(rect);
+          SetTop(rect, nl.Y);
+          SetLeft(rect, nl.X);
 
-          // display the node index 
-          var text = new TextBlock() {
+          // display the node index
+          var text = new TextBlock {
               Text = string.Empty + node.Index,
               HorizontalAlignment = HorizontalAlignment.Center,
               VerticalAlignment = VerticalAlignment.Center,
               Foreground = stroke
           };
 
-          this.Children.Add(text);
+          Children.Add(text);
           text.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
-          Canvas.SetTop(text, nl.Y + nl.Height/2 - text.DesiredSize.Height/2);
-          Canvas.SetLeft(text, nl.X + nl.Width/2 - text.DesiredSize.Width/2);
+          SetTop(text, nl.Y + nl.Height / 2 - text.DesiredSize.Height / 2);
+          SetLeft(text, nl.X + nl.Width / 2 - text.DesiredSize.Width / 2);
         }
       }
 
@@ -161,29 +148,31 @@ namespace Demo.Layout.LayoutGraphViewer
         lastSegmentVector.Normalize();
         var perpendicular = new Vector(lastSegmentVector.Y, -lastSegmentVector.X);
 
-        return new Polygon
-        {
-          Fill = EdgeStroke,
-          Points =
-          {
-            lastPoint,
-            lastPoint - 8 * lastSegmentVector + 4 * perpendicular,
-            lastPoint - 8 * lastSegmentVector - 4 * perpendicular
-          }
+        return new Polygon {
+            Fill = EdgeStroke,
+            Points = {
+                lastPoint,
+                lastPoint - 8 * lastSegmentVector + 4 * perpendicular,
+                lastPoint - 8 * lastSegmentVector - 4 * perpendicular
+            }
         };
       }
 
-      private static Polygon GetPolygon(YOrientedRectangle orientedRectangle) {
-        var poly = new Polygon
-        {
-          Fill = LabelFill,
-          Points =
-          {
-            new Point(orientedRectangle.AnchorX, orientedRectangle.AnchorY),
-            new Point((orientedRectangle.AnchorX + orientedRectangle.Height * orientedRectangle.UpX), (orientedRectangle.AnchorY + orientedRectangle.Height * orientedRectangle.UpY)),
-            new Point((orientedRectangle.AnchorX + orientedRectangle.Height * orientedRectangle.UpX + orientedRectangle.Width * -orientedRectangle.UpY), (orientedRectangle.AnchorY + orientedRectangle.Height * orientedRectangle.UpY + orientedRectangle.Width * orientedRectangle.UpX)),
-            new Point((orientedRectangle.AnchorX + orientedRectangle.Width * -orientedRectangle.UpY), (orientedRectangle.AnchorY + orientedRectangle.Width * orientedRectangle.UpX))
-          }
+      private static Polygon GetPolygon(IOrientedRectangle orientedRectangle) {
+        var poly = new Polygon {
+            Fill = LabelFill,
+            Points = {
+                new Point(orientedRectangle.AnchorX, orientedRectangle.AnchorY),
+                new Point(orientedRectangle.AnchorX + orientedRectangle.Height * orientedRectangle.UpX,
+                    orientedRectangle.AnchorY + orientedRectangle.Height * orientedRectangle.UpY),
+                new Point(
+                    orientedRectangle.AnchorX + orientedRectangle.Height * orientedRectangle.UpX +
+                    orientedRectangle.Width * -orientedRectangle.UpY,
+                    orientedRectangle.AnchorY + orientedRectangle.Height * orientedRectangle.UpY +
+                    orientedRectangle.Width * orientedRectangle.UpX),
+                new Point(orientedRectangle.AnchorX + orientedRectangle.Width * -orientedRectangle.UpY,
+                    orientedRectangle.AnchorY + orientedRectangle.Width * orientedRectangle.UpX)
+            }
         };
         return poly;
       }
@@ -201,11 +190,11 @@ namespace Demo.Layout.LayoutGraphViewer
 
     private void Btn_actualSize(object sender, RoutedEventArgs e) {
       var graphCanvas = TC_Graphs.SelectedContent as GraphCanvas;
-      graphCanvas.Scale =1.0d;
+      graphCanvas.Scale = 1.0d;
     }
 
     private void MenuItemSave_OnClick(object sender, RoutedEventArgs e) {
-      SaveFileDialog saveFileDialog = new SaveFileDialog();
+      var saveFileDialog = new SaveFileDialog();
 
       saveFileDialog.Filter = "PNG File|*.png";
 
@@ -220,7 +209,7 @@ namespace Demo.Layout.LayoutGraphViewer
         var bounds = VisualTreeHelper.GetDescendantBounds(canvas);
         var dpi = 96d;
 
-        var rtb = new RenderTargetBitmap((int) bounds.Width, (int) bounds.Height, dpi, dpi, System.Windows.Media.PixelFormats.Default);
+        var rtb = new RenderTargetBitmap((int) bounds.Width, (int) bounds.Height, dpi, dpi, PixelFormats.Default);
 
         var dv = new DrawingVisual();
         using (var dc = dv.RenderOpen()) {
@@ -232,13 +221,14 @@ namespace Demo.Layout.LayoutGraphViewer
         BitmapEncoder pngEncoder = new PngBitmapEncoder();
         pngEncoder.Frames.Add(BitmapFrame.Create(rtb));
 
-        using (var fs = System.IO.File.OpenWrite(saveFileDialog.FileName)) {
+        using (var fs = File.OpenWrite(saveFileDialog.FileName)) {
           pngEncoder.Save(fs);
         }
       }
     }
+
     private void MenuItemExit_OnClick(object sender, RoutedEventArgs e) {
-      this.Close();
+      Close();
     }
   }
 }

@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -40,8 +40,8 @@ using yWorks.Graph.Styles;
 namespace Demo.yFiles.Graph.ArrowNodeStyle
 {
   /// <summary>
-  /// An <see cref="IHandle"/> for nodes with a <see cref="yWorks.Graph.Styles.ArrowNodeStyle"/> to change the
-  /// <see cref="ArrowNodeStyle.Angle"/> interactively.
+  ///   An <see cref="IHandle"/> for nodes with a <see cref="yWorks.Graph.Styles.ArrowNodeStyle"/> to change the
+  ///   <see cref="ArrowNodeStyle.Angle"/> interactively.
   /// </summary>
   public class ArrowNodeStyleAngleHandle : IHandle, IPoint, IVisualCreator
   {
@@ -64,29 +64,29 @@ namespace Demo.yFiles.Graph.ArrowNodeStyle
     private double handleOffsetForMinAngle;
     private double handleOffsetForMaxAngle;
 
-    private ICanvasObject angleLineCanvasObject;
+    private IRenderTreeElement angleLineRenderTreeElement;
 
     /// <summary>
-    /// Creates a new instance for the given node.
+    ///   Creates a new instance for the given node.
     /// </summary>
     /// <param name="node">The node whose style shall be changed.</param>
     /// <param name="angleChanged">An action that is called when the handle has been moved.</param>
     public ArrowNodeStyleAngleHandle(INode node, Action angleChanged) {
       this.node = node;
       this.angleChanged = angleChanged;
-      this.style = node.Style as yWorks.Graph.Styles.ArrowNodeStyle;
+      style = node.Style as yWorks.Graph.Styles.ArrowNodeStyle;
     }
 
     /// <summary>
-    /// Gets a live view of the handle location.
+    ///   Gets a live view of the handle location.
     /// </summary>
     /// <remarks>
-    /// The handle is placed with an offset to the node bounds on the line from the arrow head tip along the arrow blade.
+    ///   The handle is placed with an offset to the node bounds on the line from the arrow head tip along the arrow blade.
     /// </remarks>
-    public IPoint Location { get { return this; } }
+    public IPoint Location => this;
 
     /// <summary>
-    /// Initializes the drag gesture and adds a line from the arrow head tip along the arrow blade to the handle to the view.
+    ///   Initializes the drag gesture and adds a line from the arrow head tip along the arrow blade to the handle to the view.
     /// </summary>
     /// <param name="context">The current input mode context.</param>
     public void InitializeDrag(IInputModeContext context) {
@@ -129,12 +129,12 @@ namespace Demo.yFiles.Graph.ArrowNodeStyle
 
       // add a line from the arrow tip along the arrow blade to the handle location to the view
       // this line is created and updated in the CreateVisual and UpdateVisual methods
-      angleLineCanvasObject =
-          context.CanvasControl.InputModeGroup.AddChild(this, CanvasObjectDescriptors.AlwaysDirtyInstance);
+      var renderTree = context.CanvasControl.RenderTree;
+      angleLineRenderTreeElement = renderTree.CreateElement(renderTree.InputModeGroup, this);
     }
 
     /// <summary>
-    /// Calculates the new angle depending on the new mouse location and updates the node style and angle visualization.
+    ///   Calculates the new angle depending on the new mouse location and updates the node style and angle visualization.
     /// </summary>
     /// <param name="context">The current input mode context.</param>
     /// <param name="originalLocation">The original handle location.</param>
@@ -160,33 +160,38 @@ namespace Demo.yFiles.Graph.ArrowNodeStyle
     }
 
     /// <summary>
-    /// Resets the initial angle and removes the angle visualization.
+    ///   Resets the initial angle and removes the angle visualization.
     /// </summary>
     public void CancelDrag(IInputModeContext context, PointD originalLocation) {
       style.Angle = initialAngle;
-      angleLineCanvasObject.Remove();
+      context.CanvasControl.RenderTree.Remove(angleLineRenderTreeElement);
     }
 
     /// <summary>
-    /// Sets the angle for the new location, removes the angle visualization and triggers the angleChanged callback.
+    ///   Sets the angle for the new location, removes the angle visualization, and triggers the angleChanged callback.
     /// </summary>
     public void DragFinished(IInputModeContext context, PointD originalLocation, PointD newLocation) {
       HandleMove(context, originalLocation, newLocation);
-      angleLineCanvasObject.Remove();
+      context.CanvasControl.RenderTree.Remove(angleLineRenderTreeElement);
     }
 
     /// <summary>
-    /// Returns <see cref="HandleTypes.Rotate"/> as handle type that determines the visualization of the handle.
+    ///   Returns <see cref="HandleType.Move2"/> as the handle type that determines the visualization of the handle.
     /// </summary>
-    public HandleTypes Type { get { return HandleTypes.Rotate; } }
+    public HandleType Type => HandleType.Move2;
 
     /// <summary>
-    /// Returns <see cref="Cursors.Cross"/> as cursor that shall be used during the drag gesture.
+    ///   Gets an optional tag object associated with the handle.
     /// </summary>
-    public Cursor Cursor { get { return Cursors.Cross; } }
+    public object Tag => null;
 
     /// <summary>
-    /// Ignore clicks.
+    ///   Returns <see cref="Cursors.Cross"/> as the cursor that shall be used during the drag gesture.
+    /// </summary>
+    public Cursor Cursor => Cursors.Cross;
+
+    /// <summary>
+    ///   Ignore clicks.
     /// </summary>
     /// <param name="eventArgs">Arguments describing the click.</param>
     public void HandleClick(ClickEventArgs eventArgs) {
@@ -252,13 +257,13 @@ namespace Demo.yFiles.Graph.ArrowNodeStyle
     #region Utility methods
 
     /// <summary>
-    /// Clamps the <see cref="ArrowNodeStyle.Angle"/> of the given style to a valid value.
+    ///   Clamps the <see cref="ArrowNodeStyle.Angle"/> of the given style to a valid value.
     /// </summary>
     /// <remarks>
-    /// A valid angle is less then <c>&#x03c0; / 2</c>.
-    /// For styles using <see cref="ArrowStyleShape.Parallelogram"/> or <see cref="ArrowStyleShape.Trapezoid"/> shape
-    /// or having <see cref="ArrowNodeStyle.ShaftRatio"/> <c>1</c>, the angle also has to be bigger then <c>-&#x03c0; / 2</c>,
-    /// otherwise it has to be <c>&gt;= 0</c>
+    ///   A valid angle is less than <c>&#x03c0; / 2</c>.
+    ///   For styles using <see cref="ArrowStyleShape.Parallelogram"/> or <see cref="ArrowStyleShape.Trapezoid"/> shape
+    ///   or having <see cref="ArrowNodeStyle.ShaftRatio"/> <c>1</c>, the angle has to be greater than
+    ///   <c>-&#x03c0; / 2</c>, otherwise it has to be greater than or equal to <c>0</c>.
     /// </remarks>
     /// <param name="style">The style to return the clamped angle for.</param>
     /// <returns>The angle of the style clamped to a valid value.</returns>
@@ -279,7 +284,7 @@ namespace Demo.yFiles.Graph.ArrowNodeStyle
     }
 
     /// <summary>
-    /// Returns the width of one arrow side for the given node layout and style.
+    ///   Returns the width of one arrow side for the given node layout and style.
     /// </summary>
     /// <param name="nodeLayout">The node layout whose size shall be used.</param>
     /// <param name="style">The style whose shape and direction shall be used.</param>
@@ -296,7 +301,7 @@ namespace Demo.yFiles.Graph.ArrowNodeStyle
     }
 
     /// <summary>
-    /// Returns the maximum possible arrow head length for the given node layout and style.
+    ///   Returns the maximum possible arrow head length for the given node layout and style.
     /// </summary>
     /// <param name="nodeLayout">The node layout whose size shall be used.</param>
     /// <param name="style">The style whose shape and direction shall be used.</param>
@@ -314,7 +319,7 @@ namespace Demo.yFiles.Graph.ArrowNodeStyle
     }
 
     /// <summary>
-    /// Calculates the length of the arrow head for the given node layout and style.
+    ///   Calculates the length of the arrow head for the given node layout and style.
     /// </summary>
     /// <param name="nodeLayout">The layout of the node.</param>
     /// <param name="style">The style whose shape and angle shall be considered.</param>
@@ -329,15 +334,15 @@ namespace Demo.yFiles.Graph.ArrowNodeStyle
     }
 
     /// <summary>
-    /// Calculates the offset of the current handle location to the location corresponding to an angle of 0. 
+    ///   Calculates the offset of the current handle location to the location corresponding to an angle of 0.
     /// </summary>
     /// <returns>The offset of the current handle location to the location corresponding to an angle of 0.</returns>
     private double CalculateHandleInDirectionOffset() {
       var headLength = GetArrowHeadLength(node.Layout, style);
       var arrowSideWidth = GetArrowSideWidth(node.Layout, style);
-      var scaledHeadLength = headLength * (HandleOffset + arrowSideWidth) / (arrowSideWidth);
+      var scaledHeadLength = headLength * (HandleOffset + arrowSideWidth) / arrowSideWidth;
       var angle = GetClampedAngle(style);
-      var offset = angle >= 0 ? scaledHeadLength : (headLength - scaledHeadLength);
+      var offset = angle >= 0 ? scaledHeadLength : headLength - scaledHeadLength;
       return offset;
     }
 
@@ -347,8 +352,7 @@ namespace Demo.yFiles.Graph.ArrowNodeStyle
 
     Visual IVisualCreator.CreateVisual(IRenderContext context) {
       var group = new VisualGroup {
-          Transform = context.ViewTransform,
-          Children = { new Line() { Stroke = Brushes.Goldenrod, StrokeThickness = 2 } }
+          Transform = context.ViewTransform, Children = { new Line { Stroke = Brushes.Goldenrod, StrokeThickness = 2 } }
       };
       return ((IVisualCreator) this).UpdateVisual(context, group);
     }
@@ -362,7 +366,7 @@ namespace Demo.yFiles.Graph.ArrowNodeStyle
 
       // synchronize first line point with handle location
       var fromWorld = Location.ToPointD();
-      var fromView = context.ToViewCoordinates(fromWorld);
+      var fromView = context.WorldToViewCoordinates(fromWorld);
       line.X1 = fromView.X;
       line.Y1 = fromView.Y;
 
@@ -399,7 +403,7 @@ namespace Demo.yFiles.Graph.ArrowNodeStyle
         }
       }
 
-      var toView = context.ToViewCoordinates(new PointD(toWorldX, toWorldY));
+      var toView = context.WorldToViewCoordinates(new PointD(toWorldX, toWorldY));
       line.X2 = toView.X;
       line.Y2 = toView.Y;
       return group;

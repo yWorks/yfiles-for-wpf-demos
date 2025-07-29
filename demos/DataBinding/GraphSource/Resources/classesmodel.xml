@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8" ?>
 <classes>
   <class name="IA" type="interface"/>
   <class name="IB" extends="IA" type="interface"/>

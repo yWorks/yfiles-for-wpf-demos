@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--Created by yFiles WPF 2.1-->
-<graphml xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/3.0/xaml" xmlns:y="http://www.yworks.com/xml/yfiles-common/3.0" xmlns:demo="http://www.yworks.com/yfiles-wpf/2.1/demos/ControlStyles" xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/3.0" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml.wpf/2.0/ygraphml.xsd " xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://graphml.graphdrawing.org/xmlns">
+<graphml xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/4.0/xaml" xmlns:y="http://www.yworks.com/xml/yfiles-common/3.0"  xmlns:yx="http://www.yworks.com/xml/yfiles-common/4.0" xmlns:demo="http://www.yworks.com/yfiles-wpf/2.1/demos/ControlStyles" xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/3.0" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml.wpf/2.0/ygraphml.xsd " xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://graphml.graphdrawing.org/xmlns">
   <key id="d0" for="all" attr.name="UserTags" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/UserTags" />
   <key id="d1" for="node" attr.name="NodeLabels" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeLabels" />
   <key id="d2" for="node" attr.name="NodeGeometry" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeGeometry" />
@@ -34,11 +34,11 @@
           </ywpf:PolylineEdgeStyle>
         </demo:VSMEdgeSegmentControlEdgeStyle.PathStyle>
       </demo:VSMEdgeSegmentControlEdgeStyle>
-      <y:EdgeSegmentLabelModelParameter x:Key="6">
-        <y:EdgeSegmentLabelModelParameter.Model>
-          <y:EdgeSegmentLabelModel Distance="0" Angle="0" />
-        </y:EdgeSegmentLabelModelParameter.Model>
-      </y:EdgeSegmentLabelModelParameter>
+      <yx:EdgeSegmentLabelModelParameter x:Key="6">
+        <yx:EdgeSegmentLabelModelParameter.Model>
+          <yx:EdgeSegmentLabelModel Distance="0" Angle="0" />
+        </yx:EdgeSegmentLabelModelParameter.Model>
+      </yx:EdgeSegmentLabelModelParameter>
       <demo:VSMLabelControlLabelStyle x:Key="7" StyleResourceKey="LabelTemplate" />
       <demo:Product x:Key="8" Name="Snow Boots" Id="8972" InStock="True" />
       <demo:Product x:Key="9" Name="Cowboy Hat" Id="8973" InStock="False" />

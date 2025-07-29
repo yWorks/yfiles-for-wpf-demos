@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -33,22 +33,22 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
-using yWorks.Controls.Input;
-using yWorks.Controls;
 using yWorks.Annotations;
+using yWorks.Controls;
+using yWorks.Controls.Input;
 using yWorks.Geometry;
 using yWorks.Graph;
 using yWorks.Graph.Styles;
-using Point = System.Windows.Point;
+using yWorks.Utils;
 
 namespace Demo.yFiles.Graph.SimpleCustomStyle
 {
   /// <summary>
-  /// This class is an example for a custom edge style based on <see cref="EdgeStyleBase{TVisual}"/>.
+  ///   This class is an example of a custom edge style based on <see cref="EdgeStyleBase{TVisual}"/>.
   /// </summary>
   /// <remarks>
-  /// The <see cref="System.Windows.FrameworkElement"/>s created by this instance are of type <see cref="VisualGroup"/>
-  /// so this is used as the generic type parameter.
+  ///   The <see cref="System.Windows.FrameworkElement"/>s created by this instance are of type <see cref="VisualGroup"/>
+  ///   so this is used as the generic type parameter.
   /// </remarks>
   public class MySimpleEdgeStyle : EdgeStyleBase<VisualGroup>
   {
@@ -57,8 +57,8 @@ namespace Demo.yFiles.Graph.SimpleCustomStyle
     private static readonly LinearGradientBrush animatedPathStroke;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="MySimpleEdgeStyle"/> class with
-    /// a <see cref="MySimpleArrow">custom arrow</see>.
+    ///   Initializes a new instance of the <see cref="MySimpleEdgeStyle"/> class with
+    ///   a <see cref="MySimpleArrow">custom arrow</see>.
     /// </summary>
     public MySimpleEdgeStyle() {
       Arrows = new MySimpleArrow();
@@ -66,79 +66,74 @@ namespace Demo.yFiles.Graph.SimpleCustomStyle
     }
 
     static MySimpleEdgeStyle() {
-      pathStroke = new LinearGradientBrush
-                     {
-                       GradientStops =
-                         {
-                           new GradientStop {Color = Color.FromArgb(150, 150, 255, 255), Offset = 1},
-                           new GradientStop {Color = Color.FromArgb(200, 0, 130, 180), Offset = 0.5},
-                           new GradientStop {Color = Color.FromArgb(150, 200, 255, 255), Offset = 0}
-                         },
-                       StartPoint = new Point(0, 0),
-                       EndPoint = new Point(1, 1),
-                       SpreadMethod = GradientSpreadMethod.Repeat,
-                     };
+      pathStroke = new LinearGradientBrush {
+          GradientStops = {
+              new GradientStop { Color = Color.FromArgb(150, 150, 255, 255), Offset = 1 },
+              new GradientStop { Color = Color.FromArgb(200, 0, 130, 180), Offset = 0.5 },
+              new GradientStop { Color = Color.FromArgb(150, 200, 255, 255), Offset = 0 }
+          },
+          StartPoint = new Point(0, 0),
+          EndPoint = new Point(1, 1),
+          SpreadMethod = GradientSpreadMethod.Repeat
+      };
       pathStroke.Freeze();
 
-      animatedPathStroke = new LinearGradientBrush
-      {
-        GradientStops =
-                                        {
-                                          new GradientStop {Color = Color.FromArgb(255, 255, 215, 0), Offset = 0},
-                                          new GradientStop {Color = Color.FromArgb(255, 255, 245, 30), Offset = 0.5},
-                                          new GradientStop {Color = Color.FromArgb(255, 255, 215, 0), Offset = 1}
-                                        },
-        StartPoint = new Point(0, 0),
-        EndPoint = new Point(30, 30),
-        SpreadMethod = GradientSpreadMethod.Repeat,
-        Transform = new TranslateTransform(),
-        MappingMode = BrushMappingMode.Absolute,
+      animatedPathStroke = new LinearGradientBrush {
+          GradientStops = {
+              new GradientStop { Color = Color.FromArgb(255, 255, 215, 0), Offset = 0 },
+              new GradientStop { Color = Color.FromArgb(255, 255, 245, 30), Offset = 0.5 },
+              new GradientStop { Color = Color.FromArgb(255, 255, 215, 0), Offset = 1 }
+          },
+          StartPoint = new Point(0, 0),
+          EndPoint = new Point(30, 30),
+          SpreadMethod = GradientSpreadMethod.Repeat,
+          Transform = new TranslateTransform(),
+          MappingMode = BrushMappingMode.Absolute
       };
       // Animate Fill
-      DoubleAnimation animation = new DoubleAnimation
-      {
-        From = 0,
-        To = 60,
-        Duration = new Duration(TimeSpan.FromMilliseconds(800)),
-        AutoReverse = false,
-        RepeatBehavior = RepeatBehavior.Forever
+      var animation = new DoubleAnimation {
+          From = 0,
+          To = 60,
+          Duration = new Duration(TimeSpan.FromMilliseconds(800)),
+          AutoReverse = false,
+          RepeatBehavior = RepeatBehavior.Forever
       };
       animation.Freeze();
       animatedPathStroke.Transform.BeginAnimation(TranslateTransform.XProperty, animation);
     }
 
     /// <summary>
-    /// Gets or sets the thickness of the edge
+    ///   Gets or sets the thickness of the edge.
     /// </summary>
     [DefaultValue(3.0d)]
     public double PathThickness { get; set; }
 
     /// <summary>
-    /// Gets or sets the arrows drawn at the beginning and at the end of the edge.
+    ///   Gets or sets the arrows drawn at the beginning and at the end of the edge.
     /// </summary>
     public IArrow Arrows { get; set; }
 
     /// <summary>
-    /// Creates the visual for an edge.
+    ///   Creates the visual for an edge.
     /// </summary>
     protected override VisualGroup CreateVisual(IRenderContext context, IEdge edge) {
       // This implementation creates a VisualGroup and uses it for the rendering of the edge.
       var visual = new VisualGroup();
       // Get the necessary data for rendering of the edge
-      RenderDataCache cache = CreateRenderDataCache(context, edge);
+      var cache = CreateRenderDataCache(context, edge);
       // Render the edge
       Render(context, edge, visual, cache);
       return visual;
     }
 
     /// <summary>
-    /// Re-renders the edge using the old visual for performance reasons.
+    ///   Re-renders the edge using the old visual for performance reasons.
     /// </summary>
     protected override VisualGroup UpdateVisual(IRenderContext context, VisualGroup oldVisual, IEdge edge) {
       // get the data with which the old visual was created
-      RenderDataCache oldCache = oldVisual.GetRenderDataCache<RenderDataCache>();
+      var oldCache = oldVisual.GetRenderDataCache<RenderDataCache>();
       // get the data for the new visual
-      RenderDataCache newCache = CreateRenderDataCache(context, edge);
+      var newCache = CreateRenderDataCache(context, edge);
 
       // check if something changed
       if (!newCache.StateEquals(oldCache)) {
@@ -157,7 +152,9 @@ namespace Demo.yFiles.Graph.SimpleCustomStyle
     }
 
     /// <summary>
-    /// Updates the edge path data as well as the arrow positions of the visuals stored in <param name="container" />.
+    ///   Updates the edge path data as well as the arrow positions of the visuals stored in
+    ///   <param name="container"/>
+    ///   .
     /// </summary>
     private void UpdatePath(IRenderContext context, IEdge edge, VisualGroup container, RenderDataCache cache) {
       // The first child must be a path - else re-create the container from scratch
@@ -171,8 +168,8 @@ namespace Demo.yFiles.Graph.SimpleCustomStyle
       container.SetRenderDataCache(cache);
 
       // update the path
-      GeneralPath gp = cache.GeneralPath;
-      Path path = (Path) container.Children[0];
+      var gp = cache.GeneralPath;
+      var path = (Path) container.Children[0];
       path.Data = gp.CreateGeometry(null);
 
       // update the arrows
@@ -180,29 +177,25 @@ namespace Demo.yFiles.Graph.SimpleCustomStyle
     }
 
     /// <summary>
-    /// Creates an object containing all necessary data to create an edge visual
+    ///   Creates an object containing all necessary data to create an edge visual
     /// </summary>
     private RenderDataCache CreateRenderDataCache(IRenderContext context, IEdge edge) {
-      IGraphSelection selection = context.CanvasControl != null ? context.CanvasControl.Lookup<IGraphSelection>() : null;
-      bool selected = selection != null && selection.IsSelected(edge);
+      var selection = context.CanvasControl.Lookup<IGraphSelection>();
+      var selected = selection != null && selection.Contains(edge);
       return new RenderDataCache(PathThickness, selected, GetPath(edge), Arrows);
     }
 
     /// <summary>
-    /// Creates the visual appearance of an edge
+    ///   Creates the visual appearance of an edge
     /// </summary>
     private void Render(IRenderContext context, IEdge edge, VisualGroup container, RenderDataCache cache) {
       // store information with the visual on how we created it
       container.SetRenderDataCache(cache);
 
-      GeneralPath gp = cache.GeneralPath;
-      Path path = new Path
-      {
-        // convince WPF to render the path even if all coordinates are negative 
-        Stretch = Stretch.None,
-        MinWidth = 1,
-        MinHeight = 1,
-        Data = gp.CreateGeometry(null)
+      var gp = cache.GeneralPath;
+      var path = new Path {
+          // convince WPF to render the path even if all coordinates are negative
+          Stretch = Stretch.None, MinWidth = 1, MinHeight = 1, Data = gp.CreateGeometry(null)
       };
 
       if (cache.Selected) {
@@ -222,14 +215,14 @@ namespace Demo.yFiles.Graph.SimpleCustomStyle
     }
 
     /// <summary>
-    /// Creates a <see cref="GeneralPath"/> from the edge's bends
+    ///   Creates a <see cref="GeneralPath"/> from the edge's bends
     /// </summary>
     /// <param name="edge">The edge to create the path for.</param>
     /// <returns>A <see cref="GeneralPath"/> following the edge</returns>
     [NotNull]
     protected override GeneralPath GetPath(IEdge edge) {
       // Create a general path from the locations of the ports and the bends of the edge.
-      GeneralPath path = new GeneralPath(edge.Bends.Count + 2);
+      var path = new GeneralPath(edge.Bends.Count + 2);
       path.MoveTo(GetLocation(edge.SourcePort));
       foreach (var bend in edge.Bends) {
         path.LineTo(bend.Location);
@@ -241,12 +234,12 @@ namespace Demo.yFiles.Graph.SimpleCustomStyle
     }
 
     /// <summary>
-    /// In contrast to the <see cref="GraphExtensions.GetLocation" /> property of <see cref="IPort" />, this
-    /// method returns the static current location of the port.
+    ///   In contrast to the <see cref="GraphExtensions.GetLocation"/> property of <see cref="IPort"/>, this
+    ///   method returns the static current location of the port.
     /// </summary>
     /// <remarks>
-    /// It is recommended to use this method at performance critical places that require no live
-    /// view of the port location, like the <see cref="GetPath" /> method of this class.
+    ///   It is recommended to use this method at performance critical places that require no live
+    ///   view of the port location, like the <see cref="GetPath"/> method of this class.
     /// </remarks>
     /// <param name="port">The port.</param>
     /// <returns>The current location of the given port.</returns>
@@ -256,9 +249,9 @@ namespace Demo.yFiles.Graph.SimpleCustomStyle
     }
 
     /// <summary>
-    /// Determines whether the visual representation of the edge has been hit at the given location.
-    /// Overridden method to include the <see cref="PathThickness"/> and the HitTestRadius specified in the context
-    /// in the calculation.
+    ///   Determines whether the visual representation of the edge has been hit at the given location.
+    ///   Overridden method to include the <see cref="PathThickness"/> and the HitTestRadius specified in the context
+    ///   in the calculation.
     /// </summary>
     protected override bool IsHit(IInputModeContext context, PointD location, IEdge edge) {
       // Use the convenience method in GeneralPath
@@ -266,30 +259,17 @@ namespace Demo.yFiles.Graph.SimpleCustomStyle
     }
 
     /// <summary>
-    /// This implementation of the look up provides a custom implementation of the 
-    /// <see cref="ISelectionIndicatorInstaller"/> interface that better suits to this style.
+    ///   This implementation of the lookup turns off the default selection decoration.
     /// </summary>
     protected override object Lookup(IEdge edge, Type type) {
-      if (type == typeof(ISelectionIndicatorInstaller)) {
-        return new MySelectionIndicatorInstaller();
-      } else {
-        return base.Lookup(edge, type);
+      if (type == typeof(ISelectionRenderer)) {
+        return VoidObjectRenderer.Instance;
       }
+      return base.Lookup(edge, type);
     }
 
     /// <summary>
-    /// This customized <see cref="ISelectionIndicatorInstaller"/> overrides the
-    /// pen property to be <see langword="null"/>, so that no edge path is rendered if the edge is selected.
-    /// </summary>
-    private sealed class MySelectionIndicatorInstaller : EdgeSelectionIndicatorInstaller
-    {
-      protected override Pen GetPen(CanvasControl context, IEdge edge) {
-        return null;
-      }
-    }
-
-    /// <summary>
-    /// Saves the data which is necessary for the creation of an edge
+    ///   Saves the data which is necessary for the creation of an edge
     /// </summary>
     private sealed class RenderDataCache
     {
@@ -300,10 +280,13 @@ namespace Demo.yFiles.Graph.SimpleCustomStyle
         Arrows = arrows;
       }
 
-      public double PathThickness { get; private set; }
-      public bool Selected { get; private set; }
-      public GeneralPath GeneralPath { get; private set; }
-      public IArrow Arrows { get; private set; }
+      public double PathThickness { get; }
+
+      public bool Selected { get; }
+
+      public GeneralPath GeneralPath { get; }
+
+      public IArrow Arrows { get; }
 
       public override bool Equals(object obj) {
         var cache = obj as RenderDataCache;
@@ -311,15 +294,15 @@ namespace Demo.yFiles.Graph.SimpleCustomStyle
       }
 
       /// <summary>
-      /// Check if the path thickness, the selection state and the arrows of this instance 
-      /// are equal to another <see cref="RenderDataCache"/>'s properties.
+      ///   Check if the path thickness, the selection state and the arrows of this instance
+      ///   are equal to another <see cref="RenderDataCache"/>'s properties.
       /// </summary>
       public bool StateEquals(RenderDataCache other) {
         return other.PathThickness == PathThickness && other.Selected == Selected && Equals(other.Arrows, Arrows);
       }
 
       /// <summary>
-      /// Check if the path of this instance is equals to another <see cref="RenderDataCache"/>'s path.
+      ///   Check if the path of this instance is equals to another <see cref="RenderDataCache"/>'s path.
       /// </summary>
       public bool PathEquals(RenderDataCache other) {
         return other.GeneralPath.IsEquivalentTo(GeneralPath);

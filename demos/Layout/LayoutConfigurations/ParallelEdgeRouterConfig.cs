@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -33,57 +33,61 @@ using Demo.yFiles.Toolkit.OptionHandler;
 using yWorks.Controls;
 using yWorks.Graph;
 using yWorks.Layout;
+using yWorks.Layout.Router;
 
 namespace Demo.yFiles.Layout.Configurations
 {
   /// <summary>
-  /// Configuration options for the layout algorithm of the same name.
+  ///   Configuration options for the layout algorithm of the same name.
   /// </summary>
   [Obfuscation(StripAfterObfuscation = false, Exclude = true, ApplyToMembers = true)]
   [Label("ParallelEdgeRouter")]
-  public class ParallelEdgeRouterConfig : LayoutConfiguration {
+  public class ParallelEdgeRouterConfig : LayoutConfiguration
+  {
     /// <summary>
-    /// Setup default values for various configuration parameters.
+    ///   Setup default values for various configuration parameters.
     /// </summary>
     public ParallelEdgeRouterConfig() {
       var router = new ParallelEdgeRouter();
       ScopeItem = EnumScope.ScopeAllEdges;
       UseSelectedEdgesAsMasterItem = false;
       ConsiderEdgeDirectionItem = router.DirectedMode;
-      UseAdaptiveLineDistanceItem = router.AdaptiveLineDistances;
-      LineDistanceItem = (int) router.LineDistance;
+      UseAdaptiveLineDistanceItem = router.AdaptiveEdgeDistances;
+      LineDistanceItem = (int) router.EdgeDistance;
       JoinEndsItem = router.JoinEnds;
-      JoinDistanceItem = router.AbsJoinEndDistance;
+      JoinDistanceItem = router.AbsoluteJoinEndDistance;
     }
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     protected override ILayoutAlgorithm CreateConfiguredLayout(GraphControl graphControl) {
       var router = new ParallelEdgeRouter();
       router.AdjustLeadingEdge = false;
       router.DirectedMode = ConsiderEdgeDirectionItem;
-      router.AdaptiveLineDistances = UseAdaptiveLineDistanceItem;
-      router.LineDistance = LineDistanceItem;
+      router.AdaptiveEdgeDistances = UseAdaptiveLineDistanceItem;
+      router.EdgeDistance = LineDistanceItem;
       router.JoinEnds = JoinEndsItem;
-      router.AbsJoinEndDistance = JoinDistanceItem;
+      router.AbsoluteJoinEndDistance = JoinDistanceItem;
 
       return router;
     }
 
-    protected override LayoutData CreateConfiguredLayoutData(GraphControl graphControl, ILayoutAlgorithm layout) {
-      var layoutData = new ParallelEdgeRouterData();
+    protected override LayoutData<INode, IEdge, ILabel, ILabel> CreateConfiguredLayoutData(
+        GraphControl graphControl,
+        ILayoutAlgorithm layout) {
+      var layoutData = new ParallelEdgeRouterData<INode, IEdge, ILabel, ILabel>();
       var selection = graphControl.Selection;
 
       if (ScopeItem == EnumScope.ScopeAtSelectedNodes) {
-        layoutData.AffectedEdges.Delegate = edge =>
-            selection.IsSelected(edge.GetSourceNode()) || selection.IsSelected(edge.GetTargetNode());
+        layoutData.AffectedEdges.Predicate = edge =>
+            selection.Contains(edge.GetSourceNode()) || selection.Contains(edge.GetTargetNode());
       } else if (ScopeItem == EnumScope.ScopeSelectedEdges) {
-        layoutData.AffectedEdges.Source = selection.SelectedEdges;
+        layoutData.AffectedEdges.Source = selection.Edges;
       } else {
-        layoutData.AffectedEdges.Delegate = edge => true;
+        layoutData.AffectedEdges.Predicate = edge => true;
       }
 
       if (UseSelectedEdgesAsMasterItem) {
-        layoutData.LeadingEdges.Source = selection.SelectedEdges;
+        layoutData.LeadingEdges.Source = selection.Edges;
       }
 
       return layoutData;
@@ -92,7 +96,7 @@ namespace Demo.yFiles.Layout.Configurations
 
     // ReSharper disable UnusedMember.Global
     // ReSharper disable InconsistentNaming
-    
+
     [Label("Description")]
     [OptionGroup("RootGroup", 5)]
     [ComponentType(ComponentTypes.OptionGroup)]
@@ -100,12 +104,9 @@ namespace Demo.yFiles.Layout.Configurations
 
     [OptionGroup("DescriptionGroup", 10)]
     [ComponentType(ComponentTypes.FormattedText)]
-    public string DescriptionText {
-      get {
-        return "<Paragraph>The parallel edge routing algorithm routes parallel edges which connect the same pair of nodes in a graph."
-               + " It is often used as layout stage for other layout algorithms to handle the parallel edges for those.</Paragraph>";
-      }
-    }
+    public string DescriptionText =>
+        "<Paragraph>The parallel edge routing algorithm routes parallel edges which connect the same pair of nodes in a graph." +
+        " It is often used as layout stage for other layout algorithms to handle the parallel edges for those.</Paragraph>";
 
     [Label("General")]
     [OptionGroup("RootGroup", 10)]
@@ -115,16 +116,19 @@ namespace Demo.yFiles.Layout.Configurations
     // ReSharper restore UnusedMember.Global
     // ReSharper restore InconsistentNaming
 
-    public enum EnumScope {
-      ScopeAllEdges, ScopeSelectedEdges, ScopeAtSelectedNodes
+    public enum EnumScope
+    {
+      ScopeAllEdges,
+      ScopeSelectedEdges,
+      ScopeAtSelectedNodes
     }
 
     [Label("Scope")]
     [OptionGroup("LayoutGroup", 10)]
     [DefaultValue(EnumScope.ScopeAllEdges)]
     [EnumValue("All Edges", EnumScope.ScopeAllEdges)]
-    [EnumValue("Selected Edges",EnumScope.ScopeSelectedEdges)]
-    [EnumValue("Edges at Selected Nodes",EnumScope.ScopeAtSelectedNodes)]
+    [EnumValue("Selected Edges", EnumScope.ScopeSelectedEdges)]
+    [EnumValue("Edges at Selected Nodes", EnumScope.ScopeAtSelectedNodes)]
     public EnumScope ScopeItem { get; set; }
 
     [Label("Use Selected Edges As Leading Edges")]
@@ -161,8 +165,6 @@ namespace Demo.yFiles.Layout.Configurations
     [ComponentType(ComponentTypes.Slider)]
     public double JoinDistanceItem { get; set; }
 
-    public bool ShouldDisableJoinDistanceItem {
-      get { return !JoinEndsItem; }
-    }
+    public bool ShouldDisableJoinDistanceItem => !JoinEndsItem;
   }
 }

@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -34,38 +34,36 @@ using Demo.yFiles.Option.DataBinding;
 using Demo.yFiles.Option.Editor;
 using Demo.yFiles.Option.I18N;
 using Demo.yFiles.Option.View;
-using yWorks.Graph;
+using yWorks.Utils;
 
 namespace Demo.yFiles.Option.Handler
 {
   /// <summary>
-  /// This class can be used to manage settings and options that belong together
-  /// with a consistent interface.
+  ///   This class can be used to manage settings and options that belong together
+  ///   with a consistent interface.
   /// </summary>
-  /// <remarks>Each item is represented by an instance of <see cref="IOptionItem"/>. 
-  /// To edit values in the handler, you can create editors with subclasses of 
-  /// <see cref="EditorFactory"/>.</remarks>
+  /// <remarks>
+  ///   Each item is represented by an instance of <see cref="IOptionItem"/>.
+  ///   To edit values in the handler, you can create editors with subclasses of
+  ///   <see cref="EditorFactory"/>.
+  /// </remarks>
   public class OptionHandler : OptionGroup
   {
     //todo: make more specific
-    private List<WeakReference> views = new List<WeakReference>();
+    private List<WeakReference> views = new();
 
-    //not sure if this should be serialized...
-    private I18NFactory i18nFactory;
+    // not sure if this should be serialized...
 
     /// <summary>
-    /// Gets or sets an <see cref="I18NFactory"/> instance that can be
-    /// used for localization of various string values such as item names, tooltips,
-    /// button labels, etc.
+    ///   Gets or sets an <see cref="I18NFactory"/> instance that can be
+    ///   used for localization of various string values such as item names, tooltips,
+    ///   button labels, etc.
     /// </summary>
-    /// <remarks>If no instance has been set, retrieving this property
-    /// returns a default implementation.</remarks>
-    public I18NFactory I18nFactory {
-      get {
-        return i18nFactory;
-      }
-      set { i18nFactory = value; }
-    }
+    /// <remarks>
+    ///   If no instance has been set, retrieving this property
+    ///   returns a default implementation.
+    /// </remarks>
+    public I18NFactory I18nFactory { get; set; }
 
     public OptionGroup GetGroupByName(string name) {
       return (OptionGroup) OptionItemExtensions.GetGroupByName(this, name);
@@ -75,26 +73,28 @@ namespace Demo.yFiles.Option.Handler
     public override object Lookup(Type type) {
       if (type == typeof(IOptionGroup)) {
         return this;
-      } else if (type == typeof(OptionHandler)) {
-        return this;
-      } else if (type == typeof(I18NFactory)) {
-        return I18nFactory;
-      } else {
-        return base.Lookup(type);
       }
+      if (type == typeof(OptionHandler)) {
+        return this;
+      }
+      if (type == typeof(I18NFactory)) {
+        return I18nFactory;
+      }
+      return base.Lookup(type);
     }
 
     /// <summary>
-    /// Creates a new option handler.
+    ///   Creates a new option handler.
     /// </summary>
-    /// <remarks>This option handler always contains one OptionGroup by default, 
-    /// with the same name as the title of the handler.</remarks>
-    public OptionHandler(string title)
-      : base(title) {
+    /// <remarks>
+    ///   This option handler always contains one OptionGroup by default,
+    ///   with the same name as the title of the handler.
+    /// </remarks>
+    public OptionHandler(string title) : base(title) {
       //_title = title;
       //OptionGroup g = new OptionGroup(title);
       //AddOptionGroup(g);
-      }
+    }
 
     internal void AddView(IModelView view) {
       if (views == null) {
@@ -106,7 +106,7 @@ namespace Demo.yFiles.Option.Handler
     }
 
     internal void RemoveView(IModelView view) {
-      foreach (WeakReference reference in views) {
+      foreach (var reference in views) {
         if (reference.Target == view) {
           views.Remove(reference);
           break;
@@ -120,18 +120,18 @@ namespace Demo.yFiles.Option.Handler
 
     internal IList<IModelView> ActiveViews {
       get {
-        List<IModelView> list = new List<IModelView>();
+        var list = new List<IModelView>();
 
-        List<WeakReference> deletable = new List<WeakReference>();
-        foreach (WeakReference view in views) {
-          IModelView mv = view.Target as IModelView;
+        var deletable = new List<WeakReference>();
+        foreach (var view in views) {
+          var mv = view.Target as IModelView;
           if (mv != null) {
             list.Add(mv);
           } else {
             deletable.Add(view);
           }
         }
-        foreach (WeakReference reference in deletable) {
+        foreach (var reference in deletable) {
           views.Remove(reference);
         }
         return list.AsReadOnly();
@@ -141,29 +141,33 @@ namespace Demo.yFiles.Option.Handler
     #endregion
 
     /// <summary>
-    /// EventBracketing method for content changes.
+    ///   EventBracketing method for content changes.
     /// </summary>
-    /// <remarks>When this method is called, all <see cref="ViewChanged"/> events
-    /// from this handler are temporarily suppressed, until <see cref="EndContentChange"/>
-    /// is called. This can be used for complex changes of the handler's content, when it is not necessary
-    /// to raise these events, e.g. when views will be recreated anyway.</remarks>
+    /// <remarks>
+    ///   When this method is called, all <see cref="ViewChanged"/> events
+    ///   from this handler are temporarily suppressed, until <see cref="EndContentChange"/>
+    ///   is called. This can be used for complex changes of the handler's content, when it is not necessary
+    ///   to raise these events, e.g. when views will be recreated anyway.
+    /// </remarks>
     public void StartContentChange() {
-      isUpdating = true;
+      IsUpdating = true;
       SuppressEvents = true;
     }
 
     protected bool SuppressEvents { get; set; }
 
     /// <summary>
-    /// EventBracketing method for content changes.
+    ///   EventBracketing method for content changes.
     /// </summary>
-    /// <remarks>When this method is called, <see cref="ViewChanged"/> events
-    /// from this handler are not suppressed anymore. Together with <see cref="StartContentChange"/>,
-    /// this can be used for complex changes of the handler's content, when it is not necessary
-    /// to raise these events, e.g. when views will be recreated anyway.</remarks>
+    /// <remarks>
+    ///   When this method is called, <see cref="ViewChanged"/> events
+    ///   from this handler are not suppressed anymore. Together with <see cref="StartContentChange"/>,
+    ///   this can be used for complex changes of the handler's content, when it is not necessary
+    ///   to raise these events, e.g. when views will be recreated anyway.
+    /// </remarks>
     public void EndContentChange() {
       SuppressEvents = false;
-      isUpdating = false;
+      IsUpdating = false;
     }
 
     private void OnViewChanged(IModelView view, bool isAdded) {
@@ -173,50 +177,50 @@ namespace Demo.yFiles.Option.Handler
     }
 
     /// <summary>
-    /// Returns whether the handler is currently updating its structure.
+    ///   Returns whether the handler is currently updating its structure.
     /// </summary>
-    /// <remarks>When this returns true, querying the handler for items is unsafe.</remarks>
-    public bool IsUpdating {
-      get { return isUpdating; }
-    }
-
-    private bool isUpdating = false;
+    /// <remarks>When this returns <see langword="true"/>, querying the handler for items is unsafe.</remarks>
+    public bool IsUpdating { get; private set; }
 
     /// <inheritdoc/>
     internal event ViewChangeHandler ViewChanged;
 
     /// <summary>
-    /// Populates this instance from scratch using a provided selection provider.
+    ///   Populates this instance from scratch using a provided selection provider.
     /// </summary>
-    /// <remarks>This instance will be cleared, and all constraints on it will be reset. 
-    /// The builder inspects the first <see cref="IPropertyItemDescriptor{T}"/> from
-    /// <paramref name="selectionProvider"/> and creates an <see cref="IOptionBuilder"/> instance 
-    /// that will <see cref="IOptionBuilder.AddItems"/> to this instance via the builder.
+    /// <remarks>
+    ///   This instance will be cleared, and all constraints on it will be reset.
+    ///   The builder inspects the first <see cref="IPropertyItemDescriptor{T}"/> from
+    ///   <paramref name="selectionProvider"/> and creates an <see cref="IOptionBuilder"/> instance
+    ///   that will <see cref="IOptionBuilder.AddItems"/> to this instance via the builder.
     /// </remarks>
     /// <param name="selectionProvider"></param>
-    /// <param name="contextLookup">The lookup tunnel through to the created
-    /// <see cref="IOptionBuilderContext"/> that will be used to query the <see cref="IOptionBuilder"/>
-    /// instances for recursive sets of properties.</param>
-    public virtual void BuildFromSelection<T>(ISelectionProvider<T> selectionProvider, IContextLookup contextLookup) {
+    /// <param name="contextLookup">
+    ///   The lookup tunnel through to the created
+    ///   <see cref="IOptionBuilderContext"/> that will be used to query the <see cref="IOptionBuilder"/>
+    ///   instances for recursive sets of properties.
+    /// </param>
+    public virtual void BuildFromSelection<T>(
+        ISelectionProvider<T> selectionProvider,
+        ContextLookupDelegate contextLookup) {
       StartContentChange();
       try {
         Clear();
         DefaultOptionBuilderContext<T> context;
-        context = new DefaultOptionBuilderContext<T>(selectionProvider, this);
-        context.ContextLookup = contextLookup;
+        context = new DefaultOptionBuilderContext<T>(selectionProvider, this, contextLookup);
 
-        ConstraintManager constraintManager = this.Lookup(typeof (ConstraintManager)) as ConstraintManager;
+        var constraintManager = Lookup(typeof(ConstraintManager)) as ConstraintManager;
         if (constraintManager == null) {
           constraintManager = new ConstraintManager(this);
-          this.SetLookup(typeof(ConstraintManager), constraintManager);
+          SetLookup(typeof(ConstraintManager), constraintManager);
         }
         constraintManager.Clear();
-        IEnumerator<IPropertyItemDescriptor<T>> enumerator = selectionProvider.Selection.GetEnumerator();
+        var enumerator = selectionProvider.Selection.GetEnumerator();
         if (enumerator.MoveNext()) {
-          IPropertyItemDescriptor<T> descriptor = enumerator.Current;
+          var descriptor = enumerator.Current;
           T item;
           item = descriptor.Item;
-          IOptionBuilder builder = context.GetOptionBuilder(item);
+          var builder = context.GetOptionBuilder(item);
           if (builder != null) {
             builder.AddItems(context, item.GetType(), item);
           }
@@ -232,20 +236,13 @@ namespace Demo.yFiles.Option.Handler
 
   internal class ViewChangeEventArgs : EventArgs
   {
-    private bool isAdded;
-    private IModelView view;
-
     public ViewChangeEventArgs(bool isAdded, IModelView view) {
-      this.isAdded = isAdded;
-      this.view = view;
+      IsAdded = isAdded;
+      View = view;
     }
 
-    public bool IsAdded {
-      get { return isAdded; }
-    }
+    public bool IsAdded { get; }
 
-    public IModelView View {
-      get { return view; }
-    }
+    public IModelView View { get; }
   }
 }

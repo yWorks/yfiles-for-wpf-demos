@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -30,94 +30,94 @@
 using System;
 
 namespace Demo.yFiles.Toolkit.OptionHandler
-{  
+{
   /// <summary>
-  /// An attribute that determines the ui component's text label.
+  ///   An attribute that determines the UI component's text label.
   /// </summary>
-  [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method | AttributeTargets.Property | AttributeTargets.Field,
-    AllowMultiple = false, Inherited = true)]
+  [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method | AttributeTargets.Property |
+      AttributeTargets.Field)]
   public class LabelAttribute : Attribute
   {
     /// <summary>
-    /// Initialize the LabelAttribute.
+    ///   Initialize the LabelAttribute.
     /// </summary>
     /// <param name="label">The text of the generated label.</param>
     public LabelAttribute(string label) {
-      this.Label = label;
+      Label = label;
     }
 
     /// <summary>
-    /// The text of the generated label.
+    ///   The text of the generated label.
     /// </summary>
     public string Label { get; set; }
   }
 
   /// <summary>
-  /// An attribute that limits the ui component's value to the given range.
+  ///   An attribute that limits the UI component's value to the given range.
   /// </summary>
-  [AttributeUsage(AttributeTargets.Method | AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false,
-    Inherited = true)]
+  [AttributeUsage(AttributeTargets.Method | AttributeTargets.Property | AttributeTargets.Field)]
   public class MinMaxAttribute : Attribute
   {
     /// <summary>
-    /// Initialize the MinMaxAttribute.
+    ///   Initialize the MinMaxAttribute.
     /// </summary>
     public MinMaxAttribute() {
-      this.Min = Int32.MinValue;
-      this.Max = Int32.MaxValue;
-      this.Step = 1;
+      Min = int.MinValue;
+      Max = int.MaxValue;
+      Step = 1;
     }
 
     /// <summary>
-    /// The ui component's minimum valid value.
+    ///   The UI component's minimum valid value.
     /// </summary>
     public double Min { get; set; }
+
     /// <summary>
-    /// The ui component's maximum valid value.
+    ///   The UI component's maximum valid value.
     /// </summary>
     public double Max { get; set; }
+
     /// <summary>
-    /// The ui component's increment/decrement step (if supported)
+    ///   The UI component's increment/decrement step (if supported)
     /// </summary>
     public double Step { get; set; }
   }
 
   /// <summary>
-  /// An attribute that determines the <see cref="OptionGroup"/> the ui component belongs to.
+  ///   An attribute that determines the <see cref="OptionGroup"/> the UI component belongs to.
   /// </summary>
-  [AttributeUsage(AttributeTargets.Method | AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false,
-    Inherited = true)]
+  [AttributeUsage(AttributeTargets.Method | AttributeTargets.Property | AttributeTargets.Field)]
   public class OptionGroupAttribute : Attribute
   {
     /// <summary>
-    /// Initialize the new OptionGroupAttribute. 
+    ///   Initialize the new OptionGroupAttribute.
     /// </summary>
-    /// <param name="name">Name of OptionGroup the ui component belongs to.</param>
-    /// <param name="position">The ui component's display position in the OptionGroup.</param>
+    /// <param name="name">Name of OptionGroup the UI component belongs to.</param>
+    /// <param name="position">The UI component's display position in the OptionGroup.</param>
     public OptionGroupAttribute(string name, int position) {
       Name = name;
       Position = position;
     }
 
     /// <summary>
-    /// Name of <see cref="OptionGroup"/> the ui component belongs to.
+    ///   Name of <see cref="OptionGroup"/> the UI component belongs to.
     /// </summary>
-    public string Name { get; private set; }
-    
+    public string Name { get; }
+
     /// <summary>
-    /// The ui component's display position in the <see cref="OptionGroup"/>.
+    ///   The UI component's display position in the <see cref="OptionGroup"/>.
     /// </summary>
     public int Position { get; set; }
   }
 
   /// <summary>
-  /// An attribute that determines an enum value and its label name for the ui component.
+  ///   An attribute that determines an enum value and its label name for the UI component.
   /// </summary>
-  [AttributeUsage(AttributeTargets.Method | AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = true, Inherited = true)]
+  [AttributeUsage(AttributeTargets.Method | AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = true)]
   public class EnumValueAttribute : Attribute
   {
     /// <summary>
-    /// Initializes the new EnumValueAttribute.
+    ///   Initializes the new EnumValueAttribute.
     /// </summary>
     /// <param name="label">The displayed label of the generated enum value.</param>
     /// <param name="value">The enum value.</param>
@@ -127,37 +127,37 @@ namespace Demo.yFiles.Toolkit.OptionHandler
     }
 
     /// <summary>
-    /// The displayed label of the generated enum value.
+    ///   The displayed label of the generated enum value.
     /// </summary>
     public string Label { get; set; }
 
     /// <summary>
-    /// The enum value.
+    ///   The enum value.
     /// </summary>
     public object Value { get; set; }
   }
 
   /// <summary>
-  /// An attribute that determines the type of ui component that will be generated for the attributed member.
+  ///   An attribute that determines the type of UI component that will be generated for the attributed member.
   /// </summary>
   public class ComponentTypeAttribute : Attribute
   {
     /// <summary>
-    /// Initialize the ComponentTypeAttribute.
+    ///   Initialize the ComponentTypeAttribute.
     /// </summary>
-    /// <param name="value">The type of ui component to be generated.</param>
+    /// <param name="value">The type of UI component to be generated.</param>
     public ComponentTypeAttribute(ComponentTypes value) {
       Value = value;
     }
 
     /// <summary>
-    /// >The type of ui component to be generated.
+    ///   The type of UI component to be generated.
     /// </summary>
-    public virtual ComponentTypes Value { get; private set; }
+    public virtual ComponentTypes Value { get; }
   }
 
   /// <summary>
-  /// The ui components available in the generated UI.
+  ///   The UI components available in the generated UI.
   /// </summary>
   public enum ComponentTypes
   {

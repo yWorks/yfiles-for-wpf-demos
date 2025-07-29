@@ -1,6 +1,6 @@
 <!-- ************************************************************************ -->
-<!-- This demo file is part of yFiles WPF 3.6.                           -->
-<!-- Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
+<!-- This demo file is part of yFiles WPF 4.0.                           -->
+<!-- Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
 <!-- 72070 Tuebingen, Germany. All rights reserved.                           -->
 <!--                                                                          -->
 <!-- yFiles demo files exhibit yFiles WPF functionalities. Any redistribution  -->
@@ -194,32 +194,6 @@
                             <Run Style="{StaticResource HtmlCode}">FreeLabelModel</Run> parameter, the
                             amount of work to determine label placement can be minimized. The drawback is that labels
                             now no longer move with their nodes or edges.
-                        </Paragraph>
-
-                        <Paragraph Style="{StaticResource HtmlH2}">Dirty Handling</Paragraph>
-
-                        <Paragraph>Another (very low-level) optimization can be done when the graph is known to be
-                            unchanging. Every object in a
-                            <Run Style="{StaticResource HtmlCode}">CanvasControl</Run> is placed in a tree of
-                            <Run Style="{StaticResource HtmlCode}">CanvasObject</Run>s, each of which has a
-                            <Run Style="{StaticResource HtmlCode}">CanvasObjectDescriptor</Run> that handles
-                            hit-testing, visibility checks and creating/updating visuals. For the most part that
-                            descriptor looks very similar to a style, and by default in fact delegates to an item's
-                            style. A descriptor also has a
-                            <Run Style="{StaticResource HtmlEm}">dirty</Run> flag that
-                            is taken into account for visibility checks and updates while drawing.
-                        </Paragraph>
-
-                        <Paragraph>By writing a custom descriptor that mostly returns
-                            <Run Style="{StaticResource HtmlCode}">false</Run> for
-                            <Run Style="{StaticResource HtmlCode}">IsDirty</Run> we can side-step almost all
-                            visibility checks and calls to
-                            <Run Style="{StaticResource HtmlCode}">UpdateVisual</Run>.
-                            This greatly increases rendering speed as almost nothing needs to be done anymore. The
-                            caveat is that we have to manually update the
-                            <Run Style="{StaticResource HtmlEm}">dirty</Run> flag when something changed. In this demo 
-                            this is only done for the zoom level changes that are configured on the right, but more
-                            complex solutions are possible.
                         </Paragraph>
 
                     </FlowDocument>

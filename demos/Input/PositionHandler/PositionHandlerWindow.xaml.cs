@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -29,53 +29,56 @@
 
 using System;
 using System.Windows;
-using System.Windows.Media;
 using Demo.yFiles.Toolkit;
 using yWorks.Controls;
 using yWorks.Controls.Input;
 using yWorks.Geometry;
 using yWorks.Graph;
+using yWorks.Utils;
+using Brushes = System.Windows.Media.Brushes;
+using Rectangle = System.Windows.Shapes.Rectangle;
 
 namespace Demo.yFiles.Graph.Input.PositionHandler
 {
   /// <summary>
-  /// Shows how to customize and restrict the movement behavior of nodes
-  /// by implementing a custom <see cref="IPositionHandler"/>.
+  ///   Shows how to customize and restrict the movement behavior of nodes
+  ///   by implementing a custom <see cref="IPositionHandler"/>.
   /// </summary>
   public partial class PositionHandlerWindow
   {
     /// <summary>
-    /// Shows how to register the custom <see cref="IPositionHandler"/> implementations with the <see cref="IGraph"/>'s
-    /// <see cref="ILookupDecorator"/> mechanism.
+    ///   Shows how to register the custom <see cref="IPositionHandler"/> implementations with the <see cref="IGraph"/>'s
+    ///   <see cref="ILookupDecorator"/> mechanism.
     /// </summary>
     private void RegisterPositionHandler(MutableRectangle boundaryRectangle) {
-      var nodeDecorator = graphControl.Graph.GetDecorator().NodeDecorator;
-      nodeDecorator.PositionHandlerDecorator.SetImplementationWrapper(
-        (node, delegateHandler) => {
-          // Obtain the tag from the node
-          object nodeTag = node.Tag;
+      var nodeDecorator = graphControl.Graph.GetDecorator().Nodes;
+      nodeDecorator.PositionHandler.AddWrapperFactory((node, delegateHandler) => {
+        // Obtain the tag from the node
+        var nodeTag = node.Tag;
 
-          // Check if it is a known tag and choose the respective implementation.
-          // Fallback to the default behavior otherwise.
-          if (!(nodeTag is Palette)) {
-            return delegateHandler;
-          } else if (Themes.PaletteOrange.Equals(nodeTag)) {
-            // This implementation delegates certain behavior to the default implementation
-            return new OrangePositionHandler(boundaryRectangle, node, delegateHandler);
-          } else if (Themes.PaletteRed.Equals(nodeTag)) {
-            // A simple implementation that prohibits moving
-            return new RedPositionHandler();
-          } else if (Themes.PaletteLightblue.Equals(nodeTag)) {
-            // Implementation that uses two levels of delegation to create a combined behavior
-            return new OrangePositionHandler(boundaryRectangle, node, new GreenPositionHandler(delegateHandler));
-          } else if (Themes.PaletteGreen.Equals(nodeTag)) {
-            // Another implementation that delegates certain behavior to the default implementation
-            return new GreenPositionHandler(delegateHandler);
-          } else {
-            return delegateHandler;
-          }
-        });
-
+        // Check if it is a known tag and choose the respective implementation.
+        // Fallback to the default behavior otherwise.
+        if (!(nodeTag is Palette)) {
+          return delegateHandler;
+        }
+        if (Themes.PaletteOrange.Equals(nodeTag)) {
+          // This implementation delegates certain behavior to the default implementation
+          return new OrangePositionHandler(boundaryRectangle, node, delegateHandler);
+        }
+        if (Themes.PaletteRed.Equals(nodeTag)) {
+          // A simple implementation that prohibits moving
+          return new RedPositionHandler();
+        }
+        if (Themes.PaletteLightblue.Equals(nodeTag)) {
+          // Implementation that uses two levels of delegation to create a combined behavior
+          return new OrangePositionHandler(boundaryRectangle, node, new GreenPositionHandler(delegateHandler));
+        }
+        if (Themes.PaletteGreen.Equals(nodeTag)) {
+          // Another implementation that delegates certain behavior to the default implementation
+          return new GreenPositionHandler(delegateHandler);
+        }
+        return delegateHandler;
+      });
     }
 
     #region Initialization
@@ -85,7 +88,7 @@ namespace Demo.yFiles.Graph.Input.PositionHandler
     }
 
     private void OnWindowLoaded(object sender, RoutedEventArgs e) {
-      IGraph graph = graphControl.Graph;
+      var graph = graphControl.Graph;
 
       // Create a default editor input mode
       var graphEditorInputMode = new GraphEditorInputMode();
@@ -108,68 +111,41 @@ namespace Demo.yFiles.Graph.Input.PositionHandler
       // Create the rectangle that limits the movement of some nodes
       // and add it to the GraphControl.
       var boundaryRectangle = new MutableRectangle(20, 20, 480, 400);
-      graphControl.RootGroup.AddChild(boundaryRectangle, new LimitingRectangleDescriptor());
+      var renderTree = graphControl.RenderTree;
+      renderTree.CreateElement(renderTree.RootGroup, boundaryRectangle, new LimitingRectangleRenderer());
 
       RegisterPositionHandler(boundaryRectangle);
 
       CreateSampleGraph(graph);
       // reset the Undo queue so the initial graph creation cannot be undone
       graph.GetUndoEngine().Clear();
+
+      graphControl.FitGraphBounds();
     }
 
     /// <summary>
-    /// Creates the visualization for the limiting rectangle.
+    ///   Creates the visualization for the limiting rectangle.
     /// </summary>
-    private class LimitingRectangleDescriptor : ICanvasObjectDescriptor, IVisualCreator
+    private sealed class LimitingRectangleRenderer : ObjectRendererBase<MutableRectangle, Rectangle>
     {
-      private MutableRectangle rect;
-
-      public IVisualCreator GetVisualCreator(object forUserObject) {
-        this.rect = (MutableRectangle) forUserObject;
-        return this;
-      }
-
-      public bool IsDirty(ICanvasContext context, ICanvasObject canvasObject) {
-        return true;
-      }
-
-      public IBoundsProvider GetBoundsProvider(object forUserObject) {
-        return BoundsProviders.Unbounded;
-      }
-
-      public IVisibilityTestable GetVisibilityTestable(object forUserObject) {
-        return VisibilityTestables.Always;
-      }
-
-      public IHitTestable GetHitTestable(object forUserObject) {
-        return HitTestables.Never;
-      }
-
-      public Visual CreateVisual(IRenderContext context) {
-        System.Windows.Shapes.Rectangle rectangle = new System.Windows.Shapes.Rectangle();
-        rectangle.Stroke = Brushes.Black;
-        rectangle.StrokeThickness = 2;
-        rectangle.SetValue(CanvasControl.CanvasControlArrangeRectProperty, new Rect(this.rect.X, this.rect.Y, this.rect.Width, this.rect.Height));
+      protected override Rectangle CreateVisual(IRenderContext context, MutableRectangle rect) {
+        var rectangle = new Rectangle { Stroke = Brushes.Black, StrokeThickness = 2 };
+        rectangle.SetValue(CanvasControl.CanvasControlArrangeRectProperty, rect.ToRect());
         return rectangle;
       }
 
-      public Visual UpdateVisual(IRenderContext context, Visual oldVisual) {
-        System.Windows.Shapes.Rectangle rectangle = oldVisual as System.Windows.Shapes.Rectangle;
-        if (rectangle == null) {
-          return CreateVisual(context);
-        } else {
-          rectangle.SetValue(CanvasControl.CanvasControlArrangeRectProperty, new Rect(this.rect.X, this.rect.Y, this.rect.Width, this.rect.Height));
-          return rectangle;
-        }
+      protected override Rectangle UpdateVisual(IRenderContext context, Rectangle oldVisual, MutableRectangle rect) {
+        oldVisual.SetValue(CanvasControl.CanvasControlArrangeRectProperty, rect.ToRect());
+        return oldVisual;
       }
     }
 
     #endregion
 
     /// <summary>
-    /// A <see cref="ConstrainedPositionHandler"/> that limits the movement of a
-    /// node to be within an rectangle and delegates for other aspects to
-    /// another (the original) handler.
+    ///   A <see cref="ConstrainedPositionHandler"/> that limits the movement of a
+    ///   node to be within a rectangle and delegates for other aspects to
+    ///   another (the original) handler.
     /// </summary>
     public class OrangePositionHandler : ConstrainedPositionHandler
     {
@@ -184,56 +160,57 @@ namespace Demo.yFiles.Graph.Input.PositionHandler
       }
 
       /// <summary>
-      /// Prepares the rectangle that is actually used to limit the node
-      /// position, besides the base functionality. Since a position handler
-      /// works on points, the actual rectangle must be a limit for the upper
-      /// left corner of the node and not for the node's bounding box.
+      ///   Prepares the rectangle that is actually used to limit the node
+      ///   position, besides the base functionality. Since a position handler
+      ///   works on points, the actual rectangle must be a limit for the upper
+      ///   left corner of the node and not for the node's bounds.
       /// </summary>
       protected override void OnInitialized(IInputModeContext context, PointD originalLocation) {
         base.OnInitialized(context, originalLocation);
         // Shrink the retangle by the node size to get the limits for the upper left node corner
-        boundaryPositionRectangle = boundaryRectangle.ToRectD() + new InsetsD(0, 0, -node.Layout.Width, -node.Layout.Height);
+        boundaryPositionRectangle =
+            boundaryRectangle.ToRectD() + new InsetsD(0, 0, -node.Layout.Width, -node.Layout.Height);
       }
 
       /// <summary>
-      /// Returns the position that is constrained by the rectangle.
+      ///   Returns the position that is constrained by the rectangle.
       /// </summary>
-      protected override PointD ConstrainNewLocation(IInputModeContext context, PointD originalLocation,
-                                                     PointD newLocation) {
+      protected override PointD ConstrainNewLocation(
+          IInputModeContext context,
+          PointD originalLocation,
+          PointD newLocation) {
         return newLocation.GetConstrained(boundaryPositionRectangle);
       }
     }
 
     /// <summary>
-    /// A position handler that prevents node movements. This implementation is
-    /// very simple since most methods do nothing at all.
+    ///   A position handler that prevents node movements. This implementation is
+    ///   very simple since most methods do nothing at all.
     /// </summary>
     public class RedPositionHandler : IPositionHandler
     {
-      public IPoint Location {
-        get { return PointD.Origin; }
-      }
+      public IPoint Location => PointD.Origin;
 
-      public void InitializeDrag(IInputModeContext context) {}
+      public void InitializeDrag(IInputModeContext context) { }
 
-      public void HandleMove(IInputModeContext context, PointD originalLocation, PointD newLocation) {}
+      public void HandleMove(IInputModeContext context, PointD originalLocation, PointD newLocation) { }
 
-      public void CancelDrag(IInputModeContext context, PointD originalLocation) {}
+      public void CancelDrag(IInputModeContext context, PointD originalLocation) { }
 
-      public void DragFinished(IInputModeContext context, PointD originalLocation, PointD newLocation) {}
+      public void DragFinished(IInputModeContext context, PointD originalLocation, PointD newLocation) { }
 
-      public void SetPosition(PointD location) {}
+      public void SetPosition(PointD location) { }
     }
 
     /// <summary>
-    /// A position handler that constrains the movement of a node to one axis
-    /// (for each gesture) and delegates for other aspects to another (the
-    /// original) handler.
+    ///   A position handler that constrains the movement of a node to one axis
+    ///   (for each gesture) and delegates for other aspects to another (the
+    ///   original) handler.
     /// </summary>
     /// <remarks>
-    /// Note that the simpler solution for this use case is subclassing 
-    /// <see cref="ConstrainedPositionHandler"/>, however the interface is
-    /// completely implemented for illustration, here.
+    ///   Note that the simpler solution for this use case is subclassing
+    ///   <see cref="ConstrainedPositionHandler"/>, however the interface is
+    ///   completely implemented for illustration, here.
     /// </remarks>
     public class GreenPositionHandler : IPositionHandler
     {
@@ -244,27 +221,25 @@ namespace Demo.yFiles.Graph.Input.PositionHandler
         this.handler = handler;
       }
 
-      public IPoint Location {
-        get { return handler.Location; }
-      }
+      public IPoint Location => handler.Location;
 
       /// <summary>
-      /// Stores the initial location of the movement for reference, and calls the base method.
+      ///   Stores the initial location of the movement for reference, and calls the base method.
       /// </summary>
       public void InitializeDrag(IInputModeContext context) {
         handler.InitializeDrag(context);
-        lastLocation = new PointD(handler.Location);
+        lastLocation = handler.Location.ToPointD();
       }
 
       /// <summary>
-      /// Constrains the movement to one axis. This is done by calculating the
-      /// constrained location for the given new location, and invoking the
-      /// original handler with the constrained location.
+      ///   Constrains the movement to one axis. This is done by calculating the
+      ///   constrained location for the given new location, and invoking the
+      ///   original handler with the constrained location.
       /// </summary>
       public void HandleMove(IInputModeContext context, PointD originalLocation, PointD newLocation) {
         // The larger difference in coordinates specifies whether this is
         // a horizontal or vertical movement.
-        PointD delta = newLocation - originalLocation;
+        var delta = newLocation - originalLocation;
         if (Math.Abs(delta.X) > Math.Abs(delta.Y)) {
           newLocation = new PointD(newLocation.X, originalLocation.Y);
         } else {
@@ -287,7 +262,7 @@ namespace Demo.yFiles.Graph.Input.PositionHandler
 
     #region Sample Graph Creation
 
-    private static void CreateSampleGraph(IGraph graph) {
+    private void CreateSampleGraph(IGraph graph) {
       CreateNode(graph, 100, 100, 100, 30, Themes.PaletteRed, "Unmovable");
       CreateNode(graph, 300, 100, 100, 30, Themes.PaletteGreen, "One Axis");
       CreateNode(graph, 80, 250, 140, 40, Themes.PaletteOrange, "Limited to Rectangle");
@@ -295,10 +270,17 @@ namespace Demo.yFiles.Graph.Input.PositionHandler
     }
 
     /// <summary>
-    /// Creates a sample node for this demo.
+    ///   Creates a sample node for this demo.
     /// </summary>
-    private static void CreateNode(IGraph graph, double x, double y, double w, double h, Palette palette, string labelText) {
-      INode node = graph.CreateNode(new RectD(x, y, w, h), DemoStyles.CreateDemoNodeStyle(palette), palette);
+    private static void CreateNode(
+        IGraph graph,
+        double x,
+        double y,
+        double w,
+        double h,
+        Palette palette,
+        string labelText) {
+      var node = graph.CreateNode(new RectD(x, y, w, h), DemoStyles.CreateDemoNodeStyle(palette), palette);
       graph.SetStyle(graph.AddLabel(node, labelText), DemoStyles.CreateDemoNodeLabelStyle(palette));
     }
 

@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -28,38 +28,37 @@
  ***************************************************************************/
 
 using System.ComponentModel;
+using System.Linq;
 using System.Reflection;
 using Demo.yFiles.Toolkit.OptionHandler;
 using yWorks.Controls;
+using yWorks.Graph;
 using yWorks.Layout;
 using yWorks.Layout.Grouping;
 using yWorks.Layout.Labeling;
 using yWorks.Layout.Orthogonal;
+using yWorks.Layout.Router;
 
 namespace Demo.yFiles.Layout.Configurations
 {
   /// <summary>
-  /// Configuration options for the layout algorithm of the same name.
+  ///   Configuration options for the layout algorithm of the same name.
   /// </summary>
   [Obfuscation(StripAfterObfuscation = false, Exclude = true, ApplyToMembers = true)]
   [Label("OrthogonalLayout")]
   public class OrthogonalLayoutConfig : LayoutConfiguration
   {
     /// <summary>
-    /// Setup default values for various configuration parameters.
+    ///   Setup default values for various configuration parameters.
     /// </summary>
     public OrthogonalLayoutConfig() {
-      StyleItem = LayoutStyle.Normal;
+      ModeItem = OrthogonalLayoutMode.Strict;
       GridSpacingItem = 15;
-      EdgeLengthReductionItem = true;
+      QualityTimeRatioItem = 0.6;
       UseExistingDrawingAsSketchItem = false;
-      CrossingReductionItem = true;
-      PerceivedBendsPostprocessingItem = true;
-      UseRandomizationItem = true;
-      UseFaceMaximizationItem = false;
 
-      ConsiderNodeLabelsItem = false;
-      EdgeLabelingItem = EnumEdgeLabeling.None;
+      NodeLabelingItem = NodeLabelPlacement.Consider;
+      EdgeLabelingItem = EdgeLabelPlacement.Integrated;
       LabelPlacementAlongEdgeItem = EnumLabelPlacementAlongEdge.Centered;
       LabelPlacementSideOfEdgeItem = EnumLabelPlacementSideOfEdge.OnEdge;
       LabelPlacementOrientationItem = EnumLabelPlacementOrientation.Horizontal;
@@ -70,83 +69,92 @@ namespace Demo.yFiles.Layout.Configurations
       MinimumLastSegmentLengthItem = 15.0d;
       ConsiderEdgeDirectionItem = false;
 
-      ChainSubstructureStyleItem = ChainLayoutStyle.None;
+      ChainSubstructureStyleItem = ChainSubstructureStyle.None;
       ChainSubstructureSizeItem = 2;
-      CycleSubstructureStyleItem = CycleLayoutStyle.None;
+      CycleSubstructureStyleItem = CycleSubstructureStyle.None;
       CycleSubstructureSizeItem = 4;
-      TreeSubstructureStyleItem = TreeLayoutStyle.None;
+      TreeSubstructureStyleItem = TreeSubstructureStyle.None;
       TreeSubstructureSizeItem = 3;
       TreeSubstructureOrientationItem = SubstructureOrientation.AutoDetect;
 
       GroupLayoutPolicyItem = EnumGroupPolicy.LayoutGroups;
     }
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     protected override ILayoutAlgorithm CreateConfiguredLayout(GraphControl graphControl) {
       var layout = new OrthogonalLayout();
       if (GroupLayoutPolicyItem == EnumGroupPolicy.FixGroups) {
-        var fgl = new FixGroupLayoutStage { InterEdgeRoutingStyle = InterEdgeRoutingStyle.Orthogonal };
-        layout.PrependStage(fgl);
+        var rgl = new RecursiveGroupLayout { InterEdgeRouter = CreateInterEdgeRouter() };
+        layout.LayoutStages.Prepend(rgl);
       } else if (GroupLayoutPolicyItem == EnumGroupPolicy.IgnoreGroups) {
-        layout.HideGroupsStageEnabled = true;
+        layout.LayoutStages.Get<GroupHidingStage>().Enabled = true;
       }
 
-      layout.LayoutStyle = StyleItem;
+      layout.LayoutMode = ModeItem;
       layout.GridSpacing = GridSpacingItem;
-      layout.EdgeLengthReduction = EdgeLengthReductionItem;
-      layout.OptimizePerceivedBends = PerceivedBendsPostprocessingItem;
+      layout.QualityTimeRatio = QualityTimeRatioItem;
       layout.UniformPortAssignment = UniformPortAssignmentItem;
-      layout.CrossingReduction = CrossingReductionItem;
-      layout.Randomization = UseRandomizationItem;
-      layout.FaceMaximization = UseFaceMaximizationItem;
       layout.FromSketchMode = UseExistingDrawingAsSketchItem;
-      layout.EdgeLayoutDescriptor.MinimumFirstSegmentLength = MinimumFirstSegmentLengthItem;
-      layout.EdgeLayoutDescriptor.MinimumLastSegmentLength = MinimumLastSegmentLengthItem;
-      layout.EdgeLayoutDescriptor.MinimumSegmentLength = MinimumSegmentLengthItem;
+      layout.DefaultEdgeDescriptor.MinimumFirstSegmentLength = MinimumFirstSegmentLengthItem;
+      layout.DefaultEdgeDescriptor.MinimumLastSegmentLength = MinimumLastSegmentLengthItem;
+      layout.DefaultEdgeDescriptor.MinimumSegmentLength = MinimumSegmentLengthItem;
 
-      //set edge labeling options
-      var normalStyle = layout.LayoutStyle == LayoutStyle.Normal;
-      layout.IntegratedEdgeLabeling = EdgeLabelingItem == EnumEdgeLabeling.Integrated && normalStyle;
-      layout.ConsiderNodeLabels = ConsiderNodeLabelsItem && normalStyle;
+      // set edge labeling options
+      var isStrictMode = layout.LayoutMode == OrthogonalLayoutMode.Strict;
+      if (EdgeLabelingItem == EdgeLabelPlacement.Integrated && isStrictMode) {
+        layout.EdgeLabelPlacement = EdgeLabelPlacement.Integrated;
+      } else if (EdgeLabelingItem == EdgeLabelPlacement.Generic) {
+        layout.EdgeLabelPlacement = EdgeLabelPlacement.Generic;
 
-      if (EdgeLabelingItem == EnumEdgeLabeling.Generic ||
-          (EdgeLabelingItem == EnumEdgeLabeling.Integrated && normalStyle)) {
-        layout.LabelingEnabled = true;
-        if (EdgeLabelingItem == EnumEdgeLabeling.Generic) {
-          ((GenericLabeling) layout.Labeling).ReduceAmbiguity = ReduceAmbiguityItem;
+        if (ReduceAmbiguityItem) {
+          var labeling = layout.LayoutStages.Get<GenericLabeling>();
+          labeling.DefaultNodeLabelingCosts.AmbiguousPlacementCost = 1.0;
+          labeling.DefaultEdgeLabelingCosts.AmbiguousPlacementCost = 1.0;
         }
-      } else if (!ConsiderNodeLabelsItem || !normalStyle) {
-        layout.LabelingEnabled = false;
+      } else {
+        layout.EdgeLabelPlacement = EdgeLabelPlacement.Ignore;
       }
 
-      layout.ChainStyle = ChainSubstructureStyleItem;
-      layout.ChainSize = ChainSubstructureSizeItem;
-      layout.CycleStyle = CycleSubstructureStyleItem;
-      layout.CycleSize = CycleSubstructureSizeItem;
-      layout.TreeStyle = TreeSubstructureStyleItem;
-      layout.TreeSize = TreeSubstructureSizeItem;
-      layout.TreeOrientation = TreeSubstructureOrientationItem;
+      if (isStrictMode) {
+        layout.NodeLabelPlacement = NodeLabelingItem;
+      } else {
+        layout.NodeLabelPlacement = NodeLabelPlacement.Ignore;
+      }
+
+      layout.ChainSubstructureStyle = ChainSubstructureStyleItem;
+      layout.ChainSubstructureSize = ChainSubstructureSizeItem;
+      layout.CycleSubstructureStyle = CycleSubstructureStyleItem;
+      layout.CycleSubstructureSize = CycleSubstructureSizeItem;
+      layout.TreeSubstructureStyle = TreeSubstructureStyleItem;
+      layout.TreeSubstructureSize = TreeSubstructureSizeItem;
+      layout.TreeSubstructureOrientation = TreeSubstructureOrientationItem;
 
       return layout;
     }
 
-    protected override LayoutData CreateConfiguredLayoutData(GraphControl graphControl, ILayoutAlgorithm layout) {
-      var layoutData = new OrthogonalLayoutData();
+    private ILayoutAlgorithm CreateInterEdgeRouter() {
+      return new EdgeRouter { DefaultEdgeDescriptor = { MinimumEdgeDistance = 4 }, MinimumNodeToEdgeDistance = 0 };
+    }
+
+    protected override LayoutData<INode, IEdge, ILabel, ILabel> CreateConfiguredLayoutData(
+        GraphControl graphControl,
+        ILayoutAlgorithm layout) {
+      var orthogonalLayoutData = new OrthogonalLayoutData<INode, IEdge, ILabel, ILabel>();
       if (ConsiderEdgeDirectionItem) {
-        layoutData.DirectedEdges.Source = graphControl.Selection.SelectedEdges;
+        orthogonalLayoutData.EdgeOrientation.MapperFunction =
+            edge => Enumerable.Contains(graphControl.Selection.Edges, edge) ? 1 : 0;
       } else {
-        layoutData.DirectedEdges.Delegate = edge => false;
+        orthogonalLayoutData.EdgeOrientation.Constant = 0;
       }
 
-      return layoutData.CombineWith(
-          CreateLabelingLayoutData(
-              graphControl.Graph,
-              LabelPlacementAlongEdgeItem,
-              LabelPlacementSideOfEdgeItem,
-              LabelPlacementOrientationItem,
-              LabelPlacementDistanceItem
-          )
-      );
+      var recursiveGroupLayoutData = new RecursiveGroupLayoutData<INode, IEdge, ILabel, ILabel> {
+          GroupNodeLayouts = { Constant = RecursiveGroupLayout.FixGroupLayout }
+      };
+
+      var labelingLayoutData = CreateLabelingLayoutData(graphControl.Graph, LabelPlacementAlongEdgeItem,
+          LabelPlacementSideOfEdgeItem, LabelPlacementOrientationItem, LabelPlacementDistanceItem);
+
+      return orthogonalLayoutData.CombineWith(recursiveGroupLayoutData).CombineWith(labelingLayoutData);
     }
 
     // ReSharper disable UnusedMember.Global
@@ -156,10 +164,10 @@ namespace Demo.yFiles.Layout.Configurations
     [ComponentType(ComponentTypes.OptionGroup)]
     public object DescriptionGroup;
 
-    [Label("Layout")]
+    [Label("General")]
     [OptionGroup("RootGroup", 10)]
     [ComponentType(ComponentTypes.OptionGroup)]
-    public object LayoutGroup;
+    public object GeneralGroup;
 
     [Label("Labeling")]
     [OptionGroup("RootGroup", 20)]
@@ -180,7 +188,7 @@ namespace Demo.yFiles.Layout.Configurations
     [OptionGroup("LabelingGroup", 30)]
     [ComponentType(ComponentTypes.OptionGroup)]
     public object PreferredPlacementGroup;
-    
+
     [Label("Edges")]
     [OptionGroup("RootGroup", 30)]
     [ComponentType(ComponentTypes.OptionGroup)]
@@ -199,160 +207,115 @@ namespace Demo.yFiles.Layout.Configurations
     // ReSharper restore UnusedMember.Global
     // ReSharper restore InconsistentNaming
 
-    public enum EnumEdgeLabeling {
-      None, Integrated, Generic
-    }
-
     public enum EnumGroupPolicy
     {
-      LayoutGroups, FixGroups, IgnoreGroups
+      LayoutGroups,
+      FixGroups,
+      IgnoreGroups
     }
 
     [OptionGroup("DescriptionGroup", 10)]
     [ComponentType(ComponentTypes.FormattedText)]
-    public string DescriptionText {
-      get {
-        return "<Paragraph>The orthogonal layout style is a multi-purpose layout style for undirected graphs. "
-               + "It is well suited for medium-sized sparse graphs, and produces compact drawings with no overlaps, "
-               + "few crossings, and few bends.</Paragraph>"
-               + "<Paragraph>It is especially fitted for application domains such as</Paragraph>"
-               + "<List>"
-               + "<ListItem><Paragraph>Software engineering</Paragraph></ListItem>"
-               + "<ListItem><Paragraph>Database schema</Paragraph></ListItem>"
-               + "<ListItem><Paragraph>System management</Paragraph></ListItem>"
-               + "<ListItem><Paragraph>Knowledge representation</Paragraph></ListItem>"
-               + "</List>";
-      }
-    }
+    public string DescriptionText =>
+        "<Paragraph>The orthogonal layout style is a multi-purpose layout style for undirected graphs. " +
+        "It is well suited for medium-sized sparse graphs, and produces compact drawings with no overlaps, " +
+        "few crossings, and few bends.</Paragraph>" +
+        "<Paragraph>It is especially fitted for application domains such as</Paragraph>" + "<List>" +
+        "<ListItem><Paragraph>Software engineering</Paragraph></ListItem>" +
+        "<ListItem><Paragraph>Database schema</Paragraph></ListItem>" +
+        "<ListItem><Paragraph>System management</Paragraph></ListItem>" +
+        "<ListItem><Paragraph>Knowledge representation</Paragraph></ListItem>" + "</List>";
 
-    [Label("Style")]
-    [OptionGroup("LayoutGroup", 10)]
-    [DefaultValue(LayoutStyle.Normal)]
-    [EnumValue("Normal", LayoutStyle.Normal)]
-    [EnumValue("Uniform Node Sizes",LayoutStyle.Uniform)]
-    [EnumValue("Node Boxes",LayoutStyle.Box)]
-    [EnumValue("Mixed",LayoutStyle.Mixed)]
-    [EnumValue("Node Boxes (Fixed Node Size)",LayoutStyle.FixedBox)]
-    [EnumValue("Mixed (Fixed Node Size)",LayoutStyle.FixedMixed)]
-    public LayoutStyle StyleItem { get; set; }
+    [Label("Layout Mode")]
+    [OptionGroup("GeneralGroup", 10)]
+    [DefaultValue(OrthogonalLayoutMode.Strict)]
+    [EnumValue("Strict", OrthogonalLayoutMode.Strict)]
+    [EnumValue("Relaxed", OrthogonalLayoutMode.Relaxed)]
+    [EnumValue("Forced Straight-Line", OrthogonalLayoutMode.ForcedStraightLine)]
+    public OrthogonalLayoutMode ModeItem { get; set; }
 
-    public bool ShouldDisableStyleItem {
-      get { return UseExistingDrawingAsSketchItem; }
-    }
+    public bool ShouldDisableModeItem => UseExistingDrawingAsSketchItem;
 
     [Label("Grid Spacing")]
-    [OptionGroup("LayoutGroup", 20)]
+    [OptionGroup("GeneralGroup", 20)]
     [DefaultValue(15)]
     [MinMax(Min = 1, Max = 100)]
     [ComponentType(ComponentTypes.Slider)]
     public int GridSpacingItem { get; set; }
 
-    [Label("Edge Length Reduction")]
-    [OptionGroup("LayoutGroup", 30)]
-    [DefaultValue(true)]
-    public bool EdgeLengthReductionItem { get; set; }
+    [Label("Quality")]
+    [OptionGroup("GeneralGroup", 30)]
+    [DefaultValue(0.6d)]
+    [MinMax(Min = 0.0d, Max = 1.0d, Step = 0.01d)]
+    [ComponentType(ComponentTypes.Slider)]
+    public double QualityTimeRatioItem { get; set; }
 
     [Label("Use Drawing as Sketch")]
-    [OptionGroup("LayoutGroup", 40)]
+    [OptionGroup("GeneralGroup", 40)]
     [DefaultValue(false)]
     public bool UseExistingDrawingAsSketchItem { get; set; }
 
-    [Label("Crossing Reduction")]
-    [OptionGroup("LayoutGroup", 50)]
-    [DefaultValue(true)]
-    public bool CrossingReductionItem { get; set; }
-
-    public bool ShouldDisableCrossingReductionItem {
-      get { return UseExistingDrawingAsSketchItem; }
-    }
-
-    [Label("Minimize Perceived Bends")]
-    [OptionGroup("LayoutGroup", 60)]
-    [DefaultValue(true)]
-    public bool PerceivedBendsPostprocessingItem { get; set; }
-
-    public bool ShouldDisablePerceivedBendsPostprocessingItem {
-      get { return UseExistingDrawingAsSketchItem; }
-    }
-
     [Label("Uniform Port Assignment")]
-    [OptionGroup("LayoutGroup", 65)]
+    [OptionGroup("GeneralGroup", 50)]
     public bool UniformPortAssignmentItem { get; set; }
 
-    [Label("Randomization")]
-    [OptionGroup("LayoutGroup", 70)]
-    [DefaultValue(true)]
-    public bool UseRandomizationItem { get; set; }
-
-    public bool ShouldDisableUseRandomizationItem {
-      get { return UseExistingDrawingAsSketchItem; }
-    }
-
-    [Label("Face Maximization")]
-    [OptionGroup("LayoutGroup", 80)]
-    [DefaultValue(false)]
-    public bool UseFaceMaximizationItem { get; set; }
-
-    [Label("Consider Node Labels")]
+    [Label("Node Labeling")]
     [OptionGroup("NodePropertiesGroup", 10)]
-    [DefaultValue(false)]
-    public bool ConsiderNodeLabelsItem { get; set; }
+    [DefaultValue(NodeLabelPlacement.Consider)]
+    [EnumValue("Consider", NodeLabelPlacement.Consider)]
+    [EnumValue("Generic", NodeLabelPlacement.Generic)]
+    [EnumValue("Ignore", NodeLabelPlacement.Ignore)]
+    public NodeLabelPlacement NodeLabelingItem { get; set; }
 
     [Label("Edge Labeling")]
     [OptionGroup("EdgePropertiesGroup", 10)]
-    [DefaultValue(EnumEdgeLabeling.None)]
-    [EnumValue("None", EnumEdgeLabeling.None)]
-    [EnumValue("Integrated",EnumEdgeLabeling.Integrated)]
-    [EnumValue("Generic",EnumEdgeLabeling.Generic)]
-    public EnumEdgeLabeling EdgeLabelingItem { get; set; }
+    [DefaultValue(EdgeLabelPlacement.Integrated)]
+    [EnumValue("Ignore", EdgeLabelPlacement.Ignore)]
+    [EnumValue("Integrated", EdgeLabelPlacement.Integrated)]
+    [EnumValue("Generic", EdgeLabelPlacement.Generic)]
+    public EdgeLabelPlacement EdgeLabelingItem { get; set; }
 
     [Label("Reduce Ambiguity")]
     [OptionGroup("EdgePropertiesGroup", 20)]
     public bool ReduceAmbiguityItem { get; set; }
 
-    public bool ShouldDisableReduceAmbiguityItem {
-      get { return EdgeLabelingItem != EnumEdgeLabeling.Generic; }
-    }
+    public bool ShouldDisableReduceAmbiguityItem => EdgeLabelingItem != EdgeLabelPlacement.Generic;
 
     [Label("Orientation")]
     [OptionGroup("PreferredPlacementGroup", 10)]
     [DefaultValue(EnumLabelPlacementOrientation.Horizontal)]
     [EnumValue("Parallel", EnumLabelPlacementOrientation.Parallel)]
-    [EnumValue("Orthogonal",EnumLabelPlacementOrientation.Orthogonal)]
-    [EnumValue("Horizontal",EnumLabelPlacementOrientation.Horizontal)]
-    [EnumValue("Vertical",EnumLabelPlacementOrientation.Vertical)]
+    [EnumValue("Orthogonal", EnumLabelPlacementOrientation.Orthogonal)]
+    [EnumValue("Horizontal", EnumLabelPlacementOrientation.Horizontal)]
+    [EnumValue("Vertical", EnumLabelPlacementOrientation.Vertical)]
     public EnumLabelPlacementOrientation LabelPlacementOrientationItem { get; set; }
 
-    public bool ShouldDisableLabelPlacementOrientationItem {
-      get { return EdgeLabelingItem == EnumEdgeLabeling.None; }
-    }
+    public bool ShouldDisableLabelPlacementOrientationItem => EdgeLabelingItem == EdgeLabelPlacement.Ignore;
 
     [Label("Along Edge")]
     [OptionGroup("PreferredPlacementGroup", 20)]
     [DefaultValue(EnumLabelPlacementAlongEdge.Centered)]
     [EnumValue("Anywhere", EnumLabelPlacementAlongEdge.Anywhere)]
-    [EnumValue("At Source",EnumLabelPlacementAlongEdge.AtSource)]
-    [EnumValue("At Target",EnumLabelPlacementAlongEdge.AtTarget)]
-    [EnumValue("Centered",EnumLabelPlacementAlongEdge.Centered)]
+    [EnumValue("At Source", EnumLabelPlacementAlongEdge.AtSource)]
+    [EnumValue("At Source Port", EnumLabelPlacementAlongEdge.AtSourcePort)]
+    [EnumValue("At Target", EnumLabelPlacementAlongEdge.AtTarget)]
+    [EnumValue("At Target Port", EnumLabelPlacementAlongEdge.AtTargetPort)]
+    [EnumValue("Centered", EnumLabelPlacementAlongEdge.Centered)]
     public EnumLabelPlacementAlongEdge LabelPlacementAlongEdgeItem { get; set; }
 
-    public bool ShouldDisableLabelPlacementAlongEdgeItem {
-      get { return EdgeLabelingItem == EnumEdgeLabeling.None; }
-    }
+    public bool ShouldDisableLabelPlacementAlongEdgeItem => EdgeLabelingItem == EdgeLabelPlacement.Ignore;
 
     [Label("Side of Edge")]
     [OptionGroup("PreferredPlacementGroup", 30)]
     [DefaultValue(EnumLabelPlacementSideOfEdge.OnEdge)]
     [EnumValue("Anywhere", EnumLabelPlacementSideOfEdge.Anywhere)]
-    [EnumValue("On Edge",EnumLabelPlacementSideOfEdge.OnEdge)]
-    [EnumValue("Left",EnumLabelPlacementSideOfEdge.Left)]
-    [EnumValue("Right",EnumLabelPlacementSideOfEdge.Right)]
-    [EnumValue("Left or Right",EnumLabelPlacementSideOfEdge.LeftOrRight)]
+    [EnumValue("On Edge", EnumLabelPlacementSideOfEdge.OnEdge)]
+    [EnumValue("Left", EnumLabelPlacementSideOfEdge.Left)]
+    [EnumValue("Right", EnumLabelPlacementSideOfEdge.Right)]
+    [EnumValue("Left or Right", EnumLabelPlacementSideOfEdge.LeftOrRight)]
     public EnumLabelPlacementSideOfEdge LabelPlacementSideOfEdgeItem { get; set; }
 
-    public bool ShouldDisableLabelPlacementSideOfEdgeItem {
-      get { return EdgeLabelingItem == EnumEdgeLabeling.None; }
-    }
+    public bool ShouldDisableLabelPlacementSideOfEdgeItem => EdgeLabelingItem == EdgeLabelPlacement.Ignore;
 
     [Label("Distance")]
     [OptionGroup("PreferredPlacementGroup", 40)]
@@ -361,9 +324,9 @@ namespace Demo.yFiles.Layout.Configurations
     [ComponentType(ComponentTypes.Slider)]
     public double LabelPlacementDistanceItem { get; set; }
 
-    public bool ShouldDisableLabelPlacementDistanceItem {
-      get { return EdgeLabelingItem == EnumEdgeLabeling.None || LabelPlacementSideOfEdgeItem == EnumLabelPlacementSideOfEdge.OnEdge; }
-    }
+    public bool ShouldDisableLabelPlacementDistanceItem =>
+        EdgeLabelingItem == EdgeLabelPlacement.Ignore ||
+        LabelPlacementSideOfEdgeItem == EnumLabelPlacementSideOfEdge.OnEdge;
 
     [Label("Minimum First Segment Length")]
     [OptionGroup("EdgesGroup", 10)]
@@ -395,16 +358,16 @@ namespace Demo.yFiles.Layout.Configurations
     [OptionGroup("GroupingGroup", 10)]
     [DefaultValue(EnumGroupPolicy.LayoutGroups)]
     [EnumValue("Layout Groups", EnumGroupPolicy.LayoutGroups)]
-    [EnumValue("Fix Contents of Groups",EnumGroupPolicy.FixGroups)]
-    [EnumValue("Ignore Groups",EnumGroupPolicy.IgnoreGroups)]
+    [EnumValue("Fix Contents of Groups", EnumGroupPolicy.FixGroups)]
+    [EnumValue("Ignore Groups", EnumGroupPolicy.IgnoreGroups)]
     public EnumGroupPolicy GroupLayoutPolicyItem { get; set; }
 
     [Label("Cycles")]
     [OptionGroup("SubstructureLayoutGroup", 10)]
-    [EnumValue("Ignore", CycleLayoutStyle.None)]
-    [EnumValue("Circular with Nodes at Corners", CycleLayoutStyle.CircularWithNodesAtCorners)]
-    [EnumValue("Circular with Bends at Corners", CycleLayoutStyle.CircularWithBendsAtCorners)]
-    public CycleLayoutStyle CycleSubstructureStyleItem { get; set; }
+    [EnumValue("Ignore", CycleSubstructureStyle.None)]
+    [EnumValue("Circular with Nodes at Corners", CycleSubstructureStyle.CircularWithNodesAtCorners)]
+    [EnumValue("Circular with Bends at Corners", CycleSubstructureStyle.CircularWithBendsAtCorners)]
+    public CycleSubstructureStyle CycleSubstructureStyleItem { get; set; }
 
     [Label("Minimum Cycle Size")]
     [OptionGroup("SubstructureLayoutGroup", 20)]
@@ -412,17 +375,15 @@ namespace Demo.yFiles.Layout.Configurations
     [ComponentType(ComponentTypes.Slider)]
     public int CycleSubstructureSizeItem { get; set; }
 
-    public bool ShouldDisableCycleSubstructureSizeItem {
-      get { return CycleSubstructureStyleItem == CycleLayoutStyle.None; }
-    }
+    public bool ShouldDisableCycleSubstructureSizeItem => CycleSubstructureStyleItem == CycleSubstructureStyle.None;
 
     [Label("Chains")]
     [OptionGroup("SubstructureLayoutGroup", 30)]
-    [EnumValue("Ignore", ChainLayoutStyle.None)]
-    [EnumValue("Straight", ChainLayoutStyle.Straight)]
-    [EnumValue("Wrapped with Nodes at Turns", ChainLayoutStyle.WrappedWithNodesAtTurns)]
-    [EnumValue("Wrapped with Bends at Turns", ChainLayoutStyle.WrappedWithBendsAtTurns)]
-    public ChainLayoutStyle ChainSubstructureStyleItem { get; set; }
+    [EnumValue("Ignore", ChainSubstructureStyle.None)]
+    [EnumValue("Straight", ChainSubstructureStyle.Straight)]
+    [EnumValue("Wrapped with Nodes at Turns", ChainSubstructureStyle.WrappedWithNodesAtTurns)]
+    [EnumValue("Wrapped with Bends at Turns", ChainSubstructureStyle.WrappedWithBendsAtTurns)]
+    public ChainSubstructureStyle ChainSubstructureStyleItem { get; set; }
 
     [Label("Minimum Chain Length")]
     [OptionGroup("SubstructureLayoutGroup", 40)]
@@ -430,18 +391,16 @@ namespace Demo.yFiles.Layout.Configurations
     [ComponentType(ComponentTypes.Slider)]
     public int ChainSubstructureSizeItem { get; set; }
 
-    public bool ShouldDisableChainSubstructureSizeItem {
-      get { return ChainSubstructureStyleItem == ChainLayoutStyle.None; }
-    }
+    public bool ShouldDisableChainSubstructureSizeItem => ChainSubstructureStyleItem == ChainSubstructureStyle.None;
 
     [Label("Tree Style")]
     [OptionGroup("SubstructureLayoutGroup", 50)]
-    [EnumValue("Ignore", TreeLayoutStyle.None)]
-    [EnumValue("Default", TreeLayoutStyle.Default)]
-    [EnumValue("Integrated", TreeLayoutStyle.Integrated)]
-    [EnumValue("Compact", TreeLayoutStyle.Compact)]
-    [EnumValue("Aspect Ratio", TreeLayoutStyle.AspectRatio)]
-    public TreeLayoutStyle TreeSubstructureStyleItem { get; set; }
+    [EnumValue("Ignore", TreeSubstructureStyle.None)]
+    [EnumValue("Default", TreeSubstructureStyle.Default)]
+    [EnumValue("Integrated", TreeSubstructureStyle.Integrated)]
+    [EnumValue("Compact", TreeSubstructureStyle.Compact)]
+    [EnumValue("Aspect Ratio", TreeSubstructureStyle.AspectRatio)]
+    public TreeSubstructureStyle TreeSubstructureStyleItem { get; set; }
 
     [Label("Minimum Tree Size")]
     [OptionGroup("SubstructureLayoutGroup", 60)]
@@ -449,9 +408,7 @@ namespace Demo.yFiles.Layout.Configurations
     [ComponentType(ComponentTypes.Slider)]
     public int TreeSubstructureSizeItem { get; set; }
 
-    public bool ShouldDisableTreeSubstructureSizeItem {
-      get { return TreeSubstructureStyleItem == TreeLayoutStyle.None; }
-    }
+    public bool ShouldDisableTreeSubstructureSizeItem => TreeSubstructureStyleItem == TreeSubstructureStyle.None;
 
     [Label("Tree Orientation")]
     [OptionGroup("SubstructureLayoutGroup", 70)]
@@ -462,16 +419,14 @@ namespace Demo.yFiles.Layout.Configurations
     [EnumValue("Right to Left", SubstructureOrientation.RightToLeft)]
     public SubstructureOrientation TreeSubstructureOrientationItem { get; set; }
 
-    public bool ShouldDisableTreeSubstructureOrientationItem {
-      get { return TreeSubstructureStyleItem == TreeLayoutStyle.None; }
-    }
+    public bool ShouldDisableTreeSubstructureOrientationItem => TreeSubstructureStyleItem == TreeSubstructureStyle.None;
 
     public void EnableSubstructures() {
-      ChainSubstructureStyleItem = ChainLayoutStyle.WrappedWithNodesAtTurns;
+      ChainSubstructureStyleItem = ChainSubstructureStyle.WrappedWithNodesAtTurns;
       ChainSubstructureSizeItem = 2;
-      CycleSubstructureStyleItem = CycleLayoutStyle.CircularWithBendsAtCorners;
+      CycleSubstructureStyleItem = CycleSubstructureStyle.CircularWithBendsAtCorners;
       CycleSubstructureSizeItem = 4;
-      TreeSubstructureStyleItem = TreeLayoutStyle.Integrated;
+      TreeSubstructureStyleItem = TreeSubstructureStyle.Integrated;
       TreeSubstructureSizeItem = 3;
       TreeSubstructureOrientationItem = SubstructureOrientation.AutoDetect;
     }

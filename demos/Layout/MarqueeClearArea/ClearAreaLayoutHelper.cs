@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -37,49 +37,47 @@ using yWorks.Layout.Partial;
 namespace Demo.yFiles.Graph.MarqueeClearArea
 {
   /// <summary>
-  /// Performs layout and animation while dragging the marquee rectangle.
+  ///   Performs layout and animation while dragging the marquee rectangle.
   /// </summary>
   internal class ClearAreaLayoutHelper
   {
     /// <summary>
-    /// Performs the layout and the animation.
+    ///   Performs the layout and the animation.
     /// </summary>
     private LayoutExecutor executor;
 
     /// <summary>
-    /// The graph that is displayed.
+    ///   The graph that is displayed.
     /// </summary>
-    private IGraph Graph {
-      get { return graphControl.Graph; }
-    }
+    private IGraph Graph => graphControl.Graph;
 
     /// <summary>
-    /// The control that displays the graph.
+    ///   The control that displays the graph.
     /// </summary>
     private readonly GraphControl graphControl;
 
     /// <summary>
-    /// The graph layout copy that stores the original layout before the marquee rectangle has been dragged.
+    ///   The graph layout copy that stores the original layout before the marquee rectangle has been dragged.
     /// </summary>
-    private GivenCoordinatesStageData resetToOriginalGraphStageData;
+    private GivenCoordinatesLayoutData<INode, IEdge, ILabel, ILabel> resetToOriginalGraphLayoutData;
 
     /// <summary>
-    /// The marquee rectangle.
+    ///   The marquee rectangle.
     /// </summary>
     public RectD ClearRectangle { get; set; }
 
     /// <summary>
-    /// The group node within which the marquee was created, otherwise null.
+    ///   The group node within which the marquee was created, otherwise null.
     /// </summary>
     public INode GroupNode { get; set; }
 
     /// <summary>
-    /// The <see cref="ILayoutAlgorithm"/> that makes space for the marquee rectangle.
+    ///   The <see cref="ILayoutAlgorithm"/> that makes space for the marquee rectangle.
     /// </summary>
     private ClearAreaLayout clearAreaLayout;
 
     /// <summary>
-    /// Initializes the helper.
+    ///   Initializes the helper.
     /// </summary>
     /// <param name="graphControl">The control that displays the graph.</param>
     public ClearAreaLayoutHelper(GraphControl graphControl) {
@@ -89,11 +87,12 @@ namespace Demo.yFiles.Graph.MarqueeClearArea
     #region LayoutExecutor configurations
 
     /// <summary>
-    /// Creates a <see cref="GivenCoordinatesStageData"/> that store the layout of nodes and edges.
+    ///   Creates a <see cref="GivenCoordinatesLayoutData{TNode,TEdge,TNodeLabel,TEdgeLabel}"/> that store the layout of nodes
+    ///   and edges.
     /// </summary>
-    /// <returns>The <see cref="GivenCoordinatesStageData"/>.</returns>
-    private GivenCoordinatesStageData CreateGivenCoordinateStageData() {
-      var data = new GivenCoordinatesStageData();
+    /// <returns>The <see cref="GivenCoordinatesLayoutData{TNode,TEdge,TNodeLabel,TEdgeLabel}"/>.</returns>
+    private GivenCoordinatesLayoutData<INode, IEdge, ILabel, ILabel> CreateGivenCoordinateStageData() {
+      var data = new GivenCoordinatesLayoutData<INode, IEdge, ILabel, ILabel>();
       foreach (var node in Graph.Nodes) {
         data.NodeLocations.Mapper[node] = node.Layout.GetTopLeft();
         data.NodeSizes.Mapper[node] = node.Layout.GetSize();
@@ -105,56 +104,50 @@ namespace Demo.yFiles.Graph.MarqueeClearArea
     }
 
     /// <summary>
-    /// A <see cref="LayoutExecutor"/> that is used while dragging the marquee rectangle.
+    ///   A <see cref="LayoutExecutor"/> that is used while dragging the marquee rectangle.
     /// </summary>
     /// <remarks>
-    /// First, all nodes and edges are pushed back into place before the drag started. Then space 
-    /// is made for the rectangle at its current position. The animation morphs all elements to the 
-    /// calculated positions.
+    ///   First, all nodes and edges are pushed back into place before the drag started. Then space
+    ///   is made for the rectangle at its current position. The animation morphs all elements to the
+    ///   calculated positions.
     /// </remarks>
     private LayoutExecutor CreateDraggingLayoutExecutor() {
-      return new LayoutExecutor(graphControl, CreateDraggingLayout())
-      {
-        LayoutData = CreateDraggingLayoutData(),
-        RunInThread = true,
-        Duration = TimeSpan.FromMilliseconds(150)
+      return new LayoutExecutor(graphControl, CreateDraggingLayout()) {
+          LayoutData = CreateDraggingLayoutData(), AnimateViewport = false, RunInThread = true, AnimationDuration = TimeSpan.FromMilliseconds(150)
       };
     }
 
     /// <summary>
-    /// A <see cref="LayoutExecutor"/> that is used after the drag is canceled.
+    ///   A <see cref="LayoutExecutor"/> that is used after the drag is canceled.
     /// </summary>
     /// <remarks>
-    /// All nodes and edges are pushed back into place before the drag started.
+    ///   All nodes and edges are pushed back into place before the drag started.
     /// </remarks>
     private LayoutExecutor CreateCanceledLayoutExecutor() {
-      return new LayoutExecutor(graphControl, new GivenCoordinatesStage())
-      {
-        LayoutData = resetToOriginalGraphStageData,
-        RunInThread = true,
-        Duration = TimeSpan.FromMilliseconds(150)
+      return new LayoutExecutor(graphControl, new GivenCoordinatesLayout()) {
+          LayoutData = resetToOriginalGraphLayoutData, AnimateViewport = false, RunInThread = true, AnimationDuration = TimeSpan.FromMilliseconds(150)
       };
     }
 
     /// <summary>
-    /// Creates a <see cref="ILayoutAlgorithm"/> used while dragging and finishing the gesture. 
+    ///   Creates a <see cref="ILayoutAlgorithm"/> used while dragging and finishing the gesture.
     /// </summary>
     private ILayoutAlgorithm CreateDraggingLayout() {
-      return new GivenCoordinatesStage(
-          clearAreaLayout = new ClearAreaLayout {
-              ComponentAssignmentStrategy = ComponentAssignmentStrategy.Single,
-              ClearAreaStrategy = ClearAreaStrategy.PreserveShapes,
-              ConsiderEdges = true
-          });
+      return new GivenCoordinatesLayout(clearAreaLayout = new ClearAreaLayout {
+          ComponentAssignmentStrategy = ComponentAssignmentStrategy.Single,
+          ClearAreaStrategy = ClearAreaStrategy.PreserveShapes,
+          ConsiderEdges = true
+      });
     }
 
     /// <summary>
-    /// Creates a <see cref="LayoutData"/> used while dragging and finishing the gesture.
+    ///   Creates a <see cref="LayoutData{TNode,TEdge,TNodeLabel,TEdgeLabel}"/> used while dragging and finishing the gesture.
     /// </summary>
-    private LayoutData CreateDraggingLayoutData() {
-      return new CompositeLayoutData(
-          resetToOriginalGraphStageData,
-          new ClearAreaLayoutData { AreaGroupNode = { Delegate = node => node == GroupNode } });
+    private LayoutData<INode, IEdge, ILabel, ILabel> CreateDraggingLayoutData() {
+      return new CompositeLayoutData<INode, IEdge, ILabel, ILabel>(resetToOriginalGraphLayoutData,
+          new ClearAreaLayoutData<INode, IEdge, ILabel, ILabel> {
+              AreaGroupNode = { Predicate = node => node == GroupNode }
+          });
     }
 
     #endregion
@@ -162,32 +155,32 @@ namespace Demo.yFiles.Graph.MarqueeClearArea
     #region Layout Execution
 
     /// <summary>
-    /// A lock which prevents re-entrant layout execution.
+    ///   A lock which prevents re-entrant layout execution.
     /// </summary>
     private bool layoutIsRunning;
 
     /// <summary>
-    /// Indicates whether a layout run has been requested while running a layout calculation.
+    ///   Indicates whether a layout run has been requested while running a layout calculation.
     /// </summary>
     private bool layoutPending;
 
     /// <summary>
-    /// Indicates that the gesture has been canceled and the original layout should be restored.
+    ///   Indicates that the gesture has been canceled and the original layout should be restored.
     /// </summary>
     private bool canceled;
-    
+
     /// <summary>
-    /// Indicates that the gesture has been finished and the new layout should be applied.
+    ///   Indicates that the gesture has been finished and the new layout should be applied.
     /// </summary>
     private bool stopped;
 
     /// <summary>
-    /// Creates a single unit to undo and redo the complete reparent gesture.
+    ///   Creates a single unit to undo and redo the complete reparent gesture.
     /// </summary>
     private ICompoundEdit layoutEdit;
 
     /// <summary>
-    /// Starts a layout calculation if none is already running.
+    ///   Starts a layout calculation if none is already running.
     /// </summary>
     public async void RunLayout() {
       if (layoutIsRunning) {
@@ -212,16 +205,16 @@ namespace Demo.yFiles.Graph.MarqueeClearArea
     }
 
     /// <summary>
-    /// Prepares the layout execution.
+    ///   Prepares the layout execution.
     /// </summary>
     public void InitializeLayout() {
       layoutEdit = Graph.BeginEdit("Clear Area", "Clear Area");
-      resetToOriginalGraphStageData = CreateGivenCoordinateStageData();
+      resetToOriginalGraphLayoutData = CreateGivenCoordinateStageData();
       executor = CreateDraggingLayoutExecutor();
     }
 
     /// <summary>
-    /// Cancels the current layout calculation.
+    ///   Cancels the current layout calculation.
     /// </summary>
     public void CancelLayout() {
       executor.Stop();
@@ -230,7 +223,7 @@ namespace Demo.yFiles.Graph.MarqueeClearArea
     }
 
     /// <summary>
-    /// Stops the current layout calculation.
+    ///   Stops the current layout calculation.
     /// </summary>
     public void StopLayout() {
       executor.Stop();
@@ -239,19 +232,19 @@ namespace Demo.yFiles.Graph.MarqueeClearArea
     }
 
     /// <summary>
-    /// Called before the a layout run starts.
+    ///   Called before the a layout run starts.
     /// </summary>
     private void OnExecutorStarting() {
       if (canceled) {
         // reset to original graph layout
         executor = CreateCanceledLayoutExecutor();
       } else {
-        clearAreaLayout.Area = ClearRectangle.ToYRectangle();
+        clearAreaLayout.Area = ClearRectangle;
       }
     }
 
     /// <summary>
-    /// Called after the a layout run finished.
+    ///   Called after the a layout run finished.
     /// </summary>
     private void OnExecutorFinished() {
       if (canceled) {
@@ -262,6 +255,5 @@ namespace Demo.yFiles.Graph.MarqueeClearArea
     }
 
     #endregion
-
   }
 }

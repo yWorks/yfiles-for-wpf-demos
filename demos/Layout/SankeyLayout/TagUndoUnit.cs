@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -31,24 +31,40 @@ using yWorks.Graph;
 
 namespace SankeyLayout
 {
-  public class TagUndoUnit : UndoUnitBase
+  public class TagUndoUnit : IUndoUnit
   {
     private readonly object oldTag;
     private readonly object newTag;
     private readonly IModelItem item;
 
-    public TagUndoUnit(string undoName, string redoName, object oldTag, object newTag, IModelItem item) : base(undoName, redoName) {
+    public TagUndoUnit(string undoName, string redoName, object oldTag, object newTag, IModelItem item) {
+      UndoName = undoName;
+      RedoName = redoName;
       this.oldTag = oldTag;
       this.newTag = newTag;
       this.item = item;
     }
 
-    public override void Undo() {
+    public string UndoName { get; }
+
+    public string RedoName { get; }
+
+    public void Undo() {
       item.Tag = oldTag;
     }
 
-    public override void Redo() {
+    public void Redo() {
       item.Tag = newTag;
     }
+
+    public bool TryMergeUnit(IUndoUnit unit) {
+      return false;
+    }
+
+    public bool TryReplaceUnit(IUndoUnit unit) {
+      return false;
+    }
+
+    public void Dispose() { }
   }
 }

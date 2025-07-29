@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -37,34 +37,35 @@ using yWorks.Controls;
 using yWorks.Controls.Input;
 using yWorks.Geometry;
 using yWorks.Graph;
-using yWorks.Graph.Styles;
 using yWorks.Graph.LabelModels;
+using yWorks.Graph.Styles;
 
-namespace Demo.yFiles.Graph.Bpmn.Styles {
-
+namespace Demo.yFiles.Graph.Bpmn.Styles
+{
   /// <summary>
-  /// An <see cref="INodeStyle"/> implementation representing an Activity according to the BPMN.
+  ///   An <see cref="INodeStyle"/> implementation representing an Activity according to the BPMN.
   /// </summary>
   [Obfuscation(StripAfterObfuscation = false, Exclude = true, ApplyToMembers = false)]
-  public class ActivityNodeStyle : BpmnNodeStyle {
-    private static readonly ShapeNodeStyle sns = new ShapeNodeStyle(new ShapeNodeStyleRenderer { RoundRectArcRadius = BpmnConstants.ActivityCornerRadius })
-    {
-        Shape = ShapeNodeShape.RoundRectangle,
+  public class ActivityNodeStyle : BpmnNodeStyle
+  {
+    private static readonly RectangleNodeStyle rectangleNodeStyle = new() {
+        CornerSize = BpmnConstants.ActivityCornerRadius,
         Pen = Pens.Black,
         Brush = null
     };
+
     private IIcon adHocIcon;
     private IIcon compensationIcon;
 
     private ActivityType activityType;
 
     /// <summary>
-    /// Gets or sets the activity type for this style.
+    ///   Gets or sets the activity type for this style.
     /// </summary>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     [DefaultValue(ActivityType.Task)]
     public ActivityType ActivityType {
-      get { return activityType; }
+      get => activityType;
       set {
         if (activityType != value || activityIcon == null) {
           ModCount++;
@@ -77,12 +78,12 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
     private TaskType taskType;
 
     /// <summary>
-    /// Gets or sets the task type for this style.
+    ///   Gets or sets the task type for this style.
     /// </summary>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     [DefaultValue(TaskType.Abstract)]
     public TaskType TaskType {
-      get { return taskType; }
+      get => taskType;
       set {
         if (taskType != value) {
           ModCount++;
@@ -95,12 +96,12 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
     private EventType triggerEventType;
 
     /// <summary>
-    /// Gets or sets the event type that is used for the task type <see cref="Bpmn.TaskType.EventTriggered"/>.
+    ///   Gets or sets the event type that is used for the task type <see cref="Bpmn.TaskType.EventTriggered"/>.
     /// </summary>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     [DefaultValue(EventType.Message)]
     public EventType TriggerEventType {
-      get { return triggerEventType; }
+      get => triggerEventType;
       set {
         if (triggerEventType != value) {
           triggerEventType = value;
@@ -115,12 +116,12 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
     private EventCharacteristic triggerEventCharacteristic;
 
     /// <summary>
-    /// Gets or sets the event characteristic that is used for the task type <see cref="Bpmn.TaskType.EventTriggered"/>.
+    ///   Gets or sets the event characteristic that is used for the task type <see cref="Bpmn.TaskType.EventTriggered"/>.
     /// </summary>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     [DefaultValue(EventCharacteristic.SubProcessInterrupting)]
     public EventCharacteristic TriggerEventCharacteristic {
-      get { return triggerEventCharacteristic; }
+      get => triggerEventCharacteristic;
       set {
         if (triggerEventCharacteristic != value) {
           triggerEventCharacteristic = value;
@@ -135,12 +136,12 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
     private LoopCharacteristic loopCharacteristic;
 
     /// <summary>
-    /// Gets or sets the loop characteristic of this style.
+    ///   Gets or sets the loop characteristic of this style.
     /// </summary>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     [DefaultValue(LoopCharacteristic.None)]
     public LoopCharacteristic LoopCharacteristic {
-      get { return loopCharacteristic; }
+      get => loopCharacteristic;
       set {
         if (loopCharacteristic != value) {
           ModCount++;
@@ -153,12 +154,12 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
     private SubState subState;
 
     /// <summary>
-    /// Gets or sets the sub state of this style.
+    ///   Gets or sets the substate of this style.
     /// </summary>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     [DefaultValue(SubState.None)]
     public SubState SubState {
-      get { return subState; }
+      get => subState;
       set {
         if (subState != value) {
           ModCount++;
@@ -170,12 +171,12 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
     private bool adHoc;
 
     /// <summary>
-    /// Gets or sets whether this style represents an Ad Hoc Activity. 
+    ///   Gets or sets whether this style represents an Ad Hoc Activity.
     /// </summary>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     [DefaultValue(false)]
     public bool AdHoc {
-      get { return adHoc; }
+      get => adHoc;
       set {
         if (adHoc != value) {
           ModCount++;
@@ -188,12 +189,12 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
     private bool compensation;
 
     /// <summary>
-    /// Gets or sets whether this style represents a Compensation Activity. 
+    ///   Gets or sets whether this style represents a Compensation Activity.
     /// </summary>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     [DefaultValue(false)]
     public bool Compensation {
-      get { return compensation; }
+      get => compensation;
       set {
         if (compensation != value) {
           ModCount++;
@@ -204,30 +205,27 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
     }
 
     /// <summary>
-    /// Gets or sets the insets for the node.
+    ///   Gets or sets the padding for the node.
     /// </summary>
     /// <remarks>
-    /// These insets are extended at the left and bottom side if markers are active
-    /// and returned via an <see cref="INodeInsetsProvider"/> if such an instance is queried through the
-    /// <see cref="INodeStyleRenderer.GetContext">context lookup</see>.
+    ///   This padding is extended at the left and bottom side if markers are active
+    ///   and returned via an <see cref="IGroupPaddingProvider"/> if such an instance is queried through the
+    ///   <see cref="INodeStyleRenderer.GetContext">context lookup</see>.
     /// </remarks>
-    /// <seealso cref="INodeInsetsProvider"/>
+    /// <seealso cref="IGroupPaddingProvider"/>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     [DefaultValue(typeof(InsetsD), "15")]
-    public InsetsD Insets {
-      get { return insets; }
-      set { insets = value; }
-    }
+    public InsetsD Padding { get; set; }
 
     private Brush background = BpmnConstants.ActivityDefaultBackground;
 
     /// <summary>
-    /// Gets or sets the background color of the activity.
+    ///   Gets or sets the background color of the activity.
     /// </summary>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     [DefaultValue(typeof(BpmnConstants), "ActivityDefaultBackground")]
     public Brush Background {
-      get { return background; }
+      get => background;
       set {
         if (background != value || activityIcon == null) {
           ModCount++;
@@ -241,12 +239,12 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
     private Brush outline = BpmnConstants.ActivityDefaultOutline;
 
     /// <summary>
-    /// Gets or sets the outline color of the activity.
+    ///   Gets or sets the outline color of the activity.
     /// </summary>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     [DefaultValue(typeof(BpmnConstants), "ActivityDefaultOutline")]
     public Brush Outline {
-      get { return outline; }
+      get => outline;
       set {
         if (outline != value || activityIcon == null) {
           ModCount++;
@@ -259,12 +257,12 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
     private Brush iconColor = BpmnConstants.DefaultIconColor;
 
     /// <summary>
-    /// Gets or sets the primary color for icons and markers.
+    ///   Gets or sets the primary color for icons and markers.
     /// </summary>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     [DefaultValue(typeof(BpmnConstants), "DefaultIconColor")]
     public Brush IconColor {
-      get { return iconColor; }
+      get => iconColor;
       set {
         if (iconColor != value) {
           ModCount++;
@@ -281,15 +279,17 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
     private Brush eventOutline = BpmnConstants.DefaultEventOutline;
 
     /// <summary>
-    /// Gets or sets the outline color for event icons if <see cref="TaskType"/> is <see cref="Bpmn.TaskType.EventTriggered"/>.
+    ///   Gets or sets the outline color for event icons if <see cref="TaskType"/> is
+    ///   <see cref="Bpmn.TaskType.EventTriggered"/>.
     /// </summary>
     /// <remarks>
-    /// If this is set to <see langword="null"/>, the outline color is automatic, based on the <see cref="TriggerEventCharacteristic"/>.
+    ///   If this is set to <see langword="null"/>, the outline color is automatic, based on the
+    ///   <see cref="TriggerEventCharacteristic"/>.
     /// </remarks>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     [DefaultValue(null)]
     public Brush EventOutline {
-      get { return eventOutline; }
+      get => eventOutline;
       set {
         if (eventOutline != value) {
           ModCount++;
@@ -302,20 +302,19 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
     private IIcon activityIcon;
     private IIcon taskIcon;
     private IIcon loopIcon;
-    private InsetsD insets;
 
     /// <summary>
-    /// Creates a new instance using the default values.
+    ///   Creates a new instance using the default values.
     /// </summary>
     public ActivityNodeStyle() {
       MinimumSize = new SizeD(40, 30);
       ActivityType = ActivityType.Task;
-      Insets = new InsetsD(15);
+      Padding = new InsetsD(15);
       SubState = SubState.None;
       LoopCharacteristic = LoopCharacteristic.None;
-	    TaskType = TaskType.Abstract;
-	    TriggerEventType = EventType.Message;
-	    TriggerEventCharacteristic = EventCharacteristic.SubProcessInterrupting;
+      TaskType = TaskType.Abstract;
+      TriggerEventType = EventType.Message;
+      TriggerEventCharacteristic = EventCharacteristic.SubProcessInterrupting;
     }
 
     private void UpdateActivityIcon() {
@@ -325,11 +324,11 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
     private void UpdateTaskIcon() {
       if (TaskType == TaskType.EventTriggered) {
         var eventNodeStyle = new EventNodeStyle {
-          Characteristic = TriggerEventCharacteristic,
-          Type = TriggerEventType,
-          Background = Background,
-          Outline = EventOutline,
-          IconColor = IconColor
+            Characteristic = TriggerEventCharacteristic,
+            Type = TriggerEventType,
+            Background = Background,
+            Outline = EventOutline,
+            IconColor = IconColor
         };
         eventNodeStyle.UpdateIcon(null);
         taskIcon = eventNodeStyle.Icon;
@@ -344,7 +343,7 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
     private void UpdateAdHocIcon() {
       adHocIcon = AdHoc ? IconFactory.CreateAdHoc(IconColor) : null;
     }
-    
+
     private void UpdateCompensationIcon() {
       compensationIcon = Compensation ? IconFactory.CreateCompensation(false, IconColor) : null;
     }
@@ -390,18 +389,19 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
         }
       }
       if (lineUpIcons.Count > 0) {
-        IIcon lineUpIcon = IconFactory.CreateLineUpIcon(lineUpIcons, BpmnConstants.MarkerSize, 5);
-        icons.Add(IconFactory.CreatePlacedIcon(lineUpIcon, BpmnConstants.TaskMarkerPlacement, BpmnConstants.MarkerSize));
+        var lineUpIcon = IconFactory.CreateLineUpIcon(lineUpIcons, BpmnConstants.MarkerSize, 5);
+        icons.Add(IconFactory.CreatePlacedIcon(lineUpIcon, BpmnConstants.TaskMarkerPlacement,
+            BpmnConstants.MarkerSize));
       }
 
       MinimumSize = new SizeD(Math.Max(minimumWidth, 40), 40);
       if (icons.Count > 1) {
         return IconFactory.CreateCombinedIcon(icons);
-      } else if (icons.Count == 1) {
-        return icons[0];
-      } else {
-        return null;
       }
+      if (icons.Count == 1) {
+        return icons[0];
+      }
+      return null;
     }
 
     /// <inheritdoc/>
@@ -431,36 +431,42 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
     /// <inheritdoc/>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     protected override bool IsHit(IInputModeContext context, PointD location, INode node) {
-      return sns.Renderer.GetHitTestable(node, sns).IsHit(context, location);
+      return rectangleNodeStyle.Renderer.GetHitTestable(node, rectangleNodeStyle).IsHit(context, location);
     }
 
     /// <inheritdoc/>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     protected override object Lookup(INode node, Type type) {
-      if (type == typeof(INodeInsetsProvider)) {
-        return new ActivityInsetsProvider(this);
+      if (type == typeof(IGroupPaddingProvider)) {
+        return new ActivityPaddingProvider(this);
       }
       return base.Lookup(node, type);
     }
 
     /// <summary>
-    /// Uses the style insets extended by the size of the participant bands.
+    ///   Uses the style padding extended by the size of the participant bands.
     /// </summary>
-    private sealed class ActivityInsetsProvider : INodeInsetsProvider {
+    private sealed class ActivityPaddingProvider : IGroupPaddingProvider
+    {
       private readonly ActivityNodeStyle style;
 
-      internal ActivityInsetsProvider(ActivityNodeStyle style) {
+      internal ActivityPaddingProvider(ActivityNodeStyle style) {
         this.style = style;
       }
 
-      public InsetsD GetInsets(INode node) {
-        double left = style.TaskType != TaskType.Abstract 
-          ? BpmnConstants.TaskTypeSize.Width + ((InteriorLabelModel)BpmnConstants.TaskTypePlacement.Model).Insets.Left 
-          : 0;
-        double bottom = style.AdHoc || style.Compensation || style.LoopCharacteristic != LoopCharacteristic.None || style.SubState != SubState.None 
-          ? BpmnConstants.MarkerSize.Height + ((InteriorStretchLabelModel)BpmnConstants.TaskMarkerPlacement.Model).Insets.Bottom 
-          : 0;
-        return new InsetsD(left + style.Insets.Left, style.Insets.Top, style.Insets.Right, bottom + style.Insets.Bottom);
+      public InsetsD GetPadding() {
+        var left = style.TaskType != TaskType.Abstract
+            ? BpmnConstants.TaskTypeSize.Width +
+            ((InteriorNodeLabelModel) BpmnConstants.TaskTypePlacement.Model).Padding.Left
+            : 0;
+        var bottom =
+            style.AdHoc || style.Compensation || style.LoopCharacteristic != LoopCharacteristic.None ||
+            style.SubState != SubState.None
+                ? BpmnConstants.MarkerSize.Height +
+                ((StretchNodeLabelModel) BpmnConstants.TaskMarkerPlacement.Model).Padding.Bottom
+                : 0;
+        return new InsetsD(left + style.Padding.Left, style.Padding.Top, style.Padding.Right,
+            bottom + style.Padding.Bottom);
       }
     }
   }

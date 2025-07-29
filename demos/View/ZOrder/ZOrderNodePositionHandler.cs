@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -31,15 +31,16 @@ using yWorks.Controls;
 using yWorks.Controls.Input;
 using yWorks.Geometry;
 using yWorks.Graph;
+using yWorks.Utils;
 
 namespace Demo.yFiles.Graph.ZOrder
 {
   /// <summary>
-  /// An <see cref="IPositionHandler"/> for nodes that tries to keep the z-order of its moved node relative to
-  /// other moved nodes.
+  ///   An <see cref="IPositionHandler"/> for nodes that tries to keep the z-order of its moved node relative to
+  ///   other moved nodes.
   /// </summary>
   /// <remarks>
-  /// As the z-order doesn't change for normal move gestures, this class customizes only interactive reparent gestures.
+  ///   As the z-order doesn't change for normal move gestures, this class customizes only interactive reparent gestures.
   /// </remarks>
   public class ZOrderNodePositionHandler : GroupingNodePositionHandler
   {
@@ -47,7 +48,7 @@ namespace Demo.yFiles.Graph.ZOrder
     private INode initialParent;
     private INode currentParent;
     private ZOrderSupport zOrderSupport;
-    private bool dragging = false;
+    private bool dragging;
 
     public ZOrderNodePositionHandler(INode node, IPositionHandler wrappedHandler = null) : base(node, wrappedHandler) {
       this.node = node;
@@ -56,11 +57,11 @@ namespace Demo.yFiles.Graph.ZOrder
     public override void InitializeDrag(IInputModeContext context) {
       var graph = context.GetGraph();
       zOrderSupport = graph.Lookup<ZOrderSupport>();
- 
+
       // store initial parent of the node...
-      this.initialParent = graph.GetParent(node);
-      this.currentParent = initialParent;
-      this.dragging = true;
+      initialParent = graph.GetParent(node);
+      currentParent = initialParent;
+      dragging = true;
       base.InitializeDrag(context);
     }
 
@@ -75,7 +76,8 @@ namespace Demo.yFiles.Graph.ZOrder
     }
 
     /// <summary>
-    /// Customizes the temporary new parent of <paramref name="node"/> and its z-order in its new <see cref="ICanvasObjectGroup"/>
+    ///   Customizes the temporary new parent of <paramref name="node"/> and its z-order in its new
+    ///   <see cref="IRenderTreeGroup"/>
     /// </summary>
     protected override void SetCurrentParent(IInputModeContext context, INode node, INode parent) {
       if (!dragging) {
@@ -94,7 +96,7 @@ namespace Demo.yFiles.Graph.ZOrder
       } else if (parent != currentParent) {
         // node is reset to its initial parent: reset its temporary z-order so the original one is used again
         zOrderSupport.RemoveTempZOrder(node);
-        
+
         base.SetCurrentParent(context, node, parent);
       }
       currentParent = parent;

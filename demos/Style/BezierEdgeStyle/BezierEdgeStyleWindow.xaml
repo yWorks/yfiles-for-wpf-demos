@@ -1,6 +1,6 @@
 <!-- ************************************************************************ -->
-<!-- This demo file is part of yFiles WPF 3.6.                           -->
-<!-- Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
+<!-- This demo file is part of yFiles WPF 4.0.                           -->
+<!-- Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
 <!-- 72070 Tuebingen, Germany. All rights reserved.                           -->
 <!--                                                                          -->
 <!-- yFiles demo files exhibit yFiles WPF functionalities. Any redistribution  -->
@@ -27,7 +27,7 @@
 <Window x:Class="Demo.yFiles.Graph.BezierEdgeStyle.BezierEdgeStyleWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/3.0/xaml"
+    xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/4.0/xaml"
     xmlns:bezierEdgeStyle="clr-namespace:Demo.yFiles.Graph.BezierEdgeStyle"
     xmlns:system="clr-namespace:System;assembly=mscorlib"
     Title="Demo.yFiles.Graph.BezierEdgeStyle" Height="473" Width="800" 
@@ -66,7 +66,7 @@
                 <MenuItem Command="IncreaseZoom" CommandTarget="{Binding ElementName=graphControl}"/>
                 <MenuItem Command="DecreaseZoom" CommandTarget="{Binding ElementName=graphControl}"/>
                 <MenuItem Header="Zoom 1:1" CommandParameter="1" Command="Zoom" CommandTarget="{Binding ElementName=graphControl}"/>
-                <MenuItem Command="{x:Static ywpf:GraphControl.FitGraphBoundsCommand}" CommandTarget="{Binding ElementName=graphControl}" />
+                <MenuItem Command="{x:Static ywpf:GraphCommands.FitGraphBounds}" CommandTarget="{Binding ElementName=graphControl}" />
             </MenuItem>
         </Menu>
         <ToolBarTray Height="Auto" Name="toolBarTray" Width="Auto" DockPanel.Dock="Top">
@@ -80,7 +80,7 @@
                 <Separator />
                 <Button Command="IncreaseZoom" CommandTarget="{Binding ElementName=graphControl}"/>
                 <Button Command="DecreaseZoom" CommandTarget="{Binding ElementName=graphControl}"/>
-                <Button Command="{x:Static ywpf:GraphControl.FitGraphBoundsCommand}" CommandTarget="{Binding ElementName=graphControl}"/>
+                <Button Command="{x:Static ywpf:GraphCommands.FitGraphBounds}" CommandTarget="{Binding ElementName=graphControl}"/>
                 <Separator />
                 <Label Content="Sample:"/>
                 <ComboBox SelectionChanged="OnSampleChanged" SelectedIndex="0" 

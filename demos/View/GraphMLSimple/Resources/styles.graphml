@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--Created by yFiles WPF 3.5-->
-<graphml xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/3.0" xmlns:y="http://www.yworks.com/xml/yfiles-common/3.0" xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/3.0/xaml" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml.wpf/3.0/ygraphml.xsd " xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://graphml.graphdrawing.org/xmlns">
+<graphml xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/3.0" xmlns:y="http://www.yworks.com/xml/yfiles-common/3.0"  xmlns:yx="http://www.yworks.com/xml/yfiles-common/4.0" xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/4.0/xaml" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml.wpf/3.0/ygraphml.xsd " xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://graphml.graphdrawing.org/xmlns">
   <key id="d0" attr.name="NodeLabels" for="node" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeLabels" />
   <key id="d1" attr.name="NodeGeometry" for="node" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeGeometry" />
   <key id="d2" attr.name="UserTags" for="all" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/UserTags" />
@@ -23,7 +23,7 @@
   <data key="d10">
     <y:SharedData>
       <ywpf:Typeface x:Key="1" />
-      <y:InteriorLabelModel x:Key="2" />
+      <yx:InteriorNodeLabelModel x:Key="2" />
       <ywpf:Arrow x:Key="3" Type="Triangle" Brush="#FF662B00" />
       <ywpf:Arrow x:Key="4" Type="Triangle" Brush="#FF27401B" />
     </y:SharedData>
@@ -32,17 +32,10 @@
     <node id="n0">
       <data key="d0">
         <x:List>
-          <y:Label>
+          <y:Label LayoutParameter="{x:Static yx:ExteriorNodeLabelModel.Bottom}">
             <y:Label.Text>RectangleNodeStyle</y:Label.Text>
-            <y:Label.LayoutParameter>
-              <y:SandwichParameter Position="South">
-                <y:SandwichParameter.Model>
-                  <y:SandwichLabelModel />
-                </y:SandwichParameter.Model>
-              </y:SandwichParameter>
-            </y:Label.LayoutParameter>
             <y:Label.Style>
-              <ywpf:DefaultLabelStyle BackgroundBrush="#FFDACAE1" VerticalTextAlignment="Center" TextAlignment="Center" Shape="RoundRectangle" Typeface="{y:GraphMLReference 1}" TextBrush="#FF413148" Insets="4,2,4,1" />
+              <ywpf:LabelStyle BackgroundBrush="#FFDACAE1" VerticalTextAlignment="Center" TextAlignment="Center" Shape="RoundRectangle" Typeface="{y:GraphMLReference 1}" TextBrush="#FF413148" Padding="4,2,4,1" />
             </y:Label.Style>
           </y:Label>
         </x:List>
@@ -65,14 +58,14 @@
           <y:Label>
             <y:Label.Text>ImageNodeStyle</y:Label.Text>
             <y:Label.LayoutParameter>
-              <y:ExteriorLabelModelParameter Position="North">
-                <y:ExteriorLabelModelParameter.Model>
-                  <y:ExteriorLabelModel />
-                </y:ExteriorLabelModelParameter.Model>
-              </y:ExteriorLabelModelParameter>
+              <yx:ExteriorNodeLabelModelParameter Position="Top">
+                <yx:ExteriorNodeLabelModelParameter.Model>
+                  <yx:ExteriorNodeLabelModel />
+                </yx:ExteriorNodeLabelModelParameter.Model>
+              </yx:ExteriorNodeLabelModelParameter>
             </y:Label.LayoutParameter>
             <y:Label.Style>
-              <ywpf:DefaultLabelStyle Typeface="Microsoft Sans Serif,Normal,Normal,Normal" TextBrush="#FF000000" />
+              <ywpf:LabelStyle Typeface="Microsoft Sans Serif,Normal,Normal,Normal" TextBrush="#FF000000" />
             </y:Label.Style>
           </y:Label>
         </x:List>
@@ -139,12 +132,12 @@ DLlu/hU/0D6igNVj27rKeoNy26rmhQn7nX1C8Z/Z5fIPzJF4ZXMs03gAAAAASUVORK5CYII=]]></ywp
       <data key="d0">
         <x:List>
           <y:Label>
-            <y:Label.Text>Trapezoid</y:Label.Text>
+            <y:Label.Text>Triangle</y:Label.Text>
             <y:Label.LayoutParameter>
-              <y:InteriorLabelModelParameter Position="Center" Model="{y:GraphMLReference 2}" />
+              <yx:InteriorNodeLabelModelParameter Position="Center" Model="{y:GraphMLReference 2}" />
             </y:Label.LayoutParameter>
             <y:Label.Style>
-              <ywpf:DefaultLabelStyle BackgroundBrush="#FFC0D9B4" VerticalTextAlignment="Center" TextAlignment="Center" Shape="RoundRectangle" Typeface="{y:GraphMLReference 1}" TextBrush="#FF27401B" Insets="4,2,4,1" />
+              <ywpf:LabelStyle BackgroundBrush="#FFC0D9B4" VerticalTextAlignment="Center" TextAlignment="Center" Shape="RoundRectangle" Typeface="{y:GraphMLReference 1}" TextBrush="#FF27401B" Padding="4,2,4,1" />
             </y:Label.Style>
           </y:Label>
         </x:List>
@@ -153,7 +146,7 @@ DLlu/hU/0D6igNVj27rKeoNy26rmhQn7nX1C8Z/Z5fIPzJF4ZXMs03gAAAAASUVORK5CYII=]]></ywp
         <y:RectD X="500" Y="30" Width="60" Height="60" />
       </data>
       <data key="d3">
-        <ywpf:ShapeNodeStyle Brush="#FF61A044" Shape="Trapez">
+        <ywpf:ShapeNodeStyle Brush="#FF61A044" Shape="Triangle">
           <ywpf:ShapeNodeStyle.Pen>
             <Pen Brush="#FF27401B" Thickness="1.5" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" p11:Freeze="true" xmlns:p11="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options" />
           </ywpf:ShapeNodeStyle.Pen>
@@ -167,10 +160,10 @@ DLlu/hU/0D6igNVj27rKeoNy26rmhQn7nX1C8Z/Z5fIPzJF4ZXMs03gAAAAASUVORK5CYII=]]></ywp
           <y:Label>
             <y:Label.Text>Star6</y:Label.Text>
             <y:Label.LayoutParameter>
-              <y:InteriorLabelModelParameter Position="Center" Model="{y:GraphMLReference 2}" />
+              <yx:InteriorNodeLabelModelParameter Position="Center" Model="{y:GraphMLReference 2}" />
             </y:Label.LayoutParameter>
             <y:Label.Style>
-              <ywpf:DefaultLabelStyle BackgroundBrush="#FFC0D9B4" VerticalTextAlignment="Center" TextAlignment="Center" Shape="RoundRectangle" Typeface="{y:GraphMLReference 1}" TextBrush="#FF27401B" Insets="4,2,4,1" />
+              <ywpf:LabelStyle BackgroundBrush="#FFC0D9B4" VerticalTextAlignment="Center" TextAlignment="Center" Shape="RoundRectangle" Typeface="{y:GraphMLReference 1}" TextBrush="#FF27401B" Padding="4,2,4,1" />
             </y:Label.Style>
           </y:Label>
         </x:List>
@@ -194,10 +187,10 @@ DLlu/hU/0D6igNVj27rKeoNy26rmhQn7nX1C8Z/Z5fIPzJF4ZXMs03gAAAAASUVORK5CYII=]]></ywp
           <y:Label>
             <y:Label.Text>Thing</y:Label.Text>
             <y:Label.LayoutParameter>
-              <y:InteriorLabelModelParameter Position="Center" Model="{y:GraphMLReference 2}" />
+              <yx:InteriorNodeLabelModelParameter Position="Center" Model="{y:GraphMLReference 2}" />
             </y:Label.LayoutParameter>
             <y:Label.Style>
-              <ywpf:DefaultLabelStyle BackgroundBrush="#FFC0D9B4" VerticalTextAlignment="Center" TextAlignment="Center" Shape="RoundRectangle" Typeface="{y:GraphMLReference 1}" TextBrush="#FF27401B" Insets="4,2,4,1" />
+              <ywpf:LabelStyle BackgroundBrush="#FFC0D9B4" VerticalTextAlignment="Center" TextAlignment="Center" Shape="RoundRectangle" Typeface="{y:GraphMLReference 1}" TextBrush="#FF27401B" Padding="4,2,4,1" />
             </y:Label.Style>
           </y:Label>
         </x:List>
@@ -217,26 +210,19 @@ DLlu/hU/0D6igNVj27rKeoNy26rmhQn7nX1C8Z/Z5fIPzJF4ZXMs03gAAAAASUVORK5CYII=]]></ywp
     <node id="n5">
       <data key="d0">
         <x:List>
-          <y:Label>
+          <y:Label LayoutParameter="{x:Static yx:ExteriorNodeLabelModel.Bottom}">
             <y:Label.Text><![CDATA[First label]]></y:Label.Text>
-            <y:Label.LayoutParameter>
-              <y:SandwichParameter>
-                <y:SandwichParameter.Model>
-                  <y:SandwichLabelModel />
-                </y:SandwichParameter.Model>
-              </y:SandwichParameter>
-            </y:Label.LayoutParameter>
             <y:Label.Style>
-              <ywpf:DefaultLabelStyle BackgroundBrush="#FFB5DCEE" VerticalTextAlignment="Center" TextAlignment="Center" Shape="RoundRectangle" Typeface="{y:GraphMLReference 1}" TextBrush="#FF1C4355" Insets="4,2,4,1" />
+              <ywpf:LabelStyle BackgroundBrush="#FFB5DCEE" VerticalTextAlignment="Center" TextAlignment="Center" Shape="RoundRectangle" Typeface="{y:GraphMLReference 1}" TextBrush="#FF1C4355" Padding="4,2,4,1" />
             </y:Label.Style>
           </y:Label>
           <y:Label>
             <y:Label.Text><![CDATA[Second label]]></y:Label.Text>
             <y:Label.LayoutParameter>
-              <y:InteriorLabelModelParameter Position="Center" Model="{y:GraphMLReference 2}" />
+              <yx:InteriorNodeLabelModelParameter Position="Center" Model="{y:GraphMLReference 2}" />
             </y:Label.LayoutParameter>
             <y:Label.Style>
-              <ywpf:DefaultLabelStyle BackgroundBrush="#FFB5DCEE" VerticalTextAlignment="Center" TextAlignment="Center" Shape="RoundRectangle" Typeface="{y:GraphMLReference 1}" TextBrush="#FF1C4355" Insets="4,2,4,1" />
+              <ywpf:LabelStyle BackgroundBrush="#FFB5DCEE" VerticalTextAlignment="Center" TextAlignment="Center" Shape="RoundRectangle" Typeface="{y:GraphMLReference 1}" TextBrush="#FF1C4355" Padding="4,2,4,1" />
             </y:Label.Style>
           </y:Label>
         </x:List>
@@ -267,14 +253,14 @@ DLlu/hU/0D6igNVj27rKeoNy26rmhQn7nX1C8Z/Z5fIPzJF4ZXMs03gAAAAASUVORK5CYII=]]></ywp
           <y:Label>
             <y:Label.Text>GeneralPathNodeStyle</y:Label.Text>
             <y:Label.LayoutParameter>
-              <y:ExteriorLabelModelParameter Position="North">
-                <y:ExteriorLabelModelParameter.Model>
-                  <y:ExteriorLabelModel />
-                </y:ExteriorLabelModelParameter.Model>
-              </y:ExteriorLabelModelParameter>
+              <yx:ExteriorNodeLabelModelParameter Position="Top">
+                <yx:ExteriorNodeLabelModelParameter.Model>
+                  <yx:ExteriorNodeLabelModel />
+                </yx:ExteriorNodeLabelModelParameter.Model>
+              </yx:ExteriorNodeLabelModelParameter>
             </y:Label.LayoutParameter>
             <y:Label.Style>
-              <ywpf:DefaultLabelStyle BackgroundBrush="#FFB5DCEE" VerticalTextAlignment="Center" TextAlignment="Center" Shape="RoundRectangle" Typeface="{y:GraphMLReference 1}" TextBrush="#FF1C4355" Insets="4,2,4,1" />
+              <ywpf:LabelStyle BackgroundBrush="#FFB5DCEE" VerticalTextAlignment="Center" TextAlignment="Center" Shape="RoundRectangle" Typeface="{y:GraphMLReference 1}" TextBrush="#FF1C4355" Padding="4,2,4,1" />
             </y:Label.Style>
           </y:Label>
         </x:List>
@@ -305,14 +291,14 @@ DLlu/hU/0D6igNVj27rKeoNy26rmhQn7nX1C8Z/Z5fIPzJF4ZXMs03gAAAAASUVORK5CYII=]]></ywp
           <y:Label>
             <y:Label.Text><![CDATA[Group Node]]></y:Label.Text>
             <y:Label.LayoutParameter>
-              <y:GroupNodeLabelModelParameter PlaceOnTab="False">
-                <y:GroupNodeLabelModelParameter.Model>
-                  <y:GroupNodeLabelModel />
-                </y:GroupNodeLabelModelParameter.Model>
-              </y:GroupNodeLabelModelParameter>
+              <yx:GroupNodeLabelModelParameter PlaceOnTab="False">
+                <yx:GroupNodeLabelModelParameter.Model>
+                  <yx:GroupNodeLabelModel />
+                </yx:GroupNodeLabelModelParameter.Model>
+              </yx:GroupNodeLabelModelParameter>
             </y:Label.LayoutParameter>
             <y:Label.Style>
-              <ywpf:DefaultLabelStyle VerticalTextAlignment="Center" ClipText="False" Typeface="{y:GraphMLReference 1}" TextBrush="#FFB5DCEE" />
+              <ywpf:LabelStyle VerticalTextAlignment="Center" ClipText="False" Typeface="{y:GraphMLReference 1}" TextBrush="#FFB5DCEE" />
             </y:Label.Style>
           </y:Label>
         </x:List>
@@ -321,7 +307,7 @@ DLlu/hU/0D6igNVj27rKeoNy26rmhQn7nX1C8Z/Z5fIPzJF4ZXMs03gAAAAASUVORK5CYII=]]></ywp
         <y:RectD X="80" Y="20" Width="170" Height="190" />
       </data>
       <data key="d3">
-        <ywpf:GroupNodeStyle TabWidth="30" TabHeight="20" TabInset="3" IconForegroundBrush="#FF46A8D5" IconOffset="2" HitTransparentContentArea="True" TabBrush="#FF46A8D5">
+        <ywpf:GroupNodeStyle TabWidth="30" TabHeight="20" TabPadding="3" IconForegroundBrush="#FF46A8D5" IconOffset="2" HitTransparentContentArea="True" TabBrush="#FF46A8D5">
           <ywpf:GroupNodeStyle.Pen>
             <Pen Brush="#FF46A8D5" Thickness="2" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" p11:Freeze="true" xmlns:p11="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options" />
           </ywpf:GroupNodeStyle.Pen>
@@ -334,10 +320,10 @@ DLlu/hU/0D6igNVj27rKeoNy26rmhQn7nX1C8Z/Z5fIPzJF4ZXMs03gAAAAASUVORK5CYII=]]></ywp
               <y:Label>
                 <y:Label.Text>14</y:Label.Text>
                 <y:Label.LayoutParameter>
-                  <y:InteriorLabelModelParameter Position="Center" Model="{y:GraphMLReference 2}" />
+                  <yx:InteriorNodeLabelModelParameter Position="Center" Model="{y:GraphMLReference 2}" />
                 </y:Label.LayoutParameter>
                 <y:Label.Style>
-                  <ywpf:DefaultLabelStyle BackgroundBrush="#FFC0D9B4" VerticalTextAlignment="Center" TextAlignment="Center" Shape="RoundRectangle" Typeface="{y:GraphMLReference 1}" TextBrush="#FF27401B" Insets="4,2,4,1" />
+                  <ywpf:LabelStyle BackgroundBrush="#FFC0D9B4" VerticalTextAlignment="Center" TextAlignment="Center" Shape="RoundRectangle" Typeface="{y:GraphMLReference 1}" TextBrush="#FF27401B" Padding="4,2,4,1" />
                 </y:Label.Style>
               </y:Label>
             </x:List>
@@ -370,10 +356,10 @@ DLlu/hU/0D6igNVj27rKeoNy26rmhQn7nX1C8Z/Z5fIPzJF4ZXMs03gAAAAASUVORK5CYII=]]></ywp
     <node id="n8">
       <data key="d0">
         <x:List>
-          <y:Label LayoutParameter="{x:Static y:ExteriorLabelModel.North}">
+          <y:Label LayoutParameter="{x:Static yx:ExteriorNodeLabelModel.Top}">
             <y:Label.Text>RectangleNodeStyle</y:Label.Text>
             <y:Label.Style>
-              <ywpf:DefaultLabelStyle BackgroundBrush="#FFFFC499" VerticalTextAlignment="Center" TextAlignment="Center" Shape="RoundRectangle" Typeface="{y:GraphMLReference 1}" TextBrush="#FF662B00" Insets="4,2,4,1" />
+              <ywpf:LabelStyle BackgroundBrush="#FFFFC499" VerticalTextAlignment="Center" TextAlignment="Center" Shape="RoundRectangle" Typeface="{y:GraphMLReference 1}" TextBrush="#FF662B00" Padding="4,2,4,1" />
             </y:Label.Style>
           </y:Label>
         </x:List>
@@ -406,14 +392,14 @@ DLlu/hU/0D6igNVj27rKeoNy26rmhQn7nX1C8Z/Z5fIPzJF4ZXMs03gAAAAASUVORK5CYII=]]></ywp
           <y:Label>
             <y:Label.Text><![CDATA[Demo Styles]]></y:Label.Text>
             <y:Label.LayoutParameter>
-              <y:GroupNodeLabelModelParameter PlaceOnTab="False">
-                <y:GroupNodeLabelModelParameter.Model>
-                  <y:GroupNodeLabelModel />
-                </y:GroupNodeLabelModelParameter.Model>
-              </y:GroupNodeLabelModelParameter>
+              <yx:GroupNodeLabelModelParameter PlaceOnTab="False">
+                <yx:GroupNodeLabelModelParameter.Model>
+                  <yx:GroupNodeLabelModel />
+                </yx:GroupNodeLabelModelParameter.Model>
+              </yx:GroupNodeLabelModelParameter>
             </y:Label.LayoutParameter>
             <y:Label.Style>
-              <ywpf:DefaultLabelStyle VerticalTextAlignment="Center" ClipText="False" Typeface="{y:GraphMLReference 1}" TextBrush="#FF9DC6D0" />
+              <ywpf:LabelStyle VerticalTextAlignment="Center" ClipText="False" Typeface="{y:GraphMLReference 1}" TextBrush="#FF9DC6D0" />
             </y:Label.Style>
           </y:Label>
         </x:List>
@@ -422,7 +408,7 @@ DLlu/hU/0D6igNVj27rKeoNy26rmhQn7nX1C8Z/Z5fIPzJF4ZXMs03gAAAAASUVORK5CYII=]]></ywp
         <y:RectD X="46" Y="360.5" Width="179" Height="118" />
       </data>
       <data key="d3">
-        <ywpf:GroupNodeStyle TabWidth="30" TabHeight="20" TabInset="3" IconForegroundBrush="#FF0B7189" IconOffset="2" HitTransparentContentArea="True" TabBrush="#FF0B7189">
+        <ywpf:GroupNodeStyle TabWidth="30" TabHeight="20" TabPadding="3" IconForegroundBrush="#FF0B7189" IconOffset="2" HitTransparentContentArea="True" TabBrush="#FF0B7189">
           <ywpf:GroupNodeStyle.Pen>
             <Pen Brush="#FF0B7189" Thickness="2" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" p11:Freeze="true" xmlns:p11="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options" />
           </ywpf:GroupNodeStyle.Pen>
@@ -435,10 +421,10 @@ DLlu/hU/0D6igNVj27rKeoNy26rmhQn7nX1C8Z/Z5fIPzJF4ZXMs03gAAAAASUVORK5CYII=]]></ywp
               <y:Label>
                 <y:Label.Text>1</y:Label.Text>
                 <y:Label.LayoutParameter>
-                  <y:InteriorLabelModelParameter Position="Center" Model="{y:GraphMLReference 2}" />
+                  <yx:InteriorNodeLabelModelParameter Position="Center" Model="{y:GraphMLReference 2}" />
                 </y:Label.LayoutParameter>
                 <y:Label.Style>
-                  <ywpf:DefaultLabelStyle BackgroundBrush="#FFFFC499" VerticalTextAlignment="Center" TextAlignment="Center" Shape="RoundRectangle" Typeface="{y:GraphMLReference 1}" TextBrush="#FF662B00" Insets="4,2,4,1" />
+                  <ywpf:LabelStyle BackgroundBrush="#FFFFC499" VerticalTextAlignment="Center" TextAlignment="Center" Shape="RoundRectangle" Typeface="{y:GraphMLReference 1}" TextBrush="#FF662B00" Padding="4,2,4,1" />
                 </y:Label.Style>
               </y:Label>
             </x:List>
@@ -461,10 +447,10 @@ DLlu/hU/0D6igNVj27rKeoNy26rmhQn7nX1C8Z/Z5fIPzJF4ZXMs03gAAAAASUVORK5CYII=]]></ywp
               <y:Label>
                 <y:Label.Text>2</y:Label.Text>
                 <y:Label.LayoutParameter>
-                  <y:InteriorLabelModelParameter Position="Center" Model="{y:GraphMLReference 2}" />
+                  <yx:InteriorNodeLabelModelParameter Position="Center" Model="{y:GraphMLReference 2}" />
                 </y:Label.LayoutParameter>
                 <y:Label.Style>
-                  <ywpf:DefaultLabelStyle BackgroundBrush="#FFFFC499" VerticalTextAlignment="Center" TextAlignment="Center" Shape="RoundRectangle" Typeface="{y:GraphMLReference 1}" TextBrush="#FF662B00" Insets="4,2,4,1" />
+                  <ywpf:LabelStyle BackgroundBrush="#FFFFC499" VerticalTextAlignment="Center" TextAlignment="Center" Shape="RoundRectangle" Typeface="{y:GraphMLReference 1}" TextBrush="#FF662B00" Padding="4,2,4,1" />
                 </y:Label.Style>
               </y:Label>
             </x:List>
@@ -503,14 +489,14 @@ DLlu/hU/0D6igNVj27rKeoNy26rmhQn7nX1C8Z/Z5fIPzJF4ZXMs03gAAAAASUVORK5CYII=]]></ywp
           <y:Label>
             <y:Label.Text>PolylineEdgeStyle</y:Label.Text>
             <y:Label.LayoutParameter>
-              <y:NinePositionsEdgeLabelModelParameter Position="CenterAbove">
-                <y:NinePositionsEdgeLabelModelParameter.Model>
-                  <y:NinePositionsEdgeLabelModel />
-                </y:NinePositionsEdgeLabelModelParameter.Model>
-              </y:NinePositionsEdgeLabelModelParameter>
+              <yx:NinePositionsEdgeLabelModelParameter Position="CenterAbove">
+                <yx:NinePositionsEdgeLabelModelParameter.Model>
+                  <yx:NinePositionsEdgeLabelModel />
+                </yx:NinePositionsEdgeLabelModelParameter.Model>
+              </yx:NinePositionsEdgeLabelModelParameter>
             </y:Label.LayoutParameter>
             <y:Label.Style>
-              <ywpf:DefaultLabelStyle BackgroundBrush="#FFE0D5CC" VerticalTextAlignment="Center" TextAlignment="Center" Shape="RoundRectangle" Typeface="{y:GraphMLReference 1}" TextBrush="#FF662B00" Insets="4,2,4,1" />
+              <ywpf:LabelStyle BackgroundBrush="#FFE0D5CC" VerticalTextAlignment="Center" TextAlignment="Center" Shape="RoundRectangle" Typeface="{y:GraphMLReference 1}" TextBrush="#FF662B00" Padding="4,2,4,1" />
             </y:Label.Style>
           </y:Label>
         </x:List>
@@ -535,14 +521,14 @@ DLlu/hU/0D6igNVj27rKeoNy26rmhQn7nX1C8Z/Z5fIPzJF4ZXMs03gAAAAASUVORK5CYII=]]></ywp
           <y:Label>
             <y:Label.Text>ArcEdgeStyle</y:Label.Text>
             <y:Label.LayoutParameter>
-              <y:NinePositionsEdgeLabelModelParameter Position="CenterAbove">
-                <y:NinePositionsEdgeLabelModelParameter.Model>
-                  <y:NinePositionsEdgeLabelModel />
-                </y:NinePositionsEdgeLabelModelParameter.Model>
-              </y:NinePositionsEdgeLabelModelParameter>
+              <yx:NinePositionsEdgeLabelModelParameter Position="CenterAbove">
+                <yx:NinePositionsEdgeLabelModelParameter.Model>
+                  <yx:NinePositionsEdgeLabelModel />
+                </yx:NinePositionsEdgeLabelModelParameter.Model>
+              </yx:NinePositionsEdgeLabelModelParameter>
             </y:Label.LayoutParameter>
             <y:Label.Style>
-              <ywpf:DefaultLabelStyle BackgroundBrush="#FFD4D9D1" VerticalTextAlignment="Center" TextAlignment="Center" Shape="RoundRectangle" Typeface="{y:GraphMLReference 1}" TextBrush="#FF27401B" Insets="4,2,4,1" />
+              <ywpf:LabelStyle BackgroundBrush="#FFD4D9D1" VerticalTextAlignment="Center" TextAlignment="Center" Shape="RoundRectangle" Typeface="{y:GraphMLReference 1}" TextBrush="#FF27401B" Padding="4,2,4,1" />
             </y:Label.Style>
           </y:Label>
         </x:List>
@@ -565,11 +551,11 @@ DLlu/hU/0D6igNVj27rKeoNy26rmhQn7nX1C8Z/Z5fIPzJF4ZXMs03gAAAAASUVORK5CYII=]]></ywp
             <y:Label.Text><![CDATA[Hello! I'm
 truly a  label!]]></y:Label.Text>
             <y:Label.LayoutParameter>
-              <y:NinePositionsEdgeLabelModelParameter>
-                <y:NinePositionsEdgeLabelModelParameter.Model>
-                  <y:NinePositionsEdgeLabelModel Distance="20" />
-                </y:NinePositionsEdgeLabelModelParameter.Model>
-              </y:NinePositionsEdgeLabelModelParameter>
+              <yx:NinePositionsEdgeLabelModelParameter>
+                <yx:NinePositionsEdgeLabelModelParameter.Model>
+                  <yx:NinePositionsEdgeLabelModel Distance="20" />
+                </yx:NinePositionsEdgeLabelModelParameter.Model>
+              </yx:NinePositionsEdgeLabelModelParameter>
             </y:Label.LayoutParameter>
             <y:Label.Style>
               <ywpf:NodeStyleLabelStyleAdapter>
@@ -581,7 +567,7 @@ truly a  label!]]></y:Label.Text>
                   </ywpf:RectangleNodeStyle>
                 </ywpf:NodeStyleLabelStyleAdapter.NodeStyle>
                 <ywpf:NodeStyleLabelStyleAdapter.LabelStyle>
-                  <ywpf:DefaultLabelStyle VerticalTextAlignment="Center" TextAlignment="Center" Shape="RoundRectangle" Typeface="{y:GraphMLReference 1}" TextBrush="#FF662B00" Insets="4,2,4,1" />
+                  <ywpf:LabelStyle VerticalTextAlignment="Center" TextAlignment="Center" Shape="RoundRectangle" Typeface="{y:GraphMLReference 1}" TextBrush="#FF662B00" Padding="4,2,4,1" />
                 </ywpf:NodeStyleLabelStyleAdapter.LabelStyle>
               </ywpf:NodeStyleLabelStyleAdapter>
             </y:Label.Style>

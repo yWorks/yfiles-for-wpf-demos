@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -30,14 +30,13 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Text;
 using System.Windows.Data;
 using System.Windows.Media;
 
 namespace Neo4JIntegration
 {
   /// <summary>
-  /// Converts a string to Titlecase.
+  /// Converts a string to title case.
   /// </summary>
   public class TitleCaseConverter : IValueConverter
   {
@@ -50,12 +49,12 @@ namespace Neo4JIntegration
   /// </summary>
   public class HeaderBrushConverter : IValueConverter
   {
-    static readonly Brush[] brushes = new[] { Brushes.DodgerBlue, Brushes.Orange, Brushes.Crimson, Brushes.Green, Brushes.DarkSlateBlue };
+    static readonly Brush[] brushes = { Brushes.DodgerBlue, Brushes.Orange, Brushes.Crimson, Brushes.Green, Brushes.DarkSlateBlue };
 
     private Dictionary<string, Brush> seenLabels = new Dictionary<string, Brush>();
 
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
-      // Somewhat arbitrarily, use the first label as the "type" of the node and assign the same color to identical types. 
+      // Somewhat arbitrarily, use the first label as the "type" of the node and assign the same color to identical types.
       var label = ((IReadOnlyList<string>) value)[0];
       Brush brush;
       if (!seenLabels.ContainsKey(label)) {

@@ -1,6 +1,6 @@
 <!-- ************************************************************************ -->
-<!-- This demo file is part of yFiles WPF 3.6.                           -->
-<!-- Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
+<!-- This demo file is part of yFiles WPF 4.0.                           -->
+<!-- Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
 <!-- 72070 Tuebingen, Germany. All rights reserved.                           -->
 <!--                                                                          -->
 <!-- yFiles demo files exhibit yFiles WPF functionalities. Any redistribution  -->
@@ -27,7 +27,7 @@
 <Window x:Class="Demo.yFiles.Complete.RotatableNodes.RotatableNodesWindow"
 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/3.0/xaml"
+    xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/4.0/xaml"
     Title="Demo.yFiles.Complete.RotatableNodes" Height="500" Width="800" Loaded="OnWindowLoaded" Style="{StaticResource DemoWindow}">
     <HeaderedContentControl Style="{StaticResource DemoStyle}">
         <HeaderedContentControl.Header>
@@ -50,8 +50,8 @@ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                             <Paragraph>Rotate a node by dragging the rotation handle.</Paragraph>
                         </ListItem>
                         <ListItem>
-                            <Paragraph>Enable snapping to snap the rotation to the coordinate axis and other rotated nodes. 
-                                    You can hold Shift to prevent snapping.</Paragraph>
+                            <Paragraph>Observe how nodes, when rotated, are snapped to the coordinate axes and other rotated nodes. 
+                                    You can hold Alt to prevent snapping or disable it in the toolbar.</Paragraph>
                         </ListItem>
                         <ListItem>
                             <Paragraph>Create edges between nodes. Note that port candidates
@@ -87,7 +87,7 @@ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     <Button Command="IncreaseZoom" CommandTarget="{Binding ElementName=graphControl}"/>
                     <Button Command="Zoom" CommandParameter="1" CommandTarget="{Binding ElementName=graphControl}" ContentTemplate="{StaticResource ImageButtonContentTemplate}" Content="{StaticResource Zoom100Icon}"/>
                     <Button Command="DecreaseZoom" CommandTarget="{Binding ElementName=graphControl}"/>
-                    <Button Command="{x:Static ywpf:GraphControl.FitGraphBoundsCommand}" CommandTarget="{Binding ElementName=graphControl}"/>
+                    <Button Command="{x:Static ywpf:GraphCommands.FitGraphBounds}" CommandTarget="{Binding ElementName=graphControl}"/>
                     <Separator />
                     <Button Command="Cut" CommandTarget="{Binding ElementName=graphControl}"/>
                     <Button Command="Copy" CommandTarget="{Binding ElementName=graphControl}"/>
@@ -97,7 +97,7 @@ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     <Button Command="Undo" CommandTarget="{Binding ElementName=graphControl}"/>
                     <Button Command="Redo" CommandTarget="{Binding ElementName=graphControl}"/>
                     <Separator />
-                    <ToggleButton x:Name="snappingButton" ToolTip="Snapping" Click="SnappingButtonClick" Content="{StaticResource SnappingIcon}" 
+                    <ToggleButton x:Name="snappingButton" ToolTip="Snapping" IsChecked="True" Click="SnappingButtonClick" Content="{StaticResource SnappingIcon}" 
                         ContentTemplate="{StaticResource ImageButtonContentTemplate}" />
                     <ToggleButton x:Name="orthogonalEditingButton" ToolTip="Orthogonal Edges" IsChecked="True" Click="OrthogonalEditingButtonClick" Content="{StaticResource OrthogonalEditingIcon}" 
                         ContentTemplate="{StaticResource ImageButtonContentTemplate}" />
@@ -116,12 +116,12 @@ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     <Separator/>
                     <ComboBox x:Name="layoutChooserBox" Width="130" SelectionChanged="LayoutChooserBoxSelectedIndexChanged" SelectedIndex="8">
                         <ComboBox.Items>
-                            <ComboBoxItem Tag="hierarchic">Layout: Hierarchic</ComboBoxItem>
+                            <ComboBoxItem Tag="hierarchical">Layout: Hierarchical</ComboBoxItem>
                             <ComboBoxItem Tag="organic">Layout: Organic</ComboBoxItem>
                             <ComboBoxItem Tag="orthogonal">Layout: Orthogonal</ComboBoxItem>
                             <ComboBoxItem Tag="circular">Layout: Circular</ComboBoxItem>
                             <ComboBoxItem Tag="tree">Layout: Tree</ComboBoxItem>
-                            <ComboBoxItem Tag="balloon">Layout: Balloon</ComboBoxItem>
+                            <ComboBoxItem Tag="radial-tree">Layout: Radial Tree</ComboBoxItem>
                             <ComboBoxItem Tag="radial">Layout: Radial</ComboBoxItem>
                             <Separator/>
                             <ComboBoxItem Tag="router-polyline">Routing: Polyline</ComboBoxItem>

@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -35,7 +35,7 @@ namespace Demo.yFiles.Option.Constraint
 {
   internal abstract class BinaryLogicalCondition : ConditionBase
   {
-    protected BinaryLogicalCondition(ICondition condition1, ICondition condition2) : base(condition1, condition2) {}
+    protected BinaryLogicalCondition(ICondition condition1, ICondition condition2) : base(condition1, condition2) { }
 
     public override void AddInput(INotifyPropertyChanged item) {
       throw new NotImplementedException();
@@ -46,25 +46,23 @@ namespace Demo.yFiles.Option.Constraint
     }
 
     public override void Dispose() {
-      //dispose both sources
+      // dispose both sources
       ((ICondition) Inputs[0]).Dispose();
       ((ICondition) Inputs[1]).Dispose();
       base.Dispose();
     }
 
     protected override INotifyPropertyChanged GetItemCopy(IModelView view, INotifyPropertyChanged item) {
-      ICondition condCopy = ((ICondition)item).InstallInView(view);
+      var condCopy = ((ICondition) item).InstallInView(view);
       return condCopy;
     }
   }
 
   internal sealed class And : BinaryLogicalCondition
   {
-    public And(ICondition condition1, ICondition condition2) : base(condition1, condition2) {}
+    public And(ICondition condition1, ICondition condition2) : base(condition1, condition2) { }
 
-    public override bool IsTrue {
-      get { return ((ICondition) Inputs[0]).IsTrue && ((ICondition) Inputs[1]).IsTrue; }
-    }
+    public override bool IsTrue => ((ICondition) Inputs[0]).IsTrue && ((ICondition) Inputs[1]).IsTrue;
 
     protected override ICondition CreateCopy(params INotifyPropertyChanged[] copiedInput) {
       return new And((ICondition) copiedInput[0], (ICondition) copiedInput[1]);
@@ -73,11 +71,9 @@ namespace Demo.yFiles.Option.Constraint
 
   internal sealed class Or : BinaryLogicalCondition
   {
-    public Or(ICondition condition1, ICondition condition2) : base(condition1, condition2) {}
+    public Or(ICondition condition1, ICondition condition2) : base(condition1, condition2) { }
 
-    public override bool IsTrue {
-      get { return ((ICondition) Inputs[0]).IsTrue || ((ICondition) Inputs[1]).IsTrue; }
-    }
+    public override bool IsTrue => ((ICondition) Inputs[0]).IsTrue || ((ICondition) Inputs[1]).IsTrue;
 
     protected override ICondition CreateCopy(params INotifyPropertyChanged[] copiedInput) {
       return new Or((ICondition) copiedInput[0], (ICondition) copiedInput[1]);
@@ -86,12 +82,12 @@ namespace Demo.yFiles.Option.Constraint
 
   internal sealed class Xor : BinaryLogicalCondition
   {
-    public Xor(ICondition condition1, ICondition condition2) : base(condition1, condition2) {}
+    public Xor(ICondition condition1, ICondition condition2) : base(condition1, condition2) { }
 
     public override bool IsTrue {
       get {
-        bool v1 = ((ICondition) Inputs[0]).IsTrue;
-        bool v2 = ((ICondition) Inputs[1]).IsTrue;
+        var v1 = ((ICondition) Inputs[0]).IsTrue;
+        var v2 = ((ICondition) Inputs[1]).IsTrue;
         return (v1 && !v2) || (!v1 && v2);
       }
     }
@@ -103,16 +99,13 @@ namespace Demo.yFiles.Option.Constraint
 
   internal sealed class Not : ConditionBase
   {
-    public Not(ICondition condition1)
-      : base(condition1) {}
+    public Not(ICondition condition1) : base(condition1) { }
 
-    public override bool IsTrue {
-      get { return !((ICondition) Inputs[0]).IsTrue; }
-    }
+    public override bool IsTrue => !((ICondition) Inputs[0]).IsTrue;
 
     protected override ICondition CreateCopy(params INotifyPropertyChanged[] copiedInput) {
       return new Not((ICondition) copiedInput[0]);
-//      throw new NotImplementedException();
+      //      throw new NotImplementedException();
     }
 
     public override void Dispose() {
@@ -121,7 +114,7 @@ namespace Demo.yFiles.Option.Constraint
     }
 
     protected override INotifyPropertyChanged GetItemCopy(IModelView view, INotifyPropertyChanged item) {
-      ICondition condCopy = ((ICondition)item).InstallInView(view);
+      var condCopy = ((ICondition) item).InstallInView(view);
       return condCopy;
     }
   }

@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -28,26 +28,28 @@
  ***************************************************************************/
 
 using System.Collections;
-using yWorks.Graph;
+using yWorks.Utils;
 
 namespace Demo.yFiles.Option.DataBinding
 {
   /// <summary>
-  /// The interface used by <see cref="IPropertyMap"/>
-  /// to hold the entries.
+  ///   The interface used by <see cref="IPropertyMap"/>
+  ///   to hold the entries.
   /// </summary>
   public interface IPropertyItem : ILookup
   {
     /// <summary>
-    /// Returns the getter method.
+    ///   Returns the getter method.
     /// </summary>
     IValueGetter Getter { get; }
+
     /// <summary>
-    /// Returns the setter method.
+    ///   Returns the setter method.
     /// </summary>
     IValueSetter Setter { get; }
+
     /// <summary>
-    /// Returns the comparer to use.
+    ///   Returns the comparer to use.
     /// </summary>
     IEqualityComparer EqualityComparer { get; }
   }

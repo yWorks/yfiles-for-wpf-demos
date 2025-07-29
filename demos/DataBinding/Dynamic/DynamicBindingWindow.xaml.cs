@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -28,26 +28,24 @@
  ***************************************************************************/
 
 using System;
-using System.Windows;
-using System.Windows.Input;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using yWorks.Controls.Input;
+using System.Windows;
+using System.Windows.Input;
 using yWorks.Graph;
-using yWorks.Layout.Hierarchic;
 using yWorks.Graph.DataBinding;
+using yWorks.Layout.Hierarchical;
 
 namespace Demo.yFiles.DataBinding.Dynamic
 {
   /// <summary>
-  /// Interaction logic for TreeDataBindingWindow.xaml
+  /// Shows how to use a <see cref="yWorks.Graph.DataBinding.TreeSource"/> bound to dynamic business data.
   /// </summary>
   /// <remarks>
   /// <para>
   /// Note that this class does not change the graph maintained by the tree source directly.
   /// It just acts on the business data to which the tree source is bound. Since the
-  /// <see cref="TreeSource">tree source</see> is configured to handle dynamic updates in
+  /// <see cref="TreeSource"/> is configured to handle dynamic updates in
   /// the XAML file, changes to the business data are translated to changes of the graph.
   /// </para>
   /// <para>
@@ -61,8 +59,6 @@ namespace Demo.yFiles.DataBinding.Dynamic
   {
     #region Private Fields
 
-    private INode rootNodeToBeRemoved;
-    private bool newRootNode;
     private int customerCounter = 1;
 
     #endregion
@@ -71,22 +67,17 @@ namespace Demo.yFiles.DataBinding.Dynamic
       InitializeComponent();
       // add a mode that handles the user commands.
       var keyboardInputMode = graphViewerInputMode.KeyboardInputMode;
-      keyboardInputMode.AddHandler(new KeyGesture(Key.Insert), CreateCustomer);
-      keyboardInputMode.AddHandler(new KeyGesture(Key.Delete), RemoveCustomer);
+      keyboardInputMode.AddKeyBinding(Key.Insert, ModifierKeys.None, CreateCustomer);
+      keyboardInputMode.AddKeyBinding(Key.Delete, ModifierKeys.None, RemoveCustomer);
     }
 
     #region Creating and Removing Customer Business Objects
 
-    private async void CreateCustomer(object sender, EventArgs e) {
-      // Remember whether the new customer is a root customer for triggering a layout.
-      INode currentItem =  graphControl.Selection.SelectedNodes.FirstOrDefault();
-      newRootNode = currentItem == null;
+    private async void CreateCustomer() {
+      var selectedNode = graphControl.Selection.Nodes.FirstOrDefault();
 
       // Get parent customer.
-      Customer parentCustomer = null;
-      if (!newRootNode) {
-        parentCustomer = TreeSource.GetBusinessObject(currentItem) as Customer;
-      }
+      var parentCustomer = selectedNode == null ? null : TreeSource.GetBusinessObject(selectedNode) as Customer;
 
       // Create the new customer.
       CustomerRepository.CreateCustomer("Customer " + customerCounter++, parentCustomer);
@@ -95,16 +86,11 @@ namespace Demo.yFiles.DataBinding.Dynamic
     }
 
 
-    private async void RemoveCustomer(object sender, EventArgs e) {
-      INode currentItem = graphControl.Selection.SelectedNodes.FirstOrDefault();
-      if (currentItem != null)
-      {
-        // Remember the selected node for triggering a layout.
-        rootNodeToBeRemoved = graphControl.CurrentItem as INode;
-
+    private async void RemoveCustomer() {
+      var selectedNode = graphControl.Selection.Nodes.FirstOrDefault();
+      if (selectedNode != null) {
         // Remove the customer which is represented by the selected node.
-        Customer customer = TreeSource.GetBusinessObject(currentItem) as Customer;
-        if (customer != null) {
+        if (TreeSource.GetBusinessObject(selectedNode) is Customer customer) {
           CustomerRepository.RemoveCustomer(customer);
           await DoLayout();
         }
@@ -115,14 +101,14 @@ namespace Demo.yFiles.DataBinding.Dynamic
 
     #region Event Handling
 
-    private async void Window_Loaded(object sender, RoutedEventArgs e) {
+    private async void OnLoaded(object sender, RoutedEventArgs e) {
 
       // Perform an initial layout when the window is loaded.
       await DoLayout();
     }
 
     private async Task DoLayout() {
-      await graphControl.MorphLayout(new HierarchicLayout(), TimeSpan.FromMilliseconds(500), null);
+      await graphControl.ApplyLayoutAnimated(new HierarchicalLayout(), TimeSpan.FromMilliseconds(500));
     }
 
     #endregion
@@ -132,16 +118,12 @@ namespace Demo.yFiles.DataBinding.Dynamic
     /// <summary>
     /// Gets the customer repository defined in the XAML file.
     /// </summary>
-    public CustomerRepository CustomerRepository {
-      get { return (CustomerRepository)FindResource("customerRepository"); }
-    }
+    public CustomerRepository CustomerRepository => (CustomerRepository) FindResource("customerRepository");
 
     /// <summary>
     /// Gets the tree source defined in the XAML file.
     /// </summary>
-    public TreeSource TreeSource {
-      get { return (TreeSource) FindResource("treeSource"); }
-    }
+    public TreeSource TreeSource => (TreeSource) FindResource("treeSource");
 
     #endregion
   }

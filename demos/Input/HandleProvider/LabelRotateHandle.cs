@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -27,70 +27,50 @@
  ** 
  ***************************************************************************/
 
-using System.Collections.Generic;
-using System.Reflection;
-using System.Windows;
 using System.Windows.Input;
-using yWorks.Controls.Input;
+using System.Windows.Media;
+using Demo.yFiles.Toolkit;
 using yWorks.Controls;
+using yWorks.Controls.Input;
 using yWorks.Geometry;
 using yWorks.Graph;
 using yWorks.Graph.LabelModels;
+using yWorks.Utils;
 
 namespace Demo.yFiles.Graph.Input.HandleProvider
 {
   /// <summary>
-  /// A custom <see cref="IHandle"/> implementation that implements the functionality 
-  /// needed for rotating a label.
+  ///   A custom <see cref="IHandle"/> implementation that implements the functionality
+  ///   needed for rotating a label.
   /// </summary>
   public class LabelRotateHandle : IHandle
   {
     private readonly ILabel label;
+
     // whether to use the temporary dummy bounds or the actual label bounds
     private bool emulate;
+
     // the dummy bounds for displaying the size indicator during a resize gesture
     private PointD dummyLocation;
+
     private PointD up;
-    // the canvas object representing the size indicator 
-    private ICanvasObject sizeIndicator;
+
+    // the render tree element representing the rotation indicator
+    private IRenderTreeElement rotationIndicator;
     private PointD rotationCenter;
-
-    /// <summary>
-    /// A <see cref="ResourceKey"/> that will be used to find the <see cref="DataTemplate"/>
-    /// that will be used to represent the rectangular selection for rotatable labels.
-    /// </summary>
-    /// <remarks>
-    /// The template is defined in the file App.xaml.
-    /// </remarks>
-    [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
-    public static readonly ResourceKey LabelSelectionTemplateKey =
-      new ComponentResourceKey(typeof(LabelPositionHandler), "LabelSelectionTemplateKey");
-
-    /// <summary>
-    /// A <see cref="ResourceKey"/> that will be used to find the <see cref="DataTemplate"/>
-    /// that will be used to represent the rectangular selection for labels which are rotated.
-    /// </summary>
-    /// <remarks>
-    /// The template is defined in the file App.xaml.
-    /// </remarks>
-    [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
-    public static readonly ResourceKey LabelHighlightTemplateKey =
-      new ComponentResourceKey(typeof(LabelPositionHandler), "LabelHighlightTemplateKey");
 
     private IInputModeContext inputModeContext;
 
     public LabelRotateHandle(ILabel label, IInputModeContext context) {
       this.label = label;
-      this.inputModeContext = context;
+      inputModeContext = context;
     }
 
-    public HandleTypes Type {
-      get { return HandleTypes.Rotate; }
-    }
+    public HandleType Type => HandleType.Move;
 
-    public Cursor Cursor {
-      get { return Cursors.Cross; }
-    }
+    public object Tag => null;
+
+    public Cursor Cursor => Cursors.Cross;
 
     public void HandleClick(ClickEventArgs eventArgs) {
       // ignore clicks
@@ -98,31 +78,24 @@ namespace Demo.yFiles.Graph.Input.HandleProvider
 
     private IPoint location;
 
-    public IPoint Location {
-      get {
-        if (location == null) {
-          location = new LabelRotateHandleLivePoint(this);
-        }
-        return location;
-      }
-    }
+    public IPoint Location => location ??= new LabelRotateHandleLivePoint(this);
 
     public void InitializeDrag(IInputModeContext context) {
-      this.inputModeContext = context;
+      inputModeContext = context;
       // start using the calculated dummy bounds
       emulate = true;
       var labelLayout = label.GetLayout();
-      dummyLocation = labelLayout.GetAnchorLocation();
-      up = labelLayout.GetUp();
+      dummyLocation = labelLayout.GetAnchor();
+      up = labelLayout.GetUpVector();
 
-      // TODO the reference point, can be determined from the parameter
       rotationCenter = labelLayout.GetCenter();
-      var canvasControl = context.CanvasControl;
-      if (canvasControl != null) {
-        // install the visual rectangle indicator in the SelectionGroup of the canvas
-        var template = canvasControl.TryFindResource(LabelHighlightTemplateKey) as DataTemplate;
-        var installer = new LabelRotateIndicatorInstaller(this) {Template = template};
-        sizeIndicator = installer.AddCanvasObject(canvasControl.CanvasContext, ((GraphControl) canvasControl).SelectionGroup, this);
+      if (context.CanvasControl is GraphControl graphControl) {
+        // install the visual rotation indicator in the SelectionGroup of the canvas
+        var renderer = new OrientedRectangleRenderer<LabelRotateHandle>(handle => handle.GetCurrentLabelLayout()) {
+            Pen = new Pen(Brushes.Gray, 2)
+        };
+        var renderTree = graphControl.RenderTree;
+        rotationIndicator = renderTree.CreateElement(renderTree.SelectionGroup, this, renderer);
       }
     }
 
@@ -131,13 +104,13 @@ namespace Demo.yFiles.Graph.Input.HandleProvider
       up = (newLocation - rotationCenter).Normalized;
 
       // and the anchor point
-      SizeD preferredSize = label.PreferredSize;
+      var preferredSize = label.PreferredSize;
 
-      double p2X = -preferredSize.Width * 0.5;
-      double p2Y = preferredSize.Height * 0.5;
+      var p2X = -preferredSize.Width * 0.5;
+      var p2Y = preferredSize.Height * 0.5;
 
-      double anchorX = rotationCenter.X - p2X * up.Y - p2Y * up.X;
-      double anchorY = rotationCenter.Y - p2Y * up.Y + p2X * up.X;
+      var anchorX = rotationCenter.X - p2X * up.Y - p2Y * up.X;
+      var anchorY = rotationCenter.Y - p2Y * up.Y + p2X * up.X;
 
       // calculate the new location
       dummyLocation = new PointD(anchorX, anchorY);
@@ -146,10 +119,10 @@ namespace Demo.yFiles.Graph.Input.HandleProvider
     public void CancelDrag(IInputModeContext context, PointD originalLocation) {
       // use the normal label bounds if the drag gesture is over
       emulate = false;
-      // remove the visual size indicator
-      if (sizeIndicator != null) {
-        sizeIndicator.Remove();
-        sizeIndicator = null;
+      // remove the visual rotation indicator
+      if (rotationIndicator != null) {
+        context.CanvasControl!.RenderTree.Remove(rotationIndicator);
+        rotationIndicator = null;
       }
     }
 
@@ -157,9 +130,9 @@ namespace Demo.yFiles.Graph.Input.HandleProvider
       var graph = context.GetGraph();
       if (graph != null) {
         var model = label.LayoutParameter.Model;
-        var finder = model.Lookup<ILabelModelParameterFinder>();
+        var finder = model.GetContext(label).Lookup<ILabelModelParameterFinder>();
         if (finder != null) {
-          var param = finder.FindBestParameter(label, model, GetCurrentLabelLayout());
+          var param = finder.FindBestParameter(GetCurrentLabelLayout());
           graph.SetLabelLayoutParameter(label, param);
         }
       }
@@ -169,10 +142,8 @@ namespace Demo.yFiles.Graph.Input.HandleProvider
     private OrientedRectangle GetCurrentLabelLayout() {
       var preferredSize = label.PreferredSize;
       var labelLayout = label.GetLayout();
-      return new OrientedRectangle(
-        emulate ? dummyLocation.X : labelLayout.AnchorX, emulate ? dummyLocation.Y : labelLayout.AnchorY, 
-        preferredSize.Width, preferredSize.Height, 
-        up.X, up.Y);
+      return new OrientedRectangle(emulate ? dummyLocation.X : labelLayout.AnchorX,
+          emulate ? dummyLocation.Y : labelLayout.AnchorY, preferredSize.Width, preferredSize.Height, up.X, up.Y);
     }
 
     #region live location
@@ -189,10 +160,10 @@ namespace Demo.yFiles.Graph.Input.HandleProvider
         get {
           var preferredSize = outerThis.label.PreferredSize;
           var labelLayout = outerThis.label.GetLayout();
-          var anchor = outerThis.emulate ? outerThis.dummyLocation : labelLayout.GetAnchorLocation();
-          var up = outerThis.emulate ? outerThis.up : labelLayout.GetUp();
+          var anchor = outerThis.emulate ? outerThis.dummyLocation : labelLayout.GetAnchor();
+          var up = outerThis.emulate ? outerThis.up : labelLayout.GetUpVector();
           // calculate the location of the handle from the anchor, the size and the orientation
-          var offset = outerThis.inputModeContext != null ? 20 / outerThis.inputModeContext.CanvasControl.Zoom : 20;
+          var offset = outerThis.inputModeContext != null ? 27 / outerThis.inputModeContext.CanvasControl.Zoom : 27;
           return anchor.X + up.X * (preferredSize.Height + offset) + -up.Y * (preferredSize.Width * 0.5);
         }
       }
@@ -201,28 +172,15 @@ namespace Demo.yFiles.Graph.Input.HandleProvider
         get {
           var preferredSize = outerThis.label.PreferredSize;
           var labelLayout = outerThis.label.GetLayout();
-          var anchor = outerThis.emulate ? outerThis.dummyLocation : labelLayout.GetAnchorLocation();
-          var up = outerThis.emulate ? outerThis.up : labelLayout.GetUp();
+          var anchor = outerThis.emulate ? outerThis.dummyLocation : labelLayout.GetAnchor();
+          var up = outerThis.emulate ? outerThis.up : labelLayout.GetUpVector();
           // calculate the location of the handle from the anchor, the size and the orientation
-          var offset = outerThis.inputModeContext != null ? 20 / outerThis.inputModeContext.CanvasControl.Zoom : 20;
+          var offset = outerThis.inputModeContext != null ? 27 / outerThis.inputModeContext.CanvasControl.Zoom : 27;
           return anchor.Y + up.Y * (preferredSize.Height + offset) + up.X * (preferredSize.Width * 0.5);
         }
       }
     }
 
     #endregion
-
-    private class LabelRotateIndicatorInstaller : OrientedRectangleIndicatorInstaller {
-
-      private readonly LabelRotateHandle outerThis;
-
-      public LabelRotateIndicatorInstaller(LabelRotateHandle outerThis) {
-        this.outerThis = outerThis;
-      }
-
-      protected override IOrientedRectangle GetRectangle(object item) {
-        return outerThis.GetCurrentLabelLayout();
-      }
-    }
   }
 }

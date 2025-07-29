@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -39,7 +39,7 @@ using yWorks.Graph.Styles;
 namespace Demo.yFiles.Graph.TableNodeStyle.Style
 {
   /// <summary>
-  /// Abstract base class for stripe styles that provide a BPMN like visualization.
+  /// Abstract base class for stripe styles that provide a BPMN-like visualization.
   /// </summary>
   public abstract class BPMNStyle : StripeStyleBase<VisualGroup>
   {
@@ -70,7 +70,7 @@ namespace Demo.yFiles.Graph.TableNodeStyle.Style
 
       var cc = new VisualGroup();
       cc.Add(visual);
-      cc.SetCanvasArrangeRect(layout.ToRectD());
+      cc.SetCanvasArrangeRect(layout.ToRect());
       return cc;
     }
 
@@ -85,7 +85,7 @@ namespace Demo.yFiles.Graph.TableNodeStyle.Style
                                         new Pen(StripeDescriptor.BorderBrush, StripeDescriptor.BorderThickness.Left),
                                         null, FillMode.Always);
       }
-      oldVisual.SetCanvasArrangeRect(arrangeRect);
+      oldVisual.SetCanvasArrangeRect(arrangeRect.ToRect());
       return oldVisual;
     }
 
@@ -93,7 +93,7 @@ namespace Demo.yFiles.Graph.TableNodeStyle.Style
   }
 
   /// <summary>
-  /// Custom style that provides a BPMN like visualization for rows
+  /// Custom style that provides a BPMN-like visualization for rows
   /// </summary>
   public class BPMNRowStyle : BPMNStyle
   {
@@ -121,14 +121,14 @@ namespace Demo.yFiles.Graph.TableNodeStyle.Style
   }
 
   /// <summary>
-  /// Custom style that provides a BPMN like visualization for columns
+  /// Custom style that provides a BPMN-like visualization for columns
   /// </summary>
   public class BPMNColumnStyle : BPMNStyle
   {
     protected override GeneralPath CreatePath(IStripe stripe, IRectangle layout) {
       var column = (IColumn)stripe;
       GeneralPath outline = new GeneralPath();
-      //Left border:
+      // Left border:
       outline.MoveTo(0, 0);
       outline.LineTo(layout.Width, 0);
       outline.LineTo(layout.Width + WedgeWidth, WedgeHeight);

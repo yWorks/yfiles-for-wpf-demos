@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -34,21 +34,21 @@ using yWorks.Graph;
 using yWorks.Graph.LabelModels;
 using yWorks.Utils;
 
-namespace Demo.yFiles.Graph.Bpmn.Util {
-
-  internal class ScalingLabelModel : ILabelModel {
-
+namespace Demo.yFiles.Graph.Bpmn.Util
+{
+  internal class ScalingLabelModel : ILabelModel
+  {
     #region Initialize static fields
 
-    private static readonly InteriorStretchLabelModel stretchModel;
+    private static readonly StretchNodeLabelModel stretchModel;
     private static readonly ILabelModelParameter stretchParameter;
 
     private static readonly SimpleNode dummyNode;
     private static readonly SimpleLabel dummyLabel;
 
     static ScalingLabelModel() {
-      stretchModel = new InteriorStretchLabelModel();
-      stretchParameter = stretchModel.CreateParameter(InteriorStretchLabelModel.Position.Center);
+      stretchModel = new StretchNodeLabelModel();
+      stretchParameter = stretchModel.CreateParameter(StretchNodeLabelModel.Position.Center);
       dummyNode = new SimpleNode();
       dummyLabel = new SimpleLabel(dummyNode, "", stretchParameter);
     }
@@ -56,57 +56,56 @@ namespace Demo.yFiles.Graph.Bpmn.Util {
     #endregion
 
     /// <summary>
-    /// Gets or sets the insets to use within the node's <see cref="INode.Layout"/>.
+    ///   Gets or sets the padding to use within the node's <see cref="INode.Layout"/>.
     /// </summary>
-    [DefaultValue(typeof (InsetsD), "0")]
-    public virtual InsetsD Insets { get; set; }
+    [DefaultValue(typeof(InsetsD), "0")]
+    public virtual InsetsD Padding { get; set; }
 
     ///<inheritdoc/>
-    public object Lookup(Type type) {
-      return stretchModel.Lookup(type);
-    }
-
-    ///<inheritdoc/>
-    public ILookup GetContext(ILabel label, ILabelModelParameter parameter) {
-      return stretchModel.GetContext(label, parameter);
+    public ILookup GetContext(ILabel label) {
+      return stretchModel.GetContext(label);
     }
 
     ///<inheritdoc/>
     public IOrientedRectangle GetGeometry(ILabel label, ILabelModelParameter parameter) {
-      ScalingParameter scalingParameter = (ScalingParameter) parameter;
-      if (!(label.Owner is INode)) {
-        return OrientedRectangle.Empty;
+      if (parameter is not ScalingParameter scalingParameter) {
+        throw new ArgumentException("The parameter is not supported by this label model.", nameof(parameter));
       }
+      if (!DefaultGraph.HasOwner(label)) {
+        throw new ArgumentException("The label has no valid owner.", nameof(label));
+      }
+      if (label.Owner is not INode node) {
+        throw new ArgumentException("This model only supports node labels.", nameof(label));
+      }
+      var availableRect = node.Layout.ToRectD();
+      var horizontalPadding = Padding.Left + Padding.Right;
+      var verticalPadding = Padding.Top + Padding.Bottom;
 
-      var availableRect = ((INode) label.Owner).Layout.ToRectD();
-      var horizontalInsets = Insets.Left + Insets.Right;
-      var verticalInsets = Insets.Top + Insets.Bottom;
+      // consider fix padding
+      var x = availableRect.X + (availableRect.Width > horizontalPadding ? Padding.Left : 0);
+      var y = availableRect.Y + (availableRect.Height > verticalPadding ? Padding.Top : 0);
+      var width = availableRect.Width - (availableRect.Width > horizontalPadding ? horizontalPadding : 0);
+      var height = availableRect.Height - (availableRect.Height > verticalPadding ? verticalPadding : 0);
 
-      // consider fix insets
-      double x = availableRect.MinX + (availableRect.Width > horizontalInsets ? Insets.Left : 0);
-      double y = availableRect.MinY + (availableRect.Height > verticalInsets ? Insets.Top : 0);
-      double width = availableRect.Width - (availableRect.Width > horizontalInsets ? horizontalInsets : 0);
-      double height = availableRect.Height - (availableRect.Height > verticalInsets ? verticalInsets : 0);
-
-      // consider scaling insets
-      x += scalingParameter.ScalingInsets.Left*width;
-      y += scalingParameter.ScalingInsets.Top*height;
-      width = width*(1 - scalingParameter.ScalingInsets.Left - scalingParameter.ScalingInsets.Right);
-      height = height*(1 - scalingParameter.ScalingInsets.Top - scalingParameter.ScalingInsets.Bottom);
+      // consider scaling padding
+      x += scalingParameter.ScalingPadding.Left * width;
+      y += scalingParameter.ScalingPadding.Top * height;
+      width = width * (1 - scalingParameter.ScalingPadding.Left - scalingParameter.ScalingPadding.Right);
+      height = height * (1 - scalingParameter.ScalingPadding.Top - scalingParameter.ScalingPadding.Bottom);
 
       if (scalingParameter.KeepRatio) {
         var fixRatio = scalingParameter.Ratio;
-        var availableRatio = height > 0  && width > 0 ? width/height : 1;
+        var availableRatio = height > 0 && width > 0 ? width / height : 1;
 
         if (fixRatio > availableRatio) {
           // keep width
-          double cy = y + height / 2;
+          var cy = y + height / 2;
           height *= availableRatio / fixRatio;
-          y = cy - height/2;
+          y = cy - height / 2;
         } else {
-          double cx = x + width / 2;
+          var cx = x + width / 2;
           width *= fixRatio / availableRatio;
-          x = cx - width/2;
+          x = cx - width / 2;
         }
       }
 
@@ -117,76 +116,83 @@ namespace Demo.yFiles.Graph.Bpmn.Util {
 
     #region Create Parameter Methods
 
-    ///<inheritdoc/>
-    public ILabelModelParameter CreateDefaultParameter() {
-      return new ScalingParameter() {Model = this, ScalingInsets = InsetsD.Empty};
-    }
-
-    public ILabelModelParameter CreateScaledParameter(double scale) {
+    public ScalingParameter CreateScaledParameter(double scale) {
       if (scale <= 0 || scale > 1) {
         throw new ArgumentException("Argument '" + scale + "' not allowed. Valid values are in ]0; 1].");
       }
-      return new ScalingParameter() {Model = this, ScalingInsets = new InsetsD((1 - scale)/2)};
+      return new ScalingParameter(this, new InsetsD((1 - scale) / 2));
     }
 
-    public ILabelModelParameter CreateScaledParameter(double leftScale, double topScale, double rightScale, double bottomScale) {
+    public ScalingParameter CreateScaledParameter(
+        double leftScale,
+        double topScale,
+        double rightScale,
+        double bottomScale) {
       if (leftScale < 0 || rightScale < 0 || topScale < 0 || bottomScale < 0) {
         throw new ArgumentException("Negative Arguments are not allowed.");
       }
       if (leftScale + rightScale >= 1 || topScale + bottomScale >= 1) {
-        throw new ArgumentException("Arguments not allowed. The sum of left and right scale respectively top and bottom scale must be below 1.");
+        throw new ArgumentException(
+            "Arguments not allowed. The sum of left and right scale respectively top and bottom scale must be below 1.");
       }
-      return new ScalingParameter() { Model = this, ScalingInsets = new InsetsD(leftScale, topScale, rightScale, bottomScale) };
+      return new ScalingParameter(this, new InsetsD(leftScale, topScale, rightScale, bottomScale));
     }
 
-    public ILabelModelParameter CreateScaledParameterWithRatio(double scale, double ratio) {
+    public ScalingParameter CreateScaledParameterWithRatio(double scale, double ratio) {
       if (scale <= 0 || scale > 1) {
         throw new ArgumentException("Argument '" + scale + "' not allowed. Valid values are in ]0; 1].");
       }
       if (ratio <= 0) {
         throw new ArgumentException("Argument '" + ratio + "' not allowed. Ratio must be positive.");
       }
-      return new ScalingParameter() {Model = this, ScalingInsets = new InsetsD((1 - scale)/2), KeepRatio = true, Ratio = ratio};
+      return new ScalingParameter(this, new InsetsD((1 - scale) / 2), true, ratio);
     }
 
-    public ILabelModelParameter CreateScaledParameterWithRatio(double leftScale, double topScale, double rightScale, double bottomScale, double ratio) {
+    public ScalingParameter CreateScaledParameterWithRatio(
+        double leftScale,
+        double topScale,
+        double rightScale,
+        double bottomScale,
+        double ratio) {
       if (leftScale < 0 || rightScale < 0 || topScale < 0 || bottomScale < 0) {
         throw new ArgumentException("Negative Arguments are not allowed.");
       }
       if (leftScale + rightScale >= 1 || topScale + bottomScale >= 1) {
-        throw new ArgumentException("Arguments not allowed. The sum of left and right scale respectively top and bottom scale must be below 1.");
+        throw new ArgumentException(
+            "Arguments not allowed. The sum of left and right scale respectively top and bottom scale must be below 1.");
       }
       if (ratio <= 0) {
         throw new ArgumentException("Argument '" + ratio + "' not allowed. Ratio must be positive.");
       }
-      return new ScalingParameter() { Model = this, ScalingInsets = new InsetsD(leftScale, topScale, rightScale, bottomScale), KeepRatio = true, Ratio = ratio };
+      return new ScalingParameter(this, new InsetsD(leftScale, topScale, rightScale, bottomScale), true, ratio);
     }
 
-#endregion
+    #endregion
 
     #region ScalingParameter
 
-    private class ScalingParameter : ILabelModelParameter
+    public class ScalingParameter : ILabelModelParameter
     {
-
-      public ILabelModel Model { get; set; }
-
-      public InsetsD ScalingInsets { get; set; }
-
-      public bool KeepRatio { get; set; }
-
-      public double Ratio { get; set; }
-
-      public object Clone() {
-        return new ScalingParameter() {Model = Model, ScalingInsets = ScalingInsets, KeepRatio = KeepRatio};
+      public ScalingParameter(ILabelModel model, InsetsD scalingPadding, bool keepRatio = false, double ratio = 0) {
+        Model = model;
+        ScalingPadding = scalingPadding;
+        KeepRatio = keepRatio;
+        Ratio = ratio;
       }
 
-      public bool Supports(ILabel label) {
-        return label.Owner is INode;
+      public ILabelModel Model { get; }
+
+      public InsetsD ScalingPadding { get; }
+
+      public bool KeepRatio { get; }
+
+      public double Ratio { get; }
+
+      public object Clone() {
+        return new ScalingParameter(Model, ScalingPadding, KeepRatio, Ratio);
       }
     }
 
-#endregion
-
+    #endregion
   }
 }

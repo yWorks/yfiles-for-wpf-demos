@@ -1,6 +1,6 @@
 <!-- ************************************************************************ -->
-<!-- This demo file is part of yFiles WPF 3.6.                           -->
-<!-- Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
+<!-- This demo file is part of yFiles WPF 4.0.                           -->
+<!-- Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
 <!-- 72070 Tuebingen, Germany. All rights reserved.                           -->
 <!--                                                                          -->
 <!-- yFiles demo files exhibit yFiles WPF functionalities. Any redistribution  -->
@@ -27,34 +27,13 @@
 <Application x:Class="Demo.yFiles.Layout.NodeLabeling.DemoApplication"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/3.0/xaml"
-             StartupUri="NodeLabelingWindow.xaml"
-    >
-  <Application.Resources>
+             StartupUri="NodeLabelingWindow.xaml">
+    <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/DemoToolkit;component/StyleResources.xaml" />
                 <ResourceDictionary Source="Resources/blank_us_map.xaml" />
             </ResourceDictionary.MergedDictionaries>
-
-            <DataTemplate x:Key="{x:Static ywpf:LabelPositionHandler.CandidateTemplateKey}">
-                <Grid>
-                    <Rectangle Margin="-1" IsHitTestVisible="false" StrokeThickness="4" Stroke="#99e1edfb" Fill="Transparent"/>
-                </Grid>
-            </DataTemplate>
-
-            <DataTemplate x:Key="{x:Static ywpf:LabelPositionHandler.HighlightTemplateKey}">
-                <Grid>
-                    <Rectangle Margin="-2" IsHitTestVisible="false" StrokeThickness="4" Stroke="#FFe1edfb" Fill="Transparent"/>
-                </Grid>
-            </DataTemplate>
-
-            <DataTemplate x:Key="{x:Static ywpf:OrientedRectangleIndicatorInstaller.SelectionTemplateKey}">
-                <Grid>
-                    <Rectangle Margin="-3" IsHitTestVisible="false" StrokeThickness="4" Stroke="#FFe1edfb" Fill="Transparent"/>
-                </Grid>
-            </DataTemplate>
-
         </ResourceDictionary>
     </Application.Resources>
 </Application>

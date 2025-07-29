@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <!--Created by yFiles WPF 2.1-->
-<graphml xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/3.0" xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/3.0/xaml" xmlns:yed="http://www.yworks.com/yfiles-wpf/2.1/demos/GraphEditor/Styles" xmlns:y="http://www.yworks.com/xml/yfiles-common/3.0" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml.wpf/2.0/ygraphml.xsd " xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://graphml.graphdrawing.org/xmlns">
+<graphml xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/3.0" xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/4.0/xaml" xmlns:yed="http://www.yworks.com/yfiles-wpf/2.1/demos/GraphEditor/Styles" xmlns:y="http://www.yworks.com/xml/yfiles-common/3.0"  xmlns:yx="http://www.yworks.com/xml/yfiles-common/4.0" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml.wpf/2.0/ygraphml.xsd " xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://graphml.graphdrawing.org/xmlns">
   <key id="GraphDescription" for="graph" attr.name="GraphDescription" attr.type="string"/>
   <key id="d0" for="all" attr.name="UserTags" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/UserTags" />
   <key id="d1" for="node" attr.name="NodeLabels" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeLabels" />
@@ -10,7 +10,11 @@
   <key id="d5" for="edge" attr.name="EdgeGeometry" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/EdgeGeometry" />
   <key id="d6" for="edge" attr.name="EdgeStyle" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/EdgeStyle">
     <default>
-      <ywpf:PolylineEdgeStyle TargetArrow="Default" SourceArrow="None" />
+      <ywpf:PolylineEdgeStyle SourceArrow="None">
+        <ywpf:PolylineEdgeStyle.TargetArrow>
+         <ywpf:Arrow Type="Stealth"/>
+        </ywpf:PolylineEdgeStyle.TargetArrow>
+      </ywpf:PolylineEdgeStyle>
     </default>
   </key>
   <key id="d7" for="port" attr.name="PortLocationParameter" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/PortLocationParameter">
@@ -26,7 +30,7 @@
   <key id="d9" attr.name="SharedData" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/SharedData" />
   <data key="d9">
     <y:SharedData>
-      <ywpf:DefaultLabelStyle x:Key="2" Typeface="Arial,Normal,Normal,Normal" TextBrush="Black" BackgroundBrush="#B0FFFFFF"/>
+      <ywpf:LabelStyle x:Key="2" Typeface="Arial,Normal,Normal,Normal" TextBrush="Black" BackgroundBrush="#B0FFFFFF"/>
       <yed:VectorNodeStyle x:Key="3" TemplateKey="UserIcon_Female_1" />
 	    <yed:VectorNodeStyle x:Key="4" TemplateKey="UserIcon_Male_1" />
 	    <yed:VectorNodeStyle x:Key="5" TemplateKey="UserIcon_Male_2" />
@@ -48,11 +52,11 @@
             <y:NodeDefaults.Labels>
               <y:LabelDefaults AutoAdjustPreferredSize="True" ShareLayoutParameterInstance="True" Style="{y:GraphMLReference 2}" ShareStyleInstance="True" >
                 <y:LabelDefaults.LayoutParameter>
-                  <y:InteriorLabelModelParameter Position="South">
-                    <y:InteriorLabelModelParameter.Model>
-                      <y:InteriorLabelModel Insets="5"/>
-                    </y:InteriorLabelModelParameter.Model>
-                  </y:InteriorLabelModelParameter>
+                  <yx:InteriorNodeLabelModelParameter Position="Bottom">
+                    <yx:InteriorNodeLabelModelParameter.Model>
+                      <yx:InteriorNodeLabelModel Padding="5"/>
+                    </yx:InteriorNodeLabelModelParameter.Model>
+                  </yx:InteriorNodeLabelModelParameter>
                 </y:LabelDefaults.LayoutParameter>
               </y:LabelDefaults>
             </y:NodeDefaults.Labels>

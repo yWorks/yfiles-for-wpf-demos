@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -27,89 +27,63 @@
  ** 
  ***************************************************************************/
 
-using System.Collections.Generic;
 using yWorks.Layout.Tree;
 
 namespace Demo.yFiles.Layout.Tree.Configuration
 {
   /// <summary>
-  /// Non generic base interface for <see cref="RotatableNodePlacerConfigurationBase{T}"/> that provides the <see cref="ModificationMatrix"/> property
+  ///   Non-generic base interface for <see cref="RotatableSubtreePlacerConfigurationBase{T}"/> that provides the
+  ///   <see cref="Transform"/> property
   /// </summary>
-  public interface IRotatableNodePlacerConfiguration : INodePlacerConfiguration
+  public interface IRotatableSubtreePlacerConfiguration : ISubtreePlacerConfiguration
   {
-    RotatableNodePlacerBase.Matrix ModificationMatrix { get; }
+    SubtreeTransform Transform { get; }
 
     /// <summary>
-    /// Sets the modification matrix
+    ///   Sets the modification matrix
     /// </summary>
-    void SetModificationMatrix(RotatableNodePlacerBase.Matrix matrix);
+    void SetTransform(SubtreeTransform transform);
   }
 
   /// <summary>
-  /// Abstract base class for configuration handler for <see cref="AbstractRotatableNodePlacer"/> implementations.
+  ///   Abstract base class for configuration handler for <see cref="ISubtreePlacer"/> implementations that are
+  ///   transformable using a <see cref="SubtreeTransform"/>.
   /// </summary>
-  public abstract class RotatableNodePlacerConfigurationBase<T> : IRotatableNodePlacerConfiguration
-    where T : RotatableNodePlacerBase, new()
+  public abstract class RotatableSubtreePlacerConfigurationBase<T> : IRotatableSubtreePlacerConfiguration
+      where T : ISubtreePlacer
   {
-    /// <summary>
-    /// Symbolic enumeration for the <see cref="AbstractRotatableNodePlacer.RootAlignment"/> class members.
-    /// </summary>
-    public enum RotatingRootAlignment
-    {
-      Leading,
-      Center,
-      CenterOverChildren,
-      Trailing,
-      Left,
-      Right,
-      Median
-    }
-
-    protected static readonly IDictionary<RotatingRootAlignment, RotatableNodePlacerBase.RootAlignment> Alignments =
-      new Dictionary<RotatingRootAlignment, RotatableNodePlacerBase.RootAlignment>();
-
-    static RotatableNodePlacerConfigurationBase() {
-      Alignments[RotatingRootAlignment.Center] = RotatableNodePlacerBase.RootAlignment.Center;
-      Alignments[RotatingRootAlignment.CenterOverChildren] =
-        RotatableNodePlacerBase.RootAlignment.CenterOverChildren;
-      Alignments[RotatingRootAlignment.Leading] = RotatableNodePlacerBase.RootAlignment.Leading;
-      Alignments[RotatingRootAlignment.Left] = RotatableNodePlacerBase.RootAlignment.Left;
-      Alignments[RotatingRootAlignment.Median] = RotatableNodePlacerBase.RootAlignment.Median;
-      Alignments[RotatingRootAlignment.Right] = RotatableNodePlacerBase.RootAlignment.Right;
-      Alignments[RotatingRootAlignment.Trailing] = RotatableNodePlacerBase.RootAlignment.Trailing;
-    }
-
     public virtual double Spacing { get; set; }
 
-    public virtual INodePlacer CreateNodePlacer() {
+    public virtual ISubtreePlacer CreateSubtreePlacer() {
       var placer = CreatePlacerCore();
       ConfigurePlacer(placer);
       return placer;
     }
 
+    public void AdoptSettings(ISubtreePlacer subtreePlacer) {
+      AdoptSettings((T) subtreePlacer);
+    }
+
     /// <summary>
-    /// Create the placer - this cannot be done here since we need to specify the <see cref="ModificationMatrix"/> in the placer's constructor.
+    ///   Create the placer - this cannot be done here since we need to specify the
+    ///   <see cref="Transform">transformation matrix</see> in the placer's constructor.
     /// </summary>
     protected abstract T CreatePlacerCore();
 
-    public virtual void AdoptSettings(INodePlacer nodePlacer) {
-      var dnp = (T) nodePlacer;
-      Spacing = dnp.Spacing;
-      modificationMatrix = dnp.ModificationMatrix;
+    /// <summary>
+    ///   Adopts the settings from the given subtree placer
+    /// </summary>
+    public abstract void AdoptSettings(T subtreePlacer);
+
+    public SubtreeTransform Transform { get; set; }
+
+    public void SetTransform(SubtreeTransform transform) {
+      Transform = transform;
     }
 
-    private RotatableNodePlacerBase.Matrix modificationMatrix;
-
-    public RotatableNodePlacerBase.Matrix ModificationMatrix {
-      get { return modificationMatrix; }
-    }
-
-    public void SetModificationMatrix(RotatableNodePlacerBase.Matrix matrix) {
-      modificationMatrix = matrix;
-    }
-
-    protected virtual void ConfigurePlacer(T placer) {
-      placer.Spacing = Spacing;
-    }
+    /// <summary>
+    ///   Transfers the transformation settings to the placer
+    /// </summary>
+    protected abstract void ConfigurePlacer(T placer);
   }
 }

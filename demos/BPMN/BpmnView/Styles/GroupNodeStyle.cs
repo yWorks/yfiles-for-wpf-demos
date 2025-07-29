@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -37,121 +37,116 @@ using yWorks.Controls.Input;
 using yWorks.Geometry;
 using yWorks.Graph;
 using yWorks.Graph.Styles;
+using yWorks.Utils;
 
-namespace Demo.yFiles.Graph.Bpmn.Styles {
-
+namespace Demo.yFiles.Graph.Bpmn.Styles
+{
   /// <summary>
-  /// An <see cref="INodeStyle"/> implementation representing an Group Node according to the BPMN.
+  ///   An <see cref="INodeStyle"/> implementation representing a Group Node according to the BPMN.
   /// </summary>
   [Obfuscation(StripAfterObfuscation = false, Exclude = true, ApplyToMembers = false)]
-  public class GroupNodeStyle : INodeStyle {
-    private readonly GroupNodeStyleRenderer renderer = new GroupNodeStyleRenderer();
-
-    private InsetsD insets = new InsetsD(15);
+  public sealed class GroupNodeStyle : INodeStyle
+  {
+    private readonly GroupNodeStyleRenderer renderer = new();
 
     /// <summary>
-    /// Gets or sets the insets for the node.
+    ///   Gets or sets the padding for the node.
     /// </summary>
     /// <remarks>
-    /// These insets are returned via an <see cref="INodeInsetsProvider"/> if such an instance is queried through the
-    /// <see cref="INodeStyleRenderer.GetContext">context lookup</see>.
+    ///   This padding is returned via an <see cref="IGroupPaddingProvider"/> if such an instance is queried through the
+    ///   <see cref="INodeStyleRenderer.GetContext">context lookup</see>.
     /// </remarks>
-    /// <seealso cref="INodeInsetsProvider"/>
+    /// <seealso cref="IGroupPaddingProvider"/>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     [DefaultValue(typeof(InsetsD), "15")]
-    public InsetsD Insets {
-      get { return insets; }
-      set { insets = value; }
-    }
+    public InsetsD Padding { get; set; } = new(15);
 
     /// <inheritdoc/>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     public object Clone() {
-      return new GroupNodeStyle {
-          Insets = Insets,
-          Background = Background,
-          Outline = Outline,
-      };
+      return new GroupNodeStyle { Padding = Padding, Background = Background, Outline = Outline };
     }
 
     /// <inheritdoc/>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
-    public INodeStyleRenderer Renderer {
-      get { return renderer; }
-    }
+    public INodeStyleRenderer Renderer => renderer;
 
     /// <summary>
-    /// Gets or sets the background color of the group.
+    ///   Gets or sets the background color of the group.
     /// </summary>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     [DefaultValue(typeof(BpmnConstants), "GroupDefaultBackground")]
     public Brush Background {
-      get { return renderer.shapeNodeStyle.Brush; }
+      get => renderer.rectangleNodeStyle.Brush;
       set {
-        if (renderer.shapeNodeStyle.Brush != value) {
-          renderer.shapeNodeStyle.Brush = value;
+        if (renderer.rectangleNodeStyle.Brush != value) {
+          renderer.rectangleNodeStyle.Brush = value;
         }
       }
     }
 
     /// <summary>
-    /// Gets or sets the outline color of the group.
+    ///   Gets or sets the outline color of the group.
     /// </summary>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     [DefaultValue(typeof(BpmnConstants), "GroupDefaultOutline")]
     public Brush Outline {
-      get { return renderer.shapeNodeStyle.Pen.Brush; }
+      get => renderer.rectangleNodeStyle.Pen.Brush;
       set {
-        if (renderer.shapeNodeStyle.Pen.Brush != value) {
-          renderer.shapeNodeStyle.Pen = GetPen(value);
+        if (renderer.rectangleNodeStyle.Pen.Brush != value) {
+          renderer.rectangleNodeStyle.Pen = GetPen(value);
         }
       }
     }
 
     private static Pen GetPen(Brush outline) {
-      return (Pen) new Pen { DashStyle = DashStyles.DashDot, DashCap = PenLineCap.Round, Brush = outline }.GetAsFrozen();
+      return (Pen) new Pen { DashStyle = DashStyles.DashDot, DashCap = PenLineCap.Round, Brush = outline }
+          .GetAsFrozen();
     }
 
     /// <summary>
-    /// An <see cref="INodeStyleRenderer"/> implementation used by <see cref="GroupNodeStyle"/>.
+    ///   An <see cref="INodeStyleRenderer"/> implementation used by <see cref="GroupNodeStyle"/>.
     /// </summary>
-    internal class GroupNodeStyleRenderer : INodeStyleRenderer, ILookup
+    private sealed class GroupNodeStyleRenderer : INodeStyleRenderer, ILookup
     {
-      internal readonly ShapeNodeStyle shapeNodeStyle =
-          new ShapeNodeStyle(new ShapeNodeStyleRenderer { RoundRectArcRadius = BpmnConstants.GroupNodeCornerRadius }) {
-              Shape = ShapeNodeShape.RoundRectangle,
-              Brush = BpmnConstants.GroupDefaultBackground,
-              Pen = GetPen(BpmnConstants.GroupDefaultOutline)
-          };
+      internal readonly RectangleNodeStyle rectangleNodeStyle = new() {
+          CornerSize = BpmnConstants.GroupNodeCornerRadius,
+          Brush = BpmnConstants.GroupDefaultBackground,
+          Pen = GetPen(BpmnConstants.GroupDefaultOutline)
+      };
 
       private INode lastNode;
       private GroupNodeStyle lastStyle;
 
       /// <inheritdoc/>
       public IVisualCreator GetVisualCreator(INode item, INodeStyle style) {
-        return shapeNodeStyle.Renderer.GetVisualCreator(item, shapeNodeStyle);
+        return rectangleNodeStyle.Renderer.GetVisualCreator(item, rectangleNodeStyle);
       }
 
       /// <inheritdoc/>
       public IBoundsProvider GetBoundsProvider(INode item, INodeStyle style) {
-        return shapeNodeStyle.Renderer.GetBoundsProvider(item, shapeNodeStyle);
+        return rectangleNodeStyle.Renderer.GetBoundsProvider(item, rectangleNodeStyle);
       }
 
       /// <inheritdoc/>
       public IVisibilityTestable GetVisibilityTestable(INode item, INodeStyle style) {
-        return shapeNodeStyle.Renderer.GetVisibilityTestable(item, shapeNodeStyle);
+        return rectangleNodeStyle.Renderer.GetVisibilityTestable(item, rectangleNodeStyle);
       }
 
       /// <inheritdoc/>
       public IHitTestable GetHitTestable(INode item, INodeStyle style) {
-        var geometry = shapeNodeStyle.Renderer.GetShapeGeometry(item, shapeNodeStyle);
+        var geometry = rectangleNodeStyle.Renderer.GetShapeGeometry(item, rectangleNodeStyle);
         var outline = geometry.GetOutline();
         return HitTestables.Create((context, location) => outline.PathContains(location, context.HitTestRadius));
       }
 
       /// <inheritdoc/>
       public IMarqueeTestable GetMarqueeTestable(INode item, INodeStyle style) {
-        return shapeNodeStyle.Renderer.GetMarqueeTestable(item, shapeNodeStyle);
+        return rectangleNodeStyle.Renderer.GetMarqueeTestable(item, rectangleNodeStyle);
+      }
+
+      public ILassoTestable GetLassoTestable(INode node, INodeStyle style) {
+        return rectangleNodeStyle.Renderer.GetLassoTestable(node, rectangleNodeStyle);
       }
 
       /// <inheritdoc/>
@@ -163,32 +158,33 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
 
       /// <inheritdoc/>
       public IShapeGeometry GetShapeGeometry(INode node, INodeStyle style) {
-        return shapeNodeStyle.Renderer.GetShapeGeometry(node, shapeNodeStyle);
+        return rectangleNodeStyle.Renderer.GetShapeGeometry(node, rectangleNodeStyle);
       }
 
       /// <inheritdoc/>
       [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
       public object Lookup(Type type) {
-        if (type == typeof(INodeInsetsProvider) && lastStyle != null) {
-          return new GroupInsetsProvider(lastStyle);
+        if (type == typeof(IGroupPaddingProvider) && lastStyle != null) {
+          return new GroupPaddingProvider(lastStyle);
         }
-        var lookup = shapeNodeStyle.Renderer.GetContext(lastNode, shapeNodeStyle);
+        var lookup = rectangleNodeStyle.Renderer.GetContext(lastNode, rectangleNodeStyle);
         return lookup != null ? lookup.Lookup(type) : null;
       }
 
 
       /// <summary>
-      /// Uses the style insets extended by the size of the participant bands.
+      ///   Uses the style padding extended by the size of the participant bands.
       /// </summary>
-      private sealed class GroupInsetsProvider : INodeInsetsProvider {
+      private sealed class GroupPaddingProvider : IGroupPaddingProvider
+      {
         private readonly GroupNodeStyle style;
 
-        internal GroupInsetsProvider(GroupNodeStyle style) {
+        internal GroupPaddingProvider(GroupNodeStyle style) {
           this.style = style;
         }
 
-        public InsetsD GetInsets(INode node) {
-          return style.Insets;
+        public InsetsD GetPadding() {
+          return style.Padding;
         }
       }
     }

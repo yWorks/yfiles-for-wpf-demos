@@ -1,6 +1,6 @@
 <!-- ************************************************************************ -->
-<!-- This demo file is part of yFiles WPF 3.6.                           -->
-<!-- Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
+<!-- This demo file is part of yFiles WPF 4.0.                           -->
+<!-- Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
 <!-- 72070 Tuebingen, Germany. All rights reserved.                           -->
 <!--                                                                          -->
 <!-- yFiles demo files exhibit yFiles WPF functionalities. Any redistribution  -->
@@ -27,7 +27,7 @@
 <Window x:Class="Demo.yFiles.Graph.Input.MoveUnselectedNodes.MoveUnselectedNodesWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/3.0/xaml"
+    xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/4.0/xaml"
     Title="Demo.yFiles.Graph.Input.MoveUnselectedNodes" Height="473" Width="800" 
         Loaded="OnLoaded" Style="{StaticResource DemoWindow}" 
     >
@@ -36,13 +36,10 @@
             <RichTextBox IsReadOnly="True" BorderThickness="0">
                 <FlowDocument>
                     <Paragraph>
-                        This demo shows a special input mode that allows you to move nodes without selecting
-                                    them first.
-                    </Paragraph>
-                    <Paragraph>
-                        This is done with the
-                        <Run Style="{StaticResource HtmlCode}">MoveUnselectedInputMode</Run> of
-                        <Run Style="{StaticResource HtmlCode}">GraphEditorInputMode</Run> .
+                        This demo shows how the
+                        <Run Style="{StaticResource HtmlCode}">MoveUnselectedItemsInputMode</Run> of
+                        <Run Style="{StaticResource HtmlCode}">GraphEditorInputMode</Run> can be
+                        constrained, e.g. with keys or custom hit testing.
                     </Paragraph>
                     <Paragraph Style="{StaticResource HtmlH2}">
                         Things to Try
@@ -50,8 +47,8 @@
                     <List>
                         <ListItem>
                             <Paragraph>
-                                Move a node around by dragging it without selecting it first.
-                                            Note that the cursor indicates that the node can be moved.
+                                Move a node around by dragging the top without selecting the node first. Note that the
+                                cursor indicates that the node can be moved.
                             </Paragraph>
                         </ListItem>
                         <ListItem>
@@ -62,18 +59,20 @@
                         </ListItem>
                         <ListItem>
                             <Paragraph>
-                                Enable the
-                                <Run Style="{StaticResource HtmlEm}">Classic Mode</Run> ,
-                                            that is the standard move input mode.
-                                            Now selected nodes are movable, regardless of the
-                                <Run Style="{StaticResource HtmlEm}">Move Unselected Nodes</Run> setting.
-                                            Note that both the standard and the special move input mode can be enabled at the same time.
+                                Disable
+                                <Run Style="{StaticResource HtmlEm}">Move Selected Nodes</Run> which is the
+                                out of the box
+                                <Run Style="{StaticResource HtmlCode}">MoveInputMode</Run> to move selected
+                                nodes. When disabled, only the current
+                                <Run Style="{StaticResource HtmlEm}">Move Unselected Nodes</Run> setting is
+                                considered, therefore selected nodes may not be draggable. Note that both, the standard
+                                and the special move input mode, can be enabled at the same time.
                             </Paragraph>
                         </ListItem>
                     </List>
 
                     <Paragraph Style="{StaticResource HtmlH2}">
-                        Input Mode Properties
+                        Move Unselected Settings
                     </Paragraph>
                     <Paragraph>
                         The
@@ -88,7 +87,9 @@
                     <Paragraph Style="{StaticResource HtmlDt}">Shift Not Pressed</Paragraph>
                     <Paragraph Style="{StaticResource HtmlDi}">
                         Nodes cannot be moved if the Shift key is held down while dragging. Instead, this 
-                                    gesture starts edge creation.
+                                    gesture may start edge creation if the
+                        <Run Style="{StaticResource HtmlEm}">Edge Creation Mode</Run> is set to
+                        default.
                     </Paragraph>
                     <Paragraph Style="{StaticResource HtmlDt}">Drag at Top</Paragraph>
                     <Paragraph Style="{StaticResource HtmlDi}">
@@ -104,6 +105,25 @@
                     <Paragraph Style="{StaticResource HtmlDi}">
                         Unselected nodes cannot be moved.
                     </Paragraph>
+
+                    <Paragraph Style="{StaticResource HtmlH2}">
+                        Edge Creation Settings
+                    </Paragraph>
+                    <Paragraph>
+                        The
+                        <Run Style="{StaticResource HtmlEm}">Edge Creation Mode</Run> combo box provides
+                        different behaviors for the edge creation gesture.
+                    </Paragraph>
+                    <Paragraph Style="{StaticResource HtmlDt}">Default</Paragraph>
+                    <Paragraph Style="{StaticResource HtmlDi}">
+                        The default edge creation behavior. When this is set, users may not be able to create edges
+                        because the node may be moved instead.
+                    </Paragraph>
+                    <Paragraph Style="{StaticResource HtmlDt}">At Port Candidates</Paragraph>
+                    <Paragraph Style="{StaticResource HtmlDi}">
+                        This allows edge creation to start at distinct port candidates which also works in conjunction
+                        with moving unselected nodes.
+                    </Paragraph>
                 </FlowDocument>
             </RichTextBox>
         </HeaderedContentControl.Header>
@@ -112,10 +132,10 @@
                 <ToolBar Width="{Binding ActualWidth, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ToolBarTray}}}" Height="Auto" Name="toolBar">
                     <Button Command="IncreaseZoom" CommandTarget="{Binding ElementName=graphControl}"/>
                     <Button Command="DecreaseZoom" CommandTarget="{Binding ElementName=graphControl}"/>
-                    <Button Command="{x:Static ywpf:GraphControl.FitGraphBoundsCommand}" CommandTarget="{Binding ElementName=graphControl}"/>
+                    <Button Command="{x:Static ywpf:GraphCommands.FitGraphBounds}" CommandTarget="{Binding ElementName=graphControl}"/>
                     <Separator />
                     <Label>Move Unselected Nodes:</Label>
-                    <ComboBox Name="cmbMode" SelectedIndex="0" Width="200" SelectionChanged="OnMoveModeChanged">
+                    <ComboBox Name="cmbMode" SelectedIndex="2" Width="200" SelectionChanged="OnMoveModeChanged">
                         <ComboBoxItem>Always</ComboBoxItem>
                         <ComboBoxItem>Shift Not Pressed</ComboBoxItem>
                         <ComboBoxItem>Drag at Top</ComboBoxItem>
@@ -135,7 +155,14 @@
                         </ToggleButton.Style>
                     </ToggleButton>
                     <Separator />
-                    <ToggleButton Name="btnClassic" Click="OnClassicClicked">Classic Mode</ToggleButton>
+                    <ToggleButton Name="btnClassic" Click="OnClassicClicked" IsChecked="True">Move Selected Nodes</ToggleButton>
+                    <Separator />
+                    <Label>Edge Creation Mode:</Label>
+                    <ComboBox Name="edgeCreationModeSelect" SelectedIndex="0" Width="200"
+                              SelectionChanged="OnEdgeCreationModeChanged">
+                        <ComboBoxItem>Default</ComboBoxItem>
+                        <ComboBoxItem>At Port Candidates</ComboBoxItem>
+                    </ComboBox>
                 </ToolBar>
             </ToolBarTray>
             <ywpf:GraphControl Width="Auto" x:Name="graphControl" FileOperationsEnabled="True"/>

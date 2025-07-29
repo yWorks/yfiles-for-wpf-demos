@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using yWorks.Controls.Input;
 using yWorks.Graph;
+using yWorks.Utils;
 
 namespace Demo.yFiles.Complete.RotatableNodes
 {
@@ -49,7 +50,7 @@ namespace Demo.yFiles.Complete.RotatableNodes
     public NodeRotateHandleProvider(INode node) {
       this.node = node;
       reshapeHandler = node.Lookup<IReshapeHandler>();
-      SnapStep = 45;
+      SnapStep = 90;
       SnapDelta = 10;
       SnapToSameAngleDelta = 5;
     }
@@ -58,9 +59,9 @@ namespace Demo.yFiles.Complete.RotatableNodes
     /// Gets or sets the angular step size to which rotation should snap (in degrees).
     /// </summary>
     /// <remarks>
-    /// Default is 45. Setting this to zero will disable snapping to predefined steps.
+    /// Default is 90. Setting this to zero will disable snapping to predefined steps.
     /// </remarks>
-    [DefaultValue(45.0)]
+    [DefaultValue(90.0)]
     public double SnapStep { get; set; }
 
     /// <summary>

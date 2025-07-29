@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -33,61 +33,70 @@ using yWorks.Graph.Styles;
 namespace Demo.yFiles.Complete.RotatableNodes
 {
   /// <summary>
-  /// Helper class to support clipboard operations for rotatable nodes.
+  ///   Helper class to support clipboard operations for rotatable nodes.
   /// </summary>
-  class RotatableNodeClipboardHelper : IClipboardHelper
+  internal class RotatableNodeClipboardHelper : IClipboardHelper
   {
     /// <summary>
-    /// Returns whether or not to copying the given item is possible.
+    ///   Returns whether copying the given item is possible.
     /// </summary>
     public bool ShouldCopy(IGraphClipboardContext context, IModelItem item) {
       return true;
     }
 
     /// <summary>
-    /// Returns whether or not to cutting the given item is possible.
+    ///   Returns whether cutting the given item is possible.
     /// </summary>
     public bool ShouldCut(IGraphClipboardContext context, IModelItem item) {
       return true;
     }
 
     /// <summary>
-    /// Returns whether or not to pasting of the given item is possible.
+    ///   Returns whether pasting the given item is possible.
     /// </summary>
-    public bool ShouldPaste(IGraphClipboardContext context, IModelItem item, object userData) {
+    public bool ShouldPaste(IGraphClipboardContext context, IModelItem item) {
       return true;
     }
 
     /// <summary>
-    /// Adds no additional state to the copy-operation.
+    ///   Returns whether duplicating the given item is possible.
     /// </summary>
-    public object Copy(IGraphClipboardContext context, IModelItem item) {
-      return null;
+    public bool ShouldDuplicate(IGraphClipboardContext context, IModelItem item) {
+      return true;
     }
 
     /// <summary>
-    /// Adds no additional state to the cut-operation.
+    ///   Adds no additional state to the copy-operation.
     /// </summary>
-    public object Cut(IGraphClipboardContext context, IModelItem item) {
-      return null;
-    }
+    public void OnCopied(IGraphClipboardContext context, IModelItem item) { }
 
     /// <summary>
-    /// Copies the node style for the paste-operation because <see cref="RotatableNodeStyleDecorator"/> should not be shared.
+    ///   Adds no additional state to the cut-operation.
     /// </summary>
-    public void Paste(IGraphClipboardContext context, IModelItem item, object userData) {
-      var node = item as INode;
-      if (node == null) {
+    public void OnCut(IGraphClipboardContext context, IModelItem item) { }
+
+    /// <summary>
+    ///   Copies the node style for the paste operation because <see cref="RotatableNodeStyleDecorator"/> should not be shared.
+    /// </summary>
+    public void OnPasted(IGraphClipboardContext context, IModelItem item) {
+      if (item is not INode node) {
         return;
       }
-      var styleWrapper = node.Style as RotatableNodeStyleDecorator;
-      if (styleWrapper != null) {
+      if (node.Style is RotatableNodeStyleDecorator styleWrapper) {
         if (context.TargetGraph.GetFoldingView() != null) {
           context.TargetGraph.GetFoldingView().Manager.MasterGraph.SetStyle(node, styleWrapper.Clone() as INodeStyle);
         } else {
           context.TargetGraph.SetStyle(node, styleWrapper.Clone() as INodeStyle);
         }
       }
+    }
+
+    /// <summary>
+    ///   Copies the node style for the duplicate operation because <see cref="RotatableNodeStyleDecorator"/> should not be
+    ///   shared.
+    /// </summary>
+    public void OnDuplicated(IGraphClipboardContext context, IModelItem original, IModelItem duplicate) {
+      OnPasted(context, duplicate);
     }
   }
 }

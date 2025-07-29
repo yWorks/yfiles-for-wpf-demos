@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -33,6 +33,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Shapes;
 using yWorks.Controls;
 using yWorks.Geometry;
 using yWorks.Graph;
@@ -45,19 +46,19 @@ namespace Demo.yFiles.Graph.TableEditor
   public class NodeStylePanel : Panel
   {
     private readonly GraphControl graphControl;
-    private readonly System.Windows.Shapes.Rectangle dragRect;
+    private readonly Rectangle dragRect;
 
     private readonly INode dummyNode;
 
     public NodeStylePanel() {
       ClipToBounds = true;
-      //Create a dummy graph control that holds the item representation as an INode
-      //We just hard code the necessary sizes for simplicity
+      // Create a dummy graph control that holds the item representation as an INode
+      // We just hard code the necessary sizes for simplicity
       graphControl = new GraphControl
                        {
                          HorizontalScrollBarPolicy = ScrollBarVisibility.Hidden,
                          VerticalScrollBarPolicy = ScrollBarVisibility.Hidden,
-                         ContentRect = new RectD(0, 0, 150, 150)
+                         ContentBounds = new RectD(0, 0, 150, 150)
                        };
       MaxWidth = MaxHeight = 150;
       MinWidth = MinHeight = 150;
@@ -66,25 +67,25 @@ namespace Demo.yFiles.Graph.TableEditor
       Children.Add(new StackPanel());
 
 
-      dragRect = new System.Windows.Shapes.Rectangle {Fill = Brushes.Transparent};
+      dragRect = new Rectangle {Fill = Brushes.Transparent};
       dragRect.MouseMove += DragRectOnMouseMove;
       Children.Add(dragRect);
       SizeChanged += OnSizeChanged;
       dummyNode = graphControl.Graph.CreateNode(new RectD(10, 10, 30, 30));
-      graphControl.ContentRect = new RectD(5, 5, 150, 150);
+      graphControl.ContentBounds = new RectD(5, 5, 150, 150);
     }
 
     private VisualGroup CreateVisual(CanvasControl canvas) {
-      RectD rect = canvas.ContentRect;
+      RectD rect = canvas.ContentBounds;
       ContextConfigurator configurator = new ContextConfigurator(rect);
       configurator.Margins = new InsetsD(0, 0, 0, 0);
       // scale down if necessary
       if (ActualHeight > 0 && ActualHeight > 0) {
         if (ActualHeight < rect.Height || ActualWidth < rect.Width) {
-          configurator.Scale = Math.Min(this.ActualWidth / rect.Width, this.ActualHeight / rect.Height);
+          configurator.Scale = Math.Min(ActualWidth / rect.Width, ActualHeight / rect.Height);
         }
-        RectD bounds = RectD.FromCenter(rect.Center,
-                                        new SizeD(this.ActualWidth, this.ActualHeight) * (1 / configurator.Scale));
+        RectD bounds = RectD.FromCenter(rect.GetCenter(),
+                                        new SizeD(ActualWidth, ActualHeight) * (1 / configurator.Scale));
         configurator.WorldBounds = bounds;
       }
 
@@ -111,13 +112,13 @@ namespace Demo.yFiles.Graph.TableEditor
     private void DragRectOnMouseMove(object sender, MouseEventArgs mouseEventArgs) {
       if (mouseEventArgs.LeftButton == MouseButtonState.Pressed) {
         if (Item.Tag is IStripe) {
-          //If the dummy node has a stripe as its tag, we use the stripe directly
-          //This allows StripeDropInputMode to take over
+          // If the dummy node has a stripe as its tag, we use the stripe directly
+          // This allows StripeDropInputMode to take over
           var dao = new DataObject();
           dao.SetData(typeof (IStripe), Item.Tag);
           DragDrop.DoDragDrop(this, dao, DragDropEffects.Link | DragDropEffects.Copy | DragDropEffects.Move);
         } else {
-          //Otherwise, we just use the node itself and let (hopefully) NodeDropInputMode take over
+          // Otherwise, we just use the node itself and let (hopefully) NodeDropInputMode take over
           var dao = new DataObject();
           dao.SetData(typeof (INode),
                       new SimpleNode {Layout = Item.Layout, Style = (INodeStyle) Item.Style.Clone(), Tag = Item.Tag});
@@ -135,7 +136,7 @@ namespace Demo.yFiles.Graph.TableEditor
 
     private static void OnItemChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args) {
       if (args.NewValue is IModelItem) {
-        var stylePanel = ((NodeStylePanel) dependencyObject);
+        var stylePanel = (NodeStylePanel) dependencyObject;
         stylePanel.UpdateChild();
       }
     }
@@ -151,7 +152,7 @@ namespace Demo.yFiles.Graph.TableEditor
         graphControl.Graph.AddLabel(dummyNode, label.Text, label.LayoutParameter,
                                     label.Style, label.PreferredSize, label.Tag);
       }
-      graphControl.ContentRect = dummyNode.Layout.ToRectD().GetEnlarged(5);
+      graphControl.ContentBounds = dummyNode.Layout.ToRectD().GetEnlarged(5);
     }
 
     public INode Item {

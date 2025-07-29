@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -40,20 +40,19 @@ using yWorks.Controls;
 using yWorks.Controls.Input;
 using yWorks.Geometry;
 using yWorks.Graph;
-using yWorks.Graph.Styles;
 using yWorks.Graph.LabelModels;
+using yWorks.Graph.Styles;
 
-namespace Demo.yFiles.Graph.Bpmn.Styles {
-
+namespace Demo.yFiles.Graph.Bpmn.Styles
+{
   /// <summary>
-  /// An <see cref="INodeStyle"/> implementation representing an Choreography according to the BPMN.
+  ///   An <see cref="INodeStyle"/> implementation representing a Choreography according to the BPMN.
   /// </summary>
   [Obfuscation(StripAfterObfuscation = false, Exclude = true, ApplyToMembers = false)]
-  public class ChoreographyNodeStyle : BpmnNodeStyle
+  public sealed class ChoreographyNodeStyle : BpmnNodeStyle
   {
-    private static readonly ShapeNodeStyle sns = new ShapeNodeStyle(new ShapeNodeStyleRenderer {RoundRectArcRadius = BpmnConstants.ChoreographyCornerRadius})
-    {
-        Shape = ShapeNodeShape.RoundRectangle,
+    private static readonly RectangleNodeStyle rectangleNodeStyle = new() {
+        CornerSize = BpmnConstants.ChoreographyCornerRadius,
         Pen = Pens.Black,
         Brush = null
     };
@@ -72,12 +71,12 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
     private ChoreographyType type;
 
     /// <summary>
-    /// Gets or sets the choreography type of this style. 
+    ///   Gets or sets the choreography type of this style.
     /// </summary>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     [DefaultValue(ChoreographyType.Task)]
     public ChoreographyType Type {
-      get { return type; }
+      get => type;
       set {
         if (type != value || outlineIcon == null) {
           ModCount++;
@@ -90,12 +89,12 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
     private LoopCharacteristic loopCharacteristic;
 
     /// <summary>
-    /// Gets or sets the loop characteristic of this style. 
+    ///   Gets or sets the loop characteristic of this style.
     /// </summary>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     [DefaultValue(LoopCharacteristic.None)]
     public LoopCharacteristic LoopCharacteristic {
-      get { return loopCharacteristic; }
+      get => loopCharacteristic;
       set {
         if (loopCharacteristic != value) {
           ModCount++;
@@ -108,12 +107,12 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
     private SubState subState;
 
     /// <summary>
-    /// Gets or sets the sub state of this style.
+    ///   Gets or sets the substate of this style.
     /// </summary>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     [DefaultValue(SubState.None)]
     public SubState SubState {
-      get { return subState; }
+      get => subState;
       set {
         if (subState != value) {
           ModCount++;
@@ -126,12 +125,12 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
     private bool initiatingMessage;
 
     /// <summary>
-    /// Gets or sets whether the initiating message icon is displayed. 
+    ///   Gets or sets whether the initiating message icon is displayed.
     /// </summary>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     [DefaultValue(false)]
     public bool InitiatingMessage {
-      get { return initiatingMessage; }
+      get => initiatingMessage;
       set {
         if (initiatingMessage != value) {
           ModCount++;
@@ -143,12 +142,12 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
     private bool responseMessage;
 
     /// <summary>
-    /// Gets or sets whether the response message icon is displayed. 
+    ///   Gets or sets whether the response message icon is displayed.
     /// </summary>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     [DefaultValue(false)]
     public bool ResponseMessage {
-      get { return responseMessage; }
+      get => responseMessage;
       set {
         if (responseMessage != value) {
           ModCount++;
@@ -160,16 +159,18 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
     private bool initiatingAtTop = true;
 
     /// <summary>
-    /// Gets or sets whether the initiating message icon or the response message icon is displayed on top of the node while the other one is at the bottom side. 
+    ///   Gets or sets whether the initiating message icon or the response message icon is displayed on top of the node while
+    ///   the other one is at the bottom side.
     /// </summary>
     /// <remarks>
-    /// Whether the initiating and response message icons are displayed at all depends on <see cref="InitiatingMessage"/> and <see cref="ResponseMessage"/>.
-    /// This property only determines which one is displayed on which side of the node.
+    ///   Whether the initiating and response message icons are displayed at all depends on <see cref="InitiatingMessage"/> and
+    ///   <see cref="ResponseMessage"/>.
+    ///   This property only determines which one is displayed on which side of the node.
     /// </remarks>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     [DefaultValue(true)]
     public bool InitiatingAtTop {
-      get { return initiatingAtTop; }
+      get => initiatingAtTop;
       set {
         if (initiatingAtTop != value) {
           initiatingAtTop = value;
@@ -180,37 +181,33 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
       }
     }
 
-    private readonly ParticipantList topParticipants = new ParticipantList();
+    private readonly ParticipantList topParticipants = new();
 
     /// <summary>
-    /// Gets the list of <see cref="Participant"/>s at the top of the node, ordered from top to bottom.
+    ///   Gets the list of <see cref="Participant"/>s at the top of the node, ordered from top to bottom.
     /// </summary>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
-    public IList<Participant> TopParticipants {
-      get { return topParticipants; }
-    }
+    public IList<Participant> TopParticipants => topParticipants;
 
-    private readonly ParticipantList bottomParticipants = new ParticipantList();
+    private readonly ParticipantList bottomParticipants = new();
 
     /// <summary>
-    /// Gets the list of <see cref="Participant"/>s at the bottom of the node, ordered from bottom to top.
+    ///   Gets the list of <see cref="Participant"/>s at the bottom of the node, ordered from bottom to top.
     /// </summary>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
-    public IList<Participant> BottomParticipants {
-      get { return bottomParticipants; }
-    }
+    public IList<Participant> BottomParticipants => bottomParticipants;
 
     private Brush background = BpmnConstants.ChoreographyDefaultBackground;
 
     /// <summary>
-    /// Gets or sets the background color of the choreography.
+    ///   Gets or sets the background color of the choreography.
     /// </summary>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     [DefaultValue(typeof(BpmnConstants), "ChoreographyDefaultBackground")]
     public Brush Background {
-      get { return background; }
+      get => background;
       set {
         if (background != value) {
           ModCount++;
@@ -223,12 +220,12 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
     private Brush outline = BpmnConstants.ChoreographyDefaultOutline;
 
     /// <summary>
-    /// Gets or sets the outline color of the choreography.
+    ///   Gets or sets the outline color of the choreography.
     /// </summary>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     [DefaultValue(typeof(BpmnConstants), "ChoreographyDefaultOutline")]
     public Brush Outline {
-      get { return outline; }
+      get => outline;
       set {
         if (outline != value) {
           ModCount++;
@@ -241,12 +238,12 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
     private Brush iconColor = BpmnConstants.ChoreographyDefaultIconColor;
 
     /// <summary>
-    /// Gets or sets the primary color for icons and markers.
+    ///   Gets or sets the primary color for icons and markers.
     /// </summary>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     [DefaultValue(typeof(BpmnConstants), "ChoreographyDefaultIconColor")]
     public Brush IconColor {
-      get { return iconColor; }
+      get => iconColor;
       set {
         if (iconColor != value) {
           ModCount++;
@@ -261,12 +258,12 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
     private Brush initiatingColor = BpmnConstants.ChoreographyDefaultInitiatingColor;
 
     /// <summary>
-    /// Gets or sets the color for initiating participants and messages.
+    ///   Gets or sets the color for initiating participants and messages.
     /// </summary>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     [DefaultValue(typeof(BpmnConstants), "ChoreographyDefaultInitiatingColor")]
     public Brush InitiatingColor {
-      get { return initiatingColor; }
+      get => initiatingColor;
       set {
         if (initiatingColor != value) {
           ModCount++;
@@ -278,12 +275,12 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
     private Brush responseColor = BpmnConstants.ChoreographyDefaultResponseColor;
 
     /// <summary>
-    /// Gets or sets the primary color for responding participants and messages.
+    ///   Gets or sets the primary color for responding participants and messages.
     /// </summary>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     [DefaultValue(typeof(BpmnConstants), "ChoreographyDefaultResponseColor")]
     public Brush ResponseColor {
-      get { return responseColor; }
+      get => responseColor;
       set {
         if (responseColor != value) {
           ModCount++;
@@ -297,21 +294,22 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
     private Pen messageLinePen;
 
     /// <summary>
-    /// Gets or sets the outline color for messages.
+    ///   Gets or sets the outline color for messages.
     /// </summary>
     /// <remarks>
-    /// This also influences the color of the line to the message.
+    ///   This also influences the color of the line to the message.
     /// </remarks>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     [DefaultValue(typeof(BpmnConstants), "ChoreographyDefaultMessageOutline")]
     public Brush MessageOutline {
-      get { return messageOutline; }
+      get => messageOutline;
       set {
         if (messageOutline != value) {
           ModCount++;
           messageOutline = value;
           messagePen = (Pen) new Pen(messageOutline, 1).GetAsFrozen();
-          messageLinePen = (Pen) new Pen(messageOutline, 1) { DashStyle = DashStyles.Dot, DashCap = PenLineCap.Round }.GetAsFrozen();
+          messageLinePen = (Pen) new Pen(messageOutline, 1) { DashStyle = DashStyles.Dot, DashCap = PenLineCap.Round }
+              .GetAsFrozen();
           UpdateMessageLineIcon();
           UpdateInitiatingMessageIcon();
           UpdateResponseMessageIcon();
@@ -320,35 +318,27 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
     }
 
     /// <summary>
-    /// Gets or sets the insets for the task name band of the given item.
+    ///   Gets or sets the padding for the task name band of the given item.
     /// </summary>
     /// <remarks>
-    /// These insets are extended by the sizes of the participant bands on top and bottom side 
-    /// and returned via an <see cref="INodeInsetsProvider"/> if such an instance is queried through the
-    /// <see cref="INodeStyleRenderer.GetContext">context lookup</see>.
+    ///   This padding is extended by the sizes of the participant bands on top and bottom side
+    ///   and returned via an <see cref="IGroupPaddingProvider"/> if such an instance is queried through the
+    ///   <see cref="INodeStyleRenderer.GetContext">context lookup</see>.
     /// </remarks>
-    /// <seealso cref="INodeInsetsProvider"/>
+    /// <seealso cref="IGroupPaddingProvider"/>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     [DefaultValue(typeof(InsetsD), "5")]
-    public InsetsD Insets {
-      get { return insets; }
-      set { insets = value; }
-    }
+    public InsetsD Padding { get; set; } = new(5);
 
-    private bool ShowTopMessage {
-      get { return (InitiatingMessage && InitiatingAtTop) || (ResponseMessage && !InitiatingAtTop); }
-    }
+    private bool ShowTopMessage => (InitiatingMessage && InitiatingAtTop) || (ResponseMessage && !InitiatingAtTop);
 
-    private bool ShowBottomMessage {
-      get { return (InitiatingMessage && !InitiatingAtTop) || (ResponseMessage && InitiatingAtTop); }
-    }
+    private bool ShowBottomMessage => (InitiatingMessage && !InitiatingAtTop) || (ResponseMessage && InitiatingAtTop);
 
     private IIcon outlineIcon;
     private IIcon loopIcon;
-    private InsetsD insets = new InsetsD(5);
 
     /// <summary>
-    /// Creates a new instance.
+    ///   Creates a new instance.
     /// </summary>
     public ChoreographyNodeStyle() {
       Type = ChoreographyType.Task;
@@ -382,7 +372,8 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
 
     private void UpdateTopInitiatingMessageIcon() {
       topInitiatingMessageIcon = IconFactory.CreateCombinedIcon(new[] {
-          IconFactory.CreatePlacedIcon(messageLineIcon, ExteriorLabelModel.North, new SizeD(MessageDistance, MessageDistance)),
+          IconFactory.CreatePlacedIcon(messageLineIcon, ExteriorNodeLabelModel.Top,
+              new SizeD(MessageDistance, MessageDistance)),
           IconFactory.CreatePlacedIcon(initiatingMessageIcon, BpmnConstants.ChoreographyTopMessagePlacement,
               BpmnConstants.MessageSize)
       });
@@ -390,7 +381,7 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
 
     private void UpdateBottomInitiatingMessageIcon() {
       bottomInitiatingMessageIcon = IconFactory.CreateCombinedIcon(new[] {
-          IconFactory.CreatePlacedIcon(messageLineIcon, ExteriorLabelModel.South,
+          IconFactory.CreatePlacedIcon(messageLineIcon, ExteriorNodeLabelModel.Bottom,
               new SizeD(MessageDistance, MessageDistance)),
           IconFactory.CreatePlacedIcon(initiatingMessageIcon, BpmnConstants.ChoreographyBottomMessagePlacement,
               BpmnConstants.MessageSize)
@@ -403,11 +394,11 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
       UpdateTopResponseMessageIcon();
       UpdateBottomResponseMessageIcon();
     }
-    
+
 
     private void UpdateTopResponseMessageIcon() {
       topResponseMessageIcon = IconFactory.CreateCombinedIcon(new[] {
-          IconFactory.CreatePlacedIcon(messageLineIcon, ExteriorLabelModel.North,
+          IconFactory.CreatePlacedIcon(messageLineIcon, ExteriorNodeLabelModel.Top,
               new SizeD(MessageDistance, MessageDistance)),
           IconFactory.CreatePlacedIcon(responseMessageIcon, BpmnConstants.ChoreographyTopMessagePlacement,
               BpmnConstants.MessageSize)
@@ -416,7 +407,7 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
 
     private void UpdateBottomResponseMessageIcon() {
       bottomResponseMessageIcon = IconFactory.CreateCombinedIcon(new[] {
-          IconFactory.CreatePlacedIcon(messageLineIcon, ExteriorLabelModel.South,
+          IconFactory.CreatePlacedIcon(messageLineIcon, ExteriorNodeLabelModel.Bottom,
               new SizeD(MessageDistance, MessageDistance)),
           IconFactory.CreatePlacedIcon(responseMessageIcon, BpmnConstants.ChoreographyBottomMessagePlacement,
               BpmnConstants.MessageSize)
@@ -426,8 +417,7 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
     private void UpdateMultiInstanceIcon() {
       multiInstanceIcon = IconFactory.CreatePlacedIcon(
           IconFactory.CreateLoopCharacteristic(LoopCharacteristic.Parallel, IconColor),
-          BpmnConstants.ChoreographyMarkerPlacement,
-          BpmnConstants.MarkerSize);
+          BpmnConstants.ChoreographyMarkerPlacement, BpmnConstants.MarkerSize);
     }
 
     private void UpdateLoopIcon() {
@@ -453,7 +443,7 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
       var tpi = new List<IIcon>();
       // top participants
       double topOffset = 0;
-      bool first = true;
+      var first = true;
       foreach (Participant participant in topParticipants) {
         var participantIcon = CreateParticipantIcon(participant, true, first);
         tpi.Add(participantIcon);
@@ -466,7 +456,7 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
 
       var bpi = new List<IIcon>();
       // bottom participants
-      double bottomOffset = bounds.Height;
+      var bottomOffset = bounds.Height;
       first = true;
       foreach (Participant participant in bottomParticipants) {
         var participantIcon = CreateParticipantIcon(participant, false, first);
@@ -479,7 +469,7 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
       }
 
       // outline
-      outlineIcon.SetBounds(new RectD(PointD.Origin, bounds.Size));
+      outlineIcon.SetBounds(new RectD(PointD.Origin, bounds.GetSize()));
       container.Add(outlineIcon.CreateVisual(context));
 
       // messages
@@ -496,8 +486,11 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
         container.Add(responseMessageIcon.CreateVisual(context));
       }
 
-      container.SetCanvasArrangeRect(new Rect(bounds.TopLeft, bounds.Size));
-      container.SetRenderDataCache(new ChoreographyRenderData(bounds, ModCount + topParticipants.ModCount + bottomParticipants.ModCount) {TopParticipantIcons = tpi, BottomParticipantIcons = bpi});
+      container.SetCanvasArrangeRect(new Rect(bounds.GetTopLeft().ToPoint(), bounds.GetSize().ToSize()));
+      container.SetRenderDataCache(
+          new ChoreographyRenderData(bounds, ModCount + topParticipants.ModCount + bottomParticipants.ModCount) {
+              TopParticipantIcons = tpi, BottomParticipantIcons = bpi
+          });
       return container;
     }
 
@@ -510,16 +503,16 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
       if (cache == null || cache.ModCount != currentModCount) {
         return CreateVisual(context, node);
       }
-      
+
       var newBounds = node.Layout.ToRectD();
 
       if (cache.Bounds == newBounds) {
         return container;
       }
-      
+
       if (cache.Bounds.Width != newBounds.Width || cache.Bounds.Height != newBounds.Height) {
         // update icon bounds
-        int childIndex = 0;
+        var childIndex = 0;
 
         // task band
         var taskBandContainer = container.Children[childIndex++] as VisualGroup;
@@ -533,7 +526,7 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
 
         // top participants
         double topOffset = 0;
-        for (int i = 0; i < topParticipants.Count; i++) {
+        for (var i = 0; i < topParticipants.Count; i++) {
           var participant = topParticipants[i];
           var participantIcon = cache.TopParticipantIcons[i];
           var height = participant.GetSize();
@@ -543,8 +536,8 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
         }
 
         // bottom participants
-        double bottomOffset = newBounds.Height;
-        for (int i = 0; i < bottomParticipants.Count; i++) {
+        var bottomOffset = newBounds.Height;
+        for (var i = 0; i < bottomParticipants.Count; i++) {
           var participant = bottomParticipants[i];
           var participantIcon = cache.BottomParticipantIcons[i];
           var height = participant.GetSize();
@@ -554,7 +547,7 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
         }
 
         // outline
-        outlineIcon.SetBounds(new RectD(PointD.Origin, newBounds.Size));
+        outlineIcon.SetBounds(new RectD(PointD.Origin, newBounds.GetSize()));
         UpdateChildVisual(context, container, childIndex++, outlineIcon);
 
         // messages
@@ -570,8 +563,10 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
         }
       }
 
-      container.SetCanvasArrangeRect(new Rect(newBounds.TopLeft, newBounds.Size));
-      container.SetRenderDataCache(new ChoreographyRenderData(newBounds, currentModCount) {TopParticipantIcons = cache.TopParticipantIcons, BottomParticipantIcons = cache.BottomParticipantIcons});
+      container.SetCanvasArrangeRect(new Rect(newBounds.GetTopLeft().ToPoint(), newBounds.GetSize().ToSize()));
+      container.SetRenderDataCache(new ChoreographyRenderData(newBounds, currentModCount) {
+          TopParticipantIcons = cache.TopParticipantIcons, BottomParticipantIcons = cache.BottomParticipantIcons
+      });
       return container;
     }
 
@@ -581,13 +576,15 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
       }
       IIcon subStateIcon = null;
       if (SubState != SubState.None) {
-        subStateIcon = SubState == SubState.Dynamic ? IconFactory.CreateDynamicSubState(node, IconColor) : IconFactory.CreateStaticSubState(SubState, IconColor);
+        subStateIcon = SubState == SubState.Dynamic
+            ? IconFactory.CreateDynamicSubState(node, IconColor)
+            : IconFactory.CreateStaticSubState(SubState, IconColor);
       }
 
       IIcon markerIcon = null;
       if (loopIcon != null && subStateIcon != null) {
-        markerIcon = IconFactory.CreateLineUpIcon(new List<IIcon>(new [] {loopIcon, subStateIcon}),
-          BpmnConstants.MarkerSize, 5);
+        markerIcon = IconFactory.CreateLineUpIcon(new List<IIcon>(new[] { loopIcon, subStateIcon }),
+            BpmnConstants.MarkerSize, 5);
       } else if (loopIcon != null) {
         markerIcon = loopIcon;
       } else if (subStateIcon != null) {
@@ -595,21 +592,18 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
       }
       if (markerIcon != null) {
         var placedMarkers = IconFactory.CreatePlacedIcon(markerIcon, BpmnConstants.ChoreographyMarkerPlacement,
-          BpmnConstants.MarkerSize);
-        return IconFactory.CreateCombinedIcon(new List<IIcon>(new[] {taskBandBackgroundIcon, placedMarkers}));
-      } else {
-        return taskBandBackgroundIcon;
+            BpmnConstants.MarkerSize);
+        return IconFactory.CreateCombinedIcon(new List<IIcon>(new[] { taskBandBackgroundIcon, placedMarkers }));
       }
+      return taskBandBackgroundIcon;
     }
 
     private IIcon CreateParticipantIcon(Participant participant, bool top, bool isFirst) {
-      var isInitializing = isFirst && (top ^ !InitiatingAtTop);
+      var isInitializing = isFirst && top ^ !InitiatingAtTop;
 
       var radius = BpmnConstants.ChoreographyCornerRadius;
-      var icon = IconFactory.CreateChoreographyParticipant(
-          Outline, isInitializing ? InitiatingColor : ResponseColor,
-        top && isFirst ? radius : 0,
-        !top && isFirst ? radius : 0);
+      var icon = IconFactory.CreateChoreographyParticipant(Outline, isInitializing ? InitiatingColor : ResponseColor,
+          top && isFirst ? radius : 0, !top && isFirst ? radius : 0);
       if (participant.MultiInstance) {
         if (multiInstanceIcon == null) {
           UpdateMultiInstanceIcon();
@@ -619,7 +613,11 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
       return icon;
     }
 
-    private static void UpdateChildVisual(IRenderContext context, VisualGroup container, int index, IVisualCreator icon) {
+    private static void UpdateChildVisual(
+        IRenderContext context,
+        VisualGroup container,
+        int index,
+        IVisualCreator icon) {
       var oldPathVisual = container.Children[index];
       var newPathVisual = icon.UpdateVisual(context, oldPathVisual);
       if (!oldPathVisual.Equals(newPathVisual)) {
@@ -629,14 +627,13 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
       }
     }
 
-#endregion
+    #endregion
 
     /// <summary>
-    /// Returns the participant at the specified location.
+    ///   Returns the participant at the specified location.
     /// </summary>
     /// <param name="node">The node whose bounds shall be used.</param>
     /// <param name="location">The location of the participant.</param>
-    /// <returns></returns>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     public Participant GetParticipant(INode node, PointD location) {
       if (!node.Layout.Contains(location)) {
@@ -645,7 +642,7 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
 
       var relativeY = (location - node.Layout.GetTopLeft()).Y;
       if (relativeY < topParticipants.GetHeight()) {
-        foreach (Participant participant in TopParticipants) {
+        foreach (var participant in TopParticipants) {
           var size = participant.GetSize();
           if (relativeY < size) {
             return participant;
@@ -654,7 +651,7 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
         }
       } else if (node.Layout.Height - bottomParticipants.GetHeight() < relativeY) {
         var yFromBottom = node.Layout.Height - relativeY;
-        foreach (Participant participant in BottomParticipants) {
+        foreach (var participant in BottomParticipants) {
           var size = participant.GetSize();
           if (yFromBottom < size) {
             return participant;
@@ -668,28 +665,26 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
 
 
     /// <summary>
-    /// Returns the bounds of the specified participant band.
+    ///   Returns the bounds of the specified participant band.
     /// </summary>
     /// <param name="owner">The node whose bounds shall be used.</param>
     /// <param name="index">The index of the participant in its list.</param>
-    /// <param name="top">Whether the top of bottom list of participants shall be used.</param>
-    /// <returns></returns>
+    /// <param name="top">Whether the top or bottom list of participants shall be used.</param>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     public RectD GetParticipantBandBounds(INode owner, int index, bool top) {
       var width = owner.Layout.Width;
       if (top && index <= topParticipants.Count) {
-        int i = 0;
+        var i = 0;
         double yOffset = 0;
         foreach (Participant topParticipant in topParticipants) {
           if (index == i++) {
             return new RectD(owner.Layout.X, owner.Layout.Y + yOffset, width, topParticipant.GetSize());
-          } else {
-            yOffset += topParticipant.GetSize();
           }
+          yOffset += topParticipant.GetSize();
         }
       } else if (!top && index < bottomParticipants.Count) {
-        int i = 0;
-        double yOffset = owner.Layout.Height;
+        var i = 0;
+        var yOffset = owner.Layout.Height;
         foreach (Participant bottomParticipant in bottomParticipants) {
           yOffset -= bottomParticipant.GetSize();
           if (index == i++) {
@@ -701,7 +696,6 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
     }
 
     public ILabelModelParameter GetParticipantParameters(Participant participant) {
-
       bool top;
       int index;
 
@@ -712,15 +706,14 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
         top = true;
         index = TopParticipants.IndexOf(participant);
       }
-      
+
       return ChoreographyLabelModel.Instance.CreateParticipantParameter(top, index);
     }
-    
+
     /// <summary>
-    /// Returns the bounds of the task name band.
+    ///   Returns the bounds of the task name band.
     /// </summary>
     /// <param name="owner">The node whose bounds shall be used.</param>
-    /// <returns></returns>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     public RectD GetTaskNameBandBounds(INode owner) {
       return GetRelativeTaskNameBandBounds(owner).GetTranslated(owner.Layout.GetTopLeft());
@@ -728,24 +721,24 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
 
     private RectD GetRelativeTaskNameBandBounds(INode owner) {
       var topHeight = topParticipants.GetHeight();
-      return new RectD(0, topHeight, owner.Layout.Width, Math.Max(0, owner.Layout.Height - topHeight - bottomParticipants.GetHeight()));
+      return new RectD(0, topHeight, owner.Layout.Width,
+          Math.Max(0, owner.Layout.Height - topHeight - bottomParticipants.GetHeight()));
     }
 
     /// <inheritdoc/>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     protected override GeneralPath GetOutline(INode node) {
-      sns.Renderer.GetShapeGeometry(node, sns);
-      var path = ((ShapeNodeStyleRenderer) sns.Renderer).GetOutline()??new GeneralPath();
+      var path = rectangleNodeStyle.Renderer.GetShapeGeometry(node, rectangleNodeStyle).GetOutline() ?? new GeneralPath();
 
       if (ShowTopMessage) {
         var topBoxSize = BpmnConstants.MessageSize;
         var cx = node.Layout.GetCenter().X;
-        double topBoxMaxY = node.Layout.Y - MessageDistance;
-        path.MoveTo(cx - topBoxSize.Width/2, node.Layout.Y);
-        path.LineTo(cx - topBoxSize.Width/2, topBoxMaxY);
-        path.LineTo(cx - topBoxSize.Width/2, topBoxMaxY - topBoxSize.Height);
-        path.LineTo(cx + topBoxSize.Width/2, topBoxMaxY - topBoxSize.Height);
-        path.LineTo(cx + topBoxSize.Width/2, topBoxMaxY);
+        var topBoxMaxY = node.Layout.Y - MessageDistance;
+        path.MoveTo(cx - topBoxSize.Width / 2, node.Layout.Y);
+        path.LineTo(cx - topBoxSize.Width / 2, topBoxMaxY);
+        path.LineTo(cx - topBoxSize.Width / 2, topBoxMaxY - topBoxSize.Height);
+        path.LineTo(cx + topBoxSize.Width / 2, topBoxMaxY - topBoxSize.Height);
+        path.LineTo(cx + topBoxSize.Width / 2, topBoxMaxY);
         path.LineTo(cx - topBoxSize.Width / 2, topBoxMaxY);
         path.Close();
       }
@@ -755,7 +748,7 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
         var cx = node.Layout.GetCenter().X;
         var bottomBoxY = node.Layout.GetMaxY() + MessageDistance;
         path.MoveTo(cx - bottomBoxSize.Width / 2, node.Layout.GetMaxY());
-        path.LineTo(cx - bottomBoxSize.Width/2, bottomBoxY);
+        path.LineTo(cx - bottomBoxSize.Width / 2, bottomBoxY);
         path.LineTo(cx - bottomBoxSize.Width / 2, bottomBoxY + bottomBoxSize.Height);
         path.LineTo(cx + bottomBoxSize.Width / 2, bottomBoxY + bottomBoxSize.Height);
         path.LineTo(cx + bottomBoxSize.Width / 2, bottomBoxY);
@@ -769,18 +762,22 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
     /// <inheritdoc/>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     protected override bool IsHit(IInputModeContext context, PointD location, INode node) {
-      if (sns.Renderer.GetHitTestable(node, sns).IsHit(context, location)) {
+      if (rectangleNodeStyle.Renderer.GetHitTestable(node, rectangleNodeStyle).IsHit(context, location)) {
         return true;
       }
       var layout = node.Layout.ToRectD();
       if (ShowTopMessage) {
         var cx = layout.GetCenter().X;
         var topBoxSize = BpmnConstants.MessageSize;
-        var messageRect = new RectD(new PointD(cx - topBoxSize.Width/2, layout.Y - MessageDistance - topBoxSize.Height), topBoxSize);
+        var messageRect =
+            new RectD(new PointD(cx - topBoxSize.Width / 2, layout.Y - MessageDistance - topBoxSize.Height),
+                topBoxSize);
         if (messageRect.Contains(location, context.HitTestRadius)) {
           return true;
         }
-        if (Math.Abs(location.X - cx) < context.HitTestRadius && layout.Y - MessageDistance - context.HitTestRadius < location.Y && location.Y < layout.Y + context.HitTestRadius) {
+        if (Math.Abs(location.X - cx) < context.HitTestRadius &&
+            layout.Y - MessageDistance - context.HitTestRadius < location.Y &&
+            location.Y < layout.Y + context.HitTestRadius) {
           return true;
         }
       }
@@ -788,11 +785,14 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
       if (ShowBottomMessage) {
         var bottomBoxSize = BpmnConstants.MessageSize;
         var cx = layout.GetCenter().X;
-        var messageRect = new RectD(new PointD(cx - bottomBoxSize.Width / 2, layout.GetMaxY() + MessageDistance), bottomBoxSize);
+        var messageRect = new RectD(new PointD(cx - bottomBoxSize.Width / 2, layout.GetMaxY() + MessageDistance),
+            bottomBoxSize);
         if (messageRect.Contains(location, context.HitTestRadius)) {
           return true;
         }
-        if (Math.Abs(location.X - cx) < context.HitTestRadius && layout.GetMaxY() - context.HitTestRadius < location.Y && location.Y < layout.GetMaxY() + MessageDistance + context.HitTestRadius) {
+        if (Math.Abs(location.X - cx) < context.HitTestRadius &&
+            layout.GetMaxY() - context.HitTestRadius < location.Y &&
+            location.Y < layout.GetMaxY() + MessageDistance + context.HitTestRadius) {
           return true;
         }
       }
@@ -802,7 +802,7 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
     /// <inheritdoc/>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     protected override RectD GetBounds(ICanvasContext context, INode node) {
-      RectD bounds = node.Layout.ToRectD();
+      var bounds = node.Layout.ToRectD();
       if (ShowTopMessage) {
         bounds = bounds.GetEnlarged(new InsetsD(0, MessageDistance + BpmnConstants.MessageSize.Height, 0, 0));
       }
@@ -820,9 +820,11 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
         var minWidth = Math.Max(0, MinimumSize.Width);
         var minHeight = Math.Max(0, MinimumSize.Height) + topParticipants.GetHeight() + bottomParticipants.GetHeight();
         return new NodeSizeConstraintProvider(new SizeD(minWidth, minHeight), SizeD.Infinite);
-      } else if (type == typeof (INodeInsetsProvider)) {
-        return new ChoreographyInsetsProvider(this);
-      } else if (type == typeof (IEditLabelHelper)) {
+      }
+      if (type == typeof(IGroupPaddingProvider)) {
+        return new ChoreographyPaddingProvider(this);
+      }
+      if (type == typeof(IEditLabelHelper)) {
         return new ChoreographyEditLabelHelper(node);
       }
       return base.Lookup(node, type);
@@ -831,22 +833,21 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
     /// <inheritdoc/>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     public override object Clone() {
-      ChoreographyNodeStyle clone = new ChoreographyNodeStyle
-      {
-        InitiatingAtTop = InitiatingAtTop, 
-        InitiatingMessage = InitiatingMessage, 
-        Insets = Insets, 
-        LoopCharacteristic = LoopCharacteristic, 
-        MinimumSize = MinimumSize,
-        ResponseMessage = ResponseMessage, 
-        SubState = SubState, 
-        Type = Type,
-        IconColor = IconColor,
-        InitiatingColor = InitiatingColor,
-        ResponseColor = ResponseColor,
-        Outline = Outline,
-        Background = Background,
-        MessageOutline = MessageOutline
+      var clone = new ChoreographyNodeStyle {
+          InitiatingAtTop = InitiatingAtTop,
+          InitiatingMessage = InitiatingMessage,
+          Padding = Padding,
+          LoopCharacteristic = LoopCharacteristic,
+          MinimumSize = MinimumSize,
+          ResponseMessage = ResponseMessage,
+          SubState = SubState,
+          Type = Type,
+          IconColor = IconColor,
+          InitiatingColor = InitiatingColor,
+          ResponseColor = ResponseColor,
+          Outline = Outline,
+          Background = Background,
+          MessageOutline = MessageOutline
       };
       foreach (var participant in TopParticipants) {
         clone.TopParticipants.Add(participant.Clone());
@@ -864,11 +865,7 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
 
       private int modCount;
 
-      public int ModCount {
-        get {
-          return modCount + GetParticipantModCount();
-        }
-      }
+      public int ModCount => modCount + GetParticipantModCount();
 
       public double GetHeight() {
         double height = 0;
@@ -917,13 +914,9 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
         return innerList.Remove(item);
       }
 
-      public int Count {
-        get { return innerList.Count; }
-      }
+      public int Count => innerList.Count;
 
-      public bool IsReadOnly {
-        get { return innerList.IsReadOnly; }
-      }
+      public bool IsReadOnly => innerList.IsReadOnly;
 
       public int IndexOf(Participant item) {
         return innerList.IndexOf(item);
@@ -940,35 +933,38 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
       }
 
       public Participant this[int index] {
-        get { return innerList[index]; }
-        set { innerList[index] = value; }
+        get => innerList[index];
+        set => innerList[index] = value;
       }
     }
 
 
     /// <summary>
-    /// Uses the style insets extended by the size of the participant bands.
+    ///   Uses the style padding extended by the size of the participant bands.
     /// </summary>
-    private sealed class ChoreographyInsetsProvider : INodeInsetsProvider {
+    private sealed class ChoreographyPaddingProvider : IGroupPaddingProvider
+    {
       private readonly ChoreographyNodeStyle style;
 
-      internal ChoreographyInsetsProvider(ChoreographyNodeStyle style) {
+      internal ChoreographyPaddingProvider(ChoreographyNodeStyle style) {
         this.style = style;
       }
 
-      public InsetsD GetInsets(INode node) {
-        double topInsets = ((ParticipantList) style.TopParticipants).GetHeight();
-        double bottomInsets = ((ParticipantList) style.BottomParticipants).GetHeight();
+      public InsetsD GetPadding() {
+        var topPadding = ((ParticipantList) style.TopParticipants).GetHeight();
+        var bottomPadding = ((ParticipantList) style.BottomParticipants).GetHeight();
 
-        bottomInsets += style.LoopCharacteristic != LoopCharacteristic.None || style.SubState != SubState.None 
-          ? BpmnConstants.MarkerSize.Height + ((InteriorLabelModel)BpmnConstants.ChoreographyMarkerPlacement.Model).Insets.Bottom
-        : 0;
+        bottomPadding += style.LoopCharacteristic != LoopCharacteristic.None || style.SubState != SubState.None
+            ? BpmnConstants.MarkerSize.Height +
+            ((InteriorNodeLabelModel) BpmnConstants.ChoreographyMarkerPlacement.Model).Padding.Bottom
+            : 0;
 
-        return new InsetsD(style.Insets.Left, style.Insets.Top + topInsets, style.Insets.Right, style.Insets.Bottom + bottomInsets);
+        return new InsetsD(style.Padding.Left, style.Padding.Top + topPadding, style.Padding.Right,
+            style.Padding.Bottom + bottomPadding);
       }
     }
 
-    private sealed class ChoreographyEditLabelHelper : IEditLabelHelper
+    private sealed class ChoreographyEditLabelHelper : EditLabelHelper
     {
       private readonly INode node;
 
@@ -976,25 +972,16 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
         this.node = node;
       }
 
-      public void OnLabelEditing(LabelEditingEventArgs args) {
-        if (node.Labels.Count == 0) {
-          OnLabelAdding(args);
-          return;
-        }
-        args.Label = node.Labels[0];
-        args.Handled = true;
-      }
-
-      public void OnLabelAdding(LabelEditingEventArgs args) {
+      protected override void OnLabelAdding(IInputModeContext context, LabelEditingEventArgs args) {
         var parameter = ChoreographyLabelModel.Instance.FindNextParameter(node);
         ILabelStyle labelStyle;
-        if (parameter == ChoreographyLabelModel.NorthMessage || parameter == ChoreographyLabelModel.SouthMessage) {
+        if (parameter == ChoreographyLabelModel.TopMessage || parameter == ChoreographyLabelModel.BottomMessage) {
           labelStyle = new ChoreographyMessageLabelStyle();
         } else {
-          labelStyle = ((GraphControl)args.Context.CanvasControl).Graph.NodeDefaults.Labels.Style;
+          labelStyle = ((GraphControl) args.Context.CanvasControl).Graph.NodeDefaults.Labels.Style;
         }
         if (parameter == null) {
-          parameter = ExteriorLabelModel.West;
+          parameter = ExteriorNodeLabelModel.Left;
         }
 
         args.LayoutParameter = parameter;
@@ -1006,54 +993,43 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
 
     private sealed class ChoreographyRenderData
     {
-      private readonly RectD bounds;
+      public RectD Bounds { get; }
 
-      public RectD Bounds {
-        get { return bounds; }
-      }
-
-      private readonly int modCount;
-
-      public int ModCount {
-        get { return modCount; }
-      }
+      public int ModCount { get; }
 
       public IList<IIcon> TopParticipantIcons { get; set; }
 
       public IList<IIcon> BottomParticipantIcons { get; set; }
 
       public ChoreographyRenderData(RectD bounds, int modCount) {
-        this.bounds = bounds;
-        this.modCount = modCount;
+        Bounds = bounds;
+        ModCount = modCount;
       }
     }
   }
 
   /// <summary>
-  /// A participant of a Choreography that can be added to a <see cref="ChoreographyNodeStyle"/>.
+  ///   A participant of a Choreography that can be added to a <see cref="ChoreographyNodeStyle"/>.
   /// </summary>
   [Obfuscation(StripAfterObfuscation = false, Exclude = true, ApplyToMembers = false)]
-  public class Participant {
-
+  public class Participant
+  {
     #region Properties
 
-    internal int ModCount {
-      get { return modCount; }
-    }
+    internal int ModCount { get; private set; }
 
-    private bool multiInstance = false;
-    private int modCount;
+    private bool multiInstance;
 
     /// <summary>
-    /// Gets or sets if the participant contains multiple instances.
+    ///   Gets or sets if the participant contains multiple instances.
     /// </summary>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     [DefaultValue(false)]
     public bool MultiInstance {
-      get { return multiInstance; }
+      get => multiInstance;
       set {
         if (multiInstance != value) {
-          modCount++;
+          ModCount++;
           multiInstance = value;
         }
       }
@@ -1062,13 +1038,13 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
     #endregion
 
     internal double GetSize() {
-      return MultiInstance ? 32: 20;
+      return MultiInstance ? 32 : 20;
     }
 
     /// <inheritdoc/>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
     public Participant Clone() {
-      return new Participant {MultiInstance = MultiInstance};
+      return new Participant { MultiInstance = MultiInstance };
     }
   }
 }

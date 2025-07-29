@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -35,74 +35,62 @@ using yWorks.Geometry;
 using yWorks.Graph;
 using yWorks.Graph.LabelModels;
 using yWorks.GraphML;
+using yWorks.Utils;
 
 namespace Demo.yFiles.Complete.RotatableNodes
 {
   /// <summary>
-  /// An <see cref="ILabelModel"/> decorator for node labels that wraps another label model and considers 
-  /// the <see cref="RotatableNodeStyleDecorator.Angle">rotation angle</see>
-  /// of the label owner when a <see cref="RotatableNodeStyleDecorator"/> is used.
+  ///   An <see cref="ILabelModel"/> decorator for node labels that wraps another label model and considers
+  ///   the <see cref="RotatableNodeStyleDecorator.Angle">rotation angle</see>
+  ///   of the label owner when a <see cref="RotatableNodeStyleDecorator"/> is used.
   /// </summary>
   /// <remarks>
-  /// This will make the node labels rotate with the node's rotation.
+  ///   This will make the node labels rotate with the node's rotation.
   /// </remarks>
   public class RotatableNodeLabelModelDecorator : ILabelModel, IMarkupExtensionConverter
   {
     /// <summary>
-    /// Gets or sets if the <see cref="RotatableNodeStyleDecorator.Angle">rotation</see> of the label owner should be considered.
+    ///   Gets or sets if the <see cref="RotatableNodeStyleDecorator.Angle">rotation</see> of the label owner should be
+    ///   considered.
     /// </summary>
     public bool UseNodeRotation { get; set; }
 
     /// <summary>
-    /// Gets or sets the wrapped label model.
+    ///   Gets or sets the wrapped label model.
     /// </summary>
     public ILabelModel Wrapped { get; set; }
 
     /// <summary>
-    /// Creates a new instance using <see cref="FreeNodeLabelModel.Instance"/> as <see cref="Wrapped"/> label model.
+    ///   Creates a new instance using <see cref="FreeNodeLabelModel.Instance"/> as <see cref="Wrapped"/> label model.
     /// </summary>
-    public RotatableNodeLabelModelDecorator() : this(FreeNodeLabelModel.Instance) {}
+    public RotatableNodeLabelModelDecorator() : this(FreeNodeLabelModel.Instance) { }
 
     /// <summary>
-    /// Creates a new instance for the passed model.
+    ///   Creates a new instance for the passed model.
     /// </summary>
     /// <param name="wrapped">The label model to wrap.</param>
     public RotatableNodeLabelModelDecorator(ILabelModel wrapped) {
-      this.Wrapped = wrapped;
+      Wrapped = wrapped;
       UseNodeRotation = true;
     }
 
     /// <summary>
-    /// Provides custom implementations of <see cref="ILabelModelParameterProvider"/> and 
-    /// <see cref="ILabelModelParameterFinder"/> that consider the nodes rotation.
-    /// </summary>
-    /// <param name="type"></param>
-    /// <returns></returns>
-    public object Lookup(Type type) {
-      if (type == typeof (ILabelModelParameterProvider)) {
-        var provider = Wrapped.Lookup<ILabelModelParameterProvider>();
-        if (provider != null) {
-          return new RotatedNodeLabelModelParameterProvider(provider);
-        }
-      }
-      if (type == typeof (ILabelModelParameterFinder)) {
-        var finder = Wrapped.Lookup<ILabelModelParameterFinder>();
-        if (finder != null) {
-          return new RotatedNodeLabelModelParameterFinder(finder);
-        }
-      }
-      return null;
-    }
-
-    /// <summary>
-    /// Returns the current geometry of the given label.
+    ///   Returns the current geometry of the given label.
     /// </summary>
     public IOrientedRectangle GetGeometry(ILabel label, ILabelModelParameter parameter) {
+      if (parameter is not RotatableNodeLabelModelDecoratorParameter) {
+        throw new ArgumentException("The parameter is not supported by this label model.", nameof(parameter));
+      }
+      if (!DefaultGraph.HasOwner(label)) {
+        throw new ArgumentException("The label has no valid owner.", nameof(label));
+      }
+      if (label.Owner is not INode node) {
+        throw new ArgumentException("This model only supports node labels.", nameof(label));
+      }
       var styleWrapper = GetNodeStyleWrapper(label);
       var wrappedParameter = GetWrappedParameter(parameter);
       var orientedRectangle = wrappedParameter.Model.GetGeometry(label, wrappedParameter);
-      var node = label.Owner as INode;
-      if (!UseNodeRotation || node == null || styleWrapper == null || styleWrapper.Angle == 0) {
+      if (!UseNodeRotation || styleWrapper == null || styleWrapper.Angle == 0) {
         return orientedRectangle;
       }
 
@@ -116,40 +104,34 @@ namespace Demo.yFiles.Complete.RotatableNodes
     }
 
     /// <summary>
-    /// Creates a wrapped instance of the wrapped label model's default parameter.
-    /// </summary>
-    public ILabelModelParameter CreateDefaultParameter() {
-      return new RotatableNodeLabelModelDecoratorParameter(Wrapped.CreateDefaultParameter(), this);
-    }
-
-    /// <summary>
-    /// Creates a new parameter wrapping <paramref name="wrapped"/>.
+    ///   Creates a new parameter wrapping <paramref name="wrapped"/>.
     /// </summary>
     /// <remarks>The label model of <paramref name="wrapped"/> should be the same as <see cref="Wrapped"/>.</remarks>
     /// <param name="wrapped">The parameter to wrap.</param>
     /// <returns>A parameter wrapping <paramref name="wrapped"/>.</returns>
-    public ILabelModelParameter CreateWrappingParameter(ILabelModelParameter wrapped) {
+    public RotatableNodeLabelModelDecoratorParameter CreateWrappingParameter(ILabelModelParameter wrapped) {
       return new RotatableNodeLabelModelDecoratorParameter(wrapped, this);
     }
 
     /// <summary>
-    /// Provides a lookup context for the given combination of label and parameter.
+    ///   Provides a lookup context for the given combination of label and parameter that
+    ///   provides custom implementations of <see cref="ILabelModelParameterProvider"/> and
+    ///   <see cref="ILabelModelParameterFinder"/> that consider the node's rotation.
     /// </summary>
-    public ILookup GetContext(ILabel label, ILabelModelParameter parameter) {
-      var wrappedParameter = GetWrappedParameter(parameter);
-      return wrappedParameter.Model.GetContext(label, wrappedParameter);
+    public ILookup GetContext(ILabel label) {
+      return new RotatableNodeLabelModelLookup(label, this);
     }
 
     /// <summary>
-    /// Returns the wrapped label model parameter.
+    ///   Returns the wrapped label model parameter.
     /// </summary>
     private ILabelModelParameter GetWrappedParameter(ILabelModelParameter parameter) {
       return ((RotatableNodeLabelModelDecoratorParameter) parameter).Wrapped;
     }
 
     /// <summary>
-    /// Returns the wrapping style for nodes when <see cref="RotatableNodeStyleDecorator"/> is used, 
-    /// <see langword="null"/> otherwise.
+    ///   Returns the wrapping style for nodes when <see cref="RotatableNodeStyleDecorator"/> is used,
+    ///   <see langword="null"/> otherwise.
     /// </summary>
     private RotatableNodeStyleDecorator GetNodeStyleWrapper(ILabel label) {
       var node = label.Owner as INode;
@@ -157,27 +139,27 @@ namespace Demo.yFiles.Complete.RotatableNodes
     }
 
     /// <summary>
-    /// Returns that this label model can be converted.
+    ///   Returns that this label model can be converted.
     /// </summary>
     public bool CanConvert(IWriteContext context, object value) {
       return true;
     }
 
     /// <summary>
-    /// Converts this label model using <see cref="RotatableNodeLabelModelDecoratorExtension"/>.
+    ///   Converts this label model using <see cref="RotatableNodeLabelModelDecoratorExtension"/>.
     /// </summary>
     public MarkupExtension Convert(IWriteContext context, object value) {
-      return new RotatableNodeLabelModelDecoratorExtension {Wrapped = Wrapped, UseNodeRotation = UseNodeRotation};
+      return new RotatableNodeLabelModelDecoratorExtension { Wrapped = Wrapped, UseNodeRotation = UseNodeRotation };
     }
 
     /// <summary>
-    /// A <see cref="ILabelModelParameter"/> decorator for node labels using 
-    /// <see cref="RotatableNodeLabelModelDecorator"/> to adjust the label rotation to the node rotation.
+    ///   A <see cref="ILabelModelParameter"/> decorator for node labels using
+    ///   <see cref="RotatableNodeLabelModelDecorator"/> to adjust the label rotation to the node rotation.
     /// </summary>
-    private sealed class RotatableNodeLabelModelDecoratorParameter : ILabelModelParameter, IMarkupExtensionConverter
+    public sealed class RotatableNodeLabelModelDecoratorParameter : ILabelModelParameter, IMarkupExtensionConverter
     {
       /// <summary>
-      /// Creates a new instance wrapping the given parameter.
+      ///   Creates a new instance wrapping the given parameter.
       /// </summary>
       public RotatableNodeLabelModelDecoratorParameter(ILabelModelParameter wrapped, ILabelModel model) {
         Wrapped = wrapped;
@@ -185,107 +167,146 @@ namespace Demo.yFiles.Complete.RotatableNodes
       }
 
       /// <summary>
-      /// Returns a copy of this label model parameter.
+      ///   Returns a copy of this label model parameter.
       /// </summary>
       public object Clone() {
         return new RotatableNodeLabelModelDecoratorParameter(Wrapped, Model);
       }
 
       /// <summary>
-      /// Returns the label model.
+      ///   Returns the label model.
       /// </summary>
-      public ILabelModel Model { get; private set; }
+      public ILabelModel Model { get; }
 
       /// <summary>
-      /// Returns the wrapped label model parameter.
+      ///   Returns the wrapped label model parameter.
       /// </summary>
-      public ILabelModelParameter Wrapped { get; private set; }
-
-      /// <summary>
-      /// Accepts node labels that are supported by the wrapped label model parameter.
-      /// </summary>
-      public bool Supports(ILabel label) {
-        return label.Owner is INode && Wrapped.Supports(label);
-      }
+      public ILabelModelParameter Wrapped { get; }
 
       #region Implementation of IMarkupExtensionConverter
 
       /// <summary>
-      /// Returns that this label model parameter can be converted.
+      ///   Returns that this label model parameter can be converted.
       /// </summary>
       public bool CanConvert(IWriteContext context, object value) {
         return true;
       }
 
       /// <summary>
-      /// Converts this label model parameter using <see cref="RotatableNodeLabelModelDecoratorParameterExtension"/>.
+      ///   Converts this label model parameter using <see cref="RotatableNodeLabelModelDecoratorParameterExtension"/>.
       /// </summary>
       public MarkupExtension Convert(IWriteContext context, object value) {
-        return new RotatableNodeLabelModelDecoratorParameterExtension {Model = Model, Wrapped = Wrapped};
+        return new RotatableNodeLabelModelDecoratorParameterExtension { Model = Model, Wrapped = Wrapped };
       }
 
       #endregion
     }
 
     /// <summary>
-    /// Provides candidate parameters for rotated label models.
+    ///   Provides custom implementations of <see cref="ILabelModelParameterProvider"/> and
+    ///   <see cref="ILabelModelParameterFinder"/> that consider the nodes rotation.
+    /// </summary>
+    private sealed class RotatableNodeLabelModelLookup : ILookup
+    {
+      private readonly ILabel label;
+      private readonly RotatableNodeLabelModelDecorator model;
+
+      public RotatableNodeLabelModelLookup(ILabel label, RotatableNodeLabelModelDecorator model) {
+        this.label = label;
+        this.model = model;
+      }
+
+      public object Lookup(Type type) {
+        if (type == typeof(ILabelModelParameterProvider)) {
+          var provider = model.Wrapped.GetContext(label).Lookup<ILabelModelParameterProvider>();
+          if (provider != null) {
+            return new RotatedNodeLabelModelParameterProvider(model, provider);
+          }
+        }
+        if (type == typeof(ILabelModelParameterFinder)) {
+          var finder = model.Wrapped.GetContext(label).Lookup<ILabelModelParameterFinder>();
+          if (finder != null) {
+            return new RotatedNodeLabelModelParameterFinder(label, model, finder);
+          }
+        }
+
+        return model.Wrapped.GetContext(label).Lookup(type);
+      }
+    }
+
+    /// <summary>
+    ///   Provides candidate parameters for rotated label models.
     /// </summary>
     private sealed class RotatedNodeLabelModelParameterProvider : ILabelModelParameterProvider
     {
-
+      private readonly RotatableNodeLabelModelDecorator decorator;
       private readonly ILabelModelParameterProvider wrappedProvider;
 
       /// <summary>
-      /// Creates a new instance using the given parameter provider.
+      ///   Creates a new instance using the given parameter provider.
       /// </summary>
-      public RotatedNodeLabelModelParameterProvider(ILabelModelParameterProvider wrappedProvider) {
+      public RotatedNodeLabelModelParameterProvider(
+          RotatableNodeLabelModelDecorator decorator,
+          ILabelModelParameterProvider wrappedProvider) {
+        this.decorator = decorator;
         this.wrappedProvider = wrappedProvider;
       }
 
       /// <summary>
-      /// Returns a set of possible wrapped <see cref="ILabelModelParameter"/> instances.
+      ///   Returns a set of possible wrapped <see cref="ILabelModelParameter"/> instances.
       /// </summary>
-      public IEnumerable<ILabelModelParameter> GetParameters(ILabel label, ILabelModel model) {
-        var wrapperModel = model as RotatableNodeLabelModelDecorator;
-        var parameters = wrappedProvider.GetParameters(label, wrapperModel.Wrapped);
+      public IEnumerable<ILabelModelParameter> GetParameters() {
+        var parameters = wrappedProvider.GetParameters();
         var result = new List<ILabelModelParameter>();
         foreach (var parameter in parameters) {
-          result.Add(wrapperModel.CreateWrappingParameter(parameter));
+          result.Add(decorator.CreateWrappingParameter(parameter));
         }
         return result;
       }
     }
 
     /// <summary>
-    /// Finds the best <see cref="ILabelModelParameter"/> to approximate a specific rotated layout.
+    ///   Finds the best <see cref="ILabelModelParameter"/> to approximate a specific rotated layout.
     /// </summary>
     private sealed class RotatedNodeLabelModelParameterFinder : ILabelModelParameterFinder
     {
+      private readonly ILabel label;
       private readonly ILabelModelParameterFinder wrappedFinder;
+      private readonly RotatableNodeLabelModelDecorator decorator;
+      private readonly INode node;
 
       /// <summary>
-      /// Creates a new instance using the given parameter finder.
+      ///   Creates a new instance using the given parameter finder.
       /// </summary>
-      public RotatedNodeLabelModelParameterFinder(ILabelModelParameterFinder wrappedFinder) {
+      public RotatedNodeLabelModelParameterFinder(
+          ILabel label,
+          RotatableNodeLabelModelDecorator decorator,
+          ILabelModelParameterFinder wrappedFinder) {
+        if (!DefaultGraph.HasOwner(label)) {
+          throw new ArgumentException("The label has no valid owner.", nameof(label));
+        }
+        if (label.Owner is not INode node) {
+          throw new ArgumentException("This model only supports node labels.", nameof(label));
+        }
+
+        this.label = label;
         this.wrappedFinder = wrappedFinder;
+        this.decorator = decorator;
+        this.node = node;
       }
 
       /// <summary>
-      /// Finds the label model parameter that describes the given label layout best.
+      ///   Finds the label model parameter that describes the given label layout best.
       /// </summary>
       /// <remarks>
-      /// Sometimes the layout cannot be met exactly, then the nearest location is used.
+      ///   Sometimes the layout cannot be met exactly, then the nearest location is used.
       /// </remarks>
-      public ILabelModelParameter FindBestParameter(ILabel label, ILabelModel model, IOrientedRectangle labelLayout) {
-        var wrapperModel = model as RotatableNodeLabelModelDecorator;
-        var styleWrapper = wrapperModel.GetNodeStyleWrapper(label);
-        if (!wrapperModel.UseNodeRotation || styleWrapper == null || styleWrapper.Angle == 0) {
-          return
-              wrapperModel.CreateWrappingParameter(wrappedFinder.FindBestParameter(label, wrapperModel.Wrapped,
-                  labelLayout));
+      public ILabelModelParameter FindBestParameter(IOrientedRectangle labelLayout) {
+        var styleWrapper = decorator.GetNodeStyleWrapper(label);
+        if (!decorator.UseNodeRotation || styleWrapper == null || styleWrapper.Angle == 0) {
+          return decorator.CreateWrappingParameter(wrappedFinder.FindBestParameter(labelLayout));
         }
 
-        var node = label.Owner as INode;
         var rotatedCenter = styleWrapper.GetRotatedPoint(labelLayout.GetCenter(), node, false);
         var rotatedLayout = styleWrapper.GetRotatedLayout(node);
 
@@ -293,26 +314,26 @@ namespace Demo.yFiles.Complete.RotatableNodes
         rectangle.Angle -= rotatedLayout.GetRadians();
         rectangle.SetCenter(rotatedCenter);
 
-        return
-            wrapperModel.CreateWrappingParameter(wrappedFinder.FindBestParameter(label, wrapperModel.Wrapped, rectangle));
+        return decorator.CreateWrappingParameter(wrappedFinder.FindBestParameter(rectangle));
       }
     }
   }
 
   /// <summary>
-  /// Markup extension that helps (de-)serializing a <see cref="RotatableNodeLabelModelDecorator"/>.
+  ///   Markup extension that helps (de-)serializing a <see cref="RotatableNodeLabelModelDecorator"/>.
   /// </summary>
   [ContentProperty("Wrapped")]
   public class RotatableNodeLabelModelDecoratorExtension : MarkupExtension
   {
     /// <summary>
-    /// Gets or sets if the <see cref="RotatableNodeStyleDecorator.Angle">rotation</see> of the label owner should be considered.
+    ///   Gets or sets if the <see cref="RotatableNodeStyleDecorator.Angle">rotation</see> of the label owner should be
+    ///   considered.
     /// </summary>
     [DefaultValue(true)]
     public bool UseNodeRotation { get; set; }
 
     /// <summary>
-    /// Gets or sets the wrapped label model.
+    ///   Gets or sets the wrapped label model.
     /// </summary>
     public ILabelModel Wrapped { get; set; }
 
@@ -321,23 +342,23 @@ namespace Demo.yFiles.Complete.RotatableNodes
     }
 
     public override object ProvideValue(IServiceProvider serviceProvider) {
-      return new RotatableNodeLabelModelDecorator(Wrapped) {UseNodeRotation = UseNodeRotation};
+      return new RotatableNodeLabelModelDecorator(Wrapped) { UseNodeRotation = UseNodeRotation };
     }
   }
 
   /// <summary>
-  /// Markup extension that helps (de-)serializing parameters created by a <see cref="RotatableNodeLabelModelDecorator"/>.
+  ///   Markup extension that helps (de-)serializing parameters created by a <see cref="RotatableNodeLabelModelDecorator"/>.
   /// </summary>
   [ContentProperty("Wrapped")]
   public class RotatableNodeLabelModelDecoratorParameterExtension : MarkupExtension
   {
     /// <summary>
-    /// The label model.
+    ///   The label model.
     /// </summary>
     public ILabelModel Model { get; set; }
 
     /// <summary>
-    /// The wrapped label model parameter.
+    ///   The wrapped label model parameter.
     /// </summary>
     public ILabelModelParameter Wrapped { get; set; }
 

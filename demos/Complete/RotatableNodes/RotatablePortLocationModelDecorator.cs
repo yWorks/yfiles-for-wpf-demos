@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -35,51 +35,44 @@ using yWorks.Geometry;
 using yWorks.Graph;
 using yWorks.Graph.PortLocationModels;
 using yWorks.GraphML;
+using yWorks.Utils;
 
 namespace Demo.yFiles.Complete.RotatableNodes
 {
   /// <summary>
-  /// Port location model decorator that automatically provides the location in the rotated coordinates of the owner
+  ///   Port location model decorator that automatically provides the location in the rotated coordinates of the owner
   /// </summary>
   public class RotatablePortLocationModelDecorator : IPortLocationModel, IMarkupExtensionConverter
   {
     private const double Eps = 0.001d;
 
     /// <summary>
-    /// Default instance
+    ///   Default instance
     /// </summary>
-    public static readonly RotatablePortLocationModelDecorator Instance = new RotatablePortLocationModelDecorator();
-
-    private IPortLocationModel wrapped = new FreeNodePortLocationModel();
+    public static readonly RotatablePortLocationModelDecorator Instance = new();
 
     /// <summary>
-    /// The wrapped location model.
+    ///   The wrapped location model.
     /// </summary>
     /// <remarks>
-    /// This is only used when new parameters are created via <see cref="CreateParameter(yWorks.Graph.IPortOwner,yWorks.Geometry.PointD)"/>. 
-    /// Default is <see cref="FreeNodePortLocationModel.Instance"/>
+    ///   This is only used when new parameters are created via
+    ///   <see cref="CreateParameter(yWorks.Graph.IPortOwner,yWorks.Geometry.PointD)"/>.
+    ///   Default is <see cref="FreeNodePortLocationModel.Instance"/>
     /// </remarks>
-    public IPortLocationModel Wrapped {
-      get { return wrapped; }
-      set { wrapped = value; }
-    }
+    public IPortLocationModel Wrapped { get; set; } = new FreeNodePortLocationModel();
 
     /// <summary>
-    /// Delegates to the wrapped location model's lookup.
-    /// </summary>
-    public object Lookup(Type type) {
-      return Wrapped.Lookup(type);
-    }
-
-    /// <summary>
-    /// Recalculates the coordinates provided by <paramref name="parameter"/>.
+    ///   Recalculates the coordinates provided by <paramref name="parameter"/>.
     /// </summary>
     /// <remarks>
-    /// This has only an effect when <paramref name="parameter"/> is created by this model and the owner of
-    /// <paramref name="port"/> has a <see cref="RotatableNodeStyleDecorator"/>.
+    ///   This has only an effect when <paramref name="parameter"/> is created by this model and the owner of
+    ///   <paramref name="port"/> has a <see cref="RotatableNodeStyleDecorator"/>.
     /// </remarks>
     public PointD GetLocation(IPort port, IPortLocationModelParameter parameter) {
-      var param = ((RotatablePortLocationModelDecoratorParameter)parameter).Wrapped;
+      if (parameter is not RotatablePortLocationModelDecoratorParameter decoratorParameter) {
+        throw new ArgumentException("The parameter is not supported by this port location model.", nameof(parameter));
+      }
+      var param = decoratorParameter.Wrapped;
       var coreLocation = Wrapped.GetLocation(port, param);
       var ownerNode = port.Owner as INode;
       if (ownerNode == null) {
@@ -91,21 +84,20 @@ namespace Demo.yFiles.Complete.RotatableNodes
         return coreLocation;
       }
       var center = ownerNode.Layout.GetCenter();
-      var rotation = new RotateTransform(-angle, center.X, center.Y);
+      var rotation = new RotateTransform(angle, center.X, center.Y);
       var result = rotation.Transform(coreLocation.ToPoint());
-      return new PointD(result);
+      return new PointD(result.X, result.Y);
     }
 
     /// <summary>
-    /// Creates a parameter that matches <paramref name="location"/>
+    ///   Creates a parameter that matches <paramref name="location"/>
     /// </summary>
     /// <remarks>
-    /// This implementation undoes the rotation by the <paramref name="portOwner"/>, creates a parameter for this location in
-    /// <see cref="Wrapped"/> and wraps this into a model specific parameter.
+    ///   This implementation undoes the rotation by the <paramref name="portOwner"/>, creates a parameter for this location in
+    ///   <see cref="Wrapped"/> and wraps this into a model specific parameter.
     /// </remarks>
     /// <param name="portOwner"></param>
     /// <param name="location">The actual coordinates</param>
-    /// <returns></returns>
     public IPortLocationModelParameter CreateParameter(IPortOwner portOwner, PointD location) {
       double angle = 0;
       var ownerNode = portOwner as INode;
@@ -113,70 +105,75 @@ namespace Demo.yFiles.Complete.RotatableNodes
         angle = GetAngle(ownerNode);
       }
       if (Math.Abs(angle) >= Eps) {
-        //Undo the rotation by the ownerNode so that we can create a core parameter for the unrotated layout.
+        // Undo the rotation by the ownerNode so that we can create a core parameter for the unrotated layout.
         var center = ownerNode.Layout.GetCenter();
-        var rotation = new RotateTransform(angle, center.X, center.Y);
+        var rotation = new RotateTransform(-angle, center.X, center.Y);
         var result = rotation.Transform(location.ToPoint());
-        location = new PointD(result);
+        location = new PointD(result.X, result.Y);
       }
-      return new RotatablePortLocationModelDecoratorParameter(Wrapped.CreateParameter(portOwner, location), this);
+      var wrappedParameter = Wrapped.CreateParameter(portOwner, location);
+      return CreateWrappingParameter(wrappedParameter);
     }
 
     /// <summary>
-    /// Wrapes a given parameter so it can be automatically rotated
+    ///   Wraps a given parameter so it can be automatically rotated
     /// </summary>
     /// <remarks>
-    /// The <paramref name="coreParameter"/> is assumed to provide coordinates for an unrotated owner.
+    ///   The <paramref name="coreParameter"/> is assumed to provide coordinates for an un-rotated owner.
     /// </remarks>
-    public IPortLocationModelParameter CreateWrappingParameter(IPortLocationModelParameter coreParameter) {
+    public RotatablePortLocationModelDecoratorParameter CreateWrappingParameter(
+        IPortLocationModelParameter coreParameter) {
       return new RotatablePortLocationModelDecoratorParameter(coreParameter, this);
     }
 
     /// <summary>
-    /// Returns the lookup of the wrapped location model.
+    ///   Returns the lookup of the wrapped location model.
     /// </summary>
-    public ILookup GetContext(IPort port, IPortLocationModelParameter parameter) {
-      return Wrapped.GetContext(port, parameter);
+    public ILookup GetContext(IPort port) {
+      return Wrapped.GetContext(port);
     }
 
     /// <summary>
-    /// Returns that this port location model can be converted.
+    ///   Returns that this port location model can be converted.
     /// </summary>
     public bool CanConvert(IWriteContext context, object value) {
       return true;
     }
 
     /// <summary>
-    /// Converts this port location model using <see cref="RotatablePortLocationModelDecoratorExtension"/>.
+    ///   Converts this port location model using <see cref="RotatablePortLocationModelDecoratorExtension"/>.
     /// </summary>
     public MarkupExtension Convert(IWriteContext context, object value) {
-      return new RotatablePortLocationModelDecoratorExtension {Wrapped = wrapped};
+      return new RotatablePortLocationModelDecoratorExtension { Wrapped = Wrapped };
     }
 
     /// <summary>
-    /// An <see cref="IPortLocationModelParameter"/> decorator for ports using <see cref="RotatablePortLocationModelDecorator"/> 
-    /// to adjust the port location to the node rotation.
+    ///   An <see cref="IPortLocationModelParameter"/> decorator for ports using
+    ///   <see cref="RotatablePortLocationModelDecorator"/>
+    ///   to adjust the port location to the node rotation.
     /// </summary>
-    private sealed class RotatablePortLocationModelDecoratorParameter : IPortLocationModelParameter, IMarkupExtensionConverter
+    public sealed class RotatablePortLocationModelDecoratorParameter : IPortLocationModelParameter,
+        IMarkupExtensionConverter
     {
-      private readonly IPortLocationModelParameter wrapped;
       private readonly RotatablePortLocationModelDecorator model;
 
       /// <summary>
-      /// Creates a new instance wrapping the given location model parameter.
+      ///   Creates a new instance wrapping the given location model parameter.
       /// </summary>
-      public RotatablePortLocationModelDecoratorParameter(IPortLocationModelParameter wrapped, RotatablePortLocationModelDecorator model) {
-        this.wrapped = wrapped;
+      public RotatablePortLocationModelDecoratorParameter(
+          IPortLocationModelParameter wrapped,
+          RotatablePortLocationModelDecorator model) {
+        Wrapped = wrapped;
         this.model = model;
       }
 
       #region Implementation of ICloneable
 
       /// <summary>
-      /// Creates a copy of this location model parameter.
+      ///   Creates a copy of this location model parameter.
       /// </summary>
       public object Clone() {
-        return new RotatablePortLocationModelDecoratorParameter((IPortLocationModelParameter)wrapped.Clone(), model);
+        return new RotatablePortLocationModelDecoratorParameter((IPortLocationModelParameter) Wrapped.Clone(), model);
       }
 
       #endregion
@@ -184,44 +181,33 @@ namespace Demo.yFiles.Complete.RotatableNodes
       #region Implementation of IPortLocationModelParameter
 
       /// <summary>
-      /// The model.
+      ///   The model.
       /// </summary>
-      public IPortLocationModel Model {
-        get { return model; }
-      }
+      public IPortLocationModel Model => model;
 
       /// <summary>
-      /// The wrapped parameter.
+      ///   The wrapped parameter.
       /// </summary>
-      public IPortLocationModelParameter Wrapped {
-        get { return wrapped; }
-      }
-
-      /// <summary>
-      /// Accepts all port owners that are supported by the wrapped parameter.
-      /// </summary>
-      public bool Supports(IPortOwner portOwner) {
-        return wrapped.Supports(portOwner);
-      }
+      public IPortLocationModelParameter Wrapped { get; }
 
       #endregion
 
       #region Implementation of IMarkupExtensionConverter
 
       /// <summary>
-      /// Returns that this port location model parameter can be converted.
+      ///   Returns that this port location model parameter can be converted.
       /// </summary>
       bool IMarkupExtensionConverter.CanConvert(IWriteContext context, object value) {
         return true;
       }
 
       /// <summary>
-      /// Converts this port location model parameter using <see cref="RotatablePortLocationModelDecoratorParameterExtension"/>.
+      ///   Converts this port location model parameter using <see cref="RotatablePortLocationModelDecoratorParameterExtension"/>
+      ///   .
       /// </summary>
       MarkupExtension IMarkupExtensionConverter.Convert(IWriteContext context, object value) {
         return new RotatablePortLocationModelDecoratorParameterExtension {
-          Model = model == Instance ? null : model,
-          Wrapped = wrapped
+            Model = model == Instance ? null : model, Wrapped = Wrapped
         };
       }
 
@@ -229,7 +215,7 @@ namespace Demo.yFiles.Complete.RotatableNodes
     }
 
     /// <summary>
-    /// Returns the current angle of the given rotated node.
+    ///   Returns the current angle of the given rotated node.
     /// </summary>
     private static double GetAngle(INode ownerNode) {
       var ra = ownerNode.Style as RotatableNodeStyleDecorator;
@@ -239,7 +225,7 @@ namespace Demo.yFiles.Complete.RotatableNodes
 
 
   /// <summary>
-  /// Markup extension that helps (de-)serializing a <see cref="RotatablePortLocationModelDecorator"/>.
+  ///   Markup extension that helps (de-)serializing a <see cref="RotatablePortLocationModelDecorator"/>.
   /// </summary>
   [ContentProperty("Wrapped")]
   public class RotatablePortLocationModelDecoratorExtension : MarkupExtension
@@ -252,7 +238,8 @@ namespace Demo.yFiles.Complete.RotatableNodes
   }
 
   /// <summary>
-  /// Markup extension that helps (de-)serializing a <see cref="RotatablePortLocationModelDecorator.RotatablePortLocationModelDecoratorParameter"/>.
+  ///   Markup extension that helps (de-)serializing a
+  ///   <see cref="RotatablePortLocationModelDecorator.RotatablePortLocationModelDecoratorParameter"/>.
   /// </summary>
   [ContentProperty("Wrapped")]
   public sealed class RotatablePortLocationModelDecoratorParameterExtension : MarkupExtension
@@ -264,7 +251,7 @@ namespace Demo.yFiles.Complete.RotatableNodes
     public IPortLocationModelParameter Wrapped { get; set; }
 
     public override object ProvideValue(IServiceProvider serviceProvider) {
-      RotatablePortLocationModelDecorator model = Model as RotatablePortLocationModelDecorator ?? RotatablePortLocationModelDecorator.Instance;
+      var model = Model as RotatablePortLocationModelDecorator ?? RotatablePortLocationModelDecorator.Instance;
       return model.CreateWrappingParameter(Wrapped);
     }
   }

@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -37,7 +37,7 @@ using yWorks.Graph;
 namespace Demo.yFiles.Complete.IsometricDrawing
 {
   /// <summary>
-  /// A node handle that can be used to change the <see cref="Model.Geometry.Height"/> of the nodes <see cref="NodeData"/>.
+  ///   A node handle that can be used to change the <see cref="Model.Geometry.Height"/> of the node's <see cref="NodeData"/>.
   /// </summary>
   public class HeightHandle : IHandle
   {
@@ -45,7 +45,7 @@ namespace Demo.yFiles.Complete.IsometricDrawing
     private readonly IInputModeContext inputModeContext;
     private readonly double minimumHeight;
 
-    private double originalHeight = 0;
+    private double originalHeight;
 
     public HeightHandle(INode node, IInputModeContext inputModeContext, double minimumHeight) {
       this.node = node;
@@ -55,68 +55,62 @@ namespace Demo.yFiles.Complete.IsometricDrawing
 
     public IPoint Location {
       get {
-        var cc = this.inputModeContext.CanvasControl;
-        var vp = cc.ToViewCoordinates(this.node.Layout.GetCenter());
-        var up = PointD.Add(vp, new PointD(0, -Geometry.Height * this.inputModeContext.Zoom));
-        return cc.ToWorldCoordinates(up);
+        var cc = inputModeContext.CanvasControl;
+        var vp = cc.WorldToViewCoordinates(node.Layout.GetCenter());
+        var up = PointD.Add(vp, new PointD(0, -Geometry.Height * inputModeContext.Zoom));
+        return cc.ViewToWorldCoordinates(up);
       }
     }
 
     /// <summary>
-    /// Initializes the drag.
+    ///   Initializes the drag.
     /// </summary>
     public void InitializeDrag(IInputModeContext context) {
-      this.originalHeight = Geometry.Height;
+      originalHeight = Geometry.Height;
     }
 
     /// <summary>
-    /// Updates the node according to the moving handle.
+    ///   Updates the node according to the moving handle.
     /// </summary>
     public void HandleMove(IInputModeContext context, PointD originalLocation, PointD newLocation) {
-      this.AdjustNodeHeight(inputModeContext, originalLocation, newLocation);
+      AdjustNodeHeight(inputModeContext, originalLocation, newLocation);
     }
 
     /// <summary>
-    /// Cancels the drag and cleans up.
+    ///   Cancels the drag and cleans up.
     /// </summary>
     public void CancelDrag(IInputModeContext context, PointD originalLocation) {
-      Geometry.Height = this.originalHeight;
+      Geometry.Height = originalHeight;
     }
 
     /// <summary>
-    /// Finishes the drag an applies changes.
+    ///   Finishes the drag and applies changes.
     /// </summary>
     public void DragFinished(IInputModeContext context, PointD originalLocation, PointD newLocation) {
-      this.AdjustNodeHeight(context, originalLocation, newLocation);
+      AdjustNodeHeight(context, originalLocation, newLocation);
     }
 
     /// <summary>
-    /// Adjusts the node height according to how much the handle was moved.
+    ///   Adjusts the node height according to how much the handle was moved.
     /// </summary>
     private void AdjustNodeHeight(IInputModeContext context, PointD oldLocation, PointD newLocation) {
-      var newY = context.CanvasControl.ToViewCoordinates(newLocation).Y;
-      var oldY = context.CanvasControl.ToViewCoordinates(oldLocation).Y;
+      var newY = context.CanvasControl.WorldToViewCoordinates(newLocation).Y;
+      var oldY = context.CanvasControl.WorldToViewCoordinates(oldLocation).Y;
       var delta = (newY - oldY) / context.Zoom;
-      var newHeight = this.originalHeight - delta;
-      Geometry.Height = Math.Max(this.minimumHeight, newHeight);
+      var newHeight = originalHeight - delta;
+      Geometry.Height = Math.Max(minimumHeight, newHeight);
     }
 
-    public HandleTypes Type {
-      get { return HandleTypes.Resize; }
-    }
+    public HandleType Type => HandleType.Resize;
 
-    public Cursor Cursor {
-      get { return Cursors.Hand; }
-    }
+    public object Tag => null;
+
+    public Cursor Cursor => Cursors.Hand;
 
     public void HandleClick(ClickEventArgs eventArgs) {
       // ignore clicks
     }
 
-    private Geometry Geometry {
-      get {
-        return ((NodeData) this.node.Tag).Geometry;
-      }
-    }
+    private Geometry Geometry => ((NodeData) node.Tag).Geometry;
   }
 }

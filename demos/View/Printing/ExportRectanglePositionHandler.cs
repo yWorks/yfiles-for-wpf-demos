@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -33,57 +33,53 @@ using yWorks.Geometry;
 namespace Demo.yFiles.Printing
 {
   /// <summary>
-  /// Simple implementation of an <see cref="IPositionHandler"/> that moves an 
-  /// <see cref="IMutablePoint"/> by the dragged distance.
+  ///   Simple implementation of an <see cref="IPositionHandler"/> that moves an
+  ///   <see cref="IMutablePoint"/> by the dragged distance.
   /// </summary>
   public class ExportRectanglePositionHandler : IPositionHandler
   {
-
-    private readonly IMutablePoint position;
+    private readonly MutableRectangle rectangle;
     private PointD startPosition;
 
     /// <summary>
-    /// Creates a position handler that delegates to a mutable position.
+    ///   Creates a position handler that delegates to a mutable position.
     /// </summary>
-    /// <param name="position">The position that will be read and changed.</param>
-    public ExportRectanglePositionHandler(IMutablePoint position) {
-      this.position = position;
+    /// <param name="rectangle">The position that will be read and changed.</param>
+    public ExportRectanglePositionHandler(MutableRectangle rectangle) {
+      this.rectangle = rectangle;
     }
 
-    public IPoint Location {
-      get { return position; }
-    }
+    public IPoint Location => rectangle.Location;
 
     /// <summary>
-    /// Stores the initial position of the <see cref="IMutablePoint"/>.
+    ///   Stores the initial position of the <see cref="IMutablePoint"/>.
     /// </summary>
     public virtual void InitializeDrag(IInputModeContext context) {
-      startPosition = position.ToPointD();
+      startPosition = rectangle.GetTopLeft();
     }
 
     /// <summary>
-    /// Moves the <see cref="IMutablePoint"/> away from the start position by the difference
-    /// beteween <paramref name="newLocation"/> and <paramref name="originalLocation"/>.
+    ///   Moves the <see cref="IMutablePoint"/> away from the start position by the difference
+    ///   between <paramref name="newLocation"/> and <paramref name="originalLocation"/>.
     /// </summary>
     public virtual void HandleMove(IInputModeContext context, PointD originalLocation, PointD newLocation) {
       var currentPosition = startPosition + (newLocation - originalLocation);
-      if (position.X != currentPosition.X || position.Y != currentPosition.Y) {
-        position.X = currentPosition.X;
-        position.Y = currentPosition.Y;
+      if (rectangle.X != currentPosition.X || rectangle.Y != currentPosition.Y) {
+        rectangle.X = currentPosition.X;
+        rectangle.Y = currentPosition.Y;
       }
     }
 
     /// <summary>
-    /// Moves the <see cref="IMutablePoint"/> back to the start position.
+    ///   Moves the <see cref="IMutablePoint"/> back to the start position.
     /// </summary>
     public virtual void CancelDrag(IInputModeContext context, PointD originalLocation) {
-      if (position.X != startPosition.X || position.Y != startPosition.Y) {
-        position.X = startPosition.X;
-        position.Y = startPosition.Y;
+      if (rectangle.X != startPosition.X || rectangle.Y != startPosition.Y) {
+        rectangle.X = startPosition.X;
+        rectangle.Y = startPosition.Y;
       }
     }
 
-    public virtual void DragFinished(IInputModeContext context, PointD originalLocation, PointD newLocation) {
-    }
+    public virtual void DragFinished(IInputModeContext context, PointD originalLocation, PointD newLocation) { }
   }
 }

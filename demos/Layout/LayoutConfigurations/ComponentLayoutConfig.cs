@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -30,28 +30,28 @@
 using System.ComponentModel;
 using System.Reflection;
 using Demo.yFiles.Toolkit.OptionHandler;
-using yWorks.Algorithms.Geometry;
 using yWorks.Controls;
+using yWorks.Geometry;
 using yWorks.Layout;
 
 namespace Demo.yFiles.Layout.Configurations
 {
   /// <summary>
-  /// Configuration options for the layout algorithm of the same name.
+  ///   Configuration options for the layout algorithm of the same name.
   /// </summary>
   [Obfuscation(StripAfterObfuscation = false, Exclude = true, ApplyToMembers = true)]
   [Label("ComponentLayout")]
-  public class ComponentLayoutConfig : LayoutConfiguration {
+  public class ComponentLayoutConfig : LayoutConfiguration
+  {
     /// <summary>
-    /// Setup default values for various configuration parameters.
+    ///   Setup default values for various configuration parameters.
     /// </summary>
     public ComponentLayoutConfig() {
       var layout = new ComponentLayout();
 
-      StyleItem = ComponentArrangementStyles.Rows;
-      NoOverlapItem = (layout.Style & ComponentArrangementStyles.ModifierNoOverlap) != 0;
-      FromSketchItem = (layout.Style & ComponentArrangementStyles.ModifierAsIs) != 0;
-      YDimension size = layout.PreferredSize;
+      StyleItem = ComponentArrangementStyle.Rows;
+      FromSketchItem = layout.FromSketchMode;
+      var size = layout.PreferredSize;
       UseScreenRatioItem = true;
       AspectRatioItem = size.Width / size.Height;
 
@@ -60,32 +60,24 @@ namespace Demo.yFiles.Layout.Configurations
       GridSpacingItem = layout.GridSpacing > 0 ? layout.GridSpacing : 20.0d;
     }
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     protected override ILayoutAlgorithm CreateConfiguredLayout(GraphControl graphControl) {
       var layout = new ComponentLayout();
-      layout.ComponentArrangement = true;
-      var style = StyleItem;
-      if (NoOverlapItem) {
-        style |= ComponentArrangementStyles.ModifierNoOverlap;
-      }
-      if (FromSketchItem) {
-        style |= ComponentArrangementStyles.ModifierAsIs;
-      }
-      layout.Style = style;
+      layout.Style = StyleItem;
+      layout.FromSketchMode = FromSketchItem;
 
       double w, h;
       if (graphControl != null && UseScreenRatioItem) {
         var canvasSize = graphControl.InnerSize;
         w = canvasSize.Width;
         h = canvasSize.Height;
-      }
-      else {
+      } else {
         w = AspectRatioItem;
         h = 1 / w;
         w *= 400;
         h *= 400;
       }
-      layout.PreferredSize = new YDimension(w, h);
+      layout.PreferredSize = new SizeD(w, h);
       layout.ComponentSpacing = ComponentSpacingItem;
       if (GridEnabledItem) {
         layout.GridSpacing = GridSpacingItem;
@@ -103,90 +95,80 @@ namespace Demo.yFiles.Layout.Configurations
     [ComponentType(ComponentTypes.OptionGroup)]
     public object DescriptionGroup;
 
-    [Label("Layout")]
+    [Label("General")]
     [OptionGroup("RootGroup", 10)]
     [ComponentType(ComponentTypes.OptionGroup)]
-    public object LayoutGroup;
+    public object GeneralGroup;
 
     // ReSharper restore UnusedMember.Global
     // ReSharper restore InconsistentNaming
+
     [OptionGroup("DescriptionGroup", 10)]
     [ComponentType(ComponentTypes.FormattedText)]
-    public string DescriptionText {
-      get {
-        return
-          "<Paragraph>The component layout algorithm arranges the connected components of a graph. "
-          + "It can use any other layout style to arrange each component separately, and then arranges the components as such.</Paragraph>"
-          + "<Paragraph>In this demo, the arrangement of each component is just kept as it is.</Paragraph>";
-      }
-    }
+    public string DescriptionText =>
+        "<Paragraph>The component layout algorithm arranges the connected components of a graph. " +
+        "It can use any other layout style to arrange each component separately, and then arranges the components as such.</Paragraph>" +
+        "<Paragraph>In this demo, the arrangement of each component is just kept as it is.</Paragraph>";
 
-    [Label("Style")]
-    [OptionGroup("LayoutGroup", 10)]
-    [DefaultValue(ComponentArrangementStyles.Rows)]
-    [EnumValue("No Arrangement", ComponentArrangementStyles.None)]
-    [EnumValue("Multiple Rows",ComponentArrangementStyles.Rows)]
-    [EnumValue("Single Row",ComponentArrangementStyles.SingleRow)]
-    [EnumValue("Single Column",ComponentArrangementStyles.SingleColumn)]
-    [EnumValue("Packed Rectangle",ComponentArrangementStyles.PackedRectangle)]
-    [EnumValue("Compact Rectangle",ComponentArrangementStyles.PackedCompactRectangle)]
-    [EnumValue("Packed Circle",ComponentArrangementStyles.PackedCircle)]
-    [EnumValue("Compact Circle",ComponentArrangementStyles.PackedCompactCircle)]
-    [EnumValue("Nested Rows",ComponentArrangementStyles.MultiRows)]
-    [EnumValue("Compact Nested Rows",ComponentArrangementStyles.MultiRowsCompact)]
-    [EnumValue("Width-constrained Nested Rows",ComponentArrangementStyles.MultiRowsWidthConstraint)]
-    [EnumValue("Height-constrained Nested Rows",ComponentArrangementStyles.MultiRowsHeightConstraint)]
-    [EnumValue("Width-constrained Compact Nested Rows",ComponentArrangementStyles.MultiRowsWidthConstraintCompact)]
-    [EnumValue("Height-constrained Compact Nested Rows",ComponentArrangementStyles.MultiRowsHeightConstraintCompact)]
-    public ComponentArrangementStyles StyleItem { get; set; }
+    [Label("Layout Style")]
+    [OptionGroup("GeneralGroup", 10)]
+    [DefaultValue(ComponentArrangementStyle.Rows)]
+    [EnumValue("No Arrangement", ComponentArrangementStyle.None)]
+    [EnumValue("Fix Centers", ComponentArrangementStyle.KeepCenters)]
+    [EnumValue("Try Keep Centers", ComponentArrangementStyle.TryKeepCenters)]
+    [EnumValue("Multiple Rows", ComponentArrangementStyle.Rows)]
+    [EnumValue("Single Row", ComponentArrangementStyle.SingleRow)]
+    [EnumValue("Single Column", ComponentArrangementStyle.SingleColumn)]
+    [EnumValue("Packed Rectangle", ComponentArrangementStyle.PackedRectangle)]
+    [EnumValue("Compact Rectangle", ComponentArrangementStyle.PackedCompactRectangle)]
+    [EnumValue("Packed Circle", ComponentArrangementStyle.PackedCircle)]
+    [EnumValue("Compact Circle", ComponentArrangementStyle.PackedCompactCircle)]
+    [EnumValue("Nested Rows", ComponentArrangementStyle.MultiRows)]
+    [EnumValue("Compact Nested Rows", ComponentArrangementStyle.MultiRowsCompact)]
+    [EnumValue("Width-constrained Nested Rows", ComponentArrangementStyle.MultiRowsWidthConstraint)]
+    [EnumValue("Height-constrained Nested Rows", ComponentArrangementStyle.MultiRowsHeightConstraint)]
+    [EnumValue("Width-constrained Compact Nested Rows", ComponentArrangementStyle.MultiRowsWidthConstraintCompact)]
+    [EnumValue("Height-constrained Compact Nested Rows", ComponentArrangementStyle.MultiRowsHeightConstraintCompact)]
+    public ComponentArrangementStyle StyleItem { get; set; }
 
-    [Label("Remove Overlaps")]
-    [OptionGroup("LayoutGroup", 20)]
-    [DefaultValue(false)]
-    public bool NoOverlapItem { get; set; }
-
-    [Label("From Sketch")]
-    [OptionGroup("LayoutGroup", 30)]
+    [Label("Use Drawing as Sketch")]
+    [OptionGroup("GeneralGroup", 30)]
     [DefaultValue(false)]
     public bool FromSketchItem { get; set; }
 
     [Label("Use Screen Aspect Ratio")]
-    [OptionGroup("LayoutGroup", 40)]
+    [OptionGroup("GeneralGroup", 40)]
     [DefaultValue(true)]
     public bool UseScreenRatioItem { get; set; }
 
     [Label("Aspect Ratio")]
-    [OptionGroup("LayoutGroup", 50)]
+    [OptionGroup("GeneralGroup", 50)]
     [DefaultValue(1.0d)]
     [MinMax(Min = 0.2d, Max = 5.0d, Step = 0.01d)]
     [ComponentType(ComponentTypes.Slider)]
     public double AspectRatioItem { get; set; }
 
-    public bool ShouldDisableAspectRatioItem {
-      get { return UseScreenRatioItem; }
-    }
+    public bool ShouldDisableAspectRatioItem => UseScreenRatioItem;
 
     [Label("Minimum Component Distance")]
-    [OptionGroup("LayoutGroup", 60)]
+    [OptionGroup("GeneralGroup", 60)]
     [DefaultValue(45.0d)]
     [MinMax(Min = 0.0d, Max = 400.0d)]
     [ComponentType(ComponentTypes.Slider)]
     public double ComponentSpacingItem { get; set; }
 
-    [Label("Route on Grid")]
-    [OptionGroup("LayoutGroup", 70)]
+    [Label("Place on Grid")]
+    [OptionGroup("GeneralGroup", 70)]
     [DefaultValue(false)]
     public bool GridEnabledItem { get; set; }
 
     [Label("Grid Spacing")]
-    [OptionGroup("LayoutGroup", 80)]
+    [OptionGroup("GeneralGroup", 80)]
     [DefaultValue(20.0d)]
     [MinMax(Min = 2, Max = 100)]
     [ComponentType(ComponentTypes.Slider)]
     public double GridSpacingItem { get; set; }
 
-    public bool ShouldDisableGridSpacingItem {
-      get { return !GridEnabledItem; }
-    }
+    public bool ShouldDisableGridSpacingItem => !GridEnabledItem;
   }
 }

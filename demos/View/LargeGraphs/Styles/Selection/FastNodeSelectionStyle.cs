@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -27,7 +27,6 @@
  ** 
  ***************************************************************************/
 
-using System.Windows;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using yWorks.Controls;
@@ -42,7 +41,7 @@ namespace Demo.yFiles.Graph.LargeGraphs.Styles.Selection
   /// </summary>
   /// <remarks>
   ///   <para>
-  ///     This style essentially displays a rectangle and scales its stroke thickness and brush by 1 / zoom level.
+  ///     This style essentially displays a rectangle and scales its stroke thickness and brush by 1 / zoom level.
   ///     This means that positioning and size considerations can still be done in world coordinates and the rectangle
   ///     doesn't require a series of transformations to end up where it should be. The brush is scaled because the default
   ///     selection decoration uses a pixel checkerboard pattern which would otherwise be scaled with the zoom level.
@@ -111,13 +110,13 @@ namespace Demo.yFiles.Graph.LargeGraphs.Styles.Selection
         // If the size changed we need to update the rectangle size.
         oldVisual.Width = layout.Width;
         oldVisual.Height = layout.Height;
-        CanvasControl.SetCanvasControlArrangeRect(oldVisual, layout);
+        CanvasControl.SetCanvasControlArrangeRect(oldVisual, layout.ToRect());
         oldVisual.SetRenderDataCache(layout);
         // ReSharper disable CompareOfFloatsByEqualityOperator
       } else if (layout.X != oldLayout.X || layout.Y != oldLayout.Y) {
         // ReSharper restore CompareOfFloatsByEqualityOperator
         // But if only the position changed, we can get away with just arranging the rectangle in the canvas again.
-        CanvasControl.SetCanvasControlArrangeRect(oldVisual, layout);
+        CanvasControl.SetCanvasControlArrangeRect(oldVisual, layout.ToRect());
         oldVisual.SetRenderDataCache(layout);
       }
 
@@ -133,7 +132,6 @@ namespace Demo.yFiles.Graph.LargeGraphs.Styles.Selection
     ///   Creates the rectangle with the necessary properties.
     /// </summary>
     /// <param name="layout">The intended layout for the rectangle.</param>
-    /// <returns></returns>
     private Rectangle CreateRectangle(RectD layout) {
       var rect = new Rectangle
       {
@@ -149,7 +147,7 @@ namespace Demo.yFiles.Graph.LargeGraphs.Styles.Selection
       // The bitmap scaling mode is necessary for the scaled stroke brush not to show moiré.
       RenderOptions.SetBitmapScalingMode(rect, BitmapScalingMode.NearestNeighbor);
 
-      CanvasControl.SetCanvasControlArrangeRect(rect, layout);
+      CanvasControl.SetCanvasControlArrangeRect(rect, layout.ToRect());
 
       return rect;
     }

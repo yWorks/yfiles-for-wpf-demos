@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -32,15 +32,14 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
-using Demo.yFiles.Option.Handler;
 using yWorks.Annotations;
 
 namespace Demo.yFiles.Option.DataBinding
 {
   internal static class PropertyInfoExtensions
   {
-    private static IDictionary<KeyValuePair<MemberInfo, Type>, Attribute> attributeCache =
-      new Dictionary<KeyValuePair<MemberInfo, Type>, Attribute>();
+    private static readonly IDictionary<KeyValuePair<MemberInfo, Type>, Attribute> attributeCache =
+        new Dictionary<KeyValuePair<MemberInfo, Type>, Attribute>();
 
     public static object GetValue(this PropertyInfo p, object o) {
       return p.GetValue(o, null);
@@ -48,15 +47,14 @@ namespace Demo.yFiles.Option.DataBinding
 
     [CanBeNull]
     public static T GetAttribute<T>([NotNull] this MemberInfo info) where T : Attribute {
-      KeyValuePair<MemberInfo, Type> key = new KeyValuePair<MemberInfo, Type>(info, typeof (T));
+      var key = new KeyValuePair<MemberInfo, Type>(info, typeof(T));
       Attribute retval;
       if (attributeCache.TryGetValue(key, out retval)) {
         return retval as T;
-      } else {
-        retval = Attribute.GetCustomAttribute(info, typeof (T), true);
-        attributeCache[key] = retval;
-        return retval as T;
       }
+      retval = Attribute.GetCustomAttribute(info, typeof(T), true);
+      attributeCache[key] = retval;
+      return retval as T;
     }
 
     [CanBeNull]
@@ -69,44 +67,43 @@ namespace Demo.yFiles.Option.DataBinding
       var displayNameAttribute = info.GetAttribute<DisplayNameAttribute>();
       if (displayNameAttribute != null) {
         return displayNameAttribute.DisplayName;
-      } else {
-        return info.Name;
       }
+      return info.Name;
     }
   }
 
 
   public class AttributeBasedPropertyMapBuilder<TSubject> : PropertyMapBuilderBase<TSubject> where TSubject : class
   {
-    public AttributeBasedPropertyMapBuilder() : base(true) {}
+    public AttributeBasedPropertyMapBuilder() : base(true) { }
 
     protected override void BuildPropertyMapImpl(IPropertyBuildContext<TSubject> builder) {
-      MethodInfo[] infos =
-        typeof (IPropertyBuildContext<>).MakeGenericType(typeof (TSubject)).GetMethods(BindingFlags.DeclaredOnly |
-                                                                                       BindingFlags.Instance |
-                                                                                       BindingFlags.Public);
-      MethodInfo buildChildContextMethod =
-        infos.FirstOrDefault(info => info.IsGenericMethod && info.ReturnType.IsGenericType);
+      var infos = typeof(IPropertyBuildContext<>).MakeGenericType(typeof(TSubject))
+          .GetMethods(BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public);
+      var buildChildContextMethod = infos.FirstOrDefault(info => info.IsGenericMethod && info.ReturnType.IsGenericType);
       if (buildChildContextMethod == null) {
         throw new Exception("Method not found!");
       }
 
-      TSubject instance = builder.CurrentInstance;
+      var instance = builder.CurrentInstance;
 
       var properties = instance.GetType().GetProperties();
-      foreach (PropertyInfo d  in properties) {
+      foreach (var d in properties) {
         AddProperty(builder, buildChildContextMethod, d);
       }
     }
 
-    private void AddProperty(IPropertyBuildContext<TSubject> context, MethodInfo buildChildContextMethod, PropertyInfo d) {
-      PropertyInfo descriptor = d;
-      Type propertyType = descriptor.PropertyType;
+    private void AddProperty(
+        IPropertyBuildContext<TSubject> context,
+        MethodInfo buildChildContextMethod,
+        PropertyInfo d) {
+      var descriptor = d;
+      var propertyType = descriptor.PropertyType;
 
-      AssignmentPolicyAttribute assignmentPolicyAttribute = descriptor.GetAttribute<AssignmentPolicyAttribute>();
+      var assignmentPolicyAttribute = descriptor.GetAttribute<AssignmentPolicyAttribute>();
 
-      NullableAttribute nullableAttribute = descriptor.GetAttribute<NullableAttribute>();
-      bool nullable = nullableAttribute == null || nullableAttribute.IsNullable;
+      var nullableAttribute = descriptor.GetAttribute<NullableAttribute>();
+      var nullable = nullableAttribute == null || nullableAttribute.IsNullable;
 
       AssignmentPolicy policy;
 
@@ -117,7 +114,7 @@ namespace Demo.yFiles.Option.DataBinding
       }
 
       object childbuilder;
-      object currentPropertyValue = descriptor.GetValue(context.CurrentInstance, null);
+      var currentPropertyValue = descriptor.GetValue(context.CurrentInstance, null);
 
       if (currentPropertyValue == null && nullable) {
         //todo: make this dependent on yet-to-implement nullable attribute
@@ -126,62 +123,54 @@ namespace Demo.yFiles.Option.DataBinding
         childbuilder = context.GetPropertyMapBuilder(currentPropertyValue);
       }
 
-      string name = descriptor.GetDisplayName();
+      var name = descriptor.GetDisplayName();
       if (childbuilder != null) {
         // Create the SetInstanceDelegate that uses the builders' CurrentInstance for the set operation
         Delegate setMemberInstanceDelegate;
         {
-          Type helperSetInstanceDelegateType = typeof (HelperSetInstanceDelegate<,>)
-            .MakeGenericType(propertyType, typeof (TSubject));
-          ConstructorInfo setterConstructorInfo = helperSetInstanceDelegateType
-            .GetConstructor(new[] {typeof (PropertyInfo), typeof (IPropertyBuildContext<TSubject>)});
-          object helperSetInstanceDelegateInstance = setterConstructorInfo
-            .Invoke(new object[] {descriptor, context});
+          var helperSetInstanceDelegateType =
+              typeof(HelperSetInstanceDelegate<,>).MakeGenericType(propertyType, typeof(TSubject));
+          var setterConstructorInfo =
+              helperSetInstanceDelegateType.GetConstructor(new[] {
+                  typeof(PropertyInfo), typeof(IPropertyBuildContext<TSubject>)
+              });
+          var helperSetInstanceDelegateInstance = setterConstructorInfo.Invoke(new object[] { descriptor, context });
 
-          MethodInfo method =
-            helperSetInstanceDelegateType.GetMethods(BindingFlags.DeclaredOnly | BindingFlags.Public |
-                                                     BindingFlags.Instance)[0];
-          setMemberInstanceDelegate =
-            Delegate.CreateDelegate(typeof (SetInstanceDelegate<>).MakeGenericType(propertyType),
-                                    helperSetInstanceDelegateInstance, method);
+          var method =
+              helperSetInstanceDelegateType.GetMethods(BindingFlags.DeclaredOnly | BindingFlags.Public |
+                  BindingFlags.Instance)[0];
+          setMemberInstanceDelegate = Delegate.CreateDelegate(
+              typeof(SetInstanceDelegate<>).MakeGenericType(propertyType), helperSetInstanceDelegateInstance, method);
         }
 
         // Create the SetInstanceDelegate that uses the builders' CurrentInstance for the set operation
         Delegate getMemberInstanceDelegate;
         {
-          Type helperInstanceDelegateType = typeof (HelperGetInstanceDelegate<,>)
-            .MakeGenericType(propertyType, typeof (TSubject));
-          ConstructorInfo getterConstructorInfo = helperInstanceDelegateType
-            .GetConstructor(new[] {typeof (PropertyInfo), typeof (IPropertyBuildContext<TSubject>)});
-          object helperGetInstanceDelegateInstance = getterConstructorInfo
-            .Invoke(new object[] {descriptor, context});
+          var helperInstanceDelegateType =
+              typeof(HelperGetInstanceDelegate<,>).MakeGenericType(propertyType, typeof(TSubject));
+          var getterConstructorInfo =
+              helperInstanceDelegateType.GetConstructor(new[] {
+                  typeof(PropertyInfo), typeof(IPropertyBuildContext<TSubject>)
+              });
+          var helperGetInstanceDelegateInstance = getterConstructorInfo.Invoke(new object[] { descriptor, context });
 
-          MethodInfo method =
-            helperInstanceDelegateType.GetMethods(BindingFlags.DeclaredOnly | BindingFlags.Public |
-                                                  BindingFlags.Instance)[0];
-          getMemberInstanceDelegate =
-            Delegate.CreateDelegate(typeof (GetInstanceDelegate<>).MakeGenericType(propertyType),
-                                    helperGetInstanceDelegateInstance, method);
+          var method =
+              helperInstanceDelegateType.GetMethods(BindingFlags.DeclaredOnly | BindingFlags.Public |
+                  BindingFlags.Instance)[0];
+          getMemberInstanceDelegate = Delegate.CreateDelegate(
+              typeof(GetInstanceDelegate<>).MakeGenericType(propertyType), helperGetInstanceDelegateInstance, method);
         }
-        object childContext = buildChildContextMethod.MakeGenericMethod(propertyType).Invoke(context,
-                                                                                             new object[]
-                                                                                               {
-                                                                                                 name,
-                                                                                                 getMemberInstanceDelegate
-                                                                                                 ,
-                                                                                                 setMemberInstanceDelegate
-                                                                                                 ,
-                                                                                                 policy
-                                                                                               });
+        var childContext = buildChildContextMethod.MakeGenericMethod(propertyType).Invoke(context,
+            new object[] { name, getMemberInstanceDelegate, setMemberInstanceDelegate, policy });
 
-        MethodInfo buildPropertyMapMethod =
-          typeof (IPropertyMapBuilder).GetMethods(BindingFlags.DeclaredOnly | BindingFlags.Public |
-                                                  BindingFlags.Instance)[0];
+        var buildPropertyMapMethod =
+            typeof(IPropertyMapBuilder).GetMethods(BindingFlags.DeclaredOnly | BindingFlags.Public |
+                BindingFlags.Instance)[0];
 
-        buildPropertyMapMethod.MakeGenericMethod(propertyType).Invoke(childbuilder, new[] {childContext});
+        buildPropertyMapMethod.MakeGenericMethod(propertyType).Invoke(childbuilder, new[] { childContext });
       } else {
         context.AddEntry(name, new ReflectionGetter<TSubject>(descriptor, context),
-                         new ReflectionSetter<TSubject>(descriptor, context));
+            new ReflectionSetter<TSubject>(descriptor, context));
       }
     }
 
@@ -243,7 +232,7 @@ namespace Demo.yFiles.Option.DataBinding
     }
 
     /// <summary>
-    /// DO NOT REMOVE - USED THROUGH REFLECTION ABOVE!!!
+    ///   DO NOT REMOVE - USED THROUGH REFLECTION ABOVE!!!
     /// </summary>
     public TChild GetInstance() {
       return (TChild) descriptor.GetValue(context.CurrentInstance, null);
@@ -261,7 +250,7 @@ namespace Demo.yFiles.Option.DataBinding
     }
 
     /// <summary>
-    /// DO NOT REMOVE - USED THROUGH REFLECTION ABOVE!!!
+    ///   DO NOT REMOVE - USED THROUGH REFLECTION ABOVE!!!
     /// </summary>
     public void SetValue(TChild value) {
       if (!(descriptor.CanRead && !descriptor.CanWrite)) {

@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -28,36 +28,30 @@
  ***************************************************************************/
 
 using System;
-using System.Windows.Media;
 using Demo.yFiles.Toolkit;
 using yWorks.Controls;
 using yWorks.Controls.Input;
 using yWorks.Graph;
-using yWorks.Graph.Styles;
 using yWorks.Layout.Partial;
 
 namespace Demo.yFiles.Graph.RelocateSubtree
 {
   /// <summary>
-  /// A demo that shows how to interactively relocate subtrees from one parent to another using
-  /// <see cref="ClearAreaLayout"/> to make space at the desired location.
+  ///   A demo that shows how to interactively relocate subtrees from one parent to another using
+  ///   <see cref="ClearAreaLayout"/> to make space at the desired location.
   /// </summary>
   public partial class RelocateSubtreeDemo
   {
     /// <summary>
-    /// Returns the GraphControl instance used in the form.
+    ///   Returns the GraphControl instance used in the form.
     /// </summary>
-    private GraphControl GraphControl {
-      get { return graphControl; }
-    }
+    private GraphControl GraphControl => graphControl;
 
     /// <summary>
-    /// Gets the currently registered IGraph instance from the GraphControl.
+    ///   Gets the currently registered IGraph instance from the GraphControl.
     /// </summary>
-    private IGraph Graph {
-      get { return GraphControl.Graph; }
-    }
-    
+    private IGraph Graph => GraphControl.Graph;
+
     public RelocateSubtreeDemo() {
       InitializeComponent();
     }
@@ -68,28 +62,27 @@ namespace Demo.yFiles.Graph.RelocateSubtree
     }
 
     /// <summary>
-    /// Registers the <see cref="GraphEditorInputMode"/> as the <see cref="CanvasControl.InputMode"/>
-    /// and initializes an <see cref="IPositionHandler"/> that moves a node and its subtree.
+    ///   Registers the <see cref="GraphEditorInputMode"/> as the <see cref="CanvasControl.InputMode"/>
+    ///   and initializes an <see cref="IPositionHandler"/> that moves a node and its subtree.
     /// </summary>
     private void InitializeInputModes() {
       // create a GraphEditorInputMode instance
       var editMode = new GraphEditorInputMode {
-          MoveUnselectedInputMode = { Enabled = true },
-          MovableItems = GraphItemTypes.Node,
+          MovableUnselectedItems = GraphItemTypes.Node,
           SelectableItems = GraphItemTypes.None,
-          AllowCreateBend = false,
+          AllowCreateBend = false
       };
 
       // use special position handler to moves a node and its subtree
-      Graph.GetDecorator().NodeDecorator.PositionHandlerDecorator
-           .SetImplementationWrapper((node, handler) => new SubtreePositionHandler(node, handler));
+      Graph.GetDecorator().Nodes.PositionHandler
+          .AddWrapperFactory((node, handler) => new SubtreePositionHandler(node, handler));
 
       // and install the edit mode into the canvas
       GraphControl.InputMode = editMode;
     }
 
     /// <summary>
-    /// Initializes styles and loads a sample graph.
+    ///   Initializes styles and loads a sample graph.
     /// </summary>
     protected virtual void InitializeGraph() {
       DemoStyles.InitDemoStyles(GraphControl.Graph);

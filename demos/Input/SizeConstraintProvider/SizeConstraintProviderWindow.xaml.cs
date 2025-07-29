@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -29,56 +29,54 @@
 
 using System.Windows;
 using System.Windows.Media;
+using System.Windows.Shapes;
 using Demo.yFiles.Toolkit;
 using yWorks.Controls;
 using yWorks.Controls.Input;
 using yWorks.Geometry;
 using yWorks.Graph;
 using yWorks.Graph.LabelModels;
+using yWorks.Utils;
 
 namespace Demo.yFiles.Graph.Input.SizeConstraintProvider
 {
   /// <summary>
-  /// Shows how to customize the resizing behavior of INodes by implementing a
-  /// custom <see cref="INodeSizeConstraintProvider"/>.
+  ///   Shows how to customize the resizing behavior of INodes by implementing a
+  ///   custom <see cref="INodeSizeConstraintProvider"/>.
   /// </summary>
   public partial class SizeConstraintProviderWindow
   {
-
     /// <summary>
-    /// Registers a callback function as decorator that provides a custom
-    /// <see cref="INodeSizeConstraintProvider"/> for each node.
+    ///   Registers a callback function as decorator that provides a custom
+    ///   <see cref="INodeSizeConstraintProvider"/> for each node.
     /// </summary>
     /// <remarks>
-    /// This callback function is called whenever a node in the graph is queried
-    /// for its <see cref="INodeSizeConstraintProvider"/>. In this case, the 'node' parameter will be set
-    /// to that node.
+    ///   This callback function is called whenever a node in the graph is queried
+    ///   for its <see cref="INodeSizeConstraintProvider"/>. In this case, the 'node' parameter will be set
+    ///   to that node.
     /// </remarks>
     public void RegisterSizeConstraintProvider(MutableRectangle boundaryRectangle) {
-      // One shared instance that will be used by all blue nodes
-      var blueSizeConstraintProvider = new BlueSizeConstraintProvider();
+      var nodeDecorator = graphControl.Graph.GetDecorator().Nodes;
+      nodeDecorator.SizeConstraintProvider.AddFactory(node => {
+        // Obtain the tag from the node
+        var nodeTag = node.Tag;
 
-      var nodeDecorator = graphControl.Graph.GetDecorator().NodeDecorator;
-      nodeDecorator.SizeConstraintProviderDecorator.SetFactory(
-        node => {
-          // Obtain the tag from the node
-          object nodeTag = node.Tag;
-
-          // Check if it is a known tag and choose the respective implementation.
-          // Fallback to the default behavior otherwise.
-          if (!(nodeTag is Palette)) {
-            return null;
-          } else if (Themes.PaletteLightblue.Equals(nodeTag)) {
-            return blueSizeConstraintProvider;
-          } else if (Themes.PaletteGreen.Equals(nodeTag)) {
-            return new GreenSizeConstraintProvider();
-          } else if (Themes.PaletteOrange.Equals(nodeTag)) {
-            return new yWorks.Controls.Input.NodeSizeConstraintProvider(
-              new SizeD(50, 50), new SizeD(300, 300), boundaryRectangle.ToRectD());
-          } else {
-            return null;
-          }
-        });
+        // Check if it is a known tag and choose the respective implementation.
+        // Fallback to the default behavior otherwise.
+        if (!(nodeTag is Palette)) {
+          return null;
+        }
+        if (Themes.PaletteLightblue.Equals(nodeTag)) {
+          return new BlueSizeConstraintProvider(node);
+        }
+        if (Themes.PaletteGreen.Equals(nodeTag)) {
+          return new GreenSizeConstraintProvider(node);
+        }
+        if (Themes.PaletteOrange.Equals(nodeTag)) {
+          return new NodeSizeConstraintProvider(new SizeD(50, 50), new SizeD(300, 300), boundaryRectangle.ToRectD());
+        }
+        return null;
+      });
     }
 
     #region Initialization
@@ -88,10 +86,10 @@ namespace Demo.yFiles.Graph.Input.SizeConstraintProvider
     }
 
     private void OnWindowLoaded(object sender, RoutedEventArgs e) {
-      IGraph graph = graphControl.Graph;
+      var graph = graphControl.Graph;
 
       // Create a default editor input mode
-      GraphEditorInputMode graphEditorInputMode = new GraphEditorInputMode();
+      var graphEditorInputMode = new GraphEditorInputMode();
 
       // Just for user convenience: disable node and edge creation,
       graphEditorInputMode.AllowCreateEdge = false;
@@ -99,7 +97,8 @@ namespace Demo.yFiles.Graph.Input.SizeConstraintProvider
       // disable deleting items
       graphEditorInputMode.DeletableItems = GraphItemTypes.None;
       // disable node moving
-      graphEditorInputMode.MovableItems = GraphItemTypes.None;
+      graphEditorInputMode.MovableSelectedItems = GraphItemTypes.None;
+      graphEditorInputMode.MovableUnselectedItems = GraphItemTypes.None;
       // enable the undo feature
       graph.SetUndoEngineEnabled(true);
 
@@ -109,7 +108,8 @@ namespace Demo.yFiles.Graph.Input.SizeConstraintProvider
       // Create the rectangle that limits the movement of some nodes
       // and add it to the GraphControl.
       var boundaryRectangle = new MutableRectangle(210, 350, 30, 30);
-      graphControl.RootGroup.AddChild(boundaryRectangle, new LimitingRectangleDescriptor());
+      var renderTree = graphControl.RenderTree;
+      renderTree.CreateElement(renderTree.RootGroup, boundaryRectangle, new LimitingRectangleRenderer());
 
       RegisterSizeConstraintProvider(boundaryRectangle);
 
@@ -117,105 +117,89 @@ namespace Demo.yFiles.Graph.Input.SizeConstraintProvider
 
       // reset the Undo queue so the initial graph creation cannot be undone
       graph.GetUndoEngine().Clear();
+
+      graphControl.FitGraphBounds();
     }
 
     /// <summary>
-    /// Creates the visualization for the limiting rectangle.
+    ///   Creates the visualization for the limiting rectangle.
     /// </summary>
-    private class LimitingRectangleDescriptor : ICanvasObjectDescriptor, IVisualCreator
+    private sealed class LimitingRectangleRenderer : ObjectRendererBase<MutableRectangle, Rectangle>
     {
-      private MutableRectangle rect;
-
-      public IVisualCreator GetVisualCreator(object forUserObject) {
-        this.rect = (MutableRectangle) forUserObject;
-        return this;
-      }
-
-      public bool IsDirty(ICanvasContext context, ICanvasObject canvasObject) {
-        return true;
-      }
-
-      public IBoundsProvider GetBoundsProvider(object forUserObject) {
-        return BoundsProviders.Unbounded;
-      }
-
-      public IVisibilityTestable GetVisibilityTestable(object forUserObject) {
-        return VisibilityTestables.Always;
-      }
-
-      public IHitTestable GetHitTestable(object forUserObject) {
-        return HitTestables.Never;
-      }
-
-      public Visual CreateVisual(IRenderContext context) {
-        System.Windows.Shapes.Rectangle rectangle = new System.Windows.Shapes.Rectangle();
-        rectangle.Stroke = Brushes.Black;
-        rectangle.StrokeThickness = 2;
-        rectangle.SetValue(CanvasControl.CanvasControlArrangeRectProperty, new Rect(this.rect.X, this.rect.Y, this.rect.Width, this.rect.Height));
+      protected override Rectangle CreateVisual(IRenderContext context, MutableRectangle rect) {
+        var rectangle = new Rectangle { Stroke = Brushes.Black, StrokeThickness = 2 };
+        rectangle.SetValue(CanvasControl.CanvasControlArrangeRectProperty, rect.ToRect());
         return rectangle;
       }
 
-      public Visual UpdateVisual(IRenderContext context, Visual oldVisual) {
-        System.Windows.Shapes.Rectangle rectangle = oldVisual as System.Windows.Shapes.Rectangle;
-        if (rectangle == null) {
-          return CreateVisual(context);
-        } else {
-          rectangle.SetValue(CanvasControl.CanvasControlArrangeRectProperty, new Rect(this.rect.X, this.rect.Y, this.rect.Width, this.rect.Height));
-          return rectangle;
-        }
+      protected override Rectangle UpdateVisual(IRenderContext context, Rectangle oldVisual, MutableRectangle rect) {
+        oldVisual.SetValue(CanvasControl.CanvasControlArrangeRectProperty, rect.ToRect());
+        return oldVisual;
       }
     }
 
     #endregion
 
-   /// <summary>
-    /// An <see cref="INodeSizeConstraintProvider"/> that prevents shrinking of
-    /// nodes. Additionally, neither side of the node can become larger than
-    /// three times its initial size in each resizing operation.
+    /// <summary>
+    ///   An <see cref="INodeSizeConstraintProvider"/> that prevents shrinking of
+    ///   nodes. Additionally, neither side of the node can become larger than
+    ///   three times its initial size in each resizing operation.
     /// </summary>
     public class BlueSizeConstraintProvider : INodeSizeConstraintProvider
     {
+      private readonly INode node;
+
+      public BlueSizeConstraintProvider(INode node) {
+        this.node = node;
+      }
+
       /// <summary>
-      /// Returns the current node size to prevent the shrinking of nodes.
+      ///   Returns the current node size to prevent the shrinking of nodes.
       /// </summary>
-      public SizeD GetMinimumSize(INode node) {
+      public SizeD GetMinimumSize() {
         return node.Layout.GetSize();
       }
 
       /// <summary>
-      /// Returns three times the current node size.
+      ///   Returns three times the current node size.
       /// </summary>
-      public SizeD GetMaximumSize(INode node) {
+      public SizeD GetMaximumSize() {
         return node.Layout.GetSize() * 3;
       }
 
       /// <summary>
-      /// Returns an empty rectangle since this area is not constraint.
+      ///   Returns an empty rectangle since this area is not constrained.
       /// </summary>
-      public RectD GetMinimumEnclosedArea(INode node) {
+      public RectD GetMinimumEnclosedArea() {
         return RectD.Empty;
       }
     }
 
     /// <summary>
-    /// An <see cref="INodeSizeConstraintProvider"/> that returns the size of the
-    /// first label as minimum size. The maximum size is not limited.
+    ///   An <see cref="INodeSizeConstraintProvider"/> that returns the size of the
+    ///   first label as minimum size. The maximum size is not limited.
     /// </summary>
     public class GreenSizeConstraintProvider : INodeSizeConstraintProvider
     {
+      private readonly INode node;
+
+      public GreenSizeConstraintProvider(INode node) {
+        this.node = node;
+      }
+
       /// <summary>
-      /// Returns the label size to prevent the shrinking of nodes beyond their
-      /// label's size.
+      ///   Returns the label size to prevent the shrinking of nodes beyond their
+      ///   label's size.
       /// </summary>
-      public SizeD GetMinimumSize(INode node) {
+      public SizeD GetMinimumSize() {
         if (node.Labels.Count > 0) {
-          foreach (ILabel label in node.Labels) {
-            INodeSizeConstraintProvider labelProvider = label.Lookup<INodeSizeConstraintProvider>();
+          foreach (var label in node.Labels) {
+            var labelProvider = label.Lookup<INodeSizeConstraintProvider>();
             if (labelProvider != null) {
-              return labelProvider.GetMinimumSize(node);
+              return labelProvider.GetMinimumSize();
             }
 
-            if (label.LayoutParameter.Model is InteriorLabelModel) {
+            if (label.LayoutParameter.Model is InteriorNodeLabelModel) {
               return label.PreferredSize;
             }
           }
@@ -224,16 +208,16 @@ namespace Demo.yFiles.Graph.Input.SizeConstraintProvider
       }
 
       /// <summary>
-      /// Returns the infinite size since the maximum size is not limited.
+      ///   Returns the infinite size since the maximum size is not limited.
       /// </summary>
-      public SizeD GetMaximumSize(INode node) {
+      public SizeD GetMaximumSize() {
         return SizeD.Infinite;
       }
 
       /// <summary>
-      /// Returns an empty rectangle since this area is not constraint.
+      ///   Returns an empty rectangle since this area is not constrained.
       /// </summary>
-      public RectD GetMinimumEnclosedArea(INode node) {
+      public RectD GetMinimumEnclosedArea() {
         return RectD.Empty;
       }
     }
@@ -241,21 +225,30 @@ namespace Demo.yFiles.Graph.Input.SizeConstraintProvider
     #region Sample Graph Creation
 
     /// <summary>
-    /// Creates the sample graph of this demo.
+    ///   Creates the sample graph of this demo.
     /// </summary>
-    private static void CreateSampleGraph(IGraph graph) {
+    private void CreateSampleGraph(IGraph graph) {
       CreateNode(graph, 100, 100, 100, 60, Themes.PaletteLightblue, Colors.WhiteSmoke, "Never Shrink\n(Max 3x)");
       CreateNode(graph, 300, 100, 160, 30, Themes.PaletteLightblue, Colors.WhiteSmoke, "Never Shrink (Max 3x)");
       CreateNode(graph, 100, 215, 100, 30, Themes.PaletteGreen, Colors.WhiteSmoke, "Enclose Label");
       CreateNode(graph, 300, 200, 140, 80, Themes.PaletteGreen, Colors.WhiteSmoke, "Enclose Label,\nEven Large Ones");
-      CreateNode(graph, 200, 340, 140, 140, Themes.PaletteOrange, Colors.Black, "Encompass Rectangle,\nMin and Max Size");
+      CreateNode(graph, 200, 340, 140, 140, Themes.PaletteOrange, Colors.Black,
+          "Encompass Rectangle,\nMin and Max Size");
     }
 
     /// <summary>
-    /// Creates a sample node for this demo.
+    ///   Creates a sample node for this demo.
     /// </summary>
-    private static void CreateNode(IGraph graph, double x, double y, double w, double h, Palette palette, Color textColor, string labelText) {
-      INode node = graph.CreateNode(new RectD(x, y, w, h), DemoStyles.CreateDemoNodeStyle(palette), palette);
+    private static void CreateNode(
+        IGraph graph,
+        double x,
+        double y,
+        double w,
+        double h,
+        Palette palette,
+        Color textColor,
+        string labelText) {
+      var node = graph.CreateNode(new RectD(x, y, w, h), DemoStyles.CreateDemoNodeStyle(palette), palette);
       graph.SetStyle(graph.AddLabel(node, labelText), DemoStyles.CreateDemoNodeLabelStyle(palette));
     }
 

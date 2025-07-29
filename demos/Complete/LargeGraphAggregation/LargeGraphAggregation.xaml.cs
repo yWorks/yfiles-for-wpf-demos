@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -40,8 +40,6 @@ using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using Demo.yFiles.Aggregation;
-using yWorks.Algorithms.Util;
-using yWorks.Analysis;
 using yWorks.Controls;
 using yWorks.Controls.Input;
 using yWorks.Geometry;
@@ -51,74 +49,67 @@ using yWorks.Graph.Styles;
 using yWorks.GraphML;
 using yWorks.Layout;
 using yWorks.Layout.Circular;
+using yWorks.Layout.Graph;
 using yWorks.Layout.Grouping;
+using yWorks.Layout.Router;
 using yWorks.Layout.Tree;
 using yWorks.Utils;
+using Cursors = System.Windows.Input.Cursors;
+using NodeAggregation = yWorks.Analysis.NodeAggregation;
 
 namespace Demo.yFiles.Complete.LargeGraphAggregation
 {
   /// <summary>
-  /// Demo window that shows how to use the smart <see cref="NodeAggregation"/> algorithm together with the
-  /// <see cref="AggregateGraphWrapper"/> for drill down exploration of a large graph.
+  ///   Demo window that shows how to use the smart <see cref="yWorks.Analysis.NodeAggregation"/> algorithm together with the
+  ///   <see cref="AggregateGraphWrapper"/> for drill down exploration of a large graph.
   /// </summary>
   public partial class LargeGraphAggregationWindow : INotifyPropertyChanged
   {
     /// <summary>
-    /// Style for aggregation nodes that handles aggregated and separated state as well as placeholder nodes.
+    ///   Style for aggregation nodes that handles aggregated and separated state as well as placeholder nodes.
     /// </summary>
-    private static readonly INodeStyle aggregationNodeStyle =
+    private static readonly INodeStyle AggregationNodeStyle =
         new NodeControlNodeStyle("AggregationNodeStyleTemplate") { OutlineShape = new Ellipse() };
 
     /// <summary>
-    /// Style for the artificial hierarchy edges.
+    ///   Style for the artificial hierarchy edges.
     /// </summary>
-    private static readonly IEdgeStyle hierarchyEdgeStyle = new BezierEdgeStyle
-    {
-      Pen = (Pen) new Pen { Brush = (Brush) new SolidColorBrush(Color.FromArgb(35, 0, 0, 0)).GetAsFrozen(), DashStyle = DashStyles.Dash }.GetAsFrozen(),
-      TargetArrow = new Arrow
-      {
-        Type = ArrowType.Simple,
-        Pen = (Pen) new Pen { Brush = (Brush) new SolidColorBrush(Color.FromArgb(35, 0, 0, 0)).GetAsFrozen() }.GetAsFrozen()
-      }
+    private static readonly IEdgeStyle HierarchyEdgeStyle = new BezierEdgeStyle {
+        Pen = (Pen) new Pen {
+            Brush = (Brush) new SolidColorBrush(Color.FromArgb(35, 0, 0, 0)).GetAsFrozen(), DashStyle = DashStyles.Dash
+        }.GetAsFrozen(),
+        TargetArrow = new Arrow(ArrowType.Open,
+            pen : (Pen) new Pen { Brush = (Brush) new SolidColorBrush(Color.FromArgb(35, 0, 0, 0)).GetAsFrozen() }
+                .GetAsFrozen(), brush : Brushes.Transparent)
     };
 
     /// <summary>
-    /// Style for the labels for aggregated nodes.
+    ///   Style for the labels for aggregated nodes.
     /// </summary>
-    private static readonly ILabelStyle descendantLabelStyle =
-        new DefaultLabelStyle { TextSize = 10, TextBrush = (Brush) new SolidColorBrush(Color.FromArgb(150, 75, 75, 75)).GetAsFrozen() };
+    private static readonly ILabelStyle DescendantLabelStyle = new LabelStyle {
+        TextSize = 10, TextBrush = (Brush) new SolidColorBrush(Color.FromArgb(150, 75, 75, 75)).GetAsFrozen()
+    };
 
     /// <summary>
-    /// The number of currently visible original nodes (or their placeholders).
+    ///   The number of currently visible original nodes (or their placeholders).
     /// </summary>
-    public int VisibleNodes {
-      get {
-        return aggregationHelper?.VisibleNodes ?? 0;
-      }
-    }
+    public int VisibleNodes => aggregationHelper?.VisibleNodes ?? 0;
 
     /// <summary>
-    /// The number of currently visible original edges (or their placeholders).
+    ///   The number of currently visible original edges (or their placeholders).
     /// </summary>
-    public int VisibleEdges {
-      get {
-        return aggregationHelper?.VisibleEdges ?? 0;
-      }
-    }
+    public int VisibleEdges => aggregationHelper?.VisibleEdges ?? 0;
 
     /// <summary>
-    /// The label of the <see cref="yWorks.Controls.GraphControl.CurrentItem"/>.
+    ///   The label of the <see cref="yWorks.Controls.GraphControl.CurrentItem"/>.
     /// </summary>
-    public string CurrentItemLabel {
-      get {
-        return (GraphControl.CurrentItem as ILabelOwner)?.Labels.FirstOrDefault()?.Text.Replace("\n", " ");
-      }
-    }
+    public string CurrentItemLabel =>
+        (GraphControl.CurrentItem as ILabelOwner)?.Labels.FirstOrDefault()?.Text.Replace("\n", " ");
 
     /// <summary>
-    /// The Aggregate of the current item.
+    ///   The aggregate of the current item.
     /// </summary>
-    public yWorks.Analysis.NodeAggregation.Aggregate CurrentItemAggregate {
+    public NodeAggregation.Aggregate CurrentItemAggregate {
       get {
         if (aggregationHelper == null || !(GraphControl.CurrentItem is INode)) {
           return null;
@@ -129,24 +120,24 @@ namespace Demo.yFiles.Complete.LargeGraphAggregation
     }
 
     /// <summary>
-    /// The original graph before aggregation.
+    ///   The original graph before aggregation.
     /// </summary>
     public IGraph OriginalGraph { get; set; }
 
     /// <summary>
-    /// Manages the NodeAggregation properties panel on the right sight.
+    ///   Manages the NodeAggregation properties panel on the right sight.
     /// </summary>
-    private NodeAggregationConfig NodeAggregationConfig;
+    private NodeAggregationConfig nodeAggregationConfig;
 
     /// <summary>
-    /// Encapsulates aggregation and separation methods.
+    ///   Encapsulates aggregation and separation methods.
     /// </summary>
     private AggregationHelper aggregationHelper;
 
     public LargeGraphAggregationWindow() {
       InitializeComponent();
 
-      layoutStyleComboBox.ItemsSource = new[] { "Balloon", "Cactus" };
+      layoutStyleComboBox.ItemsSource = new[] { "Radial Tree", "Radial Group" };
       layoutStyleComboBox.SelectedIndex = 0;
     }
 
@@ -178,7 +169,7 @@ namespace Demo.yFiles.Complete.LargeGraphAggregation
     }
 
     /// <summary>
-    /// Enables/disables the UI.
+    ///   Enables/disables the UI.
     /// </summary>
     private void SetUiEnabled(bool isEnabled) {
       graphControl.IsEnabled = isEnabled;
@@ -188,12 +179,13 @@ namespace Demo.yFiles.Complete.LargeGraphAggregation
       graphLoadingBar.IsIndeterminate = !isEnabled;
       graphLoadingBar.Visibility = isEnabled ? Visibility.Hidden : Visibility.Visible;
 
-      Window.Cursor = isEnabled ? System.Windows.Input.Cursors.Arrow : System.Windows.Input.Cursors.Wait;
-      SwitchViewButton.IsEnabled = isEnabled && !graphControl.Graph.Nodes.All(aggregationHelper.AggregateGraph.IsAggregationItem);
+      Window.Cursor = isEnabled ? Cursors.Arrow : Cursors.Wait;
+      SwitchViewButton.IsEnabled =
+          isEnabled && !graphControl.Graph.Nodes.All(aggregationHelper.AggregateGraph.IsAggregationItem);
     }
 
     /// <summary>
-    /// Asynchronously loads a compressed graphmlz file.
+    ///   Asynchronously loads a compressed graphmlz file.
     /// </summary>
     private static async Task<IGraph> LoadGraphMlz(string filepath) {
       return await Task.Run(() => {
@@ -208,16 +200,16 @@ namespace Demo.yFiles.Complete.LargeGraphAggregation
 
 
     /// <summary>
-    /// Initializes the property panel for the <see cref="NodeAggregation"/> settings.
+    ///   Initializes the property panel for the <see cref="yWorks.Analysis.NodeAggregation"/> settings.
     /// </summary>
     private void InitializePropertiesPanel() {
-      NodeAggregationConfig = new NodeAggregationConfig();
-      Editor.Configuration = NodeAggregationConfig;
+      nodeAggregationConfig = new NodeAggregationConfig();
+      Editor.Configuration = nodeAggregationConfig;
     }
 
     /// <summary>
-    /// Registers a listener to the <see cref="GraphInputMode.ItemClicked"/> event that toggles the aggregation of a node,
-    /// runs a layout and sets the current item.
+    ///   Registers a listener to the <see cref="GraphInputMode.ItemClicked"/> event that toggles the aggregation of a node,
+    ///   runs a layout and sets the current item.
     /// </summary>
     private void InitializeToggleAggregation() {
       graphViewerInputMode.ClickableItems = GraphItemTypes.Node;
@@ -256,16 +248,13 @@ namespace Demo.yFiles.Complete.LargeGraphAggregation
       graphViewerInputMode.ItemHoverInputMode.Enabled = true;
       // set the items to be reported
       graphViewerInputMode.ItemHoverInputMode.HoverItems = GraphItemTypes.Edge | GraphItemTypes.Node;
-      // if there are other items (most importantly labels) in front of edges or nodes
-      // they should be discarded, rather than be reported as "null"
-      graphViewerInputMode.ItemHoverInputMode.DiscardInvalidItems = false;
       // whenever the currently hovered item changes call our method
       graphViewerInputMode.ItemHoverInputMode.HoveredItemChanged += OnHoveredItemChanged;
     }
 
     private void OnHoveredItemChanged(object sender, HoveredItemChangedEventArgs e) {
       // first remove previous highlights
-      graphControl.HighlightIndicatorManager.ClearHighlights();
+      graphControl.Highlights.Clear();
       // then see where we are hovering over, now
       var newItem = e.Item;
       if (newItem != null) {
@@ -293,51 +282,49 @@ namespace Demo.yFiles.Complete.LargeGraphAggregation
 
     private void AddHighlight(INode node) {
       if (aggregationHelper.IsOriginalNodeOrPlaceHolder(node)) {
-        graphControl.HighlightIndicatorManager.AddHighlight(node);
+        graphControl.Highlights.Add(node);
       }
     }
 
     private void AddHighlight(IEdge edge) {
       if (!aggregationHelper.IsHierarchyEdge(edge)) {
-        graphControl.HighlightIndicatorManager.AddHighlight(edge);
+        graphControl.Highlights.Add(edge);
       }
     }
 
     private void InitializeHighlightStyles() {
       // we want to create a non-default nice highlight styling
-      // for the hover highlight, create semi transparent orange stroke first
+      // for the hover highlight, create semi-transparent orange stroke first
       var orangeRed = Colors.Orange;
-      var orangePen = new Pen((Brush) new SolidColorBrush(Color.FromArgb(220, orangeRed.R, orangeRed.G, orangeRed.B)).GetAsFrozen(), 3);
+      var orangePen =
+          new Pen((Brush) new SolidColorBrush(Color.FromArgb(220, orangeRed.R, orangeRed.G, orangeRed.B)).GetAsFrozen(),
+              3);
       // freeze it for slightly improved performance
       orangePen.Freeze();
 
       // hide the default selection and focus indicator
-      graphControl.SelectionIndicatorManager = new GraphSelectionIndicatorManager() { NodeStyle = VoidNodeStyle.Instance };
-      graphControl.FocusIndicatorManager = new GraphFocusIndicatorManager { NodeStyle = VoidNodeStyle.Instance };
+      graphControl.Graph.GetDecorator().Nodes.SelectionRenderer.Hide();
+      graphControl.Graph.GetDecorator().Nodes.FocusRenderer.Hide();
 
       // nodes should be given a rectangular orange rectangle highlight shape
       var highlightShape = new ShapeNodeStyle { Shape = ShapeNodeShape.Ellipse, Pen = orangePen, Brush = null };
       // that should be slightly larger than the real node
-      var nodeStyleHighlight = new IndicatorNodeStyleDecorator(highlightShape) { Padding = new InsetsD(5) };
+      var nodeStyleHighlight = new NodeStyleIndicatorRenderer { NodeStyle = highlightShape, Margins = new InsetsD(5) };
 
-      // a similar style for the edges, however cropped by the highlight's insets
-      var dummyCroppingArrow = new Arrow { Type = ArrowType.None, CropLength = 5 };
-      var edgeStyle = new BezierEdgeStyle
-      {
-        Pen = orangePen,
-        TargetArrow = dummyCroppingArrow,
-        SourceArrow = dummyCroppingArrow,
+      // a similar style for the edges, however cropped by the highlight's margins
+      var dummyCroppingArrow = new Arrow(ArrowType.None, cropLength : 5);
+      var edgeStyle = new BezierEdgeStyle {
+          Pen = orangePen, TargetArrow = dummyCroppingArrow, SourceArrow = dummyCroppingArrow
       };
-      var edgeStyleHighlight = new IndicatorEdgeStyleDecorator(edgeStyle) ;
-      graphControl.HighlightIndicatorManager = new GraphHighlightIndicatorManager {
-          NodeStyle = nodeStyleHighlight, EdgeStyle = edgeStyleHighlight
-      };
+      var edgeStyleHighlight = new EdgeStyleIndicatorRenderer { EdgeStyle = edgeStyle };
+      graphControl.Graph.GetDecorator().Nodes.HighlightRenderer.AddConstant(nodeStyleHighlight);
+      graphControl.Graph.GetDecorator().Edges.HighlightRenderer.AddConstant(edgeStyleHighlight);
     }
 
     #endregion
 
     /// <summary>
-    /// Runs the smart <see cref="NodeAggregation"/> algorithm with the settings from the properties panel.
+    ///   Runs the smart <see cref="yWorks.Analysis.NodeAggregation"/> algorithm with the settings from the properties panel.
     /// </summary>
     private async void RunAggregation(object sender, RoutedEventArgs e) {
       SetUiEnabled(false);
@@ -350,7 +337,7 @@ namespace Demo.yFiles.Complete.LargeGraphAggregation
     }
 
     /// <summary>
-    /// Switches between the view with hierarchy nodes and without and runs an appropriate layout.
+    ///   Switches between the view with hierarchy nodes and without and runs an appropriate layout.
     /// </summary>
     private async void SwitchViewButtonClick(object sender, RoutedEventArgs e) {
       if (GraphControl.Graph is AggregateGraphWrapper) {
@@ -365,14 +352,14 @@ namespace Demo.yFiles.Complete.LargeGraphAggregation
     }
 
     /// <summary>
-    /// Switches the visibility of hierarchy edges by setting either the default hierarchy edge
-    /// style or a void edge style that does not visualize the edge.
+    ///   Switches the visibility of hierarchy edges by setting either the default hierarchy edge
+    ///   style or a void edge style that does not visualize the edge.
     /// </summary>
     private void SwitchHierarchyEdgeVisibility(IGraph graph, bool visible) {
       foreach (var edge in graph.Edges) {
         if (aggregationHelper.IsHierarchyEdge(edge)) {
-          if (visible && edge.Style != hierarchyEdgeStyle) {
-            graph.SetStyle(edge, hierarchyEdgeStyle);
+          if (visible && edge.Style != HierarchyEdgeStyle) {
+            graph.SetStyle(edge, HierarchyEdgeStyle);
           } else if (!visible && edge.Style != VoidEdgeStyle.Instance) {
             graph.SetStyle(edge, VoidEdgeStyle.Instance);
           }
@@ -381,21 +368,18 @@ namespace Demo.yFiles.Complete.LargeGraphAggregation
     }
 
     /// <summary>
-    /// Creates a new <see cref="FilteredGraphWrapper"/> that shows the currently visible original nodes.
+    ///   Creates a new <see cref="FilteredGraphWrapper"/> that shows the currently visible original nodes.
     /// </summary>
     /// <remarks>
-    /// Nodes without currently visible edges are also filtered out.
+    ///   Nodes without currently visible edges are also filtered out.
     /// </remarks>
     private FilteredGraphWrapper CreateFilteredView() {
       // create a new FilteredGraphWrapper that filters the original graph and shows only the currently visible nodes
-      var filteredGraph = new FilteredGraphWrapper(
-        OriginalGraph,
-          node => {
-            node = aggregationHelper.GetPlaceholder(node);
-            var aggregateGraph = aggregationHelper.AggregateGraph;
-            return aggregateGraph.Contains(node);
-          }
-        );
+      var filteredGraph = new FilteredGraphWrapper(OriginalGraph, node => {
+        node = aggregationHelper.GetPlaceholder(node);
+        var aggregateGraph = aggregationHelper.AggregateGraph;
+        return aggregateGraph.Contains(node);
+      });
 
       // set the node layouts for a smooth transition
       foreach (var node in filteredGraph.Nodes) {
@@ -404,17 +388,18 @@ namespace Demo.yFiles.Complete.LargeGraphAggregation
 
       // reset any rotated node labels
       foreach (var label in filteredGraph.GetNodeLabels()) {
-        filteredGraph.SetLabelLayoutParameter(label, FreeNodeLabelModel.Instance.CreateDefaultParameter());
+        filteredGraph.SetLabelLayoutParameter(label, FreeNodeLabelModel.Center);
       }
 
       return filteredGraph;
     }
 
     /// <summary>
-    /// Creates a new <see cref="AggregateGraphWrapper"/> and runs the aggregation algorithm.
+    ///   Creates a new <see cref="AggregateGraphWrapper"/> and runs the aggregation algorithm.
     /// </summary>
     private async Task RunAggregationAndReplaceGraph(IGraph originalGraph) {
-      var aggregateGraph = new AggregateGraphWrapper(originalGraph) { EdgeReplacementPolicy = EdgeReplacementPolicy.None };
+      var aggregateGraph =
+          new AggregateGraphWrapper(originalGraph) { EdgeReplacementPolicy = EdgeReplacementPolicy.None };
       await ApplyAggregation(originalGraph, aggregateGraph);
       GraphControl.Graph = aggregateGraph;
 
@@ -426,21 +411,22 @@ namespace Demo.yFiles.Complete.LargeGraphAggregation
 
 
     /// <summary>
-    /// Asynchronously runs the <see cref="NodeAggregation"/> algorithm with the settings from the properties panel.
+    ///   Asynchronously runs the <see cref="yWorks.Analysis.NodeAggregation"/> algorithm with the settings from the properties
+    ///   panel.
     /// </summary>
     /// <remarks>
-    /// Afterwards, the <see cref="NodeAggregation.Result"/> is applied to the <paramref name="aggregateGraph"/>.
+    ///   Afterwards, the <see cref="yWorks.Analysis.NodeAggregation.Result"/> is applied to the
+    ///   <paramref name="aggregateGraph"/>.
     /// </remarks>
     private async Task ApplyAggregation(IGraph originalGraph, AggregateGraphWrapper aggregateGraph) {
       await Task.Run(() => {
-        var nodeAggregation = NodeAggregationConfig.CreateConfiguredAggregation();
+        var nodeAggregation = nodeAggregationConfig.CreateConfiguredAggregation();
         var aggregationResult = nodeAggregation.Run(originalGraph);
 
-        aggregationHelper = new AggregationHelper(aggregationResult, aggregateGraph)
-        {
-          AggregationNodeStyle = aggregationNodeStyle,
-          HierarchyEdgeStyle = hierarchyEdgeStyle,
-          DescendantLabelStyle = descendantLabelStyle
+        aggregationHelper = new AggregationHelper(aggregationResult, aggregateGraph) {
+            AggregationNodeStyle = AggregationNodeStyle,
+            HierarchyEdgeStyle = HierarchyEdgeStyle,
+            DescendantLabelStyle = DescendantLabelStyle
         };
         aggregationHelper.Separate(aggregationHelper.AggregateRecursively(aggregationResult.Root));
       });
@@ -449,222 +435,79 @@ namespace Demo.yFiles.Complete.LargeGraphAggregation
     #region layout
 
     /// <summary>
-    /// Runs a layout on the hierarchy view.
+    ///   Runs a layout on the hierarchy view.
     /// </summary>
-    private Task RunLayoutOnHierarchyView(IListEnumerable<INode> affectedNodes = null) {
-      return "Cactus".Equals(layoutStyleComboBox.SelectedItem)
-        ? RunCactusLayout(affectedNodes)
-        : RunBalloonLayout(affectedNodes);
+    private Task RunLayoutOnHierarchyView(IReadOnlyList<INode> affectedNodes = null) {
+      return "Radial Group".Equals(layoutStyleComboBox.SelectedItem)
+          ? RunRadialGroupLayout(affectedNodes)
+          : RunRadialTreeLayout(affectedNodes);
     }
 
     /// <summary>
-    /// Runs a balloon layout where the hierarchy edges are the tree edges and original edges are bundled.
+    ///   Runs a radial tree layout where the hierarchy edges are the tree edges and original edges are bundled.
     /// </summary>
-    private async Task RunBalloonLayout(IListEnumerable<INode> affectedNodes = null) {
+    private async Task RunRadialTreeLayout(IReadOnlyList<INode> affectedNodes = null) {
       SwitchHierarchyEdgeVisibility(GraphControl.Graph, true);
 
-      // create the balloon layout
-      var layout = new BalloonLayout
-      {
-        IntegratedNodeLabeling = true,
-        NodeLabelingPolicy = NodeLabelingPolicy.RayLikeLeaves,
-        FromSketchMode = true,
-        CompactnessFactor = 0.1,
-        AllowOverlaps = true
+      // create the radial tree layout
+      var layout = new RadialTreeLayout {
+          NodeLabelPlacement = RadialNodeLabelPlacement.RayLikeLeaves,
+          ChildOrderingPolicy = ChildOrderingPolicy.FromSketch,
+          CompactnessFactor = 0.95,
+          AllowOverlaps = true
       };
 
       // prepend a TreeReduction stage with the hierarchy edges as tree edges
-      var treeReductionStage = new TreeReductionStage();
-      treeReductionStage.NonTreeEdgeRouter = treeReductionStage.CreateStraightLineRouter();
+      var treeReductionStage = layout.TreeReductionStage;
+      treeReductionStage.NonTreeEdgeRouter = new StraightLineEdgeRouter();
       treeReductionStage.EdgeBundling.BundlingStrength = 1;
-      layout.PrependStage(treeReductionStage);
       var nonTreeEdges = GraphControl.Graph.Edges.Where(e => !aggregationHelper.IsHierarchyEdge(e)).ToList();
 
       // mark all other edges to be bundled
-      var treeReductionStageData = new TreeReductionStageData
-      {
-          NonTreeEdges = { Items = nonTreeEdges },
-          EdgeBundleDescriptors = new ItemMapping<IEdge, EdgeBundleDescriptor>(edge =>
-              new EdgeBundleDescriptor { Bundled = nonTreeEdges.Contains(edge), BezierFitting = true })
-      };
+      var treeReductionStageData = treeReductionStage.CreateLayoutData(graphControl.Graph);
+      treeReductionStageData.NonTreeEdges.Items = nonTreeEdges;
+      treeReductionStageData.EdgeBundleDescriptors.MapperFunction = edge =>
+          new EdgeBundleDescriptor { Bundled = nonTreeEdges.Contains(edge), BezierFitting = true };
 
       // create a layout executor that also zooms to all nodes that were affected by the last operation
       var layoutExecutor =
-          new ZoomToNodesLayoutExecutor(affectedNodes ?? ListEnumerable<INode>.Empty, GraphControl, layout)
-          {
-            Duration = TimeSpan.FromSeconds(0.5),
-            AnimateViewport = true,
-            EasedAnimation = true,
-            LayoutData = treeReductionStageData
+          new ZoomToNodesLayoutExecutor(affectedNodes ?? AggregationHelper.EmptyReadOnlyNodeList, GraphControl,
+              layout) {
+              AnimationDuration = TimeSpan.FromSeconds(0.5),
+              AnimateViewport = true,
+              EasedAnimation = true,
+              LayoutData = treeReductionStageData
           };
       await layoutExecutor.Start();
     }
 
-    private async Task RunCircularLayout() {
-      await GraphControl.MorphLayout(
-          new CircularLayout { BalloonLayout = { InterleavedMode = InterleavedMode.AllNodes } },
-          TimeSpan.FromSeconds(0.5));
-    }
-
     /// <summary>
-    /// Runs a {@link CactusGroupLayout} where the hierarchy edges are not shown but the hierarchy is
-    /// visualized by placing child nodes along the circular border of the parent node.
+    ///   A layout stage that prepares the temporary group nodes inserted by
+    ///   <see cref="TemporaryGroupDescriptor"/> for the <see cref="RadialGroupLayout"/> algorithm.
     /// </summary>
-    /// <remarks>
-    /// <para>
-    /// The original edges are drawn in a bundled style.
-    /// </para>
-    /// <para>
-    /// The approach uses {@link TemporaryGroupNodeInsertionStage} and some custom layout stage code
-    /// to temporarily represent inner tree nodes (which have successors) as group nodes with children.
-    /// This is required because the cactus layout works on hierarchical grouping structures as
-    /// input and not on tree graph structures.
-    /// </para>
-    /// </remarks>
-    private async Task RunCactusLayout(IListEnumerable<INode> affectedNodes = null) {
-      var graph = graphControl.Graph;
-      SwitchHierarchyEdgeVisibility(graph, false);
-
-      // collect hierarchy tree nodes that have children, which must temporarily be modeled as a groups
-      var innerTreeNodes = new List<INode>();
-      var innerTreeNode2Descriptor = new Dictionary<INode, TemporaryGroupDescriptor>();
-      foreach (var node in graph.Nodes) {
-        if (graph.OutEdgesAt(node).Any(e => aggregationHelper.IsHierarchyEdge(e))) {
-          innerTreeNodes.Add(node);
-          innerTreeNode2Descriptor[node] = new TemporaryGroupDescriptor();
-        }
-      }
-
-      // prepare the layout data for the TemporaryGroupNodeInsertionStage
-      var tmpGroupStageData = new TemporaryGroupNodeInsertionData();
-      foreach (var treeNode in innerTreeNodes) {
-        var descriptor = innerTreeNode2Descriptor[treeNode];
-
-        // register a temporary group for each inner tree node...
-        var temporaryGroup = tmpGroupStageData.TemporaryGroups.Add(descriptor);
-        // ... members of the group are all the successor nodes
-        temporaryGroup.Source = graph
-          .OutEdgesAt(treeNode)
-          .Where(e => aggregationHelper.IsHierarchyEdge(e))
-          .Select(e => e.GetTargetNode());
-
-        // if the tree node has a parent too, then the parent descriptor must be setup as well
-        var inEdge = graph
-          .InEdgesAt(treeNode)
-          .Where(e => aggregationHelper.IsHierarchyEdge(e))
-          .FirstOrDefault();
-        if (inEdge != null) {
-          TemporaryGroupDescriptor parentGroupDescriptor;
-          if (innerTreeNode2Descriptor.TryGetValue(inEdge.GetSourceNode(), out parentGroupDescriptor)) {
-            descriptor.Parent = parentGroupDescriptor;
-          }
-        }
-      }
-
-      // create a mapper that maps from the inner tree node to the temporary group descriptor,
-      // which is necessary that the custom layout stages know
-      var innerNodesMapper = graph.MapperRegistry.CreateDelegateMapper<INode, TemporaryGroupDescriptor>(
-        "INNER_TREE_NODES",
-        n => {
-          TemporaryGroupDescriptor descriptor;
-          if (innerTreeNode2Descriptor.TryGetValue(n, out descriptor)) {
-            return descriptor;
-          }
-          return null;
-        }
-      );
-
-      // create a layout executor that also zooms to all nodes that were affected by the last operation
-      var layoutExecutor = new ZoomToNodesLayoutExecutor(
-        affectedNodes ?? ListEnumerable<INode>.Empty,
-        graphControl,
-        new CustomCactusLayoutStage()
-      )
-      {
-        Duration = TimeSpan.FromSeconds(0.5),
-        AnimateViewport = true,
-        EasedAnimation = true,
-        LayoutData = tmpGroupStageData
-      };
-      await layoutExecutor.Start();
-
-      // clean-up the mapper registered earlier
-      graph.MapperRegistry.RemoveMapper(innerNodesMapper);
-    }
-
-    /// <summary>
-    /// A layout stage that configures and applies the {@link CactusGroupLayout} and uses further
-    /// stages to make the input suitable for it.
-    /// </summary>
-    private class CustomCactusLayoutStage : LayoutStageBase
-    {
-      public override void ApplyLayout(LayoutGraph graph) {
-        if (graph.NodeCount < 2) {
-          // single node or no node: nothing to do for the layout
-          return;
-        }
-
-        // configure the cactus group layout
-        var cactus = new CactusGroupLayout()
-        {
-          FromSketchMode = true,
-          PreferredRootWedge = 360,
-          IntegratedNodeLabeling = true,
-          NodeLabelingPolicy = NodeLabelingPolicy.RayLikeLeaves
-        };
-        // ... configure bundling
-        cactus.EdgeBundling.DefaultBundleDescriptor.Bundled = true;
-        cactus.EdgeBundling.DefaultBundleDescriptor.BezierFitting = true;
-
-        // ... configure the parent-child overlap ratio so that they are allowed to overlap a bit
-        graph.AddDataProvider(
-          CactusGroupLayout.ParentOverlapRatioDpKey,
-          DataProviders.CreateConstantDataProvider(0.5)
-        );
-
-        // apply the cactus group layout with temporary groups
-        new TemporaryGroupNodeInsertionStage(new TemporaryGroupCustomizationStage(cactus)).ApplyLayout(
-          graph
-        );
-
-        // clean-up
-        graph.RemoveDataProvider(CactusGroupLayout.ParentOverlapRatioDpKey);
-      }
-    }
-
-    /**
- * A layout stage that prepares the temporary group nodes inserted by
- * {@link TemporaryGroupDescriptor} for the {@link CactusGroupLayout} algorithm.
- */
     private class TemporaryGroupCustomizationStage : LayoutStageBase
     {
-      public TemporaryGroupCustomizationStage(CactusGroupLayout cactus) : base(cactus) {
-      }
+      public TemporaryGroupCustomizationStage(RadialGroupLayout radialGroupLayout) : base(radialGroupLayout) { }
 
-      public override void ApplyLayout(LayoutGraph graph) {
-        var innerNodesDp = graph.GetDataProvider("INNER_TREE_NODES");
-        var isInsertedTmpGroupDp = graph.GetDataProvider(
-          TemporaryGroupNodeInsertionStage.InsertedGroupNodeDpKey
-        );
-        var childNode2DescriptorDp = graph.GetDataProvider(
-          TemporaryGroupNodeInsertionStage.TemporaryGroupDescriptorDpKey
-        );
-        var grouping = new yWorks.Layout.Grouping.GroupingSupport(graph);
+      public static readonly NodeDataKey<TemporaryGroupDescriptor> InnerTreeNodeDataKey =
+          new(
+              "Demo.yFiles.Complete.LargeGraphAggregation.LargeGraphAggregationWindow.TemporaryGroupCustomizationStage.InnerTreeNodeDataKey");
+
+      protected override void ApplyLayoutImpl(LayoutGraph graph) {
+        var innerNodesDp = graph.Context.GetItemData(InnerTreeNodeDataKey);
+        var isInsertedTmpGroupDp = graph.Context.GetItemData(TemporaryGroupInsertionStage.InsertedGroupNodeDataKey);
+        var childNode2DescriptorDp =
+            graph.Context.GetItemData(TemporaryGroupInsertionStage.TemporaryGroupDescriptorDataKey);
+        var grouping = LayoutGraphGrouping.CreateReadOnlyView(graph);
 
         // collect the temporary group nodes inserted by TemporaryGroupNodeInsertionStage earlier
         // and the respective original tree node
-        var temporaryGroups = graph.Nodes
-          .Where(n => isInsertedTmpGroupDp.GetBool(n))
-          .Select(tmpGroup => {
-            var child = grouping.GetChildren(tmpGroup).FirstNode();
+        var temporaryGroups = graph.Nodes.Where(n => isInsertedTmpGroupDp[n]).Select(tmpGroup => {
+          var child = grouping.GetChildren(tmpGroup).First(child => !isInsertedTmpGroupDp[child]);
 
-            var originalTreeNode = graph.Nodes.First(
-              n => innerNodesDp.Get(n) == childNode2DescriptorDp.Get(child)
-            );
-            return new { Group = tmpGroup, TreeNode = originalTreeNode };
-          })
-          .ToArray();
-        grouping.Dispose();
+          var originalTreeNode = graph.Nodes.First(n => innerNodesDp[n] == childNode2DescriptorDp[child]);
+          return new { Group = tmpGroup, TreeNode = originalTreeNode };
+        }).ToArray();
 
         // pre-processing: transfer data from original tree node to temporary group node
         foreach (var group in temporaryGroups) {
@@ -672,8 +515,9 @@ namespace Demo.yFiles.Complete.LargeGraphAggregation
           var treeNode = group.TreeNode;
 
           // transfer sketch (size and location) from the original tree node to the temporary group
-          graph.SetSize(groupNode, graph.GetSize(treeNode));
-          graph.SetCenter(groupNode, graph.GetCenter(treeNode));
+          groupNode.Layout.Width = treeNode.Layout.Width;
+          groupNode.Layout.Height = treeNode.Layout.Height;
+          groupNode.Layout.Center = treeNode.Layout.Center;
 
           // change edges such that they connect to the group node (if there are any)
           foreach (var edge in treeNode.Edges.ToArray()) {
@@ -689,8 +533,8 @@ namespace Demo.yFiles.Complete.LargeGraphAggregation
           treeNodeHider.Hide(group.TreeNode);
         }
 
-        // apply the cactus layout
-        base.ApplyLayoutCore(graph);
+        // apply the radial group layout
+        CoreLayout?.ApplyLayout(graph);
 
         // un-hide all the hidden tree nodes
         treeNodeHider.UnhideAll();
@@ -701,8 +545,9 @@ namespace Demo.yFiles.Complete.LargeGraphAggregation
           var treeNode = group.TreeNode;
 
           // transfer size and location
-          graph.SetSize(treeNode, graph.GetSize(groupNode));
-          graph.SetLocation(treeNode, graph.GetLocation(groupNode));
+          treeNode.Layout.Width = groupNode.Layout.Width;
+          treeNode.Layout.Height = groupNode.Layout.Height;
+          treeNode.Layout.Center = groupNode.Layout.Center;
 
           // change edges such that they again connect to the original tree nodes
           foreach (var edge in groupNode.Edges.ToArray()) {
@@ -714,14 +559,130 @@ namespace Demo.yFiles.Complete.LargeGraphAggregation
       }
     }
 
-    /// <summary>
-    /// A LayoutExecutor that modifies the viewport animation to zoom to a list of nodes.
-    /// </summary>
-    sealed class ZoomToNodesLayoutExecutor : LayoutExecutor
-    {
-      private readonly IListEnumerable<INode> nodes;
+    private async Task RunCircularLayout() {
+      var layout = new CircularLayout();
+      var backboneData = layout.BackboneLayout.CreateLayoutData();
+      backboneData.InterleavedNodes.Predicate = _ => true;
+      await GraphControl.ApplyLayoutAnimated(layout, TimeSpan.FromSeconds(0.5), backboneData);
+    }
 
-      public ZoomToNodesLayoutExecutor(IListEnumerable<INode> nodes, GraphControl graphControl, ILayoutAlgorithm layout)
+    /// <summary>
+    ///   Runs a <see cref="RadialGroupLayout"/> where the hierarchy edges are not shown but the hierarchy is
+    ///   visualized by placing child nodes along the circular border of the parent node.
+    /// </summary>
+    /// <remarks>
+    ///   <para>
+    ///     The original edges are drawn in a bundled style.
+    ///   </para>
+    ///   <para>
+    ///     The approach uses <see cref="TemporaryGroupInsertionStage"/> and some custom layout stage code
+    ///     to temporarily represent inner tree nodes (which have successors) as group nodes with children.
+    ///     This is required because the radial group layout works on hierarchical grouping structures as
+    ///     input and not on tree graph structures.
+    ///   </para>
+    /// </remarks>
+    private async Task RunRadialGroupLayout(IReadOnlyList<INode> affectedNodes = null) {
+      var graph = graphControl.Graph;
+      SwitchHierarchyEdgeVisibility(graph, false);
+
+      // collect hierarchy tree nodes that have children, which must temporarily be modeled as a groups
+      var innerTreeNodes = new List<INode>();
+      var innerTreeNode2Descriptor = new Dictionary<INode, TemporaryGroupDescriptor>();
+      foreach (var node in graph.Nodes) {
+        if (graph.OutEdgesAt(node).Any(e => aggregationHelper.IsHierarchyEdge(e))) {
+          innerTreeNodes.Add(node);
+          innerTreeNode2Descriptor[node] = new TemporaryGroupDescriptor();
+        }
+      }
+
+      // prepare the layout data for the TemporaryGroupNodeInsertionStage
+      var tmpGroupStageData = new TemporaryGroupInsertionData<INode, IEdge, ILabel, ILabel>();
+      foreach (var treeNode in innerTreeNodes) {
+        var descriptor = innerTreeNode2Descriptor[treeNode];
+
+        // register a temporary group for each inner tree node...
+        var temporaryGroup = tmpGroupStageData.TemporaryGroups.Add(descriptor);
+        // ... members of the group are all the successor nodes
+        temporaryGroup.Source = graph.OutEdgesAt(treeNode).Where(e => aggregationHelper.IsHierarchyEdge(e))
+            .Select(e => e.GetTargetNode());
+
+        // if the tree node has a parent too, then the parent descriptor must be setup as well
+        var inEdge = graph.InEdgesAt(treeNode).FirstOrDefault(e => aggregationHelper.IsHierarchyEdge(e));
+        if (inEdge != null) {
+          TemporaryGroupDescriptor parentGroupDescriptor;
+          if (innerTreeNode2Descriptor.TryGetValue(inEdge.GetSourceNode(), out parentGroupDescriptor)) {
+            descriptor.Parent = parentGroupDescriptor;
+          }
+        }
+      }
+
+      // create a mapper that maps from the inner tree node to the temporary group descriptor,
+      // which is necessary that the custom layout stages know
+      var innerNodesMapper = Mappers.FromDelegate<INode, TemporaryGroupDescriptor>(n => {
+        TemporaryGroupDescriptor descriptor;
+        if (innerTreeNode2Descriptor.TryGetValue(n, out descriptor)) {
+          return descriptor;
+        }
+        return null;
+      });
+
+      var innerNodesLayoutData = graphControl.Graph.CreateGenericLayoutData();
+      innerNodesLayoutData.AddItemMapping(TemporaryGroupCustomizationStage.InnerTreeNodeDataKey).Mapper =
+          innerNodesMapper;
+
+      // create a layout executor that also zooms to all nodes that were affected by the last operation
+      var layoutExecutor =
+          new ZoomToNodesLayoutExecutor(affectedNodes ?? AggregationHelper.EmptyReadOnlyNodeList, graphControl,
+              new CustomRadialGroupLayoutStage()) {
+              AnimationDuration = TimeSpan.FromSeconds(0.5),
+              AnimateViewport = true,
+              EasedAnimation = true,
+              LayoutData = tmpGroupStageData.CombineWith(innerNodesLayoutData)
+          };
+      await layoutExecutor.Start();
+    }
+
+    /// <summary>
+    ///   A layout stage that configures and applies the <see cref="RadialGroupLayout"/> and uses further
+    ///   stages to make the input suitable for it.
+    /// </summary>
+    private class CustomRadialGroupLayoutStage : LayoutStageBase
+    {
+      protected override void ApplyLayoutImpl(LayoutGraph graph) {
+        if (graph.Nodes.Count < 2) {
+          // single node or no node: nothing to do for the layout
+          return;
+        }
+
+        // configure the radial group layout
+        var radialGroupLayout = new RadialGroupLayout {
+            FromSketchMode = true,
+            PreferredRootSectorAngle = 360,
+            NodeLabelPlacement = RadialNodeLabelPlacement.RayLikeLeaves
+        };
+        // ... configure bundling
+        radialGroupLayout.EdgeBundling.DefaultBundleDescriptor.Bundled = true;
+        radialGroupLayout.EdgeBundling.DefaultBundleDescriptor.BezierFitting = true;
+
+        // ... configure the parent-child overlap ratio so that they are allowed to overlap a bit
+        graph.Context.AddItemData(RadialGroupLayout.ParentOverlapRatioDataKey, Mappers.FromConstant<Node, double>(0.5));
+
+        // apply the radial group layout with temporary groups
+        new TemporaryGroupInsertionStage(new TemporaryGroupCustomizationStage(radialGroupLayout)).ApplyLayout(graph);
+
+        // clean-up
+        graph.Context.Remove(RadialGroupLayout.ParentOverlapRatioDataKey);
+      }
+    }
+
+    /// <summary>
+    ///   A LayoutExecutor that modifies the viewport animation to zoom to a list of nodes.
+    /// </summary>
+    private sealed class ZoomToNodesLayoutExecutor : LayoutExecutor
+    {
+      private readonly IReadOnlyList<INode> nodes;
+
+      public ZoomToNodesLayoutExecutor(IReadOnlyList<INode> nodes, GraphControl graphControl, ILayoutAlgorithm layout)
           : base(graphControl, layout) {
         this.nodes = nodes;
       }
@@ -735,18 +696,13 @@ namespace Demo.yFiles.Complete.LargeGraphAggregation
           throw new InvalidOperationException("Cannot zoom to nodes that are not in the graph");
         }
 
-        var layoutGraph = this.LayoutGraph;
-        var bounds = nodes
-                     .Select(node => layoutGraph.GetBoundingBox(layoutGraph.GetCopiedNode(node)))
-                     .Aggregate(RectD.Empty, (rect1, rect2) => rect1 + rect2.ToRectD());
+        var bounds = nodes.Select(node => Adapter.GetLayoutNode(node).Layout.Bounds)
+            .Aggregate(RectD.Empty, (rect1, rect2) => rect1 + rect2);
 
-        var viewportAnimation =
-            new ViewportAnimation(this.GraphControl, bounds, this.Duration)
-            {
-              // The insets are not symmetric since we must compensate the space of the scrollbars
-              TargetViewMargins = new InsetsD(20, 20, 36, 36),
-              MaximumTargetZoom = 1
-            };
+        var viewportAnimation = new ViewportAnimation(GraphControl, bounds, AnimationDuration) {
+            // The margins are not symmetric since we must compensate the space of the scrollbars
+            TargetMargins = new InsetsD(20, 20, 36, 36), MaximumTargetZoom = 1
+        };
         return viewportAnimation;
       }
     }
@@ -754,23 +710,19 @@ namespace Demo.yFiles.Complete.LargeGraphAggregation
     #endregion
 
     /// <summary>
-    /// Returns the GraphControl instance used in the form.
+    ///   Returns the GraphControl instance used in the form.
     /// </summary>
-    private GraphControl GraphControl {
-      get { return graphControl; }
-    }
+    private GraphControl GraphControl => graphControl;
 
     /// <summary>
-    /// Returns the AggregateGraph.
+    ///   Returns the AggregateGraph.
     /// </summary>
-    public AggregateGraphWrapper AggregateGraph {
-      get { return aggregationHelper?.AggregateGraph; }
-    }
+    public AggregateGraphWrapper AggregateGraph => aggregationHelper?.AggregateGraph;
 
     #region INotifyPropertyChanged
 
     /// <summary>
-    /// Updates the info panels.
+    ///   Updates the info panels.
     /// </summary>
     private void OnInfoPanelPropertiesChanged() {
       OnPropertyChanged("VisibleNodes");
@@ -792,11 +744,11 @@ namespace Demo.yFiles.Complete.LargeGraphAggregation
   #region style converters
 
   /// <summary>
-  /// A value converter that converts the <see cref="AggregationNodeInfo"/> in a node's tag to a respective fill color.
+  ///   A value converter that converts the <see cref="AggregationNodeInfo"/> in a node's tag to a respective fill color.
   /// </summary>
   /// <remarks>
-  /// If the node is a placeholder node, the fill color of this node is used. Otherwise one of the colors in the parameter
-  /// is used depending on the <see cref="AggregationNodeInfo.IsAggregated"/> property.
+  ///   If the node is a placeholder node, the fill color of this node is used. Otherwise one of the colors in the parameter
+  ///   is used depending on the <see cref="AggregationNodeInfo.IsAggregated"/> property.
   /// </remarks>
   public class FillConverter : IValueConverter
   {
@@ -814,15 +766,17 @@ namespace Demo.yFiles.Complete.LargeGraphAggregation
       return new BrushConverter().ConvertFrom(aggregationInfo.IsAggregated ? defaultColors[0] : defaultColors[1]);
     }
 
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) { return null; }
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
+      return null;
+    }
   }
 
   /// <summary>
-  /// A value converter that converts the <see cref="AggregationNodeInfo"/> in a node's tag to a respective stroke color.
+  ///   A value converter that converts the <see cref="AggregationNodeInfo"/> in a node's tag to a respective stroke color.
   /// </summary>
   /// <remarks>
-  /// If the node is a placeholder node, the stroke color of this node is used. Otherwise the color in the parameter is
-  /// used.
+  ///   If the node is a placeholder node, the stroke color of this node is used. Otherwise, the color in the parameter is
+  ///   used.
   /// </remarks>
   public class StrokeConverter : IValueConverter
   {
@@ -839,7 +793,9 @@ namespace Demo.yFiles.Complete.LargeGraphAggregation
       return new BrushConverter().ConvertFrom(parameter);
     }
 
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) { return null; }
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
+      return null;
+    }
   }
 
   #endregion

@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -36,41 +36,37 @@ using yWorks.Geometry;
 using yWorks.Graph;
 using yWorks.Graph.PortLocationModels;
 using yWorks.Graph.Styles;
+using yWorks.Utils;
 
-namespace Demo.yFiles.Graph.StyleDecorators {
-
+namespace Demo.yFiles.Graph.StyleDecorators
+{
   /// <summary>
-  /// An edge style that shows how to decorator an existing edge style and delegate rendering, 
-  /// as well as all rendering helper methods, to the wrapped style as well as how to use 
-  /// a port style to render the edge's bends.
+  ///   An edge style that shows how to decorate an existing edge style and delegate rendering,
+  ///   as well as all rendering helper methods, to the wrapped style as well as how to use
+  ///   a port style to render the edge's bends.
   /// </summary>
   /// <remarks>
-  /// This implementation wraps <see cref="PolylineEdgeStyle"/>.
-  /// The <see cref="PolylineEdgeStyle.Pen"/> of the wrapped style is modified based on the 
-  /// <see cref="TrafficLoad"/> value stored in the edge's tag.
-  /// In order to render the edge's bend, and arbitrary <see cref="IPortStyle">port style</see>, 
-  /// that can be set in the constructor, is used.
+  ///   This implementation wraps <see cref="PolylineEdgeStyle"/>.
+  ///   The <see cref="PolylineEdgeStyle.Pen"/> of the wrapped style is modified based on the
+  ///   <see cref="TrafficLoad"/> value stored in the edge's tag.
+  ///   In order to render the edge's bend, and arbitrary <see cref="IPortStyle">port style</see>,
+  ///   that can be set in the constructor, is used.
   /// </remarks>
   [Obfuscation(StripAfterObfuscation = false, Exclude = true, ApplyToMembers = true)]
-  public class EdgeStyleDecorator : EdgeStyleBase<VisualGroup>
+  public sealed class EdgeStyleDecorator : EdgeStyleBase<VisualGroup>
   {
-    private readonly PolylineEdgeStyle wrapped = new PolylineEdgeStyle {SmoothingLength = 5.0};
+    private readonly PolylineEdgeStyle wrapped = new() { SmoothingLength = 5.0 };
 
-    private IPortStyle bendStyle;
-
-    public EdgeStyleDecorator() {}
+    public EdgeStyleDecorator() { }
 
     public EdgeStyleDecorator(IPortStyle bendStyle) {
-      this.bendStyle = bendStyle;
+      BendStyle = bendStyle;
     }
 
     /// <summary>
-    /// Gets the <see cref="IPortStyle">style</see> that is used for visualizing the edge's bends
+    ///   Gets the <see cref="IPortStyle">style</see> that is used for visualizing the edge's bends.
     /// </summary>
-    public IPortStyle BendStyle {
-      get { return bendStyle; }
-      set { bendStyle = value; }
-    }
+    public IPortStyle BendStyle { get; set; }
 
     protected override VisualGroup CreateVisual(IRenderContext context, IEdge edge) {
       // create container
@@ -78,10 +74,10 @@ namespace Demo.yFiles.Graph.StyleDecorators {
       // set pen
       wrapped.Pen = GetPen(edge);
       // delegate rendering
-      var wrappedVisual =  wrapped.Renderer.GetVisualCreator(edge, wrapped).CreateVisual(context);
+      var wrappedVisual = wrapped.Renderer.GetVisualCreator(edge, wrapped).CreateVisual(context);
       container.Add(wrappedVisual);
 
-      if (bendStyle != null) {
+      if (BendStyle != null) {
         var bendContainer = new VisualGroup();
         container.Add(bendContainer);
         RenderBends(context, edge, bendContainer);
@@ -99,7 +95,7 @@ namespace Demo.yFiles.Graph.StyleDecorators {
         oldVisual.Children[0] = wrappedVisual;
       }
 
-      if (bendStyle != null) {
+      if (BendStyle != null) {
         var bendContainer = (VisualGroup) oldVisual.Children[1];
         RenderBends(context, edge, bendContainer);
       }
@@ -109,40 +105,37 @@ namespace Demo.yFiles.Graph.StyleDecorators {
     #region bend rendering
 
     /// <summary>
-    /// Renders the edge's bends, using <see cref="BendStyle" /> and dummy ports.
+    ///   Renders the edge's bends, using <see cref="BendStyle"/> and dummy ports.
     /// </summary>
     private void RenderBends(IRenderContext context, IEdge edge, VisualGroup container) {
       var bends = edge.Bends;
       // remove surplus visuals
       while (container.Children.Count > bends.Count) {
         // remove last child
-        container.Remove(container.Children[container.Children.Count-1]);
+        container.Remove(container.Children[container.Children.Count - 1]);
       }
       // update existing bend visuals
-      for(int i=0; i<container.Children.Count; i++) {
+      for (var i = 0; i < container.Children.Count; i++) {
         var bend = bends[i];
         // create a dummy port at the bend's location to render
-        SimplePort dummyPort = new SimplePort(null, PointPortLocationModel.Instance.CreateParameter(bend.Location.ToPointD()))
-        {
-          LookupImplementation = Lookups.Empty
-        };
+        var dummyPort = new SimplePort(new SimpleNode(),
+            PointPortLocationModel.Instance.CreateParameter(bend.Location.ToPointD()));
         // update the dummy port visual
-        var visual = bendStyle.Renderer.GetVisualCreator(dummyPort, bendStyle).UpdateVisual(context, container.Children[i]);
+        var visual = BendStyle.Renderer.GetVisualCreator(dummyPort, BendStyle)
+            .UpdateVisual(context, container.Children[i]);
         // switch instances if necessary
         if (container.Children[i] != visual) {
           container.Children[i] = visual;
         }
       }
       // add missing visuals
-      for(int i=container.Children.Count; i<bends.Count; i++) {
+      for (var i = container.Children.Count; i < bends.Count; i++) {
         var bend = bends[i];
         // create a dummy port at the bend's location to render
-        SimplePort dummyPort = new SimplePort(null, PointPortLocationModel.Instance.CreateParameter(bend.Location.ToPointD()))
-        {
-          LookupImplementation = Lookups.Empty
-        };
+        var dummyPort = new SimplePort(new SimpleNode(),
+            PointPortLocationModel.Instance.CreateParameter(bend.Location.ToPointD()));
         // render the dummy port visual
-        var bendVisual = bendStyle.Renderer.GetVisualCreator(dummyPort, bendStyle).CreateVisual(context);
+        var bendVisual = BendStyle.Renderer.GetVisualCreator(dummyPort, BendStyle).CreateVisual(context);
         container.Children.Add(bendVisual);
       }
     }
@@ -174,13 +167,12 @@ namespace Demo.yFiles.Graph.StyleDecorators {
     #endregion
 
     /// <summary>
-    /// Returns a pen based on the priority stored in the edge's tag
+    ///   Returns a pen based on the priority stored in the edge's tag
     /// </summary>
     /// <param name="edge"></param>
-    /// <returns></returns>
     private static Pen GetPen(IEdge edge) {
       if (edge.Tag is TrafficLoad) {
-        switch((TrafficLoad)edge.Tag) {
+        switch ((TrafficLoad) edge.Tag) {
           case TrafficLoad.VeryHigh:
             return new Pen(Brushes.Red, 3.0);
           case TrafficLoad.High:
@@ -197,36 +189,32 @@ namespace Demo.yFiles.Graph.StyleDecorators {
     }
   }
 
-  public class PointPortLocationModel : IPortLocationModel {
-
-    public static PointPortLocationModel Instance = new PointPortLocationModel();
-
-    public object Lookup(Type type) {
-      return null;
-    }
+  public class PointPortLocationModel : IPortLocationModel
+  {
+    public static readonly PointPortLocationModel Instance = new();
 
     public PointD GetLocation(IPort port, IPortLocationModelParameter locationParameter) {
-      var modelParameter = locationParameter as PointPortLocationModelParameter;
-      if (modelParameter == null) {
-        throw new ArgumentException("parameter is not supported", "locationParameter");
+      if (locationParameter is not PointPortLocationModelParameter modelParameter) {
+        throw new ArgumentException("The parameter is not supported by this port location model.",
+            nameof(locationParameter));
       }
       return modelParameter.Location;
     }
 
-    public IPortLocationModelParameter CreateParameter(PointD location) {
-      return new PointPortLocationModelParameter { Location = location, Model = this};
+    public PointPortLocationModelParameter CreateParameter(PointD location) {
+      return new PointPortLocationModelParameter { Location = location, Model = this };
     }
 
     public IPortLocationModelParameter CreateParameter(IPortOwner owner, PointD location) {
-      return new PointPortLocationModelParameter { Location = location, Model = this};
+      return new PointPortLocationModelParameter { Location = location, Model = this };
     }
 
-    public ILookup GetContext(IPort port, IPortLocationModelParameter locationParameter) {
-      return this;
+    public ILookup GetContext(IPort port) {
+      return Lookups.Empty;
     }
 
-    private class PointPortLocationModelParameter : IPortLocationModelParameter {
-
+    public class PointPortLocationModelParameter : IPortLocationModelParameter
+    {
       public PointD Location { get; set; }
 
       public object Clone() {
@@ -234,10 +222,6 @@ namespace Demo.yFiles.Graph.StyleDecorators {
       }
 
       public IPortLocationModel Model { get; set; }
-      
-      public bool Supports(IPortOwner owner) {
-        return true;
-      }
     }
   }
 }

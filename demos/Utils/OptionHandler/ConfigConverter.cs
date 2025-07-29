@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -34,63 +34,63 @@ using System.Reflection;
 namespace Demo.yFiles.Toolkit.OptionHandler
 {
   /// <summary>
-  /// ConfigConverter is used to convert an input configuration into nested <see cref="Option"/>s usable by an option editor.
+  ///   ConfigConverter is used to convert an input configuration into nested <see cref="Option"/>s usable by an option
+  ///   editor.
   /// </summary>
   /// <remarks>
-  /// The output configuration <see cref="Option"/> is later interpreted by an option editor and turned into ui components.
-  /// The input configuration is a regular class with additional attributes attached to public member declarations.
-  /// These attributes specify how a member is turned into an ui component. 
-  ///
-  /// The input configuration format
-  /// 
-  /// Components:
-  /// - a default <see cref="Option"/> is created for each public property and field according to the property/field's type.
-  /// - components are available for built-in types: enum, bool, int, double, string
-  ///
-  /// Component labels:
-  /// - component labels are defined using the <see cref="LabelAttribute"/>
-  /// 
-  /// Component minimum, maximum and step:
-  /// - component minimum, maximum and step are defined using the <see cref="MinMaxAttribute"/>  
-  /// 
-  /// Component type:
-  /// - component type is one of <see cref="ComponentTypes"/> and defined using the <see cref="ComponentTypeAttribute"/>
-  /// 
-  /// Component grouping and ordering:
-  /// - public fields and properties with an <see cref="ComponentTypeAttribute"/> with value <see cref="ComponentTypes.OptionGroup"/> are interpreted as ui groups
-  /// - <see cref="Option"/> or <see cref="OptionGroup"/>s are assigned to another <see cref="OptionGroup"/> using the <see cref="OptionGroupAttribute"/> 
-  /// - if a members <see cref="OptionGroupAttribute"/> has name "RootGroup" or there is no <see cref="OptionGroupAttribute"/> the corresponding component is added to the toplevel group.
-  /// - display order of components is defined through position parameter of <see cref="OptionGroupAttribute"/> 
-  /// 
-  /// Conditionally disabling a component:
-  /// - a public boolean property named "ShouldDisable[memberName]" defines a condition to disable the component created for the corresponding member.
-  /// 
+  ///   The output configuration <see cref="Option"/> is later interpreted by an option editor and turned into UI components.
+  ///   The input configuration is a regular class with additional attributes attached to public member declarations.
+  ///   These attributes specify how a member is turned into an UI component.
+  ///   The input configuration format
+  ///   Components:
+  ///   - a default <see cref="Option"/> is created for each public property and field according to the property/field's
+  ///   type.
+  ///   - components are available for built-in types: enum, bool, int, double, string
+  ///   Component labels:
+  ///   - component labels are defined using the <see cref="LabelAttribute"/>
+  ///   Component minimum, maximum, and step:
+  ///   - component minimum, maximum, and step are defined using the <see cref="MinMaxAttribute"/>
+  ///   Component type:
+  ///   - component type is one of <see cref="ComponentTypes"/> and defined using the <see cref="ComponentTypeAttribute"/>
+  ///   Component grouping and ordering:
+  ///   - public fields and properties with a <see cref="ComponentTypeAttribute"/> with value
+  ///   <see cref="ComponentTypes.OptionGroup"/> are interpreted as UI groups
+  ///   - <see cref="Option"/> or <see cref="OptionGroup"/>s are assigned to another <see cref="OptionGroup"/> using the
+  ///   <see cref="OptionGroupAttribute"/>
+  ///   - if a member's <see cref="OptionGroupAttribute"/> has name "RootGroup" or there is no
+  ///   <see cref="OptionGroupAttribute"/>, the corresponding component is added to the top-level group.
+  ///   - display order of components is defined through the position parameter of <see cref="OptionGroupAttribute"/>
+  ///   Conditionally disabling a component:
+  ///   - a public boolean property named "ShouldDisable[memberName]" defines a condition to disable the component created
+  ///   for the corresponding member.
   /// </remarks>
   public class ConfigConverter
   {
     // all members that need to be added to the top-level OptionGroup - including groups
-    private List<MemberInfo> toplevelItems = new List<MemberInfo>();
+    private readonly List<MemberInfo> toplevelItems = new();
+
     // the methods - methods aren't used right now
-    private List<MethodInfo> methods = new List<MethodInfo>();
-    
+    private readonly List<MethodInfo> methods = new();
+
     // map a group name to a list of its inner members
-    private Dictionary<string, List<MemberInfo>> groupMapping = new Dictionary<string, List<MemberInfo>>();
+    private readonly Dictionary<string, List<MemberInfo>> groupMapping = new();
 
     // map for the ShouldDisable functions for properties
-    private Dictionary<string, Func<bool>> isDisabledMapping = new Dictionary<string, Func<bool>>();
+    private readonly Dictionary<string, Func<bool>> isDisabledMapping = new();
 
     // map for the ShouldHide functions for properties
-    private Dictionary<string, Func<bool>> isHiddenMapping = new Dictionary<string, Func<bool>>();
+    private readonly Dictionary<string, Func<bool>> isHiddenMapping = new();
 
     /// <summary>
-    /// Convert the input configuration into an <see cref="OptionGroup"/> usable by an option editor.
+    ///   Convert the input configuration into an <see cref="OptionGroup"/> usable by an option editor.
     /// </summary>
     /// <remarks>
-    /// First, all members are *collected* and stored in their respective maps and lists.
-    /// Next, members are sorted by the position information contained in the corresponding <see cref="OptionGroupAttribute"/>.
-    /// Finally, all members are visited and the extracted data relevant to build ui components are written to
-    /// an <see cref="Option"/>.
-    /// </remarks>    
+    ///   First, all members are *collected* and stored in their respective maps and lists.
+    ///   Next, members are sorted by the position information contained in the corresponding
+    ///   <see cref="OptionGroupAttribute"/>.
+    ///   Finally, all members are visited and the extracted data relevant to build ui components are written to
+    ///   an <see cref="Option"/>.
+    /// </remarks>
     /// <param name="config">The input configuration written by the developer.</param>
     /// <returns>The output configuration usable by an option editor.</returns>
     public OptionGroup Convert(object config) {
@@ -101,7 +101,7 @@ namespace Demo.yFiles.Toolkit.OptionHandler
 
       // sort members
       toplevelItems.Sort(new MemberComparer());
-      foreach (KeyValuePair<string, List<MemberInfo>> entry in groupMapping) {
+      foreach (var entry in groupMapping) {
         entry.Value.Sort(new MemberComparer());
       }
 
@@ -113,10 +113,10 @@ namespace Demo.yFiles.Toolkit.OptionHandler
     }
 
     /// <summary>
-    /// Write member information into <see cref="Option"/>s.
-    /// <remarks>
-    /// The function basically dispatches between different visitor functions.
-    /// </remarks>
+    ///   Write member information into <see cref="Option"/>s.
+    ///   <remarks>
+    ///     The function basically dispatches between different visitor functions.
+    ///   </remarks>
     /// </summary>
     /// <param name="optionGroup">The OptionGroup to contain the configuration.</param>
     /// <param name="config">The input configuration.</param>
@@ -130,7 +130,7 @@ namespace Demo.yFiles.Toolkit.OptionHandler
     }
 
     /// <summary>
-    /// Collect all public members of a given type and store them in the respective field.
+    ///   Collect all public members of a given type and store them in the respective field.
     /// </summary>
     /// <param name="type">The type object to collect members for.</param>
     /// <param name="config">The input configuration.</param>
@@ -144,7 +144,7 @@ namespace Demo.yFiles.Toolkit.OptionHandler
     }
 
     /// <summary>
-    /// Clear members from dictionaries and lists.
+    ///   Clear members from dictionaries and lists.
     /// </summary>
     private void ClearMappings() {
       groupMapping.Clear();
@@ -155,10 +155,10 @@ namespace Demo.yFiles.Toolkit.OptionHandler
     }
 
     /// <summary>
-    /// Collect a member.
+    ///   Collect a member.
     /// </summary>
     /// <remarks>
-    /// The function dispatches between different collect functions based on type of member.
+    ///   The function dispatches between different collect functions based on type of member.
     /// </remarks>
     /// <param name="member">The member to be processed.</param>
     /// <param name="config">The input configuration.</param>
@@ -176,7 +176,7 @@ namespace Demo.yFiles.Toolkit.OptionHandler
     }
 
     /// <summary>
-    /// Collect an utility property that disables a control.
+    ///   Collect an utility property that disables a control.
     /// </summary>
     /// <param name="member">The member to be processed.</param>
     /// <param name="config">The input configuration.</param>
@@ -206,20 +206,20 @@ namespace Demo.yFiles.Toolkit.OptionHandler
     private Func<bool> GetInvoker(MemberInfo member, object config) {
       var fieldInfo = member as FieldInfo;
       if (fieldInfo != null) {
-        if (fieldInfo.FieldType == typeof (bool)) {
-          return (() => (bool) fieldInfo.GetValue(config));
+        if (fieldInfo.FieldType == typeof(bool)) {
+          return () => (bool) fieldInfo.GetValue(config);
         }
       }
       var propertyInfo = member as PropertyInfo;
       if (propertyInfo != null) {
-        if (propertyInfo.PropertyType == typeof (bool)) {
-          return (() => (bool) propertyInfo.GetValue(config, null));
+        if (propertyInfo.PropertyType == typeof(bool)) {
+          return () => (bool) propertyInfo.GetValue(config, null);
         }
       }
       var methodInfo = member as MethodInfo;
       if (methodInfo != null) {
-        if (methodInfo.ReturnType == typeof (bool)) {
-          return (() => (bool) methodInfo.Invoke(config, null));
+        if (methodInfo.ReturnType == typeof(bool)) {
+          return () => (bool) methodInfo.Invoke(config, null);
         }
       }
 
@@ -227,15 +227,16 @@ namespace Demo.yFiles.Toolkit.OptionHandler
     }
 
     /// <summary>
-    /// Collect a field.
+    ///   Collect a field.
     /// </summary>
     /// <remarks>
-    /// If the field has an <see cref="OptionGroupAttribute"/>, add it to the corresponding <see cref="groupMapping"/>, otherwise add it
-    /// to <see cref="toplevelItems"/>.
-    /// </remarks>    
+    ///   If the field has an <see cref="OptionGroupAttribute"/>, add it to the corresponding <see cref="groupMapping"/>,
+    ///   otherwise add it
+    ///   to <see cref="toplevelItems"/>.
+    /// </remarks>
     /// <param name="field">The field to process.</param>
     private void CollectField(FieldInfo field) {
-      string group = GetGroup(field);
+      var group = GetGroup(field);
       if (group != null && group != "rootgroup") {
         if (!groupMapping.ContainsKey(group)) {
           groupMapping[group] = new List<MemberInfo>();
@@ -247,15 +248,16 @@ namespace Demo.yFiles.Toolkit.OptionHandler
     }
 
     /// <summary>
-    /// Collect a property.
+    ///   Collect a property.
     /// </summary>
     /// <remarks>
-    /// If the property has an <see cref="OptionGroupAttribute"/>, add it to the corresponding <see cref="groupMapping"/>, otherwise add it
-    /// to <see cref="toplevelItems"/>.
+    ///   If the property has an <see cref="OptionGroupAttribute"/>, add it to the corresponding <see cref="groupMapping"/>,
+    ///   otherwise add it
+    ///   to <see cref="toplevelItems"/>.
     /// </remarks>
     /// <param name="property">The property to process.</param>
     private void CollectProperty(PropertyInfo property) {
-      string group = GetGroup(property);
+      var group = GetGroup(property);
       if (group != null && group != "rootgroup") {
         if (!groupMapping.ContainsKey(group)) {
           groupMapping[group] = new List<MemberInfo>();
@@ -267,10 +269,10 @@ namespace Demo.yFiles.Toolkit.OptionHandler
     }
 
     /// <summary>
-    /// Collect a method.
+    ///   Collect a method.
     /// </summary>
     /// <remarks>
-    /// The method is added to the <see cref="methods"/> list.
+    ///   The method is added to the <see cref="methods"/> list.
     /// </remarks>
     /// <param name="method">The method to process.</param>
     private void CollectMethod(MethodInfo method) {
@@ -280,10 +282,10 @@ namespace Demo.yFiles.Toolkit.OptionHandler
     }
 
     /// <summary>
-    /// Visit a member.
+    ///   Visit a member.
     /// </summary>
     /// <remarks>
-    /// The function dispatches between different visit functions based on type of the member.
+    ///   The function dispatches between different visit functions based on type of the member.
     /// </remarks>
     /// <param name="member">The member to visit.</param>
     /// <param name="optionGroup">The output data object.</param>
@@ -296,27 +298,27 @@ namespace Demo.yFiles.Toolkit.OptionHandler
         optionGroup.ChildOptions.Add(VisitGroup(member, config));
       } else {
         if (member is FieldInfo) {
-          optionGroup.ChildOptions.Add(VisitField((FieldInfo)member, config));
+          optionGroup.ChildOptions.Add(VisitField((FieldInfo) member, config));
         } else if (member is PropertyInfo) {
-          optionGroup.ChildOptions.Add(VisitProperty((PropertyInfo)member, config));
+          optionGroup.ChildOptions.Add(VisitProperty((PropertyInfo) member, config));
         }
       }
     }
 
     /// <summary>
-    /// Visit a field and return an <see cref="Option"/> with all relevant information to build a component.
+    ///   Visit a field and return an <see cref="Option"/> with all relevant information to build a component.
     /// </summary>
     /// <remarks>
-    /// The following information is written:
-    /// - the internally used name
-    /// - the value type of the field
-    /// - the text label
-    /// - the options if it has <see cref="EnumValueAttribute"/>s
-    /// - the initial value
-    /// - the default value
-    /// - the component type
-    /// - the utility properties (condition to disable the component)
-    /// - all custom attributes
+    ///   The following information is written:
+    ///   - the internally used name
+    ///   - the value type of the field
+    ///   - the text label
+    ///   - the options if it has <see cref="EnumValueAttribute"/>s
+    ///   - the initial value
+    ///   - the default value
+    ///   - the component type
+    ///   - the utility properties (condition to disable the component)
+    ///   - all custom attributes
     /// </remarks>
     /// <param name="field">The field to visit.</param>
     /// <param name="config">The input configuration.</param>
@@ -343,19 +345,19 @@ namespace Demo.yFiles.Toolkit.OptionHandler
     }
 
     /// <summary>
-    /// Visit a property and return an <see cref="Option"/> with all relevant information to build a component.    
+    ///   Visit a property and return an <see cref="Option"/> with all relevant information to build a component.
     /// </summary>
     /// <remarks>
-    /// The following information is written:
-    /// - the internally used name
-    /// - the value type of the field
-    /// - the text label
-    /// - the options if it has <see cref="EnumValueAttribute"/>s
-    /// - the initial value
-    /// - the default value
-    /// - the component type
-    /// - the utility properties (condition to disable the component)
-    /// - all custom attributes
+    ///   The following information is written:
+    ///   - the internally used name
+    ///   - the value type of the field
+    ///   - the text label
+    ///   - the options if it has <see cref="EnumValueAttribute"/>s
+    ///   - the initial value
+    ///   - the default value
+    ///   - the component type
+    ///   - the utility properties (condition to disable the component)
+    ///   - all custom attributes
     /// </remarks>
     /// <param name="property">The property to visit.</param>
     /// <param name="config">The input configuration.</param>
@@ -386,14 +388,14 @@ namespace Demo.yFiles.Toolkit.OptionHandler
     }
 
     /// <summary>
-    /// Visit an attribute and set all relevant information on <paramref name="obj"/> to build a component.
+    ///   Visit an attribute and set all relevant information on <paramref name="obj"/> to build a component.
     /// </summary>
     /// <remarks>
-    /// The following information is written:
-    /// - minimum value
-    /// - maximum value
-    /// - increment/decrement step
-    /// </remarks>    
+    ///   The following information is written:
+    ///   - minimum value
+    ///   - maximum value
+    ///   - increment/decrement step
+    /// </remarks>
     /// <param name="attribute">The attribute to process.</param>
     /// <param name="obj">The object containing the extracted information</param>
     private void VisitAttribute(Attribute attribute, Option obj) {
@@ -403,16 +405,17 @@ namespace Demo.yFiles.Toolkit.OptionHandler
     }
 
     /// <summary>
-    /// Visit a group and return an <see cref="OptionGroup"/> with all relevant information to build a component.
+    ///   Visit a group and return an <see cref="OptionGroup"/> with all relevant information to build a component.
     /// </summary>
     /// <remarks>
-    /// The following information is written:
-    /// - group name
-    /// - text label
-    /// - custom attributes
-    /// <para>
-    /// If the <see cref="groupMapping"/> contains child members of this groups, these are <see cref="VisitMember">visited</see> as well.
-    /// </para>
+    ///   The following information is written:
+    ///   - group name
+    ///   - text label
+    ///   - custom attributes
+    ///   <para>
+    ///     If the <see cref="groupMapping"/> contains child members of this groups, these are
+    ///     <see cref="VisitMember">visited</see> as well.
+    ///   </para>
     /// </remarks>
     /// <param name="groupMember">The group to process.</param>
     /// <param name="config">The input configuration.</param>
@@ -421,7 +424,7 @@ namespace Demo.yFiles.Toolkit.OptionHandler
       g.Name = groupMember.Name;
       g.ComponentType = ComponentTypes.OptionGroup;
       SetLabel(groupMember, g);
-      object[] attrs = groupMember.GetCustomAttributes(false);
+      var attrs = groupMember.GetCustomAttributes(false);
       foreach (var attribute in attrs) {
         VisitAttribute((Attribute) attribute, g);
       }
@@ -436,21 +439,21 @@ namespace Demo.yFiles.Toolkit.OptionHandler
     }
 
     /// <summary>
-    /// Sets the component type to <paramref name="obj"/>.
+    ///   Sets the component type to <paramref name="obj"/>.
     /// </summary>
     /// <remarks>
-    /// If a <see cref="ComponentTypeAttribute"/> is set, the given component type is set. 
-    /// If an <see cref="EnumValueAttribute"/> is present <see cref="ComponentTypes.Combobox"/> is set.
-    /// Otherwise a default component is determined based on <paramref name="type"/>.
+    ///   If a <see cref="ComponentTypeAttribute"/> is set, the given component type is set.
+    ///   If an <see cref="EnumValueAttribute"/> is present <see cref="ComponentTypes.Combobox"/> is set.
+    ///   Otherwise a default component is determined based on <paramref name="type"/>.
     /// </remarks>
     /// <param name="member">The member to process.</param>
     /// <param name="type">The type of the member.</param>
     /// <param name="obj">The <see cref="Option"/> containing the extracted information.</param>
     private void SetComponent(MemberInfo member, Type type, Option obj) {
-      if (member.GetCustomAttributes(typeof (ComponentTypeAttribute), false).Length > 0) {
-        ComponentTypeAttribute attr = (ComponentTypeAttribute) member.GetCustomAttributes(typeof (ComponentTypeAttribute), false)[0];
+      if (member.GetCustomAttributes(typeof(ComponentTypeAttribute), false).Length > 0) {
+        var attr = (ComponentTypeAttribute) member.GetCustomAttributes(typeof(ComponentTypeAttribute), false)[0];
         obj.ComponentType = attr.Value;
-      } else if (member.GetCustomAttributes(typeof (EnumValueAttribute), false).Length > 0) {
+      } else if (member.GetCustomAttributes(typeof(EnumValueAttribute), false).Length > 0) {
         // use combobox for members with EnumValues attribute
         obj.ComponentType = ComponentTypes.Combobox;
       } else {
@@ -459,15 +462,15 @@ namespace Demo.yFiles.Toolkit.OptionHandler
     }
 
     /// <summary>
-    /// Sets the label text on <paramref name="obj"/>.
+    ///   Sets the label text on <paramref name="obj"/>.
     /// </summary>
     /// <param name="member">The member to process.</param>
     /// <param name="obj">The <see cref="Option"/> containing the extracted information.</param>
     private void SetLabel(MemberInfo member, Option obj) {
-      var attributes = member.GetCustomAttributes(typeof (LabelAttribute), false);
+      var attributes = member.GetCustomAttributes(typeof(LabelAttribute), false);
       string label;
       if (attributes.Length > 0) {
-        LabelAttribute attr = (LabelAttribute) attributes[0];
+        var attr = (LabelAttribute) attributes[0];
         label = attr.Label;
       } else {
         label = member.Name;
@@ -476,23 +479,27 @@ namespace Demo.yFiles.Toolkit.OptionHandler
     }
 
     /// <summary>
-    /// Sets the <see cref="Option.EnumValues"/> to <paramref name="obj"/>.
+    ///   Sets the <see cref="Option.EnumValues"/> to <paramref name="obj"/>.
     /// </summary>
     /// <remarks>
-    /// If an <see cref="EnumValueAttribute"/> is set, options are extracted from it.
-    /// If the member is of type enum, options are extracted from the enum.
+    ///   If an <see cref="EnumValueAttribute"/> is set, options are extracted from it.
+    ///   If the member is of type enum, options are extracted from the enum.
     /// </remarks>
     /// <param name="member">The member to process.</param>
     /// <param name="type">The type of the member.</param>
     /// <param name="obj">The <see cref="Option"/> containing the extracted information.</param>
     private void SetEnumValues(MemberInfo member, Type type, Option obj) {
-      var attributes = member.GetCustomAttributes(typeof (EnumValueAttribute), false);
+      var attributes = member.GetCustomAttributes(typeof(EnumValueAttribute), false);
       if (attributes.Length > 0) {
         var enumValues = new List<EnumValue>();
         foreach (var attribute in attributes) {
-          var enumValue = ((EnumValueAttribute) attribute);
-          if (enumValue.Value.GetType() != obj.ValueType) {
-            throw new Exception("Type mismatch between optionValue(" + type + ") and enumValue(" + enumValue.Value.GetType() + " for Option " + obj.Name);
+          var enumValue = (EnumValueAttribute) attribute;
+          var underlyingType = Nullable.GetUnderlyingType(obj.ValueType);
+          var objType = underlyingType ?? obj.ValueType;
+          if (enumValue.Value == null && underlyingType != null ||
+              enumValue.Value != null && enumValue.Value.GetType() != objType) {
+            throw new Exception("Type mismatch between optionValue(" + type + ") and enumValue(" +
+                enumValue.Value.GetType() + " for Option " + objType);
           }
           enumValues.Add(new EnumValue(enumValue.Label, enumValue.Value));
         }
@@ -508,7 +515,7 @@ namespace Demo.yFiles.Toolkit.OptionHandler
     }
 
     /// <summary>
-    /// Set utility properties on <paramref name="obj"/>.
+    ///   Set utility properties on <paramref name="obj"/>.
     /// </summary>
     /// <param name="member">The member to process.</param>
     /// <param name="obj">The <see cref="Option"/> containing the extracted information.</param>
@@ -527,7 +534,7 @@ namespace Demo.yFiles.Toolkit.OptionHandler
     }
 
     private static bool IsOptionGroup(MemberInfo groupMember) {
-      var componentTypeAttributes = groupMember.GetCustomAttributes(typeof (ComponentTypeAttribute), false);
+      var componentTypeAttributes = groupMember.GetCustomAttributes(typeof(ComponentTypeAttribute), false);
       if (componentTypeAttributes.Length > 0) {
         return ((ComponentTypeAttribute) componentTypeAttributes[0]).Value == ComponentTypes.OptionGroup;
       }
@@ -535,7 +542,7 @@ namespace Demo.yFiles.Toolkit.OptionHandler
     }
 
     private static string GetGroup(MemberInfo member) {
-      var attributes = member.GetCustomAttributes(typeof (OptionGroupAttribute), false);
+      var attributes = member.GetCustomAttributes(typeof(OptionGroupAttribute), false);
       if (attributes.Length > 0) {
         return ((OptionGroupAttribute) attributes[0]).Name.ToLower();
       }
@@ -545,32 +552,36 @@ namespace Demo.yFiles.Toolkit.OptionHandler
     private static ComponentTypes GetDefaultComponent(Type type) {
       if (type.IsEnum) {
         return ComponentTypes.Combobox;
-      } else if (type == typeof (bool)) {
+      }
+      if (type == typeof(bool)) {
         return ComponentTypes.Checkbox;
-      } else if (type == typeof (int)) {
+      }
+      if (type == typeof(int)) {
         return ComponentTypes.Spinner;
       }
       return ComponentTypes.Text;
     }
 
     /// <summary>
-    /// <see cref="IComparer{T}"/> that compares members position information contained in <see cref="OptionGroupAttribute"/>.
+    ///   <see cref="IComparer{T}"/> that compares members' position information contained in <see cref="OptionGroupAttribute"/>
+    ///   .
     /// </summary>
     public class MemberComparer : IComparer<MemberInfo>
     {
       public int Compare(MemberInfo x, MemberInfo y) {
         int posX = 0, posY = 0;
-        var attributesX = x.GetCustomAttributes(typeof (OptionGroupAttribute), false);
+        var attributesX = x.GetCustomAttributes(typeof(OptionGroupAttribute), false);
         if (attributesX.Length > 0) {
           posX = ((OptionGroupAttribute) attributesX[0]).Position;
         }
-        var attributesY = y.GetCustomAttributes(typeof (OptionGroupAttribute), false);
+        var attributesY = y.GetCustomAttributes(typeof(OptionGroupAttribute), false);
         if (attributesY.Length > 0) {
           posY = ((OptionGroupAttribute) attributesY[0]).Position;
         }
         if (posX > posY) {
           return 1;
-        } else if (posX < posY) {
+        }
+        if (posX < posY) {
           return -1;
         }
         return 0;

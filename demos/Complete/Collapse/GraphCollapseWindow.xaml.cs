@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -38,48 +38,51 @@ using yWorks.Geometry;
 using yWorks.Graph;
 using yWorks.Graph.Styles;
 using yWorks.Layout;
-using yWorks.Algorithms;
 using yWorks.Layout.Organic;
 using yWorks.Layout.Orthogonal;
 using yWorks.Layout.Tree;
+using yWorks.Utils;
 
 namespace Demo.yFiles.Graph.Collapse
 {
   /// <summary>
-  /// A form that demonstrates the wrapping and decorating of <see cref="IGraph"/> instances.
+  ///   A form that demonstrates the wrapping and decorating of <see cref="IGraph"/> instances.
   /// </summary>
   /// <remarks>
-  /// This demo shows a collapsible tree structure. Subtrees can be collapsed or expanded by clicking on 
-  /// their root nodes.
+  ///   This demo shows a collapsible tree structure. Subtrees can be collapsed or expanded by clicking on
+  ///   their root nodes.
   /// </remarks>
   /// <seealso cref="FilteredGraphWrapper"/>
   public partial class GraphCollapseWindow
   {
     // list that stores collapsed nodes
     private readonly ICollection<INode> collapsedNodes = new List<INode>();
+
     // graph that contains visible nodes
     private FilteredGraphWrapper filteredGraph;
+
     // graph containing all nodes
     private IGraph fullGraph;
+
     private readonly INodeStyle leafNodeStyle = new NodeControlNodeStyle("LeafNodeStyleTemplate");
+
     // currently selected layout algorithm
     private ILayoutAlgorithm currentLayout;
+
     // list of all layout algorithms
-    private readonly List<ILayoutAlgorithm> layouts = new List<ILayoutAlgorithm>();
     // mapper for mapping layout algorithms to their string representation in the combobox
-    private IMapper<string, ILayoutAlgorithm> layoutMapper = new DictionaryMapper<string, ILayoutAlgorithm>();
+    private readonly IMapper<string, ILayoutAlgorithm> layoutMapper = new DictionaryMapper<string, ILayoutAlgorithm>();
+
     // the node that has just been toggled and should stay fixed.
     private INode toggledNode;
 
     /// <summary>
-    /// Returns all available layout algorithms.
+    ///   Returns all available layout algorithms.
     /// </summary>
-    public List<ILayoutAlgorithm> Layouts {
-      get { return layouts; }
-    }
+    public List<ILayoutAlgorithm> Layouts { get; } = new();
 
     /// <summary>
-    /// Create a new instance of this class.
+    ///   Create a new instance of this class.
     /// </summary>
     public GraphCollapseWindow() {
       InitializeComponent();
@@ -88,25 +91,25 @@ namespace Demo.yFiles.Graph.Collapse
     #region Handling Expand/Collapse Clicks
 
     /// <summary>
-    /// The command that can be used by the node buttons to toggle the visibilit of the child nodes.
+    ///   The command that can be used by the node buttons to toggle the visibility of the child nodes.
     /// </summary>
     /// <remarks>
-    /// This command requires the corresponding <see cref="INode"/> as the <see cref="ExecutedRoutedEventArgs.Parameter"/>.
+    ///   This command requires the corresponding <see cref="INode"/> as the <see cref="ExecutedRoutedEventArgs.Parameter"/>.
     /// </remarks>
     public static readonly ICommand ToggleChildrenCommand = new RoutedUICommand("Toggle Children", "ToggleChildren",
-                                                                                  typeof(GraphCollapseWindow));
+        typeof(GraphCollapseWindow));
 
-    
+
     /// <summary>
-    /// Called when the ToggleChildren command has been executed. 
+    ///   Called when the ToggleChildren command has been executed.
     /// </summary>
     /// <remarks>
-    /// Toggles the visiblity of the node's children.
+    ///   Toggles the visibility of the node's children.
     /// </remarks>
     public async void ToggleChildrenExecuted(object sender, ExecutedRoutedEventArgs e) {
       var node = (e.Parameter ?? graphControl.CurrentItem) as INode;
       if (node != null) {
-        bool canExpand = filteredGraph.OutDegree(node) != filteredGraph.WrappedGraph.OutDegree(node);
+        var canExpand = filteredGraph.OutDegree(node) != filteredGraph.WrappedGraph.OutDegree(node);
         if (canExpand) {
           await Expand(node);
         } else {
@@ -116,7 +119,7 @@ namespace Demo.yFiles.Graph.Collapse
     }
 
     /// <summary>
-    /// Show the children of a collapsed node.
+    ///   Show the children of a collapsed node.
     /// </summary>
     /// <param name="node">The node that should be expanded</param>
     private async Task Expand(INode node) {
@@ -131,7 +134,7 @@ namespace Demo.yFiles.Graph.Collapse
     }
 
     /// <summary>
-    /// Hide the children of a expanded node.
+    ///   Hide the children of an expanded node.
     /// </summary>
     /// <param name="node">The node that should be collapsed</param>
     private async Task Collapse(INode node) {
@@ -149,11 +152,11 @@ namespace Demo.yFiles.Graph.Collapse
       // of a node which gets expanded to the position of the expanded node.
       // This looks nicer in the following animated layout. Try commenting
       // out the method body to see the difference.
-      PointD center = node.Layout.GetCenter();
-      foreach (IEdge edge in fullGraph.EdgesAt(node)) {
+      var center = node.Layout.GetCenter();
+      foreach (var edge in fullGraph.EdgesAt(node)) {
         if (edge.SourcePort.Owner == node) {
           fullGraph.ClearBends(edge);
-          INode child = (INode)edge.TargetPort.Owner;
+          var child = (INode) edge.TargetPort.Owner;
           fullGraph.SetNodeCenter(child, center);
           AlignChildren(child);
         }
@@ -166,33 +169,32 @@ namespace Demo.yFiles.Graph.Collapse
         style.StyleTag = collapsed;
       }
     }
-    
+
     #endregion
 
     /// <summary>
-    /// Builds a sample graph.
+    ///   Builds a sample graph.
     /// </summary>
     private void BuildTree(IGraph graph, int children, int levels, int collapseLevel) {
-      INode root = graph.CreateNode(new PointD(20, 20));
+      var root = graph.CreateNode(new PointD(20, 20));
       SetCollapsedTag(root, false);
       AddChildren(levels, graph, root, children, collapseLevel);
     }
 
-    private readonly Random random = new Random(666);
+    private readonly Random random = new(666);
 
     /// <summary>
-    /// Recursively add children to the tree.
+    ///   Recursively add children to the tree.
     /// </summary>
     private void AddChildren(int level, IGraph graph, INode root, int childCount, int collapseLevel) {
-      int actualChildCount = random.Next(1, childCount + 1);
-      for (int i = 0; i < actualChildCount; i++) {
-        INode child = graph.CreateNode(new PointD(20, 20));
+      var actualChildCount = random.Next(1, childCount + 1);
+      for (var i = 0; i < actualChildCount; i++) {
+        var child = graph.CreateNode(new PointD(20, 20));
         graph.CreateEdge(root, child);
         if (level < collapseLevel) {
           collapsedNodes.Add(child);
           SetCollapsedTag(child, true);
-        }
-        else {
+        } else {
           SetCollapsedTag(child, false);
         }
         if (level > 0) {
@@ -204,14 +206,14 @@ namespace Demo.yFiles.Graph.Collapse
     }
 
     /// <summary>
-    /// Predicate for the filtered graph wrapper that 
-    /// indicates whether a node should be visible
+    ///   Predicate for the filtered graph wrapper that
+    ///   indicates whether a node should be visible
     /// </summary>
     /// <returns> true if the node should be visible</returns>
     private bool NodePredicate(INode node) {
       // return true if none of the parent nodes is collapsed
-      foreach (IEdge edge in fullGraph.InEdgesAt(node)) {
-        INode parent = (INode)edge.SourcePort.Owner;
+      foreach (var edge in fullGraph.InEdgesAt(node)) {
+        var parent = (INode) edge.SourcePort.Owner;
         return !collapsedNodes.Contains(parent) && NodePredicate(parent);
       }
       return true;
@@ -220,10 +222,9 @@ namespace Demo.yFiles.Graph.Collapse
     #region Initialization
 
     /// <summary>
-    /// Called upon the loading of the form.
-    /// This method initializes the graph and the input mode.
+    ///   Called upon the loading of the form.
+    ///   This method initializes the graph and the input mode.
     /// </summary>
-    /// <param name="e"></param>
     /// <seealso cref="InitializeInputModes"/>
     /// <seealso cref="InitializeGraph"/>
     protected virtual void OnLoaded(object source, EventArgs e) {
@@ -235,8 +236,8 @@ namespace Demo.yFiles.Graph.Collapse
     }
 
     /// <summary>
-    /// Initializes the graph instance, setting default styles
-    /// and creating a small sample graph.
+    ///   Initializes the graph instance, setting default styles
+    ///   and creating a small sample graph.
     /// </summary>
     protected virtual void InitializeGraph() {
       // Create the graph instance that will hold the complete graph.
@@ -246,7 +247,7 @@ namespace Demo.yFiles.Graph.Collapse
       fullGraph.NodeDefaults.Style = new NodeControlNodeStyle("InnerNodeStyleTemplate");
       fullGraph.NodeDefaults.Size = new SizeD(60, 30);
       fullGraph.NodeDefaults.ShareStyleInstance = false;
-      
+
       // Create a nice default style for the edges
       fullGraph.EdgeDefaults.Style = DemoStyles.CreateDemoEdgeStyle();
 
@@ -267,53 +268,42 @@ namespace Demo.yFiles.Graph.Collapse
     }
 
     /// <summary>
-    /// Creates a mode and registers it as the
-    /// <see cref="CanvasControl.InputMode"/>.
+    ///   Creates a mode and registers it as the <see cref="InputMode"/>.
     /// </summary>
     protected virtual void InitializeInputModes() {
-      // Create a multiplexing input mode and that uses a MoveViewportInputMode and add a 
-      // wait input mode that will be used by the animator to block user input during 
+      // Create a multiplexing input mode and that uses a MoveViewportInputMode and add a
+      // wait input mode that will be used by the animator to block user input during
       // animations automatically.
-      MultiplexingInputMode multiplexingInputMode = new MultiplexingInputMode();
-      multiplexingInputMode.Add(new WaitInputMode{Priority = 0});
-      multiplexingInputMode.Add(new MoveViewportInputMode{Priority = 5});
+      var multiplexingInputMode = new MultiplexingInputMode();
+      multiplexingInputMode.Add(new WaitInputMode { Priority = 0 });
+      multiplexingInputMode.Add(new MoveViewportInputMode { Priority = 5 });
       graphControl.InputMode = multiplexingInputMode;
     }
 
     private void SetupLayouts() {
       // create TreeLayout
-      var treeLayout = new TreeLayout {LayoutOrientation = LayoutOrientation.LeftToRight};
-      treeLayout.PrependStage(new FixNodeLayoutStage());
-      layouts.Add(treeLayout);
+      var treeLayout = new TreeLayout { LayoutOrientation = LayoutOrientation.LeftToRight };
+      Layouts.Add(treeLayout);
       layoutMapper["Tree"] = treeLayout;
       layoutComboBox.Items.Add("Tree");
 
-      // create BalloonLayout
-      var balloonLayout = new BalloonLayout
-      {
-        FromSketchMode = true,
-        CompactnessFactor = 1.0,
-        AllowOverlaps = true
+      // create RadialTreeLayout
+      var radialTreeLayout = new RadialTreeLayout {
+          ChildOrderingPolicy = ChildOrderingPolicy.FromSketch, CompactnessFactor = 0.0, AllowOverlaps = true
       };
-      balloonLayout.PrependStage(new FixNodeLayoutStage());
-      layouts.Add(balloonLayout);
-      layoutMapper["Balloon"] = balloonLayout;
-      layoutComboBox.Items.Add("Balloon");
+      Layouts.Add(radialTreeLayout);
+      layoutMapper["Radial Tree"] = radialTreeLayout;
+      layoutComboBox.Items.Add("Radial Tree");
 
       // create OrganicLayout
-      var organicLayout = new OrganicLayout {
-        MinimumNodeDistance = 40,
-        Deterministic = true
-      };
-      organicLayout.PrependStage(new FixNodeLayoutStage());
-      layouts.Add(organicLayout);
+      var organicLayout = new OrganicLayout { DefaultMinimumNodeDistance = 40, Deterministic = true };
+      Layouts.Add(organicLayout);
       layoutMapper["Organic"] = organicLayout;
       layoutComboBox.Items.Add("Organic");
 
       // create OrthogonalLayout
       var orthogonalLayout = new OrthogonalLayout();
-      orthogonalLayout.PrependStage(new FixNodeLayoutStage());
-      layouts.Add(orthogonalLayout);
+      Layouts.Add(orthogonalLayout);
       layoutMapper["Orthogonal"] = orthogonalLayout;
       layoutComboBox.Items.Add("Orthogonal");
 
@@ -327,30 +317,24 @@ namespace Demo.yFiles.Graph.Collapse
     #region Actions
 
     /// <summary>
-    /// Exit the demo
+    ///   Exit the demo
     /// </summary>
     /// <param name="sender"></param>
-    /// <param name="e"></param>            
+    /// <param name="e"></param>
     private void ExitMenuItem_Click(object sender, EventArgs e) {
       Application.Current.Shutdown();
     }
 
     #endregion
-    
+
     private async Task RunLayout(bool animateViewport) {
       if (currentLayout != null) {
-        // provide additional data to configure the FixNodeLayoutStage
-        FixNodeLayoutData fixNodeLayoutData = new FixNodeLayoutData();
-        // specify the node whose position is to be fixed during layout
-        fixNodeLayoutData.FixedNodes.Item = toggledNode;
-
-        // run the layout and animate the result
-        var layoutExecutor = new LayoutExecutor(graphControl, currentLayout)
-        {
-          UpdateContentRect = true,
-          AnimateViewport = animateViewport,
-          Duration = TimeSpan.FromSeconds(0.3d),
-          LayoutData = fixNodeLayoutData
+        var layoutExecutor = new LayoutExecutor(graphControl, currentLayout) {
+            AnimateViewport = animateViewport,
+            AnimationDuration = TimeSpan.FromSeconds(0.3d),
+            AnchoredItems = {
+                MapperFunction = item => item == toggledNode ? LayoutAnchoringPolicy.Center : LayoutAnchoringPolicy.None
+            }
         };
         await layoutExecutor.Start();
         toggledNode = null;
@@ -361,22 +345,5 @@ namespace Demo.yFiles.Graph.Collapse
       currentLayout = layoutMapper[layoutComboBox.SelectedItem as string];
       await RunLayout(true);
     }
-
   }
-
-  internal class XCoordComparer : IComparer<object>
-  {
-    /// <summary>Compares two edges by the x-coordinates of the centers of their target nodes.</summary>
-    /// <param name="edge1">the first edge</param>
-    /// <param name="edge2">the second edge</param>
-    /// <returns>a negative value if the first target node is left of the second target node, a positive value if it's the
-    /// other way round and <c>0</c> if both target nodes are at the same x-coordinate</returns>
-    public virtual int Compare(object edge1, object edge2) {
-      Node va = ((Edge) edge1).Target;
-      Node vb = ((Edge) edge2).Target;
-      LayoutGraph graph = (LayoutGraph) va.Graph;
-      return (int) ((100.0 * (graph.GetCenterX(va) - graph.GetCenterX(vb))));
-    }
-  }
-
 }

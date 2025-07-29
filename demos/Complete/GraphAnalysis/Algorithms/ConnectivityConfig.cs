@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -33,12 +33,11 @@ using yWorks.Graph;
 
 namespace Demo.yFiles.Algorithms.GraphAnalysis
 {
-
   /// <summary>
-  /// Determines connected components.
+  ///   Determines connected components.
   /// </summary>
   /// <remarks>
-  /// Supports connected components, biconnected components, and strongly connected components.
+  ///   Supports connected components, biconnected components, and strongly connected components.
   /// </remarks>
   public class ConnectivityConfig : AlgorithmConfiguration
   {
@@ -52,7 +51,7 @@ namespace Demo.yFiles.Algorithms.GraphAnalysis
     public override void RunAlgorithm(IGraph graph) {
       switch (algorithmType) {
         case ConnectivityMode.BiconnectedComponents:
-          CalculateBiconnectedComponents(graph); 
+          CalculateBiconnectedComponents(graph);
           break;
         case ConnectivityMode.StronglyConnectedComponents:
           CalculateConnectedComponents(graph, true);
@@ -65,8 +64,7 @@ namespace Demo.yFiles.Algorithms.GraphAnalysis
     }
 
     private void CalculateConnectedComponents(IGraph graph, bool stronglyConnected) {
-
-      ResultItemCollection<Component> components;
+      ResultItemCollection<ConnectedComponent> components;
       if (stronglyConnected) {
         var result = new StronglyConnectedComponents().Run(graph);
         components = result.Components;
@@ -83,7 +81,7 @@ namespace Demo.yFiles.Algorithms.GraphAnalysis
 
         for (var i = 0; i < components.Count; i++) {
           var component = components[i];
-          var color = colors[i];
+          var color = colors[i % colors.Length];
 
           foreach (var edge in component.InducedEdges) {
             // each edge of the same cycle get the same tag
@@ -91,9 +89,7 @@ namespace Demo.yFiles.Algorithms.GraphAnalysis
             var tag = InitializeTag(edge);
             tag.CurrentColor = color;
           }
-          component.Nodes.ForEach(node => {
-            InitializeTag(node).CurrentColor = color;
-          });
+          component.Nodes.ForEach(node => { InitializeTag(node).CurrentColor = color; });
         }
 
         foreach (var edge in graph.Edges) {
@@ -103,6 +99,7 @@ namespace Demo.yFiles.Algorithms.GraphAnalysis
         }
       }
     }
+
     private void CalculateBiconnectedComponents(IGraph graph) {
       var result = new BiconnectedComponents().Run(graph);
 
@@ -113,7 +110,7 @@ namespace Demo.yFiles.Algorithms.GraphAnalysis
         // sets the style/tag for the edges
         for (var i = 0; i < result.Components.Count; i++) {
           var component = result.Components[i];
-          var color = colors[i];
+          var color = colors[i % colors.Length];
 
           component.Edges.ForEach(edge => { InitializeTag(edge).CurrentColor = color; });
           component.Nodes.ForEach(node => { InitializeTag(node).CurrentColor = color; });
@@ -136,6 +133,8 @@ namespace Demo.yFiles.Algorithms.GraphAnalysis
 
   public enum ConnectivityMode
   {
-    ConnectedComponents, BiconnectedComponents, StronglyConnectedComponents
+    ConnectedComponents,
+    BiconnectedComponents,
+    StronglyConnectedComponents
   }
 }

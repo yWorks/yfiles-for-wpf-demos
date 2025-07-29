@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<!--Created by yFiles WPF 2.1-->
-<graphml xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/3.0" xmlns:y="http://www.yworks.com/xml/yfiles-common/3.0" xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/3.0/xaml" xmlns:style="Demo.yFiles.Graph.TableNodeStyle" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml.wpf/2.0/ygraphml.xsd " xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://graphml.graphdrawing.org/xmlns">
+<!--Created by yFiles WPF 4.0-->
+<graphml xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/3.0" xmlns:y="http://www.yworks.com/xml/yfiles-common/3.0"  xmlns:yx="http://www.yworks.com/xml/yfiles-common/4.0" xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/4.0/xaml" xmlns:style="Demo.yFiles.Graph.TableNodeStyle" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml.wpf/2.0/ygraphml.xsd " xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://graphml.graphdrawing.org/xmlns">
   <key id="d0" for="all" attr.name="UserTags" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/UserTags" />
   <key id="d1" for="node" attr.name="NodeLabels" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeLabels" />
   <key id="d2" for="node" attr.name="NodeGeometry" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeGeometry" />
@@ -21,12 +21,12 @@
   <key id="d9" attr.name="SharedData" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/SharedData" />
   <data key="d9">
     <y:SharedData>
-      <y:RatioAnchoredLabelModelParameter x:Key="1" LayoutRatio="0,0.5" LayoutOffset="10,0" LabelRatio="0.5,0.5" Angle="-1.5707963267948966">
-        <y:RatioAnchoredLabelModelParameter.Model>
-          <y:FreeNodeLabelModel />
-        </y:RatioAnchoredLabelModelParameter.Model>
-      </y:RatioAnchoredLabelModelParameter>
-      <ywpf:DefaultLabelStyle x:Key="2" TextAlignment="Center" Typeface="{y:GraphMLReference 4}" VerticalTextAlignment="Center"/>
+      <yx:FreeNodeLabelModelParameter x:Key="1" LayoutRatio="0,0.5" LayoutOffset="10,0" LabelRatio="0.5,0.5" Angle="-1.5707963267948966">
+        <yx:FreeNodeLabelModelParameter.Model>
+          <yx:FreeNodeLabelModel />
+        </yx:FreeNodeLabelModelParameter.Model>
+      </yx:FreeNodeLabelModelParameter>
+      <ywpf:LabelStyle x:Key="2" TextAlignment="Center" Typeface="{y:GraphMLReference 4}" VerticalTextAlignment="Center"/>
       <style:BPMNRowStyle x:Key="3" WedgeHeight="10" WedgeWidth="10">
         <style:BPMNRowStyle.StripeDescriptor>
           <style:StripeDescriptor />
@@ -38,12 +38,16 @@
           <style:StripeDescriptor BackgroundBrush="#FFFFFFFF" />
         </style:BPMNColumnStyle.StripeDescriptor>
       </style:BPMNColumnStyle>
-      <ywpf:DefaultLabelStyle x:Key="7" Typeface="{y:GraphMLReference 4}" TextAlignment="Center" VerticalTextAlignment="Center" />
+      <ywpf:LabelStyle x:Key="7" Typeface="{y:GraphMLReference 4}" TextAlignment="Center" VerticalTextAlignment="Center" />
       <Pen Brush="#FF03689A" Thickness="1" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" x:Key="8" />
       <Pen Brush="#FFA6A61D" Thickness="1" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" x:Key="9" />
       <Pen Brush="#FFC6C28B" Thickness="1" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" x:Key="10" />
-      <ywpf:PolylineEdgeStyle x:Key="11" TargetArrow="Default" SourceArrow="None" />
-      <y:StretchStripeLabelModelParameter x:Key="12" Position="West"/>
+      <ywpf:PolylineEdgeStyle x:Key="11" SourceArrow="None">
+        <ywpf:PolylineEdgeStyle.TargetArrow>
+         <ywpf:Arrow Type="Stealth"/>
+        </ywpf:PolylineEdgeStyle.TargetArrow>
+      </ywpf:PolylineEdgeStyle>
+      <yx:StretchStripeLabelModelParameter x:Key="12" Position="Left"/>
     </y:SharedData>
   </data>
   <graph id="G" edgedefault="directed">
@@ -54,68 +58,68 @@
       <data key="d3">
         <ywpf:TableNodeStyle>
           <ywpf:TableNodeStyle.Table>
-            <y:Table Insets="25,0,0,0">
-              <y:Table.Rows>
-                <y:Row MinimumSize="100" Size="275" Insets="25,20,0,0" Style="{y:GraphMLReference 3}">
-                  <y:Row.Labels>
+            <yx:Table Padding="25,0,0,0">
+              <yx:Table.Rows>
+                <yx:Row MinimumSize="100" Size="275" Padding="25,20,0,0" Style="{y:GraphMLReference 3}">
+                  <yx:Row.Labels>
                     <y:Label LayoutParameter="{y:GraphMLReference 12}" Style="{y:GraphMLReference 2}" PreferredSize="37,14">
                       <y:Label.Text><![CDATA[Lane 0]]></y:Label.Text>
                     </y:Label>
-                  </y:Row.Labels>
-                </y:Row>
-                <y:Row MinimumSize="100" Size="100" Insets="25,0,0,0" Style="{y:GraphMLReference 3}">
-                  <y:Row.Labels>
+                  </yx:Row.Labels>
+                </yx:Row>
+                <yx:Row MinimumSize="100" Size="100" Padding="25,0,0,0" Style="{y:GraphMLReference 3}">
+                  <yx:Row.Labels>
                     <y:Label LayoutParameter="{y:GraphMLReference 12}" Style="{y:GraphMLReference 2}" PreferredSize="37,14">
                       <y:Label.Text><![CDATA[Lane 1]]></y:Label.Text>
                     </y:Label>
-                  </y:Row.Labels>
-                </y:Row>
-                <y:Row MinimumSize="100" Size="100" Insets="25,0,0,0" Style="{y:GraphMLReference 3}">
-                  <y:Row.Labels>
+                  </yx:Row.Labels>
+                </yx:Row>
+                <yx:Row MinimumSize="100" Size="100" Padding="25,0,0,0" Style="{y:GraphMLReference 3}">
+                  <yx:Row.Labels>
                     <y:Label LayoutParameter="{y:GraphMLReference 12}" Style="{y:GraphMLReference 2}" PreferredSize="37,14">
                       <y:Label.Text><![CDATA[Lane 2]]></y:Label.Text>
                     </y:Label>
-                  </y:Row.Labels>
-                </y:Row>
-              </y:Table.Rows>
-              <y:Table.Columns>
-                <y:Column Style="{y:GraphMLReference 6}" MinimumSize="200" Size="340" Insets="5,0,5,0">
-                  <y:Column.Labels>
-                    <y:Label LayoutParameter="{x:Static y:StretchStripeLabelModel.North}" Style="{y:GraphMLReference 7}" PreferredSize="62,14">
+                  </yx:Row.Labels>
+                </yx:Row>
+              </yx:Table.Rows>
+              <yx:Table.Columns>
+                <yx:Column Style="{y:GraphMLReference 6}" MinimumSize="200" Size="340" Padding="5,0,5,0">
+                  <yx:Column.Labels>
+                    <y:Label LayoutParameter="{x:Static yx:StretchStripeLabelModel.Top}" Style="{y:GraphMLReference 7}" PreferredSize="62,14">
                       <y:Label.Text><![CDATA[Milestone 0]]></y:Label.Text>
                     </y:Label>
-                  </y:Column.Labels>
-                </y:Column>
-                <y:Column Style="{y:GraphMLReference 6}" MinimumSize="200" Size="200" Insets="5,0,5,0">
-                  <y:Column.Labels>
-                    <y:Label LayoutParameter="{x:Static y:StretchStripeLabelModel.North}" Style="{y:GraphMLReference 7}" PreferredSize="62,14">
+                  </yx:Column.Labels>
+                </yx:Column>
+                <yx:Column Style="{y:GraphMLReference 6}" MinimumSize="200" Size="200" Padding="5,0,5,0">
+                  <yx:Column.Labels>
+                    <y:Label LayoutParameter="{x:Static yx:StretchStripeLabelModel.Top}" Style="{y:GraphMLReference 7}" PreferredSize="62,14">
                       <y:Label.Text><![CDATA[Milestone 1]]></y:Label.Text>
                     </y:Label>
-                  </y:Column.Labels>
-                </y:Column>
-                <y:Column Style="{y:GraphMLReference 6}" MinimumSize="200" Size="205" Insets="5,0,5,0">
-                  <y:Column.Labels>
-                    <y:Label LayoutParameter="{x:Static y:StretchStripeLabelModel.North}" Style="{y:GraphMLReference 7}" PreferredSize="62,14">
+                  </yx:Column.Labels>
+                </yx:Column>
+                <yx:Column Style="{y:GraphMLReference 6}" MinimumSize="200" Size="205" Padding="5,0,5,0">
+                  <yx:Column.Labels>
+                    <y:Label LayoutParameter="{x:Static yx:StretchStripeLabelModel.Top}" Style="{y:GraphMLReference 7}" PreferredSize="62,14">
                       <y:Label.Text><![CDATA[Milestone 2]]></y:Label.Text>
                     </y:Label>
-                  </y:Column.Labels>
-                </y:Column>
-              </y:Table.Columns>
-              <y:Table.RowDefaults>
-                <y:StripeDefaults Insets="25,0,0,0" MinimumSize="100" Style="{y:GraphMLReference 3}">
-                  <y:StripeDefaults.Labels>
+                  </yx:Column.Labels>
+                </yx:Column>
+              </yx:Table.Columns>
+              <yx:Table.RowDefaults>
+                <yx:StripeDefaults Padding="25,0,0,0" MinimumSize="100" Style="{y:GraphMLReference 3}">
+                  <yx:StripeDefaults.Labels>
                     <y:LabelDefaults AutoAdjustPreferredSize="True" ShareLayoutParameterInstance="True" LayoutParameter="{y:GraphMLReference 12}" Style="{y:GraphMLReference 2}" ShareStyleInstance="True" />
-                  </y:StripeDefaults.Labels>
-                </y:StripeDefaults>
-              </y:Table.RowDefaults>
-              <y:Table.ColumnDefaults>
-                <y:StripeDefaults Insets="5,0,5,0" Size="200" MinimumSize="200" Style="{y:GraphMLReference 6}">
-                  <y:StripeDefaults.Labels>
-                    <y:LabelDefaults AutoAdjustPreferredSize="True" ShareLayoutParameterInstance="True" LayoutParameter="{x:Static y:StretchStripeLabelModel.North}" Style="{y:GraphMLReference 7}" ShareStyleInstance="True" />
-                  </y:StripeDefaults.Labels>
-                </y:StripeDefaults>
-              </y:Table.ColumnDefaults>
-            </y:Table>
+                  </yx:StripeDefaults.Labels>
+                </yx:StripeDefaults>
+              </yx:Table.RowDefaults>
+              <yx:Table.ColumnDefaults>
+                <yx:StripeDefaults Padding="5,0,5,0" Size="200" MinimumSize="200" Style="{y:GraphMLReference 6}">
+                  <yx:StripeDefaults.Labels>
+                    <y:LabelDefaults AutoAdjustPreferredSize="True" ShareLayoutParameterInstance="True" LayoutParameter="{x:Static yx:StretchStripeLabelModel.Top}" Style="{y:GraphMLReference 7}" ShareStyleInstance="True" />
+                  </yx:StripeDefaults.Labels>
+                </yx:StripeDefaults>
+              </yx:Table.ColumnDefaults>
+            </yx:Table>
           </ywpf:TableNodeStyle.Table>
           <ywpf:TableNodeStyle.BackgroundStyle>
             <ywpf:ShapeNodeStyle />
@@ -127,7 +131,7 @@
           <y:Label LayoutParameter="{y:GraphMLReference 1}" PreferredSize="25,14">
             <y:Label.Text>Pool</y:Label.Text>
             <y:Label.Style>
-              <ywpf:DefaultLabelStyle Typeface="{y:GraphMLReference 4}" />
+              <ywpf:LabelStyle Typeface="{y:GraphMLReference 4}" />
             </y:Label.Style>
           </y:Label>
         </x:List>

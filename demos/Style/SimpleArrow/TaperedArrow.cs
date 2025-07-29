@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -27,19 +27,20 @@
  ** 
  ***************************************************************************/
 
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Shapes;
-using System.ComponentModel;
 using yWorks.Controls;
 using yWorks.Geometry;
 using yWorks.Graph;
 using yWorks.Graph.Styles;
+using LineSegment = System.Windows.Media.LineSegment;
 
 namespace Demo.yFiles.Graph.SimpleArrow
 {
   /// <summary>
-  /// An arrow that appears like the edge tapers to a point.
+  /// An arrow that appears as if the edge tapers to a point.
   /// </summary>
   public class TaperedArrow : IArrow, IVisualCreator, IBoundsProvider
   {
@@ -78,6 +79,9 @@ namespace Demo.yFiles.Graph.SimpleArrow
       }
     }
 
+    /// <inheritdoc/>
+    public bool CropAtPort { get; set; }
+
     /// <summary>
     /// Gets the cropping length associated with this instance.
     /// </summary>
@@ -110,9 +114,9 @@ namespace Demo.yFiles.Graph.SimpleArrow
     /// Initializes a new instance of the <see cref="TaperedArrow"/> class.
     /// </summary>
     public TaperedArrow() {
-      this.Width = 2.0d;
-      this.Length = 10.0d;
-      this.Fill = Brushes.Black;
+      Width = 2.0d;
+      Length = 10.0d;
+      Fill = Brushes.Black;
     }
 
     static TaperedArrow() {
@@ -120,7 +124,7 @@ namespace Demo.yFiles.Graph.SimpleArrow
       // We draw in a normalized coordinate system where the edge is horizontal and meets the target at (0,0)
       // The path is just a simple triangle with length and width 1 - the actual adjustment is done by simply scaling everything later.
       arrowFigure = new PathFigure {
-          // We create a tiny overlap between the edge and the arrow by painting a fraction over the edge.
+          // We create a tiny overlap between the edge and the arrow by rendering a fraction over the edge.
           // This avoids anti-alising artifacts where the edge meets the arrow.
           StartPoint = new Point(-1.1, -0.5),
           Segments = {
@@ -138,10 +142,10 @@ namespace Demo.yFiles.Graph.SimpleArrow
     /// the <see cref="Visual"/> for this arrow
     /// at the given location using the given direction for the given edge.
     /// </summary>
-    /// <param name="edge">the edge this arrow belongs to</param>
-    /// <param name="atSource">whether this will be the source arrow</param>
-    /// <param name="anchor">the anchor point for the tip of the arrow</param>
-    /// <param name="direction">the direction the arrow is pointing in</param>
+    /// <param name="edge">The edge this arrow belongs to</param>
+    /// <param name="atSource">Whether this will be the source arrow</param>
+    /// <param name="anchor">The anchor point for the tip of the arrow</param>
+    /// <param name="direction">The direction the arrow is pointing in</param>
     /// <returns>
     /// Itself as a flyweight.
     /// </returns>
@@ -156,19 +160,19 @@ namespace Demo.yFiles.Graph.SimpleArrow
     /// this arrow's bounds if painted at the given location using the
     /// given direction for the given edge.
     /// </summary>
-    /// <param name="edge">the edge this arrow belongs to</param>
-    /// <param name="atSource">whether this will be the source arrow</param>
-    /// <param name="anchor">the anchor point for the tip of the arrow</param>
-    /// <param name="directionVector">the direction the arrow is pointing in</param>
+    /// <param name="edge">The edge this arrow belongs to</param>
+    /// <param name="atSource">Whether this will be the source arrow</param>
+    /// <param name="anchor">The anchor point for the tip of the arrow</param>
+    /// <param name="directionVector">The direction the arrow is pointing in</param>
     /// <returns>
-    /// an implementation of the <see cref="IBoundsProvider"/> interface that can
+    /// An implementation of the <see cref="IBoundsProvider"/> interface that can
     /// subsequently be used to query the bounds. Clients will always call
     /// this method before using the implementation and may not cache the instance returned.
     /// This allows for applying the flyweight design pattern to implementations.
     /// </returns>
     public IBoundsProvider GetBoundsProvider(IEdge edge, bool atSource, PointD anchor, PointD directionVector) {
       this.anchor = anchor;
-      this.direction = directionVector;
+      direction = directionVector;
       return this;
     }
 
@@ -222,7 +226,7 @@ namespace Demo.yFiles.Graph.SimpleArrow
     /// Returns the bounds of the arrow for the current flyweight configuration.
     /// </summary>
     RectD IBoundsProvider.GetBounds(ICanvasContext context) {
-      return bounds.GetTransformed(CreateMatrix());
+      return CreateMatrix().CalculateTransformedBounds(bounds);
     }
 
     private Matrix2D CreateMatrix() {

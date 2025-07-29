@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -31,8 +31,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Demo.yFiles.Toolkit;
-using yWorks.Controls.Input;
 using yWorks.Controls;
+using yWorks.Controls.Input;
 using yWorks.Geometry;
 using yWorks.Graph;
 
@@ -45,7 +45,7 @@ namespace Demo.yFiles.Graph.Input.ContextMenu
   public partial class ContextMenuWindow
   {
     /// <summary>
-    /// Registers the callback method that populates the dynamic context menu, 
+    /// Registers the callback method that populates the dynamic context menu,
     /// when needed.
     /// </summary>
     /// <remarks>
@@ -57,7 +57,7 @@ namespace Demo.yFiles.Graph.Input.ContextMenu
     private void RegisterContextMenuCallback() {
       graphEditorInputMode.ContextMenuItems = GraphItemTypes.Node | GraphItemTypes.Edge;
 
-      // Simple implementations with static context menus could just assign 
+      // Simple implementations with static context menus could just assign
       // a static ContextMenu instance here.
       // Instead, use a dynamic context menu:
       graphEditorInputMode.PopulateItemContextMenu += OnPopulateItemContextMenu;
@@ -71,9 +71,9 @@ namespace Demo.yFiles.Graph.Input.ContextMenu
       INode node = e.Item as INode;
       // if the cursor is over a node select it, else clear selection
       UpdateSelection(node);
-        
+
       // Create the context menu items
-      if (graphControl.Selection.SelectedNodes.Count > 0) {
+      if (graphControl.Selection.Nodes.Count > 0) {
         // at least one node is selected
         var cutItem = new MenuItem { Command = ApplicationCommands.Cut};
         e.Menu.Items.Add(cutItem);
@@ -106,11 +106,11 @@ namespace Demo.yFiles.Graph.Input.ContextMenu
         graphControl.Selection.Clear();
       } else {
         // see if the node was selected, already
-        if (!graphControl.Selection.SelectedNodes.IsSelected(node)) {
+        if (!graphControl.Selection.Nodes.Contains(node)) {
           // no - clear the remaining selection
           graphControl.Selection.Clear();
           // select the node
-          graphControl.Selection.SelectedNodes.SetSelected(node, true);
+          graphControl.Selection.Nodes.Add(node);
           // also update the current item
           graphControl.CurrentItem = node;
         }
@@ -129,6 +129,8 @@ namespace Demo.yFiles.Graph.Input.ContextMenu
       // Set a nicer node style and create the sample graph
       DemoStyles.InitDemoStyles(graphControl.Graph);
       CreateSampleGraph(graphControl.Graph);
+
+      graphControl.FitGraphBounds();
     }
 
     #endregion

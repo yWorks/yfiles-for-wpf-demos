@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -34,31 +34,33 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
 using Demo.yFiles.Toolkit;
-using yWorks.Controls.Input;
 using yWorks.Controls;
+using yWorks.Controls.Input;
 using yWorks.Geometry;
 using yWorks.Graph;
-using yWorks.Graph.Styles;
 using yWorks.Graph.LabelModels;
 using yWorks.Graph.PortLocationModels;
+using yWorks.Graph.Styles;
 
 namespace Demo.yFiles.Input.DragAndDrop
 {
-
   /// <summary>
-  /// This demo creates a simple style chooser that shows how to use class <see cref="NodeDropInputMode"/> for drag and drop.
-  /// In contrast to <see cref="DropInputMode"/>, <see cref="NodeDropInputMode"/> shows a preview of the node
-  /// while dragging, leverages snapping and allows for dropping nodes into group nodes.
+  ///   This demo creates a simple style chooser that shows how to use class <see cref="NodeDropInputMode"/> for drag and
+  ///   drop.
+  ///   In contrast to <see cref="DropInputMode"/>, <see cref="NodeDropInputMode"/> shows a preview of the node
+  ///   while dragging, leverages snapping, and allows for dropping nodes into group nodes.
   /// </summary>
-  /// <remarks>To create a node, drag the desired node style from the left panel onto the canvas. See the dragged node
-  /// snap to the grid positions and to other nodes.</remarks>
-  public partial class DragAndDropWindow 
+  /// <remarks>
+  ///   To create a node, drag the desired node style from the left panel onto the canvas. See the dragged node
+  ///   snap to the grid positions and to other nodes.
+  /// </remarks>
+  public partial class DragAndDropWindow
   {
-    private string[] functionOptions = { "Snapping & Preview", "Preview", "None" };
+    private readonly string[] functionOptions = { "Snapping & Preview", "Preview", "None" };
 
-    
+
     /// <summary>
-    /// Enables support for dropping nodes on the given <see cref="GraphEditorInputMode"/>.
+    ///   Enables support for dropping nodes on the given <see cref="GraphEditorInputMode"/>.
     /// </summary>
     /// <param name="editorInputMode">The GraphEditorInputMode for this application.</param>
     private void ConfigureNodeDropInputMode(GraphEditorInputMode editorInputMode) {
@@ -73,49 +75,42 @@ namespace Demo.yFiles.Input.DragAndDrop
       // we enable dropping nodes onto leaf nodes ...
       nodeDropInputMode.AllowNonGroupNodeAsParent = true;
       // ... but we restrict that feature to the third nodes (and group nodes).
-      nodeDropInputMode.IsValidParentPredicate =
-        node =>
-          graphControl.Graph.IsGroupNode(node) ||
-          (node.Labels.Count == 2 && node.Labels[1].Text.Contains("convert"));
+      nodeDropInputMode.IsValidParentPredicate = node =>
+          graphControl.Graph.IsGroupNode(node) || (node.Labels.Count == 2 && node.Labels[1].Text.Contains("convert"));
 
       var labelDropInputMode = editorInputMode.LabelDropInputMode;
       labelDropInputMode.Enabled = true;
-      labelDropInputMode.AutoEditLabel = true;
-      labelDropInputMode.UseBestMatchingParameter = true;
     }
 
 
     public DragAndDropWindow() {
       InitializeComponent();
+    }
 
+    private async void OnLoaded(object sender, EventArgs eventArgs) {
       InitializeStylesList();
 
       // add the visual grid
       const int gridWidth = 80;
-      GridInfo gridInfo = new GridInfo(gridWidth);
+      var gridInfo = new GridInfo(gridWidth);
 
-      var grid = new GridVisualCreator(gridInfo);
-      graphControl.BackgroundGroup.AddChild(grid);
+      var renderTree = graphControl.RenderTree;
+      renderTree.CreateElement(renderTree.BackgroundGroup, gridInfo, new GridRenderer());
 
       // Create and configure a GraphSnapContext to enable snapping
-      var context = new GraphSnapContext
-      {
-        NodeToNodeDistance = 30,
-        NodeToEdgeDistance = 20,
-        SnapOrthogonalMovement = false,
-        SnapDistance = 10,
-        SnapSegmentsToSnapLines = true,
-        NodeGridConstraintProvider = new GridConstraintProvider<INode>(gridInfo),
-        BendGridConstraintProvider = new GridConstraintProvider<IBend>(gridInfo),
-        SnapBendsToSnapLines = true,
-        GridSnapType = GridSnapTypes.All
+      var context = new GraphSnapContext {
+          SnappableItems = SnappableItems.Node | SnappableItems.Edge | SnappableItems.Label,
+          NodeDistance = 30,
+          NodeToEdgeDistance = 20,
+          SnapDistance = 10,
+          NodeGridConstraintProvider = new GridConstraintProvider(gridInfo),
+          BendGridConstraintProvider = new GridConstraintProvider(gridInfo),
+          GridSnapType = GridSnapTypes.All
       };
 
       // Create and register a graph editor input mode for editing the graph
       // in the canvas.
-      var editorInputMode = new GraphEditorInputMode{AllowGroupingOperations = true};
-      editorInputMode.SnapContext = context;
-      editorInputMode.OrthogonalEdgeEditingContext = new OrthogonalEdgeEditingContext();
+      var editorInputMode = new GraphEditorInputMode { SnapContext = context };
       // use the style, size and labels of the currently selected palette node for newly created nodes
       editorInputMode.NodeCreator = GetNodeCreator(editorInputMode.NodeCreator);
 
@@ -126,11 +121,14 @@ namespace Demo.yFiles.Input.DragAndDrop
 
       // Enable undo
       graphControl.Graph.SetUndoEngineEnabled(true);
-      
-      DemoStyles.InitDemoStyles(graphControl.Graph);
+
+      DemoStyles.InitDemoStyles(graphControl.Graph, orthogonalEdgeEditing : true);
 
       // populate the control with some nodes
       CreateSampleGraph();
+
+      await graphControl.FitGraphBounds();
+      graphControl.Zoom = 2;
 
       featuresComboBox.ItemsSource = functionOptions;
       featuresComboBox.SelectedIndex = 0;
@@ -138,10 +136,10 @@ namespace Demo.yFiles.Input.DragAndDrop
 
     private NodeCreationCallback GetNodeCreator(NodeCreationCallback nodeCreator) {
       return (context, graph, location, parent) => {
-        INode paletteNode = styleListBox.SelectedItem as INode;
+        var paletteNode = styleListBox.SelectedItem as INode;
         if (paletteNode != null) {
           if (paletteNode.Tag == null || !paletteNode.Tag.ToString().EndsWith("Label Container")) {
-            INode newNode = nodeCreator(context, graph, location, parent);
+            var newNode = nodeCreator(context, graph, location, parent);
             graph.SetStyle(newNode, paletteNode.Style);
             graph.SetNodeLayout(newNode, RectD.FromCenter(location, paletteNode.Layout.ToSizeD()));
             graph.SetIsGroupNode(newNode, paletteNode.Style is GroupNodeStyle);
@@ -150,34 +148,33 @@ namespace Demo.yFiles.Input.DragAndDrop
             }
             return newNode;
           }
-        } 
+        }
 
         return null;
       };
     }
 
     private void CreateSampleGraph() {
-      // Create a group node in which the dragged node can be dropped
       var graph = graphControl.Graph;
-      INode groupNode = graph.CreateGroupNode(null, new RectD(100, 100, 70, 70));
-      graph.AddLabel(groupNode, "Group Node");
-      graph.AddLabel(groupNode, "Drop a node over me!", ExteriorLabelModel.South);
+      graph.NodeDefaults.Size = new SizeD(60, 40);
+      var edgeStyle = DemoStyles.CreateDemoEdgeStyle();
+      edgeStyle.Pen = new Pen(edgeStyle.Pen!.Brush, 3);
+      graph.EdgeDefaults.Style = edgeStyle;
 
-      // Create a node to which the dragged node can snap
-      INode node1 = graph.CreateNode(new RectD(300, 100, 30, 30));
-      graph.AddLabel(node1, "Sample Node", ExteriorLabelModel.North);
-      graph.AddLabel(node1, "Drag a node near me!", ExteriorLabelModel.South);
-
-      // Create a node which can be converted to a group node automatically, if a node is dropped onto it
-      INode node2 = graph.CreateNode(new RectD(450, 200, 30, 30), DemoStyles.CreateDemoNodeStyle(Themes.PaletteGreen));
-      graph.AddLabel(node2, "Sample Node", ExteriorLabelModel.North);
-      graph.AddLabel(node2, "Drag a node onto me to convert me to a group node!", ExteriorLabelModel.South);
+      var n1 = graph.CreateNode(new PointD(0, -50));
+      var n2 = graph.CreateNode(new PointD(-100, 100));
+      var n3 = graph.CreateNode(new PointD(100, 100));
+      var n4 = graph.CreateNode(new RectD(75, 200, 50, 50), DemoStyles.CreateDemoShapeNodeStyle(ShapeNodeShape.Ellipse));
+      graph.CreateEdge(n1, n2);
+      graph.CreateEdge(n1, n3);
+      graph.CreateEdge(n3, n4);
+      graph.AddLabel(n4, "label");
     }
 
     #region Standard Actions
 
     /// <summary>
-    /// Callback action that is triggered when the user exits the application.
+    ///   Callback action that is triggered when the user exits the application.
     /// </summary>
     protected virtual void ExitMenuItemClick(object sender, EventArgs e) {
       Application.Current.Shutdown();
@@ -188,47 +185,49 @@ namespace Demo.yFiles.Input.DragAndDrop
     #region Initialize node palette
 
     /// <summary>
-    /// Initializes the style panel of this demo.
+    ///   Initializes the style panel of this demo.
     /// </summary>
     private void InitializeStylesList() {
-      const int nodeWidth = 60;
-      const int nodeHeight = 40;
-
       // Create a new Graph in which the palette nodes live
       IGraph nodeContainer = new DefaultGraph();
       DemoStyles.InitDemoStyles(nodeContainer);
-      
-      var defaultLabelStyle = new DefaultLabelStyle{
+
+      var defaultLabelStyle = new LabelStyle {
           BackgroundPen = (Pen) new Pen(new SolidColorBrush(Color.FromRgb(101, 152, 204)), 1).GetAsFrozen(),
           BackgroundBrush = Brushes.White,
-          Insets = new InsetsD(3, 5, 3, 5)
+          Padding = new InsetsD(3, 5, 3, 5)
       };
 
       nodeContainer.NodeDefaults.Labels.Style = defaultLabelStyle;
       nodeContainer.EdgeDefaults.Labels.Style = defaultLabelStyle;
-      
-      // Create some nodes
-      nodeContainer.CreateNode(new RectD(0, 0, nodeWidth, nodeHeight), DemoStyles.CreateDemoShapeNodeStyle(ShapeNodeShape.RoundRectangle));
-      nodeContainer.CreateNode(new RectD(0, 0, nodeWidth, nodeHeight), DemoStyles.CreateDemoShapeNodeStyle(ShapeNodeShape.Ellipse));
 
-      INode node = nodeContainer.CreateGroupNode(layout:new RectD(0, 0, 70, 70));
+      // Create some nodes
+      var node = nodeContainer.CreateGroupNode(layout : new RectD(0, 0, 80, 80));
       nodeContainer.AddLabel(node, "Group Node");
 
-      var nodeLabelContainer = nodeContainer.CreateNode(new RectD(0, 0, 70, 70), VoidNodeStyle.Instance, "Node Label Container");
-      var nodeLabel = nodeContainer.AddLabel(nodeLabelContainer, "Node Label", InteriorLabelModel.Center);
+      nodeContainer.CreateNode(new RectD(0, 0, 60, 40),
+          DemoStyles.CreateDemoShapeNodeStyle(ShapeNodeShape.RoundRectangle));
+      nodeContainer.CreateNode(new RectD(0, 0, 50, 50), DemoStyles.CreateDemoShapeNodeStyle(ShapeNodeShape.Ellipse));
 
-      var edgeLabelContainer = nodeContainer.CreateNode(new RectD(0, 0, 70, 70), VoidNodeStyle.Instance, "Edge Label Container");
-      var edgeLabelTemplate = nodeContainer.AddLabel(edgeLabelContainer, "Edge Label", FreeNodeLabelModel.Instance.CreateDefaultParameter());
+      var nodeLabelContainer =
+          nodeContainer.CreateNode(new RectD(0, 0, 80, 20), VoidNodeStyle.Instance, "Node Label Container");
+      nodeContainer.AddLabel(nodeLabelContainer, "Node Label", FreeNodeLabelModel.Center,
+          DemoStyles.CreateDemoNodeLabelStyle());
+
+      var edgeLabelContainer =
+          nodeContainer.CreateNode(new RectD(0, 0, 80, 20), VoidNodeStyle.Instance, "Edge Label Container");
+      nodeContainer.AddLabel(edgeLabelContainer, "Edge Label", FreeNodeLabelModel.Center,
+          DemoStyles.CreateDemoEdgeLabelStyle());
 
       // Add nodes to listview
-      foreach (INode n in nodeContainer.Nodes) {
+      foreach (var n in nodeContainer.Nodes) {
         styleListBox.Items.Add(n);
       }
     }
 
     #endregion
 
-    #region Combobox events
+    #region Toolbar events
 
     private void FeatureSelectionChanged(object sender, EventArgs e) {
       var nodeDropInputMode = ((GraphEditorInputMode) graphControl.InputMode).NodeDropInputMode;
@@ -248,37 +247,40 @@ namespace Demo.yFiles.Input.DragAndDrop
           nodeDropInputMode.SnappingEnabled = false;
           nodeDropInputMode.ShowPreview = false;
           labelDropInputMode.ShowPreview = false;
-         break;
+          break;
       }
+    }
+
+    private void UseDropLocationForParameterChanged(object sender, EventArgs eventArgs) {
+      (graphControl.InputMode as GraphEditorInputMode)!.LabelDropInputMode.UseLocationForParameter =
+          UseDragLocationToggle.IsChecked.Value;
     }
 
     #endregion
 
     private void OnTemplateMouseDown(object sender, RoutedEventArgs e) {
       // Initialize the information for a drag&drop from the node style list.
-      FrameworkElement o = e.OriginalSource as FrameworkElement;
+      var o = e.OriginalSource as FrameworkElement;
       if (o != null) {
         var node = o.DataContext as INode;
         if (node != null) {
           if ("Node Label Container".Equals(node.Tag)) {
-            DataObject dao = new DataObject();
+            var dao = new DataObject();
             dao.SetData(typeof(ILabel), node.Labels.First());
             DragDrop.DoDragDrop(o, dao, DragDropEffects.Link | DragDropEffects.Copy | DragDropEffects.Move);
-          }
-          else if ("Edge Label Container".Equals(node.Tag)) {
+          } else if ("Edge Label Container".Equals(node.Tag)) {
             var labelTemplate = node.Labels.First();
-            //Not all label models return a valid geometry when the path is empty
-            var p1 = new SimplePort(new SimpleNode() {Layout = new RectD(PointD.Origin, new Size(1,1))}, FreeNodePortLocationModel.NodeCenterAnchored);
-            var p2 = new SimplePort(new SimpleNode(){Layout = new RectD(new PointD(0, 100), new Size(1,1))}, FreeNodePortLocationModel.NodeCenterAnchored);
+            // Not all label models return a valid geometry when the path is empty
+            var p1 = new SimplePort(new SimpleNode { Layout = new RectD(PointD.Origin, new SizeD(1, 1)) },
+                FreeNodePortLocationModel.Center);
+            var p2 = new SimplePort(new SimpleNode { Layout = new RectD(new PointD(0, 100), new SizeD(1, 1)) },
+                FreeNodePortLocationModel.Center);
             var edge = new SimpleEdge(p1, p2);
-            var dummyLabel = new SimpleLabel(edge, labelTemplate.Text,
-              FreeEdgeLabelModel.Instance.CreateDefaultParameter()) {
-              Style = labelTemplate.Style,
-              Tag = labelTemplate.Tag,
-              PreferredSize = labelTemplate.PreferredSize
+            var dummyLabel = new SimpleLabel(edge, labelTemplate.Text, FreeEdgeLabelModel.Instance.CreateParameter()) {
+                Style = labelTemplate.Style, Tag = labelTemplate.Tag, PreferredSize = labelTemplate.PreferredSize
             };
 
-            DataObject dao = new DataObject();
+            var dao = new DataObject();
             dao.SetData(typeof(ILabel), dummyLabel);
             DragDrop.DoDragDrop(o, dao, DragDropEffects.Link | DragDropEffects.Copy | DragDropEffects.Move);
           } else {
@@ -286,7 +288,7 @@ namespace Demo.yFiles.Input.DragAndDrop
             graphControl.Graph.NodeDefaults.Style = node.Style;
             graphControl.Graph.NodeDefaults.Size = node.Layout.ToSizeD();
 
-            DataObject dao = new DataObject();
+            var dao = new DataObject();
             dao.SetData(typeof(INode), node);
             DragDrop.DoDragDrop(o, dao, DragDropEffects.Link | DragDropEffects.Copy | DragDropEffects.Move);
           }
@@ -296,45 +298,37 @@ namespace Demo.yFiles.Input.DragAndDrop
   }
 
   /// <summary>
-  /// Convert from a node style to an image that shows the visual representation of the style
+  ///   Convert from a node style to an image that shows the visual representation of the style
   /// </summary>
   [ValueConversion(typeof(INode), typeof(DrawingImage))]
   public class NodeImageConverter : IValueConverter
   {
-    private readonly GraphControl graphControl = new GraphControl();
-    private SizeD size = new SizeD(40, 40);
+    private readonly GraphControl graphControl = new();
 
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
-      INode listBoxNode = value as INode;
-      if (listBoxNode == null) {
+      if (value is not INode listBoxNode) {
         return null;
       }
-      graphControl.Graph.Clear();
 
-      var node = graphControl.Graph.CreateNode(listBoxNode.Layout.ToRectD(), listBoxNode.Style, listBoxNode.Tag);
+      var graph = graphControl.Graph;
+      graph.Clear();
+
+      var node = graph.CreateNode(listBoxNode.Layout.ToRectD(), listBoxNode.Style, listBoxNode.Tag);
       foreach (var label in listBoxNode.Labels) {
-        graphControl.Graph.AddLabel(node, label.Text, label.LayoutParameter,
-            label.Style, label.PreferredSize, label.Tag);
+        graph.AddLabel(node, label.Text, label.LayoutParameter, label.Style, label.PreferredSize, label.Tag);
       }
       graphControl.FitGraphBounds();
-      ContextConfigurator cc = new ContextConfigurator(graphControl.ContentRect);
-      cc.Scale = Math.Min(cc.CalculateScaleForWidth(size.Width), cc.CalculateScaleForHeight(size.Height));
+      var cc = new ContextConfigurator(graphControl.ContentBounds);
 
       var renderContext = cc.CreateRenderContext(graphControl);
       Transform transform = cc.CreateWorldToIntermediateTransform();
-      Geometry clip = cc.CreateClip();
+      var clip = cc.CreateClip();
 
       var visualContent = graphControl.ExportContent(renderContext);
-      VisualGroup container = new VisualGroup
-      {
-        Transform = transform,
-        Clip = clip,
-        Children = { visualContent }
-      };
-      VisualBrush brush = new VisualBrush(container);
-      return
-          new DrawingImage(new GeometryDrawing(brush, null,
-              new RectangleGeometry(new Rect(0, 0, size.Width, size.Height))));
+      var container = new VisualGroup { Transform = transform, Clip = clip, Children = { visualContent } };
+      var brush = new VisualBrush(container);
+      return new DrawingImage(new GeometryDrawing(brush, null,
+          new RectangleGeometry(new Rect(new Point(0, 0), listBoxNode.Layout.ToSize()))));
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {

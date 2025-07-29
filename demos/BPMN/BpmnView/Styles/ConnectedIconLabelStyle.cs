@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -28,25 +28,22 @@
  ***************************************************************************/
 
 using System.Windows.Media;
-using System.Windows.Media.TextFormatting;
 using yWorks.Controls;
 using yWorks.Controls.Input;
 using yWorks.Geometry;
 using yWorks.Graph;
 using yWorks.Graph.LabelModels;
-using yWorks.Graph.Styles;
 using yWorks.Graph.PortLocationModels;
-using yWorks.Utils;
+using yWorks.Graph.Styles;
 
 namespace Demo.yFiles.Graph.Bpmn.Styles
 {
-
   /// <summary>
-  /// An <see cref="ILabelStyle"/> implementation combining an text label, an icon and a connecting line between the icon and the label owner.
+  ///   An <see cref="ILabelStyle"/> implementation combining an text label, an icon and a connecting line between the icon
+  ///   and the label owner.
   /// </summary>
   internal class ConnectedIconLabelStyle : LabelStyleBase<VisualGroup>
   {
-
     #region Properties
 
     public ILabelModelParameter TextPlacement { get; set; }
@@ -74,14 +71,16 @@ namespace Demo.yFiles.Graph.Bpmn.Styles
 
     static ConnectedIconLabelStyle() {
       labelAsNode = new SimpleNode();
-      dummyTextLabel = new SimpleLabel(labelAsNode, "", FreeLabelModel.Instance.CreateDefaultParameter()) {Style = new DefaultLabelStyle()};
+      dummyTextLabel =
+          new SimpleLabel(labelAsNode, "", FreeLabelModel.Instance.CreateAbsolute(PointD.Origin)) {
+              Style = new LabelStyle()
+          };
 
       dummyForLabelOwner = new SimpleNode();
 
-      dummyEdge = new SimpleEdge(new SimplePort(labelAsNode, FreeNodePortLocationModel.NodeCenterAnchored),
-        new SimplePort(dummyForLabelOwner, FreeNodePortLocationModel.NodeCenterAnchored))
-      {
-        Style = new BpmnEdgeStyle {Type = EdgeType.Association}
+      dummyEdge = new SimpleEdge(new SimplePort(labelAsNode, FreeNodePortLocationModel.Center),
+          new SimplePort(dummyForLabelOwner, FreeNodePortLocationModel.Center)) {
+          Style = new BpmnEdgeStyle { Type = EdgeType.Association }
       };
     }
 
@@ -89,7 +88,6 @@ namespace Demo.yFiles.Graph.Bpmn.Styles
 
     /// <inheritdoc/>
     protected override VisualGroup CreateVisual(IRenderContext context, ILabel label) {
-
       Configure(label);
       var container = new VisualGroup();
 
@@ -118,41 +116,39 @@ namespace Demo.yFiles.Graph.Bpmn.Styles
     protected override SizeD GetPreferredSize(ILabel label) {
       if (IconSize != SizeD.Zero) {
         return IconSize;
-      } else {
-        return label.PreferredSize;
       }
+      return label.PreferredSize;
     }
 
     /// <inheritdoc/>
     protected override VisualGroup UpdateVisual(IRenderContext context, VisualGroup container, ILabel label) {
-  
       Configure(label);
 
-      Visual oldIconVisual = container.Children[0];
+      var oldIconVisual = container.Children[0];
       Visual newIconVisual = null;
       if (IconStyle != null) {
         newIconVisual = IconStyle.Renderer.GetVisualCreator(labelAsNode, labelAsNode.Style)
-          .UpdateVisual(context, oldIconVisual);
+            .UpdateVisual(context, oldIconVisual);
       }
       if (oldIconVisual != newIconVisual) {
         container.Children[0] = newIconVisual ?? new VisualGroup();
       }
 
-      Visual oldTextVisual = container.Children[1];
+      var oldTextVisual = container.Children[1];
       Visual newTextVisual = null;
       if (TextStyle != null && TextPlacement != null) {
         newTextVisual = TextStyle.Renderer.GetVisualCreator(dummyTextLabel, dummyTextLabel.Style)
-          .UpdateVisual(context, oldTextVisual);
+            .UpdateVisual(context, oldTextVisual);
       }
       if (oldTextVisual != newTextVisual) {
         container.Children[1] = newTextVisual ?? new VisualGroup();
       }
 
-      Visual oldConnectorVisual = container.Children[2];
+      var oldConnectorVisual = container.Children[2];
       Visual newConnectorVisual = null;
       if (ConnectorStyle != null) {
         newConnectorVisual = dummyEdge.Style.Renderer.GetVisualCreator(dummyEdge, dummyEdge.Style)
-          .UpdateVisual(context, oldConnectorVisual);
+            .UpdateVisual(context, oldConnectorVisual);
       }
       if (oldConnectorVisual != newConnectorVisual) {
         container.Children[2] = newConnectorVisual ?? new VisualGroup();
@@ -176,10 +172,11 @@ namespace Demo.yFiles.Graph.Bpmn.Styles
       dummyTextLabel.Style = TextStyle;
       dummyTextLabel.LayoutParameter = TextPlacement;
       dummyTextLabel.Text = item.Text;
-      dummyTextLabel.PreferredSize = dummyTextLabel.Style.Renderer.GetPreferredSize(dummyTextLabel, dummyTextLabel.Style);
+      dummyTextLabel.PreferredSize =
+          dummyTextLabel.Style.Renderer.GetPreferredSize(dummyTextLabel, dummyTextLabel.Style);
       textBounds = TextPlacement.Model.GetGeometry(dummyTextLabel, TextPlacement);
 
-      boundingBox = item.GetLayout().GetBounds() + textBounds.GetBounds();
+      bounds = item.GetLayout().GetBounds() + textBounds.GetBounds();
 
       // Set source port to the port of the node using a dummy node that is located at the origin.
       ((SimplePort) dummyEdge.SourcePort).LocationParameter = LabelConnectorLocation;
@@ -189,39 +186,36 @@ namespace Demo.yFiles.Graph.Bpmn.Styles
 
     private IOrientedRectangle textBounds;
 
-    private RectD boundingBox;
+    private RectD bounds;
 
     /// <inheritdoc/>
     protected override bool IsHit(IInputModeContext context, PointD location, ILabel label) {
       Configure(label);
-      return label.GetLayout().Contains(location, context.HitTestRadius)
-             || textBounds.Contains(location, context.HitTestRadius)
-             || dummyEdge.Style.Renderer.GetHitTestable(dummyEdge, dummyEdge.Style).IsHit(context, location);
+      return label.GetLayout().Contains(location, context.HitTestRadius) ||
+          textBounds.Contains(location, context.HitTestRadius) || dummyEdge.Style.Renderer
+              .GetHitTestable(dummyEdge, dummyEdge.Style).IsHit(context, location);
     }
 
     /// <inheritdoc/>
     protected override bool IsInBox(IInputModeContext context, RectD rectangle, ILabel label) {
       Configure(label);
-      return rectangle.Intersects(boundingBox.GetEnlarged(context.HitTestRadius));
+      return rectangle.Intersects(bounds.GetEnlarged(context.HitTestRadius));
     }
 
     /// <inheritdoc/>
     protected override RectD GetBounds(ICanvasContext context, ILabel label) {
-      return boundingBox +
-             dummyEdge.Style.Renderer.GetBoundsProvider(dummyEdge, dummyEdge.Style).GetBounds(context);
+      return bounds + dummyEdge.Style.Renderer.GetBoundsProvider(dummyEdge, dummyEdge.Style).GetBounds(context);
     }
 
     /// <inheritdoc/>
     protected override bool IsVisible(ICanvasContext context, RectD rectangle, ILabel label) {
-      // We're computing a (very generous) bounding box here because relying on GetBounds does not work.
+      // We're computing (very generous) bounds here because relying on GetBounds does not work.
       // The visibility test does not call Configure, which means we don't have the dummy edge set up yet.
       var ownerNode = label.Owner as INode;
       if (ownerNode != null) {
-        return rectangle.Intersects(boundingBox + ownerNode.Layout.ToRectD());
+        return rectangle.Intersects(bounds + ownerNode.Layout.ToRectD());
       }
-      return rectangle.Intersects(boundingBox);
+      return rectangle.Intersects(bounds);
     }
-
   }
 }
-

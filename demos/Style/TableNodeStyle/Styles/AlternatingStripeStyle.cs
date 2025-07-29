@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -49,24 +49,24 @@ namespace Demo.yFiles.Graph.TableNodeStyle.Style
     protected override VisualGroup CreateVisual(IRenderContext context, IStripe stripe) {
       var layout = stripe.Layout.ToRectD();
       var cc = new VisualGroup();
-      Thickness stripeInsets;
+      Thickness stripePadding;
 
       int index;
       if (stripe is IColumn) {
         var col = (IColumn) stripe;
-        stripeInsets = new Thickness(0, col.GetActualInsets().Top, 0, col.GetActualInsets().Bottom);
-        index = col.ParentColumn.ChildColumns.ToList().FindIndex((curr) => col == curr);
+        stripePadding = new Thickness(0, col.GetTotalPadding().Top, 0, col.GetTotalPadding().Bottom);
+        index = col.ParentColumn.ChildColumns.ToList().FindIndex(curr => col == curr);
       } else {
         var row = (IRow) stripe;
-        stripeInsets = new Thickness(row.GetActualInsets().Left, 0, row.GetActualInsets().Right, 0);
-        index = row.ParentRow.ChildRows.ToList().FindIndex((curr) => row == curr);
+        stripePadding = new Thickness(row.GetTotalPadding().Left, 0, row.GetTotalPadding().Right, 0);
+        index = row.ParentRow.ChildRows.ToList().FindIndex(curr => row == curr);
       }
       StripeDescriptor descriptor = index % 2 == 0 ? EvenStripeDescriptor : OddStripeDescriptor;
       cc.Add(new Border
       {
         Background = descriptor.BackgroundBrush,
         BorderBrush = descriptor.InsetBrush,
-        BorderThickness = stripeInsets,
+        BorderThickness = stripePadding,
         Width = layout.Width,
         Height = layout.Height
       });
@@ -78,7 +78,7 @@ namespace Demo.yFiles.Graph.TableNodeStyle.Style
         Width = layout.Width,
         Height = layout.Height
       });
-      cc.SetCanvasArrangeRect(layout.ToRectD());
+      cc.SetCanvasArrangeRect(layout.ToRect());
       return cc;
     }
 
@@ -86,24 +86,24 @@ namespace Demo.yFiles.Graph.TableNodeStyle.Style
     protected override VisualGroup UpdateVisual(IRenderContext context, VisualGroup oldVisual, IStripe stripe) {
       var layout = stripe.Layout.ToRectD();
       if (oldVisual.Children.Count == 2) {
-        Thickness stripeInsets;
+        Thickness stripePadding;
 
         int index;
         if (stripe is IColumn) {
           var col = (IColumn) stripe;
-          stripeInsets = new Thickness(0, col.GetActualInsets().Top, 0, col.GetActualInsets().Bottom);
-          index = col.ParentColumn.ChildColumns.ToList().FindIndex((curr) => col == curr);
+          stripePadding = new Thickness(0, col.GetTotalPadding().Top, 0, col.GetTotalPadding().Bottom);
+          index = col.ParentColumn.ChildColumns.ToList().FindIndex(curr => col == curr);
         } else {
           var row = (IRow) stripe;
-          stripeInsets = new Thickness(row.GetActualInsets().Left, 0, row.GetActualInsets().Right, 0);
-          index = row.ParentRow.ChildRows.ToList().FindIndex((curr) => row == curr);
+          stripePadding = new Thickness(row.GetTotalPadding().Left, 0, row.GetTotalPadding().Right, 0);
+          index = row.ParentRow.ChildRows.ToList().FindIndex(curr => row == curr);
         }
         StripeDescriptor descriptor = index % 2 == 0 ? EvenStripeDescriptor : OddStripeDescriptor;
 
         var border = (Border) oldVisual.Children[0];
         border.Background = descriptor.BackgroundBrush;
         border.BorderBrush = descriptor.InsetBrush;
-        border.BorderThickness = stripeInsets;
+        border.BorderThickness = stripePadding;
         border.Width = layout.Width;
         border.Height = layout.Height;
 
@@ -113,11 +113,10 @@ namespace Demo.yFiles.Graph.TableNodeStyle.Style
         border2.BorderThickness = descriptor.BorderThickness;
         border2.Width = layout.Width;
         border2.Height = layout.Height;
-        oldVisual.SetCanvasArrangeRect(layout.ToRectD());
+        oldVisual.SetCanvasArrangeRect(layout.ToRect());
         return oldVisual;
-      } else {
-        return CreateVisual(context, stripe);
       }
+      return CreateVisual(context, stripe);
     }
   }
 }

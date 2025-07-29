@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -43,46 +43,50 @@ using yWorks.Geometry;
 using yWorks.Graph;
 using yWorks.Graph.Styles;
 using yWorks.Layout;
-using yWorks.Layout.Hierarchic;
+using yWorks.Layout.Hierarchical;
 using yWorks.Layout.Organic;
 using yWorks.Layout.Orthogonal;
 
 namespace Demo.yFiles.Algorithms.ShortestPath
 {
   /// <summary>
-  /// Demonstrates usage of a yFiles algorithm on an IGraph.
+  ///   Demonstrates usage of a yFiles algorithm on an IGraph.
   /// </summary>
   /// <remarks>
-  /// This demo dynamically calculates the set of edges that lie on shortest paths
-  /// between two sets of nodes (sources and targets).
-  /// Geometric edge lengths are used for the weight of the edges, unless there are numeric 
-  /// labels attached to them in which case the value of the label text is used. 
-  /// Note that negative edge weights will be interpreted as 0.
+  ///   This demo dynamically calculates the set of edges that lie on shortest paths
+  ///   between two sets of nodes (sources and targets).
+  ///   Geometric edge lengths are used for the weight of the edges, unless there are numeric
+  ///   labels attached to them in which case the value of the label text is used.
+  ///   Note that negative edge weights will be interpreted as 0.
   /// </remarks>
   public partial class ShortestPathWindow
   {
     #region Fields
 
     // holds all available layout algorithms by name for the combo box
-    private readonly IDictionary<String, ILayoutAlgorithm> layouts = new Dictionary<string, ILayoutAlgorithm>();
+    private readonly IDictionary<string, ILayoutAlgorithm> layouts = new Dictionary<string, ILayoutAlgorithm>();
+
     // holds the currently chosen layout algorithm
     private ILayoutAlgorithm currentLayout;
 
     // the styles to use for source nodes, target nodes, and ordinary nodes
     private INodeStyle defaultNodeStyle, targetNodeStyle, sourceNodeStyle, sourceAndTargetNodeStyle;
+
     // the style to use for ordinary edges and edges that lie on a shortest path
     private PolylineEdgeStyle defaultEdgeStyle, pathEdgeStyle;
+
     // the current source nodes
     private List<INode> sourceNodes;
+
     // the current target nodes
     private List<INode> targetNodes;
-    
+
     // whether to use directed path calculation
     private bool directed;
-    
+
     // for creating sample graphs
     private readonly RandomGraphGenerator randomGraphGenerator;
-    
+
     // the set of the edges that are currently part of the path
     private IEnumerable<IEdge> pathEdges = new HashSet<IEdge>();
 
@@ -91,7 +95,7 @@ namespace Demo.yFiles.Algorithms.ShortestPath
     #region Constructor
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="ShortestPathWindow"/> class.
+    ///   Initializes a new instance of the <see cref="ShortestPathWindow"/> class.
     /// </summary>
     public ShortestPathWindow() {
       InitializeComponent();
@@ -104,14 +108,13 @@ namespace Demo.yFiles.Algorithms.ShortestPath
       InitializeGraph();
 
       // initialize random graph generator
-      randomGraphGenerator = new RandomGraphGenerator
-                               {
-                                 AllowCycles = true,
-                                 AllowMultipleEdges = true,
-                                 AllowSelfLoops = false,
-                                 EdgeCount = 40,
-                                 NodeCount = 30
-                               };
+      randomGraphGenerator = new RandomGraphGenerator {
+          AllowCycles = true,
+          AllowMultipleEdges = true,
+          AllowSelfLoops = false,
+          EdgeCount = 40,
+          NodeCount = 30
+      };
     }
 
     #endregion
@@ -121,21 +124,23 @@ namespace Demo.yFiles.Algorithms.ShortestPath
     private void InitializeInputModes() {
       // build an input mode and register for the various events
       // that could change the shortest path calculation
-      GraphEditorInputMode editMode = new GraphEditorInputMode();
+      var editMode = new GraphEditorInputMode();
       // deletion
       editMode.DeletedSelection += async (o, eventArgs) => await CalculateShortestPath();
       // edge creation
       editMode.CreateEdgeInputMode.EdgeCreated += async (sender, args) => await CalculateShortestPath();
       // movement of items
-      editMode.MoveInputMode.DragFinished += async (sender, args) => await CalculateShortestPath();
+      editMode.MoveSelectedItemsInputMode.DragFinished += async (sender, args) => await CalculateShortestPath();
+      // only move selected items
+      editMode.MoveUnselectedItemsInputMode.Enabled = false;
       // resizing of items
       editMode.HandleInputMode.DragFinished += async (sender, args) => await CalculateShortestPath();
       // adding or changing labels
-      editMode.LabelAdded += async (sender, args) => await CalculateShortestPath();
-      editMode.LabelTextChanged += async (sender, args) => await CalculateShortestPath();
+      editMode.EditLabelInputMode.LabelAdded += async (sender, args) => await CalculateShortestPath();
+      editMode.EditLabelInputMode.LabelEdited += async (sender, args) => await CalculateShortestPath();
 
       // allow only numeric label texts
-      editMode.ValidateLabelText += EditModeOnValidateLabelText;
+      editMode.EditLabelInputMode.ValidateLabelText += EditModeOnValidateLabelText;
 
       // also prepare a context menu
       editMode.PopulateItemContextMenu += PopulateNodeContextMenu;
@@ -147,21 +152,23 @@ namespace Demo.yFiles.Algorithms.ShortestPath
       // when the WaitInputMode kicks in, disable buttons which might cause
       // inconsistencies when performed while a layout calculation is running
       editMode.WaitInputMode.WaitingStarted += (sender, args) => {
-        this.newGraphButton.IsEnabled = false;
-        this.layoutComboBox.IsEnabled = false;
-        this.applyLayoutButton.IsEnabled = false;
+        newGraphButton.IsEnabled = false;
+        layoutComboBox.IsEnabled = false;
+        applyLayoutButton.IsEnabled = false;
       };
       editMode.WaitInputMode.WaitingEnded += (sender, args) => {
-        this.newGraphButton.IsEnabled = true;
-        this.layoutComboBox.IsEnabled = true;
-        this.applyLayoutButton.IsEnabled = true;
+        newGraphButton.IsEnabled = true;
+        layoutComboBox.IsEnabled = true;
+        applyLayoutButton.IsEnabled = true;
       };
 
       graphControl.InputMode = editMode;
     }
 
     // show the weight of the edge as a tooltip
-    private void EditModeOnQueryItemToolTip(object sender, QueryItemToolTipEventArgs<IModelItem> queryItemToolTipEventArgs) {
+    private void EditModeOnQueryItemToolTip(
+        object sender,
+        QueryItemToolTipEventArgs<IModelItem> queryItemToolTipEventArgs) {
       var edge = queryItemToolTipEventArgs.Item as IEdge;
       if (edge != null) {
         queryItemToolTipEventArgs.ToolTip = "Weight = " + GetEdgeCost(edge).ToString("F");
@@ -175,34 +182,35 @@ namespace Demo.yFiles.Algorithms.ShortestPath
         return;
       }
       double result;
-      if (!(Double.TryParse(labelTextValidatingEventArgs.NewText, NumberStyles.Float, Thread.CurrentThread.CurrentUICulture, out result) && result >= 0)) {
+      if (!(double.TryParse(labelTextValidatingEventArgs.NewText, NumberStyles.Float,
+              Thread.CurrentThread.CurrentUICulture, out result) && result >= 0)) {
         labelTextValidatingEventArgs.Cancel = true;
       }
     }
 
     /// <summary>
-    /// Populates the context menu for nodes.
+    ///   Populates the context menu for nodes.
     /// </summary>
     private void PopulateNodeContextMenu(object sender, PopulateItemContextMenuEventArgs<IModelItem> e) {
       var node = e.Item as INode;
-      var selection = graphControl.Selection.SelectedNodes;
+      var selection = graphControl.Selection.Nodes;
       if (node != null) {
-        if (!selection.IsSelected(node)) {
+        if (!selection.Contains(node)) {
           selection.Clear();
-          selection.SetSelected(node, true);
+          selection.Add(node);
           graphControl.CurrentItem = node;
         }
       }
       if (selection.Count > 0) {
-        var markAsSourceItem = new MenuItem {Header = "Mark as Source"};
+        var markAsSourceItem = new MenuItem { Header = "Mark as Source" };
         markAsSourceItem.Click += async (o, args) => await MarkAsSource(selection.ToList());
         e.Menu.Items.Add(markAsSourceItem);
-        var markAsTargetItem = new MenuItem {Header = "Mark as Target"};
+        var markAsTargetItem = new MenuItem { Header = "Mark as Target" };
         markAsTargetItem.Click += async (o, args) => await MarkAsTarget(selection.ToList());
         e.Menu.Items.Add(markAsTargetItem);
         // check if one or more of the selected nodes are already marked as source or target
-        bool marked = false;
-        foreach (INode n in selection) {
+        var marked = false;
+        foreach (var n in selection) {
           if (sourceNodes.Contains(n) || targetNodes.Contains(n)) {
             marked = true;
             break;
@@ -212,13 +220,13 @@ namespace Demo.yFiles.Algorithms.ShortestPath
           // add the 'Remove Mark' item
           var removeMarkItem = new MenuItem { Header = "Remove Mark" };
           removeMarkItem.Click += async delegate {
-              List<INode> sn = sourceNodes.ToList();
-              sn.RemoveAll((node1 => selection.IsSelected(node1)));
-              await MarkAsSource(sn);
-              List<INode> tn = targetNodes.ToList();
-              tn.RemoveAll((node1 => selection.IsSelected(node1)));
-              await MarkAsTarget(tn);
-            };
+            var sn = sourceNodes.ToList();
+            sn.RemoveAll(node1 => selection.Contains(node1));
+            await MarkAsSource(sn);
+            var tn = targetNodes.ToList();
+            tn.RemoveAll(node1 => selection.Contains(node1));
+            await MarkAsTarget(tn);
+          };
           e.Menu.Items.Add(removeMarkItem);
         }
       }
@@ -226,7 +234,7 @@ namespace Demo.yFiles.Algorithms.ShortestPath
     }
 
     /// <summary>
-    /// Initializes the styles to use for the graph.
+    ///   Initializes the styles to use for the graph.
     /// </summary>
     private void InitializeStyles() {
       defaultNodeStyle = DemoStyles.CreateDemoNodeStyle(Themes.PaletteOrange);
@@ -238,7 +246,7 @@ namespace Demo.yFiles.Algorithms.ShortestPath
     }
 
     /// <summary>
-    /// Initializes the graph defaults.
+    ///   Initializes the graph defaults.
     /// </summary>
     private void InitializeGraph() {
       graphControl.Graph.NodeDefaults.Style = defaultNodeStyle;
@@ -261,11 +269,11 @@ namespace Demo.yFiles.Algorithms.ShortestPath
     #region Menu Handlers
 
     private async void MarkSourceMenuItem_Click(object sender, EventArgs e) {
-      await MarkAsSource(graphControl.Selection.SelectedNodes.ToList());
+      await MarkAsSource(graphControl.Selection.Nodes.ToList());
     }
 
     private async void MarkTargetMenuItem_Click(object sender, EventArgs e) {
-      await MarkAsTarget(graphControl.Selection.SelectedNodes.ToList());
+      await MarkAsTarget(graphControl.Selection.Nodes.ToList());
     }
 
     private async void directedComboBox_SelectedIndexChanged(object sender, EventArgs e) {
@@ -277,15 +285,14 @@ namespace Demo.yFiles.Algorithms.ShortestPath
 
     private static void UpdateArrow(PolylineEdgeStyle style, bool directed) {
       if (directed) {
-        var demoArrow = DemoStyles.CreateDemoEdgeStyle(showTargetArrow: true).TargetArrow as Arrow;
-        var prototype = demoArrow ?? new Arrow() { Type = ArrowType.None };
-        style.TargetArrow = new Arrow() {
-          Brush = style.Pen.Brush,
-          Scale = prototype.Scale,
-          Type = prototype.Type
-        };
+        if (DemoStyles.CreateDemoEdgeStyle(showTargetArrow : true).TargetArrow is Arrow prototype) {
+          style.TargetArrow = new Arrow(prototype.Type, prototype.Brush, prototype.Pen, prototype.LengthScale,
+              prototype.WidthScale, prototype.CropLength, prototype.CropAtPort);
+        } else {
+          style.TargetArrow = Arrow.None;
+        }
       } else {
-        style.TargetArrow = Arrows.None;        
+        style.TargetArrow = Arrow.None;
       }
     }
 
@@ -298,11 +305,11 @@ namespace Demo.yFiles.Algorithms.ShortestPath
     #region Source and Target Node
 
     /// <summary>
-    /// Marks the list of nodes as source nodes.
+    ///   Marks the list of nodes as source nodes.
     /// </summary>
     private async Task MarkAsSource(List<INode> nodes) {
       // Reset style of old source nodes
-      foreach (INode sourceNode in sourceNodes) {
+      foreach (var sourceNode in sourceNodes) {
         if (graphControl.Graph.Contains(sourceNode)) {
           graphControl.Graph.SetStyle(sourceNode, defaultNodeStyle);
         }
@@ -314,11 +321,11 @@ namespace Demo.yFiles.Algorithms.ShortestPath
     }
 
     /// <summary>
-    /// Marks the list of nodes as target nodes.
+    ///   Marks the list of nodes as target nodes.
     /// </summary>
     private async Task MarkAsTarget(List<INode> nodes) {
       // Reset style of old target nodes
-      foreach (INode targetNode in targetNodes) {
+      foreach (var targetNode in targetNodes) {
         if (graphControl.Graph.Contains(targetNode)) {
           graphControl.Graph.SetStyle(targetNode, defaultNodeStyle);
         }
@@ -330,16 +337,16 @@ namespace Demo.yFiles.Algorithms.ShortestPath
     }
 
     /// <summary>
-    /// Sets the node styles for source and target nodes
+    ///   Sets the node styles for source and target nodes
     /// </summary>
     private void SetStyles() {
       // set target node styles
-      foreach (INode targetNode in targetNodes) {
+      foreach (var targetNode in targetNodes) {
         graphControl.Graph.SetStyle(targetNode, targetNodeStyle);
       }
-      
+
       // set source node styles
-      foreach (INode sourceNode in sourceNodes) {
+      foreach (var sourceNode in sourceNodes) {
         // check for nodes which are both - source and target
         if (targetNodes.Contains(sourceNode)) {
           graphControl.Graph.SetStyle(sourceNode, sourceAndTargetNodeStyle);
@@ -354,35 +361,35 @@ namespace Demo.yFiles.Algorithms.ShortestPath
     #region Layout
 
     /// <summary>
-    /// Populates the layout combo box.
+    ///   Populates the layout combo box.
     /// </summary>
     private void PopulateLayoutComboBox() {
-      layouts["Hierarchic Layout"] = new HierarchicLayout();
-      layouts["Organic Layout"] = new OrganicLayout { MinimumNodeDistance = 40 };
+      layouts["Hierarchical Layout"] = new HierarchicalLayout();
+      layouts["Organic Layout"] = new OrganicLayout { DefaultMinimumNodeDistance = 40 };
       layouts["Orthogonal Layout"] = new OrthogonalLayout();
 
       layoutComboBox.ItemsSource = layouts.Keys.ToArray();
     }
 
     /// <summary>
-    /// Applies the layout and recalculates the shortest paths.
+    ///   Applies the layout and recalculates the shortest paths.
     /// </summary>
     private async Task ApplyLayout() {
       if (currentLayout != null) {
-        await graphControl.MorphLayout(currentLayout, TimeSpan.FromSeconds(1));
+        await graphControl.ApplyLayoutAnimated(currentLayout, TimeSpan.FromSeconds(1));
         await CalculateShortestPath();
       }
     }
 
     /// <summary>
-    /// Handles the Click event of the applyLayoutButton control.
+    ///   Handles the Click event of the applyLayoutButton control.
     /// </summary>
     private async void applyLayoutButton_Click(object sender, EventArgs e) {
       await ApplyLayout();
     }
 
     /// <summary>
-    /// Handles the SelectedIndexChanged event of the layoutComboBox control.
+    ///   Handles the SelectedIndexChanged event of the layoutComboBox control.
     /// </summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
@@ -396,7 +403,7 @@ namespace Demo.yFiles.Algorithms.ShortestPath
     #region Graph Generation
 
     /// <summary>
-    /// Generates a new graph, applies the layout and recalculates the shortest paths.
+    ///   Generates a new graph, applies the layout and recalculates the shortest paths.
     /// </summary>
     private async Task GenerateGraph() {
       graphControl.Graph.Clear();
@@ -411,19 +418,18 @@ namespace Demo.yFiles.Algorithms.ShortestPath
     #region Shortest Path Calculation
 
     /// <summary>
-    /// Calculates the shortest paths from a set of source nodes 
-    /// to a set of target nodes and marks it.
+    ///   Calculates the shortest paths from a set of source nodes
+    ///   to a set of target nodes and marks it.
     /// </summary>
     /// <remarks>This is the implementation for a list of source and target nodes.</remarks>
     private async Task CalculateShortestPath() {
-
       // reset old path edges
-      foreach (IEdge edge in pathEdges) {
+      foreach (var edge in pathEdges) {
         if (graphControl.Graph.Contains(edge)) {
           graphControl.Graph.SetStyle(edge, defaultEdgeStyle);
         }
       }
-      // remove deleted nodes 
+      // remove deleted nodes
       foreach (var sourceNode in sourceNodes.ToArray()) {
         if (!graphControl.Graph.Contains(sourceNode)) {
           sourceNodes.Remove(sourceNode);
@@ -437,16 +443,16 @@ namespace Demo.yFiles.Algorithms.ShortestPath
 
       ((GraphEditorInputMode) graphControl.InputMode).Waiting = true;
       var allPaths = await new AllPairsShortestPaths {
-          Costs = {Delegate = GetEdgeCost},
+          Costs = { MapperFunction = GetEdgeCost },
           Directed = directed,
-          Sources = {Source = sourceNodes},
-          Sinks = {Source = targetNodes}
+          Sources = { Source = sourceNodes },
+          Sinks = { Source = targetNodes }
       }.RunAsync(graphControl.Graph);
 
-      pathEdges = allPaths.Paths.SelectMany(p=>p.Edges);
-      
+      pathEdges = allPaths.Paths.SelectMany(p => p.Edges);
+
       // mark path with path style
-      foreach (IEdge edge in pathEdges) {
+      foreach (var edge in pathEdges) {
         if (graphControl.Graph.Contains(edge)) {
           graphControl.Graph.SetStyle(edge, pathEdgeStyle);
         }
@@ -456,7 +462,7 @@ namespace Demo.yFiles.Algorithms.ShortestPath
     }
 
     /// <summary>
-    /// Callback that gets the edge cost for a given edge.
+    ///   Callback that gets the edge cost for a given edge.
     /// </summary>
     /// <param name="edge">The edge.</param>
     /// <returns>The cost of the edge</returns>
@@ -465,23 +471,24 @@ namespace Demo.yFiles.Algorithms.ShortestPath
       if (edge.Labels.Count > 0) {
         // ..try to return it's value
         double length;
-        if (Double.TryParse(edge.Labels[0].Text, NumberStyles.Float, Thread.CurrentThread.CurrentUICulture, out length)) {
+        if (double.TryParse(edge.Labels[0].Text, NumberStyles.Float, Thread.CurrentThread.CurrentUICulture,
+            out length)) {
           return Math.Max(length, 0);
         }
       }
 
       // calculate geometric edge length
-      PointD[] edgePoints = new PointD[edge.Bends.Count + 2];
+      var edgePoints = new PointD[edge.Bends.Count + 2];
 
       edgePoints[0] = edge.SourcePort.GetLocation();
       edgePoints[edge.Bends.Count + 1] = edge.TargetPort.GetLocation();
 
-      for (int i = 0; i < edge.Bends.Count; i++) {
+      for (var i = 0; i < edge.Bends.Count; i++) {
         edgePoints[i + 1] = edge.Bends[i].Location.ToPointD();
       }
 
       double totalEdgeLength = 0;
-      for (int i = 0; i < edgePoints.Length - 1; i++) {
+      for (var i = 0; i < edgePoints.Length - 1; i++) {
         totalEdgeLength += edgePoints[i].DistanceTo(edgePoints[i + 1]);
       }
       return totalEdgeLength;
@@ -490,18 +497,18 @@ namespace Demo.yFiles.Algorithms.ShortestPath
     #endregion
 
     /// <summary>
-    /// Handles the Click event of the setLabelValueButton control.
+    ///   Handles the Click event of the setLabelValueButton control.
     /// </summary>
     /// <remarks>Shows a dialog that can be used to specify a numeric label for all edges.</remarks>
     private async void setLabelValueButton_Click(object sender, EventArgs e) {
-      LabelValueDialog labelValueForm = new LabelValueDialog();
-      if (labelValueForm.ShowDialog() == true){
-        double i = labelValueForm.Value;
-        foreach (IEdge edge in graphControl.Graph.Edges) {
+      var labelValueForm = new LabelValueDialog();
+      if (labelValueForm.ShowDialog() == true) {
+        var i = labelValueForm.Value;
+        foreach (var edge in graphControl.Graph.Edges) {
           if (edge.Labels.Count > 0) {
             graphControl.Graph.SetLabelText(edge.Labels[0], i.ToString(Thread.CurrentThread.CurrentUICulture));
           } else {
-            graphControl.Graph.AddLabel(edge, String.Empty + i);
+            graphControl.Graph.AddLabel(edge, string.Empty + i);
           }
         }
         await CalculateShortestPath();
@@ -509,16 +516,15 @@ namespace Demo.yFiles.Algorithms.ShortestPath
     }
 
     /// <summary>
-    /// Handles the Click event of the deleteLabelsButton control.
+    ///   Handles the Click event of the deleteLabelsButton control.
     /// </summary>
     private async void deleteLabelsButton_Click(object sender, EventArgs e) {
-      foreach (IEdge edge in graphControl.Graph.Edges.ToArray()) {
-        foreach (ILabel label in edge.Labels.ToArray()) {
+      foreach (var edge in graphControl.Graph.Edges.ToArray()) {
+        foreach (var label in edge.Labels.ToArray()) {
           graphControl.Graph.Remove(label);
         }
       }
       await CalculateShortestPath();
     }
   }
-
 }

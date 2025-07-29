@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -35,7 +35,7 @@ using System.Windows.Data;
 namespace Demo.yFiles.Graph.OrgChart
 {
   /// <summary>
-  /// symbolic zoom levels
+  /// Symbolic zoom levels
   /// </summary>
   public enum ZoomLevel
   {
@@ -47,7 +47,7 @@ namespace Demo.yFiles.Graph.OrgChart
   /// </summary>
   /// <remarks>
   /// Two thresholds can be set (<see cref="DetailThreshold"/> and <see cref="OverviewThreshold"/>),
-  /// which define the intervals of the incoming zoom value which are mapped to one of the three
+  /// which define the intervals of the incoming zoom value that are mapped to one of the three
   /// symbolic zoom levels.
   /// </remarks>
   [ValueConversion(typeof(double), typeof(ZoomLevel))]

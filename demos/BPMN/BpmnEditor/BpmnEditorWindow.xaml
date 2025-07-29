@@ -1,6 +1,6 @@
 <!-- ************************************************************************ -->
-<!-- This demo file is part of yFiles WPF 3.6.                           -->
-<!-- Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
+<!-- This demo file is part of yFiles WPF 4.0.                           -->
+<!-- Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
 <!-- 72070 Tuebingen, Germany. All rights reserved.                           -->
 <!--                                                                          -->
 <!-- yFiles demo files exhibit yFiles WPF functionalities. Any redistribution  -->
@@ -27,7 +27,7 @@
 <Window x:Class="Demo.yFiles.Graph.Bpmn.Editor.BpmnEditorWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/3.0/xaml"
+        xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/4.0/xaml"
         xmlns:demo="clr-namespace:Demo.yFiles.Graph.Bpmn.Editor"
         Title="BusinessProcessDiagram Demo" Height="650" Width="800"
         Loaded="OnLoaded" Style="{StaticResource DemoWindow}">
@@ -60,10 +60,13 @@
                                 </Paragraph>
                             </ListItem>
                             <ListItem>
-                                <Paragraph>Connect the items by dragging from an unselected node to another one.</Paragraph>
+                                <Paragraph>Connect the items by dragging from a green port candidate of a node to another one.</Paragraph>
                             </ListItem>
                             <ListItem>
-                                <Paragraph>Auto-arrange the changed diagram with the BPMN layout algorithm.</Paragraph>
+                                <Paragraph>
+                                    Auto-arrange the changed diagram with the BPMN layout algorithm by clicking the
+                                    layout button in the toolbar.
+                                </Paragraph>
                             </ListItem>
                             <ListItem>
                                 <Paragraph>
@@ -86,7 +89,10 @@
                                 <Paragraph>Add an additional label to a selected node or edge by pressing SHIFT + F2.</Paragraph>
                             </ListItem>
                             <ListItem>
-                                <Paragraph>Show the contents of expanded or collapsed group nodes in a new window.</Paragraph>
+                                <Paragraph>
+                                    Show the contents of expanded or collapsed group nodes in a new window by clicking
+                                    the button in the toolbar.
+                                </Paragraph>
                             </ListItem>
                             <ListItem>
                                 <Paragraph>Open your own BPMN-DI files.</Paragraph>
@@ -111,7 +117,7 @@
                 <MenuItem Header="View">
                     <MenuItem Command="IncreaseZoom" CommandTarget="{Binding ElementName=graphControl}"/>
                     <MenuItem Command="DecreaseZoom" CommandTarget="{Binding ElementName=graphControl}"/>
-                    <MenuItem Command="{x:Static ywpf:GraphControl.FitGraphBoundsCommand}" CommandTarget="{Binding ElementName=graphControl}"/>
+                    <MenuItem Command="{x:Static ywpf:GraphCommands.FitGraphBounds}" CommandTarget="{Binding ElementName=graphControl}"/>
                 </MenuItem>
             </Menu>
             <ToolBarTray Height="Auto" Name="toolBarTray" Width="Auto" DockPanel.Dock="Top">
@@ -125,7 +131,7 @@
                     <Separator/>
                     <Button Command="IncreaseZoom" CommandTarget="{Binding ElementName=graphControl}"  />
                     <Button Command="DecreaseZoom" CommandTarget="{Binding ElementName=graphControl}"  />
-                    <Button Command="{x:Static ywpf:GraphControl.FitGraphBoundsCommand}" CommandTarget="{Binding ElementName=graphControl}"  />
+                    <Button Command="{x:Static ywpf:GraphCommands.FitGraphBounds}" CommandTarget="{Binding ElementName=graphControl}"  />
                     <Separator/>
                     <Button Click="OnLayoutClick" Style="{StaticResource BaseToolBarButtonStyle}" >
                         <StackPanel Orientation="Horizontal">

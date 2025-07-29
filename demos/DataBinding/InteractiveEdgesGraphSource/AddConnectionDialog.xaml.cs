@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -75,8 +75,8 @@ namespace Demo.yFiles.DataBinding.InteractiveEdgesGraphSource
     private void OnOkClicked(object sender, RoutedEventArgs e) {
       ConnectionName = (string) memberCombobox.SelectedItem;
       DataElement = targetCombobox.SelectedItem as EntityData;
-      this.DialogResult = !string.IsNullOrWhiteSpace(ConnectionName) && DataElement != null;
-      this.Close();
+      DialogResult = !string.IsNullOrWhiteSpace(ConnectionName) && DataElement != null;
+      Close();
     }
 
     public string ConnectionName { get; private set; }
@@ -84,7 +84,7 @@ namespace Demo.yFiles.DataBinding.InteractiveEdgesGraphSource
     public EntityData DataElement { get; private set; }
 
     /// <summary>
-    /// Selects an item in the source/target combobox
+    /// Selects an item in the source/target combobox.
     /// </summary>
     /// <param name="draggedData"></param>
     public void Preselect(EntityData draggedData) {

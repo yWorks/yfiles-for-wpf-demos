@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -40,12 +40,12 @@ using yWorks.Graph.DataBinding;
 using yWorks.Graph.LabelModels;
 using yWorks.Graph.Styles;
 using yWorks.Layout;
-using yWorks.Layout.Hierarchic;
+using yWorks.Layout.Hierarchical;
 
 namespace Demo.yFiles.DataBinding.AdjacencyGraphBuilder
 {
   /// <summary>
-  /// Interaction logic for AdjacencyGraphBuilderWindow.xaml
+  ///   Shows how to use an <see cref="yWorks.Graph.DataBinding.AdjacencyGraphBuilder"/> for data binding.
   /// </summary>
   public partial class AdjacencyGraphBuilderWindow
   {
@@ -54,7 +54,7 @@ namespace Demo.yFiles.DataBinding.AdjacencyGraphBuilder
       InitializeGraphDefaults();
     }
 
-    private void AdjacencyGraphBuilderWindow_OnLoaded(object sender, RoutedEventArgs e) {
+    private void OnLoaded(object sender, RoutedEventArgs e) {
       graphSourceComboBox.SelectedIndex = 0;
     }
 
@@ -62,11 +62,14 @@ namespace Demo.yFiles.DataBinding.AdjacencyGraphBuilder
       BuildGraph(graphSourceComboBox.SelectedIndex);
 
       // Perform an animated layout of the organization chart graph when the window is loaded.
-      await graphControl.MorphLayout(new HierarchicLayout {
-          EdgeLayoutDescriptor = new EdgeLayoutDescriptor {MinimumLength = 50},
+      await graphControl.ApplyLayoutAnimated(new HierarchicalLayout {
+          DefaultEdgeDescriptor =
+              new HierarchicalLayoutEdgeDescriptor {
+                  MinimumLength = 50, RoutingStyleDescriptor = new RoutingStyleDescriptor(RoutingStyle.Polyline)
+              },
           LayoutOrientation =
               graphSourceComboBox.SelectedIndex <= 3 ? LayoutOrientation.TopToBottom : LayoutOrientation.BottomToTop,
-          IntegratedEdgeLabeling = true //graphSourceComboBox.SelectedIndex == 1
+          EdgeLabelPlacement = EdgeLabelPlacement.Integrated //graphSourceComboBox.SelectedIndex == 1
       }, TimeSpan.FromSeconds(2));
     }
 
@@ -74,7 +77,7 @@ namespace Demo.yFiles.DataBinding.AdjacencyGraphBuilder
       var configurationName = ((ComboBoxItem) graphSourceComboBox.Items[index]).Content as string;
       var dataProvider = ((ComboBoxItem) graphSourceComboBox.Items[index]).Tag as XmlDataProvider;
 
-      if ("Organization with Predecessor"== configurationName) {
+      if ("Organization with Predecessor" == configurationName) {
         BuildOrganization(dataProvider, false, false);
       } else if ("Organization with Successors" == configurationName) {
         BuildOrganization(dataProvider, true, false);
@@ -86,7 +89,7 @@ namespace Demo.yFiles.DataBinding.AdjacencyGraphBuilder
     }
 
     /// <summary>
-    /// Extract Data provider from the given XML and create and configure a graph builder and build the graph.
+    ///   Extract Data provider from the given XML and create and configure a graph builder and build the graph.
     /// </summary>
     /// <param name="xmlDataProvider">The XML.</param>
     /// <param name="useSuccessor"></param>
@@ -95,7 +98,8 @@ namespace Demo.yFiles.DataBinding.AdjacencyGraphBuilder
       // extract employees, positions, and business units as enumerables
       var employees = xmlDataProvider.Document.DocumentElement.GetElementsByTagName("employee").Cast<XmlElement>();
       var positions = employees.Select(employee => employee.GetAttribute("position")).Distinct();
-      var businessunits = xmlDataProvider.Document.DocumentElement.GetElementsByTagName("businessunit").Cast<XmlElement>();
+      var businessunits = xmlDataProvider.Document.DocumentElement.GetElementsByTagName("businessunit")
+          .Cast<XmlElement>();
       graphControl.Graph.Clear();
       var adjacentNodesGraphBuilder = new yWorks.Graph.DataBinding.AdjacencyGraphBuilder(graphControl.Graph);
 
@@ -113,13 +117,17 @@ namespace Demo.yFiles.DataBinding.AdjacencyGraphBuilder
 
       // set label provider
       var nodeNameLabels = nodesSource.NodeCreator.CreateLabelBinding(element => element.GetAttribute("name"));
-      nodeNameLabels.Defaults.LayoutParameter = new InteriorStretchLabelModel() {Insets = new InsetsD(5, 5, 5, 5)}.CreateParameter(InteriorStretchLabelModel.Position.Center);
+      nodeNameLabels.Defaults.LayoutParameter =
+          new StretchNodeLabelModel { Padding = new InsetsD(5, 5, 5, 5) }.CreateParameter(StretchNodeLabelModel.Position
+              .Center);
       var nodeNameLabelStyle = DemoStyles.CreateDemoNodeLabelStyle();
-      nodeNameLabelStyle.Insets = InsetsD.Empty;
+      nodeNameLabelStyle.Padding = InsetsD.Empty;
       nodeNameLabelStyle.VerticalTextAlignment = VerticalAlignment.Top;
       nodeNameLabels.Defaults.Style = nodeNameLabelStyle;
       var nodePositionLabels = nodesSource.NodeCreator.CreateLabelBinding(element => element.GetAttribute("position"));
-      nodePositionLabels.Defaults.LayoutParameter = new InteriorStretchLabelModel() {Insets = new InsetsD(5, 20, 5, 5)}.CreateParameter(InteriorStretchLabelModel.Position.Center);
+      nodePositionLabels.Defaults.LayoutParameter =
+          new StretchNodeLabelModel { Padding = new InsetsD(5, 20, 5, 5) }.CreateParameter(StretchNodeLabelModel.Position
+              .Center);
 
       // second nodes collections: positions
 
@@ -129,13 +137,16 @@ namespace Demo.yFiles.DataBinding.AdjacencyGraphBuilder
       positionsSource.NodeCreator.Defaults.Style = DemoStyles.CreateDemoNodeStyle(Themes.PaletteGreen);
       var positionLabelCreator = positionsSource.NodeCreator.CreateLabelBinding(position => position);
       positionLabelCreator.Defaults.Style = DemoStyles.CreateDemoNodeLabelStyle(Themes.PaletteGreen);
-      positionLabelCreator.Defaults.LayoutParameter = new InteriorStretchLabelModel() {Insets = new InsetsD(5)}.CreateParameter(InteriorStretchLabelModel.Position.Center);
+      positionLabelCreator.Defaults.LayoutParameter =
+          new StretchNodeLabelModel { Padding = new InsetsD(5) }.CreateParameter(StretchNodeLabelModel.Position.Center);
 
       // group node collections: business units
 
-      var groupNodesSource = adjacentNodesGraphBuilder.CreateGroupNodesSource(businessunits, (businessunit) => businessunit.GetAttribute("name"));
+      var groupNodesSource =
+          adjacentNodesGraphBuilder.CreateGroupNodesSource(businessunits,
+              businessunit => businessunit.GetAttribute("name"));
       groupNodesSource.ParentIdProvider = businessUnit => {
-        var parentUnit = (businessUnit.ParentNode as XmlElement);
+        var parentUnit = businessUnit.ParentNode as XmlElement;
         if ("businessunit".CompareTo(parentUnit.Name) == 0) {
           return parentUnit.GetAttribute("name");
         }
@@ -143,10 +154,10 @@ namespace Demo.yFiles.DataBinding.AdjacencyGraphBuilder
       };
       groupNodesSource.NodeCreator.Defaults.Size = new SizeD(50, 50);
       var groupLabels = groupNodesSource.NodeCreator.CreateLabelBinding(element => element.GetAttribute("name"));
-      groupLabels.Defaults.LayoutParameter = InteriorLabelModel.NorthWest;
+      groupLabels.Defaults.LayoutParameter = InteriorNodeLabelModel.TopLeft;
 
       // prepare edge creation
-      EdgeCreator<XmlElement> edgeCreator = new EdgeCreator<XmlElement> { Defaults = graphControl.Graph.EdgeDefaults };
+      var edgeCreator = new EdgeCreator<XmlElement> { Defaults = graphControl.Graph.EdgeDefaults };
       var edgeLabels = edgeCreator.CreateLabelBinding(element => element.GetAttribute("name"));
       edgeLabels.Defaults = graphControl.Graph.EdgeDefaults.Labels;
 
@@ -159,16 +170,20 @@ namespace Demo.yFiles.DataBinding.AdjacencyGraphBuilder
         } else {
           nodesSource.AddPredecessorIds(element => {
             var parentElement = element.ParentNode as XmlElement;
-            return parentElement != null && parentElement.Name.CompareTo("employee") == 0 ? new []{parentElement} : null;
-          },edgeCreator);
+            return parentElement != null && parentElement.Name.CompareTo("employee") == 0
+                ? new[] { parentElement }
+                : null;
+          }, edgeCreator);
         }
       } else {
         if (useSuccessor) {
           nodesSource.AddSuccessorsSource(element => element.ChildNodes.Cast<XmlElement>(), nodesSource, edgeCreator);
         } else {
-          nodesSource.AddPredecessorsSource<XmlElement>(element => {
+          nodesSource.AddPredecessorsSource(element => {
             var parentElement = element.ParentNode as XmlElement;
-            return parentElement != null && parentElement.Name.CompareTo("employee") == 0 ? new []{parentElement} : null;
+            return parentElement != null && parentElement.Name.CompareTo("employee") == 0
+                ? new[] { parentElement }
+                : null;
           }, nodesSource, edgeCreator);
         }
       }
@@ -182,14 +197,14 @@ namespace Demo.yFiles.DataBinding.AdjacencyGraphBuilder
 
     private void InitializeGraphDefaults() {
       var graph = graphControl.Graph;
-      
+
       // initialize demo styles
       DemoStyles.InitDemoStyles(graph);
-      // remove insets of demo node label styles 
-      ((DefaultLabelStyle) graph.NodeDefaults.Labels.Style).Insets = InsetsD.Empty;
-      // set insets and bigger text size for demo group node label styles 
-      var groupLabelStyle = (DefaultLabelStyle) graph.GroupNodeDefaults.Labels.Style;
-      groupLabelStyle.Insets = new InsetsD(2);
+      // remove padding of demo node label styles
+      ((LabelStyle) graph.NodeDefaults.Labels.Style).Padding = InsetsD.Empty;
+      // set padding and bigger text size for demo group node label styles
+      var groupLabelStyle = (LabelStyle) graph.GroupNodeDefaults.Labels.Style;
+      groupLabelStyle.Padding = new InsetsD(2);
       groupLabelStyle.TextSize = 24;
       // increase tab height of GroupNodeStyle so the increased group node labels fit into the header
       ((GroupNodeStyle) graph.GroupNodeDefaults.Style).TabHeight = 28;

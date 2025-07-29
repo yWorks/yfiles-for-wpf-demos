@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -33,27 +33,28 @@ using System.Windows.Shapes;
 using yWorks.Controls;
 using yWorks.Controls.Input;
 using yWorks.Geometry;
+using yWorks.Graph;
 
 namespace Demo.yFiles.Graph.Input.CustomSnapping.UI
 {
   /// <summary>
-  /// A visual creator for simple orthogonal snap lines.
+  ///   A visual creator for simple orthogonal snap lines.
   /// </summary>
   public class AdditionalSnapLineVisualCreator : IVisualCreator
   {
     private readonly Brush SnapLineBrush = (Brush) new SolidColorBrush(Color.FromRgb(0xCA, 0x0C, 0x3B)).GetAsFrozen();
-    
+
     public PointD From { get; set; }
 
     public PointD To { get; set; }
 
     /// <summary>
-    /// Creates a new instance with <see cref="From" /> and <see cref="To" /> both pointing to the origin.
+    ///   Creates a new instance with <see cref="From"/> and <see cref="To"/> both pointing to the origin.
     /// </summary>
-    public AdditionalSnapLineVisualCreator() {}
+    public AdditionalSnapLineVisualCreator() { }
 
     /// <summary>
-    /// Creates a new instance with the given start and end point of the snap line.
+    ///   Creates a new instance with the given start and end point of the snap line.
     /// </summary>
     /// <param name="from">The location to start the additional snap line.</param>
     /// <param name="to">The location to end the additional snap line.</param>
@@ -63,31 +64,38 @@ namespace Demo.yFiles.Graph.Input.CustomSnapping.UI
     }
 
     /// <summary>
-    /// Creates the <see cref="OrthogonalSnapLine"/>s that are displayed by this visual creator.
+    ///   Creates the <see cref="OrthogonalSnapLine"/>s that are displayed by this visual creator.
     /// </summary>
     /// <remarks>
-    /// Since items should be able to snap from both sides to this line, two snap lines with the same location and 
-    /// different <see cref="SnapLineSnapTypes"/> are created.
+    ///   Since items should be able to snap from both sides to this line, two snap lines with the same location and
+    ///   different <see cref="SnapLineSnapTypes"/> are created.
     /// </remarks>
-    /// <returns></returns>
     public IEnumerable<OrthogonalSnapLine> CreateSnapLines() {
       var lines = new List<OrthogonalSnapLine>();
+      var fixedLineType = SnapReferenceVisualizationType.FixedLine;
       if (From.X == To.X) { // it's vertical
-        lines.Add(new OrthogonalSnapLine(SnapLineOrientation.Vertical, SnapLineSnapTypes.Left,
-            SnapLine.SnapLineFixedLineKey, (From + To) / 2, From.Y, To.Y, this, 50));
-        lines.Add(new OrthogonalSnapLine(SnapLineOrientation.Vertical, SnapLineSnapTypes.Right,
-            SnapLine.SnapLineFixedLineKey, (From + To) / 2, From.Y, To.Y, this, 50));
+        lines.Add(new OrthogonalSnapLine(SnapLineOrientation.Vertical, SnapLineSnapTypes.Left, fixedLineType,
+            (From + To) / 2, From.Y, To.Y, false, 50, GraphItemTypes.All, this));
+        lines.Add(new OrthogonalSnapLine(SnapLineOrientation.Vertical, SnapLineSnapTypes.Right, fixedLineType,
+            (From + To) / 2, From.Y, To.Y, false, 50, GraphItemTypes.All, this));
       } else if (From.Y == To.Y) { // it's horizontal
-        lines.Add(new OrthogonalSnapLine(SnapLineOrientation.Horizontal, SnapLineSnapTypes.Top,
-            SnapLine.SnapLineFixedLineKey, (From + To) / 2, From.X, To.X, this, 50));
-        lines.Add(new OrthogonalSnapLine(SnapLineOrientation.Horizontal, SnapLineSnapTypes.Bottom,
-            SnapLine.SnapLineFixedLineKey, (From + To) / 2, From.X, To.X, this, 50));
+        lines.Add(new OrthogonalSnapLine(SnapLineOrientation.Horizontal, SnapLineSnapTypes.Top, fixedLineType,
+            (From + To) / 2, From.X, To.X, false, 50, GraphItemTypes.All, this));
+        lines.Add(new OrthogonalSnapLine(SnapLineOrientation.Horizontal, SnapLineSnapTypes.Bottom, fixedLineType,
+            (From + To) / 2, From.X, To.X, false, 50, GraphItemTypes.All, this));
       }
       return lines;
     }
 
     public Visual CreateVisual(IRenderContext context) {
-      return new Line { Stroke = SnapLineBrush, StrokeThickness = 2, X1 = From.X, Y1 = From.Y, X2 = To.X, Y2 = To.Y };
+      return new Line {
+          Stroke = SnapLineBrush,
+          StrokeThickness = 2,
+          X1 = From.X,
+          Y1 = From.Y,
+          X2 = To.X,
+          Y2 = To.Y
+      };
     }
 
     public Visual UpdateVisual(IRenderContext context, Visual oldVisual) {

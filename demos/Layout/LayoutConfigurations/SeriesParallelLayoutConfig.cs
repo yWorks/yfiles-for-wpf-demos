@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -33,14 +33,13 @@ using Demo.yFiles.Toolkit.OptionHandler;
 using yWorks.Controls;
 using yWorks.Layout;
 using yWorks.Layout.Router;
-using yWorks.Layout.Router.Polyline;
 using yWorks.Layout.SeriesParallel;
 using RoutingStyle = yWorks.Layout.SeriesParallel.RoutingStyle;
 
 namespace Demo.yFiles.Layout.Configurations
 {
   /// <summary>
-  /// Configuration options for the layout algorithm of the same name.
+  ///   Configuration options for the layout algorithm of the same name.
   /// </summary>
   [Obfuscation(StripAfterObfuscation = false, Exclude = true, ApplyToMembers = true)]
   [Label("SeriesParallelLayout")]
@@ -48,14 +47,14 @@ namespace Demo.yFiles.Layout.Configurations
   {
     public SeriesParallelLayoutConfig() {
       var layout = new SeriesParallelLayout();
-      var edgeLayoutDescriptor = layout.DefaultEdgeLayoutDescriptor;
+      var edgeLayoutDescriptor = layout.DefaultEdgeDescriptor;
 
       OrientationItem = LayoutOrientation.TopToBottom;
-      VerticalAlignmentItem = 0.5;
+      ParallelSubgraphAlignmentItem = 0.5;
       UseDrawingAsSketchItem = layout.FromSketchMode;
-      MinimumNodeToNodeDistanceItem = 30;
+      MinimumNodeDistanceItem = 30;
       MinimumNodeToEdgeDistanceItem = 15;
-      MinimumEdgeToEdgeDistanceItem = 15;
+      MinimumEdgeDistanceItem = 15;
       ConsiderNodeLabelsItem = true;
       PlaceEdgeLabelsItem = true;
 
@@ -65,34 +64,30 @@ namespace Demo.yFiles.Layout.Configurations
       MinimumPolylineSegmentLengthItem = layout.MinimumPolylineSegmentLength;
       MinimumSlopeItem = layout.MinimumSlope;
       RoutingStyleNonSeriesParallelItem = NonSeriesParallelRoutingStyle.Orthogonal;
-      RouteEdgesInFlowDirectionItem = true;
       MinimumFirstSegmentLengthItem = edgeLayoutDescriptor.MinimumFirstSegmentLength;
       MinimumLastSegmentLengthItem = edgeLayoutDescriptor.MinimumLastSegmentLength;
       MinimumEdgeLengthItem = 20;
     }
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     protected override ILayoutAlgorithm CreateConfiguredLayout(GraphControl graphControl) {
       var layout = new SeriesParallelLayout();
-      layout.GeneralGraphHandling = true;
-
       layout.LayoutOrientation = OrientationItem;
 
-      layout.VerticalAlignment = VerticalAlignmentItem;
+      layout.ParallelSubgraphAlignment = ParallelSubgraphAlignmentItem;
       layout.FromSketchMode = UseDrawingAsSketchItem;
 
-      layout.MinimumNodeToNodeDistance = MinimumNodeToNodeDistanceItem;
+      layout.MinimumNodeDistance = MinimumNodeDistanceItem;
       layout.MinimumNodeToEdgeDistance = MinimumNodeToEdgeDistanceItem;
-      layout.MinimumEdgeToEdgeDistance = MinimumEdgeToEdgeDistanceItem;
+      layout.MinimumEdgeDistance = MinimumEdgeDistanceItem;
 
-      layout.ConsiderNodeLabels = ConsiderNodeLabelsItem;
-      layout.IntegratedEdgeLabeling = PlaceEdgeLabelsItem;
+      layout.NodeLabelPlacement = ConsiderNodeLabelsItem ? NodeLabelPlacement.Consider : NodeLabelPlacement.Ignore;
+      layout.EdgeLabelPlacement = PlaceEdgeLabelsItem ? EdgeLabelPlacement.Integrated : EdgeLabelPlacement.Ignore;
 
-      var portAssignment = (DefaultPortAssignment) layout.DefaultPortAssignment;
+      var portAssignment = (SeriesParallelLayoutPortAssigner) layout.DefaultPortAssigner;
       portAssignment.Mode = PortStyleItem;
-      portAssignment.ForkStyle = RouteEdgesInFlowDirectionItem ? ForkStyle.OutsideNode : ForkStyle.AtNode;
 
-      layout.RoutingStyle = RoutingStyleItem;
+      layout.EdgeRoutingStyle = RoutingStyleItem;
       if (RoutingStyleItem == RoutingStyle.Octilinear) {
         layout.PreferredOctilinearSegmentLength = PreferredOctilinearSegmentLengthItem;
       } else if (RoutingStyleItem == RoutingStyle.Polyline) {
@@ -101,23 +96,17 @@ namespace Demo.yFiles.Layout.Configurations
       }
 
       if (RoutingStyleNonSeriesParallelItem == NonSeriesParallelRoutingStyle.Orthogonal) {
-        var edgeRouter = new EdgeRouter {
-            Rerouting = true,
-            Scope = Scope.RouteAffectedEdges
-        };
+        var edgeRouter = new EdgeRouter { Rerouting = true };
         layout.NonSeriesParallelEdgeRouter = edgeRouter;
-        layout.NonSeriesParallelEdgesDpKey = edgeRouter.AffectedEdgesDpKey;
       } else if (RoutingStyleNonSeriesParallelItem == NonSeriesParallelRoutingStyle.Organic) {
         var edgeRouter = new OrganicEdgeRouter();
         layout.NonSeriesParallelEdgeRouter = edgeRouter;
-        layout.NonSeriesParallelEdgesDpKey = OrganicEdgeRouter.AffectedEdgesDpKey;
       } else if (RoutingStyleNonSeriesParallelItem == NonSeriesParallelRoutingStyle.Straight) {
-        var edgeRouter = new StraightLineEdgeRouter { Scope = Scope.RouteAffectedEdges };
+        var edgeRouter = new StraightLineEdgeRouter();
         layout.NonSeriesParallelEdgeRouter = edgeRouter;
-        layout.NonSeriesParallelEdgesDpKey = edgeRouter.AffectedEdgesDpKey;
       }
 
-      var edgeLayoutDescriptor = layout.DefaultEdgeLayoutDescriptor;
+      var edgeLayoutDescriptor = layout.DefaultEdgeDescriptor;
       edgeLayoutDescriptor.MinimumFirstSegmentLength = MinimumFirstSegmentLengthItem;
       edgeLayoutDescriptor.MinimumLastSegmentLength = MinimumLastSegmentLengthItem;
       edgeLayoutDescriptor.MinimumLength = MinimumEdgeLengthItem;
@@ -142,31 +131,27 @@ namespace Demo.yFiles.Layout.Configurations
 
     [OptionGroup("DescriptionGroup", 10)]
     [ComponentType(ComponentTypes.FormattedText)]
-    public string DescriptionTextItem {
-      get {
-        return 
-          "<Paragraph>The series-parallel layout algorithm highlights the main direction or flow of a graph, similar to the" +
-          " hierarchic style. In comparison, this algorithm is usually faster but can be used only on special graphs," + 
-          " namely series-parallel graphs.</Paragraph>";
-      }
-    }
+    public string DescriptionTextItem =>
+        "<Paragraph>The series-parallel layout algorithm highlights the main direction or flow of a graph, similar to the" +
+        " hierarchical style. In comparison, this algorithm is usually faster but can be used only on special graphs," +
+        " namely series-parallel graphs.</Paragraph>";
 
     [Label("Orientation")]
     [DefaultValue(LayoutOrientation.TopToBottom)]
     [OptionGroup("GeneralGroup", 10)]
-    [EnumValue("Top to Bottom", LayoutOrientation.TopToBottom )]
-    [EnumValue("Left to Right", LayoutOrientation.LeftToRight )]
-    [EnumValue("Bottom to Top", LayoutOrientation.BottomToTop )]
-    [EnumValue("Right to Left", LayoutOrientation.RightToLeft )]
+    [EnumValue("Top to Bottom", LayoutOrientation.TopToBottom)]
+    [EnumValue("Left to Right", LayoutOrientation.LeftToRight)]
+    [EnumValue("Bottom to Top", LayoutOrientation.BottomToTop)]
+    [EnumValue("Right to Left", LayoutOrientation.RightToLeft)]
     public LayoutOrientation OrientationItem { get; set; }
 
-    [Label("Vertical Alignment")]
+    [Label("Parallel Subgraph Alignment")]
     [DefaultValue(0.5d)]
     [OptionGroup("GeneralGroup", 20)]
-    [EnumValue("Top", 0.0 )]
-    [EnumValue("Center", 0.5 )]
-    [EnumValue("Bottom", 1.0 )]
-    public double VerticalAlignmentItem { get; set; }
+    [EnumValue("Top", 0.0)]
+    [EnumValue("Center", 0.5)]
+    [EnumValue("Bottom", 1.0)]
+    public double ParallelSubgraphAlignmentItem { get; set; }
 
     [Label("Use Drawing as Sketch")]
     [OptionGroup("GeneralGroup", 20)]
@@ -183,7 +168,7 @@ namespace Demo.yFiles.Layout.Configurations
     [DefaultValue(30.0d)]
     [OptionGroup("DistanceGroup", 10)]
     [ComponentType(ComponentTypes.Slider)]
-    public double MinimumNodeToNodeDistanceItem { get; set; }
+    public double MinimumNodeDistanceItem { get; set; }
 
     [Label("Node to Edge Distance")]
     [MinMax(Min = 0, Max = 100)]
@@ -197,7 +182,7 @@ namespace Demo.yFiles.Layout.Configurations
     [DefaultValue(15.0d)]
     [OptionGroup("DistanceGroup", 30)]
     [ComponentType(ComponentTypes.Slider)]
-    public double MinimumEdgeToEdgeDistanceItem { get; set; }
+    public double MinimumEdgeDistanceItem { get; set; }
 
     [Label("Labeling")]
     [OptionGroup("GeneralGroup", 40)]
@@ -218,15 +203,17 @@ namespace Demo.yFiles.Layout.Configurations
     [OptionGroup("EdgesGroup", 10)]
     [DefaultValue(PortAssignmentMode.Center)]
     [EnumValue("Centered", PortAssignmentMode.Center)]
-    [EnumValue("Distributed", PortAssignmentMode.Distributed )]
+    [EnumValue("Distributed", PortAssignmentMode.Distributed)]
+    [EnumValue("Centered On Side", PortAssignmentMode.CenterOnSide)]
+    [EnumValue("Distributed On Side", PortAssignmentMode.DistributedOnSide)]
     public PortAssignmentMode PortStyleItem { get; set; }
 
     [Label("Routing Style")]
     [OptionGroup("EdgesGroup", 20)]
     [DefaultValue(RoutingStyle.Orthogonal)]
     [EnumValue("Orthogonal", RoutingStyle.Orthogonal)]
-    [EnumValue("Octilinear", RoutingStyle.Octilinear )]
-    [EnumValue("Polyline", RoutingStyle.Polyline )]
+    [EnumValue("Octilinear", RoutingStyle.Octilinear)]
+    [EnumValue("Polyline", RoutingStyle.Polyline)]
     public RoutingStyle RoutingStyleItem { get; set; }
 
     [Label("Preferred Octilinear Segment Length")]
@@ -236,9 +223,7 @@ namespace Demo.yFiles.Layout.Configurations
     [ComponentType(ComponentTypes.Slider)]
     public double PreferredOctilinearSegmentLengthItem { get; set; }
 
-    public bool ShouldDisablePreferredOctilinearSegmentLengthItem {
-      get { return RoutingStyleItem != RoutingStyle.Octilinear; }
-    }
+    public bool ShouldDisablePreferredOctilinearSegmentLengthItem => RoutingStyleItem != RoutingStyle.Octilinear;
 
     [Label("Minimum Polyline Segment Length")]
     [OptionGroup("EdgesGroup", 40)]
@@ -247,9 +232,7 @@ namespace Demo.yFiles.Layout.Configurations
     [ComponentType(ComponentTypes.Slider)]
     public double MinimumPolylineSegmentLengthItem { get; set; }
 
-    public bool ShouldDisableMinimumPolylineSegmentLengthItem {
-      get { return RoutingStyleItem != RoutingStyle.Polyline; }
-    }
+    public bool ShouldDisableMinimumPolylineSegmentLengthItem => RoutingStyleItem != RoutingStyle.Polyline;
 
     [MinMax(Min = 0.0d, Max = 5.0d, Step = 0.01d)]
     [Label("Minimum Slope")]
@@ -258,9 +241,7 @@ namespace Demo.yFiles.Layout.Configurations
     [ComponentType(ComponentTypes.Slider)]
     public double MinimumSlopeItem { get; set; }
 
-    public bool ShouldDisableMinimumSlopeItem {
-      get { return RoutingStyleItem != RoutingStyle.Polyline; }
-    }
+    public bool ShouldDisableMinimumSlopeItem => RoutingStyleItem != RoutingStyle.Polyline;
 
     [Label("Routing Style (Non-Series-Parallel Edges)")]
     [OptionGroup("EdgesGroup", 60)]
@@ -269,11 +250,6 @@ namespace Demo.yFiles.Layout.Configurations
     [EnumValue("Organic", NonSeriesParallelRoutingStyle.Organic)]
     [EnumValue("Straight-Line", NonSeriesParallelRoutingStyle.Straight)]
     public NonSeriesParallelRoutingStyle RoutingStyleNonSeriesParallelItem { get; set; }
-
-    [Label("Route Edges in Flow Direction")]
-    [OptionGroup("EdgesGroup", 70)]
-    [DefaultValue(true)]
-    public bool RouteEdgesInFlowDirectionItem { get; set; }
 
     [Label("Minimum First Segment Length")]
     [OptionGroup("EdgesGroup", 80)]
@@ -296,8 +272,11 @@ namespace Demo.yFiles.Layout.Configurations
     [ComponentType(ComponentTypes.Slider)]
     public double MinimumEdgeLengthItem { get; set; }
 
-    public enum NonSeriesParallelRoutingStyle {
-      Orthogonal, Organic, Straight
+    public enum NonSeriesParallelRoutingStyle
+    {
+      Orthogonal,
+      Organic,
+      Straight
     }
   }
 }

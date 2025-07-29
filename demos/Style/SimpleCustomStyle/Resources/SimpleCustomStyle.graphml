@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<!--Created by yFiles WPF 2.1 -->
-<graphml xmlns:demo="http://www.yworks.com/yFilesWPF/demos/SimpleCustomStyle/1.0" xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/3.0" xmlns:y="http://www.yworks.com/xml/yfiles-common/3.0" xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/3.0/xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml.net/4.0/ygraphml.xsd " xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://graphml.graphdrawing.org/xmlns">
+<!--Created by yFiles WPF 4.0-->
+<graphml xmlns:demo="http://www.yworks.com/yFilesWPF/demos/SimpleCustomStyle/1.0" xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/3.0" xmlns:y="http://www.yworks.com/xml/yfiles-common/3.0"  xmlns:yx="http://www.yworks.com/xml/yfiles-common/4.0" xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/4.0/xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml.net/4.0/ygraphml.xsd " xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://graphml.graphdrawing.org/xmlns">
   <key id="d0" for="all" attr.name="UserTags" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/UserTags" />
   <key id="d1" for="node" attr.name="NodeLabels" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeLabels" />
   <key id="d2" for="node" attr.name="NodeGeometry" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeGeometry" />
@@ -46,11 +46,11 @@
           <y:Label Style="{y:GraphMLReference 2}" >
             <y:Label.Text><![CDATA[Node 0]]></y:Label.Text>
             <y:Label.LayoutParameter>
-              <y:ExteriorLabelModelParameter Position="South">
-                <y:ExteriorLabelModelParameter.Model>
-                  <y:ExteriorLabelModel Insets="15" />
-                </y:ExteriorLabelModelParameter.Model>
-              </y:ExteriorLabelModelParameter>
+              <yx:ExteriorNodeLabelModelParameter Position="Bottom">
+                <yx:ExteriorNodeLabelModelParameter.Model>
+                  <yx:ExteriorNodeLabelModel Margins="15" />
+                </yx:ExteriorNodeLabelModelParameter.Model>
+              </yx:ExteriorNodeLabelModelParameter>
             </y:Label.LayoutParameter>
           </y:Label>
         </x:List>
@@ -73,11 +73,11 @@
           <y:Label Style="{y:GraphMLReference 2}" >
             <y:Label.Text><![CDATA[Node 1]]></y:Label.Text>
             <y:Label.LayoutParameter>
-              <y:ExteriorLabelModelParameter Position="SouthEast">
-                <y:ExteriorLabelModelParameter.Model>
-                  <y:ExteriorLabelModel Insets="15" />
-                </y:ExteriorLabelModelParameter.Model>
-              </y:ExteriorLabelModelParameter>
+              <yx:ExteriorNodeLabelModelParameter Position="BottomRight">
+                <yx:ExteriorNodeLabelModelParameter.Model>
+                  <yx:ExteriorNodeLabelModel Margins="15" />
+                </yx:ExteriorNodeLabelModelParameter.Model>
+              </yx:ExteriorNodeLabelModelParameter>
             </y:Label.LayoutParameter>
           </y:Label>
         </x:List>
@@ -98,11 +98,11 @@
           <y:Label Style="{y:GraphMLReference 2}" >
             <y:Label.Text><![CDATA[Node 2]]></y:Label.Text>
             <y:Label.LayoutParameter>
-              <y:ExteriorLabelModelParameter Position="East">
-                <y:ExteriorLabelModelParameter.Model>
-                  <y:ExteriorLabelModel Insets="15" />
-                </y:ExteriorLabelModelParameter.Model>
-              </y:ExteriorLabelModelParameter>
+              <yx:ExteriorNodeLabelModelParameter Position="Right">
+                <yx:ExteriorNodeLabelModelParameter.Model>
+                  <yx:ExteriorNodeLabelModel Margins="15" />
+                </yx:ExteriorNodeLabelModelParameter.Model>
+              </yx:ExteriorNodeLabelModelParameter>
             </y:Label.LayoutParameter>
           </y:Label>
         </x:List>
@@ -124,11 +124,11 @@
           <y:Label Style="{y:GraphMLReference 2}" >
             <y:Label.Text><![CDATA[Node 3]]></y:Label.Text>
             <y:Label.LayoutParameter>
-              <y:ExteriorLabelModelParameter Position="East">
-                <y:ExteriorLabelModelParameter.Model>
-                  <y:ExteriorLabelModel Insets="15" />
-                </y:ExteriorLabelModelParameter.Model>
-              </y:ExteriorLabelModelParameter>
+              <yx:ExteriorNodeLabelModelParameter Position="Right">
+                <yx:ExteriorNodeLabelModelParameter.Model>
+                  <yx:ExteriorNodeLabelModel Margins="15" />
+                </yx:ExteriorNodeLabelModelParameter.Model>
+              </yx:ExteriorNodeLabelModelParameter>
             </y:Label.LayoutParameter>
           </y:Label>
         </x:List>
@@ -150,11 +150,11 @@
           <y:Label Style="{y:GraphMLReference 2}" >
             <y:Label.Text><![CDATA[Node 4]]></y:Label.Text>
             <y:Label.LayoutParameter>
-              <y:ExteriorLabelModelParameter Position="NorthEast">
-                <y:ExteriorLabelModelParameter.Model>
-                  <y:ExteriorLabelModel Insets="15" />
-                </y:ExteriorLabelModelParameter.Model>
-              </y:ExteriorLabelModelParameter>
+              <yx:ExteriorNodeLabelModelParameter Position="TopRight">
+                <yx:ExteriorNodeLabelModelParameter.Model>
+                  <yx:ExteriorNodeLabelModel Margins="15" />
+                </yx:ExteriorNodeLabelModelParameter.Model>
+              </yx:ExteriorNodeLabelModelParameter>
             </y:Label.LayoutParameter>
           </y:Label>
         </x:List>
@@ -177,11 +177,11 @@
           <y:Label Style="{y:GraphMLReference 2}" >
             <y:Label.Text><![CDATA[Node 5]]></y:Label.Text>
             <y:Label.LayoutParameter>
-              <y:ExteriorLabelModelParameter Position="North">
-                <y:ExteriorLabelModelParameter.Model>
-                  <y:ExteriorLabelModel Insets="15" />
-                </y:ExteriorLabelModelParameter.Model>
-              </y:ExteriorLabelModelParameter>
+              <yx:ExteriorNodeLabelModelParameter Position="Top">
+                <yx:ExteriorNodeLabelModelParameter.Model>
+                  <yx:ExteriorNodeLabelModel Margins="15" />
+                </yx:ExteriorNodeLabelModelParameter.Model>
+              </yx:ExteriorNodeLabelModelParameter>
             </y:Label.LayoutParameter>
           </y:Label>
         </x:List>
@@ -204,11 +204,11 @@
           <y:Label Style="{y:GraphMLReference 2}" >
             <y:Label.Text><![CDATA[Node 6]]></y:Label.Text>
             <y:Label.LayoutParameter>
-              <y:ExteriorLabelModelParameter Position="NorthWest">
-                <y:ExteriorLabelModelParameter.Model>
-                  <y:ExteriorLabelModel Insets="15" />
-                </y:ExteriorLabelModelParameter.Model>
-              </y:ExteriorLabelModelParameter>
+              <yx:ExteriorNodeLabelModelParameter Position="TopLeft">
+                <yx:ExteriorNodeLabelModelParameter.Model>
+                  <yx:ExteriorNodeLabelModel Margins="15" />
+                </yx:ExteriorNodeLabelModelParameter.Model>
+              </yx:ExteriorNodeLabelModelParameter>
             </y:Label.LayoutParameter>
           </y:Label>
         </x:List>
@@ -231,11 +231,11 @@
           <y:Label Style="{y:GraphMLReference 2}" >
             <y:Label.Text><![CDATA[Node 7]]></y:Label.Text>
             <y:Label.LayoutParameter>
-              <y:ExteriorLabelModelParameter Position="West">
-                <y:ExteriorLabelModelParameter.Model>
-                  <y:ExteriorLabelModel Insets="15" />
-                </y:ExteriorLabelModelParameter.Model>
-              </y:ExteriorLabelModelParameter>
+              <yx:ExteriorNodeLabelModelParameter Position="Left">
+                <yx:ExteriorNodeLabelModelParameter.Model>
+                  <yx:ExteriorNodeLabelModel Margins="15" />
+                </yx:ExteriorNodeLabelModelParameter.Model>
+              </yx:ExteriorNodeLabelModelParameter>
             </y:Label.LayoutParameter>
           </y:Label>
         </x:List>
@@ -257,11 +257,11 @@
           <y:Label Style="{y:GraphMLReference 2}" >
             <y:Label.Text><![CDATA[Node 8]]></y:Label.Text>
             <y:Label.LayoutParameter>
-              <y:ExteriorLabelModelParameter Position="West">
-                <y:ExteriorLabelModelParameter.Model>
-                  <y:ExteriorLabelModel Insets="15" />
-                </y:ExteriorLabelModelParameter.Model>
-              </y:ExteriorLabelModelParameter>
+              <yx:ExteriorNodeLabelModelParameter Position="Left">
+                <yx:ExteriorNodeLabelModelParameter.Model>
+                  <yx:ExteriorNodeLabelModel Margins="15" />
+                </yx:ExteriorNodeLabelModelParameter.Model>
+              </yx:ExteriorNodeLabelModelParameter>
             </y:Label.LayoutParameter>
           </y:Label>
         </x:List>
@@ -282,11 +282,11 @@
           <y:Label Style="{y:GraphMLReference 2}" >
             <y:Label.Text><![CDATA[Node 9]]></y:Label.Text>
             <y:Label.LayoutParameter>
-              <y:ExteriorLabelModelParameter Position="SouthWest">
-                <y:ExteriorLabelModelParameter.Model>
-                  <y:ExteriorLabelModel Insets="15" />
-                </y:ExteriorLabelModelParameter.Model>
-              </y:ExteriorLabelModelParameter>
+              <yx:ExteriorNodeLabelModelParameter Position="BottomLeft">
+                <yx:ExteriorNodeLabelModelParameter.Model>
+                  <yx:ExteriorNodeLabelModel Margins="15" />
+                </yx:ExteriorNodeLabelModelParameter.Model>
+              </yx:ExteriorNodeLabelModelParameter>
             </y:Label.LayoutParameter>
           </y:Label>
         </x:List>

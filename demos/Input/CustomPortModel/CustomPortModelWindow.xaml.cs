@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -29,8 +29,6 @@
 
 using System;
 using System.Windows;
-using System.Windows.Media;
-using System.Windows.Shapes;
 using Demo.yFiles.Toolkit;
 using yWorks.Controls;
 using yWorks.Controls.Input;
@@ -54,61 +52,59 @@ namespace Demo.yFiles.Graph.CustomPortModel
     }
 
     /// <summary>
-    /// Calls <see cref="CreateEditorMode"/> and registers
-    /// the result as the <see cref="CanvasControl.InputMode"/>.
+    ///   Calls <see cref="CreateEditorMode"/> and registers
+    ///   the result as the <see cref="CanvasControl.InputMode"/>.
     /// </summary>
     protected virtual void InitializeInputModes() {
       graphControl.InputMode = CreateEditorMode();
     }
 
     /// <summary>
-    /// Creates the default input mode for the GraphControl,
-    /// a <see cref="GraphEditorInputMode"/>.
+    ///   Creates the default input mode for the GraphControl,
+    ///   a <see cref="GraphEditorInputMode"/>.
     /// </summary>
     /// <returns>a new GraphEditorInputMode instance</returns>
     protected virtual IInputMode CreateEditorMode() {
-
       // for selected nodes show the handles
-      graphControl.Graph.GetDecorator().NodeDecorator.HandleProviderDecorator.SetFactory(
-        node => new PortsHandleProvider(node));
+      graphControl.Graph.GetDecorator().Nodes.HandleProvider
+          .AddFactory(node => new PortsHandleProvider(node));
 
       // for nodes add a custom port candidate provider implementation which uses our model
-      graphControl.Graph.GetDecorator().NodeDecorator.PortCandidateProviderDecorator.SetFactory(GetPortCandidateProvider);
+      graphControl.Graph.GetDecorator().Nodes.PortCandidateProvider
+          .AddFactory(GetPortCandidateProvider);
 
       return new GraphEditorInputMode();
     }
 
     /// <summary>
-    ///  Callback used by the decorator in <see cref="CreateEditorMode"/>
+    ///   Callback used by the decorator in <see cref="CreateEditorMode"/>
     /// </summary>
     private IPortCandidateProvider GetPortCandidateProvider(INode forNode) {
-      var model = new MyNodePortLocationModel {Inset = 10};
+      var model = new MyNodePortLocationModel { Inset = 10 };
       return PortCandidateProviders.FromCandidates(
-          new DefaultPortCandidate(forNode, model.CreateParameter(PortLocation.Center)),
-          new DefaultPortCandidate(forNode, model.CreateParameter(PortLocation.North)),
-          new DefaultPortCandidate(forNode, model.CreateParameter(PortLocation.East)),
-          new DefaultPortCandidate(forNode, model.CreateParameter(PortLocation.South)),
-          new DefaultPortCandidate(forNode, model.CreateParameter(PortLocation.West)));
+          new PortCandidate(forNode, model.CreateParameter(PortLocation.Center)),
+          new PortCandidate(forNode, model.CreateParameter(PortLocation.Top)),
+          new PortCandidate(forNode, model.CreateParameter(PortLocation.Right)),
+          new PortCandidate(forNode, model.CreateParameter(PortLocation.Bottom)),
+          new PortCandidate(forNode, model.CreateParameter(PortLocation.Left)));
     }
 
     /// <summary>
-    /// Sets a custom node port model parameter instance for newly created
-    /// node ports in the graph, creates a example nodes with a ports using
-    /// the our model and an edge to connect the ports.
+    ///   Sets a custom node port model parameter instance for newly created
+    ///   node ports in the graph, creates an example nodes with ports using
+    ///   our model and an edge to connect the ports.
     /// </summary>
     protected void InitializeGraph() {
       DemoStyles.InitDemoStyles(graphControl.Graph);
 
-      graphControl.Graph.NodeDefaults.Ports.LocationParameter = new MyNodePortLocationModel().CreateParameter(PortLocation.Center);
+      graphControl.Graph.NodeDefaults.Ports.LocationParameter =
+          new MyNodePortLocationModel().CreateParameter(PortLocation.Center);
 
       // set the default port style and size for this demo
       var shapeNodeStyle = DemoStyles.CreateDemoShapeNodeStyle(ShapeNodeShape.Ellipse, Themes.PaletteBlue);
-      graphControl.Graph.NodeDefaults.Ports.Style = new NodeStylePortStyleAdapter(shapeNodeStyle)
-      {
-        RenderSize = new SizeD(10, 10)
-      };
+      graphControl.Graph.NodeDefaults.Ports.Style =
+          new NodeStylePortStyleAdapter(shapeNodeStyle) { RenderSize = new SizeD(10, 10) };
       graphControl.Graph.NodeDefaults.Size = new SizeD(100, 100);
-
 
       var source = graphControl.Graph.CreateNode(new RectD(90, 90, 100, 100));
       var target = graphControl.Graph.CreateNode(new RectD(250, 90, 100, 100));
@@ -116,10 +112,13 @@ namespace Demo.yFiles.Graph.CustomPortModel
       // creates a port using the default declared above
       var sourcePort = graphControl.Graph.AddPort(source);
       // creates a port using the custom model instance
-      var targetPort = graphControl.Graph.AddPort(target, new MyNodePortLocationModel { Inset = 10 }.CreateParameter(PortLocation.North));
+      var targetPort = graphControl.Graph.AddPort(target,
+          new MyNodePortLocationModel { Inset = 10 }.CreateParameter(PortLocation.Top));
 
       // create an edge
       graphControl.Graph.CreateEdge(sourcePort, targetPort);
+
+      graphControl.FitGraphBounds();
     }
 
     private void OnExitClicked(object sender, RoutedEventArgs e) {

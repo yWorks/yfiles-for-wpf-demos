@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -35,16 +35,14 @@ using yWorks.Graph;
 namespace Demo.yFiles.Algorithms.GraphAnalysis
 {
   /// <summary>
-  /// Finds cycles in a graph.
+  ///   Finds cycles in a graph.
   /// </summary>
   public class CyclesConfig : AlgorithmConfiguration
   {
-    public override bool SupportsDirectedAndUndirected {
-      get { return true; }
-    }
+    public override bool SupportsDirectedAndUndirected => true;
 
     /// <summary>
-    /// Calculates the cycles.
+    ///   Calculates the cycles.
     /// </summary>
     /// <param name="graph"></param>
     public override void RunAlgorithm(IGraph graph) {
@@ -58,7 +56,7 @@ namespace Demo.yFiles.Algorithms.GraphAnalysis
     }
 
     /// <summary>
-    /// Marks the cycle nodes and edges.
+    ///   Marks the cycle nodes and edges.
     /// </summary>
     private void MarkCycles(IGraph graph, CycleEdges.Result cycleResult) {
       // hides all non-cycle edges to be able to find independent cycles
@@ -73,7 +71,7 @@ namespace Demo.yFiles.Algorithms.GraphAnalysis
       // find the component with the larger number of elements
       var largestComponent = GetLargestComponent(affectedComponents);
       // hold a color for each affected components
-      var color2AffectedComponent = new Dictionary<Component, Color>();
+      var color2AffectedComponent = new Dictionary<ConnectedComponent, Color>();
       // generate the colors for the components
       var colors = GenerateColors(false);
 
@@ -81,25 +79,17 @@ namespace Demo.yFiles.Algorithms.GraphAnalysis
         var component = result.Components[i];
 
         foreach (var edge in component.InducedEdges) {
-
           // the source and target node get the same color, depending on their connecting edge
-          var color = DetermineElementColor(colors, component, affectedComponents, color2AffectedComponent, largestComponent, result.Components, graph, edge);
-          edge.Tag = new Tag {
-              CurrentColor = color,
-              Directed = Directed
-          };
+          var color = DetermineElementColor(colors, component, affectedComponents, color2AffectedComponent,
+              largestComponent, result.Components, graph, edge);
+          edge.Tag = new Tag { CurrentColor = color, Directed = Directed };
           var source = edge.GetSourceNode();
-          source.Tag = new Tag {
-              CurrentColor = color
-          };
+          source.Tag = new Tag { CurrentColor = color };
 
           var target = edge.GetTargetNode();
-          target.Tag = new Tag {
-              CurrentColor = color
-          };
+          target.Tag = new Tag { CurrentColor = color };
         }
       }
     }
-   
   }
 }

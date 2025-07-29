@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -28,8 +28,6 @@
  ***************************************************************************/
 
 using System.Windows.Media;
-using Demo.yFiles.Layout.Sankey;
-using yWorks.Annotations;
 using yWorks.Controls;
 using yWorks.Geometry;
 using yWorks.Graph;
@@ -37,40 +35,51 @@ using yWorks.Graph.Styles;
 
 namespace SankeyLayout
 {
-  public class HighlightManager : GraphHighlightIndicatorManager
+  public sealed class HighlightManager : HighlightIndicatorManager<IModelItem>
   {
-    private ICanvasObjectGroup edgeHighlightGroup;
+    private IRenderTreeGroup edgeHighlightGroup;
 
-    public HighlightManager() {
-      LabelStyle =
-          new IndicatorLabelStyleDecorator(new NodeStyleLabelStyleAdapter(
-              new ShapeNodeStyle {
-                  Shape = ShapeNodeShape.RoundRectangle, Pen = new Pen(Brushes.DodgerBlue, 2), Brush = null
-              }, VoidLabelStyle.Instance)) {
-              Padding = new InsetsD(3), ZoomPolicy = StyleDecorationZoomPolicy.WorldCoordinates
-          };
-    }
+    public IHighlightRenderer LabelRenderer { get; } = new LabelStyleIndicatorRenderer {
+        LabelStyle =
+            new NodeStyleLabelStyleAdapter(
+                new ShapeNodeStyle {
+                    Shape = ShapeNodeShape.RoundRectangle, Pen = new Pen(Brushes.DodgerBlue, 2), Brush = null
+                }, VoidLabelStyle.Instance),
+        Margins = new InsetsD(3),
+        ZoomPolicy = StyleIndicatorZoomPolicy.WorldCoordinates
+    };
+
+    public IHighlightRenderer EdgeRenderer { get; set; }
+
 
     public override void Install(CanvasControl canvas) {
       base.Install(canvas);
-      var graphControl = ((GraphControl) canvas);
+      var graphControl = (GraphControl) canvas;
       var graphModelManager = graphControl.GraphModelManager;
-      edgeHighlightGroup = graphModelManager.ContentGroup.AddGroup();
+      edgeHighlightGroup = graphControl.RenderTree.CreateGroup(graphModelManager.ContentGroup!);
       edgeHighlightGroup.Below(graphModelManager.EdgeLabelGroup);
 
-      EdgeStyle = new IndicatorEdgeStyleDecorator(new BezierEdgeStyle(new DemoEdgeStyleRenderer(graphControl.Selection, true)))
-      {
-          ZoomPolicy = StyleDecorationZoomPolicy.WorldCoordinates
+      EdgeRenderer = new EdgeStyleIndicatorRenderer {
+          EdgeStyle = new DemoEdgeStyle(graphControl.Selection, true),
+          ZoomPolicy = StyleIndicatorZoomPolicy.WorldCoordinates
       };
     }
 
     public override void Uninstall(CanvasControl canvas) {
-      edgeHighlightGroup.Remove();
+      canvas.RenderTree.Remove(edgeHighlightGroup);
       base.Uninstall(canvas);
     }
 
-    protected override ICanvasObjectGroup GetCanvasObjectGroup(IModelItem item) {
-      return item is IEdge ? edgeHighlightGroup : base.GetCanvasObjectGroup(item);
+    protected override IRenderTreeGroup GetRenderTreeGroup(IModelItem item) {
+      return item is IEdge ? edgeHighlightGroup : base.GetRenderTreeGroup(item);
+    }
+
+    protected override IObjectRenderer GetRenderer(IModelItem item) {
+      return item switch {
+          ILabel => LabelRenderer,
+          IEdge => EdgeRenderer,
+          _ => base.GetRenderer(item)
+      };
     }
   }
 }

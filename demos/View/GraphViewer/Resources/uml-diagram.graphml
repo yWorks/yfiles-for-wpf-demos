@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <!--Created by yFiles WPF 2.1-->
-<graphml xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/3.0" xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/3.0/xaml" xmlns:y="http://www.yworks.com/xml/yfiles-common/3.0" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml.wpf/2.0/ygraphml.xsd " xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:av="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+<graphml xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/3.0" xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/4.0/xaml" xmlns:y="http://www.yworks.com/xml/yfiles-common/3.0"  xmlns:yx="http://www.yworks.com/xml/yfiles-common/4.0" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml.wpf/2.0/ygraphml.xsd " xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:av="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
   <key id="GraphDescription" for="graph" attr.name="GraphDescription" attr.type="string"/>
   <key id="d0" for="all" attr.name="UserTags" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/UserTags" />
   <key id="d1" for="node" attr.name="NodeLabels" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeLabels" />
@@ -26,8 +26,8 @@
   <key id="d9" attr.name="SharedData" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/SharedData" />
   <data key="d9">
     <y:SharedData>
-      <ywpf:DefaultLabelStyle x:Key="1" Typeface="Arial,Normal,Normal,Normal" TextBrush="Black" >
-      </ywpf:DefaultLabelStyle>
+      <ywpf:LabelStyle x:Key="1" Typeface="Arial,Normal,Normal,Normal" TextBrush="Black" >
+      </ywpf:LabelStyle>
       <ywpf:ShapeNodeStyle x:Key="2" Brush="#ffab26" Pen="#662b00" />
       <ywpf:ShapeNodeStyle x:Key="3" Brush="#b9ccd6" Pen="#662b00" />
       <ywpf:PolylineEdgeStyle x:Key="4" TargetArrow="None">
@@ -35,12 +35,12 @@
           <av:Pen Brush="#336699" DashStyle="{x:Static av:DashStyles.Dash}"/>
         </ywpf:PolylineEdgeStyle.Pen>
         <ywpf:PolylineEdgeStyle.SourceArrow>
-          <ywpf:Arrow Type="Default" Brush="#336699"/>
+          <ywpf:Arrow Type="Stealth" Brush="#336699"/>
         </ywpf:PolylineEdgeStyle.SourceArrow>
       </ywpf:PolylineEdgeStyle>
       <ywpf:PolylineEdgeStyle x:Key="5" SourceArrow="None" Pen="#336699">
         <ywpf:PolylineEdgeStyle.TargetArrow>
-          <ywpf:Arrow Type="Default" Brush="#336699"/>
+          <ywpf:Arrow Type="Stealth" Brush="#336699"/>
         </ywpf:PolylineEdgeStyle.TargetArrow>
       </ywpf:PolylineEdgeStyle>
     </y:SharedData>
@@ -55,7 +55,7 @@
       </data>
       <data key="d1">
         <x:List>
-          <y:Label LayoutParameter="{x:Static y:InteriorLabelModel.Center}" Style="{y:GraphMLReference 1}">
+          <y:Label LayoutParameter="{x:Static yx:InteriorNodeLabelModel.Center}" Style="{y:GraphMLReference 1}">
             <y:Label.Text><![CDATA[Employee
 getName():String
 getTitle():String
@@ -96,7 +96,7 @@ getPhone()]]>
       </data>
       <data key="d1">
         <x:List>
-          <y:Label LayoutParameter="{x:Static y:InteriorLabelModel.Center}" Style="{y:GraphMLReference 1}">
+          <y:Label LayoutParameter="{x:Static yx:InteriorNodeLabelModel.Center}" Style="{y:GraphMLReference 1}">
             <y:Label.Text><![CDATA[Lecturer
 researchInterest:String
 isTeaching():bool]]></y:Label.Text>
@@ -128,7 +128,7 @@ isTeaching():bool]]></y:Label.Text>
       </data>
       <data key="d1">
         <x:List>
-          <y:Label LayoutParameter="{x:Static y:InteriorLabelModel.Center}" Style="{y:GraphMLReference 1}">
+          <y:Label LayoutParameter="{x:Static yx:InteriorNodeLabelModel.Center}" Style="{y:GraphMLReference 1}">
             <y:Label.Text><![CDATA[TutorAdmin
 addSubject():String]]>
             </y:Label.Text>
@@ -160,7 +160,7 @@ addSubject():String]]>
       </data>
       <data key="d1">
         <x:List>
-          <y:Label LayoutParameter="{x:Static y:InteriorLabelModel.Center}" Style="{y:GraphMLReference 1}">
+          <y:Label LayoutParameter="{x:Static yx:InteriorNodeLabelModel.Center}" Style="{y:GraphMLReference 1}">
             <y:Label.Text><![CDATA[Tutor
 role:String]]>
             </y:Label.Text>
@@ -197,7 +197,7 @@ role:String]]>
       </data>
       <data key="d1">
         <x:List>
-          <y:Label LayoutParameter="{x:Static y:InteriorLabelModel.Center}" Style="{y:GraphMLReference 1}">
+          <y:Label LayoutParameter="{x:Static yx:InteriorNodeLabelModel.Center}" Style="{y:GraphMLReference 1}">
             <y:Label.Text><![CDATA[DepartmentAdmin
 password:String
 addDuty()]]> 
@@ -225,7 +225,7 @@ addDuty()]]>
       </data>
       <data key="d1">
         <x:List>
-          <y:Label LayoutParameter="{x:Static y:InteriorLabelModel.Center}" Style="{y:GraphMLReference 1}">
+          <y:Label LayoutParameter="{x:Static yx:InteriorNodeLabelModel.Center}" Style="{y:GraphMLReference 1}">
             <y:Label.Text><![CDATA[TimeSheet
 hours:Integer
 typework:String]]> 
@@ -249,7 +249,7 @@ typework:String]]>
       </data>
       <data key="d1">
         <x:List>
-          <y:Label LayoutParameter="{x:Static y:InteriorLabelModel.Center}" Style="{y:GraphMLReference 1}">
+          <y:Label LayoutParameter="{x:Static yx:InteriorNodeLabelModel.Center}" Style="{y:GraphMLReference 1}">
             <y:Label.Text><![CDATA[Subject
 code:String
 subname:String
@@ -289,7 +289,7 @@ count():Integer]]>
       </data>
       <data key="d1">
         <x:List>
-          <y:Label LayoutParameter="{x:Static y:InteriorLabelModel.Center}" Style="{y:GraphMLReference 1}">
+          <y:Label LayoutParameter="{x:Static yx:InteriorNodeLabelModel.Center}" Style="{y:GraphMLReference 1}">
             <y:Label.Text><![CDATA[Student
 member:String
 name:String
@@ -330,7 +330,7 @@ enroll()]]>
       </data>
       <data key="d1">
         <x:List>
-          <y:Label LayoutParameter="{x:Static y:InteriorLabelModel.Center}" Style="{y:GraphMLReference 1}">
+          <y:Label LayoutParameter="{x:Static yx:InteriorNodeLabelModel.Center}" Style="{y:GraphMLReference 1}">
             <y:Label.Text><![CDATA[Honours
 researchArea:String]]>
               </y:Label.Text>
@@ -357,7 +357,7 @@ researchArea:String]]>
       </data>
       <data key="d1">
         <x:List>
-          <y:Label LayoutParameter="{x:Static y:InteriorLabelModel.Center}" Style="{y:GraphMLReference 1}">
+          <y:Label LayoutParameter="{x:Static yx:InteriorNodeLabelModel.Center}" Style="{y:GraphMLReference 1}">
             <y:Label.Text><![CDATA[Pass
 project:String]]> 
             </y:Label.Text>
@@ -379,7 +379,7 @@ project:String]]>
       </data>
       <data key="d1">
         <x:List>
-          <y:Label LayoutParameter="{x:Static y:InteriorLabelModel.Center}" Style="{y:GraphMLReference 1}">
+          <y:Label LayoutParameter="{x:Static yx:InteriorNodeLabelModel.Center}" Style="{y:GraphMLReference 1}">
             <y:Label.Text><![CDATA[Project
 title:String
 interimReport:String
@@ -404,7 +404,7 @@ isComplete():bool]]>
       </data>
       <data key="d1">
         <x:List>
-          <y:Label LayoutParameter="{x:Static y:InteriorLabelModel.Center}" Style="{y:GraphMLReference 1}">
+          <y:Label LayoutParameter="{x:Static yx:InteriorNodeLabelModel.Center}" Style="{y:GraphMLReference 1}">
             <y:Label.Text><![CDATA[TimeTable
 group:String
 day:Day
@@ -435,7 +435,7 @@ checkClash()]]>
       </data>
       <data key="d1">
         <x:List>
-          <y:Label LayoutParameter="{x:Static y:InteriorLabelModel.Center}" Style="{y:GraphMLReference 1}">
+          <y:Label LayoutParameter="{x:Static yx:InteriorNodeLabelModel.Center}" Style="{y:GraphMLReference 1}">
             <y:Label.Text><![CDATA[Exam
 exName:String
 percentage:Integer

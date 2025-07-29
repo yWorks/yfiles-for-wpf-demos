@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<graphml xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml.html/2.0/ygraphml.xsd " xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:y="http://www.yworks.com/xml/yfiles-common/3.0" xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/3.0" xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/3.0/xaml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<graphml xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml.html/2.0/ygraphml.xsd " xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:y="http://www.yworks.com/xml/yfiles-common/3.0"  xmlns:yx="http://www.yworks.com/xml/yfiles-common/4.0" xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/3.0" xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/4.0/xaml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<key id="d4" for="node" attr.name="NodeLabels" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeLabels"/>
 	<key id="d5" for="node" attr.name="NodeGeometry" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeGeometry"/>
 	<key id="d6" for="all" attr.name="UserTags" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/UserTags"/>
@@ -20,10 +20,10 @@
 	<key id="d19" attr.name="SharedData" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/SharedData"/>
 	<data key="d19">
 		<y:SharedData>
-			<y:InteriorLabelModel x:Key="1"/>
-			<y:InteriorLabelModelParameter x:Key="2" Position="Center" Model="{y:GraphMLReference 1}"/>
+			<yx:InteriorNodeLabelModel x:Key="1"/>
+			<yx:InteriorNodeLabelModelParameter x:Key="2" Position="Center" Model="{y:GraphMLReference 1}"/>
             <ywpf:ShapeNodeStyle x:Key="NodeStyle" Pen="#FF27401B" Brush="#FF61A044" Shape="Ellipse"/>
-            <ywpf:DefaultLabelStyle x:Key="LabelStyle" BackgroundBrush="#FFC0D9B4" VerticalTextAlignment="Center" TextAlignment="Center" Shape="RoundRectangle" TextBrush="#FF27401B" Insets="4,2,4,1" />
+            <ywpf:LabelStyle x:Key="LabelStyle" BackgroundBrush="#FFC0D9B4" VerticalTextAlignment="Center" TextAlignment="Center" Shape="RoundRectangle" TextBrush="#FF27401B" Padding="4,2,4,1" />
 		</y:SharedData>
 	</data>
 	<graph id="G" edgedefault="directed">

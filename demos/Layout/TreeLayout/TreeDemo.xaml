@@ -1,6 +1,6 @@
 <!-- ************************************************************************ -->
-<!-- This demo file is part of yFiles WPF 3.6.                           -->
-<!-- Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
+<!-- This demo file is part of yFiles WPF 4.0.                           -->
+<!-- Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
 <!-- 72070 Tuebingen, Germany. All rights reserved.                           -->
 <!--                                                                          -->
 <!-- yFiles demo files exhibit yFiles WPF functionalities. Any redistribution  -->
@@ -24,23 +24,23 @@
 <!-- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.             -->
 <!--                                                                          -->
 <!-- ************************************************************************ -->
-<Window x:Class="Demo.yFiles.Layout.Tree.TreeDemo" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/3.0/xaml" xmlns:TreeDemo="clr-namespace:Demo.yFiles.Layout.Tree" xmlns:System="clr-namespace:System;assembly=mscorlib" Title="Demo.yFiles.Layout.Tree" Height="600" Width="800" Loaded="OnLoaded" Style="{StaticResource DemoWindow}">
+<Window x:Class="Demo.yFiles.Layout.Tree.TreeDemo" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/4.0/xaml" xmlns:TreeDemo="clr-namespace:Demo.yFiles.Layout.Tree" xmlns:System="clr-namespace:System;assembly=mscorlib" Title="Demo.yFiles.Layout.Tree" Height="600" Width="800" Loaded="OnLoaded" Style="{StaticResource DemoWindow}">
 	<HeaderedContentControl Style="{StaticResource DemoStyle}">
 		<HeaderedContentControl.Header>
 			<RichTextBox BorderThickness="0" IsReadOnly="True">
 				<FlowDocument>
 					<Paragraph>
 						Demonstrates the different
-						<Run FontStyle="Italic">NodePlacer</Run>
+						<Run FontStyle="Italic">SubtreePlacer</Run>
 						implementations for the
 						<Run FontStyle="Italic">TreeLayout</Run>
 						.
 					</Paragraph>
 					<Paragraph>
 						A
-						<Run FontStyle="Italic">NodePlacer</Run>
+						<Run FontStyle="Italic">SubtreePlacer</Run>
 						can be assigned to each node separately. It arranges the node it is
-						assigned to and its sub trees. In this demo all nodes of the same layer have the same node placer.
+						assigned to and its subtrees. In this demo all nodes of the same layer have the same subtree placer.
 					</Paragraph>
 					<Paragraph Style="{StaticResource HtmlH2}">
 						Usage
@@ -48,7 +48,7 @@
 					<List>
 						<ListItem>
 							<Paragraph>
-								The settings panel displays the type, rotation and properties of the node placer of the
+								The settings panel displays the type, rotation and properties of the subtree placer of the
 								selected tree layer. The preview will immediately reflect any changed settings.
 							</Paragraph>
 						</ListItem>
@@ -60,13 +60,13 @@
 						</ListItem>
 						<ListItem>
 							<Paragraph>
-								'Apply' the settings to the node placers of the selected tree layer or 'Reset' the settings
+								'Apply' the settings to the subtree placers of the selected tree layer or 'Reset' the settings
 								panel to the properties of the currently selected nodes.
 							</Paragraph>
 						</ListItem>
 						<ListItem>
 							<Paragraph>
-								Use the context menu to set single nodes as "Assistant". Assign an 'AssistantNodePlacer' to their
+								Use the context menu to set single nodes as "Assistant". Assign an 'AssistantSubtreePlacer' to their
 								parent layer to see the effect. The 'OrgChart' sample already contains some assistant nodes.
 							</Paragraph>
 						</ListItem>
@@ -94,7 +94,7 @@
 					<Separator />
 					<Button Command="IncreaseZoom" CommandTarget="{Binding ElementName=graphControl}" />
 					<Button Command="DecreaseZoom" CommandTarget="{Binding ElementName=graphControl}" />
-					<Button Command="{x:Static ywpf:GraphControl.FitGraphBoundsCommand}" CommandTarget="{Binding ElementName=graphControl}" />
+					<Button Command="{x:Static ywpf:GraphCommands.FitGraphBounds}" CommandTarget="{Binding ElementName=graphControl}" />
 					<Separator />
 					<Button Command="Undo" CommandTarget="{Binding ElementName=graphControl}" />
 					<Button Command="Redo" CommandTarget="{Binding ElementName=graphControl}" />
@@ -106,8 +106,8 @@
 					<ColumnDefinition Width="5" />
 					<ColumnDefinition Width="315"  MinWidth="315" />
 				</Grid.ColumnDefinitions>
-				<HeaderedContentControl Grid.Column="2" Style="{StaticResource DescriptionStyle}" Header="Node Placer Settings" BorderThickness="1,0,0,0">
-					<TreeDemo:NodePlacerPanel x:Name="nodePlacerPanel" />
+				<HeaderedContentControl Grid.Column="2" Style="{StaticResource DescriptionStyle}" Header="Subtree Placer Settings" BorderThickness="1,0,0,0">
+					<TreeDemo:SubtreePlacerPanel x:Name="subtreePlacerPanel" />
 				</HeaderedContentControl>
 				<GridSplitter Grid.Column="1" ResizeDirection="Columns" Width="5" Height="Auto" ResizeBehavior="PreviousAndNext" />
 				<ywpf:GraphControl x:Name="graphControl" Grid.Column="0"/>

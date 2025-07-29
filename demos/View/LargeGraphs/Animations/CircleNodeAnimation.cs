@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -58,7 +58,7 @@ namespace Demo.yFiles.Graph.LargeGraphs.Animations
 
     /// <summary>
     ///   Initializes a new instance of the <see cref="CircleNodeAnimation" /> class with the given graph, nodes, radius,
-    ///   number of revolutions and preferred duration.
+    ///   number of revolutions, and preferred duration.
     /// </summary>
     /// <param name="g">The graph the nodes belong to.</param>
     /// <param name="nodes">The nodes.</param>
@@ -86,8 +86,8 @@ namespace Demo.yFiles.Graph.LargeGraphs.Animations
       var offset = new PointD(Math.Cos(currentAngle) * radius, Math.Sin(currentAngle) * radius);
       for (int i = 0; i < nodes.Count; i++) {
         var n = nodes[i];
-        var newPosition = startBounds[i].TopLeft - new PointD(radius, 0) + offset;
-        graph.SetNodeLayout(n, new RectD(newPosition, startBounds[i].Size));
+        var newPosition = startBounds[i].GetTopLeft() - new PointD(radius, 0) + offset;
+        graph.SetNodeLayout(n, new RectD(newPosition, startBounds[i].GetSize()));
       }
     }
 

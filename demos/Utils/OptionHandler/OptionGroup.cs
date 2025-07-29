@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -29,20 +29,20 @@
 
 using System.Collections.Generic;
 
-namespace Demo.yFiles.Toolkit.OptionHandler {
-
+namespace Demo.yFiles.Toolkit.OptionHandler
+{
   /// <summary>
-  /// An option group containing a list of <see cref="ChildOptions"/>.
+  ///   An option group containing a list of <see cref="ChildOptions"/>.
   /// </summary>
-  public class OptionGroup : Option {
-
+  public class OptionGroup : Option
+  {
     /// <summary>
-    /// The child options contained in this group.
+    ///   The child options contained in this group.
     /// </summary>
-    public IList<Option> ChildOptions { get; private set; }
+    public IList<Option> ChildOptions { get; }
 
     /// <summary>
-    /// Creates a new OptionGroup and initializes <see cref="ChildOptions"/>.
+    ///   Creates a new OptionGroup and initializes <see cref="ChildOptions"/>.
     /// </summary>
     public OptionGroup() {
       ChildOptions = new List<Option>();

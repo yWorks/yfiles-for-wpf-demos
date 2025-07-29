@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -41,20 +41,18 @@ using System.Windows.Input;
 using System.Windows.Media;
 using yWorks.Annotations;
 using yWorks.Controls;
-using yWorks.Layout.Hierarchic;
-using yWorks.Graph.DataBinding;
 using yWorks.Controls.Input;
 using yWorks.Graph;
+using yWorks.Graph.DataBinding;
+using yWorks.Layout;
+using yWorks.Layout.Hierarchical;
 
 namespace Demo.yFiles.DataBinding.InteractiveNodesGraphSource
 {
   /// <summary>
-  /// This class implements the main logic for this demo.
+  ///   Shows how to use <see cref="AdjacentNodesGraphSource"/> to build a graph from business data.
+  ///   Each business data item defines successors and predecessors lists.
   /// </summary>
-  /// <remarks>
-  /// This demo shows how to use <see cref="AdjacentNodesGraphSource"/> to build a graph from business data. 
-  /// Each business data item defines a successors and a predecessors list.
-  /// </remarks>
   public partial class InteractiveNodesGraphSourceWindow
   {
     private AdjacentNodesGraphSource graphSource;
@@ -63,36 +61,35 @@ namespace Demo.yFiles.DataBinding.InteractiveNodesGraphSource
       InitializeComponent();
     }
 
-    private async void GraphSourceWindow_OnLoaded(object sender, RoutedEventArgs e) {
+    private async void OnLoaded(object sender, RoutedEventArgs e) {
       // create new input mode
       GraphViewerInputMode inputMode = new GraphViewerInputMode { SelectableItems = GraphItemTypes.None };
       // add a custom input mode that allows dragging nodes from the graph to the lists
-      inputMode.Add(new NodeDragInputMode {Priority = -1});
+      inputMode.Add(new NodeDragInputMode { Priority = -1 });
       graphControl.InputMode = inputMode;
 
       graphControl.FocusIndicatorManager.ShowFocusPolicy = ShowFocusPolicy.Always;
 
-      graphSource = ((AdjacentNodesGraphSource)Application.Current.MainWindow.Resources["GraphSource"]);
+      graphSource = (AdjacentNodesGraphSource) Application.Current.MainWindow.Resources["GraphSource"];
       graphSource.NodesSource = CreateInitialBusinessData();
 
       await ApplyLayout(false);
     }
 
     private static IEnumerable<BusinessData> CreateInitialBusinessData() {
-      var nameDataMap = new Dictionary<string, BusinessData>
-                          {
-                            {"Jenny", new BusinessData("Jenny")},
-                            {"Julia", new BusinessData("Julia")},
-                            {"Marc", new BusinessData("Marc")},
-                            {"Martin", new BusinessData("Martin")},
-                            {"Natalie", new BusinessData("Natalie")},
-                            {"Nicole", new BusinessData("Nicole")},
-                            {"Petra", new BusinessData("Petra")},
-                            {"Stephen", new BusinessData("Stephen")},
-                            {"Tim", new BusinessData("Tim")},
-                            {"Tom", new BusinessData("Tom")},
-                            {"Tony", new BusinessData("Tony")}
-                          };
+      var nameDataMap = new Dictionary<string, BusinessData> {
+          { "Jenny", new BusinessData("Jenny") },
+          { "Julia", new BusinessData("Julia") },
+          { "Marc", new BusinessData("Marc") },
+          { "Martin", new BusinessData("Martin") },
+          { "Natalie", new BusinessData("Natalie") },
+          { "Nicole", new BusinessData("Nicole") },
+          { "Petra", new BusinessData("Petra") },
+          { "Stephen", new BusinessData("Stephen") },
+          { "Tim", new BusinessData("Tim") },
+          { "Tom", new BusinessData("Tom") },
+          { "Tony", new BusinessData("Tony") }
+      };
 
       nameDataMap["Julia"].Predecessors.Add(nameDataMap["Jenny"]);
       nameDataMap["Julia"].Successors.Add(nameDataMap["Petra"]);
@@ -108,72 +105,67 @@ namespace Demo.yFiles.DataBinding.InteractiveNodesGraphSource
       nameDataMap["Tony"].Predecessors.Add(nameDataMap["Julia"]);
       nameDataMap["Stephen"].Successors.Add(nameDataMap["Tom"]);
 
-      return new ObservableCollection<BusinessData>
-               {
-                 nameDataMap["Marc"],
-                 nameDataMap["Martin"],
-                 nameDataMap["Stephen"]
-               };
+      return new ObservableCollection<BusinessData> {
+          nameDataMap["Marc"], nameDataMap["Martin"], nameDataMap["Stephen"]
+      };
     }
 
     /// <summary>
-    /// Returns the business data object from the current item, or 
-    /// <see langword="null"/> if no current item is set
+    ///   Returns the business data object from the current item, or
+    ///   <see langword="null"/> if no current item is set
     /// </summary>
     private BusinessData GetCurrentItemData() {
       return graphControl.CurrentItem != null
-               ? graphSource.GetBusinessObject(graphControl.CurrentItem) as BusinessData
-               : null;
+          ? graphSource.GetBusinessObject(graphControl.CurrentItem) as BusinessData
+          : null;
     }
 
     /// <summary>
-    /// Applies the layout.
+    ///   Applies the layout.
     /// </summary>
     /// <remarks>
-    /// Uses an <see cref="HierarchicLayout"/>. If single graph
-    /// items are created or removed, the incremental mode of this layout
-    /// algorithm is used to keep most of the current layout of the graph
-    /// unchanged.
+    ///   Uses an <see cref="HierarchicalLayout"/>. If single graph
+    ///   items are created or removed, the incremental mode of this layout
+    ///   algorithm is used to keep most of the current layout of the graph
+    ///   unchanged.
     /// </remarks>
     /// <param name="incremental">if set to <see langword="true"/> [incremental].</param>
     /// <param name="incrementalNodes">The incremental nodes.</param>
     private async Task ApplyLayout(bool incremental, params BusinessData[] incrementalNodes) {
-      var layout = new HierarchicLayout();
-      HierarchicLayoutData layoutData = null;
+      var layout = new HierarchicalLayout();
+      var layoutData = layout.CreateLayoutData(graphControl.Graph);
       if (!incremental) {
-        layout.LayoutMode = LayoutMode.FromScratch;
+        layout.FromSketchMode = false;
       } else {
-        layout.LayoutMode = LayoutMode.Incremental;
+        layout.FromSketchMode = true;
 
         if (incrementalNodes.Any()) {
           // we need to add hints for incremental nodes
-          layoutData = new HierarchicLayoutData {
-            IncrementalHints = { IncrementalLayeringNodes = { Source = incrementalNodes.Select(graphSource.GetNode) } }
-          };
+          layoutData.IncrementalNodes.Source = incrementalNodes.Select(graphSource.GetNode);
         }
       }
-      await graphControl.MorphLayout(layout, TimeSpan.FromSeconds(1), layoutData);
+      await graphControl.ApplyLayoutAnimated(layout, TimeSpan.FromSeconds(1), layoutData);
     }
 
     #region Custom commands
 
     public static readonly ICommand AddNodeCommand = new RoutedUICommand("New Node Data", "AddNode",
-                                                                                  typeof(InteractiveNodesGraphSourceWindow));
+        typeof(InteractiveNodesGraphSourceWindow));
 
     public static readonly ICommand RemoveNodeCommand = new RoutedUICommand("Remove Node Data", "RemoveNode",
-                                                                                  typeof(InteractiveNodesGraphSourceWindow));
+        typeof(InteractiveNodesGraphSourceWindow));
 
-    public static readonly ICommand AddPredecessorCommand = new RoutedUICommand("New Predecessor Data", "AddPredecessor",
-                                                                                  typeof(InteractiveNodesGraphSourceWindow));
+    public static readonly ICommand AddPredecessorCommand = new RoutedUICommand("New Predecessor Data",
+        "AddPredecessor", typeof(InteractiveNodesGraphSourceWindow));
 
-    public static readonly ICommand RemovePredecessorCommand = new RoutedUICommand("Remove Predecessor Data", "RemovePredecessor",
-                                                                                  typeof(InteractiveNodesGraphSourceWindow));
+    public static readonly ICommand RemovePredecessorCommand = new RoutedUICommand("Remove Predecessor Data",
+        "RemovePredecessor", typeof(InteractiveNodesGraphSourceWindow));
 
     public static readonly ICommand AddSuccessorCommand = new RoutedUICommand("New Successor Data", "AddSuccessor",
-                                                                                  typeof(InteractiveNodesGraphSourceWindow));
+        typeof(InteractiveNodesGraphSourceWindow));
 
-    public static readonly ICommand RemoveSuccessorCommand = new RoutedUICommand("Remove Successor Data", "RemoveSuccessor",
-                                                                                  typeof(InteractiveNodesGraphSourceWindow));
+    public static readonly ICommand RemoveSuccessorCommand = new RoutedUICommand("Remove Successor Data",
+        "RemoveSuccessor", typeof(InteractiveNodesGraphSourceWindow));
 
     private void Remove_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
       var listBox = e.Parameter as ListBox;
@@ -207,11 +199,7 @@ namespace Demo.yFiles.DataBinding.InteractiveNodesGraphSource
 
     private async void AddData(ICollection<BusinessData> collection, ExecutedRoutedEventArgs e) {
       var command = e.Command as RoutedUICommand;
-      var dialog = new StringInputDialog
-                     {
-                       Title = command == null ? "New Data" : command.Text,
-                       Label = "Name"
-                     };
+      var dialog = new StringInputDialog { Title = command == null ? "New Data" : command.Text, Label = "Name" };
       if (dialog.ShowDialog() == true) {
         var data = new BusinessData(dialog.Value);
         collection.Add(data);
@@ -232,14 +220,14 @@ namespace Demo.yFiles.DataBinding.InteractiveNodesGraphSource
     #region UI event handlers
 
     /// <summary>
-    /// Called when an item is dropped on the <see cref="ListView"/> of NodesSource.
+    ///   Called when an item is dropped on the <see cref="ListView"/> of NodesSource.
     /// </summary>
     private async void NodesSourceListBox_OnDrop(object sender, DragEventArgs e) {
       await OnDropOnListBox(e, graphSource.NodesSource as ICollection<BusinessData>);
     }
 
     /// <summary>
-    /// Called when an item is dropped on the <see cref="ListView"/> of Predecessors.
+    ///   Called when an item is dropped on the <see cref="ListView"/> of Predecessors.
     /// </summary>
     private async void PredecessorsListBox_OnDrop(object sender, DragEventArgs e) {
       BusinessData currentData = GetCurrentItemData();
@@ -249,7 +237,7 @@ namespace Demo.yFiles.DataBinding.InteractiveNodesGraphSource
     }
 
     /// <summary>
-    /// Called when an item is dropped  on the <see cref="ListView"/> of Successors.
+    ///   Called when an item is dropped  on the <see cref="ListView"/> of Successors.
     /// </summary>
     private async void SuccessorsListBox_OnDrop(object sender, DragEventArgs e) {
       BusinessData currentData = GetCurrentItemData();
@@ -282,7 +270,7 @@ namespace Demo.yFiles.DataBinding.InteractiveNodesGraphSource
         }
       }
     }
-    
+
     private void TemplateNode_OnMouseLeave(object sender, MouseEventArgs e) {
       // initilialize drag when mouse is dragged out to ensure MouseUp works
       if (e.LeftButton == MouseButtonState.Pressed) {
@@ -312,14 +300,14 @@ namespace Demo.yFiles.DataBinding.InteractiveNodesGraphSource
     private void TemplateNodeTextBox_OnKeyDown(object sender, KeyEventArgs e) {
       if (e.Key == Key.Return || e.Key == Key.Enter) {
         string text = ((TextBox) sender).Text;
-        // create new business object with input text 
+        // create new business object with input text
         templateNodeControl.DataContext = new BusinessData(text);
         templateNodeTextBox.Visibility = Visibility.Collapsed;
       }
       if (e.Key == Key.Escape) {
         // hide textbox
         templateNodeTextBox.Visibility = Visibility.Collapsed;
-      } 
+      }
     }
 
     private void TemplateNodeTextBox_OnLostFocus(object sender, RoutedEventArgs e) {
@@ -328,23 +316,23 @@ namespace Demo.yFiles.DataBinding.InteractiveNodesGraphSource
     }
 
     /// <summary>
-    /// Called when an item is dropped over the trashcan visual.
+    ///   Called when an item is dropped over the trashcan visual.
     /// </summary>
     private async void Trashcan_OnDrop(object sender, DragEventArgs e) {
       object listTypeData = e.Data.GetData(typeof(ListType));
-      if (listTypeData != null) { 
+      if (listTypeData != null) {
         // we have a ListType, so the node must be dragged from one of the lists
-      var draggedData = e.Data.GetData(typeof(BusinessData)) as BusinessData;
-      if (draggedData == null) {
-        // just to be sure
-        return;
-      }
+        var draggedData = e.Data.GetData(typeof(BusinessData)) as BusinessData;
+        if (draggedData == null) {
+          // just to be sure
+          return;
+        }
         var type = (ListType) listTypeData;
         var currentData = GetCurrentItemData();
         switch (type) {
           case ListType.NodesSource:
             // an item from NodesSource has been dragged
-            ((ObservableCollection<BusinessData>)graphSource.NodesSource).Remove(draggedData);
+            ((ObservableCollection<BusinessData>) graphSource.NodesSource).Remove(draggedData);
             await ApplyLayout(true);
             break;
           case ListType.Predecessors:
@@ -402,6 +390,7 @@ namespace Demo.yFiles.DataBinding.InteractiveNodesGraphSource
     }
 
     private Point startPoint;
+
     private void OnListMouseDown(object sender, MouseButtonEventArgs e) {
       // remember the mouse position for drag start
       startPoint = e.GetPosition(null);
@@ -415,11 +404,10 @@ namespace Demo.yFiles.DataBinding.InteractiveNodesGraphSource
 
       if (e.LeftButton == MouseButtonState.Pressed &&
           (Math.Abs(diff.X) > SystemParameters.MinimumHorizontalDragDistance ||
-          Math.Abs(diff.Y) > SystemParameters.MinimumVerticalDragDistance)) {
+              Math.Abs(diff.Y) > SystemParameters.MinimumVerticalDragDistance)) {
         // Get the dragged ListViewItem
         ListView listView = sender as ListView;
-        ListViewItem listViewItem =
-            FindAncestor<ListViewItem>((DependencyObject)e.OriginalSource);
+        ListViewItem listViewItem = FindAncestor<ListViewItem>((DependencyObject) e.OriginalSource);
 
         if (listViewItem == null) {
           // exit if for whatever reason we didn't find the ListViewItem
@@ -427,10 +415,9 @@ namespace Demo.yFiles.DataBinding.InteractiveNodesGraphSource
         }
 
         // get the list that the event occurred on
-        var listType = listView == nodesSourceListBox ? ListType.NodesSource
-                     : listView == predecessorsListBox ? ListType.Predecessors
-                     : listView == successorsListBox ? ListType.Successors 
-                     : ListType.None;
+        var listType = listView == nodesSourceListBox ? ListType.NodesSource :
+            listView == predecessorsListBox ? ListType.Predecessors :
+            listView == successorsListBox ? ListType.Successors : ListType.None;
 
         FrameworkElement o = e.OriginalSource as FrameworkElement;
         if (o != null) {
@@ -444,11 +431,10 @@ namespace Demo.yFiles.DataBinding.InteractiveNodesGraphSource
 
     private void OnListMouseUp(object sender, MouseButtonEventArgs e) {
       // select the ListViewItem on mouse up to keep items from being selected at drag start
-      ListViewItem listViewItem =
-          FindAncestor<ListViewItem>((DependencyObject)e.OriginalSource);
+      ListViewItem listViewItem = FindAncestor<ListViewItem>((DependencyObject) e.OriginalSource);
       if (listViewItem != null) {
         listViewItem.IsSelected = true;
-        ((ListView)sender).Focus();
+        ((ListView) sender).Focus();
       }
     }
 
@@ -456,20 +442,20 @@ namespace Demo.yFiles.DataBinding.InteractiveNodesGraphSource
       switch (e.Key) {
         case Key.Delete:
           if (sender == nodesSourceListBox) {
-            ((RoutedUICommand)RemoveNodeCommand).Execute(nodesSourceListBox, graphControl);
+            ((RoutedUICommand) RemoveNodeCommand).Execute(nodesSourceListBox, graphControl);
           } else if (sender == predecessorsListBox) {
-            ((RoutedUICommand)RemovePredecessorCommand).Execute(predecessorsListBox, graphControl);
+            ((RoutedUICommand) RemovePredecessorCommand).Execute(predecessorsListBox, graphControl);
           } else if (sender == successorsListBox) {
-            ((RoutedUICommand)RemoveSuccessorCommand).Execute(successorsListBox, graphControl);
+            ((RoutedUICommand) RemoveSuccessorCommand).Execute(successorsListBox, graphControl);
           }
           break;
         case Key.Insert:
           if (sender == nodesSourceListBox) {
-            ((RoutedUICommand)AddNodeCommand).Execute(nodesSourceListBox, graphControl);
+            ((RoutedUICommand) AddNodeCommand).Execute(nodesSourceListBox, graphControl);
           } else if (sender == predecessorsListBox) {
-            ((RoutedUICommand)AddPredecessorCommand).Execute(predecessorsListBox, graphControl);
+            ((RoutedUICommand) AddPredecessorCommand).Execute(predecessorsListBox, graphControl);
           } else if (sender == successorsListBox) {
-            ((RoutedUICommand)AddSuccessorCommand).Execute(successorsListBox, graphControl);
+            ((RoutedUICommand) AddSuccessorCommand).Execute(successorsListBox, graphControl);
           }
           break;
       }
@@ -477,19 +463,22 @@ namespace Demo.yFiles.DataBinding.InteractiveNodesGraphSource
 
     private enum ListType
     {
-      NodesSource, Predecessors, Successors, None
+      NodesSource,
+      Predecessors,
+      Successors,
+      None
     }
 
     #endregion
 
     #region UI helper methods
 
-    private static void StartDrag([NotNull]BusinessData data, FrameworkElement o, ListType listType) {
+    private static void StartDrag([NotNull] BusinessData data, FrameworkElement o, ListType listType) {
       // initialize the drag operation of a business data object
       if (o != null) {
         DataObject dao = new DataObject();
-        dao.SetData(typeof (BusinessData), data);
-        dao.SetData(typeof (ListType), listType);
+        dao.SetData(typeof(BusinessData), data);
+        dao.SetData(typeof(ListType), listType);
         DragDrop.DoDragDrop(o, dao, DragDropEffects.Link | DragDropEffects.Copy | DragDropEffects.Move);
       }
     }
@@ -505,17 +494,16 @@ namespace Demo.yFiles.DataBinding.InteractiveNodesGraphSource
     }
 
     #endregion
-
   }
 
   #region Business data
 
   /// <summary>
-  /// Represents an object of the business data.
+  ///   Represents an object of the business data.
   /// </summary>
   public class BusinessData : ICloneable
   {
-    public BusinessData() :this("Unnamed") {}
+    public BusinessData() : this("Unnamed") { }
 
     public BusinessData(string name) {
       NodeName = name;
@@ -524,7 +512,9 @@ namespace Demo.yFiles.DataBinding.InteractiveNodesGraphSource
     }
 
     public String NodeName { get; set; }
+
     public ObservableCollection<BusinessData> Successors { get; set; }
+
     public ObservableCollection<BusinessData> Predecessors { get; set; }
 
     public override string ToString() {
@@ -586,7 +576,9 @@ namespace Demo.yFiles.DataBinding.InteractiveNodesGraphSource
 
   internal static class Helpers
   {
-    public static bool TryGetItemsSourceCollection(this ListBox listBox, out ICollection<BusinessData> itemsCollection) {
+    public static bool TryGetItemsSourceCollection(
+        this ListBox listBox,
+        out ICollection<BusinessData> itemsCollection) {
       if (listBox == null) {
         itemsCollection = null;
         return false;
@@ -597,5 +589,4 @@ namespace Demo.yFiles.DataBinding.InteractiveNodesGraphSource
   }
 
   #endregion
-
 }

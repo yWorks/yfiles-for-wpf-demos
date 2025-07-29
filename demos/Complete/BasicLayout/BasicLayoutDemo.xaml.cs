@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -32,34 +32,27 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows;
 using Demo.yFiles.Toolkit;
+using yWorks.Controls.Input;
+using yWorks.Graph;
 using yWorks.Layout;
 using yWorks.Layout.Circular;
-using yWorks.Layout.Hierarchic;
+using yWorks.Layout.Hierarchical;
 using yWorks.Layout.Organic;
 using yWorks.Layout.Orthogonal;
 using yWorks.Layout.Router;
-using yWorks.Layout.Router.Polyline;
 using yWorks.Layout.Tree;
-using yWorks.Controls.Input;
-using yWorks.Graph;
-using EdgeRoutingStyle = yWorks.Layout.Router.Polyline.EdgeRoutingStyle;
+using RoutingStyle = yWorks.Layout.Router.RoutingStyle;
 
 namespace Demo.yFiles.Layout.BasicLayout
 {
-
-  ///<summary>
-  /// This class shows how to use important layout and routing algorithms
-  /// to calculate coordinates for a graph. 
-  /// Featured layout and routing styles are Organic, Orthogonal (Router), 
-  /// Orthogonal (Layout), Circular and Hierarchical.
-  ///</summary>
+  /// <summary>
+  ///   This class shows how to use important layout and routing algorithms to calculate coordinates for a graph.
+  ///   Featured layout and routing styles are Hierarchical, Organic, Orthogonal, Circular, Tree and Polyline Edge
+  ///   Router.
+  /// </summary>
   public partial class BasicLayoutDemo
   {
-    private readonly Dictionary<string, ILayoutAlgorithm> layouts = new Dictionary<string, ILayoutAlgorithm>();
-
-    public Dictionary<string, ILayoutAlgorithm> Layouts {
-      get { return layouts; }
-    }
+    public Dictionary<string, ILayoutAlgorithm> Layouts { get; } = new();
 
     public ILayoutAlgorithm CurrentLayout { get; set; }
 
@@ -67,7 +60,7 @@ namespace Demo.yFiles.Layout.BasicLayout
     private async Task ApplyLayout() {
       // launch the layout in a separate thread and animate the result
       try {
-        await graphControl.MorphLayout(CurrentLayout, TimeSpan.FromSeconds(1));
+        await graphControl.ApplyLayoutAnimated(CurrentLayout, TimeSpan.FromSeconds(1));
       } catch (Exception e) {
         MessageBox.Show(this, "Layout did not complete successfully.\n" + e.Message);
       }
@@ -78,63 +71,51 @@ namespace Demo.yFiles.Layout.BasicLayout
     }
 
     private void SetupLayouts() {
-      //using hierarchical layout style
-      HierarchicLayout hierarchicLayout = new HierarchicLayout();
-      hierarchicLayout.EdgeLayoutDescriptor.RoutingStyle = new yWorks.Layout.Hierarchic.RoutingStyle(
-        yWorks.Layout.Hierarchic.EdgeRoutingStyle.Orthogonal);
+      // using hierarchical layout style
+      var hierarchicalLayout = new HierarchicalLayout();
 
-      CurrentLayout = hierarchicLayout;
-      layouts.Add("Hierarchic", hierarchicLayout);
+      CurrentLayout = hierarchicalLayout;
+      Layouts.Add("Hierarchical", hierarchicalLayout);
 
-      //using organic layout style
-      OrganicLayout organic = new OrganicLayout
-                                       {
-                                         QualityTimeRatio = 1.0,
-                                         NodeOverlapsAllowed = false,
-                                         NodeEdgeOverlapAvoided = true,
-                                         MinimumNodeDistance = 10,
-                                         PreferredEdgeLength = 50,
-                                       };
-      layouts.Add("Organic", organic);
+      // using organic layout style
+      var organic = new OrganicLayout {
+          QualityTimeRatio = 1.0,
+          AllowNodeOverlaps = false,
+          AvoidNodeEdgeOverlap = true,
+          DefaultMinimumNodeDistance = 10,
+          DefaultPreferredEdgeLength = 50
+      };
+      Layouts.Add("Organic", organic);
 
-      //using orthogonal layout style
-      OrthogonalLayout orthogonal = new OrthogonalLayout
-                                        {
-                                          GridSpacing = 15,
-                                          OptimizePerceivedBends = true
-                                        };
-      layouts.Add("Orthogonal", orthogonal);
+      // using orthogonal layout style
+      var orthogonal = new OrthogonalLayout { GridSpacing = 15 };
+      Layouts.Add("Orthogonal", orthogonal);
 
-      //using circular layout style
-      CircularLayout circular = new CircularLayout();
-      circular.BalloonLayout.MinimumEdgeLength = 50;
-      circular.BalloonLayout.CompactnessFactor = 0.1;
-      layouts.Add("Circular", circular);
+      // using circular layout style
+      var circular = new CircularLayout();
+      circular.BackboneLayout.MinimumEdgeLength = 50;
+      circular.BackboneLayout.CompactnessFactor = 0.95;
+      Layouts.Add("Circular", circular);
 
       // a tree layout algorithm
-      TreeLayout treeLayout = new TreeLayout { ConsiderNodeLabels = true };
-      treeLayout.AppendStage(new TreeReductionStage()
-      {
-        NonTreeEdgeRouter = new OrganicEdgeRouter(),
-        NonTreeEdgeSelectionKey = OrganicEdgeRouter.AffectedEdgesDpKey,
-      });
-      layouts.Add("Tree", treeLayout);
-
-      //using Polyline Router
-      var polylineRouter = new EdgeRouter
-      {
-        Grid = new Grid(0, 0, 10),
-        DefaultEdgeLayoutDescriptor = { RoutingStyle = EdgeRoutingStyle.Orthogonal },
-        Rerouting = true
+      var treeLayout = new TreeLayout {
+          NodeLabelPlacement = NodeLabelPlacement.Consider,
+          TreeReductionStage = { NonTreeEdgeRouter = new OrganicEdgeRouter() }
       };
-      polylineRouter.DefaultEdgeLayoutDescriptor.PenaltySettings.BendPenalty = 3;
-      polylineRouter.DefaultEdgeLayoutDescriptor.PenaltySettings.EdgeCrossingPenalty = 5;
-      layouts.Add("Polyline Edge Router", polylineRouter);
+      Layouts.Add("Tree", treeLayout);
+
+      // using Polyline Router
+      var polylineRouter = new EdgeRouter {
+          GridSpacing = 10, DefaultEdgeDescriptor = { RoutingStyle = RoutingStyle.Orthogonal }, Rerouting = true
+      };
+      polylineRouter.DefaultEdgeDescriptor.EdgeRouterCosts.BendCost = 3;
+      polylineRouter.DefaultEdgeDescriptor.EdgeRouterCosts.EdgeCrossingCost = 5;
+      Layouts.Add("Polyline Edge Router", polylineRouter);
     }
 
     private void Demo_Load(object sender, EventArgs e) {
       SetupLayouts();
-      layoutComboBox.ItemsSource = layouts.Keys;
+      layoutComboBox.ItemsSource = Layouts.Keys;
       InitializeGraph();
       InitializeInputModes();
 
@@ -142,10 +123,10 @@ namespace Demo.yFiles.Layout.BasicLayout
     }
 
     /// <summary>
-    /// Creates a small graph and various layouts to it.
+    ///   Creates a small graph and various layouts to it.
     /// </summary>
     private void InitializeGraph() {
-      IGraph graph = graphControl.Graph;
+      var graph = graphControl.Graph;
 
       graphControl.FileOperationsEnabled = true;
       graphControl.NavigationCommandsEnabled = true;
@@ -159,19 +140,19 @@ namespace Demo.yFiles.Layout.BasicLayout
     }
 
     private void InitializeInputModes() {
-      graphControl.InputMode = new GraphEditorInputMode {AllowGroupingOperations = true};
+      graphControl.InputMode = new GraphEditorInputMode();
     }
 
     private void ReadSampleGraph() {
       graphControl.ImportFromGraphML("Resources\\sample-flat.graphml");
-      int i = 0;
+      var i = 0;
       foreach (var node in graphControl.Graph.Nodes) {
         graphControl.Graph.AddLabel(node, (++i).ToString());
       }
     }
 
     private async void layoutComboBox_SelectedValueChanged(object sender, EventArgs e) {
-      CurrentLayout = layouts[(string)layoutComboBox.SelectedItem];
+      CurrentLayout = Layouts[(string) layoutComboBox.SelectedItem];
       await ApplyLayout();
     }
 

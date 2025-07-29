@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -28,54 +28,64 @@
  ***************************************************************************/
 
 using System;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Media;
-using yWorks.Controls.Input;
 using yWorks.Controls;
+using yWorks.Controls.Input;
 using yWorks.Geometry;
 using yWorks.Graph;
-using yWorks.Graph.Styles;
 using yWorks.Graph.LabelModels;
+using yWorks.Graph.Styles;
+using yWorks.Utils;
 
 namespace Demo.yFiles.Graph.Input.LabelEditing
 {
   /// <summary>
-  /// A label style that renders labels always at the same size regardless of the zoom level.
+  ///   A label style that renders labels always at the same size regardless of the zoom level.
   /// </summary>
   /// <remarks>
-  /// The style is implemented as a wrapper for an existing label style.
+  ///   The style is implemented as a wrapper for an existing label style.
   /// </remarks>
-  public class ZoomInvariantLabelStyle : LabelStyleBase<VisualGroup>
+  public sealed class ZoomInvariantLabelStyle : LabelStyleBase<VisualGroup>
   {
+    /// <summary>
+    ///   A <see cref="ResourceKey"/> that will be used to find the <see cref="DataTemplate"/>
+    ///   for drawing the selection indicator.
+    /// </summary>
+    [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
+    public static readonly ResourceKey SelectionTemplateKey =
+        new ComponentResourceKey(typeof(ZoomInvariantLabelStyle), "SelectionTemplateKey");
+
     private readonly SimpleLabel dummyLabel;
     private readonly OrientedRectangle rectangle;
-    
+
     /// <summary>
-    /// Instantiates a new label style.
+    ///   Instantiates a new label style.
     /// </summary>
     public ZoomInvariantLabelStyle(ILabelStyle innerLabelStyle) {
       InnerLabelStyle = innerLabelStyle;
       rectangle = new OrientedRectangle();
-      dummyLabel = new SimpleLabel(null, string.Empty, new FreeLabelModel().CreateDynamic(rectangle));
+      dummyLabel = new SimpleLabel { LayoutParameter = new FreeLabelModel().CreateDynamic(rectangle) };
     }
 
     /// <summary>
-    /// The inner style to use for the rendering.
+    ///   The inner style to use for the rendering.
     /// </summary>
     public ILabelStyle InnerLabelStyle { get; set; }
 
     /// <summary>
-    /// Returns the preferred size calculated by the <see cref="InnerLabelStyle"/>.
+    ///   Returns the preferred size calculated by the <see cref="InnerLabelStyle"/>.
     /// </summary>
     protected override SizeD GetPreferredSize(ILabel label) {
       return InnerLabelStyle.Renderer.GetPreferredSize(label, InnerLabelStyle);
     }
 
     /// <summary>
-    /// Creates the visual for the label.
+    ///   Creates the visual for the label.
     /// </summary>
     /// <remarks>
-    /// Implementation of LabelStyleBase.CreateVisual.
+    ///   Implementation of LabelStyleBase.CreateVisual.
     /// </remarks>
     /// <param name="context">The render context.</param>
     /// <param name="label">The label to which this style instance is assigned.</param>
@@ -90,16 +100,16 @@ namespace Demo.yFiles.Graph.Input.LabelEditing
         container.Transform = context.IntermediateTransform;
       }
 
-      RenderDataCache cache = CreateRenderDataCache(context, label);
+      var cache = CreateRenderDataCache(context, label);
       container.SetRenderDataCache(cache);
 
       var creator = InnerLabelStyle.Renderer.GetVisualCreator(dummyLabel, InnerLabelStyle);
 
       // create a new IRenderContext with a zoom of 1
-      var cc = new ContextConfigurator(context.CanvasControl.ContentRect);
+      var cc = new ContextConfigurator(context.CanvasControl.ContentBounds);
       var innerContext = cc.CreateRenderContext(context.CanvasControl);
 
-      //The wrapped style should always think it's rendering with zoom level 1
+      // The wrapped style should always think it's rendering with zoom level 1
       var visual = creator.CreateVisual(innerContext);
       if (visual == null) {
         return container;
@@ -109,7 +119,7 @@ namespace Demo.yFiles.Graph.Input.LabelEditing
       container.Children.Add(visual);
       // if the label is selected, add the selection visualization, too.
       if (cache.Selected) {
-        UIElement selectionVisual = CreateSelectionVisual(innerContext, dummyLabel.GetLayout()) as UIElement;
+        var selectionVisual = CreateSelectionVisual(innerContext, dummyLabel.GetLayout()) as UIElement;
         if (selectionVisual != null) {
           selectionVisual.IsHitTestVisible = false;
         }
@@ -119,21 +129,20 @@ namespace Demo.yFiles.Graph.Input.LabelEditing
     }
 
     public Visual CreateSelectionVisual(IRenderContext context, IOrientedRectangle layout) {
-      var template = context.CanvasControl.TryFindResource(OrientedRectangleIndicatorInstaller.SelectionTemplateKey) as DataTemplate;
+      var template = context.CanvasControl.TryFindResource(SelectionTemplateKey) as DataTemplate;
       var container = new VisualGroup();
-      var frameworkElement = template != null ? (template.LoadContent() as FrameworkElement) : null;
-      if (frameworkElement != null) {
-        container.Children.Add(frameworkElement);
-        return UpdateSelectionVisual(context, container, layout);
+      if (template?.LoadContent() is not FrameworkElement frameworkElement) {
+        return null;
       }
-      return null;
+      container.Children.Add(frameworkElement);
+      return UpdateSelectionVisual(context, container, layout);
     }
 
     /// <summary>
-    /// Update the visual previously created by <see cref="CreateVisual"/>.
+    ///   Update the visual previously created by <see cref="CreateVisual"/>.
     /// </summary>
     /// <remarks>
-    /// Implementation of LabelStyleBase.UpdateVisual.
+    ///   Implementation of LabelStyleBase.UpdateVisual.
     /// </remarks>
     /// <param name="context">The render context.</param>
     /// <param name="oldVisual">The visual that has been created in the call to <see cref="CreateVisual"/>.</param>
@@ -142,18 +151,18 @@ namespace Demo.yFiles.Graph.Input.LabelEditing
     /// <seealso cref="CreateVisual"/>
     protected override VisualGroup UpdateVisual(IRenderContext context, VisualGroup oldVisual, ILabel label) {
       // get the data with which the old visual was created
-      RenderDataCache oldCache = oldVisual.GetRenderDataCache<RenderDataCache>();
+      var oldCache = oldVisual.GetRenderDataCache<RenderDataCache>();
       // get the data for the new visual
-      RenderDataCache newCache = CreateRenderDataCache(context, label);
+      var newCache = CreateRenderDataCache(context, label);
       oldVisual.SetRenderDataCache(newCache);
 
       // create a new visual if the cache has been changed or the container's contents seem to be wrong
-      bool cacheChanged = !newCache.Equals(oldCache);
+      var cacheChanged = !newCache.Equals(oldCache);
       if (cacheChanged) {
         return CreateVisual(context, label);
       }
 
-      if (oldVisual == null || oldVisual.Children.Count != (newCache.Selected?2:1)) {
+      if (oldVisual == null || oldVisual.Children.Count != (newCache.Selected ? 2 : 1)) {
         return CreateVisual(context, label);
       }
 
@@ -166,7 +175,7 @@ namespace Demo.yFiles.Graph.Input.LabelEditing
       UpdateDummyLabel(context, label);
 
       // create a new IRenderContext with a zoom of 1
-      var cc = new ContextConfigurator(context.CanvasControl.ContentRect);
+      var cc = new ContextConfigurator(context.CanvasControl.ContentBounds);
       var innerContext = cc.CreateRenderContext(context.CanvasControl);
 
       // ReSharper disable once PossibleUnintendedReferenceComparison
@@ -192,7 +201,7 @@ namespace Demo.yFiles.Graph.Input.LabelEditing
       if (newCache.Selected) {
         var oldSelectionVisual = oldVisual.Children[1];
 
-        Visual selectionVisual = UpdateSelectionVisual(innerContext, oldSelectionVisual, dummyLabel.GetLayout());
+        var selectionVisual = UpdateSelectionVisual(innerContext, oldSelectionVisual, dummyLabel.GetLayout());
         // ReSharper disable once PossibleUnintendedReferenceComparison
         if (oldSelectionVisual != selectionVisual) {
           oldVisual.Children.Remove(oldSelectionVisual);
@@ -208,16 +217,16 @@ namespace Demo.yFiles.Graph.Input.LabelEditing
       if (container != null && container.Children.Count == 1) {
         var visual = container.Children[0] as FrameworkElement;
         if (visual != null) {
-          Transform transform = context.IntermediateTransform;
+          var transform = context.IntermediateTransform;
           container.Transform = transform;
-          var anchor = layout.GetAnchorLocation();
-          var anchorAndUp = anchor + layout.GetUp();
+          var anchor = layout.GetAnchor();
+          var anchorAndUp = anchor + layout.GetUpVector();
           anchor = context.WorldToIntermediateCoordinates(anchor);
           anchorAndUp = context.WorldToIntermediateCoordinates(anchorAndUp);
 
           var or = new OrientedRectangle();
           or.SetUpVector((anchorAndUp - anchor).Normalized);
-          or.SetAnchor(anchor);
+          or.Anchor = anchor;
           or.Width = layout.Width * context.Zoom;
           or.Height = layout.Height * context.Zoom;
           visual.Width = or.Width;
@@ -236,7 +245,7 @@ namespace Demo.yFiles.Graph.Input.LabelEditing
     }
 
     /// <summary>
-    /// Updates the internal label to match the given original label.
+    ///   Updates the internal label to match the given original label.
     /// </summary>
     private void UpdateDummyLabel(ICanvasContext context, ILabel original) {
       dummyLabel.Owner = original.Owner;
@@ -245,12 +254,12 @@ namespace Demo.yFiles.Graph.Input.LabelEditing
       dummyLabel.Text = original.Text;
 
       var location = original.GetLayout();
-      rectangle.Reshape(location);
-      rectangle.Width = location.Width/context.Zoom;
-      rectangle.Height = location.Height/context.Zoom;
+      rectangle.SetShape(location);
+      rectangle.Width = location.Width / context.Zoom;
+      rectangle.Height = location.Height / context.Zoom;
 
       dummyLabel.PreferredSize = rectangle.ToSizeD();
-      rectangle.Reshape(original.LayoutParameter.Model.GetGeometry(dummyLabel, original.LayoutParameter));
+      rectangle.SetShape(original.LayoutParameter.Model.GetGeometry(dummyLabel, original.LayoutParameter));
       dummyLabel.PreferredSize = location.ToSizeD();
       WorldToIntermediateCoordinates(context, rectangle);
     }
@@ -259,8 +268,7 @@ namespace Demo.yFiles.Graph.Input.LabelEditing
     protected override RectD GetBounds(ICanvasContext context, ILabel label) {
       UpdateDummyLabel(context, label);
       return IntermediateToWorldCoordinates(context,
-                                InnerLabelStyle.Renderer.GetBoundsProvider(dummyLabel, InnerLabelStyle).GetBounds(
-                                  context));
+          InnerLabelStyle.Renderer.GetBoundsProvider(dummyLabel, InnerLabelStyle).GetBounds(context));
     }
 
     /// <inheritdoc/>
@@ -279,29 +287,46 @@ namespace Demo.yFiles.Graph.Input.LabelEditing
     }
 
     /// <summary>
-    /// This implementation of the look up provides a custom implementation of the 
-    /// <see cref="ISelectionIndicatorInstaller"/> interface that better suits to this style.
+    ///   This implementation of the lookup provides a custom implementation of the
+    ///   <see cref="ISelectionRenderer"/> interface that better suits this style.
     /// </summary>
     /// <remarks>
-    /// This implementation uses the actual visual label bounds to render the selection
+    ///   This implementation uses the actual visual label bounds to render the selection.
     /// </remarks>
     protected override object Lookup(ILabel label, Type type) {
-      return type == typeof(ISelectionIndicatorInstaller) 
-        ? new OrientedRectangleIndicatorInstaller(new OrientedRectangle(0, 0, -1, -1), OrientedRectangleIndicatorInstaller.SelectionTemplateKey) 
-        : base.Lookup(label, type);
+      return type == typeof(ISelectionRenderer) ? new VoidSelectionRenderer() : base.Lookup(label, type);
     }
 
     /// <summary>
-    /// Creates an object containing all necessary data to create an edge visual
+    ///   Creates an object containing all necessary data to create an edge visual
     /// </summary>
     private static RenderDataCache CreateRenderDataCache(IRenderContext context, ILabel edge) {
-      IGraphSelection selection = context.CanvasControl != null ? context.CanvasControl.Lookup<IGraphSelection>() : null;
-      bool selected = selection != null && selection.IsSelected(edge);
+      var selection = context.CanvasControl.Lookup<IGraphSelection>();
+      var selected = selection != null && selection.Contains(edge);
       return new RenderDataCache(selected);
     }
 
+    private sealed class VoidSelectionRenderer : ISelectionRenderer
+    {
+      public IVisualCreator GetVisualCreator(object renderTag) {
+        return VoidVisualCreator.Instance;
+      }
+
+      public IBoundsProvider GetBoundsProvider(object renderTag) {
+        return BoundsProviders.Empty;
+      }
+
+      public IVisibilityTestable GetVisibilityTestable(object renderTag) {
+        return VisibilityTestables.Never;
+      }
+
+      public IHitTestable GetHitTestable(object renderTag) {
+        return HitTestables.Never;
+      }
+    }
+
     /// <summary>
-    /// Saves the data which is necessary for the creation of an edge
+    ///   Saves the data which is necessary for the creation of an edge
     /// </summary>
     private sealed class RenderDataCache
     {
@@ -309,10 +334,10 @@ namespace Demo.yFiles.Graph.Input.LabelEditing
         Selected = selected;
       }
 
-      public bool Selected { get; private set; }
+      public bool Selected { get; }
 
       /// <summary>
-      /// Check if this instance is equals to another <see cref="RenderDataCache"/> object
+      ///   Check if this instance is equals to another <see cref="RenderDataCache"/> object
       /// </summary>
       public bool Equals(RenderDataCache other) {
         return other.Selected == Selected;
@@ -325,7 +350,7 @@ namespace Demo.yFiles.Graph.Input.LabelEditing
         if (obj.GetType() != typeof(RenderDataCache)) {
           return false;
         }
-        return Equals((RenderDataCache)obj);
+        return Equals((RenderDataCache) obj);
       }
 
       public override int GetHashCode() {
@@ -337,52 +362,40 @@ namespace Demo.yFiles.Graph.Input.LabelEditing
     #region Conversion between view and world coordinates
 
     /// <summary>
-    /// Converts the given <see cref="OrientedRectangle"/> from the world into the view coordinate space. 
+    ///   Converts the given <see cref="OrientedRectangle"/> from the world into the view coordinate space.
     /// </summary>
     internal static void WorldToIntermediateCoordinates(ICanvasContext context, OrientedRectangle rect) {
-      var anchor = new PointD(rect.Anchor);
-      var anchorAndUp = anchor + rect.GetUp();
+      var anchor = rect.Anchor.ToPointD();
+      var anchorAndUp = anchor + rect.GetUpVector();
 
-      var renderContext = context as IRenderContext ?? context.Lookup(typeof (IRenderContext)) as IRenderContext;
+      var renderContext = context as IRenderContext ?? context.Lookup(typeof(IRenderContext)) as IRenderContext;
       if (renderContext != null) {
         anchor = renderContext.WorldToIntermediateCoordinates(anchor);
         anchorAndUp = renderContext.WorldToIntermediateCoordinates(anchorAndUp);
       } else {
-        var cc = context.Lookup(typeof (CanvasControl)) as CanvasControl;
-        if (cc != null) {
-          anchor = cc.WorldToIntermediateCoordinates(anchor);
-          anchorAndUp = cc.WorldToIntermediateCoordinates(anchorAndUp);
-        } else {
-          // too bad - infer trivial scale matrix
-          anchor *= context.Zoom;
-          anchorAndUp *= context.Zoom;
-        }
+        anchor = context.CanvasControl.WorldToIntermediateCoordinates(anchor);
+        anchorAndUp = context.CanvasControl.WorldToIntermediateCoordinates(anchorAndUp);
       }
 
       rect.SetUpVector((anchorAndUp - anchor).Normalized);
-      rect.SetAnchor(anchor);
+      rect.Anchor = anchor;
       rect.Width *= context.Zoom;
       rect.Height *= context.Zoom;
     }
 
     /// <summary>
-    /// Converts the given rectangle from the view into the world coordinate space. 
+    ///   Converts the given rectangle from the view into the world coordinate space.
     /// </summary>
     internal static RectD IntermediateToWorldCoordinates(ICanvasContext context, RectD rect) {
-      var renderContext = context as IRenderContext ?? context.Lookup(typeof (IRenderContext)) as IRenderContext;
+      var renderContext = context as IRenderContext ?? context.Lookup(typeof(IRenderContext)) as IRenderContext;
       if (renderContext != null) {
         return IntermediateToWorldCoordinates(renderContext.CanvasControl, rect);
       }
-      var cc = context.Lookup(typeof (CanvasControl)) as CanvasControl;
-      if (cc != null) {
-        return IntermediateToWorldCoordinates(cc, rect);
-      }
-      // too bad - infer trivial scale matrix
-      return new RectD(rect.X, rect.Y, rect.Width / context.Zoom, rect.Height / context.Zoom);
+      return IntermediateToWorldCoordinates(context.CanvasControl, rect);
     }
 
     /// <summary>
-    /// Converts the given rectangle from the view into the world coordinate space. 
+    ///   Converts the given rectangle from the view into the world coordinate space.
     /// </summary>
     internal static RectD IntermediateToWorldCoordinates(CanvasControl canvas, RectD rect) {
       var p1 = GetRounded(canvas.IntermediateToWorldCoordinates(rect.GetTopLeft()));

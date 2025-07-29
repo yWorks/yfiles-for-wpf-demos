@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -35,40 +35,45 @@ using yWorks.Controls;
 using yWorks.Controls.Input;
 using yWorks.Geometry;
 using yWorks.Graph;
-using yWorks.Graph.Styles;
 using yWorks.Graph.LabelModels;
 using yWorks.Graph.PortLocationModels;
+using yWorks.Graph.Styles;
+using yWorks.Utils;
 
-namespace Demo.yFiles.Graph.Bpmn.Styles {
-
+namespace Demo.yFiles.Graph.Bpmn.Styles
+{
   /// <summary>
-  /// A label style for message labels of nodes using a <see cref="ChoreographyNodeStyle"/>.
+  ///   A label style for message labels of nodes using a <see cref="ChoreographyNodeStyle"/>.
   /// </summary>
   /// <remarks>
-  /// To place labels with this style, <see cref="ChoreographyLabelModel.NorthMessage"/> 
-  /// or <see cref="ChoreographyLabelModel.SouthMessage"/> are recommended.
+  ///   To place labels with this style, <see cref="ChoreographyLabelModel.TopMessage"/>
+  ///   or <see cref="ChoreographyLabelModel.BottomMessage"/> are recommended.
   /// </remarks>
   [Obfuscation(StripAfterObfuscation = false, Exclude = true, ApplyToMembers = false)]
-  public class ChoreographyMessageLabelStyle : ILabelStyle {
-    private static readonly ChoreographyMessageLabelStyleRenderer renderer = new ChoreographyMessageLabelStyleRenderer();
-    private static readonly BpmnEdgeStyle connectorStyle = new BpmnEdgeStyle { Type = EdgeType.Association };
-    private static readonly DefaultLabelStyle textStyle = new DefaultLabelStyle();
-    internal static readonly ILabelModelParameter defaultTextPlacement = new ExteriorLabelModel {Insets = new InsetsD(5)}.CreateParameter(ExteriorLabelModel.Position.West);
-    private readonly BpmnNodeStyle messageStyle = new BpmnNodeStyle { MinimumSize = BpmnConstants.MessageSize };
+  public sealed class ChoreographyMessageLabelStyle : ILabelStyle
+  {
+    private static readonly ChoreographyMessageLabelStyleRenderer renderer = new();
+
+    private static readonly BpmnEdgeStyle connectorStyle = new() { Type = EdgeType.Association };
+    private static readonly LabelStyle textStyle = new();
+
+    internal static readonly ILabelModelParameter defaultTextPlacement =
+        new ExteriorNodeLabelModel { Margins = new InsetsD(5) }.CreateParameter(ExteriorNodeLabelModel.Position.Left);
+
+    private readonly BpmnNodeStyle messageStyle = new() { MinimumSize = BpmnConstants.MessageSize };
     private readonly ConnectedIconLabelStyle delegateStyle;
 
     /// <summary>
-    /// Gets or sets where the text is placed relative to the message icon.
+    ///   Gets or sets where the text is placed relative to the message icon.
     /// </summary>
     /// <remarks>
-    /// The label model parameter has to support <see cref="INode"/>s.
+    ///   The label model parameter has to support <see cref="INode"/>s.
     /// </remarks>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
-    [DefaultValue(typeof(BpmnDefaultValueConverterHolder), "Demo.yFiles.Graph.Bpmn.Styles.ChoreographyMessageLabelStyle.DefaultTextPlacement")]
+    [DefaultValue(typeof(BpmnDefaultValueConverterHolder),
+        "Demo.yFiles.Graph.Bpmn.Styles.ChoreographyMessageLabelStyle.DefaultTextPlacement")]
     public ILabelModelParameter TextPlacement {
-      get {
-        return delegateStyle != null ? delegateStyle.TextPlacement : null;
-      }
+      get => delegateStyle?.TextPlacement;
       set {
         if (delegateStyle != null) {
           delegateStyle.TextPlacement = value;
@@ -77,18 +82,16 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
     }
 
     /// <summary>
-    /// Creates a new instance.
+    ///   Creates a new instance.
     /// </summary>
     public ChoreographyMessageLabelStyle() {
-
-      delegateStyle = new ConnectedIconLabelStyle
-      {
-        IconSize = BpmnConstants.MessageSize,
-        IconStyle = messageStyle,
-        TextStyle = textStyle,
-        ConnectorStyle = connectorStyle,
-        LabelConnectorLocation = FreeNodePortLocationModel.NodeBottomAnchored,
-        NodeConnectorLocation = FreeNodePortLocationModel.NodeTopAnchored
+      delegateStyle = new ConnectedIconLabelStyle {
+          IconSize = BpmnConstants.MessageSize,
+          IconStyle = messageStyle,
+          TextStyle = textStyle,
+          ConnectorStyle = connectorStyle,
+          LabelConnectorLocation = FreeNodePortLocationModel.Bottom,
+          NodeConnectorLocation = FreeNodePortLocationModel.Top
       };
 
       TextPlacement = defaultTextPlacement;
@@ -102,16 +105,16 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
 
     /// <inheritdoc/>
     [Obfuscation(StripAfterObfuscation = false, Exclude = true)]
-    public ILabelStyleRenderer Renderer { get { return renderer;  } }
+    public ILabelStyleRenderer Renderer => renderer;
 
     /// <summary>
-    /// An <see cref="ILabelStyleRenderer"/> implementation used by <see cref="ChoreographyMessageLabelStyle"/>.
+    ///   An <see cref="ILabelStyleRenderer"/> implementation used by <see cref="ChoreographyMessageLabelStyle"/>.
     /// </summary>
-    internal class ChoreographyMessageLabelStyleRenderer : ILabelStyleRenderer, IVisualCreator
+    internal sealed class ChoreographyMessageLabelStyleRenderer : ILabelStyleRenderer, IVisualCreator
     {
       private ILabel item;
       private ILabelStyle style;
-      private bool north;
+      private bool top;
       private Brush messageColor;
       private Pen messageOutline;
 
@@ -122,27 +125,25 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
           return VoidLabelStyle.Instance;
         }
 
-        north = true;
+        top = true;
         messageColor = BpmnConstants.DefaultInitiatingMessageColor;
         messageOutline = null;
-        var node = item.Owner as INode;
-        if (node != null) {
-          north = item.GetLayout().GetCenter().Y < node.Layout.GetCenter().Y;
+        if (item.Owner is INode node) {
+          top = item.GetLayout().GetCenter().Y < node.Layout.GetCenter().Y;
 
-          var nodeStyle = node.Style as ChoreographyNodeStyle;
-          if (nodeStyle != null) {
-            var responseMessage = nodeStyle.InitiatingAtTop ^ north;
+          if (node.Style is ChoreographyNodeStyle nodeStyle) {
+            var responseMessage = nodeStyle.InitiatingAtTop ^ top;
             messageColor = responseMessage ? nodeStyle.ResponseColor : nodeStyle.InitiatingColor;
             messageOutline = nodeStyle.messagePen;
           }
         }
-        messageOutline = messageOutline ?? (Pen) new Pen(BpmnConstants.DefaultMessageOutline, 1).GetAsFrozen();
+        messageOutline ??= (Pen) new Pen(BpmnConstants.DefaultMessageOutline, 1).GetAsFrozen();
 
         var delegateStyle = labelStyle.delegateStyle;
         delegateStyle.IconStyle = labelStyle.messageStyle;
         labelStyle.messageStyle.Icon = IconFactory.CreateMessage(messageOutline, messageColor);
-        delegateStyle.LabelConnectorLocation = north ? FreeNodePortLocationModel.NodeBottomAnchored : FreeNodePortLocationModel.NodeTopAnchored;
-        delegateStyle.NodeConnectorLocation = north ? FreeNodePortLocationModel.NodeTopAnchored : FreeNodePortLocationModel.NodeBottomAnchored;
+        delegateStyle.LabelConnectorLocation = top ? FreeNodePortLocationModel.Bottom : FreeNodePortLocationModel.Top;
+        delegateStyle.NodeConnectorLocation = top ? FreeNodePortLocationModel.Top : FreeNodePortLocationModel.Bottom;
         return delegateStyle;
       }
 
@@ -178,6 +179,12 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
       }
 
       /// <inheritdoc/>
+      public ILassoTestable GetLassoTestable(ILabel item, ILabelStyle style) {
+        var delegateStyle = GetCurrentStyle(item, style);
+        return delegateStyle.Renderer.GetLassoTestable(item, delegateStyle);
+      }
+
+      /// <inheritdoc/>
       public ILookup GetContext(ILabel item, ILabelStyle style) {
         var delegateStyle = GetCurrentStyle(item, style);
         return delegateStyle.Renderer.GetContext(item, delegateStyle);
@@ -209,7 +216,8 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
         }
         var delegateStyle = GetCurrentStyle(item, style);
         var oldDelegateVisual = container.Children[0];
-        var newDelegateVisual = delegateStyle.Renderer.GetVisualCreator(item, delegateStyle).UpdateVisual(context, oldDelegateVisual);
+        var newDelegateVisual = delegateStyle.Renderer.GetVisualCreator(item, delegateStyle)
+            .UpdateVisual(context, oldDelegateVisual);
         if (oldDelegateVisual != newDelegateVisual) {
           container.Children[0] = newDelegateVisual;
         }
@@ -217,21 +225,20 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
       }
 
       private RenderData CreateRenderData() {
-        return new RenderData
-        {
-          North = north,
-          MessageColor = messageColor,
-          MessageOutline = messageOutline,
-          TextPlacement = ((ChoreographyMessageLabelStyle) style).TextPlacement,
+        return new RenderData {
+            Top = top,
+            MessageColor = messageColor,
+            MessageOutline = messageOutline,
+            TextPlacement = ((ChoreographyMessageLabelStyle) style).TextPlacement
         };
       }
 
 #pragma warning disable 659 // we never yield this class and we are the only ones to call Equals, so we don't need GetHashCode()
-      sealed class RenderData
+      private sealed class RenderData
       {
         public ILabelModelParameter TextPlacement { private get; set; }
 
-        public bool North { private get; set; }
+        public bool Top { private get; set; }
 
         public Brush MessageColor { private get; set; }
 
@@ -242,10 +249,8 @@ namespace Demo.yFiles.Graph.Bpmn.Styles {
           if (other == null) {
             return false;
           }
-          return TextPlacement == other.TextPlacement &&
-                 North == other.North && 
-                 Equals(MessageColor, other.MessageColor) &&
-                 Equals(MessageOutline, other.MessageOutline);
+          return TextPlacement == other.TextPlacement && Top == other.Top && Equals(MessageColor, other.MessageColor) &&
+              Equals(MessageOutline, other.MessageOutline);
         }
       }
     }

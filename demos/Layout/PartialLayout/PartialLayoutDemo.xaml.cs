@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -39,61 +39,59 @@ using Demo.yFiles.Toolkit;
 using yWorks.Controls.Input;
 using yWorks.Geometry;
 using yWorks.Graph;
+using yWorks.Graph.LabelModels;
 using yWorks.Graph.Styles;
 using yWorks.Layout;
 using yWorks.Layout.Circular;
-using yWorks.Layout.Hierarchic;
+using yWorks.Layout.Hierarchical;
 using yWorks.Layout.Organic;
 using yWorks.Layout.Orthogonal;
-using yWorks.Graph.LabelModels;
 using yWorks.Layout.Partial;
 using yWorks.Utils;
-using LayoutOrientation = yWorks.Layout.Partial.LayoutOrientation;
+using RoutingStyle = yWorks.Layout.Partial.RoutingStyle;
 
 namespace Demo.yFiles.Layout.PartialLayout
 {
   /// <summary>
-  /// This demo shows how to apply <see cref="Demo.yFiles.Layout.PartialLayout"/> to orthogonal, organic, hierarchic or
-  /// circular layouts and the effect of some of its configuration settings.
+  ///   This demo shows how to apply <see cref="Demo.yFiles.Layout.PartialLayout"/> to orthogonal, organic, hierarchical, or
+  ///   circular layouts and the effect of some of its configuration settings.
   /// </summary>
-  /// <remarks>The partial layout algorithm changes the coordinates of a given set of graph elements
-  /// (called partial elements) and leaves the location and size of all other elements
-  /// (called fixed elements) unchanged. The algorithm aims to place the partial elements
-  /// such that the resulting drawing (including the fixed elements) has a good quality
-  /// with respect to common graph drawing aesthetics.
+  /// <remarks>
+  ///   The partial layout algorithm changes the coordinates of a given set of graph elements
+  ///   (called partial elements) and leaves the location and size of all other elements
+  ///   (called fixed elements) unchanged. The algorithm aims to place the partial elements
+  ///   such that the resulting drawing (including the fixed elements) has a good quality
+  ///   with respect to common graph drawing aesthetics.
   /// </remarks>
   public partial class PartialLayoutDemo
   {
-    private const string HierarchicScenario = "Hierarchic";
+    private const string HierarchicalScenario = "Hierarchical";
     private const string OrthogonalScenario = "Orthogonal";
     private const string OrganicScenario = "Organic";
     private const string CircularScenario = "Circular";
 
-    private static readonly INodeStyle PartialGroupNodeStyle =
-      DemoStyles.CreateDemoGroupStyle(Themes.Palette12, true);
+    private static readonly INodeStyle PartialGroupNodeStyle = DemoStyles.CreateDemoGroupStyle(Themes.Palette12, true);
 
-    private static readonly INodeStyle FixedGroupNodeStyle =
-      DemoStyles.CreateDemoGroupStyle(Themes.Palette58, true);
+    private static readonly INodeStyle FixedGroupNodeStyle = DemoStyles.CreateDemoGroupStyle(Themes.Palette58, true);
 
-    private static readonly INodeStyle PartialNodeStyle =
-      DemoStyles.CreateDemoNodeStyle(Themes.PaletteOrange);
-    private static readonly INodeStyle FixedNodeStyle =
-      DemoStyles.CreateDemoNodeStyle(Themes.Palette58);
+    private static readonly INodeStyle PartialNodeStyle = DemoStyles.CreateDemoNodeStyle(Themes.PaletteOrange);
+    private static readonly INodeStyle FixedNodeStyle = DemoStyles.CreateDemoNodeStyle(Themes.Palette58);
 
     private static readonly PolylineEdgeStyle PartialEdgeStyle =
-      DemoStyles.CreateDemoEdgeStyle(new Palette("#ff6c00", "#ff6c00", "#ff6c00", "#ff6c00", "#ff6c00"));
+        DemoStyles.CreateDemoEdgeStyle(new Palette("#ff6c00", "#ff6c00", "#ff6c00", "#ff6c00", "#ff6c00"));
 
-    private static readonly PolylineEdgeStyle FixedEdgeStyle =
-      DemoStyles.CreateDemoEdgeStyle(Themes.Palette58);
+    private static readonly PolylineEdgeStyle FixedEdgeStyle = DemoStyles.CreateDemoEdgeStyle(Themes.Palette58);
 
     // the mapper storing if a node/edge is fixed or shall be moved by the partial layout
 
-    private static readonly IDictionary<string, ILayoutAlgorithm> SubGraphLayouts = new Dictionary<string, ILayoutAlgorithm>(4);
+    private static readonly IDictionary<string, ILayoutAlgorithm> SubGraphLayouts =
+        new Dictionary<string, ILayoutAlgorithm>(4);
+
     private MasterViewConversionMapper<IEdge, bool> partialEdgesMapper;
     private MasterViewConversionMapper<INode, bool> partialNodesMapper;
 
     static PartialLayoutDemo() {
-      SubGraphLayouts[LayoutIncremental] = new HierarchicLayout();
+      SubGraphLayouts[LayoutIncremental] = new HierarchicalLayout();
       SubGraphLayouts[LayoutOrganic] = new OrganicLayout();
       SubGraphLayouts[LayoutOrthogonal] = new OrthogonalLayout();
       SubGraphLayouts[LayoutCircular] = new CircularLayout();
@@ -105,7 +103,7 @@ namespace Demo.yFiles.Layout.PartialLayout
     }
 
     private void OnLoaded(object sender, EventArgs e) {
-      scenarioComboBox.Items.Add(HierarchicScenario);
+      scenarioComboBox.Items.Add(HierarchicalScenario);
       scenarioComboBox.Items.Add(OrthogonalScenario);
       scenarioComboBox.Items.Add(OrganicScenario);
       scenarioComboBox.Items.Add(CircularScenario);
@@ -116,16 +114,16 @@ namespace Demo.yFiles.Layout.PartialLayout
     }
 
     /// <summary>
-    /// Activates folding, sets the defaults for new graph elements and registers mappers
+    ///   Activates folding, sets the defaults for new graph elements and registers mappers
     /// </summary>
     private void InitializeGraphDefaults() {
       var fm = new FoldingManager();
       graphControl.Graph = fm.CreateFoldingView().Graph;
 
-      IGraph graph = graphControl.Graph;
+      var graph = graphControl.Graph;
       graphControl.NavigationCommandsEnabled = true;
 
-      //Create graph
+      // Create graph
       graph.NodeDefaults.Size = new SizeD(60, 30);
 
       // set the style as the default for all new nodes
@@ -136,47 +134,47 @@ namespace Demo.yFiles.Layout.PartialLayout
 
       var groupNodeDefaults = graph.GroupNodeDefaults;
       groupNodeDefaults.Labels.LayoutParameter = new GroupNodeLabelModel().CreateTabBackgroundParameter();
-      groupNodeDefaults.Labels.Style = new DefaultLabelStyle { TextAlignment = TextAlignment.Left, TextBrush = Brushes.White };
+      groupNodeDefaults.Labels.Style = new LabelStyle { TextAlignment = TextAlignment.Left, TextBrush = Brushes.White };
       groupNodeDefaults.Style = PartialGroupNodeStyle;
 
-      //Create and register mappers that specifiy partial graph elements
+      // Create and register mappers that specifiy partial graph elements
       partialNodesMapper = new MasterViewConversionMapper<INode, bool>(graph) { DefaultValue = true };
       partialEdgesMapper = new MasterViewConversionMapper<IEdge, bool>(graph) { DefaultValue = true };
 
-      graphControl.GraphMLIOHandler.AddInputMapper(yWorks.Layout.Partial.PartialLayout.AffectedNodesDpKey.Name, partialNodesMapper);
-      graphControl.GraphMLIOHandler.AddInputMapper(yWorks.Layout.Partial.PartialLayout.AffectedEdgesDpKey.Name, partialEdgesMapper);
+      graphControl.GraphMLIOHandler.AddInputMapper(yWorks.Layout.Partial.PartialLayout.NodeScopeDataKey.Id,
+          partialNodesMapper);
+      graphControl.GraphMLIOHandler.AddInputMapper(yWorks.Layout.Partial.PartialLayout.EdgeScopeDataKey.Id,
+          partialEdgesMapper);
     }
 
     /// <summary>
-    /// Configures input modes to interact with the graph structure.
+    ///   Configures input modes to interact with the graph structure.
     /// </summary>
     private void InitializeInputModes() {
       var graphEditorInputMode = new GraphEditorInputMode();
       graphEditorInputMode.ItemDoubleClicked += ItemDoubleClicked;
       // add a label to newly created nodes and mark the node as non-fixed
-      graphEditorInputMode.NodeCreated +=
-          delegate(object sender, ItemEventArgs<INode> args) {
-            var node = args.Item;
-            if (graphControl.Graph.IsGroupNode(node)) {
-              graphControl.Graph.AddLabel(node, "Group");
-            } else {
-              graphControl.Graph.AddLabel(node,
-                graphControl.Graph.Nodes.Count.ToString());
-            }
-            SetFixed(node, false);
-          };
-      graphEditorInputMode.CreateEdgeInputMode.EdgeCreated +=
-        (sender, args) => SetFixed(args.Item, false);
+      graphEditorInputMode.NodeCreated += delegate(object sender, InputModeItemEventArgs<INode> args) {
+        var node = args.Item;
+        if (graphControl.Graph.IsGroupNode(node)) {
+          graphControl.Graph.AddLabel(node, "Group");
+        } else {
+          graphControl.Graph.AddLabel(node, graphControl.Graph.Nodes.Count.ToString());
+        }
+        SetFixed(node, false);
+      };
+      graphEditorInputMode.CreateEdgeInputMode.EdgeCreated += (sender, args) => SetFixed(args.Item, false);
       graphControl.InputMode = graphEditorInputMode;
     }
 
     /// <summary>
-    /// If an <c>INode</c> or <c>IEdge</c> was double clicked, its fixed/partial state gets toggled.
+    ///   If an <c>INode</c> or <c>IEdge</c> was double clicked, its fixed/partial state gets toggled.
     /// </summary>
     private void ItemDoubleClicked(object sender, ClickEventArgs e) {
       var geim = e.Context.Lookup<GraphEditorInputMode>();
       if (geim != null) {
-        IModelItem modelItem = geim.FindItems(e.Location, new[] { GraphItemTypes.Node | GraphItemTypes.Edge }, null).FirstOrDefault();
+        var modelItem = geim.FindItems(e.Location, new[] { GraphItemTypes.Node | GraphItemTypes.Edge })
+            .FirstOrDefault();
         if (modelItem is INode) {
           var node = (INode) modelItem;
           SetFixed(node, !IsFixed(node));
@@ -190,7 +188,7 @@ namespace Demo.yFiles.Layout.PartialLayout
     }
 
     /// <summary>
-    /// Sets the given node as fixed or movable and changes its color to indicate its new state.
+    ///   Sets the given node as fixed or movable and changes its color to indicate its new state.
     /// </summary>
     private void SetFixed(INode node, bool isFixed) {
       partialNodesMapper[node] = !isFixed;
@@ -215,15 +213,15 @@ namespace Demo.yFiles.Layout.PartialLayout
     }
 
     /// <summary>
-    /// Returns if a given edge is considered fixed or shall be rerouted by the layout algorithm.
-    /// Note that an edge always gets rerouted if any of its end nodes may be moved.
+    ///   Returns if a given edge is considered fixed or shall be rerouted by the layout algorithm.
+    ///   Note that an edge always gets rerouted if any of its end nodes may be moved.
     /// </summary>
     private bool IsFixed(IEdge edge) {
       return !partialEdgesMapper[edge];
     }
 
     /// <summary>
-    /// Returns if a given node is considered fixed or shall be moved by the layout algorithm.
+    ///   Returns if a given node is considered fixed or shall be moved by the layout algorithm.
     /// </summary>
     private bool IsFixed(INode node) {
       return !partialNodesMapper[node];
@@ -243,10 +241,10 @@ namespace Demo.yFiles.Layout.PartialLayout
     }
 
     private void SetSelectionFixed(bool setFixed) {
-      foreach (INode n in graphControl.Selection.SelectedNodes) {
+      foreach (var n in graphControl.Selection.Nodes) {
         SetFixed(n, setFixed);
       }
-      foreach (IEdge e in graphControl.Selection.SelectedEdges) {
+      foreach (var e in graphControl.Selection.Edges) {
         SetFixed(e, setFixed);
       }
     }
@@ -255,40 +253,45 @@ namespace Demo.yFiles.Layout.PartialLayout
       LoadScenario();
     }
 
-    private void SetOptions(ComponentAssignmentStrategy componentAssignmentStrategy, string coreLayout,
-                            SubgraphPlacement subgraphPlacement,
-                            EdgeRoutingStrategy edgeRoutingStrategy, LayoutOrientation layoutOrientation,
-                            int minNodeDistance, bool allowMirroring, bool nodeSnapping) {
-      handler.GetItemByName(ComponentAssignment).Value = componentAssignmentStrategy;
-      handler.GetItemByName(SubgraphLayout).Value = coreLayout;
-      handler.GetItemByName(SubgraphPositioning).Value = subgraphPlacement;
-      handler.GetItemByName(EdgeRouting).Value = edgeRoutingStrategy;
-      handler.GetItemByName(LayoutOrientationStrategy).Value = layoutOrientation;
-      handler.GetItemByName(MinimumNodeDistance).Value = minNodeDistance;
-      handler.GetItemByName(AllowMirroring).Value = allowMirroring;
-      handler.GetItemByName(NodeSnapping).Value = nodeSnapping;
+    private void SetOptions(
+        ComponentAssignmentStrategy componentAssignmentStrategy,
+        string coreLayout,
+        SubgraphPlacement subgraphPlacement,
+        RoutingStyle edgeRoutingStyle,
+        PartialLayoutOrientation layoutOrientation,
+        int minNodeDistance,
+        bool allowMirroring,
+        bool nodeSnapping) {
+      Handler.GetItemByName(ComponentAssignment).Value = componentAssignmentStrategy;
+      Handler.GetItemByName(SubgraphLayout).Value = coreLayout;
+      Handler.GetItemByName(SubgraphPositioning).Value = subgraphPlacement;
+      Handler.GetItemByName(EdgeRouting).Value = edgeRoutingStyle;
+      Handler.GetItemByName(LayoutOrientationStrategy).Value = layoutOrientation;
+      Handler.GetItemByName(MinimumNodeDistance).Value = minNodeDistance;
+      Handler.GetItemByName(AllowMirroring).Value = allowMirroring;
+      Handler.GetItemByName(NodeSnapping).Value = nodeSnapping;
     }
 
 
     private void LoadScenario() {
-      string scenario = (string) scenarioComboBox.SelectedItem;
+      var scenario = (string) scenarioComboBox.SelectedItem;
       ReadSampleGraph("Resources\\" + scenario + ".graphml");
       switch (scenario) {
-        case HierarchicScenario:
+        case HierarchicalScenario:
           SetOptions(ComponentAssignmentStrategy.Connected, LayoutIncremental, SubgraphPlacement.Barycenter,
-                     EdgeRoutingStrategy.Orthogonal, LayoutOrientation.TopToBottom, 5, true, true);
+              RoutingStyle.Orthogonal, PartialLayoutOrientation.TopToBottom, 5, true, true);
           break;
         case OrthogonalScenario:
           SetOptions(ComponentAssignmentStrategy.Single, LayoutOrthogonal, SubgraphPlacement.Barycenter,
-                     EdgeRoutingStrategy.Orthogonal, LayoutOrientation.None, 20, false, true);
+              RoutingStyle.Orthogonal, PartialLayoutOrientation.None, 20, false, true);
           break;
         case OrganicScenario:
           SetOptions(ComponentAssignmentStrategy.Single, LayoutOrganic, SubgraphPlacement.Barycenter,
-                     EdgeRoutingStrategy.Automatic, LayoutOrientation.None, 30, true, false);
+              RoutingStyle.Automatic, PartialLayoutOrientation.None, 30, true, false);
           break;
         case CircularScenario:
           SetOptions(ComponentAssignmentStrategy.Connected, LayoutCircular, SubgraphPlacement.Barycenter,
-                     EdgeRoutingStrategy.Automatic, LayoutOrientation.None, 10, true, false);
+              RoutingStyle.Automatic, PartialLayoutOrientation.None, 10, true, false);
           break;
       }
     }
@@ -309,9 +312,9 @@ namespace Demo.yFiles.Layout.PartialLayout
       SetSelectionFixed(false);
     }
 
-    #region Option Handler for layout options    
+    #region Option Handler for layout options
 
-    private const string LayoutIncremental = "Hierarchic";
+    private const string LayoutIncremental = "Hierarchical";
     private const string LayoutOrganic = "Organic";
     private const string LayoutOrthogonal = "Orthogonal";
     private const string LayoutCircular = "Circular";
@@ -325,11 +328,8 @@ namespace Demo.yFiles.Layout.PartialLayout
     private const string MinimumNodeDistance = "Minimum Node Distance";
     private const string AllowMirroring = "Allow Mirroring";
     private const string NodeSnapping = "Node Snapping";
-    private OptionHandler handler;
 
-    private OptionHandler Handler {
-      get { return handler; }
-    }
+    private OptionHandler Handler { get; set; }
 
     private void SetupOptions() {
       // create the options
@@ -341,24 +341,20 @@ namespace Demo.yFiles.Layout.PartialLayout
     }
 
     /// <summary>
-    /// Initializes the option handler for the export
+    ///   Initializes the option handler for the export
     /// </summary>
     private void SetupHandler() {
-      handler = new OptionHandler(LayoutOptions);
-      OptionItem componentItem = handler.AddList(ComponentAssignment,
-                                                 new[]
-                                                   {
-                                                     ComponentAssignmentStrategy.Single,
-                                                     ComponentAssignmentStrategy.Connected
-                                                   },
-                                                 ComponentAssignmentStrategy.Single);
-      OptionItem subgraphItem = handler.AddList(SubgraphLayout, SubGraphLayouts.Keys, LayoutIncremental);
-      handler.Add(SubgraphPositioning, SubgraphPlacement.Barycenter);
-      handler.Add(EdgeRouting, EdgeRoutingStrategy.Automatic);
-      handler.Add(LayoutOrientationStrategy, LayoutOrientation.TopToBottom);
-      handler.AddInt(MinimumNodeDistance, 5, 0, int.MaxValue);
-      handler.AddBool(AllowMirroring, true);
-      handler.AddBool(NodeSnapping, true);
+      Handler = new OptionHandler(LayoutOptions);
+      OptionItem componentItem = Handler.AddList(ComponentAssignment,
+          new[] { ComponentAssignmentStrategy.Single, ComponentAssignmentStrategy.Connected },
+          ComponentAssignmentStrategy.Single);
+      OptionItem subgraphItem = Handler.AddList(SubgraphLayout, SubGraphLayouts.Keys, LayoutIncremental);
+      Handler.Add(SubgraphPositioning, SubgraphPlacement.Barycenter);
+      Handler.Add(EdgeRouting, RoutingStyle.Automatic);
+      Handler.Add(LayoutOrientationStrategy, PartialLayoutOrientation.TopToBottom);
+      Handler.AddInt(MinimumNodeDistance, 5, 0, int.MaxValue);
+      Handler.AddBool(AllowMirroring, true);
+      Handler.AddBool(NodeSnapping, true);
       var cm = new ConstraintManager(Handler);
 
       cm.SetEnabledOnValueEquals(componentItem, ComponentAssignmentStrategy.Connected, subgraphItem);
@@ -370,61 +366,52 @@ namespace Demo.yFiles.Layout.PartialLayout
 
     ///<summary>Create a <c>PartialLayout</c> using the selected demo settings</summary>
     private yWorks.Layout.Partial.PartialLayout CreateConfiguredPartialLayout() {
-      var subGraphLayout = SubGraphLayouts[(string) handler.GetItemByName(SubgraphLayout).Value];
+      var subGraphLayout = SubGraphLayouts[(string) Handler.GetItemByName(SubgraphLayout).Value];
       ConfigureCoreLayout(subGraphLayout);
-      var partialLayout = new yWorks.Layout.Partial.PartialLayout
-                              {
-                                ComponentAssignmentStrategy =
-                                  (ComponentAssignmentStrategy) handler.GetItemByName(ComponentAssignment).Value,
-                                CoreLayout = subGraphLayout,
-                                SubgraphPlacement =
-                                  (SubgraphPlacement) handler.GetItemByName(SubgraphPositioning).Value,
-                                EdgeRoutingStrategy = (EdgeRoutingStrategy) handler.GetItemByName(EdgeRouting).Value,
-                                LayoutOrientation =
-                                  (LayoutOrientation) handler.GetItemByName(LayoutOrientationStrategy).Value,
-                                MinimumNodeDistance = (int) handler.GetItemByName(MinimumNodeDistance).Value,
-                                AllowMirroring = (bool) handler.GetItemByName(AllowMirroring).Value,
-                                ConsiderNodeAlignment = (bool) handler.GetItemByName(NodeSnapping).Value
-                              };
+      var partialLayout = new yWorks.Layout.Partial.PartialLayout {
+          ComponentAssignmentStrategy = (ComponentAssignmentStrategy) Handler.GetItemByName(ComponentAssignment).Value,
+          CoreLayout = subGraphLayout,
+          SubgraphPlacement = (SubgraphPlacement) Handler.GetItemByName(SubgraphPositioning).Value,
+          EdgeRoutingStyle = (RoutingStyle) Handler.GetItemByName(EdgeRouting).Value,
+          LayoutOrientation = (PartialLayoutOrientation) Handler.GetItemByName(LayoutOrientationStrategy).Value,
+          MinimumNodeDistance = (int) Handler.GetItemByName(MinimumNodeDistance).Value,
+          AllowMirroring = (bool) Handler.GetItemByName(AllowMirroring).Value,
+          ConsiderNodeAlignment = (bool) Handler.GetItemByName(NodeSnapping).Value
+      };
 
       return partialLayout;
     }
 
     ///<summary> Uses some of the demo settings to further configure the core layout algorithm </summary>
     private void ConfigureCoreLayout(ILayoutAlgorithm coreLayout) {
-      int minNodeDistance = (int) handler.GetItemByName(MinimumNodeDistance).Value;
+      var minNodeDistance = (int) Handler.GetItemByName(MinimumNodeDistance).Value;
       if (coreLayout is OrthogonalLayout) {
         ((OrthogonalLayout) coreLayout).GridSpacing = minNodeDistance;
-      } else if (coreLayout is HierarchicLayout) {
-        ((HierarchicLayout) coreLayout).MinimumLayerDistance = minNodeDistance;
+      } else if (coreLayout is HierarchicalLayout) {
+        ((HierarchicalLayout) coreLayout).MinimumLayerDistance = minNodeDistance;
       } else if (coreLayout is CircularLayout) {
-        ((CircularLayout) coreLayout).SingleCycleLayout.MinimumNodeDistance = minNodeDistance;
-        ((CircularLayout) coreLayout).BalloonLayout.MinimumNodeDistance = minNodeDistance;
+        ((CircularLayout) coreLayout).PartitionDescriptor.MinimumNodeDistance = minNodeDistance;
+        ((CircularLayout) coreLayout).BackboneLayout.MinimumNodeDistance = minNodeDistance;
       }
     }
 
-    ///<summary>
-    /// Runs either the table or the three tiers layout depending on the selected scenario.
-    ///</summary>
+    /// <summary>
+    ///   Runs either the table or the three tiers layout depending on the selected scenario.
+    /// </summary>
     private async Task RunLayout() {
       DisableButtons();
-      var layoutData = new PartialLayoutData {
-        AffectedEdges = {Mapper = partialEdgesMapper},
-        AffectedNodes = {Mapper = partialNodesMapper}
+      var partialLayout = CreateConfiguredPartialLayout();
+      var layoutData = partialLayout.CreateLayoutData(graphControl.Graph);
+      layoutData.Scope.Nodes.Mapper = partialNodesMapper;
+      layoutData.Scope.Edges.Mapper = partialEdgesMapper;
+      var executor = new LayoutExecutor(graphControl, partialLayout) {
+          AnimationDuration = TimeSpan.FromMilliseconds(500), AnimateViewport = true, LayoutData = layoutData
       };
-      var executor = new LayoutExecutor(
-        graphControl, CreateConfiguredPartialLayout())
-                       {
-                         Duration = TimeSpan.FromMilliseconds(500),
-                         AnimateViewport = true,
-                         LayoutData = layoutData
-                       };
 
       try {
         await executor.Start();
       } catch (Exception e) {
-        MessageBox.Show(this,
-          "Layout did not complete successfully.\n" + e.Message);
+        MessageBox.Show(this, "Layout did not complete successfully.\n" + e.Message);
       }
 
       EnableButtons();
@@ -450,17 +437,17 @@ namespace Demo.yFiles.Layout.PartialLayout
   }
 
   /// <summary>
-  /// <see cref="IMapper{K,V}"/> implementation, backed by a <see cref="DictionaryMapper{K,V}"/>,
-  /// that transparently accepts either master or view items.
+  ///   <see cref="IMapper{K,V}"/> implementation, backed by a <see cref="DictionaryMapper{K,V}"/>,
+  ///   that transparently accepts either master or view items.
   /// </summary>
   /// <typeparam name="K">The key type.</typeparam>
   /// <typeparam name="V">The value type.</typeparam>
-  class MasterViewConversionMapper<K, V> : IMapper<K, V> where K : IModelItem
+  internal class MasterViewConversionMapper<K, V> : IMapper<K, V> where K : IModelItem
   {
     private readonly IGraph viewGraph;
     private readonly IGraph masterGraph;
     private readonly IFoldingView foldingView;
-    private readonly DictionaryMapper<IModelItem, V> backingMapper = new DictionaryMapper<IModelItem, V>();
+    private readonly DictionaryMapper<IModelItem, V> backingMapper = new();
 
     public MasterViewConversionMapper(IGraph viewGraph) {
       this.viewGraph = viewGraph;
@@ -469,13 +456,13 @@ namespace Demo.yFiles.Layout.PartialLayout
     }
 
     public V this[K key] {
-      get { return backingMapper[GetMasterItem(key)]; }
-      set { backingMapper[GetMasterItem(key)] = value; }
+      get => backingMapper[GetMasterItem(key)];
+      set => backingMapper[GetMasterItem(key)] = value;
     }
 
     public V DefaultValue {
-      get { return backingMapper.DefaultValue; }
-      set { backingMapper.DefaultValue = value; }
+      get => backingMapper.DefaultValue;
+      set => backingMapper.DefaultValue = value;
     }
 
     private IModelItem GetMasterItem(IModelItem item) {

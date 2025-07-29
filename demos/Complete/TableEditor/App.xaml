@@ -1,6 +1,6 @@
 <!-- ************************************************************************ -->
-<!-- This demo file is part of yFiles WPF 3.6.                           -->
-<!-- Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
+<!-- This demo file is part of yFiles WPF 4.0.                           -->
+<!-- Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
 <!-- 72070 Tuebingen, Germany. All rights reserved.                           -->
 <!--                                                                          -->
 <!-- yFiles demo files exhibit yFiles WPF functionalities. Any redistribution  -->
@@ -27,7 +27,7 @@
 <Application x:Class="Demo.yFiles.Graph.TableEditor.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/3.0/xaml"
+             xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/4.0/xaml"
              StartupUri="TableEditorWindow.xaml">
     <Application.Resources>
         <ResourceDictionary>
@@ -37,7 +37,7 @@
             <ControlTemplate x:Key="ColumnTemplate" TargetType="{x:Type ywpf:StripeControl}">
                 <Grid Background="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=StyleTag.BackgroundBrush}">
                     <Border BorderBrush="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=StyleTag.InsetBrush}"  
-                        BorderThickness="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Insets}">
+                        BorderThickness="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=TotalPadding}">
                     </Border>
                     <Border BorderBrush="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=StyleTag.BorderBrush}" 
                         BorderThickness="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=StyleTag.BorderThickness}"/>
@@ -46,7 +46,7 @@
             <ControlTemplate x:Key="RowTemplate" TargetType="{x:Type ywpf:StripeControl}">
                 <Grid Background="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=StyleTag.BackgroundBrush}">
                     <Border BorderBrush="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=StyleTag.InsetBrush}" 
-                        BorderThickness="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Insets}">
+                        BorderThickness="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=TotalPadding}">
                     </Border>
                     <Border BorderBrush="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=StyleTag.BorderBrush}" 
                         BorderThickness="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=StyleTag.BorderThickness}"/>

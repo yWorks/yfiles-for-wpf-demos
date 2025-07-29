@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 3.6.
- ** Copyright (c) 2000-2024 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.0.
+ ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -29,24 +29,17 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Windows;
 using Neo4j.Driver;
-using yWorks.Controls;
 using yWorks.Geometry;
 using yWorks.Graph;
-using yWorks.Graph.DataBinding;
-using yWorks.Graph.LabelModels;
-using yWorks.Graph.Styles;
-using yWorks.Layout.Hierarchic;
-using INode = yWorks.Graph.INode;
+using yWorks.Layout;
+using yWorks.Layout.Hierarchical;
 using INeo4jNode = Neo4j.Driver.INode;
 
 namespace Neo4JIntegration
 {
   /// <summary>
-  /// Interaction logic for PathViewer.xaml
+  ///   Interaction logic for PathViewer.xaml
   /// </summary>
   public partial class PathViewer
   {
@@ -54,7 +47,8 @@ namespace Neo4JIntegration
     private readonly List<IRelationship> edges;
 
     private async void OnLoaded(object source, EventArgs args) {
-      var (graphBuilder, _, _) = Neo4JIntegrationDemo.CreateGraphBuilder(graphControl, graphControl.Graph, nodes, edges);
+      var (graphBuilder, _, _) =
+          Neo4JIntegrationDemo.CreateGraphBuilder(graphControl, graphControl.Graph, nodes, edges);
 
       // Build the graph
       graphBuilder.BuildGraph();
@@ -62,10 +56,13 @@ namespace Neo4JIntegration
       graphControl.Center = PointD.Origin;
 
       // Layout the graph
-      await graphControl.MorphLayout(new HierarchicLayout
-      {
-        IntegratedEdgeLabeling = true
-      }, TimeSpan.FromSeconds(0.5), null);
+      await graphControl.ApplyLayoutAnimated(
+          new HierarchicalLayout {
+              EdgeLabelPlacement = EdgeLabelPlacement.Integrated,
+              DefaultEdgeDescriptor = {
+                  RoutingStyleDescriptor = new RoutingStyleDescriptor(RoutingStyle.Polyline)
+              }
+          }, TimeSpan.FromSeconds(0.5));
     }
 
     public PathViewer(List<INeo4jNode> nodes, List<IRelationship> edges) {

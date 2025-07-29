@@ -1,112 +1,19 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="..\..\Utils\OptionHandler\OptionHandler.csproj" />
+    <ProjectReference Include="..\..\Utils\DemoToolkit\DemoToolkit.csproj" />
+    <Reference Include="yWorks.yFilesWPF.Complete">
+      <HintPath>..\..\..\lib\net6.0\yWorks.yFilesWPF.Complete.dll</HintPath>
+    </Reference>
+  </ItemGroup>
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.30729</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{CA7D578A-F1EE-49A3-8B93-3F6C171FAEC6}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Demo.yFiles.Layout.MazeRouting</RootNamespace>
     <AssemblyName>MazeRoutingDemo</AssemblyName>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
-    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <FileUpgradeFlags></FileUpgradeFlags>
-    <OldToolsVersion>3.5</OldToolsVersion>
-    <UpgradeBackupLocation></UpgradeBackupLocation>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\x86\Release</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <PlatformTarget>x86</PlatformTarget>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\x86\Debug</OutputPath>
-    <DefineConstants>TRACE;DEBUG</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <PlatformTarget>x86</PlatformTarget>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <WarningLevel>4</WarningLevel>
+    <UseWPF>true</UseWPF>
+    <TargetFramework>net6.0-windows</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
-    <Reference Include="System" />
-    <Reference Include="System.Xaml" />
-    <Reference Include="System.Xml" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="WindowsBase" />
-    <Reference Include="System.Core" />
-    <Reference Include="yWorks.yFilesWPF.Adapter">
-      <HintPath>..\..\..\..\lib\net40\yWorks.yFilesWPF.Adapter.dll</HintPath>
-    </Reference>
-    <Reference Include="yWorks.yFilesWPF.Algorithms">
-      <HintPath>..\..\..\..\lib\net40\yWorks.yFilesWPF.Algorithms.dll</HintPath>
-    </Reference>
-    <Reference Include="yWorks.yFilesWPF.Viewer">
-      <HintPath>..\..\..\..\lib\net40\yWorks.yFilesWPF.Viewer.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="PolylineEdgeRouterCustomConfig.cs" />
-    <Compile Include="MazeRoutingWindow.xaml.cs">
-      <DependentUpon>MazeRoutingWindow.xaml</DependentUpon>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\Utils\OptionHandler\OptionHandler.csproj">
-      <Project>{8cf93f4c-00a0-4ccd-9fc5-fcde57522435}</Project>
-      <Name>OptionHandler</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Utils\DemoToolkit\DemoToolkit.csproj">
-      <Project>{aaa67dcc-aa93-4eb4-8b93-f09d77292c09}</Project>
-      <Name>DemoToolkit</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <ApplicationDefinition Include="App.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </ApplicationDefinition>
-  </ItemGroup>
-  <ItemGroup>
-    <Page Include="MazeRoutingWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Properties\licenses.licx" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config" />
     <None Include="Resources\mazeOnly.graphml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -114,7 +21,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\..\lib\net6.0\yWorks.yFilesWPF.DevelopmentLicense.xml" Condition="Exists('..\..\..\lib\net6.0\yWorks.yFilesWPF.DevelopmentLicense.xml')" />
+    <EmbeddedResource Include="..\..\..\lib\net6.0\yWorks.yFilesWPF.License.xml" Condition="Exists('..\..\..\lib\net6.0\yWorks.yFilesWPF.License.xml') And !Exists('..\..\..\lib\net6.0\yWorks.yFilesWPF.DevelopmentLicense.xml')" />
+  </ItemGroup>
   <!--The following target ensures that the project will build even when the ZIP file has been-->
   <!--extracted with Explorer or another tool that retains the origin zone marker for the files.-->
   <!--If that does not work, an error message will be shown in Visual Studio's Error List.-->
@@ -122,4 +32,9 @@
   <Target Name="BeforeBuild">
     <Exec Command="if exist &quot;%(Reference.HintPath)&quot; (&gt;nul 2&gt;nul (&gt;nul 2&gt;nul findstr ZoneId&lt;&quot;%(Reference.HintPath):Zone.Identifier&quot;) &amp;&amp; ((&gt;nul 2&gt;nul powershell -noprofile -nologo -command &quot;Unblock-File '%(Reference.HintPath)'&quot;) || (2&gt;nul type nul &gt;&quot;%(Reference.HintPath):Zone.Identifier&quot;) || (&lt;nul &gt;&amp;2 set /p _=Err&amp;&gt;&amp;2 echo or: The file @(Reference) originates from the Internet Zone and prevents compilation. Please unblock it manually in its properties. See the Knowledge Base at http://kb.yworks.com/article/736.)))" IgnoreExitCode="True" />
   </Target>
+  <PropertyGroup Condition=" '$(NETCoreAppMaximumVersion)' != '' ">
+    <TargetFramework>net$(NETCoreAppMaximumVersion)-windows</TargetFramework>
+    <TargetFramework Condition=" !$(NETCoreAppMaximumVersion.StartsWith('3')) And !('$(UseWPF)' == 'true' Or '$(UseWindowsForms)' == 'true') ">net$(NETCoreAppMaximumVersion)</TargetFramework>
+    <TargetFramework Condition=" $(NETCoreAppMaximumVersion.StartsWith('3')) ">netcoreapp$(NETCoreAppMaximumVersion)</TargetFramework>
+  </PropertyGroup>
 </Project>
