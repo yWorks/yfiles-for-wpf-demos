@@ -1,0 +1,51 @@
+{
+  "nodes": [
+    {
+      "id": 0,
+      "layer": 0,
+      "labels": [{ "text": "0", "cssClass": "highlight" }],
+      "cssClass": "highlight"
+    },
+    { "id": 1, "layer": 1, "labels": "1" },
+    {
+      "id": 2,
+      "layer": 2,
+      "labels": [{ "text": "2", "cssClass": "highlight" }],
+      "cssClass": "highlight"
+    },
+    { "id": 3, "layer": 3, "labels": "3" },
+    { "id": 4, "layer": 4, "labels": "4" },
+    { "id": 5, "layer": 5, "labels": "5" },
+    { "id": 6, "layer": 6, "labels": "6" },
+    {
+      "id": 7,
+      "layer": 7,
+      "labels": [{ "text": "7", "cssClass": "highlight" }],
+      "cssClass": "highlight"
+    },
+    { "id": 8, "layer": 8, "labels": "8" },
+    {
+      "id": 9,
+      "layer": 9,
+      "labels": [{ "text": "9", "cssClass": "highlight" }],
+      "cssClass": "highlight"
+    },
+    { "id": 10, "layer": 10, "labels": "10" },
+    { "id": 11, "layer": 11, "labels": "11" }
+  ],
+  "edges": [
+    { "id": 0, "source": 0, "target": 1 },
+    { "id": 1, "source": 0, "target": 2 },
+    { "id": 2, "source": 0, "target": 3 },
+    { "id": 3, "source": 1, "target": 4 },
+    { "id": 4, "source": 1, "target": 6 },
+    { "id": 5, "source": 0, "target": 4 },
+    { "id": 6, "source": 4, "target": 5 },
+    { "id": 7, "source": 2, "target": 7 },
+    { "id": 8, "source": 2, "target": 8 },
+    { "id": 9, "source": 3, "target": 9 },
+    { "id": 10, "source": 8, "target": 10 },
+    { "id": 11, "source": 4, "target": 11 },
+    { "id": 12, "source": 6, "target": 10 }
+  ]
+}

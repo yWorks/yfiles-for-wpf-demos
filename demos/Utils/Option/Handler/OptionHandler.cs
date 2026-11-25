@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 4.0.
- ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -29,14 +29,14 @@
 
 using System;
 using System.Collections.Generic;
-using Demo.yFiles.Option.Constraint;
-using Demo.yFiles.Option.DataBinding;
-using Demo.yFiles.Option.Editor;
-using Demo.yFiles.Option.I18N;
-using Demo.yFiles.Option.View;
+using yWorks.Demo.Option.Constraint;
+using yWorks.Demo.Option.DataBinding;
+using yWorks.Demo.Option.Editor;
+using yWorks.Demo.Option.I18N;
+using yWorks.Demo.Option.View;
 using yWorks.Utils;
 
-namespace Demo.yFiles.Option.Handler
+namespace yWorks.Demo.Option.Handler
 {
   /// <summary>
   ///   This class can be used to manage settings and options that belong together
@@ -50,7 +50,7 @@ namespace Demo.yFiles.Option.Handler
   public class OptionHandler : OptionGroup
   {
     //todo: make more specific
-    private List<WeakReference> views = new();
+    private List<WeakReference> views = [];
 
     // not sure if this should be serialized...
 
@@ -65,9 +65,7 @@ namespace Demo.yFiles.Option.Handler
     /// </remarks>
     public I18NFactory I18nFactory { get; set; }
 
-    public OptionGroup GetGroupByName(string name) {
-      return (OptionGroup) OptionItemExtensions.GetGroupByName(this, name);
-    }
+    public OptionGroup GetGroupByName(string name) => (OptionGroup) OptionItemExtensions.GetGroupByName(this, name);
 
     /// <inheritdoc/>
     public override object Lookup(Type type) {
@@ -98,7 +96,7 @@ namespace Demo.yFiles.Option.Handler
 
     internal void AddView(IModelView view) {
       if (views == null) {
-        views = new List<WeakReference>();
+        views = [];
       }
       //todo: add notification
       views.Add(new WeakReference(view));

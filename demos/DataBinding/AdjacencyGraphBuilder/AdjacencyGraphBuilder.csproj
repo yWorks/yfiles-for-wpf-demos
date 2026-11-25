@@ -1,23 +1,20 @@
 <Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup />
   <ItemGroup>
-    <ProjectReference Include="..\..\Utils\DemoToolkit\DemoToolkit.csproj" />
-    <Reference Include="yWorks.yFilesWPF.Complete">
-      <HintPath>..\..\..\lib\net6.0\yWorks.yFilesWPF.Complete.dll</HintPath>
-    </Reference>
+    <ProjectReference Include="../../Utils/DemoToolkit/DemoToolkit.csproj" />
+    <PackageReference Include="yWorks.yFilesWPF.Complete" Version="4.1.0" />
   </ItemGroup>
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>Demo.yFiles.DataBinding.AdjacencyGraphBuilder</RootNamespace>
-    <AssemblyName>AdjacencyGraphBuilder</AssemblyName>
     <UseWPF>true</UseWPF>
     <TargetFramework>net6.0-windows</TargetFramework>
+    <LangVersion>14.0</LangVersion>
   </PropertyGroup>
   <ItemGroup>
-    <Resource Include="Resources\**\*.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="..\..\..\lib\net6.0\yWorks.yFilesWPF.DevelopmentLicense.xml" Condition="Exists('..\..\..\lib\net6.0\yWorks.yFilesWPF.DevelopmentLicense.xml')" />
-    <EmbeddedResource Include="..\..\..\lib\net6.0\yWorks.yFilesWPF.License.xml" Condition="Exists('..\..\..\lib\net6.0\yWorks.yFilesWPF.License.xml') And !Exists('..\..\..\lib\net6.0\yWorks.yFilesWPF.DevelopmentLicense.xml')" />
+    <EmbeddedResource Include="Resources/description.html" />
+    <EmbeddedResource Include="Resources/model.xml" />
+    <EmbeddedResource Include="../../../lib/net6.0/yWorks.yFilesWPF.DevelopmentLicense.xml" Condition="Exists('../../../lib/net6.0/yWorks.yFilesWPF.DevelopmentLicense.xml')" />
+    <EmbeddedResource Include="../../../lib/net6.0/yWorks.yFilesWPF.License.xml" Condition="Exists('../../../lib/net6.0/yWorks.yFilesWPF.License.xml') And !Exists('../../../lib/net6.0/yWorks.yFilesWPF.DevelopmentLicense.xml')" />
   </ItemGroup>
   <!--The following target ensures that the project will build even when the ZIP file has been-->
   <!--extracted with Explorer or another tool that retains the origin zone marker for the files.-->

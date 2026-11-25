@@ -1,6 +1,6 @@
 <!-- ************************************************************************ -->
-<!-- This demo file is part of yFiles WPF 4.0.                           -->
-<!-- Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
+<!-- This demo file is part of yFiles WPF 4.1.                           -->
+<!-- Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
 <!-- 72070 Tuebingen, Germany. All rights reserved.                           -->
 <!--                                                                          -->
 <!-- yFiles demo files exhibit yFiles WPF functionalities. Any redistribution  -->
@@ -27,7 +27,7 @@
 <ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
-    xmlns:ControlStyles="clr-namespace:Demo.yFiles.Graph.ControlStyles"     
+    xmlns:ControlStyles="clr-namespace:yWorks.Demo.ControlStyles"     
     xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/4.0/xaml"
 >    
     <Style x:Key="CustomerNodeTemplate" TargetType="ywpf:NodeControl">
@@ -36,14 +36,14 @@
         <Setter Property="ContentTemplate">
             <Setter.Value>
                 <DataTemplate DataType="{x:Type ControlStyles:Customer}">
-                    <StackPanel>
+                    <StackPanel TextElement.Foreground="Black">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="Id: "/>
-                            <TextBlock Text="{Binding Id}"/>
+                            <TextBlock Text="Id: " Foreground="Black"/>
+                            <TextBlock Text="{Binding Id}" Foreground="Black"/>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="Location: "/>
-                            <TextBlock Text="{Binding Location}"/>
+                            <TextBlock Text="Location: " Foreground="Black"/>
+                            <TextBlock Text="{Binding Location}" Foreground="Black"/>
                         </StackPanel>
                     </StackPanel>
                 </DataTemplate>
@@ -62,7 +62,6 @@
         </Setter>
         <Setter Property="BorderBrush" Value="Transparent"/>
         <Setter Property="BorderThickness" Value="1"/>
-        <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ywpf:NodeControl">
@@ -73,7 +72,7 @@
                                 <Border.Background>
                                     <SolidColorBrush x:Name="ShineBrush" Opacity="0.25" Color="White" />
                                 </Border.Background>
-                                <TextBlock Margin="1,10,1,5" x:Name="NameTextBlock" Text="{Binding RelativeSource={RelativeSource TemplatedParent},Path=Content.Name}" TextAlignment="Center" HorizontalAlignment="Center" FontSize="13"/>
+                                <TextBlock Margin="1,10,1,5" x:Name="NameTextBlock" Text="{Binding RelativeSource={RelativeSource TemplatedParent},Path=Content.Name}" TextAlignment="Center" HorizontalAlignment="Center" FontSize="13" Foreground="Black"/>
                             </Border>
                             <!-- Other Properties -->
                             <ContentPresenter Margin="10,10,0,0"/>
@@ -103,15 +102,20 @@
         <Setter Property="ContentTemplate">
             <Setter.Value>
                 <DataTemplate DataType="{x:Type ControlStyles:Product}">
-                    <StackPanel>
+                    <StackPanel TextElement.Foreground="Black">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="Id: "/>
-                            <TextBlock Text="{Binding Id}"/>
+                            <TextBlock Text="Id: " Foreground="Black"/>
+                            <TextBlock Text="{Binding Id}" Foreground="Black"/>
                         </StackPanel>
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="In Stock: "/>
-                            <CheckBox IsChecked="{Binding InStock}" IsEnabled="False"/>
-                        </StackPanel>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="In Stock: " Foreground="Black" VerticalAlignment="Center" />
+                            <CheckBox Grid.Column="1" IsChecked="{Binding InStock}" IsEnabled="False"
+                                      VerticalAlignment="Center" HorizontalAlignment="Left" Margin="4,0,0,0" />
+                        </Grid>
                     </StackPanel>
                 </DataTemplate>
             </Setter.Value>
@@ -144,10 +148,10 @@
         <Setter Property="ContentTemplate">
             <Setter.Value>
                 <DataTemplate DataType="{x:Type ControlStyles:Relation}">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="{Binding Path=Product.Name}" FontSize="6"/>
-                        <TextBlock Text=" &lt;- " FontSize="6"/>
-                        <TextBlock Text="{Binding Path=Customer.Name}" FontSize="6"/>
+                    <StackPanel Orientation="Horizontal" TextElement.Foreground="Black">
+                        <TextBlock Text="{Binding Path=Product.Name}" FontSize="6" Foreground="Black"/>
+                        <TextBlock Text=" &lt;- " FontSize="6" Foreground="Black"/>
+                        <TextBlock Text="{Binding Path=Customer.Name}" FontSize="6" Foreground="Black"/>
                     </StackPanel>
                 </DataTemplate>
             </Setter.Value>
@@ -157,7 +161,8 @@
                 <ControlTemplate TargetType="ywpf:LabelControl">
                     <Border CornerRadius="5" Background="{TemplateBinding Background}" MinWidth="100">
                         <StackPanel Orientation="Vertical" Margin="5">
-                            <TextBlock x:Name="LabelTextBlock"  Text="{TemplateBinding LabelText}" TextAlignment="Center" FontSize="12" Margin="3"/>
+                            <TextBlock x:Name="LabelTextBlock" Text="{TemplateBinding LabelText}" TextAlignment="Center"
+                                       FontSize="12" Margin="3" Foreground="Black"/>
                             <ContentPresenter x:Name="contentPresenter"/>
                         </StackPanel>
                     </Border>
@@ -243,7 +248,7 @@
                             <Setter TargetName="rectangle" Property="Margin" Value="-2.5,0,7.5,0"/>
                             <Setter TargetName="targetArrow" Property="Visibility" Value="Visible"/>
                         </Trigger>
-                        <Trigger Property="IsMouseOverEdge" Value="true">
+                        <Trigger Property="IsPointerOverEdge" Value="true">
                             <Setter TargetName="rectangle" Property="StrokeThickness" Value="2"/>
                         </Trigger>
                         <Trigger Property="ItemSelected" Value="true">

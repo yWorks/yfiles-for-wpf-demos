@@ -1,0 +1,17 @@
+{
+  "nodes": [
+    { "id": 0, "parent": 5 },
+    { "id": 1, "parent": 5 },
+    { "id": 2, "parent": 5 },
+    { "id": 3 },
+    { "id": 4 },
+    { "id": 5, "labels": ["Group 1"], "isGroup": true }
+  ],
+  "edges": [
+    { "id": 0, "source": 0, "target": 1 },
+    { "id": 1, "source": 0, "target": 2 },
+    { "id": 2, "source": 2, "target": 3 },
+    { "id": 3, "source": 2, "target": 4 },
+    { "id": 4, "source": 0, "target": 4 }
+  ]
+}

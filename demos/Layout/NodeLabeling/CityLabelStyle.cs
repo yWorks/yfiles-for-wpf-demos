@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 4.0.
- ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -27,110 +27,129 @@
  ** 
  ***************************************************************************/
 
-using System;
-using System.Windows.Markup;
-using yWorks.Annotations;
+using System.Windows.Media;
 using yWorks.Controls;
 using yWorks.Geometry;
 using yWorks.Graph;
 using yWorks.Graph.PortLocationModels;
 using yWorks.Graph.Styles;
 
-namespace Demo.yFiles.Layout.NodeLabeling
+namespace yWorks.Demo.NodeLabeling
 {
-  [ContentProperty("InnerLabelStyle")]
-  public class CityLabelStyle : LabelStyleBase<VisualGroup>
+  /// <summary>
+  ///   This class is an example for a custom style based on the <see cref="LabelStyleBase{TVisual}"/>.
+  ///   For each label, an edge is created that connects the label to its owner node.
+  /// </summary>
+  internal sealed class CityLabelStyle : LabelStyleBase<VisualGroup>
   {
-    public CityLabelStyle() : this(new LabelStyle()) { }
+    private readonly PolylineEdgeStyle connectorEdgeStyle = new() {
+        Pen = new Pen(new SolidColorBrush(Color.FromRgb(0x66, 0x2b, 0x00)), 1)
+    };
 
-    public CityLabelStyle([NotNull] ILabelStyle innerLabelStyle) {
-      if (innerLabelStyle == null) {
-        throw new ArgumentNullException("innerLabelStyle");
-      }
+    private readonly FreeNodePortLocationModel.Parameter ownerPortLocation = FreeNodePortLocationModel.Center;
+    private readonly FreeNodePortLocationModel.Parameter labelPortLocation = FreeNodePortLocationModel.Center;
+
+    /// <summary>
+    ///   The style that will be used for the label rendering
+    /// </summary>
+    public ILabelStyle InnerLabelStyle { get; }
+
+    /// <summary>
+    ///   Initializes a new instance of CityLabelStyle.
+    /// </summary>
+    public CityLabelStyle(ILabelStyle innerLabelStyle) {
       InnerLabelStyle = innerLabelStyle;
-      ConnectorEdgeStyle = new PolylineEdgeStyle();
-      OwnerPortLocation = LabelPortLocation = FreeNodePortLocationModel.Center;
-    }
-
-    [NotNull]
-    public ILabelStyle InnerLabelStyle { get; set; }
-
-    [NotNull]
-    public IEdgeStyle ConnectorEdgeStyle { get; set; }
-
-    [NotNull]
-    public IPortLocationModelParameter OwnerPortLocation { get; set; }
-
-    [NotNull]
-    public IPortLocationModelParameter LabelPortLocation { get; set; }
-
-    protected override VisualGroup CreateVisual(IRenderContext context, ILabel label) {
-      var container = new VisualGroup();
-
-      var connectorEdge = CreateConnectorEdge(label);
-
-      // create the connecting edge visual
-      var connectorVisual = ConnectorEdgeStyle.Renderer.GetVisualCreator(connectorEdge, ConnectorEdgeStyle)
-          .CreateVisual(context);
-
-      // and add it to the container
-      container.Add(connectorVisual);
-
-      // as well as the label's own core visualization
-      var labelVisual = InnerLabelStyle.Renderer.GetVisualCreator(label, InnerLabelStyle).CreateVisual(context);
-      container.Add(labelVisual);
-
-      return container;
-    }
-
-    protected override VisualGroup UpdateVisual(IRenderContext context, VisualGroup container, ILabel label) {
-      var connectorEdge = CreateConnectorEdge(label);
-
-      // create the connecting edge visual
-      var connectorVisual = ConnectorEdgeStyle.Renderer.GetVisualCreator(connectorEdge, ConnectorEdgeStyle)
-          .UpdateVisual(context, container.Children[0]);
-
-      // and udpate it in the container
-      container.Children[0] = connectorVisual;
-
-      // as well as the label's own visualization
-      var labelVisual = InnerLabelStyle.Renderer.GetVisualCreator(label, InnerLabelStyle)
-          .UpdateVisual(context, container.Children[1]);
-      container.Children[1] = labelVisual;
-
-      return container;
-    }
-
-    protected override SizeD GetPreferredSize(ILabel label) {
-      return InnerLabelStyle.Renderer.GetPreferredSize(label, InnerLabelStyle);
     }
 
     /// <summary>
-    ///   Overrides base implementation to ensure visibility of the connecting dummy edge.
+    ///   Creates the visual for a label to be drawn.
     /// </summary>
+    /// <param name="context">The render context</param>
+    /// <param name="label">The label to be rendered</param>
+    /// <returns>The visual for a label to be drawn.</returns>
+    protected override VisualGroup CreateVisual(IRenderContext context, ILabel label) {
+      // create a visual group
+      var group = new VisualGroup();
+
+      var connectorEdge = CreateConnectorEdge(label);
+      var connectorVisual = connectorEdgeStyle.Renderer.GetVisualCreator(connectorEdge, connectorEdgeStyle)
+          .CreateVisual(context);
+      group.Add(connectorVisual);
+
+      var labelVisual = InnerLabelStyle.Renderer.GetVisualCreator(label, InnerLabelStyle).CreateVisual(context);
+      group.Add(labelVisual);
+
+      return group;
+    }
+
+    /// <summary>
+    ///   Re-renders the label using the old visual for performance reasons.
+    /// </summary>
+    /// <param name="context">The render context</param>
+    /// <param name="oldVisual">The old visual</param>
+    /// <param name="label">The label to be rendered</param>
+    protected override VisualGroup UpdateVisual(IRenderContext context, VisualGroup oldVisual, ILabel label) {
+      // check whether the elements are as expected
+      if (oldVisual.Children.Count != 2) {
+        return CreateVisual(context, label);
+      }
+      var connectorEdge = CreateConnectorEdge(label);
+      var connectorVisual = connectorEdgeStyle.Renderer.GetVisualCreator(connectorEdge, connectorEdgeStyle)
+          .UpdateVisual(context, oldVisual.Children[0]);
+      oldVisual.Children[0] = connectorVisual;
+
+      var labelVisual = InnerLabelStyle.Renderer.GetVisualCreator(label, InnerLabelStyle)
+          .UpdateVisual(context, oldVisual.Children[1]);
+      oldVisual.Children[1] = labelVisual;
+
+      return oldVisual;
+    }
+
+    /// <summary>
+    ///   Creates the edge that connects the label with its owner node.
+    /// </summary>
+    /// <param name="label">The given label</param>
+    /// <returns>The edge that connects the label with its owner node</returns>
+    private SimpleEdge CreateConnectorEdge(ILabel label) {
+      // create a dummy node at the location of the label
+      var labelNodeDummy = new SimpleNode {
+          Layout = label.GetLayout().GetBounds(),
+          Style = new ShapeNodeStyle()
+      };
+
+      var simpleEdge = new SimpleEdge {
+          Style = connectorEdgeStyle,
+          SourcePort = new SimplePort(labelNodeDummy, labelPortLocation),
+          TargetPort = new SimplePort((INode) label.Owner, ownerPortLocation)
+      };
+      return simpleEdge;
+    }
+
+    /// <summary>
+    ///   Returns the preferred size of the given label.
+    /// </summary>
+    /// <param name="label">The given label</param>
+    /// <returns>The preferred size of the given label</returns>
+    protected override SizeD GetPreferredSize(ILabel label) =>
+        InnerLabelStyle.Renderer.GetPreferredSize(label, InnerLabelStyle);
+
+    /// <summary>
+    ///   Determines whether the visualization for the specified label is visible in the context.
+    /// </summary>
+    /// <param name="context">The canvas context</param>
+    /// <param name="rectangle">The clipping rectangle</param>
+    /// <param name="label">The given label</param>
+    /// <returns>True if the visualization is visible, false otherwise</returns>
     protected override bool IsVisible(ICanvasContext context, RectD rectangle, ILabel label) {
-      if (InnerLabelStyle.Renderer.GetVisibilityTestable(label, InnerLabelStyle).IsVisible(context, rectangle)) {
+      var isInnerLabelVisible = InnerLabelStyle.Renderer.GetVisibilityTestable(label, InnerLabelStyle)
+          .IsVisible(context, rectangle);
+      if (isInnerLabelVisible) {
         return true;
       }
 
       var connectorEdge = CreateConnectorEdge(label);
-
-      // check the connecting edge visual
-      return ConnectorEdgeStyle.Renderer.GetVisibilityTestable(connectorEdge, ConnectorEdgeStyle)
+      return connectorEdgeStyle.Renderer.GetVisibilityTestable(connectorEdge, connectorEdgeStyle)
           .IsVisible(context, rectangle);
-    }
-
-    /// <summary>
-    ///   Creates the dummy connector edge for the given label.
-    /// </summary>
-    private IEdge CreateConnectorEdge(ILabel label) {
-      // create a dummy node at the location of the label
-      var labelNodeDummy = new SimpleNode { Layout = label.GetLayout().GetBounds(), Style = new ShapeNodeStyle() };
-      labelNodeDummy.Ports = new[] { new SimplePort(labelNodeDummy, LabelPortLocation) };
-
-      // create a connecting edge between the dummy node and the owner of the label
-      return new SimpleEdge(new SimplePort(labelNodeDummy, OwnerPortLocation),
-          new SimplePort((IPortOwner) label.Owner, OwnerPortLocation)) { Style = ConnectorEdgeStyle };
     }
   }
 }

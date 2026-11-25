@@ -1,3 +1,5 @@
-# Dynamic
+# Binding to Dynamic Business Data
 
-Sample Form that demonstrates data binding using a `TreeSource` to dynamic business data.
+![Demo thumbnail](../../DemoBrowser/DemoBrowser/Screenshots/dynamic.webp "Binding to Dynamic Business Data")
+
+Demonstrates data binding using a TreeSource bound to dynamic business data.

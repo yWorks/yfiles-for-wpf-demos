@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 4.0.
- ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -27,15 +27,15 @@
  ** 
  ***************************************************************************/
 
-namespace Demo.yFiles.Graph.ControlStyles
+namespace yWorks.Demo.ControlStyles
 {
   /// <summary>
-  /// The business object that describes a product in our simple model.
+  ///   The business object that describes a product in our simple model.
   /// </summary>
-  public class Product
+  public sealed class Product
   {
     // For XAML only
-    public Product() : this(string.Empty, -1, false) {}
+    public Product() : this(string.Empty, -1, false) { }
 
     public Product(string name, int id, bool inStock) {
       Name = name;
@@ -44,7 +44,9 @@ namespace Demo.yFiles.Graph.ControlStyles
     }
 
     public string Name { get; set; }
+
     public int Id { get; set; }
+
     public bool InStock { get; set; }
   }
 }

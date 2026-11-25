@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 4.0.
- ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -32,7 +32,7 @@ using System.Collections.Generic;
 using yWorks.Graph;
 using yWorks.Utils;
 
-namespace Demo.yFiles.Option.DataBinding
+namespace yWorks.Demo.Option.DataBinding
 {
   /// <summary>
   ///   A simple abstract implementation of <see cref="ISelectionProvider{T}"/>
@@ -131,15 +131,9 @@ namespace Demo.yFiles.Option.DataBinding
       }
     }
 
-    #region ILookup Members
-
-    #endregion
-
     /// <summary>
     ///   Uses <see cref="InnerContextLookup"/> to satisfy requests.
     /// </summary>
-    public virtual object Lookup(Type type) {
-      return InnerContextLookup.Lookup(this, type);
-    }
+    public virtual object Lookup(Type type) => InnerContextLookup.Lookup(this, type);
   }
 }

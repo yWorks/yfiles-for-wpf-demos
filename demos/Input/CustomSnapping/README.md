@@ -1,3 +1,5 @@
-# CustomSnapping
+# Custom Snapping
 
-This demo shows how to customize `SnapLine` behaviour.
+![Demo thumbnail](../../DemoBrowser/DemoBrowser/Screenshots/custom-snapping.webp "Custom Snapping")
+
+Shows how the snapping feature can be customized.

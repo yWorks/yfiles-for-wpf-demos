@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 4.0.
- ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -31,7 +31,7 @@ using System;
 using System.Collections;
 using yWorks.Utils;
 
-namespace Demo.yFiles.Option.DataBinding
+namespace yWorks.Demo.Option.DataBinding
 {
   /// <summary>
   ///   The interface that is used by implementations that are passed to
@@ -125,7 +125,8 @@ namespace Demo.yFiles.Option.DataBinding
     IPropertyMapBuilder GetPropertyMapBuilder(object subject);
 
     /// <summary>
-    ///   Tries to retrieve a builder instance for the given subject or type, e.g., if the subject itself is <see langword="null"/>.
+    ///   Tries to retrieve a builder instance for the given subject or type, e.g., if the subject itself is
+    ///   <see langword="null"/>.
     /// </summary>
     /// <param name="type">The type of the subject to retrieve a builder for.</param>
     /// <param name="subject">The subject to retrieve a builder for.</param>

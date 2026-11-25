@@ -1,10 +1,14 @@
+<!-- populated by readme-style.js --> Programming Samples Overview
+
 
 # yFiles WPF Programming Samples Overview
-The [yFiles WPF](https://www.yworks.com/products/yfileswpf) programming samples are extensive Visual Studio projects with **full C# source code** that present the functionality of the yFiles WPF diagramming library. All programming samples can be found in subdirectories of the current directory. Most samples are self-contained, i.e., they consist of a single Visual Studio project. 
+The [yFiles WPF](https://www.yworks.com/products/yfileswpf) programming samples are extensive .NET projects with **full C# source code** that present the functionality of the yFiles WPF diagramming library. All programming samples can be found in subdirectories of the current directory. Most samples are self-contained, i.e., they consist of a single .NET project. 
 
 
 ## Working with the samples
 All demos can be accessed by opening the solution file (yFiles Demos.sln) in this folder. 
+
+The Demo Browser Application in the DemoBrowser project makes it easy to browse the demo applications. It includes a search feature and brief descriptions of each demo. You can also run each demo as a standalone project. 
 
 
 
@@ -46,42 +50,28 @@ Click the **Trust and Open** button to open the solution.
 
 
 ### Running a Single Sample
-To open a specific programming sample, the corresponding Visual Studio project file (usually named `[demoname].csproj`) can be found in the demo's directory, which also uses the `[demoname]` naming scheme. <br /> Note that samples that demonstrate related aspects are grouped together in solution folders. 
+To open a specific programming sample, the corresponding project file (usually named `[demoname].csproj`) can be found in the demo's directory, which also uses the `[demoname]` naming scheme. <br /> Note that samples that demonstrate related aspects are grouped together in solution folders. 
 
 <a id="samples"></a> 
 ### Programming Samples Categories
 
 | Category | Folder | Description |
 |:---|:---|:---|
-|[BPMN Demos](BPMN) |**BPMN** | Source code samples that demonstrate how to implement BPMN layout and editing features. |
-|[Complete Demos](Complete) |**Complete** | Source code samples that demonstrate the interaction between the viewer component and the layout algorithms. |
+|[Application Feature Demos](ApplicationFeatures) |**ApplicationFeatures** | Source code samples demonstrate how to use and configure single yFiles WPF features. |
 |[Data Binding Demos](DataBinding) |**DataBinding** | Source code samples that demonstrate binding graph elements to business data. |
-|[InputMode Demos](Input) |**Input** | Source code samples that demonstrate how to configure specific aspects of the InputMode functionality. |
+|[The Demo Browser](DemoBrowser) |**DemoBrowser** | A Demo Browser for easy finding and running demo applications. |
+|[Input Demos](Input) |**Input** | Source code samples that demonstrate how to configure specific aspects of the interaction functionality. |
 |[Layout Demos](Layout) |**Layout** | Source code samples demonstrate the basic usage of the yFiles WPF layout algorithms. |
-|[Layout Only Demos](LayoutOnly) |**LayoutOnly** | Source code samples that demonstrate the basic usage of the yFiles WPF layout algorithms **without** the viewer component. |
+|[Layout Feature Demos](LayoutFeatures) |**LayoutFeatures** | Source code samples demonstrate specific features of the yFiles WPF layout algorithms. |
+|[Showcase Demos](Showcase) |**Showcase** | Complex samples that show application fields coming with complex visualization and interaction. |
 |[Style Demos](Style) |**Style** | Source code samples that demonstrate how to customize the visual representation of yFiles WPF graph elements. |
-|[Tutorial - Getting Started](Tutorial%20-%20Getting%20Started) |**Tutorial - Getting Started** | This tutorial shows you both basic concepts and also how to build a diagramming application that supports custom styles, full user interaction, Undo/Redo, clipboard, I/O, grouping and folding. |
-|[Tutorial - Styles](Tutorial%20-%20Styles) |**Tutorial - Styles** | This tutorial is a step-by-step introduction to customizing the visual representation of graph elements. It is intended for for advanced users that want to learn how to create custom styles from scratch. |
+|[Tutorials](Tutorials) |**Tutorials** | These tutorials show you the basic features of yFiles WPF, how to bind graph elements to business data, and how to create custom styles for nodes, edges, and labels. |
 |[Utility Projects for Demos](Utils) |**Utils** | Utility projects for common functionality in demos. |
 |[Graph Viewer Demos](View) |**View** | Source code samples demonstrate basic concepts related to the `GraphControl` component and the underlying graph model. |
 
 
+<!-- populated by readme-style.js --> 
 
 
-#### See also
-[Product Page](https://www.yworks.com/products/yfileswpf)  
-[API Documentation](https://docs.yworks.com/yfileswpf)    
-[Help and Support](https://www.yworks.com/products/yfiles/support)
 
-
-#### Contact
-yWorks GmbH  
-Vor dem Kreuzberg 28  
-72070 Tuebingen  
-Germany  
-Phone: +49 7071 979050
-Email: contact@yworks.com
-
-COPYRIGHT &#x00A9; 2021 yWorks   
-
-
+<script src="../doc/resources/readme-style.js"></script> 

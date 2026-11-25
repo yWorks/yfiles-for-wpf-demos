@@ -1,0 +1,35 @@
+{
+  "nodes": [
+    { "id": 0, "label": "Bauxite", "tag": "raw-material" },
+    { "id": 1, "label": "Copper Ore", "tag": "raw-material" },
+    { "id": 2, "label": "Lithium Ore", "tag": "raw-material" },
+    { "id": 3, "label": "Sand", "tag": "raw-material" },
+    { "id": 4, "label": "Aluminum", "tag": "refined-material" },
+    { "id": 5, "label": "Battery Cells", "tag": "refined-material" },
+    { "id": 6, "label": "Copper", "tag": "refined-material" },
+    { "id": 7, "label": "Silicon", "tag": "refined-material" },
+    { "id": 8, "label": "Chips", "tag": "intermediate-components" },
+    { "id": 9, "label": "Display Module", "tag": "intermediate-components" },
+    { "id": 10, "label": "Housing", "tag": "intermediate-components" },
+    { "id": 11, "label": "Power Module", "tag": "intermediate-components" },
+    { "id": 12, "label": "Assembled Phone", "tag": "product" },
+    { "id": 13, "label": "Retail Product", "tag": "product" }
+  ],
+  "edges": [
+    { "id": 0, "source": 0, "target": 4, "label": "refine" },
+    { "id": 1, "source": 1, "target": 6, "label": "refine" },
+    { "id": 2, "source": 2, "target": 5, "label": "refine" },
+    { "id": 3, "source": 3, "target": 7, "label": "refine" },
+    { "id": 4, "source": 4, "target": 10, "label": "form" },
+    { "id": 5, "source": 5, "target": 9, "label": "assemble" },
+    { "id": 6, "source": 5, "target": 11, "label": "assemble" },
+    { "id": 8, "source": 7, "target": 8, "label": "metallize" },
+    { "id": 9, "source": 6, "target": 8, "label": "metallize" },
+    { "id": 10, "source": 8, "target": 9, "label": "assemble" },
+    { "id": 11, "source": 8, "target": 11, "label": "assemble" },
+    { "id": 12, "source": 9, "target": 12, "label": "integrate" },
+    { "id": 13, "source": 10, "target": 12, "label": "integrate" },
+    { "id": 14, "source": 11, "target": 12, "label": "integrate" },
+    { "id": 15, "source": 12, "target": 13, "label": "pack" }
+  ]
+}

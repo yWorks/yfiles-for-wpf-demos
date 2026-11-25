@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 4.0.
- ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -36,7 +36,7 @@ using yWorks.Geometry;
 using yWorks.Graph.LabelModels;
 using yWorks.GraphML;
 
-namespace Demo.yFiles.IO.GraphML.Compat.LabelModels
+namespace yWorks.Demo.GraphMLCompat.LabelModels
 {
   public enum ExteriorLabelModelPosition
   {
@@ -57,7 +57,7 @@ namespace Demo.yFiles.IO.GraphML.Compat.LabelModels
     public ILabelModel Model { get; set; } = null;
 
     public override object ProvideValue(IServiceProvider serviceProvider) {
-      var model = this.Model as ExteriorNodeLabelModel;
+      var model = Model as ExteriorNodeLabelModel;
       if (model == null) {
         model = ExteriorNodeLabelModel.Top.Model;
       }
@@ -77,9 +77,7 @@ namespace Demo.yFiles.IO.GraphML.Compat.LabelModels
     public static readonly ILabelModelParameter SouthWest;
 
     static ExteriorLabelModelExtension() {
-      var model = new ExteriorNodeLabelModel {
-          Margins = InsetsD.Empty
-      };
+      var model = new ExteriorNodeLabelModel { Margins = InsetsD.Empty };
       North = model.CreateParameter(ExteriorNodeLabelModel.Position.Top);
       East = model.CreateParameter(ExteriorNodeLabelModel.Position.Right);
       South = model.CreateParameter(ExteriorNodeLabelModel.Position.Bottom);
@@ -91,11 +89,10 @@ namespace Demo.yFiles.IO.GraphML.Compat.LabelModels
     }
 
 
-    public InsetsD Insets { get; set; } = new InsetsD(0);
+    public InsetsD Insets { get; set; } = new(0);
 
-    public override object ProvideValue(IServiceProvider serviceProvider) {
-      return new ExteriorNodeLabelModel { Margins = Insets };
-    }
+    public override object ProvideValue(IServiceProvider serviceProvider) =>
+        new ExteriorNodeLabelModel { Margins = Insets };
   }
 
   public enum InteriorLabelModelPosition
@@ -118,7 +115,7 @@ namespace Demo.yFiles.IO.GraphML.Compat.LabelModels
     public ILabelModel Model { get; set; } = null;
 
     public override object ProvideValue(IServiceProvider serviceProvider) {
-      var model = this.Model as InteriorNodeLabelModel;
+      var model = Model as InteriorNodeLabelModel;
       if (model == null) {
         model = InteriorNodeLabelModel.Top.Model;
       }
@@ -139,9 +136,7 @@ namespace Demo.yFiles.IO.GraphML.Compat.LabelModels
     public static readonly ILabelModelParameter Center;
 
     static InteriorLabelModelExtension() {
-      var model = new InteriorNodeLabelModel {
-          Padding = InsetsD.Empty
-      };
+      var model = new InteriorNodeLabelModel { Padding = InsetsD.Empty };
       North = model.CreateParameter(InteriorNodeLabelModel.Position.Top);
       East = model.CreateParameter(InteriorNodeLabelModel.Position.Right);
       South = model.CreateParameter(InteriorNodeLabelModel.Position.Bottom);
@@ -153,11 +148,10 @@ namespace Demo.yFiles.IO.GraphML.Compat.LabelModels
       Center = model.CreateParameter(InteriorNodeLabelModel.Position.Center);
     }
 
-    public InsetsD Insets { get; set; } = new InsetsD(0);
+    public InsetsD Insets { get; set; } = new(0);
 
-    public override object ProvideValue(IServiceProvider serviceProvider) {
-      return new InteriorNodeLabelModel { Padding = Insets };
-    }
+    public override object ProvideValue(IServiceProvider serviceProvider) =>
+        new InteriorNodeLabelModel { Padding = Insets };
   }
 
   public enum InteriorStretchLabelModelPosition
@@ -168,7 +162,7 @@ namespace Demo.yFiles.IO.GraphML.Compat.LabelModels
     West = StretchNodeLabelModel.Position.Left,
     Center = StretchNodeLabelModel.Position.Center,
     CenterHorizontal = StretchNodeLabelModel.Position.CenterHorizontal,
-    CenterVertical = StretchNodeLabelModel.Position.CenterVertical,
+    CenterVertical = StretchNodeLabelModel.Position.CenterVertical
   }
 
   public class InteriorStretchLabelModelParameterExtension : MarkupExtension
@@ -178,7 +172,7 @@ namespace Demo.yFiles.IO.GraphML.Compat.LabelModels
     public ILabelModel Model { get; set; } = null;
 
     public override object ProvideValue(IServiceProvider serviceProvider) {
-      var model = this.Model as StretchNodeLabelModel;
+      var model = Model as StretchNodeLabelModel;
       if (model == null) {
         model = StretchNodeLabelModel.Top.Model;
       }
@@ -197,9 +191,7 @@ namespace Demo.yFiles.IO.GraphML.Compat.LabelModels
     public static readonly ILabelModelParameter CenterVertical;
 
     static InteriorStretchLabelModelExtension() {
-      var model = new StretchNodeLabelModel {
-          Padding = InsetsD.Empty
-      };
+      var model = new StretchNodeLabelModel { Padding = InsetsD.Empty };
       North = model.CreateParameter(StretchNodeLabelModel.Position.Top);
       East = model.CreateParameter(StretchNodeLabelModel.Position.Right);
       South = model.CreateParameter(StretchNodeLabelModel.Position.Bottom);
@@ -209,11 +201,10 @@ namespace Demo.yFiles.IO.GraphML.Compat.LabelModels
       CenterVertical = model.CreateParameter(StretchNodeLabelModel.Position.CenterVertical);
     }
 
-    public InsetsD Insets { get; set; } = new InsetsD(0);
+    public InsetsD Insets { get; set; } = new(0);
 
-    public override object ProvideValue(IServiceProvider serviceProvider) {
-      return new StretchNodeLabelModel { Padding = Insets };
-    }
+    public override object ProvideValue(IServiceProvider serviceProvider) =>
+        new StretchNodeLabelModel { Padding = Insets };
   }
 
   public enum StripeLabelModelPosition
@@ -231,7 +222,7 @@ namespace Demo.yFiles.IO.GraphML.Compat.LabelModels
     public ILabelModel Model { get; set; } = null;
 
     public override object ProvideValue(IServiceProvider serviceProvider) {
-      var model = this.Model as StripeLabelModel;
+      var model = Model as StripeLabelModel;
       if (model == null) {
         model = StripeLabelModel.Top.Model;
       }
@@ -250,9 +241,11 @@ namespace Demo.yFiles.IO.GraphML.Compat.LabelModels
 
     public double Ratio { get; set; } = 0.5;
 
-    public override object ProvideValue(IServiceProvider serviceProvider) {
-      return new StripeLabelModel { UseTotalPadding = UseActualInsets, Ratio = Ratio };
-    }
+    public override object ProvideValue(IServiceProvider serviceProvider) =>
+        new StripeLabelModel {
+            UseTotalPadding = UseActualInsets,
+            Ratio = Ratio
+        };
   }
 
   public enum StretchStripeLabelModelPosition
@@ -270,7 +263,7 @@ namespace Demo.yFiles.IO.GraphML.Compat.LabelModels
     public ILabelModel Model { get; set; } = null;
 
     public override object ProvideValue(IServiceProvider serviceProvider) {
-      var model = this.Model as StretchStripeLabelModel;
+      var model = Model as StretchStripeLabelModel;
       if (model == null) {
         model = StretchStripeLabelModel.Top.Model;
       }
@@ -287,11 +280,13 @@ namespace Demo.yFiles.IO.GraphML.Compat.LabelModels
 
     public bool UseActualInsets { get; set; } = false;
 
-    public InsetsD Insets { get; set; } = new InsetsD(0);
+    public InsetsD Insets { get; set; } = new(0);
 
-    public override object ProvideValue(IServiceProvider serviceProvider) {
-      return new StretchStripeLabelModel { UseTotalPadding = UseActualInsets, Padding = Insets };
-    }
+    public override object ProvideValue(IServiceProvider serviceProvider) =>
+        new StretchStripeLabelModel {
+            UseTotalPadding = UseActualInsets,
+            Padding = Insets
+        };
   }
 
   public class CompositeLabelModelParameterExtension : MarkupExtension
@@ -300,11 +295,11 @@ namespace Demo.yFiles.IO.GraphML.Compat.LabelModels
 
     public ILabelModel Model { get; set; } = null;
 
-    public override object ProvideValue(IServiceProvider serviceProvider) {
-      return new yWorks.Markup.Common.CompositeLabelModelParameterExtension {
-          Model = (CompositeLabelModel) Model, Parameter = Parameter
-      }.ProvideValue(serviceProvider);
-    }
+    public override object ProvideValue(IServiceProvider serviceProvider) =>
+        new Markup.Common.CompositeLabelModelParameterExtension {
+            Model = (CompositeLabelModel) Model,
+            Parameter = Parameter
+        }.ProvideValue(serviceProvider);
   }
 
   public class CompositeLabelModelExtension : MarkupExtension
@@ -334,7 +329,7 @@ namespace Demo.yFiles.IO.GraphML.Compat.LabelModels
 
     public static readonly LabelCandidateDescriptor InternalDescriptor = new();
 
-    public bool ExternalCandidate { get; set; } = false;
+    public bool ExternalCandidate { get; set; }
 
     public double EdgeOverlapPenalty { get; set; } = 1.0;
 
@@ -349,11 +344,8 @@ namespace Demo.yFiles.IO.GraphML.Compat.LabelModels
 
     public ILabelModel Model { get; set; } = null;
 
-    public override object ProvideValue(IServiceProvider serviceProvider) {
-      return Model == null
-          ? GenericLabelModelExtension.Absolute
-          : ((CompositeLabelModel) Model).Parameters.ElementAt(Index);
-    }
+    public override object ProvideValue(IServiceProvider serviceProvider) =>
+        Model == null ? GenericLabelModelExtension.Absolute : ((CompositeLabelModel) Model).Parameters.ElementAt(Index);
   }
 
   [ContentProperty("Parameters")]
@@ -369,7 +361,7 @@ namespace Demo.yFiles.IO.GraphML.Compat.LabelModels
     public override object ProvideValue(IServiceProvider serviceProvider) {
       var compositeLabelModel = new CompositeLabelModel();
       var dParam = Default >= Parameters.Count || Default < 0
-          ? (Parameters.First() ?? Absolute)
+          ? Parameters.First() ?? Absolute
           : Parameters.ElementAt(Default);
       {
         if (dParam is GenericLabelModelParameterPair pair) {
@@ -437,9 +429,7 @@ namespace Demo.yFiles.IO.GraphML.Compat.LabelModels
 
     public ILabelModel Model { get; set; } = null;
 
-    public override object ProvideValue(IServiceProvider serviceProvider) {
-      return Parameter;
-    }
+    public override object ProvideValue(IServiceProvider serviceProvider) => Parameter;
   }
 
   public class DescriptorWrapperLabelModelExtension : MarkupExtension
@@ -448,18 +438,15 @@ namespace Demo.yFiles.IO.GraphML.Compat.LabelModels
 
     public LabelCandidateDescriptor Descriptor { get; set; } = null;
 
-    public override object ProvideValue(IServiceProvider serviceProvider) {
-      return InnerModel;
-    }
+    public override object ProvideValue(IServiceProvider serviceProvider) => InnerModel;
   }
 
   public class GroupNodeLabelModelExtension : MarkupExtension
   {
     public bool ConsiderTabInset { get; set; } = true;
 
-    public override object ProvideValue(IServiceProvider serviceProvider) {
-      return new GroupNodeLabelModel { ConsiderTabPadding = ConsiderTabInset };
-    }
+    public override object ProvideValue(IServiceProvider serviceProvider) =>
+        new GroupNodeLabelModel { ConsiderTabPadding = ConsiderTabInset };
   }
 
   public abstract class EdgePathBasedLabelModelExtension : MarkupExtension
@@ -512,7 +499,8 @@ namespace Demo.yFiles.IO.GraphML.Compat.LabelModels
     public override object ProvideValue(IServiceProvider serviceProvider) {
       var _autoRotationEnabled = AutoRotation;
       return new SmartEdgeLabelModel {
-          Angle = _autoRotationEnabled ? Angle : -Angle, AutoRotation = _autoRotationEnabled
+          Angle = _autoRotationEnabled ? Angle : -Angle,
+          AutoRotation = _autoRotationEnabled
       };
     }
   }
@@ -533,8 +521,10 @@ namespace Demo.yFiles.IO.GraphML.Compat.LabelModels
 
     public double Distance { get; set; } = 10;
 
-    public override object ProvideValue(IServiceProvider serviceProvider) {
-      return new NinePositionsEdgeLabelModel { Angle = -Angle, Distance = Distance };
-    }
+    public override object ProvideValue(IServiceProvider serviceProvider) =>
+        new NinePositionsEdgeLabelModel {
+            Angle = -Angle,
+            Distance = Distance
+        };
   }
 }

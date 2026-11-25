@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 4.0.
- ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -31,7 +31,7 @@ using System;
 using System.Collections.Generic;
 using System.Windows;
 
-namespace Demo.yFiles.Toolkit.OptionHandler
+namespace yWorks.Demo.Toolkit.OptionHandler
 {
   /// <summary>
   ///   A data holder for a single configuration option
@@ -43,22 +43,22 @@ namespace Demo.yFiles.Toolkit.OptionHandler
   public class Option
   {
     /// <summary>
-    ///   The internally used name of this option.
+    ///   Gets or sets the internally used name of this option.
     /// </summary>
     public string Name { get; set; }
 
     /// <summary>
-    ///   The displayed label of this option.
+    ///   Gets or sets the displayed label of this option.
     /// </summary>
     public string Label { get; set; }
 
     /// <summary>
-    ///   The default value this option has.
+    ///   Gets or sets the default value this option has.
     /// </summary>
     public object DefaultValue { get; set; }
 
     /// <summary>
-    ///   The current value of the field or property in the scanned configuration object.
+    ///   Gets or sets the current value of the field or property in the scanned configuration object.
     /// </summary>
     /// <remarks>
     ///   Note that this property is read from and written to the configuration object this option was created for.
@@ -78,34 +78,34 @@ namespace Demo.yFiles.Toolkit.OptionHandler
     }
 
     /// <summary>
-    ///   The <see cref="Type"/> of this option.
+    ///   Gets or sets the <see cref="Type"/> of this option.
     /// </summary>
     public Type ValueType { get; set; }
 
     /// <summary>
-    ///   The type of the UI component that shall be used to represent this option.
+    ///   Gets or sets the type of the UI component that shall be used to represent this option.
     /// </summary>
     public ComponentTypes ComponentType { get; set; }
 
     /// <summary>
-    ///   A list of the available enum values for this option.
+    ///   Gets or sets a list of the available enum values for this option.
     /// </summary>
     public IList<EnumValue> EnumValues { get; set; }
 
     /// <summary>
-    ///   The <see cref="MinMaxAttribute"/> containing the minimum and maximum values for this option.
+    ///   Gets or sets the <see cref="MinMaxAttribute"/> containing the minimum and maximum values for this option.
     /// </summary>
     public MinMaxAttribute MinMax { get; set; }
 
     /// <summary>
-    ///   A utility method that returns whether this option should currently be disabled.
+    ///   Gets or sets a utility method that returns whether this option should currently be disabled.
     /// </summary>
     public Func<bool> CheckDisabled { get; set; }
 
     public bool IsEnabled => CheckDisabled == null || !CheckDisabled();
 
     /// <summary>
-    ///   A utility method that returns whether this option should currently be hidden.
+    ///   Gets or sets a utility method that returns whether this option should currently be hidden.
     /// </summary>
     public Func<bool> CheckHidden { get; set; }
 

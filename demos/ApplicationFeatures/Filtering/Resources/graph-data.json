@@ -1,0 +1,17 @@
+{
+  "nodes": [
+    { "id": 0, "filtered": false, "parent": 5 },
+    { "id": 1, "filtered": false, "parent": 5 },
+    { "id": 2, "filtered": false, "parent": 5 },
+    { "id": 3, "filtered": false },
+    { "id": 4, "filtered": false },
+    { "id": 5, "filtered": false, "labels": "Group 1", "isGroup": true }
+  ],
+  "edges": [
+    { "id": 0, "source": 0, "target": 1, "filtered": false },
+    { "id": 1, "source": 0, "target": 2, "filtered": false },
+    { "id": 2, "source": 2, "target": 3, "filtered": false },
+    { "id": 3, "source": 2, "target": 4, "filtered": false },
+    { "id": 4, "source": 0, "target": 4, "filtered": false }
+  ]
+}

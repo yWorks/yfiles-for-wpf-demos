@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 4.0.
- ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -27,18 +27,17 @@
  ** 
  ***************************************************************************/
 
-namespace Demo.yFiles.Graph.ControlStyles
+namespace yWorks.Demo.ControlStyles
 {
   /// <summary>
-  /// The relation business object in our model.
+  ///   The relation business object in our model.
   /// </summary>
-  public class Relation
+  public sealed class Relation
   {
     public Customer Customer { get; set; }
+
     public Product Product { get; set; }
 
-    public override string ToString() {
-      return string.Format("{0}->{1}", Customer.Id, Product.Id);
-    }
+    public override string ToString() => $"{Customer.Id}->{Product.Id}";
   }
 }

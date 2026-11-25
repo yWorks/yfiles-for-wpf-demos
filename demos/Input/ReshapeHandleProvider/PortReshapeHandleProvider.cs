@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 4.0.
- ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -27,60 +27,55 @@
  ** 
  ***************************************************************************/
 
+using System.Windows.Input;
 using yWorks.Controls.Input;
 using yWorks.Geometry;
 using yWorks.Graph;
 using yWorks.Graph.Styles;
 
-namespace Demo.yFiles.Graph.Input.ReshapeHandleProvider {
-
+namespace yWorks.Demo.ReshapeHandleProvider
+{
   /// <summary>
-  /// An <see cref="IReshapeHandleProvider"/> implementation for <see cref="IPort"/>s using a <see cref="NodeStylePortStyleAdapter"/>.
+  ///   An <see cref="IReshapeHandleProvider"/> implementation for <see cref="IPort"/>s using <see cref="ShapePortStyle"/>.
+  ///   The provided <see cref="PortReshapeHandle"/> modifies the <see cref="ShapePortStyle.RenderSize" render size/>.
   /// </summary>
-  /// <remarks>
-  /// The provided <see cref="PortReshapeHandle"/> modifies the <see cref="NodeStylePortStyleAdapter.RenderSize"/> of the
-  /// port style.
-  /// </remarks>
-  public class PortReshapeHandleProvider : IReshapeHandleProvider {
+  internal sealed class PortReshapeHandleProvider : IReshapeHandleProvider
+  {
+    private readonly SizeD minimumSize;
+    private readonly ShapePortStyle portStyle;
     private readonly IPort port;
-    private readonly NodeStylePortStyleAdapter adapter;
 
     /// <summary>
-    /// The minimum size the <see cref="NodeStylePortStyleAdapter.RenderSize"/> may have.
-    /// </summary>
-    public SizeD MinimumSize { get; set; }
-
-    /// <summary>
-    /// Creates a new instance for <paramref name="port"/> and its <paramref name="adapter"/>.
+    ///   Creates a new instance for port and its style.
     /// </summary>
     /// <param name="port">The port whose visualization shall be resized.</param>
-    /// <param name="adapter">The adapter whose render size shall be changed.</param>
-    public PortReshapeHandleProvider(IPort port, NodeStylePortStyleAdapter adapter) {
+    /// <param name="portStyle">The style whose render size shall be changed.</param>
+    /// <param name="minimumSize">The minimum size the <see cref="ShapePortStyle.RenderSize"/> may have.</param>
+    public PortReshapeHandleProvider(IPort port, ShapePortStyle portStyle, SizeD minimumSize) {
       this.port = port;
-      this.adapter = adapter;
+      this.portStyle = portStyle;
+      this.minimumSize = minimumSize;
     }
 
     /// <summary>
-    /// Returns <see cref="HandlePositions.Corners"/> or <see cref="HandlePositions.Border"/> as available handle
-    /// positions depending on the modifier state of <c>Ctrl</c>.
+    ///   Returns <see cref="HandlePositions.Corners"/> or <see cref="HandlePositions.Border"/> as available handle
+    ///   positions depending on the modifier state of <c>Shift</c>.
     /// </summary>
     /// <param name="context">The context the handles are created in.</param>
-    /// <returns><see cref="HandlePositions.Corners"/> or <see cref="HandlePositions.Border"/></returns>
+    /// <returns>Either <see cref="HandlePositions.Corners"/> or <see cref="HandlePositions.Border"/></returns>
     public HandlePositions GetAvailableHandles(IInputModeContext context) {
-      var ctrlPressed = EventRecognizers.CtrlIsDown(this, context.CanvasControl.LastPointerEvent);
-      // when Ctrl is pressed, all border positions are returned, otherwise only the corner positions
-      return ctrlPressed ? HandlePositions.Border : HandlePositions.Corners;
+      var shiftPressed = Keyboard.Modifiers.HasFlag(ModifierKeys.Shift);
+      return shiftPressed ? HandlePositions.Border : HandlePositions.Corners;
     }
 
     /// <summary>
-    /// Returns a <see cref="PortReshapeHandle"/> for the port at the <paramref name="position"/> and
-    /// sets its <see cref="PortReshapeHandle.MinimumSize"/> to <see cref="MinimumSize"/>.
+    ///   Returns a <see cref="PortReshapeHandle"/> for the port at the given position and
+    ///   sets its <see cref="PortReshapeHandle.minimumSize"/> to <see cref="minimumSize"/>.
     /// </summary>
     /// <param name="context">The context the handles are created in.</param>
     /// <param name="position">The position the handle shall be created for.</param>
-    /// <returns>A <see cref="PortReshapeHandle"/> for the port at the <paramref name="position"/>.</returns>
-    public IHandle GetHandle(IInputModeContext context, HandlePositions position) {
-      return new PortReshapeHandle(context, port, adapter, position) { MinimumSize = MinimumSize };
-    }
+    /// <returns>A <see cref="PortReshapeHandle"/> for the port at the given position.</returns>
+    public IHandle GetHandle(IInputModeContext context, HandlePositions position) =>
+        new PortReshapeHandle(context, port, portStyle, position, minimumSize);
   }
 }

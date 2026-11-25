@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 4.0.
- ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -34,7 +34,7 @@ using System.Windows.Shapes;
 using yWorks.Controls;
 using yWorks.Geometry;
 
-namespace Demo.yFiles.Toolkit
+namespace yWorks.Demo
 {
   /// <summary>
   ///   A utility class for anything that needs to render a rotated rectangle, e.g., a selection, focus or
@@ -62,8 +62,10 @@ namespace Demo.yFiles.Toolkit
     ///   Creates a new instance.
     /// </summary>
     /// <param name="layoutProvider">A callback providing the layout for the item.</param>
-    /// <param name="useViewCoordinates">Gets or sets a value indicating whether the visualization is drawn in
-    /// view coordinates or intermediate coordinates.</param>
+    /// <param name="useViewCoordinates">
+    ///   Gets or sets a value indicating whether the visualization is drawn in
+    ///   view coordinates or intermediate coordinates.
+    /// </param>
     public OrientedRectangleRenderer(
         Func<TRenderTag, IOrientedRectangle> layoutProvider,
         bool useViewCoordinates = true) {
@@ -74,8 +76,17 @@ namespace Demo.yFiles.Toolkit
     /// <summary>
     ///   Creates the visual that visualizes the renderItem.
     /// </summary>
+    /// <param name="context">The current render context.</param>
+    /// <param name="size">The size used for the visualization.</param>
+    /// <param name="renderTag">The tag that is rendered</param>
+    /// <returns>A visual that visualizes the renderItem.</returns>
     protected virtual Visual CreateIndicatorElement(IRenderContext context, ISize size, TRenderTag renderTag) {
-      var rectangle = new Rectangle { Width = size.Width, Height = size.Height, Fill = Brush, AllowDrop = true };
+      var rectangle = new Rectangle {
+          Width = size.Width,
+          Height = size.Height,
+          Fill = Brush,
+          AllowDrop = true
+      };
       rectangle.SetPen(Pen);
       var rect = new Rect(new Point(0, 0), size.ToSize());
       rectangle.SetCanvasArrangeRect(rect);
@@ -90,6 +101,7 @@ namespace Demo.yFiles.Toolkit
     /// <param name="size">The size of the visualization.</param>
     /// <param name="renderTag">The item to render.</param>
     /// <param name="oldVisual">The visual element to update.</param>
+    /// <returns>The updated visual.</returns>
     protected virtual Visual UpdateIndicatorElement(
         IRenderContext context,
         ISize size,
@@ -188,7 +200,12 @@ namespace Demo.yFiles.Toolkit
       Transform layoutTransform = new MatrixTransform(-intermediateLayout.UpY, intermediateLayout.UpX,
           intermediateLayout.UpX, intermediateLayout.UpY, intermediateLayout.AnchorX, intermediateLayout.AnchorY);
       if (useViewCoordinates) {
-        layoutTransform = new TransformGroup { Children = { layoutTransform, context.IntermediateTransform } };
+        layoutTransform = new TransformGroup {
+            Children = {
+                layoutTransform,
+                context.IntermediateTransform
+            }
+        };
       }
       g.Transform = layoutTransform;
     }

@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 4.0.
- ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -30,19 +30,18 @@
 using System.Windows.Markup;
 
 // To support clean GraphML writing, we declare a symbolic namespace and prefix
-[assembly: XmlnsDefinition("http://www.yworks.com/yfiles-wpf/2.1/demos/ControlStyles", "Demo.yFiles.Graph.ControlStyles")]
+[assembly: XmlnsDefinition("http://www.yworks.com/yfiles-wpf/2.1/demos/ControlStyles", "yWorks.Demo.ControlStyles")]
 [assembly: XmlnsPrefix("http://www.yworks.com/yfiles-wpf/2.1/demos/ControlStyles", "demo")]
 
-namespace Demo.yFiles.Graph.ControlStyles
+namespace yWorks.Demo.ControlStyles
 {
-
   /// <summary>
-  /// The business object that describes a customer in our simple model.
+  ///   The business object that describes a customer in our simple model.
   /// </summary>
-  public class Customer
+  public sealed class Customer
   {
     // For XAML deserialization only....
-    public Customer() : this(string.Empty, string.Empty, -1) {}
+    public Customer() : this(string.Empty, string.Empty, -1) { }
 
     public Customer(string name, string location, int id) {
       Name = name;

@@ -1,0 +1,50 @@
+{
+  "CompanyNetwork": {
+    "title": "The Company Network",
+    "content": "<div>\n  <p>\n    A company network describes the various types of relationships between individuals of a company's departments.\n    Nodes describe the company's employees, which fall within one of its departments, i.e., node groups.\n    Edges describe the relationships between these employees, which map uniquely to one of several possible interaction types, i.e., edge groups.\n  </p>\n  <p>\n    A biofabric, unlike a conventional (circular) node-link diagram, allows one not only to understand the relative sizes of the company's (four) departments, but importantly also allows one to\n  </p>\n  <ul>\n    <li>discern and investigate the individual edge groups in the network</li>\n    <li>easily investigate the immediate neighborhood of an individual employee</li>\n    <li>order edges meaningfully within their respective edge groups</li>\n  </ul>\n</div>",
+    "defaults": {
+      "edgeColorModePicker": "NodeGroups",
+      "nodeWidthPicker": "Full",
+      "nodeSortingPicker": "Degree",
+      "edgeSortingPicker": "EdgeLength",
+      "edgeGroupingPicker": true,
+      "nodeGroupingPicker": true,
+      "edgeGroupSortingPicker": "CardinalityDescending",
+      "nodeGroupSortingPicker": "CardinalityDescending"
+    },
+    "biofabric_parameters": { "edgeSpacing": 0.4 },
+    "circular_parameters": { "edgeThickness": 4 }
+  },
+  "LogisticsNetwork": {
+    "title": "The Logistics Network",
+    "content": "<div>\n  <p>\n    A logistics network describes the flow of goods from suppliers/facilities through people/couriers to consumers/warehouses. Here, the network is rendered as a so-called <em>ego-network</em>, where connectivity is calculated and rendered relative to some selected focal node, here the node <em>Global Fulfillment Center</em>.\n  </p>\n  <p>\n    The biofabric visualization very clearly renders the ego network's connectivity both within and across alter levels, where the above circular node-link diagram only makes the mapping of nodes to alter levels clear. This allows one to\n  </p>  \n  <ul>\n      <li>straightforwardly include edge labels in the visualization without adding obscuring the network's geometry</li> \n      <li>readily distinguish inter and intra alter level connectivity</li>\n      <li>easily identify the node <em>Air Cargo Hub A</em> as a key point of failure in the network, as the ego, the <em>Global Fulfillment Center</em> almost solely relies on its to move cargo to facilities further down the chain</li>\n    </ul>\n</div>",
+    "defaults": {
+      "edgeColorModePicker": "EdgeGroups",
+      "nodeWidthPicker": "Compact",
+      "nodeSortingPicker": "Degree",
+      "edgeSortingPicker": "EdgeLength",
+      "edgeGroupingPicker": true,
+      "nodeGroupingPicker": true,
+      "edgeGroupSortingPicker": "LexicographicalAscending",
+      "nodeGroupSortingPicker": "LexicographicalAscending"
+    },
+    "biofabric_parameters": { "edgeSpacing": 0.2 },
+    "circular_parameters": { "edgeThickness": 6 }
+  },
+  "TradingGraph": {
+    "title": "The Trading Network",
+    "content": "<div><p>\n        A (high-frequency) trading network describes the various (automated and high-speed) trades/exchanges between entities. In this fictional dataset, 50 different entities, i.e., nodes, trade with each other over the course of ten (discrete) time points.\n\n  </p>\n  <!--Drawbacks of Conventional Node-Link Diagrams-->\n  <p>\n    The biofabric visualization, unlike the above \"hairball\"-like circular node-link diagram, gives one a much clearer picture of this time-dependent trading data. More specifically, it allows one to\n  </p>\n  <ul>\n    <li>readily identify nodes <em>Omnidyne</em> and <em>Lumina</em> not just as the highest volume traders, but, importantly, the consistently most active traders across the dataset's ten time points </li>\n    <li>easily discern differences in overall volume traded between time points, i.e., the width of an edge group</li>\n    <li>straight-forwardly investigate individual time points of interest.</li>\n  </ul>\n</div>",
+    "defaults": {
+      "edgeColorModePicker": "EdgeGroups",
+      "nodeWidthPicker": "Full",
+      "nodeSortingPicker": "Degree",
+      "edgeSortingPicker": "EdgeLength",
+      "edgeGroupingPicker": true,
+      "nodeGroupingPicker": true,
+      "edgeGroupSortingPicker": "LexicographicalAscending",
+      "nodeGroupSortingPicker": "CardinalityDescending"
+    },
+    "biofabric_parameters": { "edgeSpacing": 0.3 },
+    "circular_parameters": { "edgeThickness": 3 }
+  }
+}

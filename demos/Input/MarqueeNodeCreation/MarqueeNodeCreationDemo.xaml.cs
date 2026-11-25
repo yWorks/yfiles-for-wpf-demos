@@ -1,0 +1,100 @@
+/****************************************************************************
+ ** 
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** 72070 Tuebingen, Germany. All rights reserved.
+ ** 
+ ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
+ ** of demo files in source code or binary form, with or without
+ ** modification, is not permitted.
+ ** 
+ ** Owners of a valid software license for a yFiles WPF version that this
+ ** demo is shipped with are allowed to use the demo source code as basis
+ ** for their own yFiles WPF powered applications. Use of such programs is
+ ** governed by the rights and conditions as set out in the yFiles WPF
+ ** license agreement.
+ ** 
+ ** THIS SOFTWARE IS PROVIDED ''AS IS'' AND ANY EXPRESS OR IMPLIED
+ ** WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+ ** MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN
+ ** NO EVENT SHALL yWorks BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ ** SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
+ ** TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ ** PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ ** LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ ** NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ ** SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ ** 
+ ***************************************************************************/
+
+using System;
+using yWorks.Controls.Input;
+using yWorks.Geometry;
+
+namespace yWorks.Demo.MarqueeNodeCreation
+{
+  /// <summary>
+  ///   Interaction logic for MarqueeNodeCreationDemo.xaml
+  /// </summary>
+  [Demo("marquee-node-creation", "input", "Marquee Node Creation",
+      Summary = "Shows how to customize the MarqueeSelectionInputMode class to create new nodes.",
+      Tags = ["interaction"], Keywords = ["marquee", "selection", "creation", "creating"], RelatedDemos = [])]
+  public sealed partial class MarqueeNodeCreationDemo
+  {
+    protected override void Initialize() {
+      // Set custom style defaults that will be used for newly created graph items
+      DemoStyles.InitDemoStyles(graphControl.Graph);
+      CreateSampleGraph();
+
+      // initialize the input mode
+      graphControl.InputMode = CreateEditorMode();
+
+      // center the graph
+      graphControl.FitGraphBounds();
+    }
+
+    /// <summary>
+    ///   Creates the default input mode for the GraphControl,
+    ///   a <see cref="GraphEditorInputMode"/>.
+    /// </summary>
+    /// <returns>A new GraphEditorInputMode instance</returns>
+    private GraphEditorInputMode CreateEditorMode() {
+      var mode = new GraphEditorInputMode {
+          AllowEditLabel = true,
+          // Initializes snapping for labels and other graph items.
+          SnapContext = new GraphSnapContext()
+      };
+
+      // Disable the default marqueeSelectionInputMode
+      mode.MarqueeSelectionInputMode.Enabled = false;
+
+      // Setting the custom input mode which handles snapping as well as a custom visualization for the marquee rectangle
+      var myMarqueeSelectionInputMode = new MyMarqueeSelectionInputMode(graphControl.Graph.NodeDefaults.Style);
+      // Set to the new input mode the priority of the default marqueeSelectionInputMode
+      myMarqueeSelectionInputMode.Priority = mode.MarqueeSelectionInputMode.Priority;
+      // Add the new input mode to the GraphEditorInputMode
+      mode.Add(myMarqueeSelectionInputMode);
+
+      // When a marquee selection is finished, create a new node at the position and size of the marquee rectangle
+      myMarqueeSelectionInputMode.DragFinishing += (_, evt) => graphControl.Graph.CreateNode(evt.Rectangle);
+
+      return mode;
+    }
+
+    /// <summary>
+    ///   Creates the initial sample graph.
+    /// </summary>
+    private void CreateSampleGraph() {
+      graphControl.Graph.CreateNode(new RectD(180, 40, 30, 30));
+      graphControl.Graph.CreateNode(new RectD(260, 50, 50, 50));
+      graphControl.Graph.CreateNode(new RectD(284, 200, 50, 30));
+    }
+
+    [STAThread]
+    private static void Main(string[] args) => Run<MarqueeNodeCreationDemo>();
+
+    public MarqueeNodeCreationDemo() {
+      InitializeComponent();
+    }
+  }
+}

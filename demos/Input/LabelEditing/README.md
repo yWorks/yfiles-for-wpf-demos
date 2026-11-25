@@ -1,3 +1,5 @@
-# LabelEditing
+# Label Editing
 
-Demo that shows how to customize label editing.
+![Demo thumbnail](../../DemoBrowser/DemoBrowser/Screenshots/label-editing.webp "Label Editing")
+
+Shows customizations of the interactive label editing.

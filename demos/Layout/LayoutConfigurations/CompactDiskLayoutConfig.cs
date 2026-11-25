@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 4.0.
- ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -30,8 +30,8 @@
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
-using Demo.yFiles.Toolkit.OptionHandler;
 using yWorks.Controls;
+using yWorks.Demo.Toolkit.OptionHandler;
 using yWorks.Graph;
 using yWorks.Graph.LabelModels;
 using yWorks.Layout;
@@ -39,7 +39,7 @@ using yWorks.Layout.Circular;
 using yWorks.Layout.Grouping;
 using yWorks.Layout.Organic;
 
-namespace Demo.yFiles.Layout.Configurations
+namespace yWorks.Demo.Layout.Configurations
 {
   /// <summary>
   ///   Configuration options for the layout algorithm of the same name.
@@ -68,7 +68,9 @@ namespace Demo.yFiles.Layout.Configurations
         // each group content in function createConfiguredLayoutData
         return new RecursiveGroupLayout {
             CoreLayout = new OrganicLayout {
-                Deterministic = true, AllowNodeOverlaps = false, DefaultMinimumNodeDistance = MinimumNodeDistanceItem
+                Deterministic = true,
+                AllowNodeOverlaps = false,
+                DefaultMinimumNodeDistance = MinimumNodeDistanceItem
             },
             FromSketchMode = UseDrawingAsSketchItem
         };
@@ -90,10 +92,8 @@ namespace Demo.yFiles.Layout.Configurations
       return null;
     }
 
-    /**
-     * Creates and configures the actual compact disk layout algorithm.
-     * @return The configured compact disk layout.
-     */
+    /// <summary>Creates and configures the actual compact disk layout algorithm.</summary>
+    /// <returns>The configured compact disk layout.</returns>
     private CompactDiskLayout CreateCompactDiskLayout(GraphControl graphControl) {
       var layout = new CompactDiskLayout();
 
@@ -106,8 +106,7 @@ namespace Demo.yFiles.Layout.Configurations
           NodeLabelingStyleItem == RadialNodeLabelPlacement.Horizontal) {
         var graph = graphControl.Graph;
         foreach (var label in graph.GetNodeLabels()) {
-          graph.SetLabelLayoutParameter(label,
-              FreeNodeLabelModel.Instance.FindBestParameter(label, label.GetLayout()));
+          graph.SetLabelLayoutParameter(label, FreeNodeLabelModel.Instance.FindBestParameter(label, label.GetLayout()));
         }
       }
 

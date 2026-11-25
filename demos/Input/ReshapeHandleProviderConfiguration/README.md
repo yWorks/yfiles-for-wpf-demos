@@ -1,4 +1,5 @@
-# ReshapeHandleProviderConfiguration
+# Reshape Handle Provider Configuration
 
-Demo code that shows how to customize the resize behavior of INodes by implementing
-      a custom `IReshapeHandleProvider`.
+![Demo thumbnail](../../DemoBrowser/DemoBrowser/Screenshots/reshape-handle-provider-configuration.webp "Reshape Handle Provider Configuration")
+
+Shows how resizing of nodes can be customized.

@@ -1,6 +1,6 @@
 <!-- ************************************************************************ -->
-<!-- This demo file is part of yFiles WPF 4.0.                           -->
-<!-- Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
+<!-- This demo file is part of yFiles WPF 4.1.                           -->
+<!-- Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
 <!-- 72070 Tuebingen, Germany. All rights reserved.                           -->
 <!--                                                                          -->
 <!-- yFiles demo files exhibit yFiles WPF functionalities. Any redistribution  -->
@@ -24,67 +24,18 @@
 <!-- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.             -->
 <!--                                                                          -->
 <!-- ************************************************************************ -->
-<Window x:Class="Demo.yFiles.Graph.DefaultLabels.LabelStyleDemo"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/4.0/xaml"
-        Title="Demo.yFiles.Graph.LabelStyle"
-        Height="600"
-        Width="800"
-        Style="{StaticResource DemoWindow}"
-        Loaded="OnLoaded">
-    <HeaderedContentControl Style="{StaticResource DemoStyle}">
-        <HeaderedContentControl.Header>
-            <RichTextBox IsReadOnly="True" BorderThickness="0">
-                <FlowDocument>
-                    <Paragraph>
-                        This demo shows the most important configuration options for the built-in
-                        <Run Style="{StaticResource HtmlCode}">LabelStyle</Run> class.
-                    </Paragraph>
-                    <Paragraph Style="{StaticResource HtmlH2}">
-                        Things to try
-                    </Paragraph>
-                    <List Margin="0" Padding="0">
-                        <ListItem Margin="25,0,0,0">
-                            <Paragraph>
-                                Observe the various pre-configured label styles that are using different label
-                                <Run Style="{StaticResource HtmlEm}">shapes</Run>, different
-                                <Run Style="{StaticResource HtmlEm}">colors</Run>,
-                                <Run Style="{StaticResource HtmlEm}">fonts</Run> and other settings.
-                            </Paragraph>
-                        </ListItem>
-                        <ListItem Margin="25,0,0,0">
-                            <Paragraph>
-                                Take a look at labels showing the
-                                <Run Style="{StaticResource HtmlEm}">text alignment</Run> features.
-                                This comes into play when the preferred size of the label is larger
-                                than the size needed for the text.
-                            </Paragraph>
-                        </ListItem>
-                        <ListItem Margin="25,0,0,0">
-                            <Paragraph>
-                                The three light-blue node labels on the right show the effects of
-                                <Run Style="{StaticResource HtmlEm}">text wrapping</Run> and
-                                <Run Style="{StaticResource HtmlEm}">text clipping</Run> for labels
-                                whose size is smaller than the size needed for displaying the whole text.
-                            </Paragraph>
-                        </ListItem>
-                    </List>
-                </FlowDocument>
-            </RichTextBox>
-        </HeaderedContentControl.Header>
-        <DockPanel>
-            <ToolBarTray Height="Auto" Name="toolBarTray" Width="Auto" DockPanel.Dock="Top">
-                <ToolBar
-                    Width="{Binding ActualWidth, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ToolBarTray}}}"
-                    Height="Auto" Name="toolBar">
-                    <Button Command="IncreaseZoom" CommandTarget="{Binding ElementName=graphControl}" />
-                    <Button Command="DecreaseZoom" CommandTarget="{Binding ElementName=graphControl}" />
-                    <Button Command="{x:Static ywpf:GraphCommands.FitGraphBounds}"
-                            CommandTarget="{Binding ElementName=graphControl}" />
-                </ToolBar>
-            </ToolBarTray>
-            <ywpf:GraphControl Width="Auto" x:Name="graphControl" FileOperationsEnabled="True" />
-        </DockPanel>
-    </HeaderedContentControl>
-</Window>
+<demo:Demo x:Class="yWorks.Demo.LabelStyle.LabelStyleDemo"
+           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+           xmlns:demo="http://www.yworks.com/xml/yfiles-demos"
+           xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/4.0/xaml">
+  <demo:DemoView>
+    <demo:ClippingBorder Style="{StaticResource DemoBorderStyle}">
+      <DockPanel>
+        <demo:DemoToolBar DockPanel.Dock="Top" ButtonPresets="Zoom" CommandTarget="{Binding ElementName=graphControl}" />
+        <ywpf:GraphControl x:Name="graphControl" Background="White" />
+      </DockPanel>
+    </demo:ClippingBorder>
+    <demo:Description Source="description.html" />
+  </demo:DemoView>
+</demo:Demo>

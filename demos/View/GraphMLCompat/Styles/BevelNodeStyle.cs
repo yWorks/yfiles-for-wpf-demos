@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 4.0.
- ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -41,7 +41,7 @@ using yWorks.Utils;
 using Color = System.Windows.Media.Color;
 using Point = System.Windows.Point;
 
-namespace Demo.yFiles.IO.GraphML.Compat.Styles
+namespace yWorks.Demo.GraphMLCompat.Styles
 {
   public class BevelNodeStyle : DelegatingNodeStyle
   {
@@ -83,16 +83,18 @@ namespace Demo.yFiles.IO.GraphML.Compat.Styles
       }
     }
 
-    public override object Clone() {
-      return new BevelNodeStyle { Inset = Inset, Radius = Radius, Color = Color, DrawShadow = DrawShadow };
-    }
+    public override object Clone() =>
+        new BevelNodeStyle {
+            Inset = Inset,
+            Radius = Radius,
+            Color = Color,
+            DrawShadow = DrawShadow
+        };
 
-    protected override INodeStyle GetStyle(INode node) {
-      return wrappedStyle;
-    }
+    protected override INodeStyle GetStyle(INode node) => wrappedStyle;
   }
 
-  class BevelNodeStyleImpl : INodeStyle
+  internal class BevelNodeStyleImpl : INodeStyle
   {
     private readonly BevelNodeStyleRenderer renderer = new();
 
@@ -104,9 +106,7 @@ namespace Demo.yFiles.IO.GraphML.Compat.Styles
 
     public INodeStyleRenderer Renderer => renderer;
 
-    public virtual object Clone() {
-      return MemberwiseClone();
-    }
+    public virtual object Clone() => MemberwiseClone();
   }
 
   internal class BevelNodeStyleRenderer : INodeStyleRenderer, IShapeGeometry, IBoundsProvider, IVisibilityTestable,
@@ -212,18 +212,15 @@ namespace Demo.yFiles.IO.GraphML.Compat.Styles
       return Lookups.Empty;
     }
 
-    public virtual Visual CreateVisual(IRenderContext context) {
-      return new BevelNodeStyleVisual().Render(Color, Inset, Layout, Radius);
-    }
+    public virtual Visual CreateVisual(IRenderContext context) =>
+        new BevelNodeStyleVisual().Render(Color, Inset, Layout, Radius);
 
     public virtual Visual UpdateVisual(IRenderContext context, Visual oldVisual) {
       var visual = oldVisual as BevelNodeStyleVisual;
       return visual != null ? visual.Render(Color, Inset, Layout, Radius) : CreateVisual(context);
     }
 
-    public virtual RectD GetBounds(ICanvasContext context) {
-      return Layout.ToRectD();
-    }
+    public virtual RectD GetBounds(ICanvasContext context) => Layout.ToRectD();
 
     public virtual GeneralPath GetOutline() {
       if (outline != null) {
@@ -233,29 +230,20 @@ namespace Demo.yFiles.IO.GraphML.Compat.Styles
       return outline = StyleUtils.CreateRoundRectanglePath(layout.X, layout.Y, layout.Width, layout.Height, Radius);
     }
 
-    public virtual PointD? GetIntersection(PointD inner, PointD outer) {
-      return StyleUtils.FindLineIntersectionWithRoundRect(inner, outer, Layout, Radius);
-    }
+    public virtual PointD? GetIntersection(PointD inner, PointD outer) =>
+        StyleUtils.FindLineIntersectionWithRoundRect(inner, outer, Layout, Radius);
 
-    public virtual bool IsInside(PointD location) {
-      return StyleUtils.RoundRectContains(location, Layout, Radius);
-    }
+    public virtual bool IsInside(PointD location) => StyleUtils.RoundRectContains(location, Layout, Radius);
 
-    public virtual bool IsHit(IInputModeContext context, PointD location) {
-      return StyleUtils.RoundRectIsHit(location, Layout, Radius, context.HitTestRadius);
-    }
+    public virtual bool IsHit(IInputModeContext context, PointD location) =>
+        StyleUtils.RoundRectIsHit(location, Layout, Radius, context.HitTestRadius);
 
-    public virtual bool IsInBox(IInputModeContext context, RectD rectangle) {
-      return rectangle.Intersects(Layout.ToRectD());
-    }
+    public virtual bool IsInBox(IInputModeContext context, RectD rectangle) => rectangle.Intersects(Layout.ToRectD());
 
-    public bool IsInPath(IInputModeContext context, GeneralPath lassoPath) {
-      return lassoPath.AreaIntersects(GetOutline()!, context.HitTestRadius);
-    }
+    public bool IsInPath(IInputModeContext context, GeneralPath lassoPath) =>
+        lassoPath.AreaIntersects(GetOutline()!, context.HitTestRadius);
 
-    public virtual bool IsVisible(ICanvasContext context, RectD rectangle) {
-      return rectangle.Intersects(Layout.ToRectD());
-    }
+    public virtual bool IsVisible(ICanvasContext context, RectD rectangle) => rectangle.Intersects(Layout.ToRectD());
 
     public virtual object Lookup(Type type) {
       if (type == typeof(IGroupPaddingProvider)) {
@@ -314,13 +302,27 @@ namespace Demo.yFiles.IO.GraphML.Compat.Styles
 
         {
           var gradientStops = new GradientStopCollection {
-              new() { Color = StyleUtils.MixColors(Colors.White, color, 0.75f), Offset = 0 },
-              new() { Color = StyleUtils.MixColors(Colors.White, color, 0.2f), Offset = 0.5 },
-              new() { Color = color, Offset = 0.5 },
-              new() { Color = color, Offset = 1 }
+              new() {
+                  Color = StyleUtils.MixColors(Colors.White, color, 0.75f),
+                  Offset = 0
+              },
+              new() {
+                  Color = StyleUtils.MixColors(Colors.White, color, 0.2f),
+                  Offset = 0.5
+              },
+              new() {
+                  Color = color,
+                  Offset = 0.5
+              },
+              new() {
+                  Color = color,
+                  Offset = 1
+              }
           };
           var brush = new LinearGradientBrush {
-              GradientStops = gradientStops, StartPoint = new Point(0, 0), EndPoint = new Point(0, 1)
+              GradientStops = gradientStops,
+              StartPoint = new Point(0, 0),
+              EndPoint = new Point(0, 1)
           };
           brush.Freeze();
           var visual = new Rectangle {
@@ -329,7 +331,7 @@ namespace Demo.yFiles.IO.GraphML.Compat.Styles
               RadiusX = radius,
               RadiusY = radius,
               Fill = brush,
-              AllowDrop = true,
+              AllowDrop = true
           };
           visual.SetCanvasArrangeRect(new Rect(layoutX, layoutY, layoutWidth, layoutHeight));
           Add(visual);
@@ -346,7 +348,7 @@ namespace Demo.yFiles.IO.GraphML.Compat.Styles
               RadiusY = Math.Max(0, radius - inset),
               Stroke = brush,
               StrokeThickness = 2,
-              AllowDrop = true,
+              AllowDrop = true
           };
           visual.SetCanvasArrangeRect(new Rect(layoutX + margin, layoutY + margin, visual.Width, visual.Height));
           Add(visual);
@@ -363,7 +365,7 @@ namespace Demo.yFiles.IO.GraphML.Compat.Styles
               RadiusY = Math.Max(0, radius - inset),
               Stroke = brush,
               StrokeThickness = 1,
-              AllowDrop = true,
+              AllowDrop = true
           };
           visual.SetCanvasArrangeRect(new Rect(layoutX + margin, layoutY + margin, visual.Width, visual.Height));
           Add(visual);
@@ -384,13 +386,9 @@ namespace Demo.yFiles.IO.GraphML.Compat.Styles
         return new SizeD(value, value);
       }
 
-      public SizeD GetMaximumSize() {
-        return SizeD.Infinite;
-      }
+      public SizeD GetMaximumSize() => SizeD.Infinite;
 
-      public RectD GetMinimumEnclosedArea() {
-        return RectD.Empty;
-      }
+      public RectD GetMinimumEnclosedArea() => RectD.Empty;
     }
 
     private sealed class MyGroupPaddingProvider : IGroupPaddingProvider
@@ -401,9 +399,7 @@ namespace Demo.yFiles.IO.GraphML.Compat.Styles
         this.style = style;
       }
 
-      public InsetsD GetPadding() {
-        return new InsetsD(style.Radius + 1);
-      }
+      public InsetsD GetPadding() => new(style.Radius + 1);
     }
   }
 }

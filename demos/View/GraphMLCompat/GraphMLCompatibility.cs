@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 4.0.
- ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -31,14 +31,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
-using Demo.yFiles.IO.GraphML.Compat;
 using yWorks.Controls;
+using yWorks.Demo.GraphMLCompat;
 using yWorks.Graph.PortLocationModels;
 using yWorks.GraphML;
 using yWorks.Markup.Common;
 using yWorks.Utils;
 
-namespace Demo.yFiles.IO.GraphML.Compat
+namespace yWorks.Demo.GraphMLCompat
 {
   /// <summary>
   ///   Helper class to enable parsing GraphML files from previous versions of yFiles WPF.
@@ -58,19 +58,19 @@ namespace Demo.yFiles.IO.GraphML.Compat
       // Register our three special namespaces containing MarkupExtensions that can then just be picked up by namespace
       // and name and do not have to be mapped manually (see below).
       // These mappings are akin to the assembly attributes at the top of this file.
-      handler.AddXamlNamespaceMapping(YfilesCommonNS30, "Demo.yFiles.IO.GraphML.Compat.LabelModels",
+      handler.AddXamlNamespaceMapping(YfilesCommonNS30, "yWorks.Demo.GraphMLCompat.LabelModels",
           typeof(GraphMLCompatibility).Assembly);
-      handler.AddXamlNamespaceMapping(YfilesCommonNS30, "Demo.yFiles.IO.GraphML.Compat.PortLocationModels",
+      handler.AddXamlNamespaceMapping(YfilesCommonNS30, "yWorks.Demo.GraphMLCompat.PortLocationModels",
           typeof(GraphMLCompatibility).Assembly);
-      handler.AddXamlNamespaceMapping(YfilesCommonNS30, "Demo.yFiles.IO.GraphML.Compat.Table",
+      handler.AddXamlNamespaceMapping(YfilesCommonNS30, "yWorks.Demo.GraphMLCompat.Table",
           typeof(GraphMLCompatibility).Assembly);
-      handler.AddXamlNamespaceMapping(YfilesWpfXamlNS30, "Demo.yFiles.IO.GraphML.Compat.Styles",
+      handler.AddXamlNamespaceMapping(YfilesWpfXamlNS30, "yWorks.Demo.GraphMLCompat.Styles",
           typeof(GraphMLCompatibility).Assembly);
 
       // Provides a mapping between XML element names in specific yFiles WPF 3.6 namespaces
       // to either their equivalent in the current library version, or to specially-written
       // MarkupExtensions that surface the old API and map it to the correct instances in the new API.
-      var mappings = new Dictionary<XName, Type>() {
+      var mappings = new Dictionary<XName, Type> {
           // Label models
           {
               XName.Get("AnchoredLabelModelParameter", YfilesCommonNS30),
@@ -88,15 +88,15 @@ namespace Demo.yFiles.IO.GraphML.Compat
           { XName.Get("SegmentRatioPortLocationModel", YfilesCommonNS30), typeof(EdgeSegmentPortLocationModel) }, {
               XName.Get("BendAnchoredParameter", YfilesCommonNS30),
               typeof(BendAnchoredPortLocationModelParameterExtension)
-          },
+          }
       };
 
       // Collect all type names for which we provide MarkupExtensions in this demo:
       var blacklistedCommonNames = new HashSet<string>();
       foreach (var type in typeof(GraphMLCompatibility).Assembly.GetTypes().Where(t =>
-          t.IsPublic && (t.Namespace == "Demo.yFiles.IO.GraphML.Compat.LabelModels" ||
-              t.Namespace == "Demo.yFiles.IO.GraphML.Compat.PortLocationModels" ||
-              t.Namespace == "Demo.yFiles.IO.GraphML.Compat.Table"))) {
+          t.IsPublic && (t.Namespace == "yWorks.Demo.GraphMLCompat.LabelModels" ||
+              t.Namespace == "yWorks.Demo.GraphMLCompat.PortLocationModels" ||
+              t.Namespace == "yWorks.Demo.GraphMLCompat.Table"))) {
         var typeName = type.Name;
         blacklistedCommonNames.Add(typeName);
         if (typeName.EndsWith("Extension")) {
@@ -106,7 +106,7 @@ namespace Demo.yFiles.IO.GraphML.Compat
 
       var blacklistedWPFNames = new HashSet<string>();
       foreach (var type in typeof(GraphMLCompatibility).Assembly.GetTypes().Where(t =>
-          t.IsPublic && t.Namespace == "Demo.yFiles.IO.GraphML.Compat.Styles")) {
+          t.IsPublic && t.Namespace == "yWorks.Demo.GraphMLCompat.Styles")) {
         var typeName = type.Name;
         blacklistedWPFNames.Add(typeName);
         if (typeName.EndsWith("Extension")) {
@@ -188,8 +188,7 @@ namespace Demo.yFiles.IO.GraphML.Compat
 
     public const string YfilesCommonNS30 = "http://www.yworks.com/xml/yfiles-common/3.0";
 
-    public static readonly TypedKey<bool> RequeryLock =
-        new TypedKey<bool>(typeof(GraphMLCompatibility).FullName + "RequeryLock", false);
+    public static readonly TypedKey<bool> RequeryLock = new(typeof(GraphMLCompatibility).FullName + "RequeryLock");
   }
 }
 

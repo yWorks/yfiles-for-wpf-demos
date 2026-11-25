@@ -1,3 +1,5 @@
-# GroupNodeStyle
+# Group Node Style
 
-The GroupNodeStyle is a style primarily intended for groups and folders, i.e., collapsed groups.
+![Demo thumbnail](../../DemoBrowser/DemoBrowser/Screenshots/group-node-style.webp "Group Node Style")
+
+Shows the group and folder node visualization options offered by the GroupNodeStyle class.

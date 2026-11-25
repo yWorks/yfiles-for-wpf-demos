@@ -1,0 +1,77 @@
+{
+  "nodes": [
+    { "id": 0, "layout": { "x": -15, "y": -15, "width": 30, "height": 30 } },
+    { "id": 1, "layout": { "x": 585, "y": -15, "width": 30, "height": 30 } },
+    { "id": 2, "layout": { "x": -15, "y": 285, "width": 30, "height": 30 } },
+    { "id": 3, "layout": { "x": 585, "y": 285, "width": 30, "height": 30 } }
+  ],
+  "edges": [
+    {
+      "id": 0,
+      "source": 0,
+      "target": 1,
+      "sourcePort": { "x": 0, "y": 0 },
+      "targetPort": { "x": 600, "y": 0 },
+      "bends": [
+        { "x": 100, "y": 100 },
+        { "x": 200, "y": 100 },
+        { "x": 300, "y": 0 },
+        { "x": 400, "y": -100 },
+        { "x": 500, "y": -100 }
+      ],
+      "labels": [
+        {
+          "text": "First from Source\nRight of Edge",
+          "model": "segment",
+          "fromSource": true,
+          "segmentIndex": 0,
+          "segmentRatio": 0.2,
+          "distance": 20
+        },
+        {
+          "text": "Second From Source\nOn Edge",
+          "model": "segment",
+          "fromSource": true,
+          "segmentIndex": 1,
+          "segmentRatio": 0.2,
+          "distance": 0
+        },
+        {
+          "text": "First From Target\nLeft of Edge",
+          "model": "segment",
+          "fromSource": false,
+          "segmentIndex": 0,
+          "segmentRatio": 0.2,
+          "distance": -20
+        },
+        {
+          "text": "Second From Target\nOn Edge",
+          "model": "segment",
+          "fromSource": false,
+          "segmentIndex": 1,
+          "segmentRatio": 0.2,
+          "distance": 0
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "source": 2,
+      "target": 3,
+      "sourcePort": { "x": 0, "y": 300 },
+      "targetPort": { "x": 600, "y": 300 },
+      "bends": [
+        { "x": 100, "y": 400 },
+        { "x": 200, "y": 400 },
+        { "x": 300, "y": 300 },
+        { "x": 400, "y": 200 },
+        { "x": 500, "y": 200 }
+      ],
+      "labels": [
+        { "text": "Bezier Ratio 0.5", "model": "path", "ratio": 0.5, "distance": 20 },
+        { "text": "Bezier Ratio 0.9", "model": "path", "ratio": 0.9, "distance": 0 },
+        { "text": "Bezier Ratio 0.1", "model": "path", "ratio": 0.1, "distance": 0 }
+      ]
+    }
+  ]
+}

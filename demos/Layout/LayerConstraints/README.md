@@ -1,4 +1,5 @@
-# LayerConstraints
+# Layer Constraints
 
-Demonstrates how to use layer constraints with the HierarchicalLayout to
-      restrict the node layering.
+![Demo thumbnail](../../DemoBrowser/DemoBrowser/Screenshots/layer-constraints.webp "Layer Constraints")
+
+Shows how to use layer constraints to prescribe the node layering in hierarchical layouts.

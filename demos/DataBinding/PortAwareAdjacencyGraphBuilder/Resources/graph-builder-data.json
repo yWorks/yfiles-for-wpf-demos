@@ -1,0 +1,1468 @@
+{
+  "nodesSource": [
+    {
+      "id": "0",
+      "name": "Root",
+      "ports": [
+        {
+          "id": "in 0",
+          "location": [
+            0,
+            0.25
+          ]
+        },
+        {
+          "id": "in 1",
+          "location": [
+            0,
+            0.5
+          ]
+        },
+        {
+          "id": "in 2",
+          "location": [
+            0,
+            0.75
+          ]
+        },
+        {
+          "id": "out 0",
+          "location": [
+            1,
+            0.25
+          ]
+        },
+        {
+          "id": "out 1",
+          "location": [
+            1,
+            0.5
+          ]
+        },
+        {
+          "id": "out 2",
+          "location": [
+            1,
+            0.75
+          ]
+        }
+      ],
+      "successors": [
+        {
+          "id": "r-0",
+          "name": "Right 0",
+          "from": "out 0",
+          "to": "in 1",
+          "color": "blue",
+          "ports": [
+            {
+              "id": "in 0",
+              "location": [
+                0,
+                0.25
+              ]
+            },
+            {
+              "id": "in 1",
+              "location": [
+                0,
+                0.5
+              ]
+            },
+            {
+              "id": "in 2",
+              "location": [
+                0,
+                0.75
+              ]
+            },
+            {
+              "id": "out 0",
+              "location": [
+                1,
+                0.25
+              ]
+            },
+            {
+              "id": "out 1",
+              "location": [
+                1,
+                0.5
+              ]
+            },
+            {
+              "id": "out 2",
+              "location": [
+                1,
+                0.75
+              ]
+            }
+          ],
+          "successors": [
+            {
+              "id": "r-0-0",
+              "name": "Right 0-0",
+              "from": "out 2",
+              "to": "in 1",
+              "ports": [
+                {
+                  "id": "in 0",
+                  "location": [
+                    0,
+                    0.25
+                  ]
+                },
+                {
+                  "id": "in 1",
+                  "location": [
+                    0,
+                    0.5
+                  ]
+                },
+                {
+                  "id": "in 2",
+                  "location": [
+                    0,
+                    0.75
+                  ]
+                },
+                {
+                  "id": "out 0",
+                  "location": [
+                    1,
+                    0.25
+                  ]
+                },
+                {
+                  "id": "out 1",
+                  "location": [
+                    1,
+                    0.5
+                  ]
+                },
+                {
+                  "id": "out 2",
+                  "location": [
+                    1,
+                    0.75
+                  ]
+                }
+              ]
+            }
+          ],
+          "predecessors": [
+            {
+              "id": "c-0-0",
+              "name": "Center 0-0",
+              "from": "out 0",
+              "to": "in 0",
+              "ports": [
+                {
+                  "id": "in 0",
+                  "location": [
+                    0,
+                    0.25
+                  ]
+                },
+                {
+                  "id": "in 1",
+                  "location": [
+                    0,
+                    0.5
+                  ]
+                },
+                {
+                  "id": "in 2",
+                  "location": [
+                    0,
+                    0.75
+                  ]
+                },
+                {
+                  "id": "out 0",
+                  "location": [
+                    1,
+                    0.25
+                  ]
+                },
+                {
+                  "id": "out 1",
+                  "location": [
+                    1,
+                    0.5
+                  ]
+                },
+                {
+                  "id": "out 2",
+                  "location": [
+                    1,
+                    0.75
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "r-1",
+          "name": "Right 1",
+          "from": "out 2",
+          "to": "in 1",
+          "color": "blue",
+          "ports": [
+            {
+              "id": "in 0",
+              "location": [
+                0,
+                0.25
+              ]
+            },
+            {
+              "id": "in 1",
+              "location": [
+                0,
+                0.5
+              ]
+            },
+            {
+              "id": "in 2",
+              "location": [
+                0,
+                0.75
+              ]
+            },
+            {
+              "id": "out 0",
+              "location": [
+                1,
+                0.25
+              ]
+            },
+            {
+              "id": "out 1",
+              "location": [
+                1,
+                0.5
+              ]
+            },
+            {
+              "id": "out 2",
+              "location": [
+                1,
+                0.75
+              ]
+            }
+          ],
+          "successors": [
+            {
+              "id": "r-1-0",
+              "name": "Right 1-0",
+              "from": "out 0",
+              "to": "in 1",
+              "ports": [
+                {
+                  "id": "in 0",
+                  "location": [
+                    0,
+                    0.25
+                  ]
+                },
+                {
+                  "id": "in 1",
+                  "location": [
+                    0,
+                    0.5
+                  ]
+                },
+                {
+                  "id": "in 2",
+                  "location": [
+                    0,
+                    0.75
+                  ]
+                },
+                {
+                  "id": "out 0",
+                  "location": [
+                    1,
+                    0.25
+                  ]
+                },
+                {
+                  "id": "out 1",
+                  "location": [
+                    1,
+                    0.5
+                  ]
+                },
+                {
+                  "id": "out 2",
+                  "location": [
+                    1,
+                    0.75
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "r-1-1",
+              "name": "Right 1-1",
+              "from": "out 2",
+              "to": "in 1",
+              "ports": [
+                {
+                  "id": "in 0",
+                  "location": [
+                    0,
+                    0.25
+                  ]
+                },
+                {
+                  "id": "in 1",
+                  "location": [
+                    0,
+                    0.5
+                  ]
+                },
+                {
+                  "id": "in 2",
+                  "location": [
+                    0,
+                    0.75
+                  ]
+                },
+                {
+                  "id": "out 0",
+                  "location": [
+                    1,
+                    0.25
+                  ]
+                },
+                {
+                  "id": "out 1",
+                  "location": [
+                    1,
+                    0.5
+                  ]
+                },
+                {
+                  "id": "out 2",
+                  "location": [
+                    1,
+                    0.75
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "predecessors": [
+        {
+          "id": "l-0",
+          "name": "Left 0",
+          "from": "out 1",
+          "to": "in 0",
+          "color": "blue",
+          "ports": [
+            {
+              "id": "in 0",
+              "location": [
+                0,
+                0.25
+              ]
+            },
+            {
+              "id": "in 1",
+              "location": [
+                0,
+                0.5
+              ]
+            },
+            {
+              "id": "in 2",
+              "location": [
+                0,
+                0.75
+              ]
+            },
+            {
+              "id": "out 0",
+              "location": [
+                1,
+                0.25
+              ]
+            },
+            {
+              "id": "out 1",
+              "location": [
+                1,
+                0.5
+              ]
+            },
+            {
+              "id": "out 2",
+              "location": [
+                1,
+                0.75
+              ]
+            }
+          ],
+          "predecessors": [
+            {
+              "id": "l-0-0",
+              "name": "Left 0-0",
+              "from": "out 1",
+              "to": "in 1",
+              "ports": [
+                {
+                  "id": "in 0",
+                  "location": [
+                    0,
+                    0.25
+                  ]
+                },
+                {
+                  "id": "in 1",
+                  "location": [
+                    0,
+                    0.5
+                  ]
+                },
+                {
+                  "id": "in 2",
+                  "location": [
+                    0,
+                    0.75
+                  ]
+                },
+                {
+                  "id": "out 0",
+                  "location": [
+                    1,
+                    0.25
+                  ]
+                },
+                {
+                  "id": "out 1",
+                  "location": [
+                    1,
+                    0.5
+                  ]
+                },
+                {
+                  "id": "out 2",
+                  "location": [
+                    1,
+                    0.75
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "l-1",
+          "name": "Left 1",
+          "from": "out 1",
+          "to": "in 2",
+          "color": "blue",
+          "ports": [
+            {
+              "id": "in 0",
+              "location": [
+                0,
+                0.25
+              ]
+            },
+            {
+              "id": "in 1",
+              "location": [
+                0,
+                0.5
+              ]
+            },
+            {
+              "id": "in 2",
+              "location": [
+                0,
+                0.75
+              ]
+            },
+            {
+              "id": "out 0",
+              "location": [
+                1,
+                0.25
+              ]
+            },
+            {
+              "id": "out 1",
+              "location": [
+                1,
+                0.5
+              ]
+            },
+            {
+              "id": "out 2",
+              "location": [
+                1,
+                0.75
+              ]
+            }
+          ],
+          "predecessors": [
+            {
+              "id": "l-1-0",
+              "name": "Left 1-0",
+              "from": "out 1",
+              "to": "in 0",
+              "ports": [
+                {
+                  "id": "in 0",
+                  "location": [
+                    0,
+                    0.25
+                  ]
+                },
+                {
+                  "id": "in 1",
+                  "location": [
+                    0,
+                    0.5
+                  ]
+                },
+                {
+                  "id": "in 2",
+                  "location": [
+                    0,
+                    0.75
+                  ]
+                },
+                {
+                  "id": "out 0",
+                  "location": [
+                    1,
+                    0.25
+                  ]
+                },
+                {
+                  "id": "out 1",
+                  "location": [
+                    1,
+                    0.5
+                  ]
+                },
+                {
+                  "id": "out 2",
+                  "location": [
+                    1,
+                    0.75
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "l-1-1",
+              "name": "Left 1-1",
+              "from": "out 1",
+              "to": "in 1",
+              "ports": [
+                {
+                  "id": "in 0",
+                  "location": [
+                    0,
+                    0.25
+                  ]
+                },
+                {
+                  "id": "in 1",
+                  "location": [
+                    0,
+                    0.5
+                  ]
+                },
+                {
+                  "id": "in 2",
+                  "location": [
+                    0,
+                    0.75
+                  ]
+                },
+                {
+                  "id": "out 0",
+                  "location": [
+                    1,
+                    0.25
+                  ]
+                },
+                {
+                  "id": "out 1",
+                  "location": [
+                    1,
+                    0.5
+                  ]
+                },
+                {
+                  "id": "out 2",
+                  "location": [
+                    1,
+                    0.75
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "l-1-2",
+              "name": "Left 1-2",
+              "from": "out 1",
+              "to": "in 2",
+              "ports": [
+                {
+                  "id": "in 0",
+                  "location": [
+                    0,
+                    0.25
+                  ]
+                },
+                {
+                  "id": "in 1",
+                  "location": [
+                    0,
+                    0.5
+                  ]
+                },
+                {
+                  "id": "in 2",
+                  "location": [
+                    0,
+                    0.75
+                  ]
+                },
+                {
+                  "id": "out 0",
+                  "location": [
+                    1,
+                    0.25
+                  ]
+                },
+                {
+                  "id": "out 1",
+                  "location": [
+                    1,
+                    0.5
+                  ]
+                },
+                {
+                  "id": "out 2",
+                  "location": [
+                    1,
+                    0.75
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "updateNodesSource": [
+    {
+      "id": "0",
+      "name": "Root",
+      "ports": [
+        {
+          "id": "in 0",
+          "location": [
+            0,
+            0.25
+          ]
+        },
+        {
+          "id": "in 1",
+          "location": [
+            0,
+            0.5
+          ]
+        },
+        {
+          "id": "in 2",
+          "location": [
+            0,
+            0.75
+          ]
+        },
+        {
+          "id": "out 0",
+          "location": [
+            1,
+            0.25
+          ]
+        },
+        {
+          "id": "out 1",
+          "location": [
+            1,
+            0.5
+          ]
+        },
+        {
+          "id": "out 2",
+          "location": [
+            1,
+            0.75
+          ]
+        }
+      ],
+      "successors": [
+        {
+          "id": "r-0",
+          "name": "Right 0",
+          "from": "out 0",
+          "to": "in 1",
+          "color": "blue",
+          "ports": [
+            {
+              "id": "in 0",
+              "location": [
+                0,
+                0.25
+              ]
+            },
+            {
+              "id": "in 1",
+              "location": [
+                0,
+                0.5
+              ]
+            },
+            {
+              "id": "in 2",
+              "location": [
+                0,
+                0.75
+              ]
+            },
+            {
+              "id": "out 0",
+              "location": [
+                1,
+                0.25
+              ]
+            },
+            {
+              "id": "out 1",
+              "location": [
+                1,
+                0.5
+              ]
+            },
+            {
+              "id": "out 2",
+              "location": [
+                1,
+                0.75
+              ]
+            }
+          ],
+          "successors": [
+            {
+              "id": "r-0-0",
+              "name": "Right 0-0",
+              "from": "out 2",
+              "to": "in 1",
+              "ports": [
+                {
+                  "id": "in 1",
+                  "location": [
+                    0,
+                    0.5
+                  ]
+                }
+              ]
+            }
+          ],
+          "predecessors": [
+            {
+              "id": "c-0-0",
+              "name": "Center 0-0",
+              "from": "out 0",
+              "to": "in 0",
+              "ports": [
+                {
+                  "id": "in 0",
+                  "location": [
+                    0,
+                    0.25
+                  ]
+                },
+                {
+                  "id": "in 1",
+                  "location": [
+                    0,
+                    0.5
+                  ]
+                },
+                {
+                  "id": "in 2",
+                  "location": [
+                    0,
+                    0.75
+                  ]
+                },
+                {
+                  "id": "out 0",
+                  "location": [
+                    1,
+                    0.25
+                  ]
+                },
+                {
+                  "id": "out 1",
+                  "location": [
+                    1,
+                    0.5
+                  ]
+                },
+                {
+                  "id": "out 2",
+                  "location": [
+                    1,
+                    0.75
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "r-1",
+          "name": "Right 1",
+          "from": "out 2",
+          "to": "in 1",
+          "color": "blue",
+          "ports": [
+            {
+              "id": "in 0",
+              "location": [
+                0,
+                0.25
+              ]
+            },
+            {
+              "id": "in 1",
+              "location": [
+                0,
+                0.5
+              ]
+            },
+            {
+              "id": "in 2",
+              "location": [
+                0,
+                0.75
+              ]
+            },
+            {
+              "id": "out 0",
+              "location": [
+                1,
+                0.25
+              ]
+            },
+            {
+              "id": "out 1",
+              "location": [
+                1,
+                0.5
+              ]
+            },
+            {
+              "id": "out 2",
+              "location": [
+                1,
+                0.75
+              ]
+            }
+          ],
+          "successors": [
+            {
+              "id": "r-1-1",
+              "name": "Right 1-1",
+              "from": "out 2",
+              "to": "in 1",
+              "ports": [
+                {
+                  "id": "in 0",
+                  "location": [
+                    0,
+                    0.16
+                  ]
+                },
+                {
+                  "id": "in 1",
+                  "location": [
+                    0,
+                    0.33
+                  ]
+                },
+                {
+                  "id": "in 2",
+                  "location": [
+                    0,
+                    0.5
+                  ]
+                },
+                {
+                  "id": "in 3",
+                  "location": [
+                    0,
+                    0.67
+                  ]
+                },
+                {
+                  "id": "out 0",
+                  "location": [
+                    1,
+                    0.25
+                  ]
+                },
+                {
+                  "id": "out 1",
+                  "location": [
+                    1,
+                    0.5
+                  ]
+                },
+                {
+                  "id": "out 2",
+                  "location": [
+                    1,
+                    0.75
+                  ]
+                }
+              ],
+              "predecessors": [
+                {
+                  "id": "r-1-1-0",
+                  "name": "Right 1-1-0",
+                  "from": "out 1",
+                  "to": "in 2",
+                  "color": "blue",
+                  "ports": [
+                    {
+                      "id": "in 0",
+                      "location": [
+                        0,
+                        0.25
+                      ]
+                    },
+                    {
+                      "id": "in 1",
+                      "location": [
+                        0,
+                        0.5
+                      ]
+                    },
+                    {
+                      "id": "in 2",
+                      "location": [
+                        0,
+                        0.75
+                      ]
+                    },
+                    {
+                      "id": "out 0",
+                      "location": [
+                        1,
+                        0.25
+                      ]
+                    },
+                    {
+                      "id": "out 1",
+                      "location": [
+                        1,
+                        0.5
+                      ]
+                    },
+                    {
+                      "id": "out 2",
+                      "location": [
+                        1,
+                        0.75
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "id": "r-1-1-1",
+                  "name": "Right 1-1-1",
+                  "from": "out 1",
+                  "to": "in 3",
+                  "color": "blue",
+                  "ports": [
+                    {
+                      "id": "in 0",
+                      "location": [
+                        0,
+                        0.25
+                      ]
+                    },
+                    {
+                      "id": "in 1",
+                      "location": [
+                        0,
+                        0.5
+                      ]
+                    },
+                    {
+                      "id": "in 2",
+                      "location": [
+                        0,
+                        0.75
+                      ]
+                    },
+                    {
+                      "id": "out 0",
+                      "location": [
+                        1,
+                        0.25
+                      ]
+                    },
+                    {
+                      "id": "out 1",
+                      "location": [
+                        1,
+                        0.5
+                      ]
+                    },
+                    {
+                      "id": "out 2",
+                      "location": [
+                        1,
+                        0.75
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "predecessors": [
+        {
+          "id": "l-0",
+          "name": "Left 0",
+          "from": "out 1",
+          "to": "in 0",
+          "color": "blue",
+          "ports": [
+            {
+              "id": "in 0",
+              "location": [
+                0,
+                0.25
+              ]
+            },
+            {
+              "id": "in 1",
+              "location": [
+                0,
+                0.5
+              ]
+            },
+            {
+              "id": "in 2",
+              "location": [
+                0,
+                0.75
+              ]
+            },
+            {
+              "id": "out 0",
+              "location": [
+                1,
+                0.25
+              ]
+            },
+            {
+              "id": "out 1",
+              "location": [
+                1,
+                0.5
+              ]
+            },
+            {
+              "id": "out 2",
+              "location": [
+                1,
+                0.75
+              ]
+            }
+          ],
+          "predecessors": [
+            {
+              "id": "l-0-0",
+              "name": "Left 0-0",
+              "from": "out 1",
+              "to": "in 1",
+              "ports": [
+                {
+                  "id": "in 0",
+                  "location": [
+                    0,
+                    0.25
+                  ]
+                },
+                {
+                  "id": "in 1",
+                  "location": [
+                    0,
+                    0.5
+                  ]
+                },
+                {
+                  "id": "in 2",
+                  "location": [
+                    0,
+                    0.75
+                  ]
+                },
+                {
+                  "id": "out 0",
+                  "location": [
+                    1,
+                    0.25
+                  ]
+                },
+                {
+                  "id": "out 1",
+                  "location": [
+                    1,
+                    0.5
+                  ]
+                },
+                {
+                  "id": "out 2",
+                  "location": [
+                    1,
+                    0.75
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "l-1-0",
+              "name": "Left 1-0",
+              "from": "out 1",
+              "to": "in 0",
+              "ports": [
+                {
+                  "id": "in 0",
+                  "location": [
+                    0,
+                    0.25
+                  ]
+                },
+                {
+                  "id": "in 1",
+                  "location": [
+                    0,
+                    0.5
+                  ]
+                },
+                {
+                  "id": "in 2",
+                  "location": [
+                    0,
+                    0.75
+                  ]
+                },
+                {
+                  "id": "out 0",
+                  "location": [
+                    1,
+                    0.25
+                  ]
+                },
+                {
+                  "id": "out 1",
+                  "location": [
+                    1,
+                    0.5
+                  ]
+                },
+                {
+                  "id": "out 2",
+                  "location": [
+                    1,
+                    0.75
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "l-1",
+          "name": "Left 1",
+          "from": "out 1",
+          "to": "in 2",
+          "color": "blue",
+          "ports": [
+            {
+              "id": "in 0",
+              "location": [
+                0,
+                0.25
+              ]
+            },
+            {
+              "id": "in 1",
+              "location": [
+                0,
+                0.5
+              ]
+            },
+            {
+              "id": "in 2",
+              "location": [
+                0,
+                0.75
+              ]
+            },
+            {
+              "id": "out 0",
+              "location": [
+                1,
+                0.25
+              ]
+            },
+            {
+              "id": "out 1",
+              "location": [
+                1,
+                0.5
+              ]
+            },
+            {
+              "id": "out 2",
+              "location": [
+                1,
+                0.75
+              ]
+            }
+          ],
+          "predecessors": [
+            {
+              "id": "l-1-1",
+              "name": "Left 1-1",
+              "from": "out 1",
+              "to": "in 1",
+              "ports": [
+                {
+                  "id": "in 0",
+                  "location": [
+                    0,
+                    0.25
+                  ]
+                },
+                {
+                  "id": "in 1",
+                  "location": [
+                    0,
+                    0.5
+                  ]
+                },
+                {
+                  "id": "in 2",
+                  "location": [
+                    0,
+                    0.75
+                  ]
+                },
+                {
+                  "id": "out 0",
+                  "location": [
+                    1,
+                    0.25
+                  ]
+                },
+                {
+                  "id": "out 1",
+                  "location": [
+                    1,
+                    0.5
+                  ]
+                },
+                {
+                  "id": "out 2",
+                  "location": [
+                    1,
+                    0.75
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "l-1-2",
+              "name": "Left 1-2",
+              "from": "out 0",
+              "to": "in 2",
+              "ports": [
+                {
+                  "id": "in 0",
+                  "location": [
+                    0,
+                    0.25
+                  ]
+                },
+                {
+                  "id": "in 1",
+                  "location": [
+                    0,
+                    0.5
+                  ]
+                },
+                {
+                  "id": "in 2",
+                  "location": [
+                    0,
+                    0.75
+                  ]
+                },
+                {
+                  "id": "out 0",
+                  "location": [
+                    1,
+                    0.25
+                  ]
+                },
+                {
+                  "id": "out 1",
+                  "location": [
+                    1,
+                    0.5
+                  ]
+                },
+                {
+                  "id": "out 2",
+                  "location": [
+                    1,
+                    0.75
+                  ]
+                }
+              ],
+              "successors": [
+                {
+                  "id": "l-1-2-0",
+                  "name": "Left 1-2-0",
+                  "from": "out 1",
+                  "to": "in 1",
+                  "color": "blue",
+                  "ports": [
+                    {
+                      "id": "in 0",
+                      "location": [
+                        0,
+                        0.25
+                      ]
+                    },
+                    {
+                      "id": "in 1",
+                      "location": [
+                        0,
+                        0.5
+                      ]
+                    },
+                    {
+                      "id": "in 2",
+                      "location": [
+                        0,
+                        0.75
+                      ]
+                    },
+                    {
+                      "id": "out 0",
+                      "location": [
+                        1,
+                        0.25
+                      ]
+                    },
+                    {
+                      "id": "out 1",
+                      "location": [
+                        1,
+                        0.5
+                      ]
+                    },
+                    {
+                      "id": "out 2",
+                      "location": [
+                        1,
+                        0.75
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "id": "l-1-2-1",
+                  "name": "Left 1-2-1",
+                  "from": "out 2",
+                  "to": "in 1",
+                  "color": "blue",
+                  "ports": [
+                    {
+                      "id": "in 0",
+                      "location": [
+                        0,
+                        0.25
+                      ]
+                    },
+                    {
+                      "id": "in 1",
+                      "location": [
+                        0,
+                        0.5
+                      ]
+                    },
+                    {
+                      "id": "in 2",
+                      "location": [
+                        0,
+                        0.75
+                      ]
+                    },
+                    {
+                      "id": "out 0",
+                      "location": [
+                        1,
+                        0.25
+                      ]
+                    },
+                    {
+                      "id": "out 1",
+                      "location": [
+                        1,
+                        0.5
+                      ]
+                    },
+                    {
+                      "id": "out 2",
+                      "location": [
+                        1,
+                        0.75
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

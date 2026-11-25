@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 4.0.
- ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -27,7 +27,7 @@
  ** 
  ***************************************************************************/
 
-namespace Demo.yFiles.Option.DataBinding
+namespace yWorks.Demo.Option.DataBinding
 {
   /// <summary>
   ///   The interface that is used by <see cref="IPropertyItem"/> to retrieve a value from a given
@@ -101,14 +101,10 @@ namespace Demo.yFiles.Option.DataBinding
     #region IValueGetter Members
 
     /// <inheritdoc/>
-    public virtual object GetValue() {
-      return getter();
-    }
+    public virtual object GetValue() => getter();
 
     /// <inheritdoc/>
-    public virtual bool CanGet() {
-      return predicate == null ? getter != null : getter != null && predicate();
-    }
+    public virtual bool CanGet() => predicate == null ? getter != null : getter != null && predicate();
 
     #endregion
   }

@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 4.0.
- ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -31,15 +31,15 @@ using System;
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
-using Demo.yFiles.Toolkit.OptionHandler;
 using yWorks.Controls;
+using yWorks.Demo.Toolkit.OptionHandler;
 using yWorks.Graph;
 using yWorks.Layout;
 using yWorks.Layout.Labeling;
 using yWorks.Layout.Router;
 using yWorks.Layout.Tree;
 
-namespace Demo.yFiles.Layout.Configurations
+namespace yWorks.Demo.Layout.Configurations
 {
   /// <summary>
   ///   Configuration options for the layout algorithm of the same name.

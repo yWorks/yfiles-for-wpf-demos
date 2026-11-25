@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 4.0.
- ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -32,9 +32,9 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
-using Demo.yFiles.Toolkit.OptionHandler;
 using yWorks.Analysis;
 using yWorks.Controls;
+using yWorks.Demo.Toolkit.OptionHandler;
 using yWorks.Geometry;
 using yWorks.Graph;
 using yWorks.Graph.Styles;
@@ -45,7 +45,7 @@ using yWorks.Layout.Organic;
 using yWorks.Layout.Tree;
 using PortAssignmentMode = yWorks.Layout.Hierarchical.PortAssignmentMode;
 
-namespace Demo.yFiles.Layout.Configurations
+namespace yWorks.Demo.Layout.Configurations
 {
   /// <summary>
   ///   Configuration options for the layout algorithm of the same name.
@@ -105,9 +105,7 @@ namespace Demo.yFiles.Layout.Configurations
       var incrementalLayout = SelectedElementsIncrementallyItem;
       var selectedElements = graphControl.Selection.Edges.Any() || graphControl.Selection.Nodes.Any();
 
-      if (incrementalLayout && selectedElements) {
-        layout.FromSketchMode = true;
-      } else if (fromSketch) {
+      if ((incrementalLayout && selectedElements) || fromSketch) {
         layout.FromSketchMode = true;
       } else {
         layout.FromSketchMode = false;
@@ -168,7 +166,6 @@ namespace Demo.yFiles.Layout.Configurations
       layout.FromScratchLayeringStrategy = RankingPolicyItem;
       layout.ComponentArrangementPolicy = ComponentArrangementPolicyItem;
       layout.CoordinateAssigner.NodeCompaction = NodeCompactionItem;
-      layout.CoordinateAssigner.StraightenEdges = StraightenEdgesItem;
 
       // configure FromSketchLayerAssigner
       var layerer = layout.FromSketchMode
@@ -193,7 +190,8 @@ namespace Demo.yFiles.Layout.Configurations
 
       if (TreatRootGroupAsSwimlanesItem) {
         var stage = new TopLevelGroupToSwimlaneStage {
-            OrderSwimlanesFromSketch = UseOrderFromSketchItem, Spacing = SwimlineSpacingItem
+            OrderSwimlanesFromSketch = UseOrderFromSketchItem,
+            Spacing = SwimlineSpacingItem
         };
         layout.LayoutStages.Prepend(stage);
       }
@@ -213,15 +211,30 @@ namespace Demo.yFiles.Layout.Configurations
         ILayoutAlgorithm layout) {
       var layoutData = new HierarchicalLayoutData<INode, IEdge, IModelItem, ILabel, ILabel>();
 
-      var incrementalLayout = SelectedElementsIncrementallyItem;
       var selection = graphControl.Selection;
-      var selectedElements = selection.Edges.Any() || selection.Nodes.Any();
 
-      if (incrementalLayout && selectedElements) {
-        // configure the mode
-        // Return the correct hint for each model item that appears in one of these sets
-        layoutData.IncrementalNodes.Source = selection.Nodes;
-        layoutData.IncrementalEdges.Source = selection.Edges;
+      if (((HierarchicalLayout) layout).FromSketchMode) {
+        // configure the from-sketch mode
+        layoutData.IncrementalNodeHints.MapperFunction = node => {
+          if (SelectedElementsIncrementallyItem && selection.Contains(node)) {
+            // a selected element can get the Incremental (i.e., arrange freely) hint
+            return IncrementalNodeHint.Incremental;
+          }
+
+          // others get a sketch-based hint, more or less strong, depending on the selected policy
+          if (SketchPolicyItem == EnumFromSketchPolicy.FromSketch) {
+            return IncrementalNodeHint.FromSketch;
+          }
+          if (SketchPolicyItem == EnumFromSketchPolicy.ExactCoordinates) {
+            return IncrementalNodeHint.ExactCoordinates;
+          }
+          return IncrementalNodeHint.KeepRelativeOrder;
+        };
+
+        // mark selected edges as incremental edges that are rerouted freely in any case
+        if (selection.Edges.Any()) {
+          layoutData.IncrementalEdges.Source = selection.Edges;
+        }
       }
 
       if (RankingPolicyItem == LayeringStrategy.Bfs) {
@@ -273,7 +286,10 @@ namespace Demo.yFiles.Layout.Configurations
           layoutData.Subcomponents.Add(new SubcomponentDescriptor(hierarchicalLayout)).Items = listOfNodes;
         }
         // layout all siblings with label 'OL' separately with organic layout
-        var organicLayout = new OrganicLayout { DefaultPreferredEdgeLength = 100, Deterministic = true };
+        var organicLayout = new OrganicLayout {
+            DefaultPreferredEdgeLength = 100,
+            Deterministic = true
+        };
         foreach (var listOfNodes in FindSubComponents(graphControl.Graph, "OL")) {
           layoutData.Subcomponents.Add(new SubcomponentDescriptor(organicLayout)).Items = listOfNodes;
         }
@@ -387,7 +403,7 @@ namespace Demo.yFiles.Layout.Configurations
 
     /// <summary>
     ///   Determines sub-components by label text and group membership.
-    ///   This is necessary because {@link HierarchicalLayout} does not support sub-components with nodes
+    ///   This is necessary because <see cref="HierarchicalLayout"/> does not support sub-components with nodes
     ///   that belong to different parent groups.
     /// </summary>
     private ICollection<ICollection<INode>> FindSubComponents(IGraph graph, string labelText) {
@@ -520,6 +536,16 @@ namespace Demo.yFiles.Layout.Configurations
     [OptionGroup("IncrementalGroup", 20)]
     [DefaultValue(false)]
     public bool UseDrawingAsSketchItem { get; set; }
+
+    [Label("Sketch Policy")]
+    [DefaultValue(EnumFromSketchPolicy.KeepOrder)]
+    [OptionGroup("IncrementalGroup", 30)]
+    [EnumValue("Keep Only Order", EnumFromSketchPolicy.KeepOrder)]
+    [EnumValue("Keep Sketch", EnumFromSketchPolicy.FromSketch)]
+    [EnumValue("Keep Exact Coordinates", EnumFromSketchPolicy.ExactCoordinates)]
+    public EnumFromSketchPolicy SketchPolicyItem;
+
+    public bool ShouldDisableSketchPolicyItem => !UseDrawingAsSketchItem && !SelectedElementsIncrementallyItem;
 
     [Label("Orientation")]
     [DefaultValue(LayoutOrientation.TopToBottom)]
@@ -655,12 +681,6 @@ namespace Demo.yFiles.Layout.Configurations
     [Label("Consider Edge Thickness")]
     [OptionGroup("EdgeSettingsGroup", 120)]
     public bool EdgeThicknessItem { get; set; }
-
-    [Label("Straighten Edges")]
-    [OptionGroup("EdgeSettingsGroup", 140)]
-    public bool StraightenEdgesItem { get; set; }
-
-    public bool ShouldDisableStraightenEdgesItem => SymmetricPlacementItem != SymmetryOptimizationStrategy.None;
 
     [Label("Recursive Edge Routing Policy")]
     [OptionGroup("EdgeSettingsGroup", 150)]
@@ -901,5 +921,12 @@ namespace Demo.yFiles.Layout.Configurations
     public PortAssignmentMode GridPortAssignmentItem { get; set; }
 
     public bool ShouldDisableGridPortAssignmentItem => !GridEnabledItem;
+
+    public enum EnumFromSketchPolicy
+    {
+      KeepOrder,
+      FromSketch,
+      ExactCoordinates
+    }
   }
 }

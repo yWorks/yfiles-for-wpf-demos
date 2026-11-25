@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 4.0.
- ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -31,11 +31,11 @@ using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Demo.yFiles.Option.Handler;
-using Demo.yFiles.Option.I18N;
-using Demo.yFiles.Option.View;
+using yWorks.Demo.Option.Handler;
+using yWorks.Demo.Option.I18N;
+using yWorks.Demo.Option.View;
 
-namespace Demo.yFiles.Option.Editor
+namespace yWorks.Demo.Option.Editor
 {
   /// <summary>
   ///   Base class for <see cref="Control"/>s that create a GUI for
@@ -251,9 +251,8 @@ namespace Demo.yFiles.Option.Editor
     /// <returns>A view instance.</returns>
     /// <seealso cref="CreateView(Handler.OptionHandler, bool, bool)"/>
     /// .
-    protected virtual IModelView CreateView(OptionHandler forHandler) {
-      return CreateView(forHandler, IsAutoAdopt, IsAutoCommit);
-    }
+    protected virtual IModelView CreateView(OptionHandler forHandler) =>
+        CreateView(forHandler, IsAutoAdopt, IsAutoCommit);
 
     /// <summary>
     ///   Helper method that creates a view for a specific <see cref="Handler.OptionHandler"/>.
@@ -387,7 +386,7 @@ namespace Demo.yFiles.Option.Editor
     }
 
     /// <summary>
-    ///   Returns the <see cref="I18N.I18NFactory"/> that is currently
+    ///   Returns the <see cref="yWorks.Demo.Option.I18N.I18NFactory"/> that is currently
     ///   in effect for the underlying handler
     /// </summary>
     public I18NFactory I18NFactory => view != null ? view.Lookup(typeof(I18NFactory)) as I18NFactory : null;

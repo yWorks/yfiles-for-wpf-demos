@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 4.0.
- ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -28,19 +28,18 @@
  ***************************************************************************/
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media;
-using Demo.yFiles.Option.Constraint;
-using Demo.yFiles.Option.Handler;
-using Demo.yFiles.Toolkit;
+using yWorks.Controls;
 using yWorks.Controls.Input;
 using yWorks.Geometry;
 using yWorks.Graph;
 using yWorks.Graph.LabelModels;
 using yWorks.Graph.Styles;
+using yWorks.GraphML;
 using yWorks.Layout;
 using yWorks.Layout.Circular;
 using yWorks.Layout.Hierarchical;
@@ -50,433 +49,392 @@ using yWorks.Layout.Partial;
 using yWorks.Utils;
 using RoutingStyle = yWorks.Layout.Partial.RoutingStyle;
 
-namespace Demo.yFiles.Layout.PartialLayout
+namespace yWorks.Demo.PartialLayout
 {
   /// <summary>
-  ///   This demo shows how to apply <see cref="Demo.yFiles.Layout.PartialLayout"/> to orthogonal, organic, hierarchical, or
-  ///   circular layouts and the effect of some of its configuration settings.
+  ///   Shows how to integrate new graph elements into an existing graph layout.
   /// </summary>
-  /// <remarks>
-  ///   The partial layout algorithm changes the coordinates of a given set of graph elements
-  ///   (called partial elements) and leaves the location and size of all other elements
-  ///   (called fixed elements) unchanged. The algorithm aims to place the partial elements
-  ///   such that the resulting drawing (including the fixed elements) has a good quality
-  ///   with respect to common graph drawing aesthetics.
-  /// </remarks>
-  public partial class PartialLayoutDemo
+  [Demo("partial-layout", "layout", "Partial Layout",
+      Summary = "Shows how to integrate new graph elements into an existing graph layout.",
+      Tags = ["layout", "incremental", "partial"],
+      Keywords = ["layoutfeatures", "hierarchical", "orthogonal", "organic", "circular", "curves"],
+      RelatedDemos = ["hierarchical-exact-coordinates"])]
+  public sealed partial class PartialLayoutDemo
   {
-    private const string HierarchicalScenario = "Hierarchical";
-    private const string OrthogonalScenario = "Orthogonal";
-    private const string OrganicScenario = "Organic";
-    private const string CircularScenario = "Circular";
+    private readonly Settings settings = new();
+    private DictionaryMapper<INode, bool> partialNodesMapper = new() { DefaultValue = true };
+    private DictionaryMapper<IEdge, bool> partialEdgesMapper = new() { DefaultValue = true };
 
-    private static readonly INodeStyle PartialGroupNodeStyle = DemoStyles.CreateDemoGroupStyle(Themes.Palette12, true);
+    private GraphEditorInputMode? graphEditorInputMode;
+    private FoldingManager foldingManager = null!;
+    private IFoldingView foldingView = null!;
 
-    private static readonly INodeStyle FixedGroupNodeStyle = DemoStyles.CreateDemoGroupStyle(Themes.Palette58, true);
+    private INodeStyle partialNodeStyle = null!;
+    private INodeStyle partialGroupStyle = null!;
+    private IEdgeStyle partialEdgeStyle = null!;
+    private INodeStyle fixedNodeStyle = null!;
+    private INodeStyle fixedGroupNodeStyle = null!;
+    private IEdgeStyle fixedEdgeStyle = null!;
 
-    private static readonly INodeStyle PartialNodeStyle = DemoStyles.CreateDemoNodeStyle(Themes.PaletteOrange);
-    private static readonly INodeStyle FixedNodeStyle = DemoStyles.CreateDemoNodeStyle(Themes.Palette58);
+    private GraphControl GraphControl => graphControl;
 
-    private static readonly PolylineEdgeStyle PartialEdgeStyle =
-        DemoStyles.CreateDemoEdgeStyle(new Palette("#ff6c00", "#ff6c00", "#ff6c00", "#ff6c00", "#ff6c00"));
-
-    private static readonly PolylineEdgeStyle FixedEdgeStyle = DemoStyles.CreateDemoEdgeStyle(Themes.Palette58);
-
-    // the mapper storing if a node/edge is fixed or shall be moved by the partial layout
-
-    private static readonly IDictionary<string, ILayoutAlgorithm> SubGraphLayouts =
-        new Dictionary<string, ILayoutAlgorithm>(4);
-
-    private MasterViewConversionMapper<IEdge, bool> partialEdgesMapper;
-    private MasterViewConversionMapper<INode, bool> partialNodesMapper;
-
-    static PartialLayoutDemo() {
-      SubGraphLayouts[LayoutIncremental] = new HierarchicalLayout();
-      SubGraphLayouts[LayoutOrganic] = new OrganicLayout();
-      SubGraphLayouts[LayoutOrthogonal] = new OrthogonalLayout();
-      SubGraphLayouts[LayoutCircular] = new CircularLayout();
-      SubGraphLayouts[LayoutUnchanged] = null;
-    }
+    private IGraph Graph => GraphControl.Graph;
 
     public PartialLayoutDemo() {
       InitializeComponent();
+      interactionPanel.DataContext = settings;
+      settings.PropertyChanged += Settings_PropertyChanged;
     }
 
-    private void OnLoaded(object sender, EventArgs e) {
-      scenarioComboBox.Items.Add(HierarchicalScenario);
-      scenarioComboBox.Items.Add(OrthogonalScenario);
-      scenarioComboBox.Items.Add(OrganicScenario);
-      scenarioComboBox.Items.Add(CircularScenario);
-      InitializeGraphDefaults();
+    protected override void Initialize() {
+      // initialize the GraphControl with folding support
+      foldingManager = new FoldingManager();
+      foldingView = foldingManager.CreateFoldingView();
+      GraphControl.Graph = foldingView.Graph;
+
+      // initialize default styles
+      InitializeGraph();
+
+      // initialize interactive behavior
       InitializeInputModes();
-      SetupOptions();
-      scenarioComboBox.SelectedIndex = 0;
+
+      // bind toolbar buttons to actions
+      sampleComboBox.SelectedIndex = 0;
+      sampleComboBox.SelectionChanged += OnSampleChanged;
+
+      // load the first scenario
+      LoadScenario("hierarchical");
     }
 
     /// <summary>
-    ///   Activates folding, sets the defaults for new graph elements and registers mappers
+    ///   Runs a partial layout considering all selected options and partial/fixed nodes.
     /// </summary>
-    private void InitializeGraphDefaults() {
-      var fm = new FoldingManager();
-      graphControl.Graph = fm.CreateFoldingView().Graph;
+    private async Task RunLayoutAsync() {
+      if (settings.IsBusy) {
+        return;
+      }
 
-      var graph = graphControl.Graph;
-      graphControl.NavigationCommandsEnabled = true;
+      SetUIDisabled(true);
 
-      // Create graph
-      graph.NodeDefaults.Size = new SizeD(60, 30);
+      // configure layout
+      var partialLayout = new Layout.Partial.PartialLayout(GetSubgraphLayout()) {
+          ComponentAssignmentStrategy = GetComponentAssignmentStrategy(),
+          SubgraphPlacement = GetSubgraphPlacement(),
+          EdgeRoutingStyle = GetEdgeRoutingStyle(),
+          LayoutOrientation = GetLayoutOrientation(),
+          MinimumNodeDistance = double.IsNaN(settings.MinimumNodeDistance) ? 0 : settings.MinimumNodeDistance,
+          AllowMirroring = settings.AllowMirroring,
+          ConsiderNodeAlignment = settings.NodeSnapping
+      };
 
-      // set the style as the default for all new nodes
-      graph.NodeDefaults.Style = PartialNodeStyle;
+      // mark partial elements for the layout algorithm
+      var partialLayoutData = partialLayout.CreateLayoutData(Graph);
+      partialLayoutData.Scope.Nodes.Predicate = node => !IsFixed(node);
+      partialLayoutData.Scope.Edges.Predicate = edge => !IsFixed(edge);
 
-      // set the style as the default for all new edges
-      graph.EdgeDefaults.Style = PartialEdgeStyle;
-
-      var groupNodeDefaults = graph.GroupNodeDefaults;
-      groupNodeDefaults.Labels.LayoutParameter = new GroupNodeLabelModel().CreateTabBackgroundParameter();
-      groupNodeDefaults.Labels.Style = new LabelStyle { TextAlignment = TextAlignment.Left, TextBrush = Brushes.White };
-      groupNodeDefaults.Style = PartialGroupNodeStyle;
-
-      // Create and register mappers that specifiy partial graph elements
-      partialNodesMapper = new MasterViewConversionMapper<INode, bool>(graph) { DefaultValue = true };
-      partialEdgesMapper = new MasterViewConversionMapper<IEdge, bool>(graph) { DefaultValue = true };
-
-      graphControl.GraphMLIOHandler.AddInputMapper(yWorks.Layout.Partial.PartialLayout.NodeScopeDataKey.Id,
-          partialNodesMapper);
-      graphControl.GraphMLIOHandler.AddInputMapper(yWorks.Layout.Partial.PartialLayout.EdgeScopeDataKey.Id,
-          partialEdgesMapper);
+      // run layout algorithm
+      try {
+        await GraphControl.ApplyLayoutAnimated(partialLayout, TimeSpan.FromMilliseconds(500), partialLayoutData);
+      } finally {
+        SetUIDisabled(false);
+      }
     }
 
     /// <summary>
-    ///   Configures input modes to interact with the graph structure.
+    ///   Retrieves the selected layout for partial components.
     /// </summary>
+    private ILayoutAlgorithm GetSubgraphLayout() {
+      var distance = double.IsNaN(settings.MinimumNodeDistance) ? 0 : settings.MinimumNodeDistance;
+      switch (settings.SubgraphLayout) {
+        case SubgraphLayoutKind.Hierarchical:
+          return new HierarchicalLayout {
+              MinimumLayerDistance = distance,
+              NodeDistance = distance
+          };
+        case SubgraphLayoutKind.Orthogonal:
+          return new OrthogonalLayout { GridSpacing = (int) Math.Round(distance) };
+        case SubgraphLayoutKind.Organic:
+          return new OrganicLayout { DefaultMinimumNodeDistance = distance };
+        case SubgraphLayoutKind.Circular:
+          var circularLayout = new CircularLayout();
+          circularLayout.PartitionDescriptor.MinimumNodeDistance = distance;
+          circularLayout.BackboneLayout.MinimumNodeDistance = distance;
+          return circularLayout;
+        default:
+          return new HierarchicalLayout {
+              MinimumLayerDistance = distance,
+              NodeDistance = distance
+          };
+      }
+    }
+
+    /**
+     * Retrieves the assignment strategy, either single nodes or components.
+     */
+    private ComponentAssignmentStrategy GetComponentAssignmentStrategy() => settings.ComponentAssignment;
+
+    /**
+     * Retrieves the positioning strategy, either nodes are placed close to the barycenter of their neighbors or their
+     * initial location.
+     */
+    private SubgraphPlacement GetSubgraphPlacement() => settings.SubgraphPlacement;
+
+    /**
+     * Retrieves the edge routing strategy for partial edges and edges connected to partial nodes.
+     */
+    private RoutingStyle GetEdgeRoutingStyle() => settings.EdgeRoutingStyle;
+
+    /**
+     * Retrieves the layout orientation for partial components.
+     */
+    private PartialLayoutOrientation GetLayoutOrientation() => settings.LayoutOrientation;
+
+    /**
+     * Activates folding, sets the defaults for new graph elements and registers mappers
+     */
+    private void InitializeGraph() {
+      // initialize styles
+      partialNodeStyle = CreateNodeStyle(true);
+      partialGroupStyle = CreateGroupNodeStyle(true);
+      partialEdgeStyle = CreateEdgeStyle(true);
+      fixedNodeStyle = CreateNodeStyle(false);
+      fixedGroupNodeStyle = CreateGroupNodeStyle(false);
+      fixedEdgeStyle = CreateEdgeStyle(false);
+
+      var masterGraph = foldingManager.MasterGraph;
+      GraphControl.NavigationCommandsEnabled = true;
+
+      masterGraph.NodeDefaults.Size = new SizeD(60, 30);
+      masterGraph.NodeDefaults.Style = partialNodeStyle;
+      masterGraph.EdgeDefaults.Style = partialEdgeStyle;
+
+      masterGraph.GroupNodeDefaults.Labels.LayoutParameter = new GroupNodeLabelModel().CreateTabBackgroundParameter();
+      masterGraph.GroupNodeDefaults.Labels.Style = new LabelStyle {
+          TextAlignment = TextAlignment.Left,
+          TextBrush = Brushes.White
+      };
+      masterGraph.GroupNodeDefaults.Style = partialGroupStyle;
+
+      // Create and register mappers that specify partial graph elements
+      partialNodesMapper.DefaultValue = true;
+      partialEdgesMapper.DefaultValue = true;
+    }
+
+    /// <summary>Creates a new style instance for nodes in this demo.</summary>
+    /// <param name="partial">Whether the node is partial or fixed.</param>
+    private static INodeStyle CreateNodeStyle(bool partial) =>
+        DemoStyles.CreateDemoNodeStyle(partial ? Themes.PaletteOrange : Themes.Palette58);
+
+    /// <summary>Creates a new style instance for group nodes in this demo.</summary>
+    /// <param name="partial">Whether the node is partial or fixed.</param>
+    private static INodeStyle CreateGroupNodeStyle(bool partial) =>
+        DemoStyles.CreateDemoGroupStyle(partial ? Themes.Palette12 : Themes.Palette58, true);
+
+    /// <summary>Creates a new style instance for edges in this demo.</summary>
+    /// <param name="partial">Whether the edge is partial or fixed.</param>
+    private static IEdgeStyle CreateEdgeStyle(bool partial) {
+      var color = partial ? Color.FromRgb(0xff, 0x6c, 0x00) : Color.FromRgb(0x4d, 0x4d, 0x4d);
+      var brush = new SolidColorBrush(color);
+      var pen = new Pen(brush, 1.5);
+      return new PolylineEdgeStyle {
+          Pen = pen,
+          TargetArrow = new Arrow(ArrowType.Triangle, brush, pen, 0.75, 0.75, 0, false)
+      };
+    }
+
+    /**
+     * Configures input modes to interact with the graph structure.
+     */
     private void InitializeInputModes() {
-      var graphEditorInputMode = new GraphEditorInputMode();
-      graphEditorInputMode.ItemDoubleClicked += ItemDoubleClicked;
+      graphEditorInputMode = new GraphEditorInputMode { AllowEditLabel = false };
+      graphEditorInputMode.ItemDoubleClicked += (_, evt) => {
+        // a graph element was double-clicked => toggle its fixed/partial state
+        SetFixed(evt.Item, !IsFixed(evt.Item));
+      };
       // add a label to newly created nodes and mark the node as non-fixed
-      graphEditorInputMode.NodeCreated += delegate(object sender, InputModeItemEventArgs<INode> args) {
-        var node = args.Item;
-        if (graphControl.Graph.IsGroupNode(node)) {
-          graphControl.Graph.AddLabel(node, "Group");
+      graphEditorInputMode.NodeCreated += (_, evt) => {
+        var node = evt.Item;
+        if (Graph.IsGroupNode(node)) {
+          Graph.AddLabel(node, "Group");
         } else {
-          graphControl.Graph.AddLabel(node, graphControl.Graph.Nodes.Count.ToString());
+          Graph.AddLabel(node, Graph.Nodes.Count.ToString());
         }
         SetFixed(node, false);
       };
-      graphEditorInputMode.CreateEdgeInputMode.EdgeCreated += (sender, args) => SetFixed(args.Item, false);
-      graphControl.InputMode = graphEditorInputMode;
-    }
-
-    /// <summary>
-    ///   If an <c>INode</c> or <c>IEdge</c> was double clicked, its fixed/partial state gets toggled.
-    /// </summary>
-    private void ItemDoubleClicked(object sender, ClickEventArgs e) {
-      var geim = e.Context.Lookup<GraphEditorInputMode>();
-      if (geim != null) {
-        var modelItem = geim.FindItems(e.Location, new[] { GraphItemTypes.Node | GraphItemTypes.Edge })
-            .FirstOrDefault();
-        if (modelItem is INode) {
-          var node = (INode) modelItem;
-          SetFixed(node, !IsFixed(node));
-          e.Handled = true;
-        } else if (modelItem is IEdge) {
-          var edge = (IEdge) modelItem;
-          SetFixed(edge, !IsFixed(edge));
-          e.Handled = true;
-        }
-      }
-    }
-
-    /// <summary>
-    ///   Sets the given node as fixed or movable and changes its color to indicate its new state.
-    /// </summary>
-    private void SetFixed(INode node, bool isFixed) {
-      partialNodesMapper[node] = !isFixed;
-      SetNodeStyle(node, isFixed);
-    }
-
-    private void SetNodeStyle(INode node, bool isFixed) {
-      if (graphControl.Graph.IsGroupNode(node)) {
-        graphControl.Graph.SetStyle(node, isFixed ? FixedGroupNodeStyle : PartialGroupNodeStyle);
-      } else {
-        graphControl.Graph.SetStyle(node, isFixed ? FixedNodeStyle : PartialNodeStyle);
-      }
-    }
-
-    private void SetFixed(IEdge edge, bool isFixed) {
-      partialEdgesMapper[edge] = !isFixed;
-      SetEdgeStyle(edge, isFixed);
-    }
-
-    private void SetEdgeStyle(IEdge edge, bool isFixed) {
-      graphControl.Graph.SetStyle(edge, isFixed ? FixedEdgeStyle : PartialEdgeStyle);
-    }
-
-    /// <summary>
-    ///   Returns if a given edge is considered fixed or shall be rerouted by the layout algorithm.
-    ///   Note that an edge always gets rerouted if any of its end nodes may be moved.
-    /// </summary>
-    private bool IsFixed(IEdge edge) {
-      return !partialEdgesMapper[edge];
-    }
-
-    /// <summary>
-    ///   Returns if a given node is considered fixed or shall be moved by the layout algorithm.
-    /// </summary>
-    private bool IsFixed(INode node) {
-      return !partialNodesMapper[node];
-    }
-
-    private void ReadSampleGraph(string baseName) {
-      partialNodesMapper.Clear();
-      partialEdgesMapper.Clear();
-      graphControl.ImportFromGraphML(baseName);
-      foreach (var node in graphControl.Graph.Nodes) {
-        var isFixed = IsFixed(node);
-        SetNodeStyle(node, isFixed);
-      }
-      foreach (var edge in graphControl.Graph.Edges) {
-        SetEdgeStyle(edge, IsFixed(edge));
-      }
-    }
-
-    private void SetSelectionFixed(bool setFixed) {
-      foreach (var n in graphControl.Selection.Nodes) {
-        SetFixed(n, setFixed);
-      }
-      foreach (var e in graphControl.Selection.Edges) {
-        SetFixed(e, setFixed);
-      }
-    }
-
-    private void ScenarioComboBoxSelectedValueChanged(object sender, EventArgs e) {
-      LoadScenario();
-    }
-
-    private void SetOptions(
-        ComponentAssignmentStrategy componentAssignmentStrategy,
-        string coreLayout,
-        SubgraphPlacement subgraphPlacement,
-        RoutingStyle edgeRoutingStyle,
-        PartialLayoutOrientation layoutOrientation,
-        int minNodeDistance,
-        bool allowMirroring,
-        bool nodeSnapping) {
-      Handler.GetItemByName(ComponentAssignment).Value = componentAssignmentStrategy;
-      Handler.GetItemByName(SubgraphLayout).Value = coreLayout;
-      Handler.GetItemByName(SubgraphPositioning).Value = subgraphPlacement;
-      Handler.GetItemByName(EdgeRouting).Value = edgeRoutingStyle;
-      Handler.GetItemByName(LayoutOrientationStrategy).Value = layoutOrientation;
-      Handler.GetItemByName(MinimumNodeDistance).Value = minNodeDistance;
-      Handler.GetItemByName(AllowMirroring).Value = allowMirroring;
-      Handler.GetItemByName(NodeSnapping).Value = nodeSnapping;
-    }
-
-
-    private void LoadScenario() {
-      var scenario = (string) scenarioComboBox.SelectedItem;
-      ReadSampleGraph("Resources\\" + scenario + ".graphml");
-      switch (scenario) {
-        case HierarchicalScenario:
-          SetOptions(ComponentAssignmentStrategy.Connected, LayoutIncremental, SubgraphPlacement.Barycenter,
-              RoutingStyle.Orthogonal, PartialLayoutOrientation.TopToBottom, 5, true, true);
-          break;
-        case OrthogonalScenario:
-          SetOptions(ComponentAssignmentStrategy.Single, LayoutOrthogonal, SubgraphPlacement.Barycenter,
-              RoutingStyle.Orthogonal, PartialLayoutOrientation.None, 20, false, true);
-          break;
-        case OrganicScenario:
-          SetOptions(ComponentAssignmentStrategy.Single, LayoutOrganic, SubgraphPlacement.Barycenter,
-              RoutingStyle.Automatic, PartialLayoutOrientation.None, 30, true, false);
-          break;
-        case CircularScenario:
-          SetOptions(ComponentAssignmentStrategy.Connected, LayoutCircular, SubgraphPlacement.Barycenter,
-              RoutingStyle.Automatic, PartialLayoutOrientation.None, 10, true, false);
-          break;
-      }
-    }
-
-    private async void OnRunButtonClicked(object sender, EventArgs e) {
-      await RunLayout();
-    }
-
-    private void OnRefreshButtonClicked(object sender, RoutedEventArgs e) {
-      LoadScenario();
-    }
-
-    private void OnLockSelectionButtonClicked(object sender, RoutedEventArgs e) {
-      SetSelectionFixed(true);
-    }
-
-    private void OnUnlockSelectionButtonClicked(object sender, RoutedEventArgs e) {
-      SetSelectionFixed(false);
-    }
-
-    #region Option Handler for layout options
-
-    private const string LayoutIncremental = "Hierarchical";
-    private const string LayoutOrganic = "Organic";
-    private const string LayoutOrthogonal = "Orthogonal";
-    private const string LayoutCircular = "Circular";
-    private const string LayoutUnchanged = "Unchanged";
-    private const string LayoutOptions = "LAYOUT_OPTIONS";
-    private const string ComponentAssignment = "Component Assignment";
-    private const string SubgraphLayout = "Subgraph Layout";
-    private const string SubgraphPositioning = "Subgraph Positioning Strategy";
-    private const string EdgeRouting = "Edge Routing Style";
-    private const string LayoutOrientationStrategy = "Layout Orientation";
-    private const string MinimumNodeDistance = "Minimum Node Distance";
-    private const string AllowMirroring = "Allow Mirroring";
-    private const string NodeSnapping = "Node Snapping";
-
-    private OptionHandler Handler { get; set; }
-
-    private void SetupOptions() {
-      // create the options
-      SetupHandler();
-      // populate the control to visualize them
-      editorControl.IsAutoAdopt = true;
-      editorControl.IsAutoCommit = true;
-      editorControl.OptionHandler = Handler;
-    }
-
-    /// <summary>
-    ///   Initializes the option handler for the export
-    /// </summary>
-    private void SetupHandler() {
-      Handler = new OptionHandler(LayoutOptions);
-      OptionItem componentItem = Handler.AddList(ComponentAssignment,
-          new[] { ComponentAssignmentStrategy.Single, ComponentAssignmentStrategy.Connected },
-          ComponentAssignmentStrategy.Single);
-      OptionItem subgraphItem = Handler.AddList(SubgraphLayout, SubGraphLayouts.Keys, LayoutIncremental);
-      Handler.Add(SubgraphPositioning, SubgraphPlacement.Barycenter);
-      Handler.Add(EdgeRouting, RoutingStyle.Automatic);
-      Handler.Add(LayoutOrientationStrategy, PartialLayoutOrientation.TopToBottom);
-      Handler.AddInt(MinimumNodeDistance, 5, 0, int.MaxValue);
-      Handler.AddBool(AllowMirroring, true);
-      Handler.AddBool(NodeSnapping, true);
-      var cm = new ConstraintManager(Handler);
-
-      cm.SetEnabledOnValueEquals(componentItem, ComponentAssignmentStrategy.Connected, subgraphItem);
-    }
-
-    #endregion
-
-    #region Layout configuration
-
-    ///<summary>Create a <c>PartialLayout</c> using the selected demo settings</summary>
-    private yWorks.Layout.Partial.PartialLayout CreateConfiguredPartialLayout() {
-      var subGraphLayout = SubGraphLayouts[(string) Handler.GetItemByName(SubgraphLayout).Value];
-      ConfigureCoreLayout(subGraphLayout);
-      var partialLayout = new yWorks.Layout.Partial.PartialLayout {
-          ComponentAssignmentStrategy = (ComponentAssignmentStrategy) Handler.GetItemByName(ComponentAssignment).Value,
-          CoreLayout = subGraphLayout,
-          SubgraphPlacement = (SubgraphPlacement) Handler.GetItemByName(SubgraphPositioning).Value,
-          EdgeRoutingStyle = (RoutingStyle) Handler.GetItemByName(EdgeRouting).Value,
-          LayoutOrientation = (PartialLayoutOrientation) Handler.GetItemByName(LayoutOrientationStrategy).Value,
-          MinimumNodeDistance = (int) Handler.GetItemByName(MinimumNodeDistance).Value,
-          AllowMirroring = (bool) Handler.GetItemByName(AllowMirroring).Value,
-          ConsiderNodeAlignment = (bool) Handler.GetItemByName(NodeSnapping).Value
+      graphEditorInputMode.CreateEdgeInputMode.EdgeCreated += (_, evt) => SetFixed(evt.Item, false);
+      graphEditorInputMode.NavigationInputMode.GroupCollapsed += (_, evt) => {
+        var group = evt.Item;
+        UpdateStyle(group, IsFixed(group));
       };
-
-      return partialLayout;
-    }
-
-    ///<summary> Uses some of the demo settings to further configure the core layout algorithm </summary>
-    private void ConfigureCoreLayout(ILayoutAlgorithm coreLayout) {
-      var minNodeDistance = (int) Handler.GetItemByName(MinimumNodeDistance).Value;
-      if (coreLayout is OrthogonalLayout) {
-        ((OrthogonalLayout) coreLayout).GridSpacing = minNodeDistance;
-      } else if (coreLayout is HierarchicalLayout) {
-        ((HierarchicalLayout) coreLayout).MinimumLayerDistance = minNodeDistance;
-      } else if (coreLayout is CircularLayout) {
-        ((CircularLayout) coreLayout).PartitionDescriptor.MinimumNodeDistance = minNodeDistance;
-        ((CircularLayout) coreLayout).BackboneLayout.MinimumNodeDistance = minNodeDistance;
-      }
-    }
-
-    /// <summary>
-    ///   Runs either the table or the three tiers layout depending on the selected scenario.
-    /// </summary>
-    private async Task RunLayout() {
-      DisableButtons();
-      var partialLayout = CreateConfiguredPartialLayout();
-      var layoutData = partialLayout.CreateLayoutData(graphControl.Graph);
-      layoutData.Scope.Nodes.Mapper = partialNodesMapper;
-      layoutData.Scope.Edges.Mapper = partialEdgesMapper;
-      var executor = new LayoutExecutor(graphControl, partialLayout) {
-          AnimationDuration = TimeSpan.FromMilliseconds(500), AnimateViewport = true, LayoutData = layoutData
+      graphEditorInputMode.NavigationInputMode.GroupExpanded += (_, evt) => {
+        var group = evt.Item;
+        UpdateStyle(group, IsFixed(group));
       };
+      GraphControl.InputMode = graphEditorInputMode;
+    }
 
-      try {
-        await executor.Start();
-      } catch (Exception e) {
-        MessageBox.Show(this, "Layout did not complete successfully.\n" + e.Message);
+    /**
+     * Sets the given item as fixed or movable and changes its color to indicate its new state.
+     */
+    private void SetFixed(IModelItem item, bool fixedItem) {
+      var masterItem = GetMasterItem(item);
+      if (masterItem is INode node) {
+        partialNodesMapper[node] = !fixedItem;
+        UpdateStyle(item, fixedItem);
+      } else if (masterItem is IEdge edge) {
+        partialEdgesMapper[edge] = !fixedItem;
+        UpdateStyle(item, fixedItem);
       }
-
-      EnableButtons();
     }
 
-    private void DisableButtons() {
-      scenarioComboBox.IsEnabled = false;
-      lockSelectionButton.IsEnabled = false;
-      unlockSelectionButton.IsEnabled = false;
-      runButton.IsEnabled = false;
-      reloadButton.IsEnabled = false;
+    /**
+     * Returns if a given item is considered fixed or shall be rearranged by the layout algorithm.
+     * Note that an edge always gets rerouted if any of its end nodes may be moved.
+     */
+    private bool IsFixed(IModelItem item) {
+      var masterItem = GetMasterItem(item);
+      if (masterItem is INode node) {
+        return !partialNodesMapper[node];
+      }
+      if (masterItem is IEdge edge) {
+        return !partialEdgesMapper[edge];
+      }
+      return false;
     }
 
-    private void EnableButtons() {
-      scenarioComboBox.IsEnabled = true;
-      lockSelectionButton.IsEnabled = true;
-      unlockSelectionButton.IsEnabled = true;
-      runButton.IsEnabled = true;
-      reloadButton.IsEnabled = true;
-    }
-
-    #endregion
-  }
-
-  /// <summary>
-  ///   <see cref="IMapper{K,V}"/> implementation, backed by a <see cref="DictionaryMapper{K,V}"/>,
-  ///   that transparently accepts either master or view items.
-  /// </summary>
-  /// <typeparam name="K">The key type.</typeparam>
-  /// <typeparam name="V">The value type.</typeparam>
-  internal class MasterViewConversionMapper<K, V> : IMapper<K, V> where K : IModelItem
-  {
-    private readonly IGraph viewGraph;
-    private readonly IGraph masterGraph;
-    private readonly IFoldingView foldingView;
-    private readonly DictionaryMapper<IModelItem, V> backingMapper = new();
-
-    public MasterViewConversionMapper(IGraph viewGraph) {
-      this.viewGraph = viewGraph;
-      foldingView = viewGraph.GetFoldingView();
-      masterGraph = foldingView.Manager.MasterGraph;
-    }
-
-    public V this[K key] {
-      get => backingMapper[GetMasterItem(key)];
-      set => backingMapper[GetMasterItem(key)] = value;
-    }
-
-    public V DefaultValue {
-      get => backingMapper.DefaultValue;
-      set => backingMapper.DefaultValue = value;
-    }
-
-    private IModelItem GetMasterItem(IModelItem item) {
+    /**
+     * Returns the master item for the given item.
+     * Since folding is supported in this demo, partial/fixed states are stored for the master items to stay consistent
+     * when expanding/collapsing group nodes.
+     */
+    private IModelItem? GetMasterItem(IModelItem item) {
+      var masterGraph = foldingView.Manager.MasterGraph;
       if (masterGraph.Contains(item)) {
         return item;
       }
-      if (viewGraph.Contains(item)) {
+      if (Graph.Contains(item)) {
         return foldingView.GetMasterItem(item);
       }
       return null;
     }
 
-    public void Clear() {
-      backingMapper.Clear();
+    /**
+     * Updates the style of the given item when the partial/fixed state has changed.
+     */
+    private void UpdateStyle(IModelItem item, bool fixedItem) {
+      var graph = Graph;
+      if (item is INode node) {
+        var masterNode = GetMasterItem(node) as INode;
+        var isGroupNode = masterNode != null && foldingView.Manager.MasterGraph.IsGroupNode(masterNode);
+        graph.SetStyle(node,
+            isGroupNode ? fixedItem ? fixedGroupNodeStyle : partialGroupStyle :
+            fixedItem ? fixedNodeStyle : partialNodeStyle);
+      } else if (item is IEdge edge) {
+        graph.SetStyle(edge, fixedItem ? fixedEdgeStyle : partialEdgeStyle);
+      }
     }
+
+    /**
+     * Updates the partial/fixed state of all graph elements that are currently selected.
+     */
+    private void SetSelectionFixed(bool fixedItem) {
+      foreach (var node in GraphControl.Selection.Nodes) {
+        SetFixed(node, fixedItem);
+      }
+      foreach (var edge in GraphControl.Selection.Edges) {
+        SetFixed(edge, fixedItem);
+      }
+    }
+
+    /**
+     * Loads one of four scenarios that come with a sample graph and a layout configuration.
+     */
+    private void LoadScenario(string sample) {
+      partialNodesMapper = new DictionaryMapper<INode, bool> { DefaultValue = true };
+      partialEdgesMapper = new DictionaryMapper<IEdge, bool> { DefaultValue = true };
+
+      var ioHandler = new GraphMLIOHandler { ClearGraphBeforeRead = true };
+      ioHandler.AddInputMapper("yWorks.Layout.Partial.PartialLayout.NodeScopeDataKey", partialNodesMapper);
+      ioHandler.AddInputMapper("yWorks.Layout.Partial.PartialLayout.EdgeScopeDataKey", partialEdgesMapper);
+
+      switch (sample) {
+        default:
+        case "hierarchical":
+          SetOptions(SubgraphLayoutKind.Hierarchical, ComponentAssignmentStrategy.Connected,
+              SubgraphPlacement.Barycenter, RoutingStyle.Orthogonal, PartialLayoutOrientation.TopToBottom, 5, true,
+              true);
+          break;
+        case "orthogonal":
+          SetOptions(SubgraphLayoutKind.Orthogonal, ComponentAssignmentStrategy.Single, SubgraphPlacement.Barycenter,
+              RoutingStyle.Orthogonal, PartialLayoutOrientation.None, 20, false, true);
+          break;
+        case "organic":
+          SetOptions(SubgraphLayoutKind.Organic, ComponentAssignmentStrategy.Single, SubgraphPlacement.Barycenter,
+              RoutingStyle.Automatic, PartialLayoutOrientation.None, 30, true, false);
+          break;
+        case "circular":
+          SetOptions(SubgraphLayoutKind.Circular, ComponentAssignmentStrategy.Connected, SubgraphPlacement.Barycenter,
+              RoutingStyle.Automatic, PartialLayoutOrientation.None, 10, true, false);
+          break;
+      }
+
+      using var stream = LoadAssemblyResource($"{sample}.graphml");
+      ioHandler.Read(Graph, stream);
+      foreach (var node in Graph.Nodes) {
+        UpdateStyle(node, IsFixed(node));
+      }
+      foreach (var edge in Graph.Edges) {
+        UpdateStyle(edge, IsFixed(edge));
+      }
+      GraphControl.FitGraphBounds();
+    }
+
+    /**
+     * Update the options according to the current scenario.
+     */
+    private void SetOptions(
+        SubgraphLayoutKind subgraphLayout,
+        ComponentAssignmentStrategy componentAssignmentStrategy,
+        SubgraphPlacement subgraphPlacement,
+        RoutingStyle edgeRoutingStrategy,
+        PartialLayoutOrientation layoutOrientation,
+        double minimumNodeDistance,
+        bool allowMirroring,
+        bool nodeSnapping) {
+      settings.SetOptions(subgraphLayout, componentAssignmentStrategy, subgraphPlacement, edgeRoutingStrategy,
+          layoutOrientation, minimumNodeDistance, allowMirroring, nodeSnapping);
+    }
+
+    /**
+     * Enables/disables the toolbar and interaction panel during layout calculation.
+     */
+    private void SetUIDisabled(bool disabled) {
+      settings.IsBusy = disabled;
+      if (graphEditorInputMode is not null) {
+        graphEditorInputMode.WaitInputMode.Waiting = disabled;
+      }
+    }
+
+    private void Settings_PropertyChanged(object? sender, PropertyChangedEventArgs e) {
+      if (e.PropertyName == nameof(Settings.IsBusy)) {
+        interactionPanel.IsEnabled = !settings.IsBusy;
+        demoToolBar.IsEnabled = !settings.IsBusy;
+      }
+    }
+
+    private void OnLockSelection(object sender, RoutedEventArgs e) => SetSelectionFixed(true);
+
+    private void OnUnlockSelection(object sender, RoutedEventArgs e) => SetSelectionFixed(false);
+
+    private void OnRefresh(object sender, RoutedEventArgs e) => LoadScenario(GetSelectedSample());
+
+    private void OnSampleChanged(object sender, SelectionChangedEventArgs e) => LoadScenario(GetSelectedSample());
+
+    private async void OnLayout(object sender, RoutedEventArgs e) => await RunLayoutAsync();
+
+    private string GetSelectedSample() => sampleComboBox.SelectedValue as string ?? "hierarchical";
+
+    [STAThread]
+    private static void Main() => Run<PartialLayoutDemo>();
   }
 }

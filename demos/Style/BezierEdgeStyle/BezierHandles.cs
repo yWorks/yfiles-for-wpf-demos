@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 4.0.
- ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -29,280 +29,205 @@
 
 using System;
 using System.Windows.Input;
-using yWorks.Annotations;
 using yWorks.Controls.Input;
 using yWorks.Geometry;
 using yWorks.Graph;
 using yWorks.Utils;
 
-namespace Demo.yFiles.Graph.BezierEdgeStyle
+namespace yWorks.Demo.BezierEdgeStyle
 {
   /// <summary>
-  ///   Handle for an outer control point bend of a bezier curve
+  ///   Handle for an outer control point bend of a Bézier curve. The outer control point bends are not located on the
+  ///   path, but determine the slope of the segments. If the control point triple is currently collinear, this
+  ///   implementation moves the other outer control point of the triple so that this invariant is kept.
   /// </summary>
-  /// <remarks>
-  ///   The outer control point bends are those that are not located on the path, but determine the slope of the segments.
-  ///   If the control point triple is currently collinear, this implementation moves the <b>other</b> outer control point
-  ///   of the triple so that this invariant is kept. Otherwise, the other control point is not adjusted.
-  /// </remarks>
-  internal class OuterControlPointHandle : IHandle
+  public sealed class OuterControlPointHandle : IHandle
   {
-    private const double EPS = 1e-6;
-
-    /// <summary>
-    ///   The core bend handle that performs the actual bend movement.
-    /// </summary>
+    /// <summary>The core bend handle that performs the actual bend movement.</summary>
     private readonly IHandle coreHandle;
 
-    /// <summary>
-    ///   The bend that belongs to this handle instance
-    /// </summary>
-    private readonly IBend bend;
+    /// <summary>The original location of this handle.</summary>
+    private PointD origin;
 
-    /// <summary>
-    ///   The other handle that is controlled indirectly from us.
-    /// </summary>
-    private IHandle slaveHandle;
+    /// <summary>The other handle that is controlled indirectly from this handle.</summary>
+    private IHandle? slaveHandle;
 
-    /// <summary>
-    ///   The original location ot the slave handle, required to perform the actual movement of the other handle.
-    /// </summary>
+    /// <summary>The original location of the slave handle, required to move it.</summary>
     private PointD slaveOrigin;
 
-    /// <summary>
-    ///   The location of the middle bend of a control point triple.
-    /// </summary>
-    /// <remarks>This is used as the axis of rotation to keep the collinearity invariant.</remarks>
+    /// <summary>The location of the middle bend, used as the axis of rotation to keep the triple collinear.</summary>
     private PointD middleLocation;
 
-    /// <summary>
-    ///   Creates a new instance that wraps the original <paramref name="coreHandle"/> for the given <paramref name="bend"/>.
-    /// </summary>
-    public OuterControlPointHandle([NotNull] IHandle coreHandle, [NotNull] IBend bend) {
+    /// <summary>The bend that belongs to this handle instance.</summary>
+    public IBend Bend { get; }
+
+    /// <summary>Creates a new instance that wraps the original core handle for the given bend.</summary>
+    public OuterControlPointHandle(IHandle coreHandle, IBend bend) {
       this.coreHandle = coreHandle;
-      this.bend = bend;
+      Bend = bend;
+      slaveOrigin = new PointD(0, 0);
+      middleLocation = new PointD(0, 0);
     }
 
-    /// <summary>
-    ///   Initializes our own drag and determines whether we are a slave or the master and if there are actual slave handles in
-    ///   that case
-    /// </summary>
+    /// <summary>Initializes our drag and determines whether this handle controls another handle.</summary>
     public void InitializeDrag(IInputModeContext context) {
+      origin = Bend.Location.ToPointD();
       coreHandle.InitializeDrag(context);
       if (context.InputMode is MoveInputMode) {
-        // If we are moved via MoveInputMode (happens when the whole edge is dragged)
-        // We only delegate to the core handle
+        // If we are moved via MoveInputMode (happens when the whole edge is dragged), delegate only to the core handle.
         return;
       }
 
-      // If we are indirectly controlled from the other control point or the bend curve point
-      // those implementations put a marker in the lookup
-      // If such a marker is present, we DON'T delegate to the other handle and just move ourselves.
-      var bcph = context.Lookup<InnerControlPointHandle>();
-      var cph = context.Lookup<OuterControlPointHandle>();
-
-      if (bcph == null && cph == null) {
-        // We are the master handle and so we control the other one
-        var index = bend.GetIndex();
-
-        // Whether this is the first or the last bend in such a control point triple
-        var isFirstInTriplet = index % 3 == 1;
-
-        IBend otherBend = null;
-        IBend middleBend = null;
-        if (isFirstInTriplet && index < bend.Owner.Bends.Count - 1) {
-          // We are the first of the triple and there is a potential slave handle
-          // So get the slave and the middle bend
-          otherBend = bend.Owner.Bends[index + 2];
-          middleBend = bend.Owner.Bends[index + 1];
-        } else if (index >= 3) {
-          // We are the last of the triple and there is a potential slave handle
-          // So get the slave and the middle bend
-          otherBend = bend.Owner.Bends[index - 2];
-          middleBend = bend.Owner.Bends[index - 1];
-        }
-        if (otherBend != null && AreCollinear(bend.Location, middleBend.Location, otherBend.Location)) {
-          slaveHandle = otherBend.Lookup<IHandle>();
-          middleLocation = middleBend.Location.ToPointD();
-        }
-
-        if (slaveHandle != null) {
-          // There not only a bend, but actually a handle to control
-          // notify it that it is the slave
-          // We just put ourselves in the context, so our presence serves as flag to the other handle
-          // And from now on control its actions.
-          var childContext = new InputModeContext(context);
-          childContext.GetDecoratorFor<OuterControlPointHandle>().AddConstant(this);
-          slaveHandle.InitializeDrag(childContext);
-          slaveOrigin = slaveHandle.Location.ToPointD();
-        }
+      // If we are indirectly controlled from the other control point or the bend curve point, those implementations
+      // put a marker in the lookup. If such a marker is present, we do not delegate to the other handle.
+      var innerHandle = context.Lookup<InnerControlPointHandle>();
+      var outerHandle = context.Lookup<OuterControlPointHandle>();
+      if (innerHandle != null || outerHandle != null) {
+        return;
       }
+
+      // We are the master handle so we control the other one.
+      var index = Bend.GetIndex();
+      var isFirstInTriplet = index % 3 == 1;
+      IBend? otherBend = null;
+      IBend? middleBend = null;
+      var allBends = Bend.Owner.Bends;
+      if (isFirstInTriplet && index < allBends.Count - 1) {
+        // We are the first of the triple and there is a potential slave handle.
+        // Get the slave and the middle bend.
+        otherBend = allBends[index + 2];
+        middleBend = allBends[index + 1];
+      } else if (index >= 3) {
+        // We are the last of the triple and there is a potential slave handle.
+        // Get the slave and the middle bend.
+        otherBend = allBends[index - 2];
+        middleBend = allBends[index - 1];
+      }
+      if (otherBend != null && middleBend != null &&
+          BezierHandleUtil.AreCollinear(Bend.Location, middleBend.Location, otherBend.Location)) {
+        slaveHandle = otherBend.Lookup<IHandle>();
+        middleLocation = middleBend.Location.ToPointD();
+      }
+      if (slaveHandle == null) {
+        return;
+      }
+
+      var childContext = new InputModeContext(context);
+      childContext.GetDecoratorFor<OuterControlPointHandle>().AddConstant(this);
+      slaveHandle.InitializeDrag(childContext);
+      slaveOrigin = slaveHandle.Location.ToPointD();
     }
 
-    /// <summary>
-    ///   Checks whether three points are collinear.
-    /// </summary>
-    /// <returns>true iff all three points are (approximately) collinear.</returns>
-    internal static bool AreCollinear([NotNull] IPoint p1, [NotNull] IPoint p2, [NotNull] IPoint p3) {
-      // Use the cross product to check whether we are collinear
-      return Math.Abs(0.5 * (p1.X * (p2.Y - p3.Y) + p2.X * (p3.Y - p1.Y) + p3.X * (p1.Y - p2.Y))) < EPS;
-    }
-
-    /// <summary>
-    ///   Move the core handle and if present also the slave handle in a way that the control point triple is collinear.
-    /// </summary>
+    /// <summary>Moves this handle and, if present, its slave handle while keeping the triple collinear.</summary>
     public void HandleMove(IInputModeContext context, PointD originalLocation, PointD newLocation) {
       coreHandle.HandleMove(context, originalLocation, newLocation);
-
-      if (slaveHandle != null) {
-        // If necessary, rotate the slave handle
-        // Move the other one by the point reflection of our move delta, keeping its distance, though
-        var delta = newLocation - middleLocation;
-        // The distance of the slave handle - we keep this
-        var otherDist = (slaveOrigin - middleLocation).VectorLength;
-        // We can use the original context since we have already done all decisions in InitializeDrag
-        slaveHandle.HandleMove(context, slaveOrigin, middleLocation - delta.Normalized * otherDist);
+      if (slaveHandle == null) {
+        return;
       }
+
+      var delta = newLocation - middleLocation;
+      var otherDistance = (slaveOrigin - middleLocation).VectorLength;
+      var direction = delta.VectorLength == 0 ? PointD.Origin : delta.Normalized;
+      slaveHandle.HandleMove(context, slaveOrigin, middleLocation - direction * otherDistance);
     }
 
-    /// <summary>
-    ///   Cancel the movement on the core handle and if present also on the slave handle
-    /// </summary>
+    /// <summary>Cancels the movement on the core handle and, if present, on the slave handle.</summary>
     public void CancelDrag(IInputModeContext context, PointD originalLocation) {
-      coreHandle.CancelDrag(context, originalLocation);
-
-      if (slaveHandle != null) {
-        // If necessary, cancel the movement of the slave handle, using its old origin
-        // We can use the original context since we have already done all decisions in InitializeDrag
-        slaveHandle.CancelDrag(context, slaveOrigin);
-        slaveHandle = null;
+      coreHandle.CancelDrag(context, origin);
+      if (slaveHandle == null) {
+        return;
       }
-    }
-
-    /// <summary>
-    ///   Finish the movement on the core handle and if present also on the slave handle
-    /// </summary>
-    public void DragFinished(IInputModeContext context, PointD originalLocation, PointD newLocation) {
-      coreHandle.DragFinished(context, originalLocation, newLocation);
-      if (slaveHandle != null) {
-        // If necessary, rotate the slave handle
-        // Move the other one by the point reflection of our move delta, keeping its distance, though
-        var delta = newLocation - middleLocation;
-        // The distance of the slave handle - we keep this
-        var otherDist = (slaveOrigin - middleLocation).VectorLength;
-        slaveHandle.DragFinished(context, slaveOrigin, middleLocation - delta.Normalized * otherDist);
-        CleanUp();
-      }
-    }
-
-    /// <summary>
-    ///   Clean up work at the end of the gesture, either by canceling or finishing
-    /// </summary>
-    private void CleanUp() {
+      // We can use the original context since all decisions were already made in InitializeDrag.
+      slaveHandle.CancelDrag(context, slaveOrigin);
       slaveHandle = null;
     }
 
-    /// <summary>
-    ///   We use the circular handle type.
-    /// </summary>
+    /// <summary>Finishes the movement on the core handle and, if present, on the slave handle.</summary>
+    public void DragFinished(IInputModeContext context, PointD originalLocation, PointD newLocation) {
+      coreHandle.DragFinished(context, originalLocation, newLocation);
+      if (slaveHandle == null) {
+        return;
+      }
+      var delta = newLocation - middleLocation;
+      var otherDistance = (slaveOrigin - middleLocation).VectorLength;
+      var direction = delta.VectorLength == 0 ? PointD.Origin : delta.Normalized;
+      slaveHandle.DragFinished(context, slaveOrigin, middleLocation - direction * otherDistance);
+      CleanUp();
+    }
+
+    /// <summary>Cleans up work at the end of the gesture, either by canceling or finishing.</summary>
+    private void CleanUp() => slaveHandle = null;
+
+    /// <summary>Uses a slightly different visualization.</summary>
     public HandleType Type => HandleType.Move2;
 
-    /// <summary>
-    ///   We don't need a handle tag.
-    /// </summary>
-    public object Tag => null;
-
-    /// <summary>
-    ///   Use the core handle's cursor
-    /// </summary>
+    /// <summary>Uses the core handle's cursor.</summary>
     public Cursor Cursor => coreHandle.Cursor;
 
-    /// <summary>
-    ///   Use the core handle's location
-    /// </summary>
+    /// <summary>Uses the core handle's location.</summary>
     public IPoint Location => coreHandle.Location;
 
-    /// <summary>
-    ///   Use the core handle's click handling.
-    /// </summary>
-    /// <param name="eventArgs">Arguments describing the click.</param>
-    public void HandleClick(ClickEventArgs eventArgs) {
-      coreHandle.HandleClick(eventArgs);
-    }
+    public object? Tag => null;
+
+    /// <summary>This implementation does nothing special when clicked.</summary>
+    public void HandleClick(ClickEventArgs eventArgs) { }
   }
 
   /// <summary>
-  ///   Handle for an inner control point bend of a bezier curve
+  ///   Handle for an inner control point bend of a Bézier curve. The inner control point bends are located on the path.
+  ///   If the control point triple is currently collinear, this implementation moves the outer control points so that
+  ///   this invariant is kept.
   /// </summary>
-  /// <remarks>
-  ///   The inner control point bends are those that are actually located on the path.
-  ///   If the control point triple is currently collinear, this implementation moves the  outer control points
-  ///   of the triple so that this invariant is kept. Otherwise, the other control points are not adjusted.
-  /// </remarks>
-  internal class InnerControlPointHandle : IHandle
+  public sealed class InnerControlPointHandle : IHandle
   {
-    /// <summary>
-    ///   The core bend handle that performs the actual bend movement.
-    /// </summary>
+    /// <summary>The core bend handle that performs the actual bend movement.</summary>
     private readonly IHandle coreHandle;
 
-    /// <summary>
-    ///   The bend that belongs to this handle instance
-    /// </summary>
+    /// <summary>The bend that belongs to this handle instance.</summary>
     private readonly IBend bend;
 
-    /// <summary>
-    ///   The first (slave) handle in a control point triple
-    /// </summary>
-    private IHandle firstSlaveHandle;
+    /// <summary>The original location of this handle.</summary>
+    private PointD origin;
 
-    /// <summary>
-    ///   The last (slave) handle in a control point triple
-    /// </summary>
-    private IHandle lastSlaveHandle;
+    /// <summary>The first (slave) handle in a control point triple.</summary>
+    private IHandle? firstSlaveHandle;
 
-    /// <summary>
-    ///   The original location ot the first slave handle, required to perform the actual movement of the that handle.
-    /// </summary>
+    /// <summary>The last (slave) handle in a control point triple.</summary>
+    private IHandle? lastSlaveHandle;
+
+    /// <summary>The original location of the first slave handle, required to move it.</summary>
     private PointD firstOrigin;
 
-    /// <summary>
-    ///   The original location ot the last slave handle, required to perform the actual movement of the that handle.
-    /// </summary>
+    /// <summary>The original location of the last slave handle, required to move it.</summary>
     private PointD lastOrigin;
 
-    /// <summary>
-    ///   Creates a new instance that wraps the original <paramref name="coreHandle"/> for the given <paramref name="bend"/>.
-    /// </summary>
-    public InnerControlPointHandle([NotNull] IHandle coreHandle, [NotNull] IBend bend) {
+    /// <summary>Creates a new instance that wraps the original core handle for the given bend.</summary>
+    public InnerControlPointHandle(IHandle coreHandle, IBend bend) {
       this.coreHandle = coreHandle;
       this.bend = bend;
+      firstOrigin = new PointD(0, 0);
+      lastOrigin = new PointD(0, 0);
     }
 
-    /// <summary>
-    ///   Initializes our own drag and determines whether we are a slave or the master and if there are actual slave handles in
-    ///   that case
-    /// </summary>
+    /// <summary>Initializes our drag and determines whether this handle controls other handles.</summary>
     public void InitializeDrag(IInputModeContext context) {
+      origin = bend.Location.ToPointD();
       coreHandle.InitializeDrag(context);
       if (context.InputMode is MoveInputMode) {
-        // If we are moved via MoveInputMode (happens when the whole edge is dragged)
-        // We only delegate to the core handle
+        // If we are moved via MoveInputMode (happens when the whole edge is dragged), delegate only to the core handle.
         return;
       }
-      var index = bend.GetIndex();
 
+      var index = bend.GetIndex();
       var firstBend = index > 0 ? bend.Owner.Bends[index - 1] : null;
       var lastBend = index < bend.Owner.Bends.Count - 1 ? bend.Owner.Bends[index + 1] : null;
-
       if (firstBend != null && lastBend != null &&
-          OuterControlPointHandle.AreCollinear(firstBend.Location, bend.Location, lastBend.Location)) {
-        // Put a marker in the context so that the slave handles can distinguish whether they are moved dependent from us, or are dragged directly
+          BezierHandleUtil.AreCollinear(firstBend.Location, bend.Location, lastBend.Location)) {
+        // Put a marker in the context so slave handles can distinguish dependent movement from a direct drag.
         var childContext = new InputModeContext(context);
         childContext.GetDecoratorFor<InnerControlPointHandle>().AddConstant(this);
         firstSlaveHandle = firstBend.Lookup<IHandle>();
         lastSlaveHandle = lastBend.Lookup<IHandle>();
-
         if (firstSlaveHandle != null) {
           firstSlaveHandle.InitializeDrag(childContext);
           firstOrigin = firstSlaveHandle.Location.ToPointD();
@@ -314,84 +239,101 @@ namespace Demo.yFiles.Graph.BezierEdgeStyle
       }
     }
 
-    /// <summary>
-    ///   Move the core handle and if present also the slave handles in a way that the control point triple is collinear.
-    /// </summary>
+    /// <summary>Moves the core handle and, if present, the slave handles with the same delta.</summary>
     public void HandleMove(IInputModeContext context, PointD originalLocation, PointD newLocation) {
       var delta = newLocation - originalLocation;
       coreHandle.HandleMove(context, originalLocation, newLocation);
-      if (firstSlaveHandle != null) {
-        firstSlaveHandle.HandleMove(context, firstOrigin, firstOrigin + delta);
-      }
-      if (lastSlaveHandle != null) {
-        lastSlaveHandle.HandleMove(context, lastOrigin, lastOrigin + delta);
-      }
+      firstSlaveHandle?.HandleMove(context, firstOrigin, firstOrigin + delta);
+      lastSlaveHandle?.HandleMove(context, lastOrigin, lastOrigin + delta);
     }
 
-    /// <summary>
-    ///   Cancel the movement on the core handle and if present also on the slave handles
-    /// </summary>
+    /// <summary>Cancels the movement on the core handle and, if present, on the slave handles.</summary>
     public void CancelDrag(IInputModeContext context, PointD originalLocation) {
       var childContext = new InputModeContext(context);
       childContext.GetDecoratorFor<InnerControlPointHandle>().AddConstant(this);
-      coreHandle.CancelDrag(context, originalLocation);
-      if (firstSlaveHandle != null) {
-        firstSlaveHandle.CancelDrag(childContext, firstOrigin);
-      }
-      if (lastSlaveHandle != null) {
-        lastSlaveHandle.CancelDrag(childContext, lastOrigin);
-      }
+      coreHandle.CancelDrag(context, origin);
+      firstSlaveHandle?.CancelDrag(childContext, firstOrigin);
+      lastSlaveHandle?.CancelDrag(childContext, lastOrigin);
     }
 
-    /// <summary>
-    ///   Finish the movement on the core handle and if present also on the slave handles
-    /// </summary>
+    /// <summary>Finishes the movement on the core handle and, if present, on the slave handles.</summary>
     public void DragFinished(IInputModeContext context, PointD originalLocation, PointD newLocation) {
       var delta = newLocation - originalLocation;
       coreHandle.DragFinished(context, originalLocation, newLocation);
-      if (firstSlaveHandle != null) {
-        firstSlaveHandle.DragFinished(context, firstOrigin, firstOrigin + delta);
-      }
-      if (lastSlaveHandle != null) {
-        lastSlaveHandle.DragFinished(context, lastOrigin, lastOrigin + delta);
-      }
+      firstSlaveHandle?.DragFinished(context, firstOrigin, firstOrigin + delta);
+      lastSlaveHandle?.DragFinished(context, lastOrigin, lastOrigin + delta);
       CleanUp();
     }
 
-    /// <summary>
-    ///   Clean up work at the end of the gesture, either by canceling or finishing
-    /// </summary>
+    /// <summary>Cleans up work at the end of the gesture, either by canceling or finishing.</summary>
     private void CleanUp() {
       firstSlaveHandle = null;
       lastSlaveHandle = null;
     }
 
-    /// <summary>
-    ///   Use the core handle's type
-    /// </summary>
+    public object? Tag => coreHandle.Tag;
+
+    /// <summary>Uses the core handle's type.</summary>
     public HandleType Type => coreHandle.Type;
 
-    /// <summary>
-    ///   Use the core handle's tag
-    /// </summary>
-    public object Tag => coreHandle.Tag;
-
-    /// <summary>
-    ///   Use the core handle's cursor
-    /// </summary>
+    /// <summary>Uses the core handle's cursor.</summary>
     public Cursor Cursor => coreHandle.Cursor;
 
-    /// <summary>
-    ///   Use the core handle's location
-    /// </summary>
+    /// <summary>Uses the core handle's location.</summary>
     public IPoint Location => coreHandle.Location;
 
-    /// <summary>
-    ///   Use the core handle's click handling.
-    /// </summary>
-    /// <param name="eventArgs">Arguments describing the click.</param>
-    public void HandleClick(ClickEventArgs eventArgs) {
-      coreHandle.HandleClick(eventArgs);
+    /// <summary>This implementation does nothing special when clicked.</summary>
+    public void HandleClick(ClickEventArgs eventArgs) => coreHandle.HandleClick(eventArgs);
+  }
+
+  internal static class BezierHandleUtil
+  {
+    private const double Eps = 1e-6;
+
+    /// <summary>Checks whether three points are collinear.</summary>
+    /// <returns><see langword="true"/> if all three points are approximately collinear.</returns>
+    internal static bool AreCollinear(IPoint p1, IPoint p2, IPoint p3) =>
+        Math.Abs(0.5 * (p1.X * (p2.Y - p3.Y) + p2.X * (p3.Y - p1.Y) + p3.X * (p1.Y - p2.Y))) < Eps;
+  }
+
+  /// <summary>
+  ///   Handle for control points of a Bézier curve if smooth editing is disabled. It stores the corresponding bend
+  ///   and whether it belongs to an outer control point so the renderer can draw it differently.
+  /// </summary>
+  public sealed class SimpleControlPointHandle : IHandle
+  {
+    private readonly IHandle coreHandle;
+
+    public IBend Bend { get; }
+
+    public bool IsOuterControlPoint { get; }
+
+    public SimpleControlPointHandle(IHandle coreHandle, IBend bend, bool isOuterControlPoint) {
+      this.coreHandle = coreHandle;
+      Bend = bend;
+      IsOuterControlPoint = isOuterControlPoint;
     }
+
+    public IPoint Location => coreHandle.Location;
+
+    public void InitializeDrag(IInputModeContext context) => coreHandle.InitializeDrag(context);
+
+    public void HandleMove(IInputModeContext context, PointD originalLocation, PointD newLocation) =>
+        coreHandle.HandleMove(context, originalLocation, newLocation);
+
+    public void CancelDrag(IInputModeContext context, PointD originalLocation) =>
+        coreHandle.CancelDrag(context, originalLocation);
+
+    public void DragFinished(IInputModeContext context, PointD originalLocation, PointD newLocation) =>
+        coreHandle.DragFinished(context, originalLocation, newLocation);
+
+    /// <summary>Inner control point handles are round and outer ones quadratic.</summary>
+    public HandleType Type => IsOuterControlPoint ? HandleType.Move2 : coreHandle.Type;
+
+    public object? Tag => coreHandle.Tag;
+
+    public Cursor Cursor => coreHandle.Cursor;
+
+    public void HandleClick(ClickEventArgs eventArgs) => coreHandle.HandleClick(eventArgs);
   }
 }

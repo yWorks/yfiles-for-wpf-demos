@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 4.0.
- ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -27,159 +27,173 @@
  ** 
  ***************************************************************************/
 
-using System.Linq;
+using yWorks.Controls;
 using yWorks.Controls.Input;
 using yWorks.Geometry;
 using yWorks.Graph;
 using yWorks.Utils;
 
-namespace Demo.yFiles.Graph.BezierEdgeStyle
+namespace yWorks.Demo.BezierEdgeStyle
 {
   /// <summary>
-  ///   Custom create edge input mode for bezier edges.
+  ///   Custom create edge input mode for Bézier edges. This mode can work in two different ways:
+  ///   when <see cref="CreateSmoothSplines"/> is true, the user creates only the exterior control points and the mode
+  ///   interpolates the missing middle control point for each triple. Otherwise, each control point is created exactly
+  ///   as placed. During the gesture, the current hull curve is shown.
   /// </summary>
-  /// <remarks>
-  ///   This mode can operate in two different ways:
-  ///   If <see cref="CreateSmoothSplines"/> is <see langword="true"/>, you create only the exterior control points and
-  ///   the mode interpolates the missing middle control point for each triple.
-  ///   Otherwise, you specify each control point exactly as intended.
-  ///   During the gesture, the current hull curve is shown.
-  /// </remarks>
-  public class BezierCreateEdgeInputMode : CreateEdgeInputMode
+  public sealed class BezierCreateEdgeInputMode : CreateEdgeInputMode
   {
-    /// <summary>
-    ///   Reentrancy flag when we are inserting/removing dummy edge bends.
-    /// </summary>
+    /// <summary>Re-entrance flag used while inserting or removing dummy edge bends.</summary>
     private bool augmenting;
 
+    /// <summary>Additional render tree element that highlights the control point sequence.</summary>
+    private IRenderTreeElement? controlPointHighlight;
+
+    /// <summary>Whether we want to create smooth splines.</summary>
+    private bool createSmoothSplines = true;
+
+    /// <summary>
+    ///   Determines whether to create smooth splines. If true, each bend creation inserts one of the exterior control
+    ///   points for a cubic segment and the middle point is created automatically. Otherwise, each control point must be
+    ///   specified. The default value is true.
+    /// </summary>
+    public bool CreateSmoothSplines {
+      get => createSmoothSplines;
+      set => createSmoothSplines = value;
+    }
+
     public BezierCreateEdgeInputMode() {
-      CreateSmoothSplines = true;
-      // By default, we can't create orthogonal edges with this mode
-      // (what would that look like)
+      // By default, this mode cannot create orthogonal edges.
       OrthogonalEdgeCreation = OrthogonalEdgeEditingPolicy.Never;
-
       CancelGestureOnInvalidEnd = false;
-
-      ValidBendHitTestable = HitTestables.Create(delegate(IInputModeContext context, PointD location) {
-        if (!(PreviewEdge.Style is yWorks.Graph.Styles.BezierEdgeStyle) || PreviewEdge.Bends.Count <= 2 || !CreateSmoothSplines) {
-          return true;
-        }
-        var nextToLastBend = PreviewEdge.Bends.ElementAt(PreviewEdge.Bends.Count - 2);
-        if (nextToLastBend == null) {
-          return true;
-        }
-        // Require a minimum length for the control point triple
-        return nextToLastBend.GetIndex() % 3 != 0 || (location - nextToLastBend.Location.ToPointD()).VectorLength > 10;
-      });
+      ValidBendHitTestable = new BezierValidBendHitTestable(this);
 
       ConfigureDummyGraph();
-      EdgeCreationStarted += (sender, args) => {
-        ConfigureDummyEdge();
-      };
+      EdgeCreationStarted += ConfigureDummyEdge;
     }
 
+    /// <summary>
+    ///   If the preview edge has a Bézier style, decorate it so the control points can also be shown.
+    /// </summary>
+    private void ConfigureDummyEdge(object? sender, InputModeItemEventArgs<IEdge> args) {
+      if (PreviewEdge is SimpleEdge simpleEdge && simpleEdge.Style is Graph.Styles.BezierEdgeStyle) {
+        // By default, BezierEdgeStyle has no bend creator, but we need one to create bends here.
+        var defaultBendCreator = new SimpleEdge().Lookup<IBendCreator>();
+        if (defaultBendCreator != null) {
+          simpleEdge.GetDecorator().BendCreator.AddConstant(defaultBendCreator);
+        }
+      }
+    }
+
+    public override void Uninstall(IInputModeContext context) {
+      if (controlPointHighlight != null) {
+        context.CanvasControl.RenderTree.Remove(controlPointHighlight);
+        controlPointHighlight = null;
+      }
+      base.Uninstall(context);
+    }
+
+    protected override void OnGestureCanceling(InputModeEventArgs inputModeEventArgs) {
+      if (controlPointHighlight != null) {
+        ParentInputModeContext?.CanvasControl.RenderTree.Remove(controlPointHighlight);
+        controlPointHighlight = null;
+      }
+      base.OnGestureCanceling(inputModeEventArgs);
+    }
+
+    protected override void OnGestureFinishing(InputModeEventArgs inputModeEventArgs) {
+      if (controlPointHighlight != null) {
+        ParentInputModeContext?.CanvasControl.RenderTree.Remove(controlPointHighlight);
+        controlPointHighlight = null;
+      }
+      base.OnGestureFinishing(inputModeEventArgs);
+    }
+
+    /// <summary>Registers to bend creation and removal to insert or remove middle bends in the preview edge.</summary>
     private void ConfigureDummyGraph() {
-      var dummyGraph = PreviewGraph;
-      // Register to bend creation and removal events
-      // in order to insert additional bends in the middle of a line segment
-      // or remove them if the defining bend is removed
-      dummyGraph.BendAdded += DummyGraph_BendAdded;
-      dummyGraph.BendRemoved += DummyGraph_BendRemoved;
+      PreviewGraph.BendAdded += OnBendAdded;
+      PreviewGraph.BendRemoved += OnBendRemoved;
     }
 
-    /// <summary>
-    ///   If we have a bezier edge style, we decorate it so that we can also show the control points.
-    /// </summary>
-    /// <remarks>
-    ///   A better solution that would however be more involved would be to show the decoration.
-    /// </remarks>
-    private void ConfigureDummyEdge() {
-      var dummyEdge = PreviewEdge;
-      var simpleEdge = dummyEdge as SimpleEdge;
-      if (simpleEdge != null && dummyEdge.Style is yWorks.Graph.Styles.BezierEdgeStyle) {
-        // By default, the BezierEdgeStyle has no bend creator
-        // However, we want to be able to create bends here
-        // So we insert a BendCreator into the dummy edge's lookup
-        simpleEdge.GetDecorator().BendCreator.AddConstant(new DefaultBendCreator(simpleEdge));
+    private void OnBendRemoved(object? sender, BendEventArgs args) {
+      if (augmenting || !(CreateSmoothSplines && PreviewEdge.Style is Graph.Styles.BezierEdgeStyle)) {
+        return;
       }
-    }
-
-    private void DummyGraph_BendRemoved(object sender, BendEventArgs e) {
-      if (!augmenting) {
-        if (CreateSmoothSplines && PreviewEdge.Style is yWorks.Graph.Styles.BezierEdgeStyle) {
-          augmenting = true;
-          try {
-            if (PreviewEdge.Bends.Any() && PreviewEdge.Bends.Count % 3 == 0) {
-              // Undo bend creation that finished a triple
-              PreviewGraph.Remove(PreviewEdge.Bends.Last());
-            }
-          } finally {
-            augmenting = false;
-          }
+      augmenting = true;
+      try {
+        if (PreviewEdge.Bends.Count > 0 && PreviewEdge.Bends.Count % 3 == 0) {
+          // Undo bend creation that finished a triple.
+          PreviewGraph.Remove(PreviewEdge.Bends[^1]);
         }
+      } finally {
+        augmenting = false;
       }
     }
 
-    private void DummyGraph_BendAdded(object sender, ItemEventArgs<IBend> e) {
-      if (!augmenting) {
-        if (CreateSmoothSplines && PreviewEdge.Style is yWorks.Graph.Styles.BezierEdgeStyle) {
-          augmenting = true;
-          try {
-            if (PreviewEdge.Bends.Count % 3 == 0) {
-              // Bend creation that finishes a control point line
-              // Insert a middle bend
-              var cp0 = PreviewEdge.Bends[PreviewEdge.Bends.Count - 2].Location.ToPointD();
-              var cp2 = e.Item.Location.ToPointD();
-              var cp1 = 0.5 * (cp2 - cp0) + cp0;
-              PreviewGraph.AddBend(PreviewEdge, cp1, PreviewEdge.Bends.Count - 1);
-            }
-          } finally {
-            augmenting = false;
-          }
+    private void OnBendAdded(object? sender, ItemEventArgs<IBend> args) {
+      if (augmenting || !(CreateSmoothSplines && PreviewEdge.Style is Graph.Styles.BezierEdgeStyle)) {
+        return;
+      }
+      augmenting = true;
+      try {
+        if (PreviewEdge.Bends.Count % 3 == 0) {
+          // Bend creation finished a control point line, so insert its middle bend.
+          var cp0 = PreviewEdge.Bends[PreviewEdge.Bends.Count - 2].Location.ToPointD();
+          var cp2 = args.Item.Location.ToPointD();
+          var cp1 = cp0 + (cp2 - cp0) * 0.5;
+          PreviewGraph.AddBend(PreviewEdge, cp1, PreviewEdge.Bends.Count - 1);
         }
+      } finally {
+        augmenting = false;
       }
     }
 
-    /// <summary>
-    ///   Whether we want to create smooth splines.
-    /// </summary>
-    /// <remarks>
-    ///   If <see langword="true"/>, each "bend" creation inserts one of the "exterior" control points for a cubic segment, and the point in the
-    ///   middle is created automatically by the mode. Otherwise, each control point must be explicitly created.
-    ///   Default value is true.
-    /// </remarks>
-    public bool CreateSmoothSplines { get; set; }
-
-    /// <summary>
-    ///   Overridden to pad the number of bends so that there are always 2 mod 3 by duplicating the last location, if
-    ///   necessary.
-    /// </summary>
-    protected override IEdge CreateEdge(
+    /// <summary>Pads the number of bends so that it is always 2 mod 3 by duplicating the last location if necessary.</summary>
+    protected override IEdge? CreateEdge(
         IGraph graph,
         IPortCandidate sourcePortCandidate,
-        IPortCandidate targetPortCandidate) {
-      if (CreateSmoothSplines && PreviewEdge.Style is yWorks.Graph.Styles.BezierEdgeStyle) {
-        if (PreviewEdge.Bends.Any()) {
-          augmenting = true;
-          try {
-            var lastLocation = PreviewEdge.Bends.Last().Location.ToPointD();
-            if (PreviewEdge.Bends.Count % 3 == 1) {
-              // We can reach this branch if we finish the edge creation
-              // without having finished a control point triple
-              // Just duplicate the last bend
-              PreviewGraph.AddBend(PreviewEdge, lastLocation);
-            } else if (PreviewEdge.Bends.Count % 3 == 0) {
-              // Actually, we shouldn't be able to come here
-              // since we always create bend triples and have an initial single control point
-              PreviewGraph.AddBend(PreviewEdge, lastLocation);
-              PreviewGraph.AddBend(PreviewEdge, lastLocation);
-            }
-          } finally {
-            augmenting = false;
+        IPortCandidate? targetPortCandidate) {
+      if (CreateSmoothSplines && PreviewEdge.Style is Graph.Styles.BezierEdgeStyle && PreviewEdge.Bends.Count > 0) {
+        augmenting = true;
+        try {
+          var lastLocation = PreviewEdge.Bends[^1].Location.ToPointD();
+          if (PreviewEdge.Bends.Count % 3 == 1) {
+            // The edge creation can finish before a control point triple is complete; duplicate the last bend.
+            PreviewGraph.AddBend(PreviewEdge, lastLocation);
+          } else if (PreviewEdge.Bends.Count % 3 == 0) {
+            // A bend count divisible by three should not occur, but complete the control point sequence if it does.
+            PreviewGraph.AddBend(PreviewEdge, lastLocation);
+            PreviewGraph.AddBend(PreviewEdge, lastLocation);
           }
+        } finally {
+          augmenting = false;
         }
       }
       return base.CreateEdge(graph, sourcePortCandidate, targetPortCandidate);
+    }
+
+    private sealed class BezierValidBendHitTestable : IHitTestable
+    {
+      private readonly BezierCreateEdgeInputMode inputMode;
+
+      internal BezierValidBendHitTestable(BezierCreateEdgeInputMode inputMode) {
+        this.inputMode = inputMode;
+      }
+
+      public bool IsHit(IInputModeContext context, PointD location) {
+        var previewEdge = inputMode.PreviewEdge;
+        if (previewEdge == null || previewEdge.Bends.Count == 0 ||
+            previewEdge.Style is not yWorks.Graph.Styles.BezierEdgeStyle || !inputMode.CreateSmoothSplines) {
+          return true;
+        }
+        if (previewEdge.Bends.Count < 2) {
+          return true;
+        }
+
+        // Require a minimum length for the control point triple.
+        var lastBend = previewEdge.Bends[^2];
+        return lastBend.GetIndex() % 3 != 0 || (location - lastBend.Location.ToPointD()).VectorLength > 10;
+      }
     }
   }
 }

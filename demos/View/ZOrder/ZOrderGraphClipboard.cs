@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 4.0.
- ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -32,171 +32,150 @@ using System.Linq;
 using yWorks.Controls;
 using yWorks.Graph;
 
-namespace Demo.yFiles.Graph.ZOrder
+namespace yWorks.Demo.ZOrder;
+
+/// <summary>
+///   A <see cref="GraphClipboard"/> that stores the z-order of cut, copied or duplicated nodes and applies it to their
+///   copies.
+/// </summary>
+public sealed class ZOrderGraphClipboard : GraphClipboard
 {
+  private readonly ZOrderSupport zOrderSupport;
+  private readonly GraphControl graphComponent;
+  private readonly Dictionary<INode, int> clipboardZOrders = [];
+  private readonly List<INode> newClipboardItems = [];
+
+  public ZOrderGraphClipboard(ZOrderSupport zOrderSupport) {
+    this.zOrderSupport = zOrderSupport;
+    graphComponent = zOrderSupport.GraphComponent;
+    ToClipboardCopier.NodeCopied += OnCopiedToClipboard;
+    FromClipboardCopier.NodeCopied += OnCopiedFromClipboard;
+    DuplicateCopier.NodeCopied += OnCopiedFromClipboard;
+
+    ItemsCopying += BeforeCopy;
+    ItemsCutting += BeforeCopy;
+    ItemsDuplicating += BeforeDuplicate;
+    ItemsPasting += BeforePaste;
+    ItemsPasted += AfterPaste;
+    ItemsDuplicated += AfterDuplicate;
+  }
+
+  private void OnCopiedToClipboard(object? sender, ItemCopiedEventArgs<INode> args) {
+    // transfer relative z-order from original node to the copy in the clipboard graph
+    clipboardZOrders[args.Copy] = GetClipboardZOrder(args.Original);
+  }
+
+  private void OnCopiedFromClipboard(object? sender, ItemCopiedEventArgs<INode> args) {
+    // store new node to use in ArrangeItems
+    newClipboardItems.Add(args.Copy);
+    // transfer relative z-order from node in the clipboard graph to the new node
+    clipboardZOrders[args.Copy] = GetClipboardZOrder(args.Original);
+  }
+
   /// <summary>
-  ///   A <see cref="GraphClipboard"/> that tries to store the z-order of cut, copied, or duplicated nodes and to apply
-  ///   them for the corresponding duplicated or pasted nodes.
+  ///   Returns the z-order previously stored for <paramref name="node"/>.
+  ///   The z-order stored in <see cref="ZOrderSupport"/> is used as fallback for items currently not in the view.
   /// </summary>
-  public class ZOrderGraphClipboard : GraphClipboard
-  {
-    public ZOrderSupport ZOrderSupport { get; }
+  private int GetClipboardZOrder(INode node) =>
+      clipboardZOrders.TryGetValue(node, out var zOrder) ? zOrder : zOrderSupport.GetZOrder(node);
 
-    public GraphControl GraphControl => ZOrderSupport.GraphControl;
+  private void BeforeCopy(object? sender, GraphClipboardEventArgs args) {
+    // store the relative z-order for cut or copied items
+    StoreInitialZOrder(args.Items.OfType<INode>(), graphComponent.Graph.GetFoldingView());
+  }
 
-    private readonly Dictionary<INode, int> clipboardZOrders = new();
-    private readonly List<INode> newClipboardItems = new();
+  private void BeforeDuplicate(object? sender, GraphClipboardEventArgs args) {
+    // collect new items in the OnCopiedFromClipboard callbacks
+    newClipboardItems.Clear();
+    // store the relative z-order for duplicated items
+    StoreInitialZOrder(args.Items.OfType<INode>(), graphComponent.Graph.GetFoldingView());
+  }
 
-    public ZOrderGraphClipboard(ZOrderSupport zOrderSupport) {
-      ZOrderSupport = zOrderSupport;
-      // copy z-order to item copied to clipboard
-      ToClipboardCopier.NodeCopied += OnItemCopiedToClipboard;
+  private void BeforePaste(object? sender, GraphClipboardEventArgs args) {
+    // collect new items in the OnCopiedFromClipboard callbacks
+    newClipboardItems.Clear();
+  }
 
-      // copy z-order to item copied to graph and collect those copied items
-      FromClipboardCopier.NodeCopied += OnItemCopiedFromClipboard;
-      DuplicateCopier.NodeCopied += OnItemCopiedFromClipboard;
+  private void AfterPaste(object? sender, GraphClipboardEventArgs args) {
+    var targetGraph = graphComponent.Graph;
+    // set final z-orders of new items depending on their new parent group
+    ArrangeItems(newClipboardItems, targetGraph.GetFoldingView());
+  }
 
-      ItemsPasting += BeforePaste;
-      ItemsPasted += AfterPaste;
-      ItemsDuplicated += AfterDuplicate;
+  private void AfterDuplicate(object? sender, GraphClipboardEventArgs args) {
+    var sourceGraph = graphComponent.Graph;
+    // set final z-orders of new items depending on their new parent group
+    ArrangeItems(newClipboardItems, sourceGraph.GetFoldingView());
+  }
+
+  private void StoreInitialZOrder(IEnumerable<INode> sourceItems, IFoldingView? foldingView) {
+    // determine the view items involved in the clipboard operation and sort them by their visual z-order
+    var items = sourceItems.ToList();
+    if (items.Count > 1) {
+      items.Sort((node1, node2) => zOrderSupport.Compare(node1, node2));
     }
-
-    private void OnItemCopiedToClipboard(object sender, ItemCopiedEventArgs<INode> e) {
-      // transfer relative z-order from original node to the copy in the clipboard graph
-      clipboardZOrders[e.Copy] = GetClipboardZOrder(e.Original);
-    }
-
-    private void OnItemCopiedFromClipboard(object sender, ItemCopiedEventArgs<INode> e) {
-      // store new node to use in ArrangeItems
-      newClipboardItems.Add(e.Copy);
-      // transfer relative z-order from node in the clipboard graph to the new node
-      clipboardZOrders[e.Copy] = GetClipboardZOrder(e.Original);
-    }
-
-    /// <summary>
-    ///   Returns the z-order previously stored for the <paramref name="node"/>.
-    /// </summary>
-    /// <remarks>
-    ///   The z-order stored in the <see cref="ZOrderSupport"/> is used as fallback for items currently not in the view.
-    /// </remarks>
-    /// <param name="node">The item to return the z-order for.</param>
-    /// <returns>The z-order of the item.</returns>
-    private int GetClipboardZOrder(INode node) {
-      if (clipboardZOrders.TryGetValue(node, out var zOrder)) {
-        return zOrder;
-      }
-      return ZOrderSupport.GetZOrder(node);
-    }
-
-    protected override void Copy(
-        ClipboardOperationContext copyContext,
-        INode targetRootNode,
-        ItemCopiedCallback itemCopiedCallback) {
-      // store the relative z-order for cut or copied items
-      StoreInitialZOrder(copyContext);
-      base.Copy(copyContext, targetRootNode, itemCopiedCallback);
-    }
-
-    protected override void Duplicate(
-        ClipboardOperationContext duplicateContext,
-        ItemCopiedCallback itemDuplicatedCallback) {
-      // collect new items in the OnItemCopiedFromClipboard callbacks
-      newClipboardItems.Clear();
-      // store the relative z-order for duplicated items
-      StoreInitialZOrder(duplicateContext);
-      base.Duplicate(duplicateContext, itemDuplicatedCallback);
-    }
-
-    private void BeforePaste(object sender, GraphClipboardEventArgs eventArgs) {
-      // collect new items in the OnCopiedFromClipboard callbacks
-      newClipboardItems.Clear();
-    }
-
-    private void AfterPaste(object sender, GraphClipboardEventArgs eventArgs) {
-      var targetGraph = GraphControl.Graph;
-      // set final z-orders of newItems depending on their new parent group
-      ArrangeItems(newClipboardItems, targetGraph.GetFoldingView());
-    }
-
-    private void AfterDuplicate(object sender, GraphClipboardEventArgs eventArgs) {
-      var sourceGraph = GraphControl.Graph;
-      // set final z-orders of newItems depending on their new parent group
-      ArrangeItems(newClipboardItems, sourceGraph.GetFoldingView());
-    }
-
-    private void StoreInitialZOrder(ClipboardOperationContext copyContext) {
-      // determine the view items involved in the clipboard operation and sort them by their visual z-order
-      var items = copyContext.AllViewItems.OfType<INode>().ToList();
-      if (items.Count > 1) {
-        items.Sort(ZOrderSupport);
-      }
-      clipboardZOrders.Clear();
-      var foldingView = copyContext.SourceFoldingView;
-      for (var i = 0; i < items.Count; i++) {
-        // in case of folding store relative z-order for master item as it will be used by the GraphCopier
-        var item = foldingView != null ? foldingView.GetMasterItem(items[i]) : items[i];
+    clipboardZOrders.Clear();
+    for (var i = 0; i < items.Count; i++) {
+      // in case of folding store relative z-order for master item as it will be used by the GraphCopier
+      var item = foldingView != null ? foldingView.GetMasterItem(items[i]) : items[i];
+      if (item != null) {
         clipboardZOrders[item] = i;
       }
     }
+  }
 
-    private void ArrangeItems(List<INode> newMasterItems, IFoldingView foldingView) {
-      // sort new items by the relative z-order transferred in OnCopiedFromClipboard
-      newMasterItems.Sort((node1, node2) => GetClipboardZOrder(node1) - GetClipboardZOrder(node2));
-      var gmm = GraphControl.GraphModelManager;
+  private void ArrangeItems(List<INode> newMasterItems, IFoldingView? foldingView) {
+    // sort new items by the relative z-order transferred in OnCopiedFromClipboard
+    newMasterItems.Sort((node1, node2) => GetClipboardZOrder(node1).CompareTo(GetClipboardZOrder(node2)));
+    var graphModelManager = graphComponent.GraphModelManager;
 
-      // group new nodes by common parent render tree groups of their main render tree elements
-      var itemsNotInView = new List<INode>();
-      var groupToItems = new Dictionary<IRenderTreeGroup, List<INode>>();
-      foreach (var masterItem in newMasterItems) {
-        var viewItem = foldingView != null ? foldingView.GetViewItem(masterItem) : masterItem;
-        if (viewItem == null) {
-          // new item is not in view (e.g. child of a collapsed folder node)
+    // group new nodes by common parent render tree groups of their main render tree element
+    var itemsNotInView = new List<INode>();
+    var groupToItems = new Dictionary<IRenderTreeGroup, List<INode>>();
+    foreach (var masterItem in newMasterItems) {
+      var viewItem = foldingView != null ? foldingView.GetViewItem(masterItem) : masterItem;
+      if (viewItem == null) {
+        // new item is not in view (e.g. child of a collapsed folder node)
+        itemsNotInView.Add(masterItem);
+      } else {
+        var renderTreeElement = graphModelManager.GetMainRenderTreeElement(viewItem);
+        if (renderTreeElement?.Parent is not IRenderTreeGroup renderTreeGroup) {
           itemsNotInView.Add(masterItem);
         } else {
-          var rte = gmm.GetMainRenderTreeElement(viewItem);
-          if (rte == null) {
-            itemsNotInView.Add(masterItem);
-          } else {
-            var rteParent = rte.Parent;
-            List<INode> newNodesInGroup;
-            if (!groupToItems.TryGetValue(rteParent, out newNodesInGroup)) {
-              newNodesInGroup = new List<INode>();
-              groupToItems[rteParent] = newNodesInGroup;
-            }
-            newNodesInGroup.Add(viewItem);
+          if (!groupToItems.TryGetValue(renderTreeGroup, out var newNodesInGroup)) {
+            newNodesInGroup = [];
+            groupToItems.Add(renderTreeGroup, newNodesInGroup);
           }
+          newNodesInGroup.Add(viewItem);
         }
       }
-      // set z-order items not in view just in ascending order
-      for (var i = 0; i < itemsNotInView.Count; i++) {
-        ZOrderSupport.SetZOrder(itemsNotInView[i], i);
+    }
+    // set z-order items not in view just in ascending order
+    for (var i = 0; i < itemsNotInView.Count; i++) {
+      zOrderSupport.SetZOrder(itemsNotInView[i], i);
+    }
+
+    // for each common parent set ascending z-orders for new nodes
+    foreach (var pair in groupToItems) {
+      var itemsInGroup = pair.Value;
+      // find the top-most node that wasn't just added and lookup its z-order
+      INode? topNodeNotJustAdded = null;
+      var walker = pair.Key.Last;
+      while (walker != null) {
+        if (graphModelManager.GetModelItem(walker) is INode node && !itemsInGroup.Contains(node)) {
+          topNodeNotJustAdded = node;
+          break;
+        }
+        walker = walker.Previous;
       }
-
-      // for each common parent set ascending z-orders for new nodes
-      foreach (var groupItemsPair in groupToItems) {
-        var itemsInGroup = groupItemsPair.Value;
-
-        // find the top-most node that was not just added and lookup its z-order
-        INode topNodeNotJustAdded = null;
-        var walker = groupItemsPair.Key.Last;
-        while (walker != null) {
-          var node = gmm.GetModelItem(walker) as INode;
-          if (node != null && !itemsInGroup.Contains(node)) {
-            topNodeNotJustAdded = node;
-            break;
-          }
-          walker = walker.Previous;
-        }
-        var nextZOrder = topNodeNotJustAdded != null ? GetClipboardZOrder(topNodeNotJustAdded) + 1 : 0;
-
-        // set new z-orders starting from nextZOrder
-        foreach (var node in itemsInGroup) {
-          ZOrderSupport.SetZOrder(node, nextZOrder++);
-        }
-        // update the view using the new z-orders
-        foreach (var node in itemsInGroup) {
-          ZOrderSupport.Update(node);
-        }
+      var nextZOrder = topNodeNotJustAdded != null ? GetClipboardZOrder(topNodeNotJustAdded) + 1 : 0;
+      // set new z-orders starting from nextZOrder
+      foreach (var node in itemsInGroup) {
+        zOrderSupport.SetZOrder(node, nextZOrder++);
+      }
+      // update the view using the new z-orders
+      foreach (var node in itemsInGroup) {
+        zOrderSupport.Update(node);
       }
     }
   }

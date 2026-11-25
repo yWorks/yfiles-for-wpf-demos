@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 4.0.
- ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -33,23 +33,21 @@ using System.Windows;
 using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Shapes;
-using Demo.yFiles.Graph.Viewer.Xaml;
 using yWorks.Controls;
+using yWorks.Demo.GraphViewer.Xaml;
 using yWorks.Geometry;
 using yWorks.Graph.LabelModels;
 using yWorks.Graph.Styles;
 using yWorks.Utils;
 
-namespace Demo.yFiles.IO.GraphML.Compat.Styles
+namespace yWorks.Demo.GraphMLCompat.Styles
 {
   [ContentProperty("Wrapped")]
   public class ShadowNodeStyleDecoratorExtension : MarkupExtension
   {
     public INodeStyle Wrapped { get; set; } = null;
 
-    public override object ProvideValue(IServiceProvider serviceProvider) {
-      return new ShadowNodeStyleDecorator(Wrapped);
-    }
+    public override object ProvideValue(IServiceProvider serviceProvider) => new ShadowNodeStyleDecorator(Wrapped);
   }
 
   public class GroupNodeStyleExtension : MarkupExtension
@@ -108,35 +106,34 @@ namespace Demo.yFiles.IO.GraphML.Compat.Styles
 
     public Pen Pen { get; set; } = null;
 
-    public override object ProvideValue(IServiceProvider serviceProvider) {
-      return new GroupNodeStyle {
-          ContentAreaBrush = ContentAreaBrush,
-          ContentAreaPadding = ContentAreaInsets,
-          CornerRadius = CornerRadius,
-          DrawShadow = DrawShadow,
-          FolderIcon = FolderIcon,
-          GroupIcon = GroupIcon,
-          HitTransparentContentArea = HitTransparentContentArea,
-          IconBackgroundBrush = IconBackgroundBrush,
-          IconBackgroundShape = IconBackgroundShape,
-          IconForegroundBrush = IconForegroundBrush,
-          IconOffset = IconOffset,
-          IconPosition = IconPosition,
-          IconSize = IconSize,
-          MinimumContentAreaSize = MinimumContentAreaSize,
-          RenderTransparentContentArea = RenderTransparentContentArea,
-          ShowFolderContentArea = ShowFolderContentArea,
-          Pen = Pen,
-          TabBackgroundBrush = TabBackgroundBrush,
-          TabHeight = TabHeight,
-          TabPadding = TabInset,
-          TabPosition = TabPosition,
-          TabSizePolicy = TabSizePolicy,
-          TabSlope = TabSlope,
-          TabWidth = TabWidth,
-          TabBrush = TabBrush
-      };
-    }
+    public override object ProvideValue(IServiceProvider serviceProvider) =>
+        new GroupNodeStyle {
+            ContentAreaBrush = ContentAreaBrush,
+            ContentAreaPadding = ContentAreaInsets,
+            CornerRadius = CornerRadius,
+            DrawShadow = DrawShadow,
+            FolderIcon = FolderIcon,
+            GroupIcon = GroupIcon,
+            HitTransparentContentArea = HitTransparentContentArea,
+            IconBackgroundBrush = IconBackgroundBrush,
+            IconBackgroundShape = IconBackgroundShape,
+            IconForegroundBrush = IconForegroundBrush,
+            IconOffset = IconOffset,
+            IconPosition = IconPosition,
+            IconSize = IconSize,
+            MinimumContentAreaSize = MinimumContentAreaSize,
+            RenderTransparentContentArea = RenderTransparentContentArea,
+            ShowFolderContentArea = ShowFolderContentArea,
+            Pen = Pen,
+            TabBackgroundBrush = TabBackgroundBrush,
+            TabHeight = TabHeight,
+            TabPadding = TabInset,
+            TabPosition = TabPosition,
+            TabSizePolicy = TabSizePolicy,
+            TabSlope = TabSlope,
+            TabWidth = TabWidth,
+            TabBrush = TabBrush
+        };
   }
 
   [ContentProperty("Wrapped")]
@@ -152,35 +149,36 @@ namespace Demo.yFiles.IO.GraphML.Compat.Styles
     public INodeStyle Wrapped { get; set; }
 
 
-    public override object ProvideValue(IServiceProvider serviceProvider) {
-      return new CollapsibleNodeStyleDecorator {
-          Padding = Insets, WrappedStyle = Wrapped ?? new ShapeNodeStyle(), ButtonPlacement = ButtonPlacement
-      };
-    }
+    public override object ProvideValue(IServiceProvider serviceProvider) =>
+        new CollapsibleNodeStyleDecorator {
+            Padding = Insets,
+            WrappedStyle = Wrapped ?? new ShapeNodeStyle(),
+            ButtonPlacement = ButtonPlacement
+        };
   }
 
   public enum ShapeNodeShape
   {
-    Rectangle = yWorks.Graph.Styles.ShapeNodeShape.Rectangle,
-    RoundRectangle = yWorks.Graph.Styles.ShapeNodeShape.RoundRectangle,
-    Ellipse = yWorks.Graph.Styles.ShapeNodeShape.Ellipse,
-    Triangle = yWorks.Graph.Styles.ShapeNodeShape.Triangle,
-    Triangle2 = yWorks.Graph.Styles.ShapeNodeShape.TrianglePointingDown,
+    Rectangle = Graph.Styles.ShapeNodeShape.Rectangle,
+    RoundRectangle = Graph.Styles.ShapeNodeShape.RoundRectangle,
+    Ellipse = Graph.Styles.ShapeNodeShape.Ellipse,
+    Triangle = Graph.Styles.ShapeNodeShape.Triangle,
+    Triangle2 = Graph.Styles.ShapeNodeShape.TrianglePointingDown,
     ShearedRectangle = 100,
     ShearedRectangle2 = 101,
     Trapez = 102,
     Trapez2 = 103,
     Star5 = 104,
-    Star6 = yWorks.Graph.Styles.ShapeNodeShape.Star6,
-    Star8 = yWorks.Graph.Styles.ShapeNodeShape.Star8,
+    Star6 = Graph.Styles.ShapeNodeShape.Star6,
+    Star8 = Graph.Styles.ShapeNodeShape.Star8,
     FatArrow = 105,
     FatArrow2 = 106,
-    Diamond = yWorks.Graph.Styles.ShapeNodeShape.Diamond,
-    Octagon = yWorks.Graph.Styles.ShapeNodeShape.Octagon,
-    Hexagon = yWorks.Graph.Styles.ShapeNodeShape.Hexagon,
-    Hexagon2 = yWorks.Graph.Styles.ShapeNodeShape.HexagonStanding,
+    Diamond = Graph.Styles.ShapeNodeShape.Diamond,
+    Octagon = Graph.Styles.ShapeNodeShape.Octagon,
+    Hexagon = Graph.Styles.ShapeNodeShape.Hexagon,
+    Hexagon2 = Graph.Styles.ShapeNodeShape.HexagonStanding,
     Star5Up = 107,
-    Pill = yWorks.Graph.Styles.ShapeNodeShape.Pill
+    Pill = Graph.Styles.ShapeNodeShape.Pill
   }
 
   public class ShapeNodeStyleExtension : MarkupExtension
@@ -207,14 +205,17 @@ namespace Demo.yFiles.IO.GraphML.Compat.Styles
           var ar = ShapeNodeStyles.GetIntrinsicAspectRatio(Shape);
 
           return new GeneralPathNodeStyle {
-              Brush = Brush, AspectRatio = KeepIntrinsicAspectRatio ? ar : 0, Pen = Pen, Path = path
+              Brush = Brush,
+              AspectRatio = KeepIntrinsicAspectRatio ? ar : 0,
+              Pen = Pen,
+              Path = path
           };
         default:
           return new ShapeNodeStyle {
               Brush = Brush,
               KeepIntrinsicAspectRatio = KeepIntrinsicAspectRatio,
               Pen = Pen,
-              Shape = (yWorks.Graph.Styles.ShapeNodeShape) (int) Shape
+              Shape = (Graph.Styles.ShapeNodeShape) (int) Shape
           };
       }
     }
@@ -234,28 +235,27 @@ namespace Demo.yFiles.IO.GraphML.Compat.Styles
 
     public IContextLookup ContextLookup { get; set; } = Lookups.EmptyContextLookup;
 
-    public override object ProvideValue(IServiceProvider serviceProvider) {
-      return new NodeControlNodeStyle {
-          Padding = Insets,
-          ContextLookup = ContextLookup,
-          MinimumSize = MinimumSize,
-          OutlineShape = OutlineShape,
-          StyleTag = StyleTag,
-          StyleResourceKey = StyleResourceKey
-      };
-    }
+    public override object ProvideValue(IServiceProvider serviceProvider) =>
+        new NodeControlNodeStyle {
+            Padding = Insets,
+            ContextLookup = ContextLookup,
+            MinimumSize = MinimumSize,
+            OutlineShape = OutlineShape,
+            StyleTag = StyleTag,
+            StyleResourceKey = StyleResourceKey
+        };
   }
 
   public enum ArrowType
   {
-    Default = yWorks.Graph.Styles.ArrowType.Stealth,
-    Simple = yWorks.Graph.Styles.ArrowType.Open,
-    Short = yWorks.Graph.Styles.ArrowType.Stealth + 100,
-    Diamond = yWorks.Graph.Styles.ArrowType.Diamond,
-    None = yWorks.Graph.Styles.ArrowType.None,
-    Circle = yWorks.Graph.Styles.ArrowType.Ellipse,
-    Cross = yWorks.Graph.Styles.ArrowType.Cross,
-    Triangle = yWorks.Graph.Styles.ArrowType.Triangle
+    Default = Graph.Styles.ArrowType.Stealth,
+    Simple = Graph.Styles.ArrowType.Open,
+    Short = Graph.Styles.ArrowType.Stealth + 100,
+    Diamond = Graph.Styles.ArrowType.Diamond,
+    None = Graph.Styles.ArrowType.None,
+    Circle = Graph.Styles.ArrowType.Ellipse,
+    Cross = Graph.Styles.ArrowType.Cross,
+    Triangle = Graph.Styles.ArrowType.Triangle
   }
 
   public class Arrows
@@ -330,11 +330,10 @@ namespace Demo.yFiles.IO.GraphML.Compat.Styles
       }
     }
 
-    internal static Arrow CreateArrow(ArrowType type, Pen pen, Brush brush, double scale = 1, double cropLength = 0) {
-      return new Arrow(cropLength : cropLength, brush : brush, lengthScale : scale * GetLengthScale(type), pen : pen,
-          type : (yWorks.Graph.Styles.ArrowType) (type == ArrowType.Short ? type - 100 : type),
-          widthScale : scale * GetWidthScale(type));
-    }
+    internal static Arrow CreateArrow(ArrowType type, Pen pen, Brush brush, double scale = 1, double cropLength = 0) =>
+        new(cropLength: cropLength, brush: brush, lengthScale: scale * GetLengthScale(type), pen: pen,
+            type: (Graph.Styles.ArrowType) (type == ArrowType.Short ? type - 100 : type),
+            widthScale: scale * GetWidthScale(type));
 
     public override object ProvideValue(IServiceProvider serviceProvider) {
       var pen = Pen;
@@ -349,26 +348,27 @@ namespace Demo.yFiles.IO.GraphML.Compat.Styles
 
   public enum TextWrappingShape
   {
-    Rectangle = yWorks.Graph.Styles.TextWrappingShape.Rectangle,
-    RoundRectangle = yWorks.Graph.Styles.TextWrappingShape.RoundRectangle,
-    Ellipse = yWorks.Graph.Styles.TextWrappingShape.Ellipse,
-    Triangle = yWorks.Graph.Styles.TextWrappingShape.Triangle,
-    Triangle2 = yWorks.Graph.Styles.TextWrappingShape.TrianglePointingDown,
-    ShearedRectangle = yWorks.Graph.Styles.TextWrappingShape.Rectangle,
-    ShearedRectangle2 = yWorks.Graph.Styles.TextWrappingShape.Rectangle,
-    Trapez = yWorks.Graph.Styles.TextWrappingShape.Rectangle,
-    Trapez2 = yWorks.Graph.Styles.TextWrappingShape.Rectangle,
-    Diamond = yWorks.Graph.Styles.TextWrappingShape.Diamond,
-    Octagon = yWorks.Graph.Styles.TextWrappingShape.Octagon,
-    Hexagon = yWorks.Graph.Styles.TextWrappingShape.Hexagon,
-    Hexagon2 = yWorks.Graph.Styles.TextWrappingShape.Hexagon,
-    Pill = yWorks.Graph.Styles.TextWrappingShape.Pill,
-    LabelShape = yWorks.Graph.Styles.TextWrappingShape.LabelShape
+    Rectangle = Graph.Styles.TextWrappingShape.Rectangle,
+    RoundRectangle = Graph.Styles.TextWrappingShape.RoundRectangle,
+    Ellipse = Graph.Styles.TextWrappingShape.Ellipse,
+    Triangle = Graph.Styles.TextWrappingShape.Triangle,
+    Triangle2 = Graph.Styles.TextWrappingShape.TrianglePointingDown,
+    ShearedRectangle = Graph.Styles.TextWrappingShape.Rectangle,
+    ShearedRectangle2 = Graph.Styles.TextWrappingShape.Rectangle,
+    Trapez = Graph.Styles.TextWrappingShape.Rectangle,
+    Trapez2 = Graph.Styles.TextWrappingShape.Rectangle,
+    Diamond = Graph.Styles.TextWrappingShape.Diamond,
+    Octagon = Graph.Styles.TextWrappingShape.Octagon,
+    Hexagon = Graph.Styles.TextWrappingShape.Hexagon,
+    Hexagon2 = Graph.Styles.TextWrappingShape.Hexagon,
+    Pill = Graph.Styles.TextWrappingShape.Pill,
+    Squircle = Graph.Styles.TextWrappingShape.Squircle,
+    LabelShape = Graph.Styles.TextWrappingShape.LabelShape
   }
 
   public class DefaultLabelStyleExtension : MarkupExtension
   {
-    private static readonly Typeface defaultFont = new Typeface("Arial");
+    private static readonly Typeface defaultFont = new("Arial");
 
     public Brush BackgroundBrush { get; set; }
 
@@ -412,31 +412,30 @@ namespace Demo.yFiles.IO.GraphML.Compat.Styles
 
     public SizeD MaximumSize { get; set; } = SizeD.Infinite;
 
-    public override object ProvideValue(IServiceProvider serviceProvider) {
-      return new LabelStyle {
-          AutoFlip = AutoFlip,
-          BackgroundBrush = BackgroundBrush,
-          BackgroundPen = BackgroundPen,
-          Typeface = Typeface,
-          TextAlignment = TextAlignment,
-          MaximumSize = MaximumSize,
-          MinimumSize = MinimumSize,
-          Padding = Insets,
-          Shape = Shape,
-          TextBrush = TextBrush,
-          TextSize = TextSize,
-          TextWrappingPadding = TextWrappingPadding,
-          TextWrappingShape = (yWorks.Graph.Styles.TextWrappingShape) TextWrappingShape,
-          VerticalTextAlignment = VerticalTextAlignment,
-          TextWrapping = TextWrapping,
-          Culture = Culture,
-          ClipText = ClipText,
-          FlowDirection = FlowDirection,
-          NumberSubstitution = NumberSubstitution,
-          TextDecorations = TextDecorations,
-          TextTrimming = TextTrimming
-      };
-    }
+    public override object ProvideValue(IServiceProvider serviceProvider) =>
+        new LabelStyle {
+            AutoFlip = AutoFlip,
+            BackgroundBrush = BackgroundBrush,
+            BackgroundPen = BackgroundPen,
+            Typeface = Typeface,
+            TextAlignment = TextAlignment,
+            MaximumSize = MaximumSize,
+            MinimumSize = MinimumSize,
+            Padding = Insets,
+            Shape = Shape,
+            TextBrush = TextBrush,
+            TextSize = TextSize,
+            TextWrappingPadding = TextWrappingPadding,
+            TextWrappingShape = (Graph.Styles.TextWrappingShape) TextWrappingShape,
+            VerticalTextAlignment = VerticalTextAlignment,
+            TextWrapping = TextWrapping,
+            Culture = Culture,
+            ClipText = ClipText,
+            FlowDirection = FlowDirection,
+            NumberSubstitution = NumberSubstitution,
+            TextDecorations = TextDecorations,
+            TextTrimming = TextTrimming
+        };
   }
 
   [ContentProperty("Wrapped")]
@@ -446,9 +445,8 @@ namespace Demo.yFiles.IO.GraphML.Compat.Styles
 
     public SizeD IconSize { get; set; } = SizeD.Empty;
 
-    public ILabelModelParameter IconPlacement { get; set; } = new ExteriorNodeLabelModel {
-        Margins = InsetsD.Empty
-    }.CreateParameter(ExteriorNodeLabelModel.Position.Left);
+    public ILabelModelParameter IconPlacement { get; set; } =
+      new ExteriorNodeLabelModel { Margins = InsetsD.Empty }.CreateParameter(ExteriorNodeLabelModel.Position.Left);
 
     public ILabelStyle Wrapped { get; set; } = new LabelStyle();
 
@@ -456,16 +454,15 @@ namespace Demo.yFiles.IO.GraphML.Compat.Styles
 
     public bool AutoFlip { get; set; } = true;
 
-    public override object ProvideValue(IServiceProvider serviceProvider) {
-      return new IconLabelStyle {
-          AutoFlip = AutoFlip,
-          IconPlacement = IconPlacement,
-          IconSize = IconSize,
-          WrappedStyle = Wrapped,
-          WrappedStylePadding = WrappedInsets,
-          Icon = Icon
-      };
-    }
+    public override object ProvideValue(IServiceProvider serviceProvider) =>
+        new IconLabelStyle {
+            AutoFlip = AutoFlip,
+            IconPlacement = IconPlacement,
+            IconSize = IconSize,
+            WrappedStyle = Wrapped,
+            WrappedStylePadding = WrappedInsets,
+            Icon = Icon
+        };
   }
 
   public class NodeStyleLabelStyleAdapterExtension : MarkupExtension
@@ -478,10 +475,12 @@ namespace Demo.yFiles.IO.GraphML.Compat.Styles
 
     public InsetsD LabelStyleInsets { get; set; }
 
-    public override object ProvideValue(IServiceProvider serviceProvider) {
-      return new NodeStyleLabelStyleAdapter {
-          AutoFlip = AutoFlip, LabelStyle = LabelStyle, LabelStylePadding = LabelStyleInsets, NodeStyle = NodeStyle
-      };
-    }
+    public override object ProvideValue(IServiceProvider serviceProvider) =>
+        new NodeStyleLabelStyleAdapter {
+            AutoFlip = AutoFlip,
+            LabelStyle = LabelStyle,
+            LabelStylePadding = LabelStyleInsets,
+            NodeStyle = NodeStyle
+        };
   }
 }

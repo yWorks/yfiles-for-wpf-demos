@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 4.0.
- ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -29,12 +29,9 @@
 
 using System;
 using System.Text.RegularExpressions;
-using System.Windows;
+using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Media;
-using Demo.yFiles.Option.Constraint;
-using Demo.yFiles.Option.Handler;
-using Demo.yFiles.Toolkit;
 using yWorks.Controls;
 using yWorks.Controls.Input;
 using yWorks.Geometry;
@@ -42,308 +39,179 @@ using yWorks.Graph;
 using yWorks.Graph.LabelModels;
 using yWorks.Graph.Styles;
 
-namespace Demo.yFiles.Graph.Input.LabelEditing
+namespace yWorks.Demo.LabelEditing
 {
-  /// <summary>Shows customizations of the interactive label editing.</summary>
-  /// <remarks>
-  ///   It shows the following features:
-  ///   <list type="bullet">
-  ///     <item><see cref="EditLabelInputMode"/> properties</item>
-  ///     <item>Input validation</item>
-  ///     <item>Instant typing</item>
-  ///     <item>Custom <see cref="IEditLabelHelper"/></item>
-  ///     <item>Creating and editing of labels that are not part of the graph structure</item>
-  ///   </list>
-  /// </remarks>
-  public partial class LabelEditingDemo
+  /// <summary>
+  ///   Shows customizations of the interactive label editing.
+  /// </summary>
+  [Demo("label-editing", "input", "Label Editing", Summary = "Shows customizations of the interactive label editing.",
+      Tags = ["interaction", "label"], Keywords = ["texts", "validation"])]
+  public sealed partial class LabelEditingDemo
   {
-    /// <summary>
-    ///   The default pattern for label validation.
-    /// </summary>
+    /// <summary>The default pattern for label validation.</summary>
     private const string DefaultValidationPattern = @"^\w+@\w+\.\w+$";
 
-    /// <summary>
-    ///   Whether label text validation is used at all.
-    /// </summary>
-    private bool validationEnabled;
-
-    /// <summary>
-    ///   Precompiled <see cref="Regex"/> matcher from the validation pattern.
-    /// </summary>
+    /// <summary>Precompiled Regex matcher from the validation pattern.</summary>
     private Regex validationPattern = new(DefaultValidationPattern);
 
-    /// <summary>
-    ///   Whether to use custom label helpers
-    /// </summary>
-    private bool customHelperEnabled;
+    private readonly LabelEditingSettings settings = new();
 
-    private DemoTextEditorInputMode textEditorInputMode;
+    /// <summary>Wires up the settings panel and its change handlers.</summary>
+    public LabelEditingDemo() {
+      InitializeComponent();
+      SettingsPanel.DataContext = settings;
+      settings.PropertyChanged += (_, args) => {
+        if (args.PropertyName == nameof(LabelEditingSettings.ValidationPattern)) {
+          try {
+            validationPattern = new Regex(settings.ValidationPattern);
+          } catch (ArgumentException) {
+            // invalid or unfinished regex, ignore
+          }
+        }
+      };
+      settings.SettingChanged += (_, _) => UpdateInputModeSettings((GraphEditorInputMode) GraphControl.InputMode!);
+    }
 
-    /// <summary>
-    ///   Simple label for the page header.
-    /// </summary>
-    private SimpleLabel pageHeader;
+    private GraphControl GraphControl => graphControl;
 
-    /// <summary>
-    ///   Initializes the input modes.
-    /// </summary>
-    /// <remarks>
-    ///   Calls <see cref="CreateEditorMode"/> and registers
-    ///   the result as the <see cref="CanvasControl.InputMode"/>.
-    /// </remarks>
-    protected virtual void InitializeInputModes() {
-      graphControl.InputMode = CreateEditorMode();
+    private IGraph Graph => GraphControl.Graph;
+
+    protected override void Initialize() {
+      DemoStyles.InitDemoStyles(Graph);
+      Graph.NodeDefaults.Size = new SizeD(100, 100);
+
+      InitializeInputModes();
+      CreateSampleGraph();
+      GraphControl.FitGraphBounds();
+    }
+
+    /// <summary>Initializes the input modes for this demo.</summary>
+    private void InitializeInputModes() {
+      GraphControl.InputMode = CreateEditorMode();
 
       // Custom label helpers
       RegisterCustomEditLabelHelper();
-
-      // Create a label for the page header
-      pageHeader = PageHeaderSupport.CreatePageHeader(GraphControl);
     }
 
     /// <summary>
-    ///   Creates the default input mode for the GraphControl,
-    ///   a <see cref="GraphEditorInputMode"/>.
+    ///   Creates the default input mode for the <see cref="GraphControl"/>, a <see cref="GraphEditorInputMode"/>.
     /// </summary>
     /// <remarks>
     ///   This implementation configures label text validation.
     /// </remarks>
-    /// <returns>A new GraphEditorInputMode instance</returns>
-    protected virtual IInputMode CreateEditorMode() {
-      var graphEditorInputMode = new GraphEditorInputMode { AllowEditLabelOnTyping = false };
+    /// <returns>A new <see cref="GraphEditorInputMode"/> instance.</returns>
+    private GraphEditorInputMode CreateEditorMode() {
+      var graphEditorInputMode = new GraphEditorInputMode();
 
       // Configure label text validation
       // Note that by default, no visual feedback is provided, the text is just not changed
-      var editLabelInputMode = graphEditorInputMode.EditLabelInputMode;
-
-      editLabelInputMode.ValidateLabelText +=
-          (_, e) => {
-            if (e.Label == pageHeader) {
-              // Page header may not be empty, regardless of whether validation is enabled or not
-              e.Cancel = e.NewText == string.Empty;
-            } else {
-              // label must match the pattern
-              e.Cancel = validationEnabled && !validationPattern.IsMatch(e.NewText);
-            }
-          };
-      // The label size for the dummy label must be updated externally
-      editLabelInputMode.LabelEdited += (_, e) => {
-        if (e.Item == pageHeader) {
-          pageHeader.AdoptPreferredSizeFromStyle();
+      graphEditorInputMode.EditLabelInputMode.ValidateLabelText += (_, args) => {
+        // label must match the pattern
+        args.Cancel = !IsValidText(args.NewText);
+        // alternatively, ValidatedText also accepts asynchronous calls e.g.:
+        if (false) {
+          args.ValidatedText = ValidateTextAsync(args.NewText)!;
         }
       };
+      graphEditorInputMode.EditLabelInputMode.TextEditorInputModeConfigurator = (_, mode, _) =>
+          ConfigureTextEditorInputMode(mode);
 
-      // Instant typing requires a custom TextEditorInputMode - it's safe to use it globally, though
-      editLabelInputMode.TextEditorInputMode = textEditorInputMode = new DemoTextEditorInputMode();
-
-      // Validate the label text live on typing, Color the text box if validation fails
-      var textBox = textEditorInputMode.TextBox;
-      textBox.KeyUp += (_, e) => {
-        if (validationEnabled && !validationPattern.IsMatch(textBox.Text)) {
-          textBox.Background = Brushes.LightPink;
-        } else {
-          textBox.ClearValue(Control.BackgroundProperty);
-        }
-      };
+      UpdateInputModeSettings(graphEditorInputMode);
 
       return graphEditorInputMode;
     }
 
     /// <summary>
-    ///   Register custom label helpers for nodes and node labels
+    ///   Validates the new text.
     /// </summary>
+    /// <param name="newText">The new text to validate.</param>
+    private bool IsValidText(string newText) => !settings.ValidationEnabled || validationPattern.IsMatch(newText);
+
+    /// <summary>
+    ///   Validates the new text asynchronously and returns null, if the text is invalid.
+    /// </summary>
+    /// <param name="newText">The new text to validate.</param>
+    private async Task<string?> ValidateTextAsync(string newText) {
+      // simulate awaiting a database access for validation
+      await FakeDatabaseAccess(2000);
+      // finally validate the text
+      return IsValidText(newText) ? newText : null;
+    }
+
+    /// <summary>Fakes an asynchronous database access using a timeout.</summary>
+    /// <param name="time">The time to set the timeout to.</param>
+    private static async Task FakeDatabaseAccess(int time) {
+      await Task.Delay(time);
+    }
+
+    /// <summary>Registers custom label helpers for nodes and node labels.</summary>
     private void RegisterCustomEditLabelHelper() {
       var firstLabelStyle = new LabelStyle { TextBrush = Brushes.Firebrick };
+      var decorator = Graph.GetDecorator();
 
-      // Register the helper for both nodes and edges, but only when the global flag ist set.
-      // We can use more or less the same implementation for both items, so we just change the item to which the helper is bound.
-      // The decorator on nodes is called when a label should be added or the label does not provide its own label helper.
-      GraphControl.Graph.GetDecorator().Nodes.EditLabelHelper.AddFactory(_ => customHelperEnabled,
-          node => new MyEditLabelHelper(node, null, ExteriorNodeLabelModel.Top, firstLabelStyle));
-      // The decorator on labels is called when a label is edited
-      GraphControl.Graph.GetDecorator().Labels.EditLabelHelper.AddFactory(_ => customHelperEnabled,
-          label => new MyEditLabelHelper(null, label, ExteriorNodeLabelModel.Top, firstLabelStyle));
+      // Register the helper for both nodes and labels, but only when the global flag is set.
+      // We can use more or less the same implementation for both items, so we just change the item to which the helper
+      // is bound. The decorator on nodes is called when a label should be added or the label does not provide its own
+      // label helper.
+      decorator.Nodes.EditLabelHelper.AddFactory(_ => settings.CustomLabelHelper,
+          node => new CustomEditLabelHelper(node, null, ExteriorNodeLabelModel.Top, firstLabelStyle));
+
+      // The decorator on labels is called when a label is edited.
+      decorator.Labels.EditLabelHelper.AddFactory(_ => settings.CustomLabelHelper,
+          label => new CustomEditLabelHelper(null, label, ExteriorNodeLabelModel.Top, firstLabelStyle));
     }
 
-    /// <summary>
-    ///   Custom TextEditorInputMode that can place the text box in view coordinates.
-    /// </summary>
-    public sealed class DemoTextEditorInputMode : TextEditorInputMode
-    {
-      #region Overrides of TextEditorInputMode
+    /// <summary>Applies the interaction-panel settings to the input mode.</summary>
+    private void UpdateInputModeSettings(GraphEditorInputMode graphEditorInputMode) {
+      graphEditorInputMode.AllowAddLabel = settings.LabelCreation;
+      graphEditorInputMode.AllowEditLabel = settings.LabelEditing;
+      graphEditorInputMode.AllowEditLabelOnTyping = settings.InstantTyping;
+      graphEditorInputMode.EditLabelInputMode.HideLabelDuringEditing = settings.HideLabel;
 
-      protected override void EnsureVisible() {
-        if (!ShowInViewCoordinatesProperty) {
-          // If we set this property
-          base.EnsureVisible();
-        }
+      var editableItems = GraphItemTypes.None;
+      if (settings.NodesEnabled) {
+        editableItems |= GraphItemTypes.Node | GraphItemTypes.NodeLabel;
       }
-
-      #endregion
-
-      /// <summary>
-      ///   Overridden to delegate to the new property <see cref="ShowInViewCoordinatesProperty"/>.
-      /// </summary>
-      protected override bool ShowInViewCoordinates(SizeD textBoxSize) {
-        return ShowInViewCoordinatesProperty;
+      if (settings.EdgesEnabled) {
+        editableItems |= GraphItemTypes.Edge | GraphItemTypes.EdgeLabel;
       }
-
-      /// <summary>
-      ///   Determines whether the text box should be displayed in the view coordinate system instead
-      ///   of in the world coordinate system.
-      /// </summary>
-      public bool ShowInViewCoordinatesProperty { get; set; }
+      graphEditorInputMode.LabelEditableItems = editableItems;
     }
 
-    /// <summary>
-    /// Starts editing of the page header.
-    /// </summary>
-    private void EditPageHeader(object sender, RoutedEventArgs e) {
-      var graphEditorInputMode = (GraphEditorInputMode) GraphControl.InputMode!;
-      graphEditorInputMode.StartLabelEditing(pageHeader);
+    /// <summary>Configures the editor and adds visual feedback for invalid label text.</summary>
+    private void ConfigureTextEditorInputMode(TextEditorInputMode mode) {
+      var textBox = mode.TextBox;
+
+      TextBoxProperties.SetCustomHelper(textBox, false);
+
+      RefreshLabelEditorFeedback(textBox);
+
+      textBox.TextChanged -= OnTextBoxTextChanged;
+      textBox.TextChanged += OnTextBoxTextChanged;
     }
 
-    #region Option handler
-
-    /// <summary>
-    ///   Initializes the option handler for the label editing properties.
-    /// </summary>
-    private void InitializeOptionHandler() {
-      var optionHandler = CreateOptionHandler();
-      editorControl.OptionHandler = optionHandler;
-      editorControl.IsAutoAdopt = true;
-      editorControl.IsAutoCommit = true;
+    private void OnTextBoxTextChanged(object sender, TextChangedEventArgs args) {
+      // Validate the text and apply the invalid background while the editor is open.
+      RefreshLabelEditorFeedback((TextBox) sender);
     }
 
-    /// <summary>
-    ///   Creates the option handler for the label editing properties.
-    /// </summary>
-    /// <remarks>
-    ///   These options either delegate directly to properties of <see cref="GraphEditorInputMode"/> or set some global flag
-    ///   that is evaluated elsewhere.
-    /// </remarks>
-    private OptionHandler CreateOptionHandler() {
-      var graphEditorInputMode = (GraphEditorInputMode) GraphControl.InputMode!;
-
-      var handler = new OptionHandler("Labeling Options");
-
-      var currentGroup = handler.AddGroup("General");
-      var labelAddItem = currentGroup.AddBool("Label Creation", true);
-      labelAddItem.PropertyChanged += delegate { graphEditorInputMode.AllowAddLabel = (bool) labelAddItem.Value; };
-
-      var labelEditItem = currentGroup.AddBool("Label Editing", true);
-      labelEditItem.PropertyChanged += delegate { graphEditorInputMode.AllowEditLabel = (bool) labelEditItem.Value; };
-
-      var hideItem = currentGroup.AddBool("Hide Label during Editing", true);
-      hideItem.PropertyChanged += delegate {
-        graphEditorInputMode.EditLabelInputMode.HideLabelDuringEditing = (bool) hideItem.Value;
-      };
-
-      var instantTypingItem = currentGroup.AddBool("Instant Typing", false);
-      instantTypingItem.PropertyChanged += delegate { graphEditorInputMode.AllowEditLabelOnTyping = (bool) instantTypingItem.Value; };
-
-      var useCustomHelperItem = currentGroup.AddBool("Custom Label Helper", false);
-      useCustomHelperItem.PropertyChanged += delegate { customHelperEnabled = (bool) useCustomHelperItem.Value; };
-
-      currentGroup = handler.AddGroup("Editable Items");
-
-      // Disable the whole editable items group if neither label editing or adding allowed
-      var cm = new ConstraintManager(handler);
-      cm.SetEnabledOnCondition(
-          ConstraintManager.LogicalCondition.Or(cm.CreateValueEqualsCondition(labelEditItem, true),
-              cm.CreateValueEqualsCondition(labelAddItem, true)), currentGroup);
-
-      currentGroup.AddBool("Nodes", true).PropertyChanged += delegate {
-        var editNodes = (bool) handler.GetValue("Editable Items", "Nodes");
-        if (editNodes) {
-          graphEditorInputMode.LabelEditableItems |= GraphItemTypes.Node | GraphItemTypes.NodeLabel;
-        } else {
-          graphEditorInputMode.LabelEditableItems &= ~(GraphItemTypes.Node | GraphItemTypes.NodeLabel);
-        }
-      };
-
-      currentGroup.AddBool("Edges", true).PropertyChanged += delegate {
-        var editEdges = (bool) handler.GetValue("Editable Items", "Edges");
-        if (editEdges) {
-          graphEditorInputMode.LabelEditableItems |= GraphItemTypes.Edge | GraphItemTypes.EdgeLabel;
-        } else {
-          graphEditorInputMode.LabelEditableItems &= ~(GraphItemTypes.Edge | GraphItemTypes.EdgeLabel);
-        }
-      };
-
-      currentGroup = handler.AddGroup("Validation");
-      var validationItem = currentGroup.AddBool("Enable Validation", false);
-      validationItem.PropertyChanged += delegate { validationEnabled = (bool) validationItem.Value; };
-      var patternItem = currentGroup.AddString("Pattern", DefaultValidationPattern);
-      patternItem.PropertyChanged += delegate {
-        validationPattern = new Regex((string) patternItem.Value, RegexOptions.Compiled);
-      };
-
-      // Editing the pattern doesn't make sense if validation is disabled
-      cm.SetEnabledOnValueEquals(validationItem, true, patternItem);
-
-      return handler;
+    private void RefreshLabelEditorFeedback(TextBox textBox) {
+      TextBoxProperties.SetValidText(textBox, IsValidText(textBox.Text));
     }
 
-    #endregion
-
-    #region Standard demo code
-
-    /// <summary>
-    ///   Automatically generated by Visual Studio. Wires up the UI components and adds a
-    ///   <see cref="GraphControl"/> to the form.
-    /// </summary>
-    public LabelEditingDemo() {
-      InitializeComponent();
-    }
-
-    /// <summary>Initializes the graph and the input mode.</summary>
-    /// <seealso cref="InitializeInputModes"/>
-    /// <seealso cref="InitializeGraph"/>
-    private void OnLoaded(object source, EventArgs e) {
-      InitializeGraph();
-      InitializeInputModes();
-      CreateSampleGraph();
-      InitializeOptionHandler();
-    }
-
-    /// <summary>
-    ///   Initializes the graph instance setting default styles and creating a small sample graph.
-    /// </summary>
-    private void InitializeGraph() {
-      var graph = graphControl.Graph;
-
-      // Enable undoability
-      graph.SetUndoEngineEnabled(true);
-
-      // Set the default node style
-      DemoStyles.InitDemoStyles(graph);
-      graph.NodeDefaults.Size = new SizeD(100, 100);
-    }
-
-    /// <summary>
-    ///   Creates the sample graph.
-    /// </summary>
+    /// <summary>Creates the sample graph.</summary>
     private void CreateSampleGraph() {
-      var graph = graphControl.Graph;
+      var graph = Graph;
       var n1 = graph.CreateNode(new PointD(0, 0));
       graph.AddLabel(n1, "Node Label");
       var n2 = graph.CreateNode(new PointD(250, 0));
       var edge = graph.CreateEdge(n1, n2);
       graph.AddLabel(edge, "Edge label");
-      graphControl.FitGraphBounds();
     }
 
-    /// <summary>Callback action that is triggered when the user exits the application.</summary>
-    private void ExitAction(object sender, EventArgs e) {
-      Application.Current.Shutdown();
+    [STAThread]
+    public static void Main() {
+      Run<LabelEditingDemo>();
     }
-
-    /// <summary>
-    ///   Returns the GraphControl instance used in this demo.
-    /// </summary>
-    public GraphControl GraphControl => graphControl;
-
-    #endregion
   }
 }

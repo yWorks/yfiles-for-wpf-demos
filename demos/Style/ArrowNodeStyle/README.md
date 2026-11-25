@@ -1,4 +1,5 @@
-# ArrowNodeStyle
+# Arrow Node Style
 
-The ArrowNodeStyle provides several properties to customize its shape. There are five basic 
-    shapes provided that can be rotated in four directions.
+![Demo thumbnail](../../DemoBrowser/DemoBrowser/Screenshots/arrow-node-style.webp "Arrow Node Style")
+
+Shows the features of the ArrowNodeStyle class.

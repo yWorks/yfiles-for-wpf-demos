@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 4.0.
- ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -28,901 +28,843 @@
  ***************************************************************************/
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Windows.Input;
-using System.Xml;
 using System.Xml.Linq;
 using yWorks.Controls;
 using yWorks.Controls.Input;
+using yWorks.Geometry;
 using yWorks.Graph;
 using yWorks.GraphML;
-using yWorks.Utils;
 
-namespace Demo.yFiles.Graph.ZOrder
+namespace yWorks.Demo.ZOrder;
+
+/// <summary>
+///   An utility class to add z-order consistency for nodes to a <see cref="GraphControl"/>.
+/// </summary>
+public sealed class ZOrderSupport
 {
+  private readonly List<Action<object, ZIndexChangedEventArgs>> zOrderChangedListeners = [];
+
+  // initialize z-order and temporary state maps
+  private readonly Dictionary<INode, int> zOrders = [];
+  private readonly Dictionary<INode, int> tempZOrders = [];
+  private readonly Dictionary<INode, INode?> tempParents = [];
+  private readonly Dictionary<INode, INode?> oldParents = [];
+  private readonly Dictionary<INode, int> maxOldZOrders = [];
+  private readonly Dictionary<INode, int> absoluteOrder = [];
+  private readonly HashSet<INode?> deleteSelectionNewParents = [];
+  private GraphEditorInputMode inputMode = null!;
+  private GroupingSupport masterGroupingSupport = null!;
+  private IFoldingView? foldingView;
+  private int maxRootZOrder = int.MinValue;
+  private List<INode> movedNodes = [];
+
   /// <summary>
-  ///   An utility class to add z-order consistency for nodes to a <see cref="yWorks.Controls.GraphControl"/>.
+  ///   A flag indicating if nodes added to the master group should get a z-order assigned.
   /// </summary>
-  public class ZOrderSupport : IComparer<INode>
-  {
-    private readonly IFoldingView FoldingView;
-    internal readonly IGraph MasterGraph;
-    private readonly GroupingSupport MasterGroupingSupport;
+  private bool addZOrderForNewNodes = true;
 
-    private readonly IDictionary<INode, int> zOrders = new Dictionary<INode, int>();
-    private readonly IDictionary<INode, int> tempZOrders = new Dictionary<INode, int>();
-    private readonly IDictionary<INode, INode> tempParents = new Dictionary<INode, INode>();
+  public GraphControl GraphComponent { get; }
 
-    /// <summary>
-    ///   The <see cref="yWorks.Controls.GraphControl"/> to work on.
-    /// </summary>
-    public GraphControl GraphControl { get; }
+  public IGraph MasterGraph { get; private set; } = null!;
 
-    /// <summary>
-    ///   A flag indicating if nodes added to the master group should be assigned a z-order.
-    /// </summary>
-    public bool AddZOrderForNewNodes { get; set; }
+  /// <summary>
+  ///   Creates a new instance and installs it on the given <see cref="GraphComponent"/>.
+  /// </summary>
+  public ZOrderSupport(GraphControl graphComponent) {
+    this.GraphComponent = graphComponent;
+    InitializeGraphComponent(graphComponent, true);
+  }
 
-    /// <summary>
-    ///   Creates a new instance and installs it on the given <see cref="GraphControl"/>.
-    /// </summary>
-    /// <param name="graphControl">The control to install the z-order support on.</param>
-    public ZOrderSupport(GraphControl graphControl) {
-      GraphControl = graphControl;
+  private void InitializeGraphComponent(GraphControl component, bool addInputMode) {
+    foldingView = component.Graph.GetFoldingView();
+    MasterGraph = foldingView?.Manager.MasterGraph ?? component.Graph;
+    masterGroupingSupport = new GroupingSupport(MasterGraph);
 
-      // make this ZOrderSupport available via lookup of the view graph and master graph
-      AddZOrderSupportLookup(graphControl.Graph, this);
-      FoldingView = graphControl.Graph.GetFoldingView();
-      MasterGraph = FoldingView != null ? FoldingView.Manager.MasterGraph : graphControl.Graph;
-      MasterGroupingSupport = MasterGraph.GetGroupingSupport();
-      if (FoldingView != null) {
-        AddZOrderSupportLookup(MasterGraph, this);
-      }
+    // use this ZOrderSupport as node comparer for the visualization
+    component.GraphModelManager.NodeManager.Comparer = Compare;
+    // The ItemModelManager.Comparer needs the user objects to be accessible from the main render tree elements
+    component.GraphModelManager.ProvideRenderTagOnMainRenderTreeElement = true;
+    // keep labels at their owners for this demo
+    component.GraphModelManager.NodeLabelLayerPolicy = LabelLayerPolicy.AtOwner;
 
-      // use this ZOrderSupport as node comparer for the visualization
-      graphControl.GraphModelManager.NodeManager.Comparer = Compare;
-      // The ItemModelManager.Comparer needs the tags to be accessible from the main render tree elements
-      graphControl.GraphModelManager.ProvideRenderTagOnMainRenderTreeElement = true;
+    component.Graph.GetDecorator().Nodes.PositionHandler.AddFactory(node => new ZOrderNodePositionHandler(node, this));
 
-      // keep node labels at their owners for this demo
-      graphControl.GraphModelManager.NodeLabelLayerPolicy = LabelLayerPolicy.AtOwner;
-
-      // configure the GraphMLIOHandler to support writing and parsing node z-orders to/from GraphML
-      ConfigureGraphMLIOHandler(graphControl.GraphMLIOHandler);
-
+    if (addInputMode) {
       // configure the edit mode to keep z-order consistent during grouping/folding/reparenting gestures
-      var geim = new GraphEditorInputMode();
-      ConfigureInputMode(geim);
-      graphControl.InputMode = geim;
-      graphControl.Graph.GetDecorator().Nodes.PositionHandler
-          .AddFactory(node => new ZOrderNodePositionHandler(node));
-
-      // configure the clipboard that transfers the relative z-order of copied/cut nodes
-      ConfigureGraphClipboard();
-
-      // listen for new nodes to assign an initial z-order
-      MasterGraph.NodeCreated += OnNodeCreated;
-      AddZOrderForNewNodes = true;
+      inputMode = new GraphEditorInputMode();
+      ConfigureInputMode(inputMode);
+      component.InputMode = inputMode;
     }
 
-    /// <summary>
-    ///   Decorates the lookup of <paramref name="graph"/> to provide the <paramref name="zOrderSupport"/>.
-    /// </summary>
-    private static void AddZOrderSupportLookup(IGraph graph, ZOrderSupport zOrderSupport) {
-      var graphLookupDecorator = graph.Lookup<ILookupDecorator>();
-      new LookupDecorator<IGraph, ZOrderSupport>(graphLookupDecorator).AddConstant(zOrderSupport);
+    // configure the clipboard that transfers the relative z-order of copied/cut nodes
+    component.Clipboard = new ZOrderGraphClipboard(this);
+
+    // listen for new nodes to assign an initial z-order
+    MasterGraph.NodeCreated += (_, args) => OnNodeCreated(args.Item);
+  }
+
+  public void ConfigureGraphMLIOHandler(GraphMLIOHandler ioHandler) {
+    var zOrderKeyDefinitionFound = false;
+    var maxExistingZOrder = int.MinValue;
+
+    ioHandler.QueryOutputHandlers += (_, args) => {
+      if (args.Scope == KeyScope.Node) {
+        args.AddOutputHandler(new ZOrderOutputHandler(this));
+      }
+    };
+
+    ioHandler.QueryInputHandlers += (_, args) => {
+      if (!args.Handled && GraphMLIOHandler.MatchesScope(args.KeyDefinition, KeyScope.Node) &&
+          GraphMLIOHandler.MatchesName(args.KeyDefinition, ZOrderOutputHandler.ZOrderKeyName)) {
+        zOrderKeyDefinitionFound = true;
+        args.AddInputHandler(new ZOrderInputHandler(this));
+        args.Handled = true;
+      }
+    };
+
+    ioHandler.Parsing += (_, _) => {
+      // clear old z-orders of old graph
+      if (ioHandler.ClearGraphBeforeRead) {
+        Clear();
+      } else {
+        maxExistingZOrder = GetOrCalculateMaxZOrder(null);
+        ClearTempZOrders();
+      }
+
+      addZOrderForNewNodes = false;
+      zOrderKeyDefinitionFound = false;
+    };
+
+    ioHandler.Parsed += (_, _) => {
+      // enable automatic z-order creation for new nodes again
+      addZOrderForNewNodes = true;
+      if (!zOrderKeyDefinitionFound) {
+        // no z-orders were stored in the GraphML so initialize the nodes in the view
+        SetTempNormalizedZOrders(null);
+      } else if (!ioHandler.ClearGraphBeforeRead) {
+        AppendTempZOrdersToExisting(maxExistingZOrder);
+      }
+
+      ApplyTempZOrders();
+    };
+  }
+
+  private void AppendTempZOrdersToExisting(int maxExistingZOrder) {
+    if (maxExistingZOrder == int.MinValue) {
+      // no nodes in the graph, yet
+      return;
     }
 
-    #region Comparer implementation
+    var minimumNewZOrder = tempZOrders.Values.Min();
+    var delta = maxExistingZOrder - minimumNewZOrder + 1;
+    foreach (var node in tempZOrders.Keys.Where(node => MasterGraph.GetParent(node) == null).ToArray()) {
+      tempZOrders[node] += delta;
+    }
+  }
 
-    public int Compare(INode x, INode y) {
-      var masterX = GetMasterNode(x);
-      var masterY = GetMasterNode(y);
+  public int Compare(INode x, INode y) {
+    var masterX = GetMasterNode(x);
+    var masterY = GetMasterNode(y);
 
-      // the stored z-order is a partial order between children of the same parent
-      var parentX = GetParent(masterX);
-      var parentY = GetParent(masterY);
-      if (parentX == parentY) {
-        // for a common parent we can just compare the z-order values
-        return ZOrderOf(masterX) - ZOrderOf(masterY);
-      }
-      if (MasterGroupingSupport.IsDescendant(masterX, masterY)) {
-        return 1;
-      }
-      if (MasterGroupingSupport.IsDescendant(masterY, masterX)) {
-        return -1;
-      }
-      // there is no common parent so find the ancestors that have a common parent
-      var nca = MasterGroupingSupport.GetNearestCommonAncestor(masterX, masterY);
-      var pathToRootX = MasterGroupingSupport.GetAncestors(masterX);
-      var pathToRootY = MasterGroupingSupport.GetAncestors(masterY);
-
-      var ancesterX = nca == null ? pathToRootX.Last() : pathToRootX[IndexOf(pathToRootX, nca) - 1];
-      var ancesterY = nca == null ? pathToRootY.Last() : pathToRootY[IndexOf(pathToRootY, nca) - 1];
-      // for these ancestors we can now compare the z-order values
-      return ZOrderOf(ancesterX) - ZOrderOf(ancesterY);
+    // the stored z-order is a partial order between children of the same parent
+    var parentX = GetParent(masterX);
+    var parentY = GetParent(masterY);
+    if (ReferenceEquals(parentX, parentY)) {
+      // for a common parent we can just compare the z-order values
+      return ZOrderOf(masterX).CompareTo(ZOrderOf(masterY));
     }
 
-    private int IndexOf(IReadOnlyList<INode> list, INode n) {
-      int c = 0;
-      foreach (var node in list) {
-        if (node == n) {
-          return c;
-        }
-        ++c;
-      }
+    if (masterGroupingSupport.IsDescendant(masterX, masterY)) {
+      return 1;
+    }
+
+    if (masterGroupingSupport.IsDescendant(masterY, masterX)) {
       return -1;
     }
 
-    #endregion
+    // there is no common parent so find the ancestors that have a common parent
+    var commonAncestor = masterGroupingSupport.GetNearestCommonAncestor(masterX, masterY);
+    var pathToRootX = masterGroupingSupport.GetAncestors(masterX).ToList();
+    var pathToRootY = masterGroupingSupport.GetAncestors(masterY).ToList();
+    var ancestorX = commonAncestor == null ? pathToRootX[^1] : pathToRootX[pathToRootX.IndexOf(commonAncestor) - 1];
+    var ancestorY = commonAncestor == null ? pathToRootY[^1] : pathToRootY[pathToRootY.IndexOf(commonAncestor) - 1];
+    // for these ancestors we can now compare the z-order values
+    return ZOrderOf(ancestorX).CompareTo(ZOrderOf(ancestorY));
+  }
 
-    #region Basic z-order operations
+  /// <summary>
+  ///   Gets the z-order value stored for <paramref name="node"/>.
+  /// </summary>
+  public int GetZOrder(INode node) => ZOrderOf(GetMasterNode(node));
 
-    /// <summary>
-    ///   Gets the z-order value stored for <paramref name="node"/>.
-    /// </summary>
-    public int GetZOrder(INode node) {
-      return ZOrderOf(GetMasterNode(node));
+  /// <summary>
+  ///   Sets the new z-order value stored for <paramref name="node"/>.
+  ///   An undo unit for the changed z-order is added as well if undo is enabled.
+  /// </summary>
+  public void SetZOrder(INode node, int newZOrder) {
+    var master = GetMasterNode(node);
+    var oldZOrder = zOrders.GetValueOrDefault(master);
+    if (oldZOrder == newZOrder) {
+      return;
     }
 
-    /// <summary>
-    ///   Sets the new z-order value stored for <paramref name="key"/>.
-    /// </summary>
-    /// <remarks>
-    ///   An <see cref="IUndoUnit"/> for the changed z-order is added as well if undo is
-    ///   <see cref="GraphExtensions.IsUndoEngineEnabled">enabled</see>.
-    /// </remarks>
-    public void SetZOrder(INode key, int newZOrder) {
-      var master = GetMasterNode(key);
-      var oldZOrder = 0;
-      zOrders.TryGetValue(master, out oldZOrder);
-      if (oldZOrder != newZOrder) {
-        if (MasterGraph.IsUndoEngineEnabled()) {
-          MasterGraph.AddUndoUnit("Undo Z-order Change", "Redo Z-order Change", () => {
-            SetZOrderCore(master, oldZOrder);
-            Update(master);
-          }, () => {
-            SetZOrderCore(master, newZOrder);
-            Update(master);
-          });
-        }
-        SetZOrderCore(master, newZOrder);
-        OnZOrderChanged(key, newZOrder, oldZOrder);
-      }
-    }
-
-    internal void SetZOrderCore(INode master, int data) {
-      zOrders[master] = data;
-    }
-
-    /// <summary>
-    ///   Arranges the <paramref name="node"/> according to its <see cref="GetZOrder">z-order</see>.
-    /// </summary>
-    public void Update(INode node) {
-      // the update call triggers a new installation of the node visualization that considers the z-order
-      GraphControl.GraphModelManager.Update(GetViewNode(node));
-    }
-
-    /// <summary>
-    ///   Sets new ascending z-orders for <paramref name="viewNodes"/> starting from <paramref name="zOrder"/>
-    ///   and sorts their <see cref="GraphModelManager.GetMainRenderTreeElement">render tree elements</see> as well.
-    /// </summary>
-    /// <param name="viewNodes">The children of one group node in their new z-order.</param>
-    /// <param name="zOrder">The z-order to start the new z-orders from.</param>
-    public void ArrangeNodes(IEnumerable<INode> viewNodes, int zOrder = 0) {
-      IRenderTreeElement prev = null;
-      foreach (var node in viewNodes) {
-        SetZOrder(GetMasterNode(node), zOrder++);
-        var renderTreeElement = GraphControl.GraphModelManager.GetMainRenderTreeElement(node);
-        if (prev == null) {
-          renderTreeElement.ToBack();
-        } else {
-          renderTreeElement.Above(prev);
-        }
-        prev = renderTreeElement;
-      }
-    }
-
-    #endregion
-
-    #region Z-Order Changed Event
-
-    private void OnZOrderChanged(INode node, int newValue, int oldValue = 0) {
-      if (ZOrderChanged != null) {
-        ZOrderChanged(this, new ZOrderChangedEventArgs(node, newValue, oldValue));
-      }
-    }
-
-    /// <summary>
-    ///   Occurs when the z-order of a a node has been changed.
-    /// </summary>
-    public event EventHandler<ZOrderChangedEventArgs> ZOrderChanged;
-
-    #endregion
-
-    #region Support for temporary z-orders
-
-    /// <summary>
-    ///   Sets a temporary z-order for <paramref name="node"/> for a temporary <paramref name="tempParent">parent</paramref>.
-    /// </summary>
-    public void SetTempZOrder(INode node, INode tempParent, int newZOrder, bool force = false) {
-      var master = GetMasterNode(node);
-      if (force || GetZOrder(master) != newZOrder) {
-        tempZOrders[master] = newZOrder;
-      }
-      var masterParent = tempParent != null ? GetMasterNode(tempParent) : FoldingView?.LocalRoot;
-      tempParents[master] = masterParent;
-    }
-
-    /// <summary>
-    ///   Sets normalized z-orders for all children of <paramref name="parent"/> and recurses into child group nodes.
-    /// </summary>
-    /// <param name="parent">The parent of the child nodes to normalize.</param>
-    public void SetTempNormalizedZOrders(INode parent = null) {
-      var children = GraphControl.Graph.GetChildren(parent).ToList();
-      children.Sort(this);
-      var zOrder = 0;
-      foreach (var child in children) {
-        SetTempZOrder(child, parent, zOrder++);
-        if (GraphControl.Graph.IsGroupNode(child)) {
-          SetTempNormalizedZOrders(child);
-        }
-      }
-    }
-
-    /// <summary>
-    ///   Removes a temporary z-order for <paramref name="node"/> that has been set previously via <see cref="SetTempZOrder"/>.
-    /// </summary>
-    public void RemoveTempZOrder(INode node) {
-      var master = GetMasterNode(node);
-      tempZOrders.Remove(master);
-      tempParents.Remove(master);
-    }
-
-    /// <summary>
-    ///   Transfers all temporary z-orders that have been set previously via <see cref="SetTempZOrder"/>.
-    /// </summary>
-    public void ApplyTempZOrders(bool update = false) {
-      foreach (var keyValuePair in tempZOrders) {
-        SetZOrder(keyValuePair.Key, keyValuePair.Value);
-        if (update) {
-          Update(keyValuePair.Key);
-        }
-      }
-      ClearTempZOrders();
-    }
-
-    /// <summary>
-    ///   Removes all temporary z-orders that have been set previously via <see cref="SetTempZOrder"/>.
-    /// </summary>
-    public void ClearTempZOrders() {
-      tempZOrders.Clear();
-      tempParents.Clear();
-    }
-
-    #endregion
-
-    #region Commands
-
-    public static readonly RoutedUICommand RaiseCommand;
-    public static readonly RoutedUICommand LowerCommand;
-    public static readonly RoutedUICommand ToFrontCommand;
-    public static readonly RoutedUICommand ToBackCommand;
-
-    static ZOrderSupport() {
-      RaiseCommand = new RoutedUICommand("Raise", "Raise", typeof(ZOrderSupport));
-      LowerCommand = new RoutedUICommand("Lower", "Lower", typeof(ZOrderSupport));
-      ToFrontCommand = new RoutedUICommand("ToFront", "ToFront", typeof(ZOrderSupport));
-      ToBackCommand = new RoutedUICommand("ToBack", "ToBack", typeof(ZOrderSupport));
-    }
-
-    /// <summary>
-    ///   Registers the z-Order commands.
-    /// </summary>
-    private void AddCommandHandler(
-        RoutedUICommand command,
-        Action<List<INode>> method,
-        GraphEditorInputMode inputMode) {
-      inputMode.KeyboardInputMode.AddCommandBinding(command, (sender, args) => {
-        var nodes = ResolveParameter(args.Parameter);
-        if (nodes != null) {
-          method.Invoke(nodes);
-          args.Handled = true;
-        }
-      }, (sender, args) => {
-        var nodes = ResolveParameter(args.Parameter);
-        args.CanExecute = nodes != null;
-        args.Handled = true;
+    if (MasterGraph.IsUndoEngineEnabled()) {
+      MasterGraph.AddUndoUnit("Undo z-Order Change", "Redo z-Order Change", () => {
+        zOrders[master] = oldZOrder;
+        Update(master);
+      }, () => {
+        zOrders[master] = newZOrder;
+        Update(master);
       });
     }
 
-    private List<INode> ResolveParameter(object parameter) {
-      if (parameter == null) {
-        if (GraphControl.Selection.Nodes.Count > 0) {
-          return GraphControl.Selection.Nodes.ToList();
+    zOrders[master] = newZOrder;
+    OnZIndexChanged(node, newZOrder, oldZOrder);
+  }
+
+  private void OnZIndexChanged(IModelItem item, int newValue, int? oldValue) {
+    var eventArgs = new ZIndexChangedEventArgs(item, newValue, oldValue);
+    foreach (var listener in zOrderChangedListeners) {
+      listener(this, eventArgs);
+    }
+  }
+
+  public void AddZIndexChangedListener(Action<object, ZIndexChangedEventArgs> listener) =>
+      zOrderChangedListeners.Add(listener);
+
+  public void RemoveZIndexChangedListener(Action<object, ZIndexChangedEventArgs> listener) =>
+      zOrderChangedListeners.Remove(listener);
+
+  /// <summary>
+  ///   Arranges the <paramref name="node"/> according to its z-order.
+  /// </summary>
+  public void Update(INode node) {
+    // the update call triggers a new installation of the node visualization that considers the z-order
+    var viewNode = GetViewNode(node);
+    if (viewNode != null) {
+      GraphComponent.GraphModelManager.Update(viewNode);
+    }
+  }
+
+  /// <summary>
+  ///   Sets new ascending z-orders for <paramref name="viewNodes"/> starting from <paramref name="zOrder"/> and sorts their
+  ///   render tree elements as well.
+  /// </summary>
+  public void ArrangeNodes(IEnumerable<INode> viewNodes, int zOrder) {
+    IRenderTreeElement? previous = null;
+    foreach (var node in viewNodes) {
+      SetZOrder(GetMasterNode(node), zOrder++);
+      var renderTreeElement = GraphComponent.GraphModelManager.GetMainRenderTreeElement(node);
+      if (renderTreeElement == null) {
+        continue;
+      }
+
+      if (previous == null) {
+        renderTreeElement.ToBack();
+      } else {
+        renderTreeElement.Above(previous);
+      }
+
+      previous = renderTreeElement;
+    }
+  }
+
+  /// <summary>
+  ///   Sets a temporary z-order for <paramref name="node"/> under a temporary parent.
+  /// </summary>
+  public void SetTempZOrder(INode node, INode? tempParent, int newZOrder, bool force = false) {
+    var master = GetMasterNode(node);
+    if (force || GetZOrder(master) != newZOrder) {
+      tempZOrders[master] = newZOrder;
+    }
+
+    var masterParent = tempParent != null ? GetMasterNode(tempParent) : foldingView?.LocalRoot;
+    tempParents[master] = masterParent;
+  }
+
+  /// <summary>
+  ///   Sets normalized z-orders for all children of <paramref name="parent"/> and recurses into child group nodes.
+  /// </summary>
+  public void SetTempNormalizedZOrders(INode? parent) {
+    var children = GraphComponent.Graph.GetChildren(parent).ToList();
+    children.Sort(Compare);
+    var zOrder = 0;
+    foreach (var child in children) {
+      SetTempZOrder(child, parent, zOrder++);
+      if (GraphComponent.Graph.IsGroupNode(child)) {
+        SetTempNormalizedZOrders(child);
+      }
+    }
+  }
+
+  /// <summary>
+  ///   Removes a temporary z-order for <paramref name="node"/>.
+  /// </summary>
+  public void RemoveTempZOrder(INode node) {
+    var master = GetMasterNode(node);
+    tempZOrders.Remove(master);
+    tempParents.Remove(master);
+  }
+
+  /// <summary>
+  ///   Transfers all temporary z-orders that have been set previously.
+  /// </summary>
+  public void ApplyTempZOrders(bool update = false) {
+    foreach (var pair in tempZOrders.ToArray()) {
+      SetZOrder(pair.Key, pair.Value);
+      if (update) {
+        Update(pair.Key);
+      }
+    }
+
+    ClearTempZOrders();
+  }
+
+  /// <summary>
+  ///   Removes all temporary z-orders.
+  /// </summary>
+  public void ClearTempZOrders() {
+    tempZOrders.Clear();
+    tempParents.Clear();
+  }
+
+  public void Raise(List<INode> nodes) {
+    nodes.Sort(Compare);
+    INode? previous = null;
+    for (var i = nodes.Count - 1; i >= 0; i--) {
+      var node = nodes[i];
+      var renderElement = GraphComponent.GraphModelManager.GetMainRenderTreeElement(node);
+      var nextElement = renderElement?.Next;
+      if (nextElement != null) {
+        var nextNode = GraphComponent.GraphModelManager.GetModelItem(nextElement) as INode;
+        if (nextNode != null && !ReferenceEquals(nextNode, previous)) {
+          SwapZOrder(node, nextNode);
+          GraphComponent.GraphModelManager.Update(node);
         }
-      } else if (parameter is INode) {
-        var nodes = new List<INode>();
-        nodes.Add(parameter as INode);
-        return nodes;
-      } else if (parameter is IEnumerable<IModelItem>) {
-        var nodes = ((IEnumerable<IModelItem>) parameter).OfType<INode>().ToList();
-        return nodes.Count > 0 ? nodes : null;
       }
-      return null;
+
+      previous = node;
     }
+  }
 
-    /// <summary>
-    ///   Raises the given <paramref name="nodes"/> above their successors.
-    /// </summary>
-    /// <param name="nodes">The nodes to raise.</param>
-    public void Raise(List<INode> nodes) {
-      nodes.Sort(this);
-
-      INode prev = null;
-      for (var i = nodes.Count - 1; i >= 0; i--) {
-        var node = nodes[i];
-        var rte = GraphControl.GraphModelManager.GetMainRenderTreeElement(node);
-        var nextRte = rte.Next;
-        if (nextRte != null) {
-          var nextNode = GraphControl.GraphModelManager.GetModelItem(nextRte) as INode;
-          if (nextNode != null && nextNode != prev) {
-            SwapZOrder(node, nextNode);
-            GraphControl.GraphModelManager.Update(node);
-          }
+  public void Lower(List<INode> nodes) {
+    nodes.Sort(Compare);
+    INode? previous = null;
+    foreach (var node in nodes) {
+      var renderElement = GraphComponent.GraphModelManager.GetMainRenderTreeElement(node);
+      var previousElement = renderElement?.Previous;
+      if (previousElement != null) {
+        var previousNode = GraphComponent.GraphModelManager.GetModelItem(previousElement) as INode;
+        if (previousNode != null && !ReferenceEquals(previousNode, previous)) {
+          SwapZOrder(node, previousNode);
+          GraphComponent.GraphModelManager.Update(node);
         }
-        prev = node;
       }
+
+      previous = node;
     }
+  }
 
-    /// <summary>
-    ///   Lowers the given <paramref name="nodes"/> below their successor.
-    /// </summary>
-    /// <param name="nodes">The nodes to lower.</param>
-    public void Lower(List<INode> nodes) {
-      nodes.Sort(this);
+  public void ToFront(List<INode> nodes) => ToFrontOrBack(nodes, true);
 
-      INode prev = null;
-      foreach (var node in nodes) {
-        var rte = GraphControl.GraphModelManager.GetMainRenderTreeElement(node);
-        var prevRte = rte.Previous;
-        if (prevRte != null) {
-          var prevNode = GraphControl.GraphModelManager.GetModelItem(prevRte) as INode;
-          if (prevNode != null && prevNode != prev) {
-            SwapZOrder(node, prevNode);
-            GraphControl.GraphModelManager.Update(node);
-          }
+  public void ToBack(List<INode> nodes) => ToFrontOrBack(nodes, false);
+
+  private void ToFrontOrBack(List<INode> nodes, bool toFront) {
+    foreach (var group in nodes.GroupBy(node => GraphComponent.Graph.GetParent(node))) {
+      var groupNode = group.Key;
+      var selected = group.ToList();
+      var allChildren = GraphComponent.Graph.GetChildren(groupNode).ToList();
+      if (selected.Count >= allChildren.Count) {
+        continue;
+      }
+
+      allChildren.Sort(Compare);
+      selected.Sort(Compare);
+      var remaining = allChildren.Where(node => !selected.Contains(node)).ToList();
+      var nextZOrder = toFront ? GetZOrder(remaining[^1]) + 1 : GetZOrder(remaining[0]) - 1;
+      if (toFront) {
+        foreach (var node in selected) {
+          SetZOrder(node, nextZOrder++);
+          Update(node);
         }
-        prev = node;
-      }
-    }
-
-    /// <summary>
-    ///   Moves the given nodes to the front in their parent group.
-    /// </summary>
-    /// <remarks>
-    ///   The order of the nodes to each other is kept stable.
-    /// </remarks>
-    /// <param name="nodes">The nodes to move to front.</param>
-    public void ToFront(List<INode> nodes) {
-      foreach (var grouping in nodes.GroupBy(node => GraphControl.Graph.GetParent(node))) {
-        var groupNode = grouping.Key;
-        var toFrontChildren = grouping.ToList();
-        var allChildren = GraphControl.Graph.GetChildren(groupNode).ToList();
-        if (toFrontChildren.Count < allChildren.Count) {
-          allChildren.Sort(this);
-          toFrontChildren.Sort(this);
-          allChildren.RemoveAll(node => toFrontChildren.Contains(node));
-          var last = allChildren.Last();
-          var zOrder = GetZOrder(last) + 1;
-          foreach (var node in toFrontChildren) {
-            SetZOrder(node, zOrder++);
-            Update(node);
-          }
+      } else {
+        for (var i = selected.Count - 1; i >= 0; i--) {
+          var node = selected[i];
+          SetZOrder(node, nextZOrder--);
+          Update(node);
         }
       }
     }
+  }
 
-    /// <summary>
-    ///   Moves the given nodes to the back in their parent group.
-    /// </summary>
-    /// <remarks>
-    ///   The order of the nodes to each other is kept stable.
-    /// </remarks>
-    /// <param name="nodes">The nodes to move to back.</param>
-    public void ToBack(List<INode> nodes) {
-      foreach (var grouping in nodes.GroupBy(node => GraphControl.Graph.GetParent(node))) {
-        var groupNode = grouping.Key;
-        var toBackChildren = grouping.ToList();
-        var allChildren = GraphControl.Graph.GetChildren(groupNode).ToList();
-        if (toBackChildren.Count < allChildren.Count) {
-          allChildren.Sort(this);
-          toBackChildren.Sort(this);
-          allChildren.RemoveAll(node => toBackChildren.Contains(node));
-          var first = allChildren[0];
-          var zOrder = GetZOrder(first) - 1;
-
-          for (var i = toBackChildren.Count - 1; i >= 0; i--) {
-            var node = toBackChildren[i];
-            SetZOrder(node, zOrder--);
-            Update(node);
-          }
-        }
-      }
+  private void OnNodeCreated(INode newNode) {
+    var undoEngine = GraphComponent.Graph.GetUndoEngine();
+    if (!addZOrderForNewNodes || undoEngine?.PerformingUndo == true || undoEngine?.PerformingRedo == true) {
+      // don't assign z-orders during undo/redo automatically
+      return;
     }
 
-    #endregion
+    var parent = GetParent(newNode);
+    var newZOrder = MasterGraph.GetChildren(parent).Select(node => GetZOrder(node) + 1).DefaultIfEmpty(0).Max();
+    zOrders[newNode] = newZOrder;
+    Update(newNode);
+  }
 
-    #region NodeCreation callback
+  public void Clear() {
+    zOrders.Clear();
+    ClearTempZOrders();
+  }
 
-    /// <summary>
-    ///   Has to be called after a node has been created to register its z-Order.
-    /// </summary>
-    private void OnNodeCreated(object sender, ItemEventArgs<INode> e) {
-      var undoEngine = GraphControl.Graph.GetUndoEngine();
-      if (!AddZOrderForNewNodes || undoEngine.PerformingUndo || undoEngine.PerformingRedo) {
-        // do not assign z-orders during undo/redo automatically
-        return;
-      }
-      var newNode = e.Item;
-      var parent = GetParent(newNode);
-      var newZOrder = MasterGraph.GetChildren(parent).Select(GetZOrder).Max() + 1;
-      SetZOrderCore(newNode, newZOrder);
-      Update(newNode);
-    }
-
-    #endregion
-
-    #region Utility methods
-
-    /// <summary>
-    ///   Resets the z-order.
-    /// </summary>
-    public void Clear() {
-      zOrders.Clear();
-      tempZOrders.Clear();
-      tempParents.Clear();
-      maxRootZOrder = int.MinValue;
-    }
-
-    /// <summary>
-    ///   Returns the master item of <paramref name="node"/> if folding is enabled and <paramref name="node"/> itself
-    ///   otherwise.
-    /// </summary>
-    internal INode GetMasterNode(INode node) {
-      var foldingView = GraphControl.Graph.GetFoldingView();
-      if (foldingView != null) {
-        if (foldingView.Manager.MasterGraph.Contains(node)) {
-          // node already part of the master graph
-          return node;
-        }
-        // return master of node
-        return foldingView.GetMasterItem(node);
-      }
-      // no folding enabled
+  /// <summary>
+  ///   Returns the master item of <paramref name="node"/> if folding is enabled and the node itself otherwise.
+  /// </summary>
+  public INode GetMasterNode(INode node) {
+    var view = GraphComponent.Graph.GetFoldingView();
+    if (view == null) {
       return node;
     }
 
-    /// <summary>
-    ///   Returns the view item of <paramref name="node"/> if folding is enabled and <paramref name="node"/> itself otherwise.
-    /// </summary>
-    internal INode GetViewNode(INode node) {
-      if (GraphControl.Graph.Contains(node)) {
-        // node is already a view node
-        return node;
+    if (view.Manager.MasterGraph.Contains(node)) {
+      // node already part of the master graph
+      return node;
+    }
+
+    // return master of node
+    return view.GetMasterItem<INode>(node)!;
+  }
+
+  /// <summary>
+  ///   Returns the view item of <paramref name="node"/> if folding is enabled and the node itself otherwise.
+  /// </summary>
+  public INode? GetViewNode(INode node) {
+    if (GraphComponent.Graph.Contains(node)) {
+      // node is already a view node
+      return node;
+    }
+
+    var view = GraphComponent.Graph.GetFoldingView();
+    if (view != null && view.Manager.MasterGraph.Contains(node)) {
+      // return the view node of node
+      return view.GetViewItem(node);
+    }
+
+    return null;
+  }
+
+  private INode? GetParent(INode masterNode) =>
+      tempParents.TryGetValue(masterNode, out var parent) ? parent : MasterGraph.GetParent(masterNode);
+
+  /// <summary>
+  ///   Returns the temporary z-order of <paramref name="node"/> if one was set, and its stored z-order otherwise.
+  /// </summary>
+  private int ZOrderOf(INode node) {
+    if (tempZOrders.TryGetValue(node, out var temporary)) {
+      // temporary z-order has precedence over basic z-order
+      return temporary;
+    }
+
+    return zOrders.GetValueOrDefault(node);
+  }
+
+  private void SwapZOrder(INode node1, INode node2) {
+    var zOrder1 = GetZOrder(node1);
+    var zOrder2 = GetZOrder(node2);
+    SetZOrder(node1, zOrder2);
+    SetZOrder(node2, zOrder1);
+  }
+
+  // Input mode configuration
+  private void ConfigureInputMode(GraphEditorInputMode mode) {
+    inputMode = mode;
+    AddCommandBinding(GraphCommands.Raise, Raise);
+    AddCommandBinding(GraphCommands.Lower, Lower);
+    AddCommandBinding(GraphCommands.ToFront, ToFront);
+    AddCommandBinding(GraphCommands.ToBack, ToBack);
+    mode.DeletingSelection += BeforeDeleteSelection;
+    mode.DeletedSelection += AfterDeleteSelection;
+    mode.GroupingSelection += BeforeGrouping;
+    mode.UngroupingSelection += BeforeUngrouping;
+    mode.ReparentNodeHandler = new ZOrderReparentHandler(mode.ReparentNodeHandler, this);
+
+    mode.MoveUnselectedItemsInputMode.DragStarting += MoveStarting;
+    mode.MoveUnselectedItemsInputMode.DragFinished += MoveFinished;
+    mode.MoveUnselectedItemsInputMode.DragCanceled += MoveCanceled;
+  }
+
+  private void AddCommandBinding(ICommand command, Action<List<INode>> action) {
+    inputMode.KeyboardInputMode.AddCommandBinding(command, (_, args) => {
+      var nodes = ResolveParameter(args.Parameter);
+      if (nodes != null) {
+        action(nodes);
+        args.Handled = true;
       }
-      var foldingView = GraphControl.Graph.GetFoldingView();
-      if (foldingView != null && foldingView.Manager.MasterGraph.Contains(node)) {
-        // return the view node of node
-        return foldingView.GetViewItem(node);
+    }, (_, args) => {
+      args.CanExecute = ResolveParameter(args.Parameter) != null;
+      args.Handled = true;
+    });
+  }
+
+  private List<INode>? ResolveParameter(object? parameter) {
+    if (parameter == null) {
+      var selection = GraphComponent.Selection.Nodes.ToList();
+      return selection.Count > 0 ? selection : null;
+    }
+
+    if (parameter is INode node) {
+      return [node];
+    }
+
+    if (parameter is IModelItem) {
+      return [];
+    }
+
+    if (parameter is IEnumerable enumerable) {
+      var nodes = enumerable.Cast<object>().OfType<INode>().ToList();
+      return nodes.Count > 0 ? nodes : null;
+    }
+
+    return null;
+  }
+
+  // Grouping operations
+  private void BeforeGrouping(object? sender, SelectionEventArgs<IModelItem> args) {
+    // get all selected nodes and sort by their current z-order
+    var nodes = args.Selection.OfType<INode>().ToList();
+    nodes.Sort(Compare);
+    // set increasing z-orders
+    for (var i = 0; i < nodes.Count; i++) {
+      SetZOrder(nodes[i], i);
+    }
+  }
+
+  private void BeforeUngrouping(object? sender, SelectionEventArgs<IModelItem> args) {
+    var graph = GraphComponent.Graph;
+    // store all selected nodes that have a parent group
+    var nodes = args.Selection.OfType<INode>().Where(node => graph.GetParent(node) != null).ToList();
+    // sort selected nodes by their current z-order
+    nodes.Sort(Compare);
+    // collect top level nodes
+    var topLevelNodes = graph.GetChildren(null).ToList();
+    topLevelNodes.Sort(Compare);
+    var newTopLevelNodes = new List<INode>();
+    var topLevelIndex = 0;
+    INode? nextTopLevelNode = null;
+    foreach (var node in nodes) {
+      var topLevelAncestor = masterGroupingSupport.GetAncestors(node).LastOrDefault();
+      while (!ReferenceEquals(topLevelAncestor, nextTopLevelNode)) {
+        nextTopLevelNode = topLevelNodes[topLevelIndex++];
+        newTopLevelNodes.Add(nextTopLevelNode);
       }
-      return null;
+
+      newTopLevelNodes.Add(node);
+    }
+
+    for (var i = topLevelIndex; i < topLevelNodes.Count; i++) {
+      newTopLevelNodes.Add(topLevelNodes[i]);
+    }
+
+    for (var i = 0; i < newTopLevelNodes.Count; i++) {
+      SetZOrder(newTopLevelNodes[i], i);
+    }
+  }
+
+  private void BeforeDeleteSelection(object? sender, SelectionEventArgs<IModelItem> args) {
+    var graph = GraphComponent.Graph;
+    // collect absolute order of all view items
+    var nodes = graph.Nodes.ToList();
+    nodes.Sort(Compare);
+    absoluteOrder.Clear();
+    for (var i = 0; i < nodes.Count; i++) {
+      absoluteOrder[nodes[i]] = i;
+    }
+
+    // Track the parents whose children may be reparented when selected groups are removed.
+    deleteSelectionNewParents.Clear();
+    foreach (var node in args.Selection.OfType<INode>()) {
+      deleteSelectionNewParents.Add(graph.GetParent(node));
+    }
+  }
+
+  private void AfterDeleteSelection(object? sender, ItemsEventArgs args) {
+    var graph = GraphComponent.Graph;
+    // for each new parent sort its children in previously stored absolute order
+    foreach (var newParent in deleteSelectionNewParents) {
+      if (newParent == null || graph.Contains(newParent)) {
+        // newParent hasn't been removed as well, so sort its children
+        var children = graph.GetChildren(newParent).ToList();
+        children.Sort((node1, node2) =>
+            absoluteOrder.GetValueOrDefault(node1).CompareTo(absoluteOrder.GetValueOrDefault(node2)));
+        ArrangeNodes(children, 0);
+      }
+    }
+
+    deleteSelectionNewParents.Clear();
+  }
+
+  // Move input mode
+  private void MoveStarting(object? sender, InputModeEventArgs args) {
+    var graph = GraphComponent.Graph;
+    // store all selected nodes which might get reparented
+    movedNodes = inputMode.MoveUnselectedItemsInputMode.AffectedItems.OfType<INode>().ToList();
+    // sort this list by their relative z-order
+    movedNodes.Sort(Compare);
+    // calculate max z-order for all group nodes containing any moved node
+    foreach (var node in movedNodes) {
+      var parent = graph.GetParent(node);
+      oldParents[node] = parent;
+      GetOrCalculateMaxZOrder(parent);
+    }
+
+    // calculate max z-order of top-level nodes
+    GetOrCalculateMaxZOrder(null);
+  }
+
+  /// <summary>
+  ///   Returns the maximum z-order of the children of <paramref name="parent"/>.
+  ///   If the maximum z-order isn't stored yet, it is calculated first.
+  /// </summary>
+  private int GetOrCalculateMaxZOrder(INode? parent) {
+    var graph = GraphComponent.Graph;
+    if (parent == null) {
+      if (maxRootZOrder == int.MinValue) {
+        maxRootZOrder = graph.GetChildren(null).Select(GetZOrder).DefaultIfEmpty(0).Max();
+      }
+
+      return maxRootZOrder;
+    }
+
+    if (!maxOldZOrders.TryGetValue(parent, out var maxZOrder)) {
+      var children = graph.GetChildren(parent).ToList();
+      maxZOrder = children.Count > 0 ? children.Select(GetZOrder).Max() : 0;
+      maxOldZOrders[parent] = maxZOrder;
+    }
+
+    return maxZOrder;
+  }
+
+  /// <summary>
+  ///   Returns a new z-order for <paramref name="node"/> in its new <paramref name="parent"/>.
+  ///   As all moved nodes will be reparented to the same parent, nodes that had this parent initially keep their
+  ///   old z-order. The new z-order accounts for moved nodes that were below <paramref name="node"/> and are reparented too.
+  /// </summary>
+  public int GetZOrderForNewParent(INode node, INode? parent) {
+    // start the new z-order one after the old children's maximum
+    var newZOrder = GetOrCalculateMaxZOrder(parent) + 1;
+    foreach (var movedNode in movedNodes) {
+      if (ReferenceEquals(movedNode, node)) {
+        return newZOrder;
+      }
+
+      if (oldParents.GetValueOrDefault(movedNode) != parent) {
+        // movedNode would be reparented and was below node, so increase the z-order
+        return newZOrder++;
+      }
+    }
+
+    return 0;
+  }
+
+  private void MoveFinished(object? sender, InputModeEventArgs args) {
+    // Apply the temporary z-orders for all reparented nodes
+    ApplyTempZOrders();
+    CleanupMove();
+  }
+
+  private void MoveCanceled(object? sender, InputModeEventArgs args) {
+    // clear temporary z-orders and keep the original ones.
+    ClearTempZOrders();
+    CleanupMove();
+  }
+
+  private void CleanupMove() {
+    movedNodes.Clear();
+    oldParents.Clear();
+    maxOldZOrders.Clear();
+    maxRootZOrder = int.MinValue;
+  }
+
+  public sealed class ZIndexChangedEventArgs : EventArgs
+  {
+    public IModelItem Item { get; }
+
+    public int NewZIndex { get; }
+
+    public int? OldZIndex { get; }
+
+    public ZIndexChangedEventArgs(IModelItem item, int newZIndex, int? oldZIndex) {
+      Item = item;
+      NewZIndex = newZIndex;
+      OldZIndex = oldZIndex;
+    }
+  }
+
+  /// <summary>
+  ///   An <see cref="IPositionHandler"/> for nodes that tries to keep the z-order of its moved node relative to other moved
+  ///   nodes.
+  ///   As the z-order doesn't change for normal move gestures, this class customizes only interactive reparent gestures.
+  /// </summary>
+  public sealed class ZOrderNodePositionHandler : GroupingNodePositionHandler
+  {
+    private readonly INode node;
+    private readonly ZOrderSupport zOrderSupport;
+    private INode? initialParent;
+    private INode? currentParent;
+
+    public ZOrderNodePositionHandler(INode node, ZOrderSupport zOrderSupport) : base(node) {
+      this.node = node;
+      this.zOrderSupport = zOrderSupport;
+    }
+
+    public ZOrderNodePositionHandler(INode node, ZOrderSupport zOrderSupport, IPositionHandler wrappedHandler) : base(
+        node, wrappedHandler) {
+      this.node = node;
+      this.zOrderSupport = zOrderSupport;
+    }
+
+    public override void InitializeDrag(IInputModeContext context) {
+      var graph = zOrderSupport.GraphComponent.Graph;
+      // store initial parent of the node...
+      initialParent = graph.GetParent(node);
+      currentParent = initialParent;
+      base.InitializeDrag(context);
     }
 
     /// <summary>
-    ///   Gets the parent of a node, including a temporary parent during an input gesture.
+    ///   Customizes the temporary new parent of <paramref name="node"/> and its z-order in its new render tree group.
     /// </summary>
-    /// <param name="masterNode">The node to get the parent for. Must be a master node.</param>
-    /// <returns>The parent of the <paramref name="masterNode"/>. Taken from the master graph.</returns>
-    internal INode GetParent(INode masterNode) {
-      INode parent;
-      if (tempParents.TryGetValue(masterNode, out parent)) {
-        // temporary parent has precedence over structural parent
-        return parent;
+    protected override void SetCurrentParent(IInputModeContext context, INode node, INode? parent) {
+      if (parent != initialParent) {
+        // node is temporarily at a new parent
+        // the move input mode knows all moved nodes and can provide the new z-order for this node
+        var tempZOrder = zOrderSupport.GetZOrderForNewParent(node, parent);
+        // 'parent' is only a temporary new parent so the old z-order should be kept but a new temporary one is set
+        zOrderSupport.SetTempZOrder(node, parent, tempZOrder);
+        base.SetCurrentParent(context, node, parent);
+      } else if (parent != currentParent) {
+        // node is reset to its initial parent: reset its temporary z-order so the original one is used again
+        zOrderSupport.RemoveTempZOrder(node);
+        base.SetCurrentParent(context, node, parent);
       }
-      return MasterGraph.GetParent(masterNode);
+
+      currentParent = parent;
     }
 
-    /// <summary>
-    ///   Gets the z-Order value of the given <paramref name="node"/>.
-    /// </summary>
-    /// <remarks>
-    ///   If the node has a temporary z-Order the temporary order is returned.
-    /// </remarks>
-    /// <param name="node">The node to get the z-Order for.</param>
-    /// <returns>The z-Order as an integer index.</returns>
-    private int ZOrderOf(INode node) {
-      int zOrder;
-      if (tempZOrders.TryGetValue(node, out zOrder)) {
-        // temporary z-order has precedence over basic z-order
-        return zOrder;
-      }
-      if (zOrders.TryGetValue(node, out zOrder)) {
-        return zOrder;
-      }
-      return 0;
+    public override void DragFinished(IInputModeContext context, PointD originalLocation, PointD newLocation) {
+      base.DragFinished(context, originalLocation, newLocation);
+      CleanUp();
     }
 
-    /// <summary>
-    ///   Swaps the z-Order of the given nodes.
-    /// </summary>
-    private void SwapZOrder(INode node1, INode node2) {
-      var zOrder1 = GetZOrder(node1);
-      var zOrder2 = GetZOrder(node2);
-      SetZOrder(node1, zOrder2);
-      SetZOrder(node2, zOrder1);
+    public override void CancelDrag(IInputModeContext context, PointD originalLocation) {
+      base.CancelDrag(context, originalLocation);
+      CleanUp();
     }
 
-    #endregion
+    private void CleanUp() {
+      initialParent = null;
+      currentParent = null;
+    }
+  }
 
-    #region Clipboard
+  /// <summary>
+  ///   An input handler that reads node z-orders from GraphML.
+  /// </summary>
+  private sealed class ZOrderInputHandler : InputHandlerBase<INode, int>
+  {
+    private readonly ZOrderSupport zOrderSupport;
 
-    public void ConfigureGraphClipboard() {
-      GraphControl.Clipboard = new ZOrderGraphClipboard(this);
+    public ZOrderInputHandler(ZOrderSupport zOrderSupport) {
+      this.zOrderSupport = zOrderSupport;
     }
 
-    #endregion
+    protected override int ParseDataCore(IParseContext context, XObject node) =>
+        int.Parse(((XElement) node).Value, CultureInfo.InvariantCulture);
 
-    #region Configure Input Mode
-
-    private GraphEditorInputMode inputMode;
-
-    public void ConfigureInputMode(GraphEditorInputMode inputMode) {
-      AddCommandHandler(RaiseCommand, Raise, inputMode);
-      AddCommandHandler(LowerCommand, Lower, inputMode);
-      AddCommandHandler(ToFrontCommand, ToFront, inputMode);
-      AddCommandHandler(ToBackCommand, ToBack, inputMode);
-      inputMode.DeletingSelection += BeforeDeleteSelection;
-      inputMode.DeletedSelection += AfterDeleteSelection;
-      inputMode.GroupingSelection += BeforeGrouping;
-      inputMode.UngroupingSelection += BeforeUngrouping;
-      inputMode.ReparentNodeHandler = new ZOrderReparentHandler(inputMode.ReparentNodeHandler, this);
-      ConfigureMoveInputMode(inputMode);
-      inputMode.MoveUnselectedItemsInputMode.Enabled = false;
-      this.inputMode = inputMode;
-    }
-
-    #endregion
-
-    #region Grouping operations
-
-    private void BeforeGrouping(object sender, SelectionEventArgs<IModelItem> e) {
-      // get all selected nodes and sort by their current z-order
-      var nodes = ((IGraphSelection) e.Selection).Nodes.ToList();
-      nodes.Sort(this);
-
-      // set increasing z-orders
-      for (var i = 0; i < nodes.Count; i++) {
-        SetZOrder(nodes[i], i);
+    protected override void SetValue(IParseContext context, INode? key, int data) {
+      if (key != null) {
+        zOrderSupport.SetZOrder(key, data);
+        zOrderSupport.Update(key);
       }
     }
 
-    private void BeforeUngrouping(object sender, SelectionEventArgs<IModelItem> e) {
-      var graph = GraphControl.Graph;
-      // store all selected nodes that have a parent group
-      var nodes = e.Selection.OfType<INode>().Where(node => graph.GetParent(node) != null).ToList();
-
-      var zOrderSupport = graph.Lookup<ZOrderSupport>();
-      // sort selected nodes by their current z-order
-      nodes.Sort(zOrderSupport);
-
-      // collect top level nodes
-      var topLevelNodes = graph.GetChildren(null).ToList();
-      topLevelNodes.Sort(zOrderSupport);
-
-      var newTopLevelNodes = new List<INode>();
-      var topLevelIndex = 0;
-
-      INode nextTopLevelNode = null;
-      var gs = graph.GetGroupingSupport();
-
-      foreach (var node in nodes) {
-        var topLevelAncestor = gs.GetAncestors(node).Last();
-        while (topLevelAncestor != nextTopLevelNode) {
-          nextTopLevelNode = topLevelNodes[topLevelIndex++];
-          newTopLevelNodes.Add(nextTopLevelNode);
-        }
-        newTopLevelNodes.Add(node);
-      }
-
-      for (var i = topLevelIndex; i < topLevelNodes.Count; i++) {
-        newTopLevelNodes.Add(topLevelNodes[i]);
-      }
-
-      for (var i = 0; i < newTopLevelNodes.Count; i++) {
-        zOrderSupport.SetZOrder(newTopLevelNodes[i], i);
-      }
-    }
-
-    #endregion
-
-    #region DeleteSelection
-
-    private HashSet<INode> deleteSelectionNewParents;
-    private Dictionary<INode, int> absOrder;
-
-    private void BeforeDeleteSelection(object sender, SelectionEventArgs<IModelItem> e) {
-      var graph = GraphControl.Graph;
-      // collect absolute order of all view items
-      var zOrderSupport = graph.Lookup<ZOrderSupport>();
-      var nodes = graph.Nodes.ToList();
-      nodes.Sort(zOrderSupport);
-      absOrder = new Dictionary<INode, int>();
-      for (var i = 0; i < nodes.Count; i++) {
-        absOrder[nodes[i]] = i;
-      }
-      // collect new parents in ParentChanged events
-      deleteSelectionNewParents = new HashSet<INode>();
-      // before the group node is removed, all its children get reparented so we listen for each ParentChanged event.
-      graph.ParentChanged += DeleteSelection_OnParentChanged;
-    }
-
-    private void AfterDeleteSelection(object sender, ItemsEventArgs e) {
-      var graph = GraphControl.Graph;
-      graph.ParentChanged -= DeleteSelection_OnParentChanged;
-
-      // for each new parent sort their children in previously stored absolute order
-      foreach (var newParent in deleteSelectionNewParents) {
-        if (newParent == null || graph.Contains(newParent)) {
-          // newParent has not been removed as well, so sort its children
-          var children = graph.GetChildren(newParent).ToList();
-          children.Sort((node1, node2) => absOrder[node1] - absOrder[node2]);
-          ArrangeNodes(children);
-        }
-      }
-      deleteSelectionNewParents = null;
-    }
-
-    private void DeleteSelection_OnParentChanged(object sender, NodeEventArgs e) {
-      var newParent = GraphControl.Graph.GetParent(e.Item);
-      deleteSelectionNewParents.Add(newParent);
-    }
-
-    #endregion
-
-    #region MoveInputMode
-
-    // Moved nodes that might get reparented.
-    private List<INode> MovedNodes;
-
-    // A mapping from moved nodes to their original parents
-    private readonly Dictionary<INode, INode> oldParents = new();
-
-    // the maximum z-order of the children of a group node
-    private readonly Dictionary<INode, int> maxOldZOrder = new();
-
-    // the maximum z-order of top-level nodes
-    private int maxRootZOrder = int.MinValue;
-
-    public void ConfigureMoveInputMode(GraphEditorInputMode geim) {
-      geim.MoveSelectedItemsInputMode.DragStarting += MoveStarting;
-      geim.MoveSelectedItemsInputMode.DragFinished += MoveFinished;
-      geim.MoveSelectedItemsInputMode.DragCanceled += MoveCanceled;
-    }
-
-    #region Initialize fields on MoveStarting
-
-    // Before the move gesture starts, we store all moved nodes, their parents and the maximum z-order of
-    // children of their parents
-    private void MoveStarting(object sender, InputModeEventArgs e) {
-      // store all selected nodes which might get reparented
-      MovedNodes = inputMode.GraphSelection.Nodes.ToList();
-      // sort this list by their relative z-order
-      MovedNodes.Sort(this);
-
-      // calculate max z-order for all group nodes containing any moved node
-      foreach (var node in MovedNodes) {
-        var parent = GraphControl.Graph.GetParent(node);
-        oldParents[node] = parent;
-        GetOrCalculateMaxZOrder(parent);
-      }
-      // calculate max z-order of top-level nodes
-      GetOrCalculateMaxZOrder(null);
-    }
-
-    /// <summary>
-    ///   Returns the maximum z-order of the children of <paramref name="parent"/>.
-    /// </summary>
-    /// <remarks>
-    ///   If the maximum z-order is not stored, yet, it is calculated first.
-    /// </remarks>
-    private int GetOrCalculateMaxZOrder(INode parent) {
-      var graph = GraphControl.Graph;
-      if (parent == null) {
-        // top-level nodes
-        if (maxRootZOrder == int.MinValue && graph.Nodes.Count > 0) {
-          maxRootZOrder = graph.GetChildren(null).Select(GetZOrder).Max();
-        }
-        return maxRootZOrder;
-      }
-      int maxZOrder;
-      if (!maxOldZOrder.TryGetValue(parent, out maxZOrder)) {
-        var children = graph.GetChildren(parent);
-        maxZOrder = children.Any() ? children.Select(GetZOrder).Max() : 0;
-        maxOldZOrder[parent] = maxZOrder;
-      }
-      return maxZOrder;
-    }
-
-    #endregion
-
-    /// <summary>
-    ///   Returns a new z-order for <paramref name="node"/> in its new <paramref name="parent"/>.
-    /// </summary>
-    /// <remarks>
-    ///   As all MovedNodes will be reparented to the same parent, those nodes that had this parent initially will
-    ///   keep their old z-order. Therefore, the new z-order can be calculated by adding the old max z-order of the parent's
-    ///   children to the number of nodes in MovedNodes that were below the node and would be reparented as well.
-    /// </remarks>
-    /// <param name="node">The node to return the z-order for.</param>
-    /// <param name="parent">The new parent of the node.</param>
-    /// <returns>A new z-order for <paramref name="node"/> in its new <paramref name="parent"/>.</returns>
-    public int GetZOrderForNewParent(INode node, INode parent) {
-      // start the new z-order one after the old children's maximum
-      var newZOrder = GetOrCalculateMaxZOrder(parent) + 1;
-      foreach (var movedNode in MovedNodes) {
-        if (movedNode == node) {
-          return newZOrder;
-        }
-        if (oldParents[movedNode] != parent) {
-          // movedNode would be reparented and was below node, so increase the z-order
-          newZOrder++;
-        }
-      }
-      return 0;
-    }
-
-    private void MoveFinished(object sender, InputModeEventArgs e) {
-      // Apply the temporary z-orders for all reparented nodes
-      ApplyTempZOrders();
-      Cleanup();
-    }
-
-    private void MoveCanceled(object sender, InputModeEventArgs e) {
-      // clear temporary z-orders and keep the original ones.
-      ClearTempZOrders();
-      Cleanup();
-    }
-
-    private void Cleanup() {
-      MovedNodes = null;
-      oldParents.Clear();
-      maxOldZOrder.Clear();
-      maxRootZOrder = int.MinValue;
-    }
-
-    #endregion
-
-    #region GraphMLIOHandler
-
-    public void ConfigureGraphMLIOHandler(GraphMLIOHandler ioHandler) {
-      var zOrderKeyDefinitionFound = false;
-      var maxExistingZOrder = int.MinValue;
-
-      ioHandler.QueryOutputHandlers += (o, evt) => {
-        if (evt.Scope == KeyScope.Node) {
-          evt.AddOutputHandler(new ZOrderOutputHandler(this));
-        }
-      };
-
-      ioHandler.QueryInputHandlers += (o, evt) => {
-        if (!evt.Handled && GraphMLIOHandler.MatchesScope(evt.KeyDefinition, KeyScope.Node) &&
-            GraphMLIOHandler.MatchesName(evt.KeyDefinition, ZOrderOutputHandler.ZOrderKeyName)) {
-          zOrderKeyDefinitionFound = true;
-          evt.AddInputHandler(new ZOrderInputHandler(this));
-          evt.Handled = true;
-        }
-      };
-
-      ioHandler.Parsing += (sender, evt) => {
-        if (ioHandler.ClearGraphBeforeRead) {
-          // clear old z-orders of old graph
-          Clear();
-        } else {
-          maxExistingZOrder = GetOrCalculateMaxZOrder(null);
-          ClearTempZOrders();
-        }
-        AddZOrderForNewNodes = false;
-        zOrderKeyDefinitionFound = false;
-      };
-
-      ioHandler.Parsed += (sender, evt) => {
-        // enable automatic z-order creation for new nodes again
-        AddZOrderForNewNodes = true;
-        if (!zOrderKeyDefinitionFound) {
-          // no z-orders were stored in the GraphML so initialize the nodes in the view
-          SetTempNormalizedZOrders();
-        } else if (!ioHandler.ClearGraphBeforeRead) {
-          AppendTempZOrdersToExisting(maxExistingZOrder);
-        }
-        ApplyTempZOrders(true);
-      };
-    }
-
-    private void AppendTempZOrdersToExisting(int maxExistingZOrder) {
-      if (maxExistingZOrder == int.MinValue) {
-        // no nodes in the graph, yet
-        return;
-      }
-      var minNewZOrder = tempZOrders.Values.Min();
-      var delta = maxExistingZOrder - minNewZOrder + 1;
-      foreach (var key in tempZOrders.Keys.Where(n => MasterGraph.GetParent(n) == null).ToList()) {
-        tempZOrders[key] = tempZOrders[key] + delta;
-      }
-    }
-
-
-    /// <summary>
-    ///   An <see cref="IOutputHandler"/> that writes the z-order of nodes, edges and ports.
-    /// </summary>
-    private class ZOrderOutputHandler : OutputHandlerBase<INode, int>
-    {
-      public const string ZOrderKeyName = "zOrder";
-
-      /// <summary>
-      ///   The namespace URI for z-order extensions to GraphML.
-      /// </summary>
-      /// <remarks>This field has the constant value <c>http://www.yworks.com/xml/yfiles-z-order/1.0</c></remarks>
-      public const string ZOrderNS = "http://www.yworks.com/xml/yfiles-z-order/1.0";
-
-      private readonly ZOrderSupport zOrderSupport;
-
-      public ZOrderOutputHandler(ZOrderSupport zOrderSupport) : base(KeyScope.Node, ZOrderKeyName, KeyType.Int) {
-        DefaultValue = 0;
-        WriteKeyDefault = false;
-        Precedence = WritePrecedence.BeforeChildren;
-        SetKeyDefinitionUri(ZOrderNS + "/" + ZOrderKeyName);
-        this.zOrderSupport = zOrderSupport;
-      }
-
-      protected override void WriteValueCore(IWriteContext context, int data) {
-        context.Writer.WriteString(XmlConvert.ToString(data));
-      }
-
-      protected override int GetValue(IWriteContext context, INode key) {
-        return zOrderSupport.GetZOrder(key);
-      }
-    }
-
-    /// <summary>
-    ///   An <see cref="IInputHandler"/> that reads the z-order of nodes, edges and ports.
-    /// </summary>
-    private class ZOrderInputHandler : InputHandlerBase<INode, int>
-    {
-      private readonly ZOrderSupport zOrderSupport;
-
-      public ZOrderInputHandler(ZOrderSupport zOrderSupport) {
-        this.zOrderSupport = zOrderSupport;
-      }
-
-      protected override int ParseDataCore(IParseContext context, XObject node) {
-        var zOrder = XmlConvert.ToInt32(((XElement) node).Value);
-        return zOrder;
-      }
-
-      protected override void SetValue(IParseContext context, INode key, int data) {
-        if (key != null) {
-          zOrderSupport.SetTempZOrder(key, null, data, true);
-        }
-      }
-
-      public override void ApplyDefault(IParseContext context) {
-        var key = context.GetCurrent<INode>();
+    public override void ApplyDefault(IParseContext context) {
+      var key = context.GetCurrent<INode>();
+      if (key != null) {
         SetValue(context, key, 0);
       }
     }
+  }
 
-    #endregion
+  /// <summary>
+  ///   An output handler that writes node z-orders to GraphML.
+  /// </summary>
+  private sealed class ZOrderOutputHandler : OutputHandlerBase<INode, int>
+  {
+    private readonly ZOrderSupport zOrderSupport;
+    public const string ZOrderKeyName = "zOrder";
+
+    /// <summary>
+    ///   The namespace URI for z-order extensions to GraphML.
+    /// </summary>
+    public const string ZOrderNamespace = "http://www.yworks.com/xml/yfiles-z-order/1.0";
+
+    public ZOrderOutputHandler(ZOrderSupport zOrderSupport) : base(KeyScope.Node, ZOrderKeyName, KeyType.Int) {
+      this.zOrderSupport = zOrderSupport;
+      WriteKeyDefault = false;
+      Precedence = WritePrecedence.BeforeChildren;
+      SetKeyDefinitionUri(ZOrderNamespace + "/" + ZOrderKeyName);
+    }
+
+    protected override void WriteValueCore(IWriteContext context, int data) =>
+        context.Writer.WriteString(data.ToString(CultureInfo.InvariantCulture));
+
+    protected override int GetValue(IWriteContext context, INode key) => zOrderSupport.GetZOrder(key);
+  }
+
+  /// <summary>
+  ///   Delegates reparenting to a handler while performing z-order updates before and after the operation.
+  /// </summary>
+  private sealed class ZOrderReparentHandler : IReparentNodeHandler
+  {
+    private readonly IReparentNodeHandler handler;
+    private readonly ZOrderSupport zOrderSupport;
+
+    public ZOrderReparentHandler(IReparentNodeHandler handler, ZOrderSupport zOrderSupport) {
+      this.handler = handler;
+      this.zOrderSupport = zOrderSupport;
+    }
+
+    public bool IsReparentGesture(IInputModeContext context, INode node) => handler.IsReparentGesture(context, node);
+
+    public bool ShouldReparent(IInputModeContext context, INode node) => handler.ShouldReparent(context, node);
+
+    public bool IsValidParent(IInputModeContext context, INode node, INode? newParent) =>
+        handler.IsValidParent(context, node, newParent);
+
+    public void Reparent(IInputModeContext context, INode node, INode? newParent) {
+      // Determine the node's and the parent's representatives in the master graph.
+      // This has to be done prior to the reparenting operation, because if the new parent is a
+      // folder node (i.e. a closed group node), the given node will be removed from the current
+      // view graph as part of the reparenting operation. In this case, the corresponding master nodes
+      // cannot be determined anymore after reparenting is done.
+      var masterNode = zOrderSupport.GetMasterNode(node);
+      var masterParent = newParent == null ? null : zOrderSupport.GetMasterNode(newParent);
+      // reparent the node
+      handler.Reparent(context, node, newParent);
+      // update the node's z-order index
+      var children = zOrderSupport.MasterGraph.GetChildren(masterParent).ToList();
+      var zIndex = children.Count == 1
+          ? 0
+          : children.Where(child => child != masterNode).Select(zOrderSupport.GetZOrder).DefaultIfEmpty(-1).Max() + 1;
+      zOrderSupport.SetZOrder(masterNode, zIndex);
+      var viewNode = zOrderSupport.GetViewNode(masterNode);
+      if (viewNode != null) {
+        zOrderSupport.GraphComponent.GraphModelManager.Update(viewNode);
+      }
+    }
   }
 }

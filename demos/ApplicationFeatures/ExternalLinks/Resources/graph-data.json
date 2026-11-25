@@ -1,0 +1,19 @@
+{
+  "nodes": [
+    { "id": 0, "parent": 6 },
+    { "id": 1, "parent": 6 },
+    { "id": 2, "parent": 6 },
+    { "id": 3, "labels": "https://www.yworks.com/yed-live/" },
+    { "id": 4, "labels": "www.yworks.com" },
+    { "id": 5, "labels": "Not a link" },
+    { "id": 6, "labels": "Group 1", "isGroup": true }
+  ],
+  "edges": [
+    { "id": 0, "source": 0, "target": 1 },
+    { "id": 1, "source": 0, "target": 2 },
+    { "id": 2, "source": 2, "target": 3 },
+    { "id": 3, "source": 2, "target": 4 },
+    { "id": 4, "source": 0, "target": 4 },
+    { "id": 5, "source": 1, "target": 5 }
+  ]
+}

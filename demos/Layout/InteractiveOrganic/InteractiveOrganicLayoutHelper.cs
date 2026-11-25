@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 4.0.
- ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -36,7 +36,7 @@ using yWorks.Graph;
 using yWorks.Layout;
 using yWorks.Layout.Organic;
 
-namespace Demo.yFiles.Layout.InteractiveOrganic
+namespace yWorks.Demo.InteractiveOrganic
 {
   /// <summary>
   ///   Helper class for the <see cref="InteractiveOrganicLayout"/> that provides a way to update locations of items in
@@ -48,9 +48,9 @@ namespace Demo.yFiles.Layout.InteractiveOrganic
     private readonly IGraph graph;
     private readonly GraphControl graphControl;
 
-    private InteractiveOrganicLayout layout;
+    private InteractiveOrganicLayout layout = null!;
     private readonly InteractiveOrganicLayoutData layoutData = new();
-    private Task cancelTask;
+    private Task? cancelTask;
 
     /// <summary>
     ///   Instantiates a new helper using the given graph control and graph.
@@ -69,7 +69,10 @@ namespace Demo.yFiles.Layout.InteractiveOrganic
 
       // run the layout in a separate thread
       var layoutExecutor = new LayoutExecutor(graphControl, organicLayout) {
-          LayoutData = layoutData, AnimateViewport = false, RunInThread = true, AllowUserInteraction = true
+          LayoutData = layoutData,
+          AnimateViewport = false,
+          RunInThread = true,
+          AllowUserInteraction = true
       };
       layout = organicLayout;
 
@@ -83,8 +86,10 @@ namespace Demo.yFiles.Layout.InteractiveOrganic
     /// </summary>
     public void StartAnimator() {
       // use an animator that animates an infinite animation
-      var animator =
-          new Animator(graphControl) { AutoInvalidation = false, AnimationPriority = DispatcherPriority.Input };
+      var animator = new Animator(graphControl) {
+          AutoInvalidation = false,
+          AnimationPriority = DispatcherPriority.Input
+      };
       animator.Animate(delegate {
         if (layoutData.UpdateNodeCenters(graph) > 0) {
           graphControl.UpdateVisual();

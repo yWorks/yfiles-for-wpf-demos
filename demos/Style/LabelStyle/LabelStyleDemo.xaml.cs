@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 4.0.
- ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -30,28 +30,43 @@
 using System;
 using System.Windows;
 using System.Windows.Media;
-using Demo.yFiles.Toolkit;
+using yWorks.Controls;
+using yWorks.Controls.Input;
 using yWorks.Geometry;
 using yWorks.Graph;
 using yWorks.Graph.LabelModels;
 using yWorks.Graph.Styles;
 
-namespace Demo.yFiles.Graph.DefaultLabels
+namespace yWorks.Demo.LabelStyle
 {
   /// <summary>
-  ///   Shows the background shapes that are available for <see cref="LabelStyle"/>.
+  ///   Shows the most important configuration options for the built-in <see cref="LabelStyle"/> class.
   /// </summary>
-  public partial class LabelStyleDemo
+  [Demo("label-style", "style", "Label Style", Summary = "Shows the features of the LabelStyle class.",
+      Keywords = ["library style", "style options", "padding"], Tags = ["style", "labels"],
+      RelatedDemos = ["tutorial-style-implementation-label-render-label-text"])]
+  public sealed partial class LabelStyleDemo
   {
-    /// <summary>
-    ///   Initializes the demo.
-    /// </summary>
+    private GraphControl GraphControl => graphControl;
+
+    private IGraph Graph => GraphControl.Graph;
+
     public LabelStyleDemo() {
       InitializeComponent();
+    }
+
+    protected override void Initialize() {
+      DemoStyles.InitDemoStyles(Graph);
 
       // Create node and edge labels using different label style settings
-      CreateSampleNodeLabels(graphControl.Graph);
-      CreateSampleEdgeLabels(graphControl.Graph);
+      CreateSampleNodeLabels(Graph);
+      CreateSampleEdgeLabels(Graph);
+
+      // Configure the interaction features and tool tips
+      ConfigureInteraction(GraphControl);
+
+      // Initialize the UI and show the demo
+      GraphControl.FitGraphBounds();
     }
 
     /// <summary>
@@ -59,41 +74,42 @@ namespace Demo.yFiles.Graph.DefaultLabels
     /// </summary>
     /// <param name="graph">The graph to add node labels to.</param>
     private static void CreateSampleNodeLabels(IGraph graph) {
-      var n1 = graph.CreateNode(new RectD(-25, -100, 50, 200), CreateNodeStyle(Themes.PaletteOrange));
+      var n1 = graph.CreateNode(new RectD(-25, -100, 50, 200), tag: true);
       // Add sample node labels to the first node, distributed evenly on the side and with different
       // background shapes
-      graph.AddLabel(n1, "Rectangle Node Label", CreateNodeLabelParameter(new PointD(1, 0.2), new PointD(100, 0)),
-          CreateNodeLabelStyle(shape : LabelShape.Rectangle));
-      graph.AddLabel(n1, "Rounded Node Label", CreateNodeLabelParameter(new PointD(1, 0.4), new PointD(100, 0)),
-          CreateNodeLabelStyle(shape : LabelShape.RoundRectangle, padding : 2));
-      graph.AddLabel(n1, "Hexagon Node Label", CreateNodeLabelParameter(new PointD(1, 0.6), new PointD(100, 0)),
-          // The hexagon background needs slightly larger padding at the sides
-          CreateNodeLabelStyle(shape : LabelShape.Hexagon));
-      graph.AddLabel(n1, "Pill Node Label", CreateNodeLabelParameter(new PointD(1, 0.8), new PointD(100, 0)),
-          CreateNodeLabelStyle(shape : LabelShape.Pill));
+      graph.AddLabel(n1, "Rectangle Node Label", CreateNodeLabelParameter(new PointD(1, 0.1), new PointD(100, 0)),
+          CreateNodeLabelStyle(shape: LabelShape.Rectangle));
+      graph.AddLabel(n1, "Rounded Node Label", CreateNodeLabelParameter(new PointD(1, 0.3), new PointD(100, 0)),
+          CreateNodeLabelStyle(shape: LabelShape.RoundRectangle, padding: new InsetsD(2)));
+      graph.AddLabel(n1, "Hexagon Node Label", CreateNodeLabelParameter(new PointD(1, 0.5), new PointD(100, 0)),
+          // The hexagon background needs slightly larger insets at the sides
+          CreateNodeLabelStyle(shape: LabelShape.Hexagon));
+      graph.AddLabel(n1, "Pill Node Label", CreateNodeLabelParameter(new PointD(1, 0.7), new PointD(100, 0)),
+          CreateNodeLabelStyle(shape: LabelShape.Pill));
+      graph.AddLabel(n1, "Squircle Node Label", CreateNodeLabelParameter(new PointD(1, 0.9), new PointD(100, 0)),
+          CreateNodeLabelStyle(shape: LabelShape.Squircle));
 
       // Create two more nodes, the bottom one and the right one
-      var n2 = graph.CreateNode(new RectD(275, 600, 50, 50));
-      graph.SetStyle(n2, CreateNodeStyle(Themes.Palette14));
+      var n2 = graph.CreateNode(new RectD(375, 700, 50, 50));
+      graph.SetStyle(n2, DemoStyles.CreateDemoNodeStyle(Themes.Palette14));
       var n3 = graph.CreateNode(new RectD(525, -100, 50, 200));
-      graph.SetStyle(n3, CreateNodeStyle(Themes.Palette12));
+      graph.SetStyle(n3, DemoStyles.CreateDemoNodeStyle(Themes.Palette12));
 
       // Add three node labels to the right node showing different text clipping and text wrapping options
       graph.AddLabel(n3, "Wrapped and clipped label text",
           CreateNodeLabelParameter(new PointD(1, 0.2), new PointD(120, 0)),
-          CreateNodeLabelStyle(Themes.Palette12, LabelShape.Pill, wrapping : TextWrapping.Wrap,
-              trimming : TextTrimming.WordEllipsis, clipText : true), new SizeD(140, 25));
+          CreateNodeLabelStyle(Themes.Palette12, LabelShape.Pill, wrapping: TextWrapping.Wrap,
+              textTrimming: TextTrimming.WordEllipsis), new SizeD(140, 25));
 
       graph.AddLabel(n3, "Un-wrapped but clipped label text",
           CreateNodeLabelParameter(new PointD(1, 0.5), new PointD(120, 0)),
-          CreateNodeLabelStyle(Themes.Palette12, LabelShape.Pill, wrapping : TextWrapping.NoWrap,
-              trimming : TextTrimming.None, clipText : true), new SizeD(140, 25));
+          CreateNodeLabelStyle(Themes.Palette12, LabelShape.Pill, wrapping: TextWrapping.NoWrap), new SizeD(140, 25));
 
       // For the last label, disable text clipping
       graph.AddLabel(n3, "Un-wrapped and un-clipped label text",
           CreateNodeLabelParameter(new PointD(1, 0.8), new PointD(120, 0)),
-          CreateNodeLabelStyle(Themes.Palette12, LabelShape.Pill, wrapping : TextWrapping.NoWrap,
-              trimming : TextTrimming.None, clipText : false), new SizeD(140, 25));
+          CreateNodeLabelStyle(Themes.Palette12, LabelShape.Pill, wrapping: TextWrapping.NoWrap, clipText: false),
+          new SizeD(140, 25));
     }
 
     /// <summary>
@@ -103,153 +119,161 @@ namespace Demo.yFiles.Graph.DefaultLabels
     private static void CreateSampleEdgeLabels(IGraph graph) {
       var edgeLabelModel = new SmartEdgeLabelModel { Angle = Math.PI / 2 };
 
-      graph.EdgeDefaults.Labels.LayoutParameter = edgeLabelModel.CreateParameterFromCenter();
-      graph.EdgeDefaults.Style = CreateEdgeStyle(Themes.Palette12);
+      graph.EdgeDefaults.Labels.LayoutParameter = edgeLabelModel.CreateParameterFromSource(0);
 
       var edge1 = graph.CreateEdge(graph.Nodes[0], graph.Nodes[1]);
       graph.AddBend(edge1, new PointD(0, 400));
 
       // Add sample edge labels on the first edge segment, distributed evenly on the path and with different
       // background shapes
-      graph.AddLabel(edge1, "Rectangle Edge Label\n" + "A second line of sample text.",
-          edgeLabelModel.CreateParameterFromSource(0, 0, 0.2), CreateEdgeLabelStyle(shape : LabelShape.Rectangle));
-      graph.AddLabel(edge1, "Rounded Edge Label\n" + "A second line of sample text.",
-          edgeLabelModel.CreateParameterFromSource(0, 0, 0.4),
+      graph.AddLabel(edge1, "Rectangle Edge Label\nA second line of sample text.",
+          edgeLabelModel.CreateParameterFromSource(0, 0, 0.1), CreateEdgeLabelStyle(shape: LabelShape.Rectangle));
+      graph.AddLabel(edge1, "Rounded Edge Label\nA second line of sample text.",
+          edgeLabelModel.CreateParameterFromSource(0, 0, 0.3),
           // For the round rectangle, we can manually increase the padding around the text
-          // using the padding property. By default, this would be just as tight as for
+          // using the insets property. By default, this would be just as tight as for
           // LabelShape.RECTANGLE, but in order to make sure that text is less likely to touch
           // the stroke of the round rectangle, we add 2 extra pixels.
-          CreateEdgeLabelStyle(shape : LabelShape.RoundRectangle, padding : 2));
-      graph.AddLabel(edge1, "Hexagon Edge Label\n" + "A second line of sample text.",
-          edgeLabelModel.CreateParameterFromSource(0, 0, 0.6), CreateEdgeLabelStyle(shape : LabelShape.Hexagon));
-      graph.AddLabel(edge1, "Pill Edge Label\n" + "A second line of sample text.",
-          edgeLabelModel.CreateParameterFromSource(0, 0, 0.8), CreateEdgeLabelStyle(shape : LabelShape.Pill));
+          CreateEdgeLabelStyle(shape: LabelShape.RoundRectangle, padding: new InsetsD(2)));
+      graph.AddLabel(edge1, "Hexagon Edge Label\nA second line of sample text.",
+          edgeLabelModel.CreateParameterFromSource(0), CreateEdgeLabelStyle(shape: LabelShape.Hexagon));
+      graph.AddLabel(edge1, "Pill Edge Label\nA second line of sample text.",
+          edgeLabelModel.CreateParameterFromSource(0, 0, 0.7), CreateEdgeLabelStyle(shape: LabelShape.Pill));
+      graph.AddLabel(edge1, "Squircle Edge Label\nA second line of sample text.",
+          edgeLabelModel.CreateParameterFromSource(0, 0, 0.9), CreateEdgeLabelStyle(shape: LabelShape.Squircle));
 
       // Add rotated edge labels on the second edge segment, distributed evenly and with different
       // background shapes
-      graph.AddLabel(edge1, "Rotated Rectangle", edgeLabelModel.CreateParameterFromSource(1, 0, 0.2),
-          CreateEdgeLabelStyle(Themes.Palette15, typeface : new Typeface("Monospace"), textSize : 16));
-      graph.AddLabel(edge1, "Rotated Rounded Rectangle", edgeLabelModel.CreateParameterFromSource(1, 0, 0.4),
+      graph.AddLabel(edge1, "Rotated Rectangle", edgeLabelModel.CreateParameterFromSource(1, 0, 0.35),
+          CreateEdgeLabelStyle(Themes.Palette15, LabelShape.Rectangle, CreateTypeface("Monospace"), 16));
+      graph.AddLabel(edge1, "Rotated Rounded Rectangle", edgeLabelModel.CreateParameterFromSource(1),
           CreateEdgeLabelStyle(Themes.Palette15, LabelShape.RoundRectangle,
               // For the round rectangle, we can manually increase the padding around the text
-              // using the padding property. By default, this would be just as tight as for
+              // using the insets property. By default, this would be just as tight as for
               // LabelShape.RECTANGLE, but in order to make sure that text is less likely to touch
               // the stroke of the round rectangle, we add 2 extra pixels.
-              2, new Typeface("Monospace"), 16));
+              padding: new InsetsD(2), typeface: CreateTypeface("Monospace"), textSize: 16));
       graph.AddLabel(edge1, "Rotated Hexagon", edgeLabelModel.CreateParameterFromSource(1, 0, 0.6),
-          CreateEdgeLabelStyle(Themes.Palette15, LabelShape.Hexagon, typeface : new Typeface("Monospace"),
-              textSize : 16));
-      graph.AddLabel(edge1, "Rotated Pill", edgeLabelModel.CreateParameterFromSource(1, 0, 0.8),
-          CreateEdgeLabelStyle(Themes.Palette15, LabelShape.Pill, typeface : new Typeface("Monospace"), textSize : 16));
+          CreateEdgeLabelStyle(Themes.Palette15, LabelShape.Hexagon, CreateTypeface("Monospace"), 16));
+      graph.AddLabel(edge1, "Rotated Pill", edgeLabelModel.CreateParameterFromSource(1, 0, 0.7),
+          CreateEdgeLabelStyle(Themes.Palette15, LabelShape.Pill, CreateTypeface("Monospace"), 16));
+      graph.AddLabel(edge1, "Rotated Squircle", edgeLabelModel.CreateParameterFromSource(1, 0, 0.85),
+          CreateEdgeLabelStyle(Themes.Palette15, LabelShape.Squircle, CreateTypeface("Monospace"), 16));
 
       var edge2 = graph.CreateEdge(graph.Nodes[2], graph.Nodes[1]);
-      graph.AddBend(edge2, new PointD(550, 625));
+      graph.AddBend(edge2, new PointD(550, 725));
+      graph.SetStyle(edge2, DemoStyles.CreateDemoEdgeStyle(Themes.Palette12));
 
       // Add larger edge labels with different vertical and horizontal text alignment settings to the second edge
       graph.AddLabel(edge2, "Edge Label\nwith vertical text\nalignment at bottom",
-          edgeLabelModel.CreateParameterFromSource(0, -20, 0.4),
-          CreateEdgeLabelStyle(Themes.Palette12, LabelShape.RoundRectangle, 2,
-              new Typeface(new FontFamily("sans-serif"), FontStyles.Normal, FontWeights.Bold, FontStretches.Normal),
-              verticalAlignment : VerticalAlignment.Bottom),
+          edgeLabelModel.CreateParameterFromSource(0, -20, 0.2),
+          CreateEdgeLabelStyle(Themes.Palette12, LabelShape.RoundRectangle, padding: new InsetsD(2),
+              typeface: CreateTypeface("sans-serif", FontWeights.Bold), textSize: 14,
+              verticalTextAlignment: VerticalAlignment.Bottom),
           // Explicitly specify a preferred size for the label that is much larger than needed for the label's text
           new SizeD(150, 120));
       graph.AddLabel(edge2, "Edge Label\nwith vertical text\nalignment at top",
-          edgeLabelModel.CreateParameterFromSource(0, 20, 0.4),
-          CreateEdgeLabelStyle(Themes.Palette12, LabelShape.RoundRectangle, 2,
-              new Typeface(new FontFamily("sans-serif"), FontStyles.Normal, FontWeights.Bold, FontStretches.Normal),
-              verticalAlignment : VerticalAlignment.Top),
+          edgeLabelModel.CreateParameterFromSource(0, 20, 0.2),
+          CreateEdgeLabelStyle(Themes.Palette12, LabelShape.RoundRectangle, padding: new InsetsD(2),
+              typeface: CreateTypeface("sans-serif", FontWeights.Bold), textSize: 14,
+              verticalTextAlignment: VerticalAlignment.Top),
           // Explicitly specify a preferred size for the label that is much larger than needed for the label's text
           new SizeD(150, 120));
       graph.AddLabel(edge2, "Edge Label\nwith vertical center\nand horizontal left\ntext alignment",
-          edgeLabelModel.CreateParameterFromSource(0, 20, 0.7),
-          CreateEdgeLabelStyle(Themes.Palette12, LabelShape.RoundRectangle, 2,
-              new Typeface(new FontFamily("sans-serif"), FontStyles.Normal, FontWeights.Bold, FontStretches.Normal),
-              verticalAlignment : VerticalAlignment.Center, textAlignment : TextAlignment.Left),
+          edgeLabelModel.CreateParameterFromSource(0, 20),
+          CreateEdgeLabelStyle(Themes.Palette12, LabelShape.RoundRectangle, padding: new InsetsD(2),
+              typeface: CreateTypeface("sans-serif", FontWeights.Bold), textSize: 14,
+              verticalTextAlignment: VerticalAlignment.Center, horizontalTextAlignment: TextAlignment.Left),
           // Explicitly specify a preferred size for the label that is much larger than needed for the label's text
           new SizeD(150, 120));
       graph.AddLabel(edge2, "Edge Label\nwith vertical bottom\nand horizontal right\ntext alignment",
-          edgeLabelModel.CreateParameterFromSource(0, -20, 0.7),
-          CreateEdgeLabelStyle(Themes.Palette12, LabelShape.RoundRectangle, 2,
-              new Typeface(new FontFamily("sans-serif"), FontStyles.Normal, FontWeights.Bold, FontStretches.Normal),
-              verticalAlignment : VerticalAlignment.Bottom, textAlignment : TextAlignment.Right),
+          edgeLabelModel.CreateParameterFromSource(0, -20),
+          CreateEdgeLabelStyle(Themes.Palette12, LabelShape.RoundRectangle, padding: new InsetsD(2),
+              typeface: CreateTypeface("sans-serif", FontWeights.Bold), textSize: 14,
+              verticalTextAlignment: VerticalAlignment.Bottom, horizontalTextAlignment: TextAlignment.Right),
           // Explicitly specify a preferred size for the label that is much larger than needed for the label's text
           new SizeD(150, 120));
-    }
-
-    private static INodeStyle CreateNodeStyle(Palette palette) {
-      return new RectangleNodeStyle {
-          Brush = palette.Fill, Pen = new Pen(palette.Stroke, 1.5), CornerStyle = CornerStyle.Round, CornerSize = 3.5
-      };
-    }
-
-    private static IEdgeStyle CreateEdgeStyle(Palette palette) {
-      return new PolylineEdgeStyle {
-          Pen = new Pen(palette.Stroke, 1.5), TargetArrow = new Arrow(brush : palette.Stroke, type : ArrowType.Triangle)
-      };
     }
 
     /// <summary>
     ///   Creates and configures a node label style.
     /// </summary>
-    /// <param name="palette">The palette to use for the style's fills and stroke.</param>
+    /// <param name="theme">The color palette to use for the style's fills and stroke.</param>
     /// <param name="shape">The label shape for the background.</param>
+    /// <param name="typeface">The typeface for the label text.</param>
+    /// <param name="textSize">The size of the label text.</param>
     /// <param name="padding">Optional padding to account for special background shapes.</param>
-    /// <param name="wrapping">The optional text wrapping defining how text of the label is wrapped.</param>
-    /// <param name="clipText">Determines whether overflowing text should be clipped.</param>
-    /// <param name="trimming">The optional text trimming defining how text of the label is trimmed.</param>
-    private static ILabelStyle CreateNodeLabelStyle(
-        Palette palette = null,
+    /// <param name="wrapping">The text wrapping mode.</param>
+    /// <param name="clipText">Whether to clip text at the label bounds.</param>
+    /// <param name="verticalTextAlignment">The vertical text alignment.</param>
+    /// <param name="horizontalTextAlignment">The horizontal text alignment.</param>
+    /// <param name="textTrimming">The text trimming behavior.</param>
+    private static Graph.Styles.LabelStyle CreateNodeLabelStyle(
+        Palette? theme = null,
         LabelShape shape = LabelShape.Rectangle,
-        double padding = 0,
+        Typeface? typeface = null,
+        double textSize = 14,
+        InsetsD? padding = null,
         TextWrapping wrapping = TextWrapping.NoWrap,
         bool clipText = true,
-        TextTrimming trimming = TextTrimming.None) {
-      palette = palette ?? Themes.Palette13;
-      return new LabelStyle {
+        VerticalAlignment verticalTextAlignment = VerticalAlignment.Center,
+        TextAlignment horizontalTextAlignment = TextAlignment.Center,
+        TextTrimming textTrimming = TextTrimming.None) {
+      theme ??= Themes.Palette13;
+      return new Graph.Styles.LabelStyle {
           Shape = shape,
-          BackgroundBrush = palette.NodeLabelFill,
+          BackgroundBrush = theme.NodeLabelFill,
           BackgroundPen = null,
-          TextSize = 14,
-          TextBrush = palette.Text,
-          Padding = new InsetsD(padding),
+          Typeface = typeface ?? CreateTypeface("Arial"),
+          TextSize = textSize,
+          TextBrush = theme.Text,
+          Padding = padding ?? new InsetsD(0),
           TextWrapping = wrapping,
-          VerticalTextAlignment = VerticalAlignment.Center,
-          TextAlignment = TextAlignment.Center,
+          TextTrimming = textTrimming,
           ClipText = clipText,
-          TextTrimming = trimming
+          VerticalTextAlignment = verticalTextAlignment,
+          TextAlignment = horizontalTextAlignment
       };
     }
 
     /// <summary>
     ///   Creates and configures an edge label style.
     /// </summary>
-    /// <param name="palette">The palette to use for the style's fills and stroke.</param>
+    /// <param name="theme">The color palette to use for the style's fills and stroke.</param>
     /// <param name="shape">The label shape for the background.</param>
+    /// <param name="typeface">The typeface for the label text.</param>
+    /// <param name="textSize">The size of the label text.</param>
     /// <param name="padding">Optional padding to account for special background shapes.</param>
-    /// <param name="typeface">The font for the label text.</param>
-    /// <param name="textSize">The size of the text.</param>
-    /// <param name="verticalAlignment">The vertical text alignment.</param>
-    /// <param name="textAlignment">The vertical text alignment.</param>
-    private static ILabelStyle CreateEdgeLabelStyle(
-        Palette palette = null,
+    /// <param name="wrapping">The text wrapping mode.</param>
+    /// <param name="clipText">Whether to clip text at the label bounds.</param>
+    /// <param name="verticalTextAlignment">The vertical text alignment.</param>
+    /// <param name="horizontalTextAlignment">The horizontal text alignment.</param>
+    /// <param name="textTrimming">The text trimming behavior.</param>
+    private static Graph.Styles.LabelStyle CreateEdgeLabelStyle(
+        Palette? theme = null,
         LabelShape shape = LabelShape.Rectangle,
-        double padding = 0,
-        Typeface typeface = null,
+        Typeface? typeface = null,
         double textSize = 14,
-        VerticalAlignment verticalAlignment = VerticalAlignment.Center,
-        TextAlignment textAlignment = TextAlignment.Center) {
-      palette = palette ?? Themes.Palette13;
-      typeface = typeface ?? new Typeface("Arial");
-      return new LabelStyle {
+        InsetsD? padding = null,
+        TextWrapping wrapping = TextWrapping.NoWrap,
+        bool clipText = false,
+        VerticalAlignment verticalTextAlignment = VerticalAlignment.Center,
+        TextAlignment horizontalTextAlignment = TextAlignment.Center,
+        TextTrimming textTrimming = TextTrimming.None) {
+      theme ??= Themes.Palette13;
+      return new Graph.Styles.LabelStyle {
           Shape = shape,
-          BackgroundBrush = palette.EdgeLabelFill,
+          BackgroundBrush = theme.EdgeLabelFill,
           BackgroundPen = null,
-          Padding = new InsetsD(padding),
-          Typeface = typeface,
+          Typeface = typeface ?? CreateTypeface("Arial"),
           TextSize = textSize,
-          TextWrapping = TextWrapping.NoWrap,
-          VerticalTextAlignment = verticalAlignment,
-          TextAlignment = textAlignment
+          TextBrush = theme.Text,
+          Padding = padding ?? new InsetsD(0),
+          TextWrapping = wrapping,
+          TextTrimming = textTrimming,
+          ClipText = clipText,
+          VerticalTextAlignment = verticalTextAlignment,
+          TextAlignment = horizontalTextAlignment
       };
     }
 
@@ -258,16 +282,48 @@ namespace Demo.yFiles.Graph.DefaultLabels
     /// </summary>
     /// <param name="layoutRatio">The ratio that describes the point on the node's layout relative to its upper-left corner.</param>
     /// <param name="layoutOffset">The absolute offset to apply to the point on the node after the ratio has been determined.</param>
-    private static ILabelModelParameter CreateNodeLabelParameter(PointD layoutRatio, PointD layoutOffset) {
-      return FreeNodeLabelModel.Instance.CreateParameter(layoutRatio, layoutOffset, new PointD(0.5, 0.5));
+    private static ILabelModelParameter CreateNodeLabelParameter(PointD layoutRatio, PointD layoutOffset) =>
+        FreeNodeLabelModel.Instance.CreateParameter(layoutRatio, layoutOffset, new PointD(0.5, 0.5));
+
+    private static Typeface CreateTypeface(string family, FontWeight? weight = null) {
+      var fontFamily = family switch {
+          "Monospace" => "Consolas",
+          "sans-serif" => "Arial",
+          _ => family
+      };
+      return new Typeface(new FontFamily(fontFamily), FontStyles.Normal, weight ?? FontWeights.Normal,
+          FontStretches.Normal);
     }
 
     /// <summary>
-    ///   Center the sample graph in the visible area.
+    ///   Configures the interaction behavior and the tooltips.
+    ///   Since this demo is about the styles of the labels, not their placement, only interaction with
+    ///   them is allowed.
     /// </summary>
-    private void OnLoaded(object source, EventArgs e) {
-      // center the sample graph in the visible area
-      graphControl.FitGraphBounds();
+    private static void ConfigureInteraction(GraphControl graphControl) {
+      var inputMode = new GraphEditorInputMode {
+          AllowCreateNode = false,
+          AllowCreateEdge = false,
+          AllowCreateBend = false,
+          ShowHandleItems = GraphItemTypes.None,
+          SelectableItems = GraphItemTypes.Label,
+          MovableSelectedItems = GraphItemTypes.Label,
+          DeletableItems = GraphItemTypes.None
+      };
+      inputMode.EditLabelInputMode.QueryLabelEditing += (_, evt) => {
+        // only the labels of the orange node are editable
+        if (evt.Owner?.Tag is not true) {
+          evt.Cancel = true;
+        }
+      };
+      ToolTipHelper.ConfigureToolTips(inputMode);
+
+      graphControl.InputMode = inputMode;
+    }
+
+    [STAThread]
+    public static void Main() {
+      Run<LabelStyleDemo>();
     }
   }
 }

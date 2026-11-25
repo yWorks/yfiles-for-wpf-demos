@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 4.0.
- ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -30,7 +30,7 @@
 using System;
 using System.Diagnostics;
 
-namespace Demo.yFiles.Option.DataBinding
+namespace yWorks.Demo.Option.DataBinding
 {
   /// <summary>
   ///   Static helper class that retrieves <see cref="IPropertyMapBuilder"/>

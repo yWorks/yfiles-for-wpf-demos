@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 4.0.
- ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -30,17 +30,17 @@
 using yWorks.Controls;
 using yWorks.Graph;
 
-namespace Demo.yFiles.Graph.UIAutomation
+namespace yWorks.Demo.UIAutomation
 {
   internal class AutomationGraphControl : GraphControl
   {
     public override string GetAutomationId(IModelItem item) =>
-      // Enable custom AutomationIds. This is just a sample that shows how to return
-      // an automation ID from the model item's tag. In practice you might return a property of the tag object if that
-      // identifies your model item uniquely.
-      item.Tag switch {
-        string s => s,
-        _ => null
-      };
+        // Enable custom AutomationIds. This is just a sample that shows how to return
+        // an automation ID from the model item's tag. In practice you might return a property of the tag object if that
+        // identifies your model item uniquely.
+        item.Tag switch {
+            string s => s,
+            _ => null
+        };
   }
 }

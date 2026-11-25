@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 4.0.
- ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -27,9 +27,12 @@
  ** 
  ***************************************************************************/
 
-using System.Windows.Media;
+#nullable disable
 
-namespace Demo.yFiles.Toolkit
+using System.Windows.Media;
+using yWorks.Annotations;
+
+namespace yWorks.Demo
 {
   public static class Themes
   {
@@ -91,12 +94,35 @@ namespace Demo.yFiles.Toolkit
     public static readonly Palette Palette95 = new("#ca0c3b", "#510518", "#ea9eb1", "#dccdd1", "#510518");
     public static readonly Palette Palette96 = new("#46a8d5", "#1c4355", "#b5dcee", "#d2d9dd", "#1c4355");
 
+    public static readonly Palette PaletteHighlight = new("#ff6c00", "#662b00", "#ffc499", "#e0d5cc", "#662b00");
     public static readonly Palette PaletteOrange = new("#ff6c00", "#662b00", "#ffc499", "#e0d5cc", "#662b00");
     public static readonly Palette PaletteBlue = new("#242265", "#0e0e28", "#a7a7c1", "#cfcfd4", "#0e0e28");
     public static readonly Palette PaletteRed = new("#ca0c3b", "#510518", "#ea9eb1", "#dccdd1", "#510518");
     public static readonly Palette PaletteGreen = new("#61a044", "#27401b", "#c0d9b4", "#d4d9d1", "#27401b");
     public static readonly Palette PalettePurple = new("#a37ab3", "#413148", "#dacae1", "#d9d6da", "#413148");
+    public static readonly Palette PalettePink = new("#e011a4", "#5a0742", "#f3a3d9", "#deced9", "#5a0742");
     public static readonly Palette PaletteLightblue = new("#46a8d5", "#1c4355", "#b5dcee", "#d2d9dd", "#1c4355");
+
+    [CanBeNull]
+    public static Palette ForName(string name) {
+      return name switch {
+          "highlight" => PaletteHighlight,
+          "orange" => PaletteOrange,
+          "blue" => PaletteBlue,
+          "red" => PaletteRed,
+          "green" => PaletteGreen,
+          "purple" => PalettePurple,
+          "lightblue" => PaletteLightblue,
+          "pink" => PalettePink,
+          "demo-orange" => PaletteOrange,
+          "demo-blue" => PaletteBlue,
+          "demo-red" => PaletteRed,
+          "demo-green" => PaletteGreen,
+          "demo-purple" => PalettePurple,
+          "demo-lightblue" => PaletteLightblue,
+          _ => null
+      };
+    }
   }
 
   public sealed class Palette
@@ -120,7 +146,9 @@ namespace Demo.yFiles.Toolkit
     public SolidColorBrush Text { get; }
 
     private static SolidColorBrush BrushFromHex(string hexColorString) {
-      return (SolidColorBrush) new BrushConverter().ConvertFrom(hexColorString);
+      var brush = (SolidColorBrush) new BrushConverter().ConvertFrom(hexColorString);
+      brush.Freeze();
+      return brush;
     }
   }
 }

@@ -1,4 +1,5 @@
-# ShapeNodeStyle
+# Shape Node Style
 
-This demo shows the main features of the `ShapeNodeStyle` class, most notably its supported shapes and 
-      the shape-specific effects of `KeepIntrinsicAspectRatio`.
+![Demo thumbnail](../../DemoBrowser/DemoBrowser/Screenshots/shape-node-style.webp "Shape Node Style")
+
+Shows the features of the ShapeNodeStyle class.

@@ -1,3 +1,5 @@
-# SelectionStyling
+# Selection Styling
 
-Demonstrates customized selecting rendering of nodes, edges and labels by decorating these items with a corresponding style.
+![Demo thumbnail](../../DemoBrowser/DemoBrowser/Screenshots/selection-styling.webp "Selection Styling")
+
+Shows customized selection painting of nodes, edges and labels by decorating these items with a corresponding style.

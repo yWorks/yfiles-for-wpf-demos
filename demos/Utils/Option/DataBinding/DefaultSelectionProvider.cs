@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 4.0.
- ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -29,10 +29,10 @@
 
 using System;
 using System.Collections.Generic;
-using Demo.yFiles.Option.Handler;
+using yWorks.Demo.Option.Handler;
 using yWorks.Utils;
 
-namespace Demo.yFiles.Option.DataBinding
+namespace yWorks.Demo.Option.DataBinding
 {
   /// <summary>
   ///   The default implementation of <see cref="ISelectionProvider{T}"/>
@@ -185,18 +185,15 @@ namespace Demo.yFiles.Option.DataBinding
     /// <summary>
     ///   Factory method that actually creates the descriptor instance for the provided parameters.
     /// </summary>
-    protected virtual IPropertyItemDescriptor<T> CreateDescriptor(T o, IPropertyMap map) {
-      return new DefaultPropertyItemDescriptor<T>(o, map);
-    }
+    protected virtual IPropertyItemDescriptor<T> CreateDescriptor(T o, IPropertyMap map) =>
+        new DefaultPropertyItemDescriptor<T>(o, map);
 
     /// <summary>
     ///   Returns <see langword="true"/> if the registered predicate does.
     /// </summary>
     /// <param name="o">The item to check.</param>
     /// <returns>Whether to add this item to the selection.</returns>
-    protected virtual bool IsValid(T o) {
-      return filter(o);
-    }
+    protected virtual bool IsValid(T o) => filter(o);
 
     #endregion
 

@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 4.0.
- ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -34,7 +34,7 @@ using System.Linq;
 using System.Windows.Markup;
 using yWorks.Graph.PortLocationModels;
 
-namespace Demo.yFiles.IO.GraphML.Compat.PortLocationModels
+namespace yWorks.Demo.GraphMLCompat.PortLocationModels
 {
   public class GenericPortLocationParameterExtension : MarkupExtension
   {
@@ -42,13 +42,12 @@ namespace Demo.yFiles.IO.GraphML.Compat.PortLocationModels
 
     public IPortLocationModel Model { get; set; } = null;
 
-    public override object ProvideValue(IServiceProvider serviceProvider) {
-      return ((CompositePortLocationModel) Model).LocationParameters.ElementAt(Index);
-    }
+    public override object ProvideValue(IServiceProvider serviceProvider) =>
+        ((CompositePortLocationModel) Model).LocationParameters.ElementAt(Index);
   }
 
   [ContentProperty("LocationParameters")]
-  public class GenericPortLocationModelExtension: MarkupExtension
+  public class GenericPortLocationModelExtension : MarkupExtension
   {
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
     public IList<IPortLocationModelParameter> LocationParameters { get; } = new List<IPortLocationModelParameter>();
@@ -65,6 +64,7 @@ namespace Demo.yFiles.IO.GraphML.Compat.PortLocationModels
   public class SegmentRatioParameterExtension : MarkupExtension
   {
     public int Index { get; set; } = 0;
+
     public double Ratio { get; set; } = 0;
 
     public IPortLocationModel Model { get; set; } = null;

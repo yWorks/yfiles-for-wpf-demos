@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 4.0.
- ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -32,10 +32,10 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Reflection;
-using Demo.yFiles.Option.Handler;
+using yWorks.Demo.Option.Handler;
 using yWorks.Utils;
 
-namespace Demo.yFiles.Option.View
+namespace yWorks.Demo.Option.View
 {
   [Obfuscation(StripAfterObfuscation = false, Exclude = true, ApplyToMembers = false)]
   internal class CopiedOptionItem : IOptionItem
@@ -291,7 +291,7 @@ namespace Demo.yFiles.Option.View
   [Obfuscation(StripAfterObfuscation = false, Exclude = true, ApplyToMembers = false)]
   internal class CopiedOptionGroup : CopiedOptionItem, IOptionGroup
   {
-    internal System.Collections.ObjectModel.ObservableCollection<IOptionItem> items = new();
+    internal System.Collections.ObjectModel.ObservableCollection<IOptionItem> items = [];
     private IOptionGroup groupDelegate;
     private WeakGroupListener listener;
 
@@ -394,9 +394,7 @@ namespace Demo.yFiles.Option.View
       }
     }
 
-    private CopiedOptionItem CreateCopy(IOptionItem item) {
-      return GetOptionHandler().CreateCopy(this, item);
-    }
+    private CopiedOptionItem CreateCopy(IOptionItem item) => GetOptionHandler().CreateCopy(this, item);
 
     public override void Dispose() {
       base.Dispose();

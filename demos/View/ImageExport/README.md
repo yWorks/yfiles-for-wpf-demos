@@ -1,4 +1,6 @@
-# ImageExport
+# Image Export
+
+![Demo thumbnail](../../DemoBrowser/DemoBrowser/Screenshots/ImageExport.webp "Image Export")
 
 This demo shows how to export a graph or part of it to different
       pixel and vector format images like JPEG, PNG, TIFF, GIF, BMP or EMF

@@ -1,4 +1,5 @@
-# SequenceConstraints
+# Sequence Constraints
 
-Demonstrates how to use sequence constraints with the HierarchicalLayout to
-      restrict the node sequencing.
+![Demo thumbnail](../../DemoBrowser/DemoBrowser/Screenshots/sequence-constraints.webp "Sequence Constraints")
+
+Shows how to use sequence constraints to prescribe the node sequencing in hierarchical layouts.

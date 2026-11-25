@@ -1,6 +1,6 @@
 <!-- ************************************************************************ -->
-<!-- This demo file is part of yFiles WPF 4.0.                           -->
-<!-- Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
+<!-- This demo file is part of yFiles WPF 4.1.                           -->
+<!-- Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
 <!-- 72070 Tuebingen, Germany. All rights reserved.                           -->
 <!--                                                                          -->
 <!-- yFiles demo files exhibit yFiles WPF functionalities. Any redistribution  -->
@@ -24,200 +24,96 @@
 <!-- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.             -->
 <!--                                                                          -->
 <!-- ************************************************************************ -->
-<Window x:Class="Demo.yFiles.Layout.PartialLayout.PartialLayoutDemo" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/4.0/xaml"
-        xmlns:option="http://www.yworks.com/yfilesWPF/3.0/demos/optionhandler"
-        Title="Demo.yFiles.Layout.PartialLayout" 
-        Height="600" Width="800" Loaded="OnLoaded" Style="{StaticResource DemoWindow}">
-	<Window.Resources>
-	</Window.Resources>
-	<HeaderedContentControl Style="{StaticResource DemoStyle}">
-		<HeaderedContentControl.Header>
-			<RichTextBox BorderThickness="0" IsReadOnly="True">
-				<FlowDocument>
-					<Paragraph>
-						Shows how to integrate (new) graph elements into an existing graph layout with
-						<Run FontWeight="Bold">PartialLayout</Run> .
-					</Paragraph>
-					<Paragraph>
-						This layout algorithm
-						<Run FontWeight="Bold">
-							changes the coordinates of a given set of graph elements
-						</Run>
-						(called
-						<Run FontStyle="Italic">partial</Run>
-						elements) and
-						<Run FontWeight="Bold">
-							leaves the location and size of all other elements
-						</Run>
-						(called
-						<Run FontStyle="Italic">fixed</Run>
-						elements) unchanged. The algorithm aims to place the partial elements such that the resulting drawing (including the fixed elements) has a good quality with
-						respect to common graph drawing aesthetics.
-					</Paragraph>
-					<Paragraph>
-						<Run FontWeight="Bold">
-							Partial node elements
-						</Run>
-						can be
-						<Run FontWeight="Bold">assigned to</Run>
-						so called
-						<Run FontWeight="Bold">subgraph components</Run>
-						. During the layout process
-						<Run FontWeight="Bold">each subgraph</Run>
-						induced by the nodes of a component is
-						<Run FontWeight="Bold">
-							first laid out using the specified subgraph layout
-						</Run>
-						. Then, the
-						<Run FontWeight="Bold">
-							different
-							components
-						</Run>
-						are
-						<Run FontWeight="Bold">
-							placed one-by-one onto the drawing area
-						</Run>
-						such that the number of overlaps among graph elements is small.
-						The user can specify different objectives (placement strategies) for finding 'good' positions for subgraph components.
-					</Paragraph>
-					<Paragraph>
-						The demo allows to specify fixed and partial elements.
-						<Run FontWeight="Bold">Fixed elements</Run>
-						are drawn
-						<Run FontWeight="Bold">grey</Run>
-						and
-						<Run FontWeight="Bold">
-							partial elements orange
-						</Run>
-						. To
-						change the fixed/partial state of elements, select the corresponding elements and click on the "Lock Selected
-						Elements" or "Unlock Selected Elements" button. The current state of selected elements can be toggled with a
-						mouse-double-click. To start the partial layout click on the play button.
-					</Paragraph>
-					<Paragraph>
-						Different
-						<Run FontWeight="Bold">
-							scenarios for hierarchical, orthogonal, organic or circular layout
-						</Run>
-						are available.
-						A scenario includes a graph laid out in the corresponding layout style and some new graph elements that
-						shall be placed by the partial layout. In addition suitable configuration options are set.
-					</Paragraph>
-					<Paragraph Style="{StaticResource HtmlH2}">
-						Configuration Options
-					</Paragraph>
-					<List>
-						<ListItem>
-							<Paragraph>
-								<Run FontWeight="Bold">Component Assignment:</Run>
-								Specifies the subgraph components.
-								<LineBreak />
-								"Single" specifies that each partial node is assigned to a separate component (no subgraph layout is applied).
-								<LineBreak />
-								"Connected" specifies that all partial nodes of a connected component are assigned to the
-								same subgraph component.
-							</Paragraph>
-						</ListItem>
-						<ListItem>
-							<Paragraph>
-								<Run FontWeight="Bold">Subgraph Layout:</Run>
-								Specifies the layout algorithm that is applied to the subgraph components. Available layout
-								algorithms include hierarchical, orthogonal, organic and circular layout styles.
-								Furthermore it can be specified that the layout of the components shall not change by selecting "Unchanged".
-							</Paragraph>
-						</ListItem>
-						<ListItem>
-							<Paragraph>
-								<Run FontWeight="Bold">
-									Subgraph Positioning Strategy:
-								</Run>
-								Specifies the placement strategy for the subgraph components.
-								<LineBreak />
-								"Barycenter" specifies that each component should be placed close to the barycenter of its graph neighbors.
-								<LineBreak />
-								"FromSketch" specifies that each component should be placed close to its original position.
-							</Paragraph>
-						</ListItem>
-						<ListItem>
-							<Paragraph>
-								<Run FontWeight="Bold">Edge Routing Style:</Run>
-								Specifies the edge routing style that is used for routing partial edges and edges between
-								different subgraph components (so-called inter-edges). Possible options are "StraightLine", "Orthogonal" and "Organic".
-								<LineBreak />
-								"Automatic" specifies that the algorithm should automatically choose a suitable routing style.
-							</Paragraph>
-						</ListItem>
-						<ListItem>
-							<Paragraph>
-								<Run FontWeight="Bold">Layout Orientation:</Run>
-								Specifies the layout orientation. "Automatic" specifies that the orientation should be determined
-								automatically.
-							</Paragraph>
-						</ListItem>
-						<ListItem>
-							<Paragraph>
-								<Run FontWeight="Bold">
-									Minimum Node Distance:
-								</Run>
-								Specifies the minimum distance between two adjacent nodes.
-							</Paragraph>
-						</ListItem>
-						<ListItem>
-							<Paragraph>
-								<Run FontWeight="Bold">Allow Mirroring:</Run>
-								Allows mirroring of subgraph components to improve the layout quality.
-							</Paragraph>
-						</ListItem>
-						<ListItem>
-							<Paragraph>
-								<Run FontWeight="Bold">Node Snapping:</Run>
-								If enabled, the algorithm tries to align nodes with each other.
-							</Paragraph>
-						</ListItem>
-					</List>
-				</FlowDocument>
-			</RichTextBox>
-		</HeaderedContentControl.Header>
-		<DockPanel>
-			<ToolBarTray DockPanel.Dock="Top">
-				<ToolBar>
-					<Button Command="IncreaseZoom" CommandTarget="{Binding ElementName=graphControl}" />
-					<Button Command="DecreaseZoom" CommandTarget="{Binding ElementName=graphControl}" />
-					<Button Command="{x:Static ywpf:GraphCommands.FitGraphBounds}" CommandTarget="{Binding ElementName=graphControl}" />
-					<Separator />
-					<Button x:Name="lockSelectionButton" Click="OnLockSelectionButtonClicked" Content="Lock Selection" />
-					<Button x:Name="unlockSelectionButton" Click="OnUnlockSelectionButtonClicked" Content="Unlock Selection" />
-				</ToolBar>
-			</ToolBarTray>
-			<Grid>
-				<Grid.ColumnDefinitions>
-					<ColumnDefinition Width="*" />
-					<ColumnDefinition Width="5" />
-					<ColumnDefinition Width="300" />
-				</Grid.ColumnDefinitions>
-				<ywpf:GraphControl x:Name="graphControl" Grid.Column="0" />
-				<GridSplitter Grid.Column="1" ResizeDirection="Columns" Width="5" Height="Auto" ResizeBehavior="PreviousAndNext" />
-				<HeaderedContentControl Grid.Column="2" Style="{StaticResource DescriptionStyle}" Header="Layout Settings" BorderThickness="1,0,0,0">
-					<StackPanel Orientation="Vertical">
-						<StackPanel Orientation="Horizontal">
-							<Label>Scenario:</Label>
-							<ComboBox x:Name="scenarioComboBox" SelectionChanged="ScenarioComboBoxSelectedValueChanged" Width="120" Margin="6,0"/>
-							<Button x:Name="reloadButton" Click="OnRefreshButtonClicked" ToolTip="Reload Scenario" Padding="6,2"
-											Content="{StaticResource RefreshIcon}" ContentTemplate="{StaticResource ImageButtonContentTemplate}" />
-						</StackPanel>
-						<option:EditorControl x:Name="editorControl" Margin="0,5,0,0" />
-						<DockPanel Margin="5,10,5,0">
-							<Button DockPanel.Dock="Left" x:Name="runButton" Click="OnRunButtonClicked" ToolTip="Perform Layout" Padding="16,4">
-								<StackPanel Orientation="Horizontal">
-									<Image Source="{StaticResource PlayIcon}" Margin="0,0,4,0"/>
-									<TextBlock>Layout</TextBlock>
-								</StackPanel>
-							</Button>
-							<Label/>
-						</DockPanel>
-					</StackPanel>
-				</HeaderedContentControl>
-			</Grid>
-		</DockPanel>
-	</HeaderedContentControl>
-</Window>
+<demo:Demo x:Class="yWorks.Demo.PartialLayout.PartialLayoutDemo"
+           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+           xmlns:demo="http://www.yworks.com/xml/yfiles-demos"
+           xmlns:ywpf="http://www.yworks.com/xml/yfiles-wpf/4.0/xaml">
+  <demo:Demo.Resources>
+    <DataTemplate x:Key="EnumChoiceTemplate">
+      <TextBlock Text="{Binding Label}" />
+    </DataTemplate>
+  </demo:Demo.Resources>
+  <demo:DemoView>
+    <demo:ClippingBorder Style="{StaticResource DemoBorderStyle}">
+      <DockPanel>
+        <demo:DemoToolBar DockPanel.Dock="Top" x:Name="demoToolBar" ButtonPresets="Zoom" CommandTarget="{Binding ElementName=graphControl}">
+          <Button Content="&#xE72E;" ToolTip="Fixate selected nodes and edges" Click="OnLockSelection" />
+          <Button Content="&#xE785;" ToolTip="Free selected nodes and edges" Click="OnUnlockSelection" />
+          <Separator />
+          <Label Content="Scenario:" VerticalAlignment="Center" Margin="6,0,4,0" />
+          <ComboBox x:Name="sampleComboBox" Width="130" SelectedValuePath="Tag"
+                  ToolTip="Choose a predefined sample">
+            <ComboBoxItem Content="Hierarchical" Tag="hierarchical" />
+            <ComboBoxItem Content="Orthogonal" Tag="orthogonal" />
+            <ComboBoxItem Content="Organic" Tag="organic" />
+            <ComboBoxItem Content="Circular" Tag="circular" />
+          </ComboBox>
+          <Button Content="Refresh" ToolTip="Refresh sample graph" Click="OnRefresh" />
+          <Separator />
+          <Button Content="Layout" ToolTip="Run Partial Layout" Click="OnLayout" />
+        </demo:DemoToolBar>
+        <ywpf:GraphControl x:Name="graphControl" />
+      </DockPanel>
+    </demo:ClippingBorder>
+    <demo:SideBar x:Name="interactionPanel" Header="Layout Settings">
+      <StackPanel>
+        <TextBlock Text="Component Assignment" FontWeight="Bold" Margin="0,4" />
+        <ComboBox ItemsSource="{Binding ComponentAssignments}"
+                  ItemTemplate="{StaticResource EnumChoiceTemplate}"
+                  SelectedValuePath="Value"
+                  SelectedValue="{Binding ComponentAssignment, Mode=TwoWay}" />
+        <TextBlock Text="Subgraph Layout" FontWeight="Bold" Margin="0,4" />
+        <ComboBox ItemsSource="{Binding SubgraphLayouts}"
+                  ItemTemplate="{StaticResource EnumChoiceTemplate}"
+                  SelectedValuePath="Value"
+                  SelectedValue="{Binding SubgraphLayout, Mode=TwoWay}" />
+        <TextBlock Text="Subgraph Positioning" FontWeight="Bold" Margin="0,4" />
+        <ComboBox ItemsSource="{Binding SubgraphPlacements}"
+                  ItemTemplate="{StaticResource EnumChoiceTemplate}"
+                  SelectedValuePath="Value"
+                  SelectedValue="{Binding SubgraphPlacement, Mode=TwoWay}" />
+        <TextBlock Text="Edge Routing Style" FontWeight="Bold" Margin="0,4" />
+        <ComboBox ItemsSource="{Binding EdgeRoutingStyles}"
+                  ItemTemplate="{StaticResource EnumChoiceTemplate}"
+                  SelectedValuePath="Value"
+                  SelectedValue="{Binding EdgeRoutingStyle, Mode=TwoWay}" />
+        <TextBlock Text="Layout Orientation" FontWeight="Bold" Margin="0,4" />
+        <ComboBox ItemsSource="{Binding LayoutOrientations}"
+                  ItemTemplate="{StaticResource EnumChoiceTemplate}"
+                  SelectedValuePath="Value"
+                  SelectedValue="{Binding LayoutOrientation, Mode=TwoWay}" />
+        <TextBlock Text="Minimum Node Distance" FontWeight="Bold" Margin="0,4" />
+        <TextBox Text="{Binding MinimumNodeDistance, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                 Margin="0,0,0,4" />
+        <CheckBox Content="Allow Mirroring" IsChecked="{Binding AllowMirroring, Mode=TwoWay}"
+                  Margin="0,2" />
+        <CheckBox Content="Node Snapping" IsChecked="{Binding NodeSnapping, Mode=TwoWay}"
+                  Margin="0,2" />
+        <TextBlock Text="Configuration Options" FontSize="16" FontWeight="Bold" Margin="0,16,0,6" />
+        <TextBlock Text="Component Assignment" FontWeight="Bold" Margin="0,4,0,0" />
+        <TextBlock Text="Partial nodes as single nodes or in connected components with a common subgraph layout."
+                   TextWrapping="Wrap" />
+        <TextBlock Text="Subgraph Layout" FontWeight="Bold" Margin="0,8,0,0" />
+        <TextBlock Text="The layout algorithm to apply to subgraph components: hierarchical, orthogonal, organic or circular. Furthermore, the components can remain Unchanged."
+                   TextWrapping="Wrap" />
+        <TextBlock Text="Subgraph Positioning Strategy" FontWeight="Bold" Margin="0,8,0,0" />
+        <TextBlock Text="Subgraph components can either be close to the barycenter of their graph neighbors or close to their original position (From Sketch)."
+                   TextWrapping="Wrap" />
+        <TextBlock Text="Edge Routing Style" FontWeight="Bold" Margin="0,8,0,0" />
+        <TextBlock Text="Partial edges and edges between different subgraph components (so-called inter-edges) are routed straight-line, orthogonal, or organic. The algorithm can also automatically choose a suitable routing strategy."
+                   TextWrapping="Wrap" />
+        <TextBlock Text="Layout Orientation" FontWeight="Bold" Margin="0,8,0,0" />
+        <TextBlock Text="The layout orientation for the layout of subgraph components. Automatic specifies that the orientation should be determined automatically."
+                   TextWrapping="Wrap" />
+        <TextBlock Text="Minimum Node Distance" FontWeight="Bold" Margin="0,8,0,0" />
+        <TextBlock Text="The minimum distance between two adjacent nodes." TextWrapping="Wrap" />
+        <TextBlock Text="Allow Mirroring" FontWeight="Bold" Margin="0,8,0,0" />
+        <TextBlock Text="Allows mirroring of subgraph components to improve the layout quality." TextWrapping="Wrap" />
+        <TextBlock Text="Node Snapping:" FontWeight="Bold" Margin="0,8,0,0" />
+        <TextBlock Text="The algorithm tries to align nodes with each other." TextWrapping="Wrap" />
+      </StackPanel>
+    </demo:SideBar>
+    <demo:Description Source="description.html" />
+  </demo:DemoView>
+</demo:Demo>

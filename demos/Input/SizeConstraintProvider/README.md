@@ -1,4 +1,5 @@
-# SizeConstraintProvider
+# Size Constraint Provider
 
-Demo code that shows how to customize the resizing behavior of INodes by implementing
-      a custom `ISizeConstraintProvider&lt;T&gt;`.
+![Demo thumbnail](../../DemoBrowser/DemoBrowser/Screenshots/size-constraint-provider.webp "Size Constraint Provider")
+
+Shows how resizing of nodes can be restricted.

@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 4.0.
- ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -37,7 +37,7 @@ using yWorks.Layout.Grid;
 using yWorks.Layout.Hierarchical;
 using yWorks.Utils;
 
-namespace Demo.yFiles.Layout.Configurations
+namespace yWorks.Demo.Layout.Configurations
 {
   /// <summary>
   ///   This stage can be used for automatically assigning
@@ -169,7 +169,11 @@ namespace Demo.yFiles.Layout.Configurations
       // check if this is a non-trivial task, i.e. the graph is not empty for the core layout after hiding top-level groups
       if (!graph.IsEmpty) {
         // create a column for those nodes that don't belong to any group, which has not a fixed index
-        var nonGroupedColumn = new TopLevelColumn { indexFixed = false, leftInset = 0, rightInset = spacing };
+        var nonGroupedColumn = new TopLevelColumn {
+            indexFixed = false,
+            leftInset = 0,
+            rightInset = spacing
+        };
 
         // remember which roots have been used at all, i.e. have nodes assigned to them
         var usedRootGroups = new HashSet<Node>();

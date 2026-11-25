@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 4.0.
- ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -31,7 +31,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace Demo.yFiles.Toolkit.OptionHandler
+namespace yWorks.Demo.Toolkit.OptionHandler
 {
   /// <summary>
   ///   ConfigConverter is used to convert an input configuration into nested <see cref="Option"/>s usable by an option
@@ -67,10 +67,10 @@ namespace Demo.yFiles.Toolkit.OptionHandler
   public class ConfigConverter
   {
     // all members that need to be added to the top-level OptionGroup - including groups
-    private readonly List<MemberInfo> toplevelItems = new();
+    private readonly List<MemberInfo> toplevelItems = [];
 
     // the methods - methods aren't used right now
-    private readonly List<MethodInfo> methods = new();
+    private readonly List<MethodInfo> methods = [];
 
     // map a group name to a list of its inner members
     private readonly Dictionary<string, List<MemberInfo>> groupMapping = new();
@@ -199,9 +199,8 @@ namespace Demo.yFiles.Toolkit.OptionHandler
       return false;
     }
 
-    private static bool StartsWith(string text, string pattern) {
-      return text.Length > pattern.Length && text.Substring(0, pattern.Length) == pattern;
-    }
+    private static bool StartsWith(string text, string pattern) =>
+        text.Length > pattern.Length && text.Substring(0, pattern.Length) == pattern;
 
     private Func<bool> GetInvoker(MemberInfo member, object config) {
       var fieldInfo = member as FieldInfo;
@@ -239,7 +238,7 @@ namespace Demo.yFiles.Toolkit.OptionHandler
       var group = GetGroup(field);
       if (group != null && group != "rootgroup") {
         if (!groupMapping.ContainsKey(group)) {
-          groupMapping[group] = new List<MemberInfo>();
+          groupMapping[group] = [];
         }
         groupMapping[group].Add(field);
       } else {
@@ -260,7 +259,7 @@ namespace Demo.yFiles.Toolkit.OptionHandler
       var group = GetGroup(property);
       if (group != null && group != "rootgroup") {
         if (!groupMapping.ContainsKey(group)) {
-          groupMapping[group] = new List<MemberInfo>();
+          groupMapping[group] = [];
         }
         groupMapping[group].Add(property);
       } else {
@@ -529,9 +528,7 @@ namespace Demo.yFiles.Toolkit.OptionHandler
       }
     }
 
-    private static bool ShouldIgnoreMember(MemberInfo member) {
-      return StartsWith(member.Name, "ShouldDisable");
-    }
+    private static bool ShouldIgnoreMember(MemberInfo member) => StartsWith(member.Name, "ShouldDisable");
 
     private static bool IsOptionGroup(MemberInfo groupMember) {
       var componentTypeAttributes = groupMember.GetCustomAttributes(typeof(ComponentTypeAttribute), false);
@@ -563,7 +560,8 @@ namespace Demo.yFiles.Toolkit.OptionHandler
     }
 
     /// <summary>
-    ///   <see cref="IComparer{T}"/> that compares members' position information contained in <see cref="OptionGroupAttribute"/>
+    ///   <see cref="IComparer{T}"/> that compares members' position information contained in
+    ///   <see cref="OptionGroupAttribute"/>
     ///   .
     /// </summary>
     public class MemberComparer : IComparer<MemberInfo>

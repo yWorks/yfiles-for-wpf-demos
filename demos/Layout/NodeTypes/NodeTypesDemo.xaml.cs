@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 4.0.
- ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -28,435 +28,529 @@
  ***************************************************************************/
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Media;
-using System.Windows.Shapes;
-using Demo.yFiles.Toolkit;
+using System.Windows.Documents;
 using yWorks.Controls;
 using yWorks.Controls.Input;
 using yWorks.Geometry;
 using yWorks.Graph;
-using yWorks.Graph.Styles;
 using yWorks.Layout;
 using yWorks.Layout.Circular;
 using yWorks.Layout.Hierarchical;
 using yWorks.Layout.Organic;
+using yWorks.Layout.Radial;
 using yWorks.Layout.Router;
 using yWorks.Layout.Tree;
-using StarSubstructureStyle = yWorks.Layout.Organic.StarSubstructureStyle;
+using OrganicCycleSubstructureStyle = yWorks.Layout.Organic.CycleSubstructureStyle;
+using OrganicParallelSubstructureStyle = yWorks.Layout.Organic.ParallelSubstructureStyle;
+using OrganicStarSubstructureStyle = yWorks.Layout.Organic.StarSubstructureStyle;
 
-namespace Demo.yFiles.Graph.NodeTypes
+namespace yWorks.Demo.NodeTypes
 {
   /// <summary>
-  ///   A demo that shows how different layout algorithms handle nodes with types.
+  ///   Describes a sample graph and the layout algorithm to run on it.
   /// </summary>
-  public partial class NodeTypesDemo
-  {
-    // node visualizations for the different node types
-    private static readonly ShapeNodeStyle[] nodeStyles = {
-        new() {
-            Shape = ShapeNodeShape.RoundRectangle,
-            Brush = new SolidColorBrush(Color.FromRgb(0x17, 0xbe, 0xbb)),
-            Pen = new Pen(new SolidColorBrush(Color.FromRgb(0x40, 0x72, 0x71)), 1.5)
-        },
-        new() {
-            Shape = ShapeNodeShape.RoundRectangle,
-            Brush = new SolidColorBrush(Color.FromRgb(0xff, 0xc9, 0x14)),
-            Pen = new Pen(new SolidColorBrush(Color.FromRgb(0x99, 0x89, 0x53)), 1.5)
-        },
-        new() {
-            Shape = ShapeNodeShape.RoundRectangle,
-            Brush = new SolidColorBrush(Color.FromRgb(0xff, 0x6c, 0x00)),
-            Pen = new Pen(new SolidColorBrush(Color.FromRgb(0x66, 0x2b, 0x00)), 1.5)
-        }
-    };
+  internal sealed record Sample(
+      string Name,
+      ILayoutAlgorithm Layout,
+      LayoutData<INode, IEdge, ILabel, ILabel> LayoutData,
+      string SampleDataResource,
+      bool Directed = false);
 
-    // edge visualizations for directed and undirected edges
-    private static readonly IEdgeStyle directedEdgeStyle = DemoStyles.CreateDemoEdgeStyle();
-    private static readonly IEdgeStyle undirectedEdgeStyle = DemoStyles.CreateDemoEdgeStyle(showTargetArrow : false);
+  /// <summary>
+  ///   Shows how different layout algorithms handle nodes with types.
+  /// </summary>
+  [Demo("node-types", "layout", "Node Types",
+      Summary = "Shows how different layout algorithms handle nodes with types.", Tags = ["layout", "node type"],
+      Keywords = [
+          "layoutfeatures", "types", "tree", "hierarchical", "organic", "components", "circular", "balloon",
+          "compact disk", "data analysis"
+      ])]
+  public sealed partial class NodeTypesDemo
+  {
+    /// <summary>
+    ///   The samples that can be selected in this demo.
+    /// </summary>
+    private readonly List<Sample> samples = [];
 
     /// <summary>
-    ///   Returns the GraphControl instance used in the form.
+    ///   The color sets for the three different node types.
+    /// </summary>
+    private static readonly Palette[] typeColors = [Themes.Palette21, Themes.Palette22, Themes.Palette23];
+
+    private GraphEditorInputMode? graphEditorInputMode;
+    private bool isBusy;
+
+    /// <summary>
+    ///   The graph control holding the graph shown in this demo.
     /// </summary>
     private GraphControl GraphControl => graphControl;
 
-    #region Initialization
+    private IGraph Graph => GraphControl.Graph;
 
-    /// <summary>
-    ///   Wires up the UI components and initializes the layout options.
-    /// </summary>
     public NodeTypesDemo() {
       InitializeComponent();
-
-      SampleGraphComboBox.ItemsSource = new[] {
-          CreateHierarchicalSample(), CreateOrganicSample(), CreateTreeSample(), CreateCircularSample(),
-          CreateComponentSample()
-      };
     }
 
     /// <summary>
-    ///   Initializes the graph and the input mode.
+    ///   Runs this demo.
     /// </summary>
-    private void OnLoad(object sender, EventArgs e) {
-      InitializeInputModes();
-      InitializeGraph(GraphControl.Graph);
-      SampleGraphComboBox.SelectedIndex = 0;
+    protected override void Initialize() {
+      ConfigureGraphComponent();
+      CreateSamples();
+      PrepareSampleList();
+      InitializeTypePanel();
+      InitializeUI();
+
+      // Load the initial sample without the comparison preview.
+      _ = LoadSampleAsync(false);
     }
-
-    /// <summary>
-    ///   Initializes the edit mode and the context menu.
-    /// </summary>
-    private void InitializeInputModes() {
-      var editMode = new GraphEditorInputMode {
-          SelectableItems = GraphItemTypes.Node | GraphItemTypes.Edge,
-          ContextMenuItems = GraphItemTypes.Node,
-          NodeCreator = (context, graph, location, parent) => {
-            var node = graph.CreateNode(location);
-            node.Tag = 0;
-            graph.SetStyle(node, GetNodeStyle(node));
-            return node;
-          }
-      };
-
-      editMode.PopulateItemContextMenu += OnPopulateItemContextMenu;
-
-      GraphControl.InputMode = editMode;
-    }
-
-    /// <summary>
-    ///   Opens a context menu to change the type of a node.
-    /// </summary>
-    private void OnPopulateItemContextMenu(object sender, PopulateItemContextMenuEventArgs<IModelItem> args) {
-      if (args.Item is INode) {
-        // Select node if not already selected
-        if (!graphControl.Selection.Contains(args.Item)) {
-          graphControl.Selection.Clear();
-          graphControl.Selection.Add(args.Item);
-        }
-
-        for (var type = 0; type < nodeStyles.Length; type++) {
-          var nodeStyle = nodeStyles[type];
-          var menuItem = new MenuItem {
-              Header = new Rectangle {
-                  Fill = nodeStyle.Brush,
-                  Width = 50,
-                  Height = 20,
-                  Stroke = nodeStyle.Pen.Brush,
-                  Margin = new Thickness(5)
-              }
-          };
-          var type1 = type;
-          menuItem.Click += async (o, eventArgs) => {
-            foreach (var node in graphControl.Selection.Nodes) {
-              node.Tag = type1;
-              GraphControl.Graph.SetStyle(node, nodeStyle);
-            }
-            await ApplyLayout(true);
-          };
-          args.Menu.Items.Add(menuItem);
-        }
-      }
-    }
-
-    /// <summary>
-    ///   Configures the defaults for the graph.
-    /// </summary>
-    private void InitializeGraph(IGraph graph) {
-      DemoStyles.InitDemoStyles(graph);
-      graph.NodeDefaults.ShareStyleInstance = false;
-      graph.NodeDefaults.Size = new SizeD(40, 40);
-
-      graph.SetUndoEngineEnabled(true);
-    }
-
-    /// <summary>
-    ///   Loads a sample graph and adapts the visualization of the nodes to their types and of the
-    ///   edges to their directions.
-    /// </summary>
-    private async Task LoadSample() {
-      var selectedSample = (Sample) SampleGraphComboBox.SelectedItem;
-      GraphControl.ImportFromGraphML("Resources\\" + selectedSample.File + ".graphml");
-
-      var graph = GraphControl.Graph;
-      foreach (var node in graph.Nodes) {
-        graph.SetStyle(node, GetNodeStyle(node));
-      }
-      foreach (var edge in graph.Edges) {
-        graph.SetStyle(edge, GetEdgeStyle(selectedSample.IsDirected));
-      }
-
-      await ApplyLayout(false);
-      await GraphControl.FitGraphBounds();
-    }
-
-    #endregion
-
-    #region Node type handling
 
     /// <summary>
     ///   Gets the type of the given node from its tag.
     /// </summary>
-    private int GetNodeType(INode node) {
-      // The implementation of this demo assumes that on the INode.Tag a type property
-      // (a number) exists. Note though that for the layout's node type feature arbitrary objects
-      // from arbitrary sources may be used.
-      return node.Tag is int ? (int) node.Tag : 0;
+    /// <param name="node">The node to query the type for.</param>
+    private static int GetNodeType(INode node) {
+      // The implementation for this demo assumes that the node tag has a type property
+      // (an integer). Note though that for the layout's node type feature arbitrary objects from
+      // arbitrary sources may be used. In other applications one could, for example, use the color
+      // or shape of the node's style as type or its label text, please see the following snippets:
+
+      // Use the fill color of the node assuming that its style is an instance of ShapeNodeStyle
+      // (does not work in this demo!)
+      // return ((ShapeNodeStyle) node.Style).Brush;
+
+      // Use the label text of the node as type
+      // return node.Labels.Count > 0 ? node.Labels[0].Text : null;
+
+      if (node.Tag is NodeData { Tag: { } dataTag }) {
+        return dataTag.Type;
+      }
+      return 0;
     }
 
     /// <summary>
-    ///   Determines the visualization of a node based on its type.
-    /// </summary>
-    private ShapeNodeStyle GetNodeStyle(INode node) {
-      var type = GetNodeType(node);
-      return nodeStyles[type];
-    }
-
-    /// <summary>
-    ///   Determines the visualization of an edge based on its direction.
-    /// </summary>
-    private IEdgeStyle GetEdgeStyle(bool directed) {
-      return directed ? directedEdgeStyle : undirectedEdgeStyle;
-    }
-
-    #endregion
-
-    #region Sample creation
-
-    /// <summary>
-    ///   Creates and configures the <see cref="HierarchicalLayout"/> and the
-    ///   <see cref="HierarchicalLayoutData{TNode,TEdge,TNodeEdge,TNodeLabel,TEdgeLabel}"/>
+    ///   Creates and configures the <see cref="HierarchicalLayout"/> and its layout data
     ///   such that node types are considered.
     /// </summary>
-    private Sample CreateHierarchicalSample() {
-      // create hierarchical layout - no further settings on the algorithm necessary to support types
+    private static Sample CreateHierarchicalSample(IGraph graph) {
+      // Create hierarchical layout - no further settings on the algorithm are necessary to support types.
       var layout = new HierarchicalLayout();
 
-      // the node types are specified as delegate on the nodeTypes property of the layout data
-      var layoutData = layout.CreateLayoutData(graphControl.Graph);
+      // The node types are specified as a delegate on the node types mapping of the layout data.
+      var layoutData = layout.CreateLayoutData(graph);
       layoutData.NodeTypes.MapperFunction = node => GetNodeType(node);
 
-      return new Sample {
-          Name = "Hierarchical",
-          File = "hierarchical",
-          Layout = layout,
-          LayoutData = layoutData,
-          IsDirected = true
-      };
+      return new Sample("Hierarchical", layout, layoutData, "hierarchical.json", true);
     }
 
     /// <summary>
-    ///   Creates and configures the <see cref="OrganicLayout"/> and the
-    ///   <see cref="OrganicLayoutData{TNode,TEdge,TNodeLabel,TEdgeLabel}"/>
+    ///   Creates and configures the <see cref="OrganicLayout"/> and its layout data
     ///   such that node types are considered.
     /// </summary>
-    private Sample CreateOrganicSample() {
-      // create an organic layout wrapped by an organic edge router
-
-      // to consider node types, substructures handling (stars, parallel structures and cycles)
-      // on the organic layout is enabled - otherwise types have no influence
+    private static Sample CreateOrganicSample(IGraph graph) {
+      // Create an organic layout wrapped by an organic edge router.
       var organicLayout = new OrganicLayout {
           Deterministic = true,
           DefaultMinimumNodeDistance = 30,
-          StarSubstructureStyle = StarSubstructureStyle.Circular,
+          StarSubstructureStyle = OrganicStarSubstructureStyle.Circular,
           StarSubstructureTypeSeparation = false,
-          ParallelSubstructureStyle = ParallelSubstructureStyle.Rectangular,
+          ParallelSubstructureStyle = OrganicParallelSubstructureStyle.Rectangular,
           ParallelSubstructureTypeSeparation = false,
-          CycleSubstructureStyle = CycleSubstructureStyle.Circular
+          CycleSubstructureStyle = OrganicCycleSubstructureStyle.Circular
       };
       var layout = new OrganicEdgeRouter(organicLayout);
 
-      // the node types are specified as delegate on the nodeTypes property of the layout data
-      var layoutData = organicLayout.CreateLayoutData(graphControl.Graph);
+      // The node types are specified as a delegate on the node types mapping of the layout data.
+      var layoutData = organicLayout.CreateLayoutData(graph);
       layoutData.NodeTypes.MapperFunction = node => GetNodeType(node);
 
-      return new Sample {
-          Name = "Organic",
-          File = "organic",
-          Layout = layout,
-          LayoutData = layoutData,
-          IsDirected = false
-      };
+      return new Sample("Organic", layout, layoutData, "organic.json");
     }
 
     /// <summary>
-    ///   Creates and configures the <see cref="TreeLayout"/> and the
-    ///   <see cref="TreeLayoutData{TNode,TEdge,TNodeLabel,TEdgeLabel}"/>
+    ///   Creates and configures the <see cref="TreeLayout"/> and its layout data
     ///   such that node types are considered.
     /// </summary>
-    private Sample CreateTreeSample() {
-      // create a tree layout including a reduction stage to support non-tree graphs too
-      var edgeRouter = new EdgeRouter();
-      var layout = new TreeLayout {
-          DefaultSubtreePlacer = new CompactSubtreePlacer(), TreeReductionStage = { NonTreeEdgeRouter = edgeRouter }
-      };
+    private static Sample CreateTreeSample(IGraph graph) {
+      // Create a tree layout.
+      var layout = new TreeLayout { DefaultSubtreePlacer = new CompactSubtreePlacer() };
+      layout.TreeReductionStage.NonTreeEdgeRouter = new EdgeRouter();
 
-      // the node types are specified as delegate on the nodeTypes property of the layout data
-      var layoutData = layout.CreateLayoutData(graphControl.Graph);
+      // The node types are specified as a delegate on the node types mapping of the layout data.
+      var layoutData = layout.CreateLayoutData(graph);
       layoutData.NodeTypes.MapperFunction = node => GetNodeType(node);
 
-      return new Sample {
-          Name = "Tree",
-          File = "tree",
-          Layout = layout,
-          LayoutData = layoutData,
-          IsDirected = true
-      };
+      return new Sample("Tree", layout, layoutData, "resources.tree.json", true);
     }
 
     /// <summary>
-    ///   Creates and configures the <see cref="CircularLayout"/> and the
-    ///   <see cref="CircularLayoutData{TNode,TEdge,TNodeLabel,TEdgeLabel}"/>
+    ///   Creates and configures the <see cref="CircularLayout"/> and its layout data
     ///   such that node types are considered.
     /// </summary>
-    private Sample CreateCircularSample() {
+    private static Sample CreateCircularSample(IGraph graph) {
+      // Create a circular layout. Its layout data specifies node types for the ordering on the circle.
       var layout = new CircularLayout();
 
-      // The node types are specified as delegate on the nodeTypes property of the layout data.
-      // The CircularLayout will sort the nodes by their type.
-      var layoutData = layout.CreateLayoutData(graphControl.Graph);
+      // The node types are specified as a delegate on the node types mapping of the layout data.
+      var layoutData = layout.CreateLayoutData(graph);
       layoutData.NodeTypes.MapperFunction = node => GetNodeType(node);
 
-      return new Sample {
-          Name = "Circular",
-          File = "circular",
-          Layout = layout,
-          LayoutData = layoutData,
-          IsDirected = false
-      };
+      return new Sample("Circular", layout, layoutData, "circular.json");
     }
 
     /// <summary>
-    ///   Creates and configures the <see cref="ComponentLayout"/> and the
-    ///   <see cref="ComponentLayoutData{TNode,TEdge,TNodeLabel,TEdgeLabel}"/>
+    ///   Creates and configures the <see cref="ComponentLayout"/> and its layout data
     ///   such that node types are considered.
     /// </summary>
-    private Sample CreateComponentSample() {
-      // create a component layout with default settings
+    private static Sample CreateComponentSample(IGraph graph) {
+      // Create a component layout with default settings.
       var layout = new ComponentLayout();
 
-      // note that with the default component arrangement style the types of nodes have an influence
+      // Note that with the default component arrangement style the types of nodes have an influence
       // already - however, if in a row only components with nodes of the same type should be
-      // allowed, this can be achieved by specifying the style as follows:
-      // layout.Style = ComponentArrangementStyles.MultiRowsTypeSeparated
+      // allowed, this can be achieved by specifying a type-separated component arrangement style.
+      // layout.Style = ComponentArrangementStyle.MultiRowsTypeSeparated;
 
-      // the node types are specified as delegate on the nodeTypes property of the layout data
-      var layoutData = layout.CreateLayoutData(graphControl.Graph);
+      // The node types are specified as a delegate on the node types mapping of the layout data.
+      var layoutData = layout.CreateLayoutData(graph);
       layoutData.NodeTypes.MapperFunction = node => GetNodeType(node);
 
-      return new Sample {
-          Name = "Component",
-          File = "component",
-          Layout = layout,
-          LayoutData = layoutData,
-          IsDirected = false
-      };
-    }
-
-    #endregion
-
-    #region Layout calculation
-
-    /// <summary>
-    ///   Calculates a layout taking the node types into account.
-    /// </summary>
-    private async Task ApplyLayout(bool animate) {
-      var sample = (Sample) SampleGraphComboBox.SelectedItem;
-      var considerTypes = ConsiderTypes.IsChecked == true;
-
-      var layout = sample.Layout;
-      var layoutData = considerTypes ? sample.LayoutData : null;
-
-      var layoutExecutor = new LayoutExecutor(graphControl, layout) {
-          LayoutData = layoutData,
-          AnimationDuration = animate ? TimeSpan.FromMilliseconds(700) : TimeSpan.Zero,
-          PortAdjustmentPolicies = { Constant = PortAdjustmentPolicy.Lengthen },
-          RunInThread = false,
-          AnimateViewport = true
-      };
-
-      EnableUi(false);
-      await layoutExecutor.Start();
-      EnableUi(true);
-    }
-
-    #endregion
-
-    #region User interface event handling
-
-    /// <summary>
-    ///   Loads a new sample.
-    /// </summary>
-    private async void OnSampleChanged(object sender, SelectionChangedEventArgs e) {
-      await LoadSample();
+      return new Sample("Component", layout, layoutData, "component.json");
     }
 
     /// <summary>
-    ///   Loads the previous sample.
+    ///   Creates and configures the <see cref="RadialTreeLayout"/> and its layout data
+    ///   such that node types are considered.
     /// </summary>
-    private void LoadPreviousSampleGraph(object sender, RoutedEventArgs e) {
-      var index = SampleGraphComboBox.SelectedIndex;
-      var sampleCount = SampleGraphComboBox.Items.Count;
-      var newIndex = index > 0 ? index - 1 : sampleCount - 1;
-      SampleGraphComboBox.SelectedIndex = newIndex;
+    private static Sample CreateRadialTreeSample(IGraph graph) {
+      // Create a radial tree layout.
+      var layout = new RadialTreeLayout();
+
+      // The node types are specified as a delegate on the node types mapping of the layout data.
+      var layoutData = layout.CreateLayoutData(graph);
+      layoutData.NodeTypes.MapperFunction = node => GetNodeType(node);
+
+      return new Sample("Radial Tree", layout, layoutData, "radial-tree.json", true);
     }
 
     /// <summary>
-    ///   Loads the next sample.
+    ///   Creates and configures the <see cref="CompactDiskLayout"/> and its layout data
+    ///   such that node types are considered.
     /// </summary>
-    private void LoadNextSampleGraph(object sender, RoutedEventArgs e) {
-      var index = SampleGraphComboBox.SelectedIndex;
-      var sampleCount = SampleGraphComboBox.Items.Count;
-      var newIndex = index < sampleCount - 1 ? index + 1 : 0;
-      SampleGraphComboBox.SelectedIndex = newIndex;
+    private static Sample CreateCompactDiskSample(IGraph graph) {
+      // Create a compact disk layout with a little additional node distance (since the nodes
+      // are not circles and this algorithm treats them as such).
+      var layout = new CompactDiskLayout { MinimumNodeDistance = 20 };
+
+      // The node types are specified as a delegate on the node types mapping of the layout data.
+      var layoutData = layout.CreateLayoutData(graph);
+      layoutData.NodeTypes.MapperFunction = node => GetNodeType(node);
+
+      return new Sample("Compact Disk", layout, layoutData, "compact-disk.json");
     }
 
     /// <summary>
-    ///   Invokes the layout calculation.
+    ///   Creates and configures the <see cref="RadialLayout"/> and its layout data
+    ///   such that node types are considered.
     /// </summary>
-    private async void OnLayoutClicked(object sender, RoutedEventArgs e) {
-      await ApplyLayout(true);
+    private static Sample CreateRadialSample(IGraph graph) {
+      // Create a radial layout with a little additional layer distance.
+      var layout = new RadialLayout { MinimumLayerDistance = 150 };
+
+      // The node types are specified as a delegate on the node types mapping of the layout data.
+      var layoutData = layout.CreateLayoutData(graph);
+      layoutData.NodeTypes.MapperFunction = node => GetNodeType(node);
+
+      return new Sample("Radial Layout", layout, layoutData, "radial.json");
+    }
+
+    private void CreateSamples() {
+      samples.Add(CreateHierarchicalSample(Graph));
+      samples.Add(CreateOrganicSample(Graph));
+      samples.Add(CreateTreeSample(Graph));
+      samples.Add(CreateRadialTreeSample(Graph));
+      samples.Add(CreateCircularSample(Graph));
+      samples.Add(CreateRadialSample(Graph));
+      samples.Add(CreateComponentSample(Graph));
+      samples.Add(CreateCompactDiskSample(Graph));
     }
 
     /// <summary>
-    ///   Invokes the layout calculation.
+    ///   Applies the current layout style to the current graph.
     /// </summary>
-    private async void OnConsiderTypesClicked(object sender, RoutedEventArgs e) {
-      await ApplyLayout(true);
-    }
-
-    /// <summary>
-    ///   Activates or deactivates the UI elements for changing the sample.
-    /// </summary>
-    private void EnableUi(bool enable) {
-      LayoutButton.IsEnabled = enable;
-      SampleGraphComboBox.IsEnabled = enable;
-      PreviousSampleButton.IsEnabled = enable;
-      NextSampleButton.IsEnabled = enable;
-      ConsiderTypes.IsEnabled = enable;
-    }
-
-    #endregion
-
-    /// <summary>
-    ///   Contains all information about a sample.
-    /// </summary>
-    private sealed class Sample
-    {
-      public string Name { get; set; }
-
-      public string File { get; set; }
-
-      public ILayoutAlgorithm Layout { get; set; }
-
-      public LayoutData<INode, IEdge, ILabel, ILabel> LayoutData { get; set; }
-
-      public bool IsDirected { get; set; }
-
-      public override string ToString() {
-        return Name;
+    private async Task ApplyCurrentLayoutAsync(bool animate, bool considerTypes) {
+      var sample = samples[sampleComboBox.SelectedIndex];
+      if (animate) {
+        if (considerTypes) {
+          await GraphControl.ApplyLayoutAnimated(sample.Layout, TimeSpan.FromMilliseconds(1000), sample.LayoutData);
+        } else {
+          await GraphControl.ApplyLayoutAnimated(sample.Layout, TimeSpan.FromMilliseconds(1000));
+        }
+      } else {
+        Graph.ApplyLayout(sample.Layout);
       }
     }
+
+    /// <summary>
+    ///   Loads the sample currently selected in the combo box, populates the graph and applies
+    ///   the respective layout algorithm.
+    /// </summary>
+    private async Task LoadSampleAsync(bool previewWithoutNodeTypes) {
+      if (isBusy || sampleComboBox.SelectedIndex < 0) {
+        return;
+      }
+
+      isBusy = true;
+      SetUIDisabled(true);
+      try {
+        var sample = samples[sampleComboBox.SelectedIndex];
+        var edgeStyle = DemoStyles.CreateDemoEdgeStyle(showTargetArrow: sample.Directed);
+        Graph.EdgeDefaults.Style = edgeStyle;
+
+        // Use the Demo helper to load sample data from the embedded JSON resource.
+        BuildGraphFromJson(sample.SampleDataResource, Graph, typeof(NodeData));
+        foreach (var node in Graph.Nodes) {
+          // Create node style depending on the type tag.
+          if (node.Tag is NodeData { Tag : null }) {
+            Graph.SetStyle(node, DemoStyles.CreateDemoNodeStyle());
+          } else {
+            Graph.SetStyle(node, DemoStyles.CreateDemoNodeStyle(typeColors[GetNodeType(node)]));
+          }
+        }
+
+        await ArrangeGraphCoreAsync(false, previewWithoutNodeTypes);
+
+        // Make the sample change non-undoable.
+        Graph.GetUndoEngine()?.Clear();
+      } finally {
+        SetUIDisabled(false);
+        isBusy = false;
+      }
+    }
+
+    /// <summary>
+    ///   Arranges the graph with an optional preview arrangement that shows the layout result when
+    ///   ignoring the node types.
+    /// </summary>
+    /// <param name="animate">Whether the layout should be animated.</param>
+    /// <param name="previewWithoutNodeTypes">
+    ///   Whether the layout should first run ignoring node types to make
+    ///   the difference easily visible.
+    /// </param>
+    private async Task ArrangeGraphAsync(bool animate, bool previewWithoutNodeTypes) {
+      if (isBusy || sampleComboBox.SelectedIndex < 0) {
+        return;
+      }
+
+      isBusy = true;
+      SetUIDisabled(true);
+      try {
+        await ArrangeGraphCoreAsync(animate, previewWithoutNodeTypes);
+      } finally {
+        SetUIDisabled(false);
+        isBusy = false;
+      }
+    }
+
+    private async Task ArrangeGraphCoreAsync(bool animate, bool previewWithoutNodeTypes) {
+      // Run a layout without considering node types.
+      if (previewWithoutNodeTypes) {
+        UpdateLayoutPopup(true, "Node types are not considered");
+        // Apply the current layout that is associated with the newly loaded sample.
+        await ApplyCurrentLayoutAsync(animate, false);
+        await GraphControl.FitGraphBounds();
+        // Add some delay.
+        await Task.Delay(2000);
+        UpdateLayoutPopup(true, "Node types are considered");
+      }
+
+      // Run a layout when considering node types.
+      await ApplyCurrentLayoutAsync(true, true);
+
+      await GraphControl.FitGraphBounds();
+      UpdateLayoutPopup(false);
+    }
+
+    /// <summary>
+    ///   Sets up a <see cref="GraphEditorInputMode"/> and configures the defaults for the graph control.
+    /// </summary>
+    private void ConfigureGraphComponent() {
+      graphEditorInputMode = new GraphEditorInputMode {
+          SelectableItems = GraphItemTypes.Node | GraphItemTypes.Edge,
+          NodeCreator = (_, graph, location, parent) => {
+            var node = graph.CreateNode(parent, RectD.FromCenter(location, graph.NodeDefaults.Size));
+            SetNodeType(node, 0);
+            return node;
+          }
+      };
+      GraphControl.InputMode = graphEditorInputMode;
+
+      Graph.NodeDefaults.ShareStyleInstance = false;
+      Graph.NodeDefaults.Size = new SizeD(40, 40);
+      Graph.NodeDefaults.Style = DemoStyles.CreateDemoNodeStyle();
+      Graph.EdgeDefaults.Style = DemoStyles.CreateDemoEdgeStyle(showTargetArrow: false);
+
+      Graph.SetUndoEngineEnabled(true);
+    }
+
+    /// <summary>
+    ///   Specifies the type of the given node by storing it in the node's tag.
+    ///   This function is used as a callback by the type panel when changing the type.
+    /// </summary>
+    private void SetNodeType(INode node, int type) {
+      // Set a new tag and style so this change is easily undoable.
+      node.Tag = new NodeData { Tag = new NodeTag { Type = type } };
+      Graph.SetStyle(node, DemoStyles.CreateDemoNodeStyle(typeColors[type]));
+    }
+
+    /// <summary>
+    ///   Initializes the type panel that allows for changing a node's type.
+    /// </summary>
+    private void InitializeTypePanel() {
+      var buttons = new[] { type0Button, type1Button, type2Button };
+      for (var type = 0; type < buttons.Length; type++) {
+        var currentType = type;
+        var palette = typeColors[currentType];
+        buttons[currentType].Background = palette.Fill;
+        buttons[currentType].BorderBrush = palette.Stroke;
+        buttons[currentType].Click += async (_, _) => await ChangeSelectedNodesTypeAsync(currentType);
+      }
+
+      GraphControl.Selection.ItemAdded += (_, _) => UpdateTypePanel();
+      GraphControl.Selection.ItemRemoved += (_, _) => UpdateTypePanel();
+      GraphControl.ViewportChanged += (_, _) => UpdateTypePanelLocation();
+    }
+
+    private async Task ChangeSelectedNodesTypeAsync(int type) {
+      var selectedNodes = GraphControl.Selection.Nodes.ToArray();
+      foreach (var node in selectedNodes) {
+        if (node.Tag is NodeData { Tag: { } dataTag } && dataTag.Type == type) {
+          continue;
+        }
+        SetNodeType(node, type);
+      }
+
+      typePopup.IsOpen = false;
+      if (selectedNodes.Length > 0) {
+        await ArrangeGraphAsync(true, false);
+      }
+    }
+
+    private void UpdateTypePanel() {
+      var selectedNodes = GraphControl.Selection.Nodes.ToArray();
+      if (selectedNodes.Length == 0) {
+        typePopup.IsOpen = false;
+        return;
+      }
+
+      var buttons = new[] { type0Button, type1Button, type2Button };
+      for (var type = 0; type < buttons.Length; type++) {
+        var currentType = type;
+        buttons[type].BorderThickness = selectedNodes.Any(node => GetNodeType(node) == currentType)
+            ? new Thickness(3)
+            : new Thickness(1);
+      }
+
+      typePopup.IsOpen = true;
+      UpdateTypePanelLocation();
+    }
+
+    private void UpdateTypePanelLocation() {
+      if (!typePopup.IsOpen || GraphControl.Selection.Nodes.Count == 0) {
+        return;
+      }
+
+      var node = GraphControl.Selection.Nodes.First();
+      var layout = node.Layout;
+      var point = GraphControl.WorldToViewCoordinates(new PointD(layout.X + layout.Width / 2, layout.Y));
+      typePopup.HorizontalOffset = Math.Max(4, point.X - 57);
+      typePopup.VerticalOffset = point.Y < 86 ? point.Y + 18 : point.Y - 86;
+    }
+
+    /// <summary>
+    ///   Initializes the sample combo box.
+    /// </summary>
+    private void PrepareSampleList() {
+      foreach (var sample in samples) {
+        sampleComboBox.Items.Add(sample.Name);
+      }
+      sampleComboBox.SelectedIndex = 0;
+    }
+
+    /// <summary>
+    ///   Binds actions to the buttons in the toolbar.
+    /// </summary>
+    private void InitializeUI() {
+      layoutButton.Click += async (_, _) => await ArrangeGraphAsync(true, true);
+      resetButton.Click += async (_, _) => await LoadSampleAsync(true);
+      sampleComboBox.SelectionChanged += async (_, _) => {
+        if (sampleComboBox.SelectedIndex >= 0) {
+          await LoadSampleAsync(true);
+        }
+      };
+    }
+
+    /// <summary>
+    ///   Disables the graph and toolbar UI while a layout is running.
+    /// </summary>
+    private void SetUIDisabled(bool disabled) {
+      resetButton.IsEnabled = !disabled;
+      layoutButton.IsEnabled = !disabled;
+      sampleComboBox.IsEnabled = !disabled;
+      typePalette.IsEnabled = !disabled;
+      if (graphEditorInputMode is not null) {
+        graphEditorInputMode.WaitInputMode.Waiting = disabled;
+      }
+    }
+
+    /// <summary>
+    ///   Updates the layout popup visibility and text.
+    /// </summary>
+    /// <param name="visible">Whether the popup should be visible.</param>
+    /// <param name="text">The desired text.</param>
+    private void UpdateLayoutPopup(bool visible, string? text = null) {
+      loadingPopup.Visibility = visible ? Visibility.Visible : Visibility.Collapsed;
+      if (text is null) {
+        return;
+      }
+
+      loadingMessage.Inlines.Clear();
+      const string notConsidered = "Node types are not considered";
+      const string considered = "Node types are considered";
+      if (text == notConsidered) {
+        loadingMessage.Inlines.Add(new Run("Node types are "));
+        loadingMessage.Inlines.Add(new Run("not considered") { TextDecorations = TextDecorations.Underline });
+      } else if (text == considered) {
+        loadingMessage.Inlines.Add(new Run("Node types "));
+        loadingMessage.Inlines.Add(new Run("are considered") { TextDecorations = TextDecorations.Underline });
+      } else {
+        loadingMessage.Text = text;
+      }
+    }
+
+    [STAThread]
+    private static void Main() {
+      Run<NodeTypesDemo>();
+    }
+  }
+
+  /// <summary>
+  ///   Type information associated with a node.
+  /// </summary>
+  internal sealed class NodeTag
+  {
+    public int Type { get; set; }
+  }
+
+  /// <summary>
+  ///   Data read from the node objects in the sample graph resources.
+  /// </summary>
+  internal sealed class NodeData
+  {
+    public NodeTag? Tag { get; set; }
   }
 }

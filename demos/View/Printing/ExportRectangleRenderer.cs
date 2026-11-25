@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 4.0.
- ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -33,7 +33,7 @@ using System.Windows.Shapes;
 using yWorks.Controls;
 using yWorks.Geometry;
 
-namespace Demo.yFiles.Printing
+namespace yWorks.Demo.Printing
 {
   /// <summary>
   ///   Renders a rectangle in view coordinates with the given <see cref="Pen"/> and <see cref="Brush"/>.
@@ -49,7 +49,11 @@ namespace Demo.yFiles.Printing
     }
 
     protected override VisualGroup CreateVisual(IRenderContext context, IRectangle layout) {
-      var rect = new Rectangle { Fill = brush, Stroke = pen.Brush, StrokeThickness = pen.Thickness };
+      var rect = new Rectangle {
+          Fill = brush,
+          Stroke = pen.Brush,
+          StrokeThickness = pen.Thickness
+      };
       var container = new VisualGroup { Children = { rect } };
 
       Transform(context, container, rect, layout);

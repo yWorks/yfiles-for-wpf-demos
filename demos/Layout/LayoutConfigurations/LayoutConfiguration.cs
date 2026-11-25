@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 4.0.
- ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -37,8 +37,9 @@ using yWorks.Graph;
 using yWorks.Graph.LabelModels;
 using yWorks.Layout;
 using yWorks.Layout.Graph;
+using yWorks.Utils;
 
-namespace Demo.yFiles.Layout.Configurations
+namespace yWorks.Demo.Layout.Configurations
 {
   /// <summary>
   ///   Abstract base class for configurations that can be displayed in an option editor.
@@ -68,6 +69,7 @@ namespace Demo.yFiles.Layout.Configurations
     /// <param name="doneHandler">
     ///   A callback that is called after the configuration is applied. Can be <see langword="null"/>
     /// </param>
+    /// <returns>The <see cref="Task"/> of this call.</returns>
     public virtual async Task Apply(GraphControl graphControl, Action doneHandler) {
       if (layoutRunning) {
         await graphControl.Dispatcher.BeginInvoke(DispatcherPriority.Background, doneHandler);
@@ -89,7 +91,7 @@ namespace Demo.yFiles.Layout.Configurations
       };
 
       // set the cancel duration for the layout computation to 20s
-      layoutExecutor.LayoutAbortController.CancelDuration = TimeSpan.FromSeconds(20);
+      layoutExecutor.LayoutAbortController.CancelDuration = TimeSpan.FromSeconds(100);
 
       // set the layout data to the LayoutExecutor
       if (layoutData != null) {
@@ -132,13 +134,13 @@ namespace Demo.yFiles.Layout.Configurations
     /// </returns>
     protected virtual LayoutData<INode, IEdge, ILabel, ILabel> CreateConfiguredLayoutData(
         GraphControl graphControl,
-        ILayoutAlgorithm layout) {
-      return null;
-    }
+        ILayoutAlgorithm layout) =>
+        null;
 
     /// <summary>
     ///   Called by <see cref="Apply"/> after the layout animation is done.
     /// </summary>
+    /// <param name="graphControl">The <see cref="GraphControl"/> for the post-processing.</param>
     protected virtual void PostProcess(GraphControl graphControl) { }
 
     /// <summary>
@@ -168,9 +170,20 @@ namespace Demo.yFiles.Layout.Configurations
 
     /// <summary>
     ///   Adds a mapper with an <see cref="EdgeLabelPreferredPlacement"/> that matches the given settings to the mapper
-    ///   registry of the given graph. In addition, sets the label model of all edge labels to free since that model
-    ///   can realize any label placement calculated by a layout algorithm.
+    ///   registry of the given graph.
     /// </summary>
+    /// <remarks>
+    ///   In addition, sets the label model of all node and edge labels to free since that model
+    ///   can realize any label placement calculated by a layout algorithm.
+    /// </remarks>
+    /// <param name="graph">The graph whose label shall be laid out.</param>
+    /// <param name="placeAlongEdge">The edge label placement along the owning edge.</param>
+    /// <param name="sideOfEdge">The side of the edge the label shall be placed.</param>
+    /// <param name="orientation">The orientation of the edge label.</param>
+    /// <param name="distanceToEdge">The distance of the edge label to the owning edge.</param>
+    /// <returns>
+    ///   A layout data instance for labeling considering the given configuration.
+    /// </returns>
     public LayoutData<INode, IEdge, ILabel, ILabel> CreateLabelingLayoutData(
         IGraph graph,
         EnumLabelPlacementAlongEdge placeAlongEdge,
@@ -181,11 +194,18 @@ namespace Demo.yFiles.Layout.Configurations
           CreatePreferredPlacementDescriptor(placeAlongEdge, sideOfEdge, orientation, distanceToEdge);
 
       // change to a free edge label model to support integrated edge labeling
-      var model = new FreeEdgeLabelModel();
-
+      var freeEdgeLabelModel = new FreeEdgeLabelModel();
       foreach (var label in graph.GetEdgeLabels()) {
         if (!(label.LayoutParameter.Model is FreeEdgeLabelModel)) {
-          graph.SetLabelLayoutParameter(label, model.FindBestParameter(label, label.GetLayout()));
+          graph.SetLabelLayoutParameter(label, freeEdgeLabelModel.FindBestParameter(label, label.GetLayout()));
+        }
+      }
+
+      // change to a free node label model to support generic node labeling
+      var freeNodeLabelModel = new FreeNodeLabelModel();
+      foreach (var label in graph.GetNodeLabels()) {
+        if (!(label.LayoutParameter.Model is FreeNodeLabelModel)) {
+          graph.SetLabelLayoutParameter(label, freeNodeLabelModel.FindBestParameter(label, label.GetLayout()));
         }
       }
 
@@ -199,6 +219,13 @@ namespace Demo.yFiles.Layout.Configurations
     /// <summary>
     ///   Creates a new <see cref="EdgeLabelPreferredPlacement"/> that matches the given settings.
     /// </summary>
+    /// <param name="placeAlongEdge">The edge label placement along the owning edge.</param>
+    /// <param name="sideOfEdge">The side of the edge the label shall be placed.</param>
+    /// <param name="orientation">The orientation of the edge label.</param>
+    /// <param name="distanceToEdge">The distance of the edge label to the owning edge.</param>
+    /// <returns>
+    ///   A new <see cref="EdgeLabelPreferredPlacement"/> that matches the given settings.
+    /// </returns>
     public EdgeLabelPreferredPlacement CreatePreferredPlacementDescriptor(
         EnumLabelPlacementAlongEdge placeAlongEdge,
         EnumLabelPlacementSideOfEdge sideOfEdge,

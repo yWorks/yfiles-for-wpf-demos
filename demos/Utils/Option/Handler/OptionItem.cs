@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 4.0.
- ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -35,7 +35,7 @@ using System.Windows;
 using System.Windows.Data;
 using yWorks.Utils;
 
-namespace Demo.yFiles.Option.Handler
+namespace yWorks.Demo.Option.Handler
 {
   /// <summary>
   ///   Abstract implementation of interface <see cref="OptionItem"/> that handles general objects.
@@ -375,9 +375,7 @@ namespace Demo.yFiles.Option.Handler
     }
 
     /// <inheritdoc/>
-    public IList<string> GetAttributeKeys() {
-      return new List<string>(attributes.Keys).AsReadOnly();
-    }
+    public IList<string> GetAttributeKeys() => new List<string>(attributes.Keys).AsReadOnly();
 
     #region IOptionItem Members
 
@@ -449,28 +447,22 @@ namespace Demo.yFiles.Option.Handler
       /// </summary>
       /// <param name="left"></param>
       /// <param name="right"></param>
-      public static bool operator ==(object left, UndefinedValueType right) {
-        // delegate to Equals method
-        return !ReferenceEquals(left, null) && left.Equals(right);
-      }
+      public static bool operator ==(object left, UndefinedValueType right) =>
+          // delegate to Equals method
+          !ReferenceEquals(left, null) && left.Equals(right);
 
       /// <summary>
       ///   Override of inequality operator
       /// </summary>
       /// <param name="left"></param>
       /// <param name="right"></param>
-      public static bool operator !=(object left, UndefinedValueType right) {
-        return !(left == right);
-      }
+      public static bool operator !=(object left, UndefinedValueType right) => !(left == right);
 
-      public static bool operator ==(UndefinedValueType left, object right) {
-        // delegate to Equals method
-        return !ReferenceEquals(left, null) && left.Equals(right);
-      }
+      public static bool operator ==(UndefinedValueType left, object right) =>
+          // delegate to Equals method
+          !ReferenceEquals(left, null) && left.Equals(right);
 
-      public static bool operator !=(UndefinedValueType left, object right) {
-        return !(left == right);
-      }
+      public static bool operator !=(UndefinedValueType left, object right) => !(left == right);
 
       /// <summary>
       ///   Returns a <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
@@ -479,9 +471,7 @@ namespace Demo.yFiles.Option.Handler
       ///   A <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
       /// </returns>
       /// <filterpriority>2</filterpriority>
-      public override string ToString() {
-        return "Undefined";
-      }
+      public override string ToString() => "Undefined";
 
       public bool Equals(UndefinedValueType undefinedValueType) {
         if (ReferenceEquals(undefinedValueType, null)) {
@@ -490,9 +480,7 @@ namespace Demo.yFiles.Option.Handler
         return true;
       }
 
-      public override int GetHashCode() {
-        return 0;
-      }
+      public override int GetHashCode() => 0;
     }
 
     #endregion
@@ -506,11 +494,11 @@ namespace Demo.yFiles.Option.Handler
       }
       if (lookupDictionary.TryGetValue(type, out var o)) {
         return o;
-      } else if (Owner != null) {
-        return Owner.Lookup(type);
-      } else {
-        return null;
       }
+      if (Owner != null) {
+        return Owner.Lookup(type);
+      }
+      return null;
     }
 
     #endregion

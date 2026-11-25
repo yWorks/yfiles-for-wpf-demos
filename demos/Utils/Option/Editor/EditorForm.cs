@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 4.0.
- ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -31,9 +31,9 @@ using System;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Interop;
-using Demo.yFiles.Option.Handler;
+using yWorks.Demo.Option.Handler;
 
-namespace Demo.yFiles.Option.Editor
+namespace yWorks.Demo.Option.Editor
 {
   /// <summary>
   ///   Convenience class that wraps an <see cref="EditorControl"/> instance and adds some buttons.

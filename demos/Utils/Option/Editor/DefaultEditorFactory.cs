@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 4.0.
- ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -29,9 +29,9 @@
 
 using System.ComponentModel;
 using System.Windows.Controls;
-using Demo.yFiles.Option.Handler;
+using yWorks.Demo.Option.Handler;
 
-namespace Demo.yFiles.Option.Editor
+namespace yWorks.Demo.Option.Editor
 {
   /// <summary>
   ///   Create a dialog representation of an <see cref="OptionHandler"/> instance.
@@ -65,7 +65,7 @@ namespace Demo.yFiles.Option.Editor
     /// <remarks>
     ///   This key is used to change the appearance of a dialog view created with this factory.
     ///   The framework expects to find bitwise combinations from values in
-    ///   <see cref="Demo.yFiles.Option.Editor.DefaultEditorFactory.RenderingHints"/>
+    ///   <see cref="RenderingHints"/>
     ///   there, other values are silently ignored.
     /// </remarks>
     public const string RenderingHintsAttribute = "DefaultEditorFactory.RenderingHintsAttribute";

@@ -1,0 +1,18 @@
+{
+  "nodes": [
+    { "id": 0, "layout": { "x": 60, "y": 80, "width": 240, "height": 30 } },
+    { "id": 1, "layout": { "x": 90, "y": 140, "width": 140, "height": 30 } },
+    { "id": 2, "layout": { "x": 270, "y": 200, "width": 180, "height": 30 } },
+    { "id": 3, "layout": { "x": 410, "y": 140, "width": 60, "height": 30 } },
+    { "id": 4, "layout": { "x": 400, "y": 380, "width": 100, "height": 120 } },
+    { "id": 5, "layout": { "x": 450, "y": 450, "width": 120, "height": 75 } },
+    { "id": 6, "layout": { "x": 390, "y": 560, "width": 240, "height": 30 } },
+    { "id": 7, "layout": { "x": 540, "y": 410, "width": 45, "height": 240 } },
+    { "id": 8, "layout": { "x": 750, "y": 175, "width": 45, "height": 45 } },
+    { "id": 9, "layout": { "x": 795, "y": 310, "width": 45, "height": 45 } },
+    { "id": 10, "layout": { "x": 840, "y": 220, "width": 45, "height": 45 } },
+    { "id": 11, "layout": { "x": 885, "y": 130, "width": 45, "height": 45 } },
+    { "id": 12, "layout": { "x": 930, "y": 265, "width": 45, "height": 45 } }
+  ],
+  "edges": []
+}

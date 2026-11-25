@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <Nullable>enable</Nullable>
+    <UseWpf>true</UseWpf>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <LangVersion>14.0</LangVersion>
+  </PropertyGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="../../Utils/DemoToolkit/DemoToolkit.csproj" />
+    <PackageReference Include="yWorks.yFilesWPF.Complete" Version="4.1.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources/description.html" />
+    <EmbeddedResource Include="Resources/earth-layers.png" />
+    <EmbeddedResource Include="../../../lib/net6.0/yWorks.yFilesWPF.DevelopmentLicense.xml" Condition="Exists('../../../lib/net6.0/yWorks.yFilesWPF.DevelopmentLicense.xml')" />
+    <EmbeddedResource Include="../../../lib/net6.0/yWorks.yFilesWPF.License.xml" Condition="Exists('../../../lib/net6.0/yWorks.yFilesWPF.License.xml') And !Exists('../../../lib/net6.0/yWorks.yFilesWPF.DevelopmentLicense.xml')" />
+  </ItemGroup>
+  <!--The following target ensures that the project will build even when the ZIP file has been-->
+  <!--extracted with Explorer or another tool that retains the origin zone marker for the files.-->
+  <!--If that does not work, an error message will be shown in Visual Studio's Error List.-->
+  <!--See http://kb.yworks.com/article/736 for details.-->
+  <Target Name="BeforeBuild">
+    <Exec Command="if exist &quot;%(Reference.HintPath)&quot; (&gt;nul 2&gt;nul (&gt;nul 2&gt;nul findstr ZoneId&lt;&quot;%(Reference.HintPath):Zone.Identifier&quot;) &amp;&amp; ((&gt;nul 2&gt;nul powershell -noprofile -nologo -command &quot;Unblock-File '%(Reference.HintPath)'&quot;) || (2&gt;nul type nul &gt;&quot;%(Reference.HintPath):Zone.Identifier&quot;) || (&lt;nul &gt;&amp;2 set /p _=Err&amp;&gt;&amp;2 echo or: The file @(Reference) originates from the Internet Zone and prevents compilation. Please unblock it manually in its properties. See the Knowledge Base at http://kb.yworks.com/article/736.)))" IgnoreExitCode="True" />
+  </Target>
+  <PropertyGroup Condition=" '$(NETCoreAppMaximumVersion)' != '' ">
+    <TargetFramework>net$(NETCoreAppMaximumVersion)-windows</TargetFramework>
+    <TargetFramework Condition=" !$(NETCoreAppMaximumVersion.StartsWith('3')) And !('$(UseWPF)' == 'true' Or '$(UseWindowsForms)' == 'true') ">net$(NETCoreAppMaximumVersion)</TargetFramework>
+    <TargetFramework Condition=" $(NETCoreAppMaximumVersion.StartsWith('3')) ">netcoreapp$(NETCoreAppMaximumVersion)</TargetFramework>
+  </PropertyGroup>
+</Project>

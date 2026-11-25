@@ -1,0 +1,39 @@
+{
+  "nodes": [
+    { "id": 0 },
+    { "id": 1 },
+    { "id": 2 },
+    { "id": 3 },
+    { "id": 4, "parent": 16 },
+    { "id": 5, "parent": 16 },
+    { "id": 6, "parent": 16 },
+    { "id": 7, "parent": 16 },
+    { "id": 8 },
+    { "id": 9 },
+    { "id": 10, "parent": 17 },
+    { "id": 11, "parent": 17 },
+    { "id": 12, "parent": 17 },
+    { "id": 13, "parent": 17 },
+    { "id": 14, "parent": 17 },
+    { "id": 15 },
+    { "id": 16, "labels": "Group 1", "isGroup": true },
+    { "id": 17, "labels": "Group 2", "isGroup": true }
+  ],
+  "edges": [
+    { "id": 0, "source": 0, "target": 1 },
+    { "id": 1, "source": 1, "target": 2 },
+    { "id": 2, "source": 1, "target": 3 },
+    { "id": 3, "source": 2, "target": 4 },
+    { "id": 4, "source": 2, "target": 9 },
+    { "id": 5, "source": 4, "target": 6 },
+    { "id": 6, "source": 6, "target": 8 },
+    { "id": 7, "source": 3, "target": 5 },
+    { "id": 8, "source": 5, "target": 7 },
+    { "id": 9, "source": 9, "target": 10 },
+    { "id": 10, "source": 9, "target": 11 },
+    { "id": 11, "source": 10, "target": 12 },
+    { "id": 12, "source": 12, "target": 15 },
+    { "id": 13, "source": 11, "target": 13 },
+    { "id": 14, "source": 11, "target": 14 }
+  ]
+}

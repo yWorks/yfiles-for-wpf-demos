@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 4.0.
- ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -39,7 +39,7 @@ using yWorks.Graph;
 using yWorks.Graph.Styles;
 using yWorks.Utils;
 
-namespace Demo.yFiles.IO.GraphML.Compat.Styles
+namespace yWorks.Demo.GraphMLCompat.Styles
 {
   public class ShinyPlateNodeStyle : DelegatingNodeStyle
   {
@@ -89,22 +89,19 @@ namespace Demo.yFiles.IO.GraphML.Compat.Styles
       set => impl.Insets = value;
     }
 
-    public override object Clone() {
-      return new ShinyPlateNodeStyle {
-          DrawShadow = DrawShadow,
-          Brush = Brush,
-          Insets = Insets,
-          Radius = Radius,
-          Pen = Pen
-      };
-    }
+    public override object Clone() =>
+        new ShinyPlateNodeStyle {
+            DrawShadow = DrawShadow,
+            Brush = Brush,
+            Insets = Insets,
+            Radius = Radius,
+            Pen = Pen
+        };
 
-    protected override INodeStyle GetStyle(INode node) {
-      return wrappedStyle;
-    }
+    protected override INodeStyle GetStyle(INode node) => wrappedStyle;
   }
 
-  class ShinyPlateNodeStyleImpl : INodeStyle
+  internal class ShinyPlateNodeStyleImpl : INodeStyle
   {
     private readonly ShinyPlateNodeStyleRenderer renderer = new();
 
@@ -119,9 +116,7 @@ namespace Demo.yFiles.IO.GraphML.Compat.Styles
     public INodeStyleRenderer Renderer => renderer;
 
     /// <inheritdoc/>
-    public virtual object Clone() {
-      return MemberwiseClone();
-    }
+    public virtual object Clone() => MemberwiseClone();
   }
 
   internal class ShinyPlateNodeStyleRenderer : INodeStyleRenderer, IShapeGeometry, IBoundsProvider, IVisibilityTestable,
@@ -227,9 +222,8 @@ namespace Demo.yFiles.IO.GraphML.Compat.Styles
       return Lookups.Empty;
     }
 
-    public virtual Visual CreateVisual(IRenderContext context) {
-      return new ShinyPlateNodeStyleVisual().Render(Brush, Pen, Layout, Radius);
-    }
+    public virtual Visual CreateVisual(IRenderContext context) =>
+        new ShinyPlateNodeStyleVisual().Render(Brush, Pen, Layout, Radius);
 
     public virtual Visual UpdateVisual(IRenderContext context, Visual oldVisual) {
       var visual = oldVisual as ShinyPlateNodeStyleVisual;
@@ -239,9 +233,7 @@ namespace Demo.yFiles.IO.GraphML.Compat.Styles
       return CreateVisual(context);
     }
 
-    public virtual RectD GetBounds(ICanvasContext context) {
-      return Layout.ToRectD();
-    }
+    public virtual RectD GetBounds(ICanvasContext context) => Layout.ToRectD();
 
     public virtual GeneralPath GetOutline() {
       if (outline != null) {
@@ -251,29 +243,20 @@ namespace Demo.yFiles.IO.GraphML.Compat.Styles
       return outline = StyleUtils.CreateRoundRectanglePath(layout.X, layout.Y, layout.Width, layout.Height, Radius);
     }
 
-    public virtual PointD? GetIntersection(PointD inner, PointD outer) {
-      return StyleUtils.FindLineIntersectionWithRoundRect(inner, outer, Layout, Radius);
-    }
+    public virtual PointD? GetIntersection(PointD inner, PointD outer) =>
+        StyleUtils.FindLineIntersectionWithRoundRect(inner, outer, Layout, Radius);
 
-    public virtual bool IsInside(PointD location) {
-      return StyleUtils.RoundRectContains(location, Layout, Radius);
-    }
+    public virtual bool IsInside(PointD location) => StyleUtils.RoundRectContains(location, Layout, Radius);
 
-    public virtual bool IsHit(IInputModeContext context, PointD location) {
-      return StyleUtils.RoundRectIsHit(location, Layout, Radius, context.HitTestRadius);
-    }
+    public virtual bool IsHit(IInputModeContext context, PointD location) =>
+        StyleUtils.RoundRectIsHit(location, Layout, Radius, context.HitTestRadius);
 
-    public virtual bool IsInBox(IInputModeContext context, RectD rectangle) {
-      return rectangle.Intersects(Layout.ToRectD());
-    }
+    public virtual bool IsInBox(IInputModeContext context, RectD rectangle) => rectangle.Intersects(Layout.ToRectD());
 
-    public bool IsInPath(IInputModeContext context, GeneralPath lassoPath) {
-      return lassoPath.AreaIntersects(GetOutline()!, context.HitTestRadius);
-    }
+    public bool IsInPath(IInputModeContext context, GeneralPath lassoPath) =>
+        lassoPath.AreaIntersects(GetOutline()!, context.HitTestRadius);
 
-    public virtual bool IsVisible(ICanvasContext context, RectD rectangle) {
-      return rectangle.Intersects(Layout.ToRectD());
-    }
+    public virtual bool IsVisible(ICanvasContext context, RectD rectangle) => rectangle.Intersects(Layout.ToRectD());
 
     public virtual object Lookup(Type type) {
       if (type == typeof(IGroupPaddingProvider)) {
@@ -298,9 +281,7 @@ namespace Demo.yFiles.IO.GraphML.Compat.Styles
         this.style = style;
       }
 
-      public InsetsD GetPadding() {
-        return style.Insets;
-      }
+      public InsetsD GetPadding() => style.Insets;
     }
 
 
@@ -344,7 +325,11 @@ namespace Demo.yFiles.IO.GraphML.Compat.Styles
         var layoutWidth = layout.Width;
         var layoutHeight = layout.Height;
 
-        var rectangle = new Rectangle { AllowDrop = true, Width = layoutWidth, Height = layoutHeight };
+        var rectangle = new Rectangle {
+            AllowDrop = true,
+            Width = layoutWidth,
+            Height = layoutHeight
+        };
         rectangle.RadiusX = rectangle.RadiusY = radius;
         rectangle.Fill = brush;
         rectangle.SetPen(pen);
@@ -374,8 +359,14 @@ namespace Demo.yFiles.IO.GraphML.Compat.Styles
         var alpha = Math.Atan(w * w / l2 / (h * h / l2)) * 360 / (2 * Math.PI);
 
         var gradientStops = new GradientStopCollection {
-            new() { Color = Color.FromArgb(220, 255, 255, 255), Offset = 0 },
-            new() { Color = Color.FromArgb(20, 255, 255, 255), Offset = 0.8 }
+            new() {
+                Color = Color.FromArgb(220, 255, 255, 255),
+                Offset = 0
+            },
+            new() {
+                Color = Color.FromArgb(20, 255, 255, 255),
+                Offset = 0.8
+            }
         };
         gradientStops.Freeze();
         var gradientBrush = new LinearGradientBrush(gradientStops, alpha) { SpreadMethod = GradientSpreadMethod.Pad };

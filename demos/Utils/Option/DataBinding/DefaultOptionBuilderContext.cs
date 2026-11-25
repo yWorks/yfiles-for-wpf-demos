@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 4.0.
- ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -28,11 +28,11 @@
  ***************************************************************************/
 
 using System;
-using Demo.yFiles.Option.Constraint;
-using Demo.yFiles.Option.Handler;
+using yWorks.Demo.Option.Constraint;
+using yWorks.Demo.Option.Handler;
 using yWorks.Utils;
 
-namespace Demo.yFiles.Option.DataBinding
+namespace yWorks.Demo.Option.DataBinding
 {
   internal class DefaultOptionBuilderContext<T> : IOptionBuilderContext
   {
@@ -54,9 +54,8 @@ namespace Demo.yFiles.Option.DataBinding
     public ILookup InnerLookup { get; set; }
 
 
-    public bool BindItem(IOptionItem item, string virtualPropertyName) {
-      return BindItem(item, false, virtualPropertyName, true);
-    }
+    public bool BindItem(IOptionItem item, string virtualPropertyName) =>
+        BindItem(item, false, virtualPropertyName, true);
 
 
     public bool BindItem(IOptionItem item, bool fullyQualifiedId, string id, bool addToOptionHandler) {
@@ -117,19 +116,18 @@ namespace Demo.yFiles.Option.DataBinding
       return subject != null ? ReflectionHelper.GetOptionBuilderFromAttribute(subject.GetType()) : null;
     }
 
-    private IOptionBuilder GetBuilder(Type type) {
-      //      if (typeof(Brush).IsAssignableFrom(type)) {
-      //        return new DefaultBrushOptionBuilder();
-      //      }
-      //      if (type == typeof(Pen)) {
-      //        return new DefaultPenOptionBuilder();
-      //      }
-      // TODO
-      //      if(type == typeof(StringFormat)) {
-      //        return new StringFormatOptionBuilder();
-      //      }
-      return null;
-    }
+    private IOptionBuilder GetBuilder(Type type) =>
+        //      if (typeof(Brush).IsAssignableFrom(type)) {
+        //        return new DefaultBrushOptionBuilder();
+        //      }
+        //      if (type == typeof(Pen)) {
+        //        return new DefaultPenOptionBuilder();
+        //      }
+        // TODO
+        //      if(type == typeof(StringFormat)) {
+        //        return new StringFormatOptionBuilder();
+        //      }
+        null;
 
     public virtual IOptionBuilder GetOptionBuilder(Type type, object subject) {
       if (subject != null) {
@@ -143,9 +141,8 @@ namespace Demo.yFiles.Option.DataBinding
       return builder;
     }
 
-    public IOptionBuilderContext CreateChildContext(string prefix) {
-      return new ChildBuilderContext(this, propertyPrefix, prefix, selectionProvider);
-    }
+    public IOptionBuilderContext CreateChildContext(string prefix) =>
+        new ChildBuilderContext(this, propertyPrefix, prefix, selectionProvider);
 
     internal static string CreatePrefix(string prefix, string suffix) {
       string newPrefix;
@@ -180,9 +177,8 @@ namespace Demo.yFiles.Option.DataBinding
         this.selectionProvider = selectionProvider;
       }
 
-      public bool BindItem(IOptionItem item, string virtualPropertyName) {
-        return BindItem(item, false, virtualPropertyName, true);
-      }
+      public bool BindItem(IOptionItem item, string virtualPropertyName) =>
+          BindItem(item, false, virtualPropertyName, true);
 
       public bool BindItem(IOptionItem item, bool fullyQualifiedId, string id, bool addToOptionHandler) {
         if (fullyQualifiedId) {
@@ -191,17 +187,12 @@ namespace Demo.yFiles.Option.DataBinding
         return BindItemHelper(item, id, parentGroup, selectionProvider, propertyPrefix, addToOptionHandler);
       }
 
-      public IOptionBuilder GetOptionBuilder(object subject) {
-        return parent.GetOptionBuilder(subject);
-      }
+      public IOptionBuilder GetOptionBuilder(object subject) => parent.GetOptionBuilder(subject);
 
-      public IOptionBuilder GetOptionBuilder(Type type, object subject) {
-        return parent.GetOptionBuilder(type, subject);
-      }
+      public IOptionBuilder GetOptionBuilder(Type type, object subject) => parent.GetOptionBuilder(type, subject);
 
-      public IOptionBuilderContext CreateChildContext(string prefix) {
-        return new ChildBuilderContext(this, propertyPrefix, prefix, selectionProvider);
-      }
+      public IOptionBuilderContext CreateChildContext(string prefix) =>
+          new ChildBuilderContext(this, propertyPrefix, prefix, selectionProvider);
 
       public object Lookup(Type type) {
         if (type == typeof(IOptionGroup)) {

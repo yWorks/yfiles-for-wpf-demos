@@ -1,3 +1,5 @@
-# ReshapeHandleProvider
+# Reshape Handle Provider
 
-Demo code that shows how to implement a custom `IReshapeHandleProvider` for `IPort`s using a `NodeStylePortStyleAdapter`.
+![Demo thumbnail](../../DemoBrowser/DemoBrowser/Screenshots/reshape-handle-provider.webp "Reshape Handle Provider")
+
+Shows how to add resize handles to ports.

@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 4.0.
- ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -30,7 +30,7 @@
 using System;
 using System.Collections;
 
-namespace Demo.yFiles.Option.DataBinding
+namespace yWorks.Demo.Option.DataBinding
 {
   /// <summary>
   ///   Abstract base class implementation of <see cref="IPropertyMapBuilder"/> with sophisticated
@@ -103,9 +103,9 @@ namespace Demo.yFiles.Option.DataBinding
         BuildPropertyMapImpl((IPropertyBuildContext<TSubject>) ctx);
       } else {
         if (typeof(T).IsAssignableFrom(typeof(TSubject))) {
-          var o = typeof(WrappingBuildContext<,>).MakeGenericType(typeof(TSubject), typeof(T)).GetConstructor(
-                  new[] { typeof(PropertyMapBuilderBase<TSubject>), typeof(IPropertyBuildContext<T>) })
-              .Invoke(new object[] { this, context });
+          var o = typeof(WrappingBuildContext<,>).MakeGenericType(typeof(TSubject), typeof(T)).GetConstructor([
+              typeof(PropertyMapBuilderBase<TSubject>), typeof(IPropertyBuildContext<T>)
+          ]).Invoke([this, context]);
           BuildPropertyMapImpl((IPropertyBuildContext<TSubject>) o);
         }
       }
@@ -178,9 +178,8 @@ namespace Demo.yFiles.Option.DataBinding
         string virtualPropertyName,
         IValueGetter getter,
         IValueSetter setter,
-        IEqualityComparer comparer) {
-      return context.AddEntry(virtualPropertyName, getter, decorate(setter), comparer);
-    }
+        IEqualityComparer comparer) =>
+        context.AddEntry(virtualPropertyName, getter, decorate(setter), comparer);
 
     /// <summary>
     ///   Decorates the setters to seemlessly perform the cloning on a set operation.
@@ -217,18 +216,15 @@ namespace Demo.yFiles.Option.DataBinding
         parent.SetNewInstance(newInstance);
       }
 
-      public bool CanSet() {
-        return setter.CanSet();
-      }
+      public bool CanSet() => setter.CanSet();
     }
 
     public IPropertyItem AddEntry<TValue>(
         string virtualPropertyName,
         ValueGetterDelegate<TValue> getter,
         ValueSetterDelegate<TValue> setter,
-        IEqualityComparer comparer) {
-      return context.AddEntry(virtualPropertyName, getter, decorate(setter), comparer);
-    }
+        IEqualityComparer comparer) =>
+        context.AddEntry(virtualPropertyName, getter, decorate(setter), comparer);
 
     /// <summary>
     ///   Decorates the setters to seemlessly perform the cloning on a set operation.
@@ -252,25 +248,20 @@ namespace Demo.yFiles.Option.DataBinding
     public IPropertyItem AddEntry<TValue>(
         string virtualPropertyName,
         ValueGetterDelegate<TValue> getter,
-        ValueSetterDelegate<TValue> setter) {
-      return context.AddEntry(virtualPropertyName, getter, decorate(setter));
-    }
+        ValueSetterDelegate<TValue> setter) =>
+        context.AddEntry(virtualPropertyName, getter, decorate(setter));
 
-    public IPropertyItem AddEntry(string virtualPropertyName, IValueGetter getter, IValueSetter setter) {
-      return context.AddEntry(virtualPropertyName, getter, decorate(setter));
-    }
+    public IPropertyItem AddEntry(string virtualPropertyName, IValueGetter getter, IValueSetter setter) =>
+        context.AddEntry(virtualPropertyName, getter, decorate(setter));
 
     public void SetNewInstance(T1 newInstance) {
       context.SetNewInstance(newInstance);
     }
 
-    public IPropertyMapBuilder GetPropertyMapBuilder(object subject) {
-      return context.GetPropertyMapBuilder(subject);
-    }
+    public IPropertyMapBuilder GetPropertyMapBuilder(object subject) => context.GetPropertyMapBuilder(subject);
 
-    public IPropertyMapBuilder GetPropertyMapBuilder(Type type, object subject) {
-      return context.GetPropertyMapBuilder(type, subject);
-    }
+    public IPropertyMapBuilder GetPropertyMapBuilder(Type type, object subject) =>
+        context.GetPropertyMapBuilder(type, subject);
 
     /// <summary>
     ///   Recursively applies the cloning logic to the registered setters.
@@ -301,9 +292,7 @@ namespace Demo.yFiles.Option.DataBinding
 
     public AssignmentPolicy Policy => context.Policy;
 
-    public object Lookup(Type type) {
-      return context.Lookup(type);
-    }
+    public object Lookup(Type type) => context.Lookup(type);
 
     /// <summary>
     ///   Sets the temporary scratch instance.
@@ -340,56 +329,46 @@ namespace Demo.yFiles.Option.DataBinding
         string virtualPropertyName,
         IValueGetter getter,
         IValueSetter setter,
-        IEqualityComparer comparer) {
-      return childContext.AddEntry(virtualPropertyName, getter, wrapper.decorate(setter), comparer);
-    }
+        IEqualityComparer comparer) =>
+        childContext.AddEntry(virtualPropertyName, getter, wrapper.decorate(setter), comparer);
 
     public IPropertyItem AddEntry<TValue>(
         string virtualPropertyName,
         ValueGetterDelegate<TValue> getter,
         ValueSetterDelegate<TValue> setter,
-        IEqualityComparer comparer) {
-      return childContext.AddEntry(virtualPropertyName, getter, wrapper.decorate(setter), comparer);
-    }
+        IEqualityComparer comparer) =>
+        childContext.AddEntry(virtualPropertyName, getter, wrapper.decorate(setter), comparer);
 
     public IPropertyItem AddEntry<TValue>(
         string virtualPropertyName,
         ValueGetterDelegate<TValue> getter,
-        ValueSetterDelegate<TValue> setter) {
-      return childContext.AddEntry(virtualPropertyName, getter, wrapper.decorate(setter));
-    }
+        ValueSetterDelegate<TValue> setter) =>
+        childContext.AddEntry(virtualPropertyName, getter, wrapper.decorate(setter));
 
-    public IPropertyItem AddEntry(string virtualPropertyName, IValueGetter getter, IValueSetter setter) {
-      return childContext.AddEntry(virtualPropertyName, getter, wrapper.decorate(setter));
-    }
+    public IPropertyItem AddEntry(string virtualPropertyName, IValueGetter getter, IValueSetter setter) =>
+        childContext.AddEntry(virtualPropertyName, getter, wrapper.decorate(setter));
 
     public void SetNewInstance(TChild newInstance) {
       childContext.SetNewInstance(newInstance);
     }
 
-    public IPropertyMapBuilder GetPropertyMapBuilder(object subject) {
-      return childContext.GetPropertyMapBuilder(subject);
-    }
+    public IPropertyMapBuilder GetPropertyMapBuilder(object subject) => childContext.GetPropertyMapBuilder(subject);
 
-    public IPropertyMapBuilder GetPropertyMapBuilder(Type type, object subject) {
-      return childContext.GetPropertyMapBuilder(type, subject);
-    }
+    public IPropertyMapBuilder GetPropertyMapBuilder(Type type, object subject) =>
+        childContext.GetPropertyMapBuilder(type, subject);
 
     public IPropertyBuildContext<TInnerChild> CreateChildContext<TInnerChild>(
         string name,
         GetInstanceDelegate<TInnerChild> getHandler,
         SetInstanceDelegate<TInnerChild> setHandler,
-        AssignmentPolicy policy) where TInnerChild : class {
-      return new OuterWrappingBuildContext<T1, T2, TInnerChild>(wrapper,
-          childContext.CreateChildContext(name, getHandler, setHandler, policy));
-    }
+        AssignmentPolicy policy) where TInnerChild : class =>
+        new OuterWrappingBuildContext<T1, T2, TInnerChild>(wrapper,
+            childContext.CreateChildContext(name, getHandler, setHandler, policy));
 
     public TChild CurrentInstance => childContext.CurrentInstance;
 
     public AssignmentPolicy Policy => childContext.Policy;
 
-    public object Lookup(Type type) {
-      return childContext.Lookup(type);
-    }
+    public object Lookup(Type type) => childContext.Lookup(type);
   }
 }

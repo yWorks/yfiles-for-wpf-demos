@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 4.0.
- ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -27,7 +27,7 @@
  ** 
  ***************************************************************************/
 
-namespace Demo.yFiles.Option.DataBinding
+namespace yWorks.Demo.Option.DataBinding
 {
   /// <summary>
   ///   The interface that is used by <see cref="IPropertyItem"/> to set a value in a given
@@ -92,9 +92,7 @@ namespace Demo.yFiles.Option.DataBinding
     }
 
     /// <inheritdoc/>
-    public virtual bool CanSet() {
-      return predicate == null ? setter != null : setter != null && predicate();
-    }
+    public virtual bool CanSet() => predicate == null ? setter != null : setter != null && predicate();
 
     #endregion
   }

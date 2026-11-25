@@ -1,0 +1,30 @@
+{
+  "nodes": [
+    {
+      "id": 0,
+      "type": 0,
+      "labels": [{ "text": "0", "cssClass": "highlight" }],
+      "cssClass": "highlight"
+    },
+    { "id": 1, "type": 1, "labels": "1" },
+    { "id": 2, "type": 2, "labels": "2" },
+    { "id": 3, "type": 3, "labels": "3" },
+    { "id": 4, "type": 4, "labels": "4" },
+    {
+      "id": 5,
+      "type": 5,
+      "labels": [{ "text": "5", "cssClass": "highlight" }],
+      "cssClass": "highlight"
+    }
+  ],
+  "edges": [
+    { "id": 0, "source": 0, "target": 1 },
+    { "id": 1, "source": 0, "target": 2 },
+    { "id": 2, "source": 0, "target": 3 },
+    { "id": 3, "source": 0, "target": 4 },
+    { "id": 4, "source": 1, "target": 5 },
+    { "id": 5, "source": 2, "target": 5 },
+    { "id": 6, "source": 3, "target": 5 },
+    { "id": 7, "source": 4, "target": 5 }
+  ]
+}

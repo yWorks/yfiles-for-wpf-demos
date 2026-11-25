@@ -1,16 +1,16 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <RootNamespace>Demo.yFiles.Aggregation</RootNamespace>
+    <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
     <TargetFramework>net6.0-windows</TargetFramework>
+    <LangVersion>14.0</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>bin/Debug/</OutputPath>
   </PropertyGroup>
+  <ItemGroup />
   <ItemGroup>
-    <Reference Include="yWorks.yFilesWPF.Complete">
-      <HintPath>..\..\..\lib\net6.0\yWorks.yFilesWPF.Complete.dll</HintPath>
-    </Reference>
+    <PackageReference Include="yWorks.yFilesWPF.Complete" Version="4.1.0" />
   </ItemGroup>
   <!--The following target ensures that the project will build even when the ZIP file has been-->
   <!--extracted with Explorer or another tool that retains the origin zone marker for the files.-->
@@ -20,8 +20,8 @@
     <Exec Command="if exist &quot;%(Reference.HintPath)&quot; (&gt;nul 2&gt;nul (&gt;nul 2&gt;nul findstr ZoneId&lt;&quot;%(Reference.HintPath):Zone.Identifier&quot;) &amp;&amp; ((&gt;nul 2&gt;nul powershell -noprofile -nologo -command &quot;Unblock-File '%(Reference.HintPath)'&quot;) || (2&gt;nul type nul &gt;&quot;%(Reference.HintPath):Zone.Identifier&quot;) || (&lt;nul &gt;&amp;2 set /p _=Err&amp;&gt;&amp;2 echo or: The file @(Reference) originates from the Internet Zone and prevents compilation. Please unblock it manually in its properties. See the Knowledge Base at http://kb.yworks.com/article/736.)))" IgnoreExitCode="True" />
   </Target>
   <ItemGroup>
-    <EmbeddedResource Include="..\..\..\lib\net6.0\yWorks.yFilesWPF.DevelopmentLicense.xml" Condition="Exists('..\..\..\lib\net6.0\yWorks.yFilesWPF.DevelopmentLicense.xml')" />
-    <EmbeddedResource Include="..\..\..\lib\net6.0\yWorks.yFilesWPF.License.xml" Condition="Exists('..\..\..\lib\net6.0\yWorks.yFilesWPF.License.xml') And !Exists('..\..\..\lib\net6.0\yWorks.yFilesWPF.DevelopmentLicense.xml')" />
+    <EmbeddedResource Include="../../../lib/net6.0/yWorks.yFilesWPF.DevelopmentLicense.xml" Condition="Exists('../../../lib/net6.0/yWorks.yFilesWPF.DevelopmentLicense.xml')" />
+    <EmbeddedResource Include="../../../lib/net6.0/yWorks.yFilesWPF.License.xml" Condition="Exists('../../../lib/net6.0/yWorks.yFilesWPF.License.xml') And !Exists('../../../lib/net6.0/yWorks.yFilesWPF.DevelopmentLicense.xml')" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(NETCoreAppMaximumVersion)' != '' ">
     <TargetFramework>net$(NETCoreAppMaximumVersion)-windows</TargetFramework>

@@ -1,4 +1,5 @@
-# ContextMenu
+# Context Menu
 
-Demo code that shows how to customize the `ContextMenu` behavior of `GraphEditorInputMode`'s `MainInputMode.ContextMenuInputMode`
-      elegantly.
+![Demo thumbnail](../../DemoBrowser/DemoBrowser/Screenshots/context-menu.webp "Context Menu")
+
+Shows how to add a context menu to the nodes of a graph and to the canvas background.

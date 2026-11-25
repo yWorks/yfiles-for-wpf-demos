@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 4.0.
- ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -32,8 +32,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
-using Demo.yFiles.Toolkit.OptionHandler;
 using yWorks.Controls;
+using yWorks.Demo.Toolkit.OptionHandler;
 using yWorks.Graph;
 using yWorks.Layout;
 using yWorks.Layout.Graph;
@@ -42,7 +42,7 @@ using yWorks.Layout.Router;
 using yWorks.Layout.Tree;
 using yWorks.Utils;
 
-namespace Demo.yFiles.Layout.Configurations
+namespace yWorks.Demo.Layout.Configurations
 {
   /// <summary>
   ///   Configuration options for the layout algorithm of the same name.
@@ -205,8 +205,8 @@ namespace Demo.yFiles.Layout.Configurations
                     : SubtreeTransform.None;
 
                 var singleLayerSubtreePlacer = new SingleLayerSubtreePlacer(subtreeTransform,
-                    SingleLayerSubtreePlacerRootAlignment.LeadingOnBus, verticalDistance : SpacingItem,
-                    horizontalDistance : SpacingItem);
+                    SingleLayerSubtreePlacerRootAlignment.LeadingOnBus, verticalDistance: SpacingItem,
+                    horizontalDistance: SpacingItem);
                 singleLayerSubtreePlacer.AlignPorts = AlignPortsItem;
                 return singleLayerSubtreePlacer;
               }
@@ -345,12 +345,16 @@ namespace Demo.yFiles.Layout.Configurations
           break;
         case EnumSubtreePlacer.DoubleLayer:
           layout.DefaultSubtreePlacer = new DoubleLayerSubtreePlacer {
-              Spacing = SpacingItem, RootAlignment = rootAlignment2, AlignPorts = AlignPortsItem
+              Spacing = SpacingItem,
+              RootAlignment = rootAlignment2,
+              AlignPorts = AlignPortsItem
           };
           break;
         case EnumSubtreePlacer.LeftRight:
-          layout.DefaultSubtreePlacer =
-              new LeftRightSubtreePlacer { Spacing = SpacingItem, AlignPorts = AlignPortsItem };
+          layout.DefaultSubtreePlacer = new LeftRightSubtreePlacer {
+              Spacing = SpacingItem,
+              AlignPorts = AlignPortsItem
+          };
           layout.AllowMultiParent = allowMultiParents;
           break;
         case EnumSubtreePlacer.LevelAligned:
@@ -370,13 +374,15 @@ namespace Demo.yFiles.Layout.Configurations
           break;
         case EnumSubtreePlacer.Dendrogram:
           layout.DefaultSubtreePlacer = new DendrogramSubtreePlacer {
-              MinimumRootDistance = SpacingItem, MinimumSubtreeDistance = SpacingItem
+              MinimumRootDistance = SpacingItem,
+              MinimumSubtreeDistance = SpacingItem
           };
           layout.AllowMultiParent = allowMultiParents;
           break;
         case EnumSubtreePlacer.MultiLayer:
           layout.DefaultSubtreePlacer = new MultiLayerSubtreePlacer {
-              Spacing = SpacingItem, RootAlignment = (MultiLayerSubtreePlacerRootAlignment) rootAlignment2
+              Spacing = SpacingItem,
+              RootAlignment = (MultiLayerSubtreePlacerRootAlignment) rootAlignment2
           };
           break;
         case EnumSubtreePlacer.Compact:
@@ -788,8 +794,6 @@ namespace Demo.yFiles.Layout.Configurations
 
             if (ConsiderEdgeLabels) {
               // all labels of hidden edges should be marked
-              var affectedLabelsDataKey = new EdgeLabelDataKey<bool>(
-                  "Demo.yFiles.Layout.Configurations.TreeLayoutConfig.HandleEdgesBetweenGroupsStage.AffectedLabelsDataKey");
               var nonTreeLabelsMap = new DictionaryMapper<EdgeLabel, bool>();
 
               foreach (var edge in graph.Edges) {

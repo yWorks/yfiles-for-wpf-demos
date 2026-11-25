@@ -1,0 +1,678 @@
+{
+  "nodes": [
+    { "id": "1", "label": "Director", "group": "Management", "level": 1 },
+    { "id": "2", "label": "Manager A", "group": "Management", "level": 2 },
+    { "id": "3", "label": "Manager B", "group": "Management", "level": 2 },
+    { "id": "4", "label": "Admin 1", "group": "Management", "level": 3 },
+    { "id": "5", "label": "Admin 2", "group": "Management", "level": 3 },
+    { "id": "10", "label": "Lead Engineer", "group": "Engineering", "level": 1 },
+    { "id": "11", "label": "Eng 1", "group": "Engineering", "level": 2 },
+    { "id": "12", "label": "Eng 2", "group": "Engineering", "level": 2 },
+    { "id": "13", "label": "Eng 3", "group": "Engineering", "level": 2 },
+    { "id": "14", "label": "Eng 4", "group": "Engineering", "level": 2 },
+    { "id": "15", "label": "Eng 5", "group": "Engineering", "level": 3 },
+    { "id": "16", "label": "Eng 6", "group": "Engineering", "level": 3 },
+    { "id": "17", "label": "Eng 7", "group": "Engineering", "level": 3 },
+    { "id": "18", "label": "Eng 8", "group": "Engineering", "level": 3 },
+    { "id": "19", "label": "Eng 9", "group": "Engineering", "level": 3 },
+    { "id": "20", "label": "Eng 10", "group": "Engineering", "level": 3 },
+    { "id": "21", "label": "Eng 11", "group": "Engineering", "level": 3 },
+    { "id": "22", "label": "Eng 12", "group": "Engineering", "level": 3 },
+    { "id": "25", "label": "Senior Researcher", "group": "Research", "level": 1 },
+    { "id": "26", "label": "Res 1", "group": "Research", "level": 2 },
+    { "id": "27", "label": "Res 2", "group": "Research", "level": 2 },
+    { "id": "28", "label": "Res 3", "group": "Research", "level": 2 },
+    { "id": "29", "label": "Res 4", "group": "Research", "level": 3 },
+    { "id": "30", "label": "Res 5", "group": "Research", "level": 3 },
+    { "id": "31", "label": "Res 6", "group": "Research", "level": 3 },
+    { "id": "32", "label": "Res 7", "group": "Research", "level": 3 },
+    { "id": "33", "label": "Res 8", "group": "Research", "level": 3 },
+    { "id": "34", "label": "Res 9", "group": "Research", "level": 3 },
+    { "id": "35", "label": "Res 10", "group": "Research", "level": 3 },
+    { "id": "40", "label": "Sales Lead", "group": "Sales", "level": 1 },
+    { "id": "41", "label": "Sales 1", "group": "Sales", "level": 2 },
+    { "id": "42", "label": "Sales 2", "group": "Sales", "level": 2 },
+    { "id": "43", "label": "Sales 3", "group": "Sales", "level": 2 },
+    { "id": "44", "label": "Sales 4", "group": "Sales", "level": 2 },
+    { "id": "45", "label": "Sales 5", "group": "Sales", "level": 3 },
+    { "id": "46", "label": "Sales 6", "group": "Sales", "level": 3 },
+    { "id": "47", "label": "Sales 7", "group": "Sales", "level": 3 },
+    { "id": "48", "label": "Sales 8", "group": "Sales", "level": 3 },
+    { "id": "49", "label": "Sales 9", "group": "Sales", "level": 3 },
+    { "id": "50", "label": "Sales 10", "group": "Sales", "level": 3 }
+  ],
+  "links": [
+    {
+      "source": "1",
+      "target": "2",
+      "group": "reporting",
+      "weight": 3,
+      "label": "Leadership Guidance"
+    },
+    {
+      "source": "1",
+      "target": "3",
+      "group": "reporting",
+      "weight": 3,
+      "label": "Strategic Oversight"
+    },
+    {
+      "source": "1",
+      "target": "10",
+      "group": "reporting",
+      "weight": 5,
+      "label": "Technical Leadership"
+    },
+    {
+      "source": "1",
+      "target": "25",
+      "group": "reporting",
+      "weight": 5,
+      "label": "Research Direction"
+    },
+    { "source": "1", "target": "40", "group": "reporting", "weight": 5, "label": "Sales Strategy" },
+    {
+      "source": "1",
+      "target": "4",
+      "group": "reporting",
+      "weight": 1,
+      "label": "Administrative Supervision"
+    },
+    {
+      "source": "1",
+      "target": "5",
+      "group": "reporting",
+      "weight": 1,
+      "label": "Support Coordination"
+    },
+    {
+      "source": "1",
+      "target": "11",
+      "group": "social",
+      "weight": 1,
+      "label": "Casual Interaction"
+    },
+    {
+      "source": "1",
+      "target": "12",
+      "group": "social",
+      "weight": 1,
+      "label": "Casual Interaction"
+    },
+    {
+      "source": "1",
+      "target": "15",
+      "group": "social",
+      "weight": 1,
+      "label": "Casual Interaction"
+    },
+    {
+      "source": "1",
+      "target": "18",
+      "group": "social",
+      "weight": 1,
+      "label": "Casual Interaction"
+    },
+    { "source": "1", "target": "26", "group": "social", "weight": 1, "label": "Networking Event" },
+    { "source": "1", "target": "27", "group": "social", "weight": 1, "label": "Networking Event" },
+    { "source": "1", "target": "30", "group": "social", "weight": 1, "label": "Networking Event" },
+    { "source": "1", "target": "33", "group": "social", "weight": 1, "label": "Networking Event" },
+    { "source": "1", "target": "41", "group": "social", "weight": 1, "label": "Social Gathering" },
+    { "source": "1", "target": "42", "group": "social", "weight": 1, "label": "Social Gathering" },
+    { "source": "1", "target": "45", "group": "social", "weight": 1, "label": "Social Gathering" },
+    { "source": "1", "target": "48", "group": "social", "weight": 1, "label": "Social Gathering" },
+    {
+      "source": "10",
+      "target": "11",
+      "group": "collaboration",
+      "weight": 3,
+      "label": "Code Review"
+    },
+    {
+      "source": "10",
+      "target": "12",
+      "group": "collaboration",
+      "weight": 3,
+      "label": "Technical Alignment"
+    },
+    {
+      "source": "10",
+      "target": "13",
+      "group": "collaboration",
+      "weight": 3,
+      "label": "Innovation Discussion"
+    },
+    {
+      "source": "10",
+      "target": "14",
+      "group": "collaboration",
+      "weight": 3,
+      "label": "Design Session"
+    },
+    {
+      "source": "10",
+      "target": "15",
+      "group": "collaboration",
+      "weight": 2,
+      "label": "Debugging Team"
+    },
+    {
+      "source": "10",
+      "target": "16",
+      "group": "collaboration",
+      "weight": 2,
+      "label": "Engineering Workshop"
+    },
+    {
+      "source": "10",
+      "target": "17",
+      "group": "collaboration",
+      "weight": 2,
+      "label": "Quality Assurance"
+    },
+    {
+      "source": "10",
+      "target": "18",
+      "group": "collaboration",
+      "weight": 2,
+      "label": "Problem Solving"
+    },
+    {
+      "source": "10",
+      "target": "19",
+      "group": "collaboration",
+      "weight": 2,
+      "label": "Innovation Sprint"
+    },
+    {
+      "source": "10",
+      "target": "20",
+      "group": "collaboration",
+      "weight": 2,
+      "label": "Technical Review"
+    },
+    {
+      "source": "10",
+      "target": "21",
+      "group": "collaboration",
+      "weight": 2,
+      "label": "Collaboration Lab"
+    },
+    {
+      "source": "10",
+      "target": "22",
+      "group": "collaboration",
+      "weight": 2,
+      "label": "Development Meeting"
+    },
+    {
+      "source": "10",
+      "target": "25",
+      "group": "collaboration",
+      "weight": 4,
+      "label": "Tech-Research Sync"
+    },
+    {
+      "source": "10",
+      "target": "40",
+      "group": "collaboration",
+      "weight": 2,
+      "label": "Engineering-Sales Alignment"
+    },
+    { "source": "10", "target": "2", "group": "social", "weight": 1, "label": "Team Building" },
+    {
+      "source": "10",
+      "target": "3",
+      "group": "social",
+      "weight": 1,
+      "label": "Industry Networking"
+    },
+    { "source": "10", "target": "4", "group": "social", "weight": 1, "label": "Informal Chat" },
+    {
+      "source": "10",
+      "target": "35",
+      "group": "collaboration",
+      "weight": 1,
+      "label": "Tech Briefing"
+    },
+    {
+      "source": "25",
+      "target": "26",
+      "group": "reporting",
+      "weight": 3,
+      "label": "Scientific Reporting"
+    },
+    {
+      "source": "25",
+      "target": "27",
+      "group": "reporting",
+      "weight": 3,
+      "label": "Support Coordination"
+    },
+    {
+      "source": "25",
+      "target": "28",
+      "group": "reporting",
+      "weight": 3,
+      "label": "Scientific Oversight"
+    },
+    { "source": "25", "target": "29", "group": "collaboration", "weight": 2, "label": "Book Club" },
+    {
+      "source": "25",
+      "target": "30",
+      "group": "collaboration",
+      "weight": 2,
+      "label": "Scientific Alignment"
+    },
+    {
+      "source": "25",
+      "target": "31",
+      "group": "collaboration",
+      "weight": 2,
+      "label": "Project Development"
+    },
+    {
+      "source": "25",
+      "target": "32",
+      "group": "collaboration",
+      "weight": 2,
+      "label": "Brainstorming"
+    },
+    {
+      "source": "25",
+      "target": "33",
+      "group": "collaboration",
+      "weight": 2,
+      "label": "Supervision"
+    },
+    {
+      "source": "25",
+      "target": "34",
+      "group": "collaboration",
+      "weight": 2,
+      "label": "Development Meeting"
+    },
+    {
+      "source": "25",
+      "target": "35",
+      "group": "collaboration",
+      "weight": 2,
+      "label": "Research Sprint"
+    },
+    {
+      "source": "25",
+      "target": "40",
+      "group": "collaboration",
+      "weight": 2,
+      "label": "Scientific Marketing Meeting"
+    },
+    {
+      "source": "25",
+      "target": "2",
+      "group": "social",
+      "weight": 1,
+      "label": "Conference Social Event"
+    },
+    {
+      "source": "25",
+      "target": "3",
+      "group": "social",
+      "weight": 1,
+      "label": "Conference Social Event"
+    },
+    {
+      "source": "25",
+      "target": "5",
+      "group": "social",
+      "weight": 1,
+      "label": "Company Social Event"
+    },
+    {
+      "source": "25",
+      "target": "22",
+      "group": "collaboration",
+      "weight": 1,
+      "label": "Innovation Hub"
+    },
+    {
+      "source": "40",
+      "target": "41",
+      "group": "reporting",
+      "weight": 3,
+      "label": "Project Oversight"
+    },
+    {
+      "source": "40",
+      "target": "42",
+      "group": "reporting",
+      "weight": 3,
+      "label": "Project Planning"
+    },
+    { "source": "40", "target": "43", "group": "reporting", "weight": 3, "label": "Supervision" },
+    {
+      "source": "40",
+      "target": "44",
+      "group": "reporting",
+      "weight": 3,
+      "label": "Strategic Meeting"
+    },
+    { "source": "40", "target": "45", "group": "social", "weight": 1, "label": "Sales Event" },
+    { "source": "40", "target": "46", "group": "social", "weight": 1, "label": "Team Building" },
+    { "source": "40", "target": "2", "group": "social", "weight": 1, "label": "Formal Dinner" },
+    { "source": "40", "target": "15", "group": "collaboration", "weight": 1, "label": "Brothers" },
+    { "source": "40", "target": "49", "group": "social", "weight": 1, "label": "Company Outing" },
+    {
+      "source": "11",
+      "target": "12",
+      "group": "collaboration",
+      "weight": 2,
+      "label": "Project A-1"
+    },
+    {
+      "source": "11",
+      "target": "13",
+      "group": "collaboration",
+      "weight": 2,
+      "label": "Project A-4"
+    },
+    {
+      "source": "11",
+      "target": "14",
+      "group": "social",
+      "weight": 1,
+      "label": "After-Work Drinks"
+    },
+    {
+      "source": "11",
+      "target": "15",
+      "group": "social",
+      "weight": 1,
+      "label": "After-Work Drinks"
+    },
+    { "source": "11", "target": "16", "group": "social", "weight": 1, "label": "Company Outing" },
+    { "source": "11", "target": "21", "group": "social", "weight": 1, "label": "Married" },
+    {
+      "source": "11",
+      "target": "26",
+      "group": "collaboration",
+      "weight": 2,
+      "label": "Scientific Innovation Hub"
+    },
+    { "source": "11", "target": "41", "group": "social", "weight": 1, "label": "Friendly Chat" },
+    { "source": "11", "target": "50", "group": "social", "weight": 1, "label": "Lunch Buddy" },
+    {
+      "source": "12",
+      "target": "13",
+      "group": "collaboration",
+      "weight": 2,
+      "label": "Project Team"
+    },
+    { "source": "12", "target": "17", "group": "social", "weight": 1, "label": "Coffee Breaks" },
+    {
+      "source": "12",
+      "target": "18",
+      "group": "social",
+      "weight": 1,
+      "label": "Sports Enthusiast"
+    },
+    {
+      "source": "12",
+      "target": "22",
+      "group": "social",
+      "weight": 1,
+      "label": "Conference Buddies"
+    },
+    {
+      "source": "12",
+      "target": "27",
+      "group": "collaboration",
+      "weight": 2,
+      "label": "Innovation Partners"
+    },
+    { "source": "12", "target": "42", "group": "social", "weight": 1, "label": "Networking Pals" },
+    { "source": "13", "target": "19", "group": "social", "weight": 1, "label": "Weekend Barbecue" },
+    { "source": "13", "target": "20", "group": "social", "weight": 1, "label": "Gym Partners" },
+    {
+      "source": "13",
+      "target": "41",
+      "group": "collaboration",
+      "weight": 2,
+      "label": "Cross-Dept Cooperation"
+    },
+    { "source": "13", "target": "43", "group": "social", "weight": 1, "label": "Team Outings" },
+    {
+      "source": "14",
+      "target": "15",
+      "group": "collaboration",
+      "weight": 2,
+      "label": "Development Allies"
+    },
+    { "source": "14", "target": "21", "group": "social", "weight": 1, "label": "Lunch Group" },
+    { "source": "14", "target": "22", "group": "social", "weight": 1, "label": "Book Club" },
+    {
+      "source": "14",
+      "target": "42",
+      "group": "collaboration",
+      "weight": 2,
+      "label": "Sales Sync-Up"
+    },
+    { "source": "14", "target": "44", "group": "social", "weight": 1, "label": "Trivia Night" },
+    {
+      "source": "15",
+      "target": "16",
+      "group": "collaboration",
+      "weight": 2,
+      "label": "Research Cohort"
+    },
+    {
+      "source": "15",
+      "target": "17",
+      "group": "collaboration",
+      "weight": 2,
+      "label": "Brainstorm Partners"
+    },
+    { "source": "15", "target": "29", "group": "social", "weight": 1, "label": "Event Organizers" },
+    { "source": "15", "target": "45", "group": "social", "weight": 1, "label": "Weekend Hikers" },
+    {
+      "source": "16",
+      "target": "18",
+      "group": "collaboration",
+      "weight": 2,
+      "label": "Testing Team"
+    },
+    { "source": "16", "target": "30", "group": "social", "weight": 1, "label": "Photography Club" },
+    { "source": "16", "target": "46", "group": "social", "weight": 1, "label": "Music Jammers" },
+    {
+      "source": "17",
+      "target": "18",
+      "group": "collaboration",
+      "weight": 2,
+      "label": "Debugging Duo"
+    },
+    { "source": "17", "target": "47", "group": "social", "weight": 1, "label": "Esports Team" },
+    { "source": "18", "target": "48", "group": "social", "weight": 1, "label": "Cycling Group" },
+    {
+      "source": "19",
+      "target": "20",
+      "group": "collaboration",
+      "weight": 2,
+      "label": "Software Architects"
+    },
+    {
+      "source": "19",
+      "target": "21",
+      "group": "collaboration",
+      "weight": 2,
+      "label": "Code Review Buddies"
+    },
+    { "source": "19", "target": "49", "group": "social", "weight": 1, "label": "Dine & Discuss" },
+    {
+      "source": "20",
+      "target": "22",
+      "group": "collaboration",
+      "weight": 2,
+      "label": "Tech Workshop"
+    },
+    { "source": "20", "target": "50", "group": "social", "weight": 1, "label": "Weekend Picnics" },
+    { "source": "21", "target": "31", "group": "social", "weight": 1, "label": "Afterwork Drinks" },
+    { "source": "22", "target": "32", "group": "social", "weight": 1, "label": "Online Gamers" },
+    {
+      "source": "26",
+      "target": "27",
+      "group": "collaboration",
+      "weight": 2,
+      "label": "R&D Explorers"
+    },
+    { "source": "26", "target": "29", "group": "social", "weight": 1, "label": "Nature Walks" },
+    { "source": "26", "target": "30", "group": "social", "weight": 1, "label": "Cooking Class" },
+    { "source": "26", "target": "35", "group": "social", "weight": 1, "label": "Art Lovers" },
+    { "source": "26", "target": "45", "group": "social", "weight": 1, "label": "Theater Group" },
+    {
+      "source": "27",
+      "target": "28",
+      "group": "collaboration",
+      "weight": 2,
+      "label": "Lab Partners"
+    },
+    {
+      "source": "27",
+      "target": "31",
+      "group": "social",
+      "weight": 1,
+      "label": "Wellness Warriors"
+    },
+    {
+      "source": "27",
+      "target": "32",
+      "group": "social",
+      "weight": 1,
+      "label": "Culinary Creations"
+    },
+    {
+      "source": "28",
+      "target": "34",
+      "group": "social",
+      "weight": 1,
+      "label": "Fitness Enthusiasts"
+    },
+    { "source": "29", "target": "30", "group": "social", "weight": 1, "label": "Chess Club" },
+    {
+      "source": "29",
+      "target": "31",
+      "group": "collaboration",
+      "weight": 2,
+      "label": "Idea Incubators"
+    },
+    {
+      "source": "30",
+      "target": "32",
+      "group": "collaboration",
+      "weight": 2,
+      "label": "Research Syndicate"
+    },
+    { "source": "31", "target": "32", "group": "social", "weight": 1, "label": "Gardeners Club" },
+    {
+      "source": "33",
+      "target": "34",
+      "group": "social",
+      "weight": 1,
+      "label": "Bookworms Collective"
+    },
+    {
+      "source": "33",
+      "target": "35",
+      "group": "collaboration",
+      "weight": 2,
+      "label": "Data Analysis Partners"
+    },
+    {
+      "source": "41",
+      "target": "42",
+      "group": "collaboration",
+      "weight": 2,
+      "label": "Sales Campaign"
+    },
+    { "source": "41", "target": "45", "group": "social", "weight": 1, "label": "Foodies Squad" },
+    { "source": "41", "target": "46", "group": "social", "weight": 1, "label": "Volunteers Team" },
+    { "source": "41", "target": "50", "group": "social", "weight": 1, "label": "Travel Buddies" },
+    { "source": "42", "target": "47", "group": "social", "weight": 1, "label": "Collectors Club" },
+    {
+      "source": "42",
+      "target": "48",
+      "group": "social",
+      "weight": 1,
+      "label": "Crafting Afternoons"
+    },
+    {
+      "source": "43",
+      "target": "44",
+      "group": "collaboration",
+      "weight": 2,
+      "label": "Client Relations"
+    },
+    { "source": "43", "target": "49", "group": "social", "weight": 1, "label": "Cycling Team" },
+    { "source": "43", "target": "50", "group": "social", "weight": 1, "label": "Night Owls" },
+    { "source": "45", "target": "46", "group": "social", "weight": 1, "label": "Brunch Bunch" },
+    {
+      "source": "45",
+      "target": "47",
+      "group": "collaboration",
+      "weight": 2,
+      "label": "Marketing Strategy"
+    },
+    {
+      "source": "46",
+      "target": "48",
+      "group": "collaboration",
+      "weight": 2,
+      "label": "Event Planning"
+    },
+    { "source": "47", "target": "48", "group": "social", "weight": 1, "label": "Pool Players" },
+    { "source": "49", "target": "50", "group": "social", "weight": 1, "label": "Dinner Buddies" },
+    { "source": "2", "target": "3", "group": "social", "weight": 1, "label": "Peer Support" },
+    {
+      "source": "2",
+      "target": "11",
+      "group": "reporting",
+      "weight": 2,
+      "label": "Direct Supervisor"
+    },
+    {
+      "source": "2",
+      "target": "12",
+      "group": "reporting",
+      "weight": 2,
+      "label": "Direct Supervisor"
+    },
+    {
+      "source": "3",
+      "target": "26",
+      "group": "reporting",
+      "weight": 2,
+      "label": "Direct Supervisor"
+    },
+    {
+      "source": "3",
+      "target": "27",
+      "group": "reporting",
+      "weight": 2,
+      "label": "Direct Supervisor"
+    },
+    {
+      "source": "3",
+      "target": "40",
+      "group": "collaboration",
+      "weight": 2,
+      "label": "Leadership Meeting"
+    },
+    {
+      "source": "4",
+      "target": "5",
+      "group": "collaboration",
+      "weight": 2,
+      "label": "Admin Support Team"
+    },
+    { "source": "4", "target": "11", "group": "social", "weight": 1, "label": "Team Celebrations" },
+    { "source": "5", "target": "26", "group": "social", "weight": 1, "label": "Lunch Companions" }
+  ]
+}

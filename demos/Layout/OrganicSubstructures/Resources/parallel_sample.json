@@ -1,0 +1,370 @@
+{
+  "nodes": [
+    {
+      "id": "n0",
+      "layout": {
+        "x": 310.33065359145934,
+        "y": 422.99293413536293,
+        "width": 40.0,
+        "height": 40.0
+      },
+      "isGroup": false,
+      "type": 1
+    },
+    {
+      "id": "n1",
+      "layout": {
+        "x": 259.9101273423485,
+        "y": 459.80090620134933,
+        "width": 40.0,
+        "height": 40.0
+      },
+      "isGroup": false,
+      "type": 1
+    },
+    {
+      "id": "n2",
+      "layout": {
+        "x": 329.75631580012237,
+        "y": 482.3199930764788,
+        "width": 40.0,
+        "height": 40.0
+      },
+      "isGroup": false,
+      "type": 1
+    },
+    {
+      "id": "n3",
+      "layout": {
+        "x": 372.7568993394983,
+        "y": 422.8511009475545,
+        "width": 40.0,
+        "height": 40.0
+      },
+      "isGroup": false,
+      "type": 1
+    },
+    {
+      "id": "n4",
+      "layout": {
+        "x": 329.4865330451381,
+        "y": 363.5782174634487,
+        "width": 40.0,
+        "height": 40.0
+      },
+      "isGroup": false,
+      "type": 1
+    },
+    {
+      "id": "n5",
+      "layout": {
+        "x": 508.33065359145934,
+        "y": 540.9929341353629,
+        "width": 40.0,
+        "height": 40.0
+      },
+      "isGroup": false,
+      "type": 2
+    },
+    {
+      "id": "n6",
+      "layout": {
+        "x": 457.9101273423485,
+        "y": 577.8009062013493,
+        "width": 40.0,
+        "height": 40.0
+      },
+      "isGroup": false,
+      "type": 2
+    },
+    {
+      "id": "n7",
+      "layout": {
+        "x": 527.7563158001224,
+        "y": 600.3199930764788,
+        "width": 40.0,
+        "height": 40.0
+      },
+      "isGroup": false,
+      "type": 2
+    },
+    {
+      "id": "n8",
+      "layout": {
+        "x": 570.7568993394983,
+        "y": 540.8511009475545,
+        "width": 40.0,
+        "height": 40.0
+      },
+      "isGroup": false,
+      "type": 2
+    },
+    {
+      "id": "n9",
+      "layout": {
+        "x": 527.4865330451381,
+        "y": 481.5782174634487,
+        "width": 40.0,
+        "height": 40.0
+      },
+      "isGroup": false,
+      "type": 2
+    },
+    {
+      "id": "n10",
+      "layout": {
+        "x": 112.3306535914594,
+        "y": 309.99293413536293,
+        "width": 40.0,
+        "height": 40.0
+      },
+      "isGroup": false,
+      "type": 3
+    },
+    {
+      "id": "n11",
+      "layout": {
+        "x": 61.9101273423485,
+        "y": 346.80090620134933,
+        "width": 40.0,
+        "height": 40.0
+      },
+      "isGroup": false,
+      "type": 3
+    },
+    {
+      "id": "n12",
+      "layout": {
+        "x": 131.75631580012234,
+        "y": 369.3199930764788,
+        "width": 40.0,
+        "height": 40.0
+      },
+      "isGroup": false,
+      "type": 3
+    },
+    {
+      "id": "n13",
+      "layout": {
+        "x": 174.75689933949832,
+        "y": 309.8511009475545,
+        "width": 40.0,
+        "height": 40.0
+      },
+      "isGroup": false,
+      "type": 3
+    },
+    {
+      "id": "n14",
+      "layout": {
+        "x": 131.48653304513812,
+        "y": 250.5782174634487,
+        "width": 40.0,
+        "height": 40.0
+      },
+      "isGroup": false,
+      "type": 3
+    },
+    {
+      "id": "n15",
+      "layout": {
+        "x": 0.0,
+        "y": 845.0,
+        "width": 40.0,
+        "height": 40.0
+      },
+      "isGroup": false,
+      "type": 4
+    },
+    {
+      "id": "n16",
+      "layout": {
+        "x": 611.0,
+        "y": 0.0,
+        "width": 40.0,
+        "height": 40.0
+      },
+      "isGroup": false,
+      "type": 4
+    },
+    {
+      "id": "n17",
+      "layout": {
+        "x": 61.743392430189665,
+        "y": 273.41445298798334,
+        "width": 40.0,
+        "height": 40.0
+      },
+      "isGroup": false,
+      "type": 3
+    },
+    {
+      "id": "n18",
+      "layout": {
+        "x": 259.74339243018966,
+        "y": 386.4144529879833,
+        "width": 40.0,
+        "height": 40.0
+      },
+      "isGroup": false,
+      "type": 1
+    },
+    {
+      "id": "n19",
+      "layout": {
+        "x": 457.74339243018966,
+        "y": 504.4144529879833,
+        "width": 40.0,
+        "height": 40.0
+      },
+      "isGroup": false,
+      "type": 2
+    }
+  ],
+  "edges": [
+    {
+      "source": "n15",
+      "target": "n14"
+    },
+    {
+      "source": "n14",
+      "target": "n16"
+    },
+    {
+      "source": "n15",
+      "target": "n13"
+    },
+    {
+      "source": "n13",
+      "target": "n16"
+    },
+    {
+      "source": "n15",
+      "target": "n12"
+    },
+    {
+      "source": "n12",
+      "target": "n16"
+    },
+    {
+      "source": "n15",
+      "target": "n11"
+    },
+    {
+      "source": "n11",
+      "target": "n16"
+    },
+    {
+      "source": "n15",
+      "target": "n10"
+    },
+    {
+      "source": "n10",
+      "target": "n16"
+    },
+    {
+      "source": "n15",
+      "target": "n9"
+    },
+    {
+      "source": "n9",
+      "target": "n16"
+    },
+    {
+      "source": "n15",
+      "target": "n8"
+    },
+    {
+      "source": "n8",
+      "target": "n16"
+    },
+    {
+      "source": "n15",
+      "target": "n7"
+    },
+    {
+      "source": "n7",
+      "target": "n16"
+    },
+    {
+      "source": "n15",
+      "target": "n6"
+    },
+    {
+      "source": "n6",
+      "target": "n16"
+    },
+    {
+      "source": "n15",
+      "target": "n5"
+    },
+    {
+      "source": "n5",
+      "target": "n16"
+    },
+    {
+      "source": "n15",
+      "target": "n4"
+    },
+    {
+      "source": "n4",
+      "target": "n16"
+    },
+    {
+      "source": "n15",
+      "target": "n3"
+    },
+    {
+      "source": "n3",
+      "target": "n16"
+    },
+    {
+      "source": "n15",
+      "target": "n2"
+    },
+    {
+      "source": "n2",
+      "target": "n16"
+    },
+    {
+      "source": "n15",
+      "target": "n1"
+    },
+    {
+      "source": "n1",
+      "target": "n16"
+    },
+    {
+      "source": "n15",
+      "target": "n0"
+    },
+    {
+      "source": "n0",
+      "target": "n16"
+    },
+    {
+      "source": "n15",
+      "target": "n17"
+    },
+    {
+      "source": "n17",
+      "target": "n16"
+    },
+    {
+      "source": "n15",
+      "target": "n18"
+    },
+    {
+      "source": "n18",
+      "target": "n16"
+    },
+    {
+      "source": "n15",
+      "target": "n19"
+    },
+    {
+      "source": "n19",
+      "target": "n16"
+    }
+  ]
+}

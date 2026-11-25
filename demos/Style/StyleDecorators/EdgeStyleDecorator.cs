@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 4.0.
- ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -28,7 +28,6 @@
  ***************************************************************************/
 
 using System;
-using System.Reflection;
 using System.Windows.Media;
 using yWorks.Controls;
 using yWorks.Controls.Input;
@@ -36,192 +35,210 @@ using yWorks.Geometry;
 using yWorks.Graph;
 using yWorks.Graph.PortLocationModels;
 using yWorks.Graph.Styles;
-using yWorks.Utils;
 
-namespace Demo.yFiles.Graph.StyleDecorators
+namespace yWorks.Demo.StyleDecorators
 {
   /// <summary>
-  ///   An edge style that shows how to decorate an existing edge style and delegate rendering,
-  ///   as well as all rendering helper methods, to the wrapped style as well as how to use
-  ///   a port style to render the edge's bends.
+  ///   This edge style decorator shows how to decorate an edge style with bends that are rendered by a port style.
   /// </summary>
   /// <remarks>
   ///   This implementation wraps <see cref="PolylineEdgeStyle"/>.
-  ///   The <see cref="PolylineEdgeStyle.Pen"/> of the wrapped style is modified based on the
-  ///   <see cref="TrafficLoad"/> value stored in the edge's tag.
-  ///   In order to render the edge's bend, and arbitrary <see cref="IPortStyle">port style</see>,
-  ///   that can be set in the constructor, is used.
+  ///   The <see cref="PolylineEdgeStyle.Pen"/> of the wrapped style is modified based on the value stored
+  ///   in the edge's tag. An arbitrary <see cref="IPortStyle"/> port style, that can be set in the
+  ///   constructor, is used to render the edge's bends.
   /// </remarks>
-  [Obfuscation(StripAfterObfuscation = false, Exclude = true, ApplyToMembers = true)]
   public sealed class EdgeStyleDecorator : EdgeStyleBase<VisualGroup>
   {
-    private readonly PolylineEdgeStyle wrapped = new() { SmoothingLength = 5.0 };
+    private readonly IPortStyle bendStyle;
+    private readonly PolylineEdgeStyle baseStyle;
 
-    public EdgeStyleDecorator() { }
-
+    /// <summary>
+    ///   Initializes a new instance of this class.
+    /// </summary>
+    /// <param name="bendStyle">A port style that is used to draw the bends.</param>
     public EdgeStyleDecorator(IPortStyle bendStyle) {
-      BendStyle = bendStyle;
+      this.bendStyle = bendStyle;
+      baseStyle = new PolylineEdgeStyle { SmoothingLength = 5.0 };
     }
 
     /// <summary>
-    ///   Gets the <see cref="IPortStyle">style</see> that is used for visualizing the edge's bends.
+    ///   Creates a new visual as combination of the base edge visualization and the bend visualizations.
     /// </summary>
-    public IPortStyle BendStyle { get; set; }
-
+    /// <param name="context">The render context.</param>
+    /// <param name="edge">The edge to which this style instance is assigned.</param>
+    /// <returns>The created visual.</returns>
+    /// <see cref="EdgeStyleBase{TVisual}.CreateVisual(IRenderContext, IEdge)"/>
     protected override VisualGroup CreateVisual(IRenderContext context, IEdge edge) {
       // create container
-      var container = new VisualGroup();
-      // set pen
-      wrapped.Pen = GetPen(edge);
-      // delegate rendering
-      var wrappedVisual = wrapped.Renderer.GetVisualCreator(edge, wrapped).CreateVisual(context);
-      container.Add(wrappedVisual);
+      var group = new VisualGroup();
 
-      if (BendStyle != null) {
-        var bendContainer = new VisualGroup();
-        container.Add(bendContainer);
-        RenderBends(context, edge, bendContainer);
-      }
-      return container;
+      // delegate rendering
+      var tag = edge.Tag as string;
+      var pen = GetPen(tag);
+      baseStyle.Pen = pen;
+      var baseVisual = baseStyle.Renderer.GetVisualCreator(edge, baseStyle).CreateVisual(context);
+      group.Add(baseVisual!);
+
+      var bendGroup = new VisualGroup();
+      group.Add(bendGroup);
+      RenderBends(context, bendGroup, edge, pen);
+      group.SetRenderDataCache(new EdgeVisualCache(tag, pen));
+      return group;
     }
 
+    /// <summary>
+    ///   Updates the provided visual.
+    /// </summary>
+    /// <param name="context">The render context.</param>
+    /// <param name="oldVisual">
+    ///   The visual that has been created in the call to
+    ///   <see cref="EdgeStyleBase{TVisual}.CreateVisual(IRenderContext, IEdge)"/>.
+    /// </param>
+    /// <param name="edge">The edge to which this style instance is assigned.</param>
+    /// <returns>The updated visual.</returns>
+    /// <see cref="EdgeStyleBase{TVisual}.UpdateVisual(IRenderContext, TVisual, IEdge)"/>
     protected override VisualGroup UpdateVisual(IRenderContext context, VisualGroup oldVisual, IEdge edge) {
-      // set pen
-      wrapped.Pen = GetPen(edge);
-      var wrappedVisual = oldVisual.Children[0];
-      // delegate update
-      wrappedVisual = wrapped.Renderer.GetVisualCreator(edge, wrapped).UpdateVisual(context, wrappedVisual);
-      if (oldVisual.Children[0] != wrappedVisual) {
-        oldVisual.Children[0] = wrappedVisual;
+      // check whether the elements are as expected
+      if (oldVisual.Children.Count != 2 || oldVisual.Children[1] is not VisualGroup bendGroup) {
+        return CreateVisual(context, edge);
       }
 
-      if (BendStyle != null) {
-        var bendContainer = (VisualGroup) oldVisual.Children[1];
-        RenderBends(context, edge, bendContainer);
+      var cache = oldVisual.GetRenderDataCache<EdgeVisualCache>();
+      var tag = edge.Tag as string;
+      var pen = cache.Tag == tag ? cache.Pen : GetPen(tag);
+
+      var baseVisual = oldVisual.Children[0];
+      // delegate update
+      baseStyle.Pen = pen;
+      baseVisual = baseStyle.Renderer.GetVisualCreator(edge, baseStyle).UpdateVisual(context, baseVisual);
+      if (!ReferenceEquals(oldVisual.Children[0], baseVisual)) {
+        oldVisual.Children[0] = baseVisual!;
       }
+
+      RenderBends(context, bendGroup, edge, pen);
+      oldVisual.SetRenderDataCache(new EdgeVisualCache(tag, pen));
       return oldVisual;
     }
 
-    #region bend rendering
-
     /// <summary>
-    ///   Renders the edge's bends, using <see cref="BendStyle"/> and dummy ports.
+    ///   Renders the edge's bends, using <see cref="bendStyle"/> and dummy ports.
     /// </summary>
-    private void RenderBends(IRenderContext context, IEdge edge, VisualGroup container) {
+    /// <param name="context">The render context.</param>
+    /// <param name="group">The group element.</param>
+    /// <param name="edge">The edge.</param>
+    private void RenderBends(IRenderContext context, VisualGroup group, IEdge edge, Pen pen) {
       var bends = edge.Bends;
+
       // remove surplus visuals
-      while (container.Children.Count > bends.Count) {
+      while (group.Children.Count > bends.Count) {
         // remove last child
-        container.Remove(container.Children[container.Children.Count - 1]);
+        group.Remove(group.Children[^1]);
       }
+
+      var bendStyle = this.bendStyle;
+      if (bendStyle is ShapePortStyle shapePortStyle) {
+        var diameter = pen.Thickness * 2;
+        shapePortStyle.RenderSize = new SizeD(diameter, diameter);
+        shapePortStyle.Brush = pen.Brush;
+      }
+
       // update existing bend visuals
-      for (var i = 0; i < container.Children.Count; i++) {
-        var bend = bends[i];
-        // create a dummy port at the bend's location to render
-        var dummyPort = new SimplePort(new SimpleNode(),
-            PointPortLocationModel.Instance.CreateParameter(bend.Location.ToPointD()));
+      var dummyPort = new SimplePort(edge);
+      var portLocationModel = BendAnchoredPortLocationModel.Instance;
+      for (var i = 0; i < group.Children.Count; i++) {
+        // place the dummy port at the bend's location
+        dummyPort.LocationParameter = portLocationModel.CreateParameterFromSource(i);
+
         // update the dummy port visual
-        var visual = BendStyle.Renderer.GetVisualCreator(dummyPort, BendStyle)
-            .UpdateVisual(context, container.Children[i]);
+        var visual = bendStyle.Renderer.GetVisualCreator(dummyPort, bendStyle).UpdateVisual(context, group.Children[i]);
         // switch instances if necessary
-        if (container.Children[i] != visual) {
-          container.Children[i] = visual;
+        if (!ReferenceEquals(group.Children[i], visual)) {
+          group.Children[i] = visual!;
         }
       }
+
       // add missing visuals
-      for (var i = container.Children.Count; i < bends.Count; i++) {
-        var bend = bends[i];
-        // create a dummy port at the bend's location to render
-        var dummyPort = new SimplePort(new SimpleNode(),
-            PointPortLocationModel.Instance.CreateParameter(bend.Location.ToPointD()));
+      for (var i = group.Children.Count; i < bends.Count; i++) {
+        // place the dummy port at the bend's location
+        dummyPort.LocationParameter = portLocationModel.CreateParameterFromSource(i);
+
         // render the dummy port visual
-        var bendVisual = BendStyle.Renderer.GetVisualCreator(dummyPort, BendStyle).CreateVisual(context);
-        container.Children.Add(bendVisual);
+        var bendVisual = bendStyle.Renderer.GetVisualCreator(dummyPort, bendStyle).CreateVisual(context);
+        group.Add(bendVisual!);
       }
     }
-
-    #endregion
-
-    #region overriding methods
-
-    protected override RectD GetBounds(ICanvasContext context, IEdge edge) {
-      return wrapped.Renderer.GetBoundsProvider(edge, wrapped).GetBounds(context);
-    }
-
-    protected override bool IsVisible(ICanvasContext context, RectD rectangle, IEdge edge) {
-      return wrapped.Renderer.GetVisibilityTestable(edge, wrapped).IsVisible(context, rectangle);
-    }
-
-    protected override bool IsHit(IInputModeContext context, PointD location, IEdge edge) {
-      return wrapped.Renderer.GetHitTestable(edge, wrapped).IsHit(context, location);
-    }
-
-    protected override bool IsInBox(IInputModeContext context, RectD rectangle, IEdge edge) {
-      return wrapped.Renderer.GetMarqueeTestable(edge, wrapped).IsInBox(context, rectangle);
-    }
-
-    protected override object Lookup(IEdge edge, Type type) {
-      return wrapped.Renderer.GetContext(edge, wrapped).Lookup(type);
-    }
-
-    #endregion
 
     /// <summary>
-    ///   Returns a pen based on the priority stored in the edge's tag
+    ///   Returns a pen for the provided data.
     /// </summary>
-    /// <param name="edge"></param>
-    private static Pen GetPen(IEdge edge) {
-      if (edge.Tag is TrafficLoad) {
-        switch ((TrafficLoad) edge.Tag) {
-          case TrafficLoad.VeryHigh:
-            return new Pen(Brushes.Red, 3.0);
-          case TrafficLoad.High:
-            return new Pen(Brushes.Orange, 2.0);
-          case TrafficLoad.Normal:
-            return new Pen(Brushes.Black, 1.0);
-          case TrafficLoad.Low:
-            return new Pen(Brushes.LightGray, 1.0);
-          default:
-            return new Pen(Brushes.Black, 1.0);
-        }
-      }
-      return new Pen(Brushes.Black, 1.0);
-    }
-  }
-
-  public class PointPortLocationModel : IPortLocationModel
-  {
-    public static readonly PointPortLocationModel Instance = new();
-
-    public PointD GetLocation(IPort port, IPortLocationModelParameter locationParameter) {
-      if (locationParameter is not PointPortLocationModelParameter modelParameter) {
-        throw new ArgumentException("The parameter is not supported by this port location model.",
-            nameof(locationParameter));
-      }
-      return modelParameter.Location;
+    /// <param name="data">A custom data object.</param>
+    /// <returns>The pen for the provided data.</returns>
+    private static Pen GetPen(string? data) {
+      return data switch {
+          "TRAFFIC_VERY_HIGH" => new Pen(new SolidColorBrush(Color.FromRgb(0xDB, 0x3A, 0x34)), 3.5),
+          "TRAFFIC_HIGH" => new Pen(new SolidColorBrush(Color.FromRgb(0xFF, 0x6C, 0x00)), 2.5),
+          "TRAFFIC_LOW" => new Pen(new SolidColorBrush(Color.FromRgb(0xC1, 0xC1, 0xC1)), 1.5),
+          _ => new Pen(Brushes.Black, 1.5)
+      };
     }
 
-    public PointPortLocationModelParameter CreateParameter(PointD location) {
-      return new PointPortLocationModelParameter { Location = location, Model = this };
-    }
+    /// <summary>
+    ///   Returns the bounds provided by the base style for the edge.
+    /// </summary>
+    /// <param name="context">The canvas context.</param>
+    /// <param name="edge">The edge to which this style instance is assigned.</param>
+    /// <returns>The visual bounds.</returns>
+    /// <see cref="EdgeStyleBase{TVisual}.GetBounds(ICanvasContext, IEdge)"/>
+    protected override RectD GetBounds(ICanvasContext context, IEdge edge) =>
+        baseStyle.Renderer.GetBoundsProvider(edge, baseStyle).GetBounds(context);
 
-    public IPortLocationModelParameter CreateParameter(IPortOwner owner, PointD location) {
-      return new PointPortLocationModelParameter { Location = location, Model = this };
-    }
+    /// <summary>
+    ///   Returns whether the base visualization for the specified edge is visible.
+    /// </summary>
+    /// <param name="context">The canvas context.</param>
+    /// <param name="rectangle">The clipping rectangle.</param>
+    /// <param name="edge">The edge to which this style instance is assigned.</param>
+    /// <returns>
+    ///   <see langword="true"/> if the specified edge is visible in the clipping rectangle;
+    ///   <see langword="false"/> otherwise.
+    /// </returns>
+    /// <see cref="EdgeStyleBase{TVisual}.IsVisible(ICanvasContext, RectD, IEdge)"/>
+    protected override bool IsVisible(ICanvasContext context, RectD rectangle, IEdge edge) =>
+        baseStyle.Renderer.GetVisibilityTestable(edge, baseStyle).IsVisible(context, rectangle);
 
-    public ILookup GetContext(IPort port) {
-      return Lookups.Empty;
-    }
+    /// <summary>
+    ///   Returns whether the base visualization is hit.
+    /// </summary>
+    /// <param name="context">The context.</param>
+    /// <param name="location">The point to test.</param>
+    /// <param name="edge">The edge to which this style instance is assigned.</param>
+    /// <returns><see langword="true"/> if the base visualization is hit.</returns>
+    /// <see cref="EdgeStyleBase{TVisual}.IsHit(IInputModeContext, PointD, IEdge)"/>
+    protected override bool IsHit(IInputModeContext context, PointD location, IEdge edge) =>
+        baseStyle.Renderer.GetHitTestable(edge, baseStyle).IsHit(context, location);
 
-    public class PointPortLocationModelParameter : IPortLocationModelParameter
-    {
-      public PointD Location { get; set; }
+    /// <summary>
+    ///   Returns whether the base visualization is in the box.
+    /// </summary>
+    /// <param name="context">The input mode context.</param>
+    /// <param name="rectangle">The marquee selection box.</param>
+    /// <param name="edge">The edge to which this style instance is assigned.</param>
+    /// <returns><see langword="true"/> if the base visualization is in the box.</returns>
+    /// <see cref="EdgeStyleBase{TVisual}.IsInBox(IInputModeContext, RectD, IEdge)"/>
+    protected override bool IsInBox(IInputModeContext context, RectD rectangle, IEdge edge) =>
+        // return only box containment test of baseStyle - we don't want the decoration to be marquee selectable
+        baseStyle.Renderer.GetMarqueeTestable(edge, baseStyle).IsInBox(context, rectangle);
 
-      public object Clone() {
-        return MemberwiseClone();
-      }
+    /// <summary>
+    ///   Delegates the lookup to the base style.
+    /// </summary>
+    /// <param name="edge">The edge to use for the context lookup.</param>
+    /// <param name="type">The type to query.</param>
+    /// <returns>An implementation of the <paramref name="type"/> or <see langword="null"/>.</returns>
+    /// <see cref="EdgeStyleBase{TVisual}.Lookup(IEdge, System.Type)"/>
+    protected override object? Lookup(IEdge edge, Type type) =>
+        baseStyle.Renderer.GetContext(edge, baseStyle).Lookup(type);
 
-      public IPortLocationModel Model { get; set; }
-    }
+    private readonly record struct EdgeVisualCache(string? Tag, Pen Pen);
   }
 }

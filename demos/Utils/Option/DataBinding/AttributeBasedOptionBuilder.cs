@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 4.0.
- ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -37,21 +37,18 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
-using Demo.yFiles.Option.Handler;
 using yWorks.Annotations;
+using yWorks.Demo.Option.Handler;
 using Trace = System.Diagnostics.Debug;
 
-namespace Demo.yFiles.Option.Handler
+namespace yWorks.Demo.Option.Handler
 {
   public static class OptionItemExtensions
   {
-    public static bool IsDefaultAttribute(this Attribute att) {
-      return att == null;
-    }
+    public static bool IsDefaultAttribute(this Attribute att) => att == null;
 
-    public static object GetValue(this IOptionGroup group, string groupName, string itemName) {
-      return ((IOptionGroup) GetItemByName(group, groupName)).GetItemByName(itemName).Value;
-    }
+    public static object GetValue(this IOptionGroup group, string groupName, string itemName) =>
+        ((IOptionGroup) group.GetItemByName(groupName)).GetItemByName(itemName).Value;
 
     public static IOptionGroup GetGroupByName(this IOptionGroup group, string groupName) {
       return (IOptionGroup) group.Items.FirstOrDefault(item => item is IOptionGroup && item.Name == groupName);
@@ -67,7 +64,7 @@ namespace Demo.yFiles.Option.Handler
   }
 }
 
-namespace Demo.yFiles.Option.DataBinding
+namespace yWorks.Demo.Option.DataBinding
 {
   /// <summary>
   ///   A generic implementation of an <see cref="IOptionBuilder"/>
@@ -132,9 +129,8 @@ namespace Demo.yFiles.Option.DataBinding
     }
 
     [CanBeNull]
-    private static T GetAttribute<T>(PropertyInfo info) where T : Attribute {
-      return (T) Attribute.GetCustomAttribute(info, typeof(T));
-    }
+    private static T GetAttribute<T>(PropertyInfo info) where T : Attribute =>
+        (T) Attribute.GetCustomAttribute(info, typeof(T));
 
     /// <summary>
     ///   Configures additional attributes for an option item or option group, such as collapsed state and group visibility.
@@ -197,7 +193,7 @@ namespace Demo.yFiles.Option.DataBinding
           }
         }
       }
-      return infos.ToArray();
+      return [.. infos];
     }
 
     /// <summary>
@@ -225,25 +221,36 @@ namespace Demo.yFiles.Option.DataBinding
           var collectionType = collectionBaseType.MakeGenericType(collectionItemType);
           var collectionOptionItemType = typeof(CollectionOptionItem<>);
           item = collectionOptionItemType.MakeGenericType(collectionItemType)
-              .GetConstructor(new[] { typeof(string), collectionType })
-              .Invoke(new[] { description, value }) as IOptionItem;
+              .GetConstructor([typeof(string), collectionType]).Invoke([description, value]) as IOptionItem;
         }
       }
 
       if (item == null) {
         if (type.IsValueType) {
           if (IsNullable(type)) {
-            item = new OptionItem { Type = Nullable.GetUnderlyingType(type), Name = description };
+            item = new OptionItem {
+                Type = Nullable.GetUnderlyingType(type),
+                Name = description
+            };
             item.Attributes[OptionItem.SupportNullValueAttribute] = true;
           } else if (IsNullable(propertyInfo.PropertyType)) {
-            item = new OptionItem { Type = type, Name = description };
+            item = new OptionItem {
+                Type = type,
+                Name = description
+            };
             item.Attributes[OptionItem.SupportNullValueAttribute] = true;
           } else {
-            item = new OptionItem { Type = type, Name = description };
+            item = new OptionItem {
+                Type = type,
+                Name = description
+            };
             item.Attributes[OptionItem.SupportNullValueAttribute] = false;
           }
         } else {
-          item = new OptionItem { Type = type, Name = description };
+          item = new OptionItem {
+              Type = type,
+              Name = description
+          };
         }
       }
       var customAttributes = Attribute.GetCustomAttributes(propertyInfo);
@@ -267,10 +274,8 @@ namespace Demo.yFiles.Option.DataBinding
       return item;
     }
 
-    private bool IsNullable(Type type) {
-      return type.IsValueType && type.IsGenericType &&
-          type.GetGenericTypeDefinition().IsAssignableFrom(typeof(Nullable<>));
-    }
+    private bool IsNullable(Type type) =>
+        type.IsValueType && type.IsGenericType && type.GetGenericTypeDefinition().IsAssignableFrom(typeof(Nullable<>));
 
 
     private class DefaultPropertyInfoComparer : IComparer<PropertyInfo>
@@ -345,9 +350,7 @@ namespace Demo.yFiles.Option.DataBinding
           .GetConstructor(Type.EmptyTypes).Invoke(null);
     }
 
-    private static bool IsPublic(Type type) {
-      return type.IsPublic || (type.IsNestedPublic && IsPublic(type.DeclaringType));
-    }
+    private static bool IsPublic(Type type) => type.IsPublic || (type.IsNestedPublic && IsPublic(type.DeclaringType));
   }
 
 

@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 4.0.
- ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -35,7 +35,7 @@ using yWorks.Graph;
 using yWorks.Graph.Styles;
 using yWorks.Utils;
 
-namespace SankeyLayout
+namespace yWorks.Demo.SankeyLayout
 {
   /// <summary>
   ///   Renders a path between Sankey nodes.
@@ -71,9 +71,7 @@ namespace SankeyLayout
     #region IEdgeStyle
 
     /// <inheritdoc/>
-    public object Clone() {
-      return MemberwiseClone();
-    }
+    public object Clone() => MemberwiseClone();
 
     /// <inheritdoc/>
     public IEdgeStyleRenderer Renderer => this;

@@ -1,4 +1,5 @@
-# EdgeToEdge
+# Edge To Edge
 
-Simple demo that hosts a `GraphControl` which enables 
-	  edge to edge connections.
+![Demo thumbnail](../../DemoBrowser/DemoBrowser/Screenshots/edge-to-edge.webp "Edge To Edge")
+
+Shows edge-to-edge connections.

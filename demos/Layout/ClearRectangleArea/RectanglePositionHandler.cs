@@ -1,0 +1,89 @@
+/****************************************************************************
+ ** 
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** 72070 Tuebingen, Germany. All rights reserved.
+ ** 
+ ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
+ ** of demo files in source code or binary form, with or without
+ ** modification, is not permitted.
+ ** 
+ ** Owners of a valid software license for a yFiles WPF version that this
+ ** demo is shipped with are allowed to use the demo source code as basis
+ ** for their own yFiles WPF powered applications. Use of such programs is
+ ** governed by the rights and conditions as set out in the yFiles WPF
+ ** license agreement.
+ ** 
+ ** THIS SOFTWARE IS PROVIDED ''AS IS'' AND ANY EXPRESS OR IMPLIED
+ ** WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+ ** MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN
+ ** NO EVENT SHALL yWorks BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ ** SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
+ ** TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ ** PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ ** LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ ** NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ ** SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ ** 
+ ***************************************************************************/
+
+using yWorks.Controls.Input;
+using yWorks.Geometry;
+
+namespace yWorks.Demo.ClearRectangleArea
+{
+  /// <summary>
+  ///   Simple implementation of an IPositionHandler that moves a MutableRectangle.
+  /// </summary>
+  internal sealed class RectanglePositionHandler : IPositionHandler
+  {
+    private readonly MutableRectangle rectangle;
+    private PointD? startPosition;
+
+    /// <summary>
+    ///   Creates a position handler that updates the provided rectangle's position.
+    /// </summary>
+    /// <param name="rectangle">The rectangle that will be read and changed.</param>
+    public RectanglePositionHandler(MutableRectangle rectangle) {
+      this.rectangle = rectangle;
+    }
+
+    public IPoint Location => new PointD(rectangle.X, rectangle.Y);
+
+    /// <summary>
+    ///   Stores the initial position of the rectangle.
+    /// </summary>
+    public void InitializeDrag(IInputModeContext context) {
+      startPosition = new PointD(rectangle.X, rectangle.Y);
+    }
+
+    /// <summary>
+    ///   Moves the rectangle by the difference between newLocation and originalLocation.
+    /// </summary>
+    /// <param name="context">The context.</param>
+    /// <param name="originalLocation">The original location.</param>
+    /// <param name="newLocation">The new location.</param>
+    public void HandleMove(IInputModeContext context, PointD originalLocation, PointD newLocation) {
+      if (startPosition is { } initialPosition) {
+        var currentPosition = initialPosition + (newLocation - originalLocation);
+        if (rectangle.X != currentPosition.X || rectangle.Y != currentPosition.Y) {
+          rectangle.X = currentPosition.X;
+          rectangle.Y = currentPosition.Y;
+        }
+      }
+    }
+
+    /// <summary>
+    ///   Moves the rectangle back to the start position.
+    /// </summary>
+    public void CancelDrag(IInputModeContext context, PointD originalLocation) {
+      if (startPosition is { } initialPosition &&
+          (rectangle.X != initialPosition.X || rectangle.Y != initialPosition.Y)) {
+        rectangle.X = initialPosition.X;
+        rectangle.Y = initialPosition.Y;
+      }
+    }
+
+    public void DragFinished(IInputModeContext context, PointD originalLocation, PointD newLocation) { }
+  }
+}

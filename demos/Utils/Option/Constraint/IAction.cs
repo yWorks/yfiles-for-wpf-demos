@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 4.0.
- ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -29,9 +29,9 @@
 
 using System;
 using System.ComponentModel;
-using Demo.yFiles.Option.View;
+using yWorks.Demo.Option.View;
 
-namespace Demo.yFiles.Option.Constraint
+namespace yWorks.Demo.Option.Constraint
 {
   /// <summary>
   ///   This interface describes the general contract for an action that can be used as a building block

@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 4.0.
- ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -38,13 +38,13 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
-using Demo.yFiles.Option.Editor;
-using Demo.yFiles.Option.Handler;
+using yWorks.Demo.Option.Editor;
+using yWorks.Demo.Option.Handler;
 #if UseDataAnnotations
 using System.ComponentModel.DataAnnotations;
 #endif
 
-namespace Demo.yFiles.Option.View
+namespace yWorks.Demo.Option.View
 {
 #if VSM
   [TemplateVisualState(Name = "ValidDefault", GroupName = "ValueStates")]
@@ -75,7 +75,7 @@ namespace Demo.yFiles.Option.View
           new CommandBinding(ResetValueCommand, OnResetValueExecuted, OnCanExecuteResetValue));
     }
 
-    private readonly List<object> validationErrors = new();
+    private readonly List<object> validationErrors = [];
     private readonly Dictionary<object, object> currentViolations = new();
 
     private void OnBindingValidationError(object sender, ValidationErrorEventArgs validationErrorEventArgs) {
@@ -218,13 +218,9 @@ namespace Demo.yFiles.Option.View
 
     private sealed class VoidConverter : IValueConverter
     {
-      public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
-        return value;
-      }
+      public object Convert(object value, Type targetType, object parameter, CultureInfo culture) => value;
 
-      public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
-        return value;
-      }
+      public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => value;
     }
 
     public static readonly DependencyProperty ValueProperty = DependencyProperty.Register("Value", typeof(object),
@@ -279,8 +275,7 @@ namespace Demo.yFiles.Option.View
 
 #if UseDataAnnotations
       if (validationAttributes != null) {
-        var validationContext = new ValidationContext(Item, null, null) {DisplayName =
- (string) new XamlLocalizingConverter().Convert(Item, typeof(string), null, CultureInfo.CurrentUICulture)};
+        var validationContext = new ValidationContext(Item, null, null) { DisplayName = (string) new XamlLocalizingConverter().Convert(Item, typeof(string), null, CultureInfo.CurrentUICulture) };
         foreach (var validationAttribute in validationAttributes) {
           if (continueValidation) {
             var validationResult = validationAttribute.GetValidationResult(newValue, validationContext);
@@ -332,9 +327,7 @@ namespace Demo.yFiles.Option.View
       return validationErrors.Count == 0;
     }
 
-    protected virtual bool IsValid(object oldValue, object newValue) {
-      return true;
-    }
+    protected virtual bool IsValid(object oldValue, object newValue) => true;
 
     public object Value {
       get => GetValue(ValueProperty);
@@ -666,8 +659,7 @@ namespace Demo.yFiles.Option.View
 
         newValue.PropertyChanged += OnItemPropertyChanged;
 #if UseDataAnnotations
-        validationAttributes =
- Item.Attributes[OptionItem.ValidationAttributesAttribute] as IEnumerable<ValidationAttribute>;
+        validationAttributes = Item.Attributes[OptionItem.ValidationAttributesAttribute] as IEnumerable<ValidationAttribute>;
 #else
         validationRules = Item.Attributes[OptionItem.ValidationRulesAttribute] as IEnumerable<ValidationRule>;
 #endif
@@ -682,7 +674,7 @@ namespace Demo.yFiles.Option.View
 #if UseDataAnnotations
         validationAttributes = EmptyList<ValidationAttribute>.Instance;
 #else
-        validationRules = Enumerable.Empty<ValidationRule>();
+        validationRules = [];
 #endif
         ItemEnabled = false;
         IsUndefined = true;
@@ -760,9 +752,8 @@ namespace Demo.yFiles.Option.View
       return converter.ConvertTo(value, typeof(string));
     }
 
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
-      return converter.ConvertFrom(value);
-    }
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) =>
+        converter.ConvertFrom(value);
   }
 
   public enum ValueState

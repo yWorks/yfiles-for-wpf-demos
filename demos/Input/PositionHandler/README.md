@@ -1,4 +1,5 @@
-# PositionHandler
+# Position Handler
 
-Demo code that shows how to customize the movement behavior of INodes by implementing
-      a custom `IPositionHandler`.
+![Demo thumbnail](../../DemoBrowser/DemoBrowser/Screenshots/position-handler.webp "Position Handler")
+
+Shows how to customize and restrict the movement behavior of nodes.

@@ -1,3 +1,5 @@
-# LabelStyle
+# Label Style
 
-This demo shows the most important configuration options for the built-in LabelStyle class.
+![Demo thumbnail](../../DemoBrowser/DemoBrowser/Screenshots/label-style.webp "Label Style")
+
+Shows the features of the LabelStyle class.

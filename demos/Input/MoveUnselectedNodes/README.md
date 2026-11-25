@@ -1,3 +1,5 @@
-# MoveUnselectedNodes
+# Move Unselected Nodes
 
-Demo code that shows how to use the modified input mode created by `GraphEditorInputMode.CreateMoveUnselectedInputMode`.
+![Demo thumbnail](../../DemoBrowser/DemoBrowser/Screenshots/move-unselected-nodes.webp "Move Unselected Nodes")
+
+Shows a special input mode that allows you to move nodes without selecting them first.

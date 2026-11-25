@@ -1,0 +1,232 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="../../Tutorials/BasicFeatures/BasicFeatures.csproj" />
+    <ProjectReference Include="../../Tutorials/GraphBuilderTutorial/GraphBuilderTutorial.csproj" />
+    <ProjectReference Include="../../Tutorials/StyleImplementationEdge/StyleImplementationEdge.csproj" />
+    <ProjectReference Include="../../Tutorials/StyleImplementationLabel/StyleImplementationLabel.csproj" />
+    <ProjectReference Include="../../Tutorials/StyleImplementationNode/StyleImplementationNode.csproj" />
+    <ProjectReference Include="../../Layout/AbortHandler/AbortHandler.csproj" />
+    <ProjectReference Include="../../DataBinding/AdjacencyGraphBuilder/AdjacencyGraphBuilder.csproj" />
+    <ProjectReference Include="../../Layout/ArcDiagram/ArcDiagram.csproj" />
+    <ProjectReference Include="../../View/ArrangeObjects/ArrangeObjects.csproj" />
+    <ProjectReference Include="../../Style/Arrow/Arrow.csproj" />
+    <ProjectReference Include="../../Style/ArrowEdgeStyle/ArrowEdgeStyle.csproj" />
+    <ProjectReference Include="../../Style/ArrowNodeStyle/ArrowNodeStyle.csproj" />
+    <ProjectReference Include="../../ApplicationFeatures/BackgroundImage/BackgroundImage.csproj" />
+    <ProjectReference Include="../../Style/BezierEdgeStyle/BezierEdgeStyle.csproj" />
+    <ProjectReference Include="../../Layout/Biofabrics/Biofabrics.csproj" />
+    <ProjectReference Include="../../Input/BorderAlignedLabelModel/BorderAlignedLabelModel.csproj" />
+    <ProjectReference Include="../../Layout/BoundaryLabeling/BoundaryLabeling.csproj" />
+    <ProjectReference Include="../../View/Bridges/Bridges.csproj" />
+    <ProjectReference Include="../../ApplicationFeatures/BuildingGraphFromData/BuildingGraphFromData.csproj" />
+    <ProjectReference Include="../../ApplicationFeatures/BuildingSwimlanesFromData/BuildingSwimlanesFromData.csproj" />
+    <ProjectReference Include="../../LayoutFeatures/BundledEdgeRouter/BundledEdgeRouter.csproj" />
+    <ProjectReference Include="../../Layout/BusRouting/BusRouting.csproj" />
+    <ProjectReference Include="../../Input/CircleSnapping/CircleSnapping.csproj" />
+    <ProjectReference Include="../../Layout/CircularSubstructures/CircularSubstructures.csproj" />
+    <ProjectReference Include="../../Layout/ClearMarqueeArea/ClearMarqueeArea.csproj" />
+    <ProjectReference Include="../../Layout/ClearRectangleArea/ClearRectangleArea.csproj" />
+    <ProjectReference Include="../../Style/ClickableStyleDecorator/ClickableStyleDecorator.csproj" />
+    <ProjectReference Include="../../View/Clipboard/Clipboard.csproj" />
+    <ProjectReference Include="../../View/Collapse/Collapse.csproj" />
+    <ProjectReference Include="../../LayoutFeatures/CompactDiskGroups/CompactDiskGroups.csproj" />
+    <ProjectReference Include="../../LayoutFeatures/CompactTabularLayout/CompactTabularLayout.csproj" />
+    <ProjectReference Include="../../ApplicationFeatures/ComplexHighlightDecorator/ComplexHighlightDecorator.csproj" />
+    <ProjectReference Include="../../Input/ComponentDragAndDrop/ComponentDragAndDrop.csproj" />
+    <ProjectReference Include="../../Style/CompositeNodeStyle/CompositeNodeStyle.csproj" />
+    <ProjectReference Include="../../Input/ContextMenu/ContextMenu.csproj" />
+    <ProjectReference Include="../../Style/ControlStyles/ControlStyles.csproj" />
+    <ProjectReference Include="../../Layout/CriticalPaths/CriticalPaths.csproj" />
+    <ProjectReference Include="../../Input/CustomCopyAndPaste/CustomCopyAndPaste.csproj" />
+    <ProjectReference Include="../../Input/CustomDragAndDrop/CustomDragAndDrop.csproj" />
+    <ProjectReference Include="../../Input/CustomEdgeCreation/CustomEdgeCreation.csproj" />
+    <ProjectReference Include="../../ApplicationFeatures/CustomGraphML/CustomGraphML.csproj" />
+    <ProjectReference Include="../../Input/CustomHandleProvider/CustomHandleProvider.csproj" />
+    <ProjectReference Include="../../Layout/CustomLayoutStage/CustomLayoutStage.csproj" />
+    <ProjectReference Include="../../Input/CustomPortModel/CustomPortModel.csproj" />
+    <ProjectReference Include="../../Input/CustomSnapping/CustomSnapping.csproj" />
+    <ProjectReference Include="../../View/DeepZoom/DeepZoom.csproj" />
+    <ProjectReference Include="../../View/DeferredCutClipboard/DeferredCutClipboard.csproj" />
+    <ProjectReference Include="../../Utils/DemoToolkit/DemoToolkit.csproj" />
+    <ProjectReference Include="../../Style/DirectedEdgeLabel/DirectedEdgeLabel.csproj" />
+    <ProjectReference Include="../../Input/DragAndDrop/DragAndDrop.csproj" />
+    <ProjectReference Include="../../Input/DragFromComponent/DragFromComponent.csproj" />
+    <ProjectReference Include="../../DataBinding/Dynamic/Dynamic.csproj" />
+    <ProjectReference Include="../../Layout/EdgeBundling/EdgeBundling.csproj" />
+    <ProjectReference Include="../../Layout/EdgeGrouping/EdgeGrouping.csproj" />
+    <ProjectReference Include="../../Layout/EdgeLabelPlacement/EdgeLabelPlacement.csproj" />
+    <ProjectReference Include="../../Input/EdgeReconnection/EdgeReconnection.csproj" />
+    <ProjectReference Include="../../Layout/EdgeRouterGrouping/EdgeRouterGrouping.csproj" />
+    <ProjectReference Include="../../LayoutFeatures/EdgeRouter/EdgeRouter.csproj" />
+    <ProjectReference Include="../../LayoutFeatures/EdgeRouterBuses/EdgeRouterBuses.csproj" />
+    <ProjectReference Include="../../LayoutFeatures/EdgeRouterBusesCustom/EdgeRouterBusesCustom.csproj" />
+    <ProjectReference Include="../../LayoutFeatures/EdgeRouterIncremental/EdgeRouterIncremental.csproj" />
+    <ProjectReference Include="../../View/EdgeToEdge/EdgeToEdge.csproj" />
+    <ProjectReference Include="../../Style/EditablePathStyle/EditablePathStyle.csproj" />
+    <ProjectReference Include="../../View/Events/Events.csproj" />
+    <ProjectReference Include="../../ApplicationFeatures/ExternalLinks/ExternalLinks.csproj" />
+    <ProjectReference Include="../../Layout/FillAreaLayout/FillAreaLayout.csproj" />
+    <ProjectReference Include="../../ApplicationFeatures/Filtering/Filtering.csproj" />
+    <ProjectReference Include="../../ApplicationFeatures/FilteringWithFolding/FilteringWithFolding.csproj" />
+    <ProjectReference Include="../../ApplicationFeatures/FlowFiltering/FlowFiltering.csproj" />
+    <ProjectReference Include="../../ApplicationFeatures/Folding/Folding.csproj" />
+    <ProjectReference Include="../../Layout/FoldingWithLayout/FoldingWithLayout.csproj" />
+    <ProjectReference Include="../../ApplicationFeatures/FoldingWithMergedEdges/FoldingWithMergedEdges.csproj" />
+    <ProjectReference Include="../../Style/GeneralPathNodeStyle/GeneralPathNodeStyle.csproj" />
+    <ProjectReference Include="../../Showcase/GraphAnalysis/GraphAnalysis.csproj" />
+    <ProjectReference Include="../../DataBinding/GraphBuilderDemo/GraphBuilderDemo.csproj" />
+    <ProjectReference Include="../../ApplicationFeatures/GraphCopy/GraphCopy.csproj" />
+    <ProjectReference Include="../../ApplicationFeatures/GraphDecorator/GraphDecorator.csproj" />
+    <ProjectReference Include="../../Input/GraphDragAndDrop/GraphDragAndDrop.csproj" />
+    <ProjectReference Include="../../View/GraphMLCompat/GraphMLCompat.csproj" />
+    <ProjectReference Include="../../View/GraphMLSimple/GraphMLSimple.csproj" />
+    <ProjectReference Include="../../ApplicationFeatures/GraphSearch/GraphSearch.csproj" />
+    <ProjectReference Include="../../DataBinding/GraphSource/GraphSource.csproj" />
+    <ProjectReference Include="../../View/GraphViewer/GraphViewer.csproj" />
+    <ProjectReference Include="../../ApplicationFeatures/GridSnapping/GridSnapping.csproj" />
+    <ProjectReference Include="../../Style/GroupNodeStyle/GroupNodeStyle.csproj" />
+    <ProjectReference Include="../../ApplicationFeatures/HeatMap/HeatMap.csproj" />
+    <ProjectReference Include="../../Layout/HeightProfile/HeightProfile.csproj" />
+    <ProjectReference Include="../../Layout/HierarchicalExactCoordinates/HierarchicalExactCoordinates.csproj" />
+    <ProjectReference Include="../../Layout/HierarchicalGridComponents/HierarchicalGridComponents.csproj" />
+    <ProjectReference Include="../../Layout/HierarchicalNestingIncremental/HierarchicalNestingIncremental.csproj" />
+    <ProjectReference Include="../../Layout/HierarchicalNesting/HierarchicalNesting.csproj" />
+    <ProjectReference Include="../../Layout/HierarchicalSubcomponents/HierarchicalSubcomponents.csproj" />
+    <ProjectReference Include="../../LayoutFeatures/Hierarchical/Hierarchical.csproj" />
+    <ProjectReference Include="../../LayoutFeatures/HierarchicalCompactGroups/HierarchicalCompactGroups.csproj" />
+    <ProjectReference Include="../../LayoutFeatures/HierarchicalConstraints/HierarchicalConstraints.csproj" />
+    <ProjectReference Include="../../LayoutFeatures/HierarchicalEdgeGrouping/HierarchicalEdgeGrouping.csproj" />
+    <ProjectReference Include="../../LayoutFeatures/HierarchicalEdgeLabeling/HierarchicalEdgeLabeling.csproj" />
+    <ProjectReference Include="../../LayoutFeatures/HierarchicalGivenLayering/HierarchicalGivenLayering.csproj" />
+    <ProjectReference Include="../../LayoutFeatures/HierarchicalIncremental/HierarchicalIncremental.csproj" />
+    <ProjectReference Include="../../LayoutFeatures/HierarchicalLayerConstraints/HierarchicalLayerConstraints.csproj" />
+    <ProjectReference Include="../../LayoutFeatures/HierarchicalNodeAlignment/HierarchicalNodeAlignment.csproj" />
+    <ProjectReference Include="../../LayoutFeatures/HierarchicalNodePortCandidates/HierarchicalNodePortCandidates.csproj" />
+    <ProjectReference Include="../../LayoutFeatures/HierarchicalSequenceConstraints/HierarchicalSequenceConstraints.csproj" />
+    <ProjectReference Include="../../View/ImageExport/ImageExport.csproj" />
+    <ProjectReference Include="../../ApplicationFeatures/InteractiveAggregation/InteractiveAggregation.csproj" />
+    <ProjectReference Include="../../Layout/InteractiveEdgeRouting/InteractiveEdgeRouting.csproj" />
+    <ProjectReference Include="../../Input/InteractiveGraphRestructuring/InteractiveGraphRestructuring.csproj" />
+    <ProjectReference Include="../../Layout/InteractiveHierarchicalLayout/InteractiveHierarchicalLayout.csproj" />
+    <ProjectReference Include="../../Layout/InteractiveOrganic/InteractiveOrganic.csproj" />
+    <ProjectReference Include="../../Style/InvariantLabelStyle/InvariantLabelStyle.csproj" />
+    <ProjectReference Include="../../Input/LabelEditing/LabelEditing.csproj" />
+    <ProjectReference Include="../../Input/LabelHandleProvider/LabelHandleProvider.csproj" />
+    <ProjectReference Include="../../Style/LabelStyle/LabelStyle.csproj" />
+    <ProjectReference Include="../../ApplicationFeatures/LabelTextWrapping/LabelTextWrapping.csproj" />
+    <ProjectReference Include="../../Showcase/LargeGraphs/LargeGraphs.csproj" />
+    <ProjectReference Include="../../Input/LassoSelection/LassoSelection.csproj" />
+    <ProjectReference Include="../../Layout/LayerConstraints/LayerConstraints.csproj" />
+    <ProjectReference Include="../../Showcase/LayoutStyles/LayoutStyles.csproj" />
+    <ProjectReference Include="../../View/Legend/Legend.csproj" />
+    <ProjectReference Include="../../Style/LevelOfDetailStyle/LevelOfDetailStyle.csproj" />
+    <ProjectReference Include="../../View/ListNode/ListNode.csproj" />
+    <ProjectReference Include="../../Input/MagnifyingGlass/MagnifyingGlass.csproj" />
+    <ProjectReference Include="../../Input/MarqueeNodeCreation/MarqueeNodeCreation.csproj" />
+    <ProjectReference Include="../../Layout/MazeRouting/MazeRouting.csproj" />
+    <ProjectReference Include="../../Layout/MetabolicPathways/MetabolicPathways.csproj" />
+    <ProjectReference Include="../../Input/MouseWheelCustomization/MouseWheelCustomization.csproj" />
+    <ProjectReference Include="../../Input/MoveUnselectedNodes/MoveUnselectedNodes.csproj" />
+    <ProjectReference Include="../../Layout/MultiPage/MultiPage.csproj" />
+    <ProjectReference Include="../../Layout/NodeAlignment/NodeAlignment.csproj" />
+    <ProjectReference Include="../../Layout/NodeLabeling/NodeLabeling.csproj" />
+    <ProjectReference Include="../../Layout/NodeOverlapAvoiding/NodeOverlapAvoiding.csproj" />
+    <ProjectReference Include="../../Input/NodeSelectionResizing/NodeSelectionResizing.csproj" />
+    <ProjectReference Include="../../Layout/NodeTypes/NodeTypes.csproj" />
+    <ProjectReference Include="../../ApplicationFeatures/OctilinearEdges/OctilinearEdges.csproj" />
+    <ProjectReference Include="../../Input/OffsetWrapperLabelModel/OffsetWrapperLabelModel.csproj" />
+    <ProjectReference Include="../../Layout/OrganicSubstructures/OrganicSubstructures.csproj" />
+    <ProjectReference Include="../../LayoutFeatures/Organic/Organic.csproj" />
+    <ProjectReference Include="../../LayoutFeatures/OrganicConstraints/OrganicConstraints.csproj" />
+    <ProjectReference Include="../../LayoutFeatures/OrganicEdgeLabeling/OrganicEdgeLabeling.csproj" />
+    <ProjectReference Include="../../LayoutFeatures/OrganicIncremental/OrganicIncremental.csproj" />
+    <ProjectReference Include="../../LayoutFeatures/OrganicWithSubstructures/OrganicWithSubstructures.csproj" />
+    <ProjectReference Include="../../Showcase/OrgChart/OrgChart.csproj" />
+    <ProjectReference Include="../../LayoutFeatures/Orthogonal/Orthogonal.csproj" />
+    <ProjectReference Include="../../Input/OrthogonalEdgeEditingCustomization/OrthogonalEdgeEditingCustomization.csproj" />
+    <ProjectReference Include="../../ApplicationFeatures/OrthogonalEdges/OrthogonalEdges.csproj" />
+    <ProjectReference Include="../../ApplicationFeatures/Overview/Overview.csproj" />
+    <ProjectReference Include="../../Layout/PartialLayout/PartialLayout.csproj" />
+    <ProjectReference Include="../../Layout/PortAlignment/PortAlignment.csproj" />
+    <ProjectReference Include="../../DataBinding/PortAwareAdjacencyGraphBuilder/PortAwareAdjacencyGraphBuilder.csproj" />
+    <ProjectReference Include="../../DataBinding/PortAwareGraphBuilder/PortAwareGraphBuilder.csproj" />
+    <ProjectReference Include="../../DataBinding/PortAwareTreeBuilder/PortAwareTreeBuilder.csproj" />
+    <ProjectReference Include="../../Input/PortCandidateProvider/PortCandidateProvider.csproj" />
+    <ProjectReference Include="../../Input/PositionHandler/PositionHandler.csproj" />
+    <ProjectReference Include="../../View/Printing/Printing.csproj" />
+    <ProjectReference Include="../../LayoutFeatures/RadialGroupLayout/RadialGroupLayout.csproj" />
+    <ProjectReference Include="../../Style/RectangleNodeStyle/RectangleNodeStyle.csproj" />
+    <ProjectReference Include="../../ApplicationFeatures/RectangularIndicator/RectangularIndicator.csproj" />
+    <ProjectReference Include="../../LayoutFeatures/RecursiveGroupLayout/RecursiveGroupLayout.csproj" />
+    <ProjectReference Include="../../View/RenderingOrder/RenderingOrder.csproj" />
+    <ProjectReference Include="../../Input/ReparentHandler/ReparentHandler.csproj" />
+    <ProjectReference Include="../../Input/ReshapeHandleProvider/ReshapeHandleProvider.csproj" />
+    <ProjectReference Include="../../Input/ReshapeHandleProviderConfiguration/ReshapeHandleProviderConfiguration.csproj" />
+    <ProjectReference Include="../../Input/RestrictedEditing/RestrictedEditing.csproj" />
+    <ProjectReference Include="../../ApplicationFeatures/RotatableNodes/RotatableNodes.csproj" />
+    <ProjectReference Include="../../Layout/SankeyLayout/SankeyLayout.csproj" />
+    <ProjectReference Include="../../Style/SelectionStyling/SelectionStyling.csproj" />
+    <ProjectReference Include="../../Layout/SequenceConstraints/SequenceConstraints.csproj" />
+    <ProjectReference Include="../../Style/ShapeNodeStyle/ShapeNodeStyle.csproj" />
+    <ProjectReference Include="../../Style/ShapePortStyle/ShapePortStyle.csproj" />
+    <ProjectReference Include="../../DataBinding/SimpleAdjacencyGraphBuilderWithIds/SimpleAdjacencyGraphBuilderWithIds.csproj" />
+    <ProjectReference Include="../../DataBinding/SimpleAdjacencyGraphBuilder/SimpleAdjacencyGraphBuilder.csproj" />
+    <ProjectReference Include="../../Style/SimpleArrowStyle/SimpleArrowStyle.csproj" />
+    <ProjectReference Include="../../ApplicationFeatures/SimpleDragAndDrop/SimpleDragAndDrop.csproj" />
+    <ProjectReference Include="../../DataBinding/SimpleGraphBuilderImplicitGroups/SimpleGraphBuilderImplicitGroups.csproj" />
+    <ProjectReference Include="../../DataBinding/SimpleGraphBuilder/SimpleGraphBuilder.csproj" />
+    <ProjectReference Include="../../View/SimpleGraphEditor/SimpleGraphEditor.csproj" />
+    <ProjectReference Include="../../ApplicationFeatures/SimpleHighlightDecorator/SimpleHighlightDecorator.csproj" />
+    <ProjectReference Include="../../Layout/SimpleLayoutGrid/SimpleLayoutGrid.csproj" />
+    <ProjectReference Include="../../DataBinding/SimpleTreeBuilderArray/SimpleTreeBuilderArray.csproj" />
+    <ProjectReference Include="../../DataBinding/SimpleTreeBuilderJson/SimpleTreeBuilderJson.csproj" />
+    <ProjectReference Include="../../Input/SingleSelection/SingleSelection.csproj" />
+    <ProjectReference Include="../../Input/SizeConstraintProvider/SizeConstraintProvider.csproj" />
+    <ProjectReference Include="../../ApplicationFeatures/SmartClickNavigation/SmartClickNavigation.csproj" />
+    <ProjectReference Include="../../ApplicationFeatures/Snapping/Snapping.csproj" />
+    <ProjectReference Include="../../Layout/SplitEdges/SplitEdges.csproj" />
+    <ProjectReference Include="../../ApplicationFeatures/SubdivideEdges/SubdivideEdges.csproj" />
+    <ProjectReference Include="../../Style/StyleDecorators/StyleDecorators.csproj" />
+    <ProjectReference Include="../../ApplicationFeatures/TableEditor/TableEditor.csproj" />
+    <ProjectReference Include="../../Layout/TabularGroups/TabularGroups.csproj" />
+    <ProjectReference Include="../../Style/ThemeVariants/ThemeVariants.csproj" />
+    <ProjectReference Include="../../ApplicationFeatures/Theming/Theming.csproj" />
+    <ProjectReference Include="../../ApplicationFeatures/Tooltips/Tooltips.csproj" />
+    <ProjectReference Include="../../LayoutFeatures/TreeLayout/TreeLayout.csproj" />
+    <ProjectReference Include="../../Layout/TreeMap/TreeMap.csproj" />
+    <ProjectReference Include="../../LayoutFeatures/TreeNodePlacers/TreeNodePlacers.csproj" />
+    <ProjectReference Include="../../View/Undo/Undo.csproj" />
+    <ProjectReference Include="../../Input/ValidBeginCursors/ValidBeginCursors.csproj" />
+    <ProjectReference Include="../../ApplicationFeatures/ViewportLimiter/ViewportLimiter.csproj" />
+    <ProjectReference Include="../../Layout/WithoutView/LayoutWithoutView.csproj" />
+    <ProjectReference Include="../../View/XamlPopup/XamlPopup.csproj" />
+    <ProjectReference Include="../../View/ZOrder/ZOrder.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Screenshots/*.webp" />
+  </ItemGroup>
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <LangVersion>14.0</LangVersion>
+  </PropertyGroup>
+  <!--The following target ensures that the project will build even when the ZIP file has been-->
+  <!--extracted with Explorer or another tool that retains the origin zone marker for the files.-->
+  <!--If that does not work, an error message will be shown in Visual Studio's Error List.-->
+  <!--See http://kb.yworks.com/article/736 for details.-->
+  <Target Name="BeforeBuild">
+    <Exec Command="if exist &quot;%(Reference.HintPath)&quot; (&gt;nul 2&gt;nul (&gt;nul 2&gt;nul findstr ZoneId&lt;&quot;%(Reference.HintPath):Zone.Identifier&quot;) &amp;&amp; ((&gt;nul 2&gt;nul powershell -noprofile -nologo -command &quot;Unblock-File '%(Reference.HintPath)'&quot;) || (2&gt;nul type nul &gt;&quot;%(Reference.HintPath):Zone.Identifier&quot;) || (&lt;nul &gt;&amp;2 set /p _=Err&amp;&gt;&amp;2 echo or: The file @(Reference) originates from the Internet Zone and prevents compilation. Please unblock it manually in its properties. See the Knowledge Base at http://kb.yworks.com/article/736.)))" IgnoreExitCode="True" />
+  </Target>
+  <ItemGroup>
+    <EmbeddedResource Include="../../../lib/net6.0/yWorks.yFilesWPF.DevelopmentLicense.xml" Condition="Exists('../../../lib/net6.0/yWorks.yFilesWPF.DevelopmentLicense.xml')" />
+    <EmbeddedResource Include="../../../lib/net6.0/yWorks.yFilesWPF.License.xml" Condition="Exists('../../../lib/net6.0/yWorks.yFilesWPF.License.xml') And !Exists('../../../lib/net6.0/yWorks.yFilesWPF.DevelopmentLicense.xml')" />
+  </ItemGroup>
+  <PropertyGroup Condition=" '$(NETCoreAppMaximumVersion)' != '' ">
+    <TargetFramework>net$(NETCoreAppMaximumVersion)-windows</TargetFramework>
+    <TargetFramework Condition=" !$(NETCoreAppMaximumVersion.StartsWith('3')) And !('$(UseWPF)' == 'true' Or '$(UseWindowsForms)' == 'true') ">net$(NETCoreAppMaximumVersion)</TargetFramework>
+    <TargetFramework Condition=" $(NETCoreAppMaximumVersion.StartsWith('3')) ">netcoreapp$(NETCoreAppMaximumVersion)</TargetFramework>
+  </PropertyGroup>
+</Project>

@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 4.0.
- ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -32,7 +32,7 @@ using System.Collections;
 using System.Collections.Generic;
 using yWorks.Utils;
 
-namespace Demo.yFiles.Option.DataBinding
+namespace yWorks.Demo.Option.DataBinding
 {
   /// <summary>
   ///   Interface for classes that manage a list of virtual properties for a specific context.
@@ -96,9 +96,8 @@ namespace Demo.yFiles.Option.DataBinding
     #region IPropertyMap Members
 
     /// <inheritdoc/>
-    public IPropertyItem AddEntry(string virtualPropertyName, IValueGetter getter, IValueSetter setter) {
-      return AddEntry(virtualPropertyName, getter, setter, null);
-    }
+    public IPropertyItem AddEntry(string virtualPropertyName, IValueGetter getter, IValueSetter setter) =>
+        AddEntry(virtualPropertyName, getter, setter, null);
 
     /// <inheritdoc/>
     public IPropertyItem AddEntry(
@@ -145,9 +144,7 @@ namespace Demo.yFiles.Option.DataBinding
 
       #region ILookup Members
 
-      public virtual object Lookup(Type type) {
-        return myLookup.Lookup(type);
-      }
+      public virtual object Lookup(Type type) => myLookup.Lookup(type);
 
       #endregion
     }

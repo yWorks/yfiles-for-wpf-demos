@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 4.0.
- ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -30,12 +30,12 @@
 using System.Windows;
 using yWorks.Layout.Graph;
 
-namespace Demo.yFiles.Layout.AbortHandler
+namespace yWorks.Demo.AbortHandler
 {
   /// <summary>
   ///   Interaction logic for AbortDialog.xaml
   /// </summary>
-  public partial class AbortDialog : Window
+  public sealed partial class AbortDialog
   {
     // Whether a stop is already requested.
     private bool stopRequested;
@@ -47,7 +47,7 @@ namespace Demo.yFiles.Layout.AbortHandler
     /// <summary>
     ///   The LayoutAbortController to use.
     /// </summary>
-    public LayoutAbortController LayoutAbortController { get; set; }
+    public LayoutAbortController? LayoutAbortController { get; set; }
 
 
     /// <summary>

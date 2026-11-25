@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 4.0.
- ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -35,7 +35,7 @@ using yWorks.Geometry;
 using yWorks.Graph;
 using yWorks.Graph.Styles;
 
-namespace Demo.yFiles.IO.GraphML.Compat.Table
+namespace yWorks.Demo.GraphMLCompat.Table
 {
   public class TableExtension : MarkupExtension
   {
@@ -55,7 +55,7 @@ namespace Demo.yFiles.IO.GraphML.Compat.Table
 
 
     public override object ProvideValue(IServiceProvider serviceProvider) {
-      var extension = new yWorks.Markup.Common.TableExtension {
+      var extension = new Markup.Common.TableExtension {
           Padding = Insets,
           RelativeLocation = RelativeLocation,
           ColumnDefaults = ColumnDefaults,
@@ -90,7 +90,7 @@ namespace Demo.yFiles.IO.GraphML.Compat.Table
     public ICollection<ILabel> Labels { get; } = new List<ILabel>();
 
     public override object ProvideValue(IServiceProvider serviceProvider) {
-      var extension = new yWorks.Markup.Common.RowExtension {
+      var extension = new Markup.Common.RowExtension {
           Padding = Insets,
           Size = Size,
           Style = Style,
@@ -126,7 +126,7 @@ namespace Demo.yFiles.IO.GraphML.Compat.Table
     public ICollection<ILabel> Labels { get; } = new List<ILabel>();
 
     public override object ProvideValue(IServiceProvider serviceProvider) {
-      var extension = new yWorks.Markup.Common.ColumnExtension {
+      var extension = new Markup.Common.ColumnExtension {
           Padding = Insets,
           Size = Size,
           Style = Style,
@@ -157,15 +157,14 @@ namespace Demo.yFiles.IO.GraphML.Compat.Table
 
     public IStripeStyle Style { get; set; } = VoidStripeStyle.Instance;
 
-    public override object ProvideValue(IServiceProvider serviceProvider) {
-      return new StripeDefaults {
-          Padding = Insets,
-          ShareStyleInstance = ShareStyleInstance,
-          Size = Size,
-          MinimumSize = MinimumSize,
-          Labels = Labels,
-          Style = Style
-      };
-    }
+    public override object ProvideValue(IServiceProvider serviceProvider) =>
+        new StripeDefaults {
+            Padding = Insets,
+            ShareStyleInstance = ShareStyleInstance,
+            Size = Size,
+            MinimumSize = MinimumSize,
+            Labels = Labels,
+            Style = Style
+        };
   }
 }

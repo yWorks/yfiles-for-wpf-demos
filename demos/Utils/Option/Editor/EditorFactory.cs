@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 4.0.
- ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -34,10 +34,10 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using Demo.yFiles.Option.Constraint;
-using Demo.yFiles.Option.View;
+using yWorks.Demo.Option.Constraint;
+using yWorks.Demo.Option.View;
 
-namespace Demo.yFiles.Option.Editor
+namespace yWorks.Demo.Option.Editor
 {
   public sealed class TablePanel : Panel
   {
@@ -45,8 +45,8 @@ namespace Demo.yFiles.Option.Editor
       FocusableProperty.OverrideMetadata(typeof(TablePanel), new FrameworkPropertyMetadata(false));
     }
 
-    private readonly List<double> minWidths = new() { 0, 0 };
-    private readonly List<double> currentWidths = new() { 0, 0 };
+    private readonly List<double> minWidths = [0, 0];
+    private readonly List<double> currentWidths = [0, 0];
 
     public TablePanel() {
       HorizontalAlignment = HorizontalAlignment.Stretch;
@@ -192,7 +192,7 @@ namespace Demo.yFiles.Option.Editor
   ///         // add various simple items directly to the handler
   ///         IOptionItem stringItem = oh.AddString(null, "String", "foo");
   ///         oh.AddInt(null, "Int", 3);
-  ///
+  /// 
   ///         // this will show a PropertyGrid like editor
   ///         // synchronization properties can be set
   ///         EditorForm form = (new TableEditorFactory()).CreateEditor(oh, true, true);

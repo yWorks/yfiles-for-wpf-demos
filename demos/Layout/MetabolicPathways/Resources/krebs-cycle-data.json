@@ -1,0 +1,262 @@
+{
+  "nodes": [
+    {
+      "id": 0,
+      "tag": { "type": "PRODUCT", "vAlign": 1 },
+      "labels": "<span style=\"font-size: 19px\">Pyruvate</span>"
+    },
+    {
+      "id": 1,
+      "tag": { "type": "REACTANT", "vAlign": 3 },
+      "labels": "<span style=\"font-size: 19px\">Acetyl CoA</span>"
+    },
+    {
+      "id": 2,
+      "tag": { "type": "REACTANT", "circle": true },
+      "labels": "<span style=\"font-size: 19px\">Oxaloacetate</span>"
+    },
+    {
+      "id": 3,
+      "tag": { "type": "REACTANT", "circle": true },
+      "labels": "<span style=\"font-size: 19px\">Citrate</span>"
+    },
+    {
+      "id": 4,
+      "tag": { "type": "REACTANT", "circle": true },
+      "labels": "<span style=\"font-size: 19px\">Malate</span>"
+    },
+    {
+      "id": 5,
+      "tag": { "type": "REACTANT", "circle": true },
+      "labels": "<span style=\"font-size: 19px\">Fumarate</span>"
+    },
+    {
+      "id": 6,
+      "tag": { "type": "REACTANT", "circle": true },
+      "labels": "<span style=\"font-size: 19px\">Succinate</span>"
+    },
+    {
+      "id": 7,
+      "tag": { "type": "REACTANT", "circle": true, "vAlign": 5 },
+      "labels": "<span style=\"font-size: 19px\">Succinyl CoA</span>"
+    },
+    {
+      "id": 8,
+      "tag": { "type": "REACTANT", "circle": true },
+      "labels": "<span style=\"font-size: 19px\">a-Ketoglutarate</span>"
+    },
+    {
+      "id": 9,
+      "tag": { "type": "REACTANT", "circle": true },
+      "labels": "<span style=\"font-size: 19px\">D-Isocitrate</span>"
+    },
+    {
+      "id": 10,
+      "tag": { "type": "REACTANT", "circle": true },
+      "labels": "<span style=\"font-size: 19px\">Cis-Aconitase</span>"
+    },
+    { "id": 11, "tag": { "type": "REACTION", "vAlign": 2 } },
+    {
+      "id": 12,
+      "tag": { "type": "CO_REACTANT" },
+      "labels": "<span style=\"font-size: 19px\"><span style=\"color:#ab2346; font-weight:bolder\">CoA</span>-SH + NAD<sup>+</sup></span>"
+    },
+    {
+      "id": 13,
+      "tag": { "type": "CO_REACTANT" },
+      "labels": "<span style=\"font-size: 19px\">CO<sub>2</sub> + NADH<sup>+</sup> + H<sup>+</sup></span>"
+    },
+    {
+      "id": 14,
+      "tag": { "type": "ENZYME" },
+      "labels": "<span style=\"font-size: 19px\">Pyruvate<br>dehydrogenase</span>"
+    },
+    { "id": 16, "tag": { "type": "REACTION" } },
+    { "id": 17, "tag": { "type": "REACTION" } },
+    { "id": 18, "tag": { "type": "REACTION" } },
+    { "id": 19, "tag": { "type": "REACTION" } },
+    { "id": 20, "tag": { "type": "REACTION" } },
+    { "id": 21, "tag": { "type": "REACTION" } },
+    { "id": 22, "tag": { "type": "REACTION" } },
+    { "id": 23, "tag": { "type": "REACTION" } },
+    {
+      "id": 24,
+      "tag": { "type": "CO_REACTANT" },
+      "labels": "<span style=\"font-size: 19px\">NAD<sup>+</sup></span>"
+    },
+    {
+      "id": 25,
+      "tag": { "type": "CO_REACTANT" },
+      "labels": "<span style=\"font-size: 19px\">NADH<sup>+</sup> + H<sup>+</sup></span>"
+    },
+    {
+      "id": 26,
+      "tag": { "type": "ENZYME" },
+      "labels": "<span style=\"font-size: 19px\">Malate<br>dehydrogenase</span>"
+    },
+    {
+      "id": 27,
+      "tag": { "type": "OTHER" },
+      "labels": "<span style=\"font-size: 19px\">H<sub>2</sub>O</span>"
+    },
+    {
+      "id": 28,
+      "tag": { "type": "ENZYME" },
+      "labels": "<span style=\"font-size: 19px\">Fumarase</span>"
+    },
+    {
+      "id": 29,
+      "tag": { "type": "ENZYME" },
+      "labels": "<span style=\"font-size: 19px\">Succinate<br>dehydrogenase</span>"
+    },
+    {
+      "id": 30,
+      "tag": { "type": "CO_REACTANT" },
+      "labels": "<span style=\"font-size: 19px\">GDP + Pi</span>"
+    },
+    {
+      "id": 31,
+      "tag": { "type": "CO_REACTANT" },
+      "labels": "<span style=\"font-size: 19px\"><span style=\"color:#ab2346; font-weight:bolder\">CoA</span>-SH</span> + GDP</span"
+    },
+    {
+      "id": 32,
+      "tag": { "type": "ENZYME" },
+      "labels": "<span style=\"font-size: 20px\">Succinate<br>thiokinase</span>"
+    },
+    {
+      "id": 33,
+      "tag": { "type": "CO_REACTANT" },
+      "labels": "<span style=\"font-size: 20px\">NAD<sup>+</sup> + <span style=\"color:#ab2346; font-weight:bolder\">CoA</span>-SH</span>"
+    },
+    {
+      "id": 34,
+      "tag": { "type": "CO_REACTANT" },
+      "labels": "<span style=\"font-size: 20px\">NADH<sup>+</sup> + H<sup>+</sup> + CO<sub>2</sub></span>"
+    },
+    {
+      "id": 36,
+      "tag": { "type": "CO_REACTANT" },
+      "labels": "<span style=\"font-size: 20px\">NAD<sup>+</sup></span>"
+    },
+    {
+      "id": 37,
+      "tag": { "type": "CO_REACTANT" },
+      "labels": "<span style=\"font-size: 20px\">NADH<sup>+</sup> + H<sup>+</sup></span>"
+    },
+    {
+      "id": 38,
+      "tag": { "type": "OTHER" },
+      "labels": "<span style=\"font-size: 20px\">CO<sub>2</sub></span>"
+    },
+    {
+      "id": 39,
+      "tag": { "type": "ENZYME" },
+      "labels": "<span style=\"font-size: 19px\">a-ketoglutarate<br>dehydrogenase</span>"
+    },
+    {
+      "id": 40,
+      "tag": { "type": "ENZYME" },
+      "labels": "<span style=\"font-size: 19px\">Isocitrate<br>dehydrogenase</span>"
+    },
+    {
+      "id": 41,
+      "tag": { "type": "ENZYME" },
+      "labels": "<span style=\"font-size: 19px\">Aconitase</span>"
+    },
+    {
+      "id": 42,
+      "tag": { "type": "OTHER" },
+      "labels": "<span style=\"font-size: 20px\">H<sub>2</sub>O</span>"
+    },
+    {
+      "id": 43,
+      "tag": { "type": "ENZYME" },
+      "labels": "<span style=\"font-size: 19px\">Aconitase</span>"
+    },
+    {
+      "id": 44,
+      "tag": { "type": "OTHER" },
+      "labels": "<span style=\"font-size: 20px\">H<sub>2</sub>O</span>"
+    },
+    {
+      "id": 45,
+      "tag": { "type": "ENZYME" },
+      "labels": "<span style=\"font-size: 19px\">Citrate<br>synthase</span>"
+    },
+    {
+      "id": 46,
+      "tag": { "type": "OTHER" },
+      "labels": "<span style=\"font-size: 20px\"><span style=\"color:#ab2346; font-weight:bolder;\" >CoA</span>-SH</span>"
+    },
+    {
+      "id": 47,
+      "tag": { "type": "CO_REACTANT" },
+      "labels": "<span style=\"font-size: 19px\">FAD</span>"
+    },
+    {
+      "id": 48,
+      "tag": { "type": "CO_REACTANT" },
+      "labels": "<span style=\"font-size: 19px\">FADH<sub>2</sub></span>"
+    },
+    {
+      "id": 49,
+      "tag": { "type": "OTHER" },
+      "labels": "<span style=\"font-size: 20px\">H<sub>2</sub>O</span>"
+    },
+    { "id": 50, "tag": { "type": "REACTION", "vAlign": 4 } }
+  ],
+  "edges": [
+    { "source": 0, "target": 11 },
+    { "source": 11, "target": 1 },
+    { "source": 12, "target": 11 },
+    { "source": 11, "target": 13 },
+    { "source": 11, "target": 14 },
+    { "source": 11, "target": 15 },
+    { "source": 24, "target": 16 },
+    { "source": 16, "target": 25 },
+    { "source": 16, "target": 26 },
+    { "source": 17, "target": 28 },
+    { "source": 18, "target": 29 },
+    { "source": 30, "target": 19 },
+    { "source": 19, "target": 31 },
+    { "source": 19, "target": 32 },
+    { "source": 20, "target": 34 },
+    { "source": 33, "target": 20 },
+    { "source": 20, "target": 35 },
+    { "source": 20, "target": 39 },
+    { "source": 21, "target": 40 },
+    { "source": 36, "target": 21 },
+    { "source": 21, "target": 37 },
+    { "source": 21, "target": 38 },
+    { "source": 22, "target": 41 },
+    { "source": 22, "target": 42 },
+    { "source": 23, "target": 43 },
+    { "source": 23, "target": 44 },
+    { "source": 3, "target": 23 },
+    { "source": 23, "target": 10 },
+    { "source": 10, "target": 22 },
+    { "source": 22, "target": 9 },
+    { "source": 9, "target": 21 },
+    { "source": 21, "target": 8 },
+    { "source": 8, "target": 20 },
+    { "source": 20, "target": 7 },
+    { "source": 7, "target": 19 },
+    { "source": 19, "target": 6 },
+    { "source": 6, "target": 18 },
+    { "source": 18, "target": 5 },
+    { "source": 5, "target": 17 },
+    { "source": 17, "target": 4 },
+    { "source": 4, "target": 16 },
+    { "source": 16, "target": 2 },
+    { "source": 47, "target": 18 },
+    { "source": 18, "target": 48 },
+    { "source": 27, "target": 17 },
+    { "source": 2, "target": 50 },
+    { "source": 1, "target": 50 },
+    { "source": 49, "target": 50 },
+    { "source": 50, "target": 3 },
+    { "source": 50, "target": 46 },
+    { "source": 50, "target": 45 }
+  ]
+}

@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 4.0.
- ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -29,7 +29,7 @@
 
 using System;
 
-namespace Demo.yFiles.Toolkit.OptionHandler
+namespace yWorks.Demo.Toolkit.OptionHandler
 {
   /// <summary>
   ///   An attribute that determines the UI component's text label.
@@ -39,7 +39,7 @@ namespace Demo.yFiles.Toolkit.OptionHandler
   public class LabelAttribute : Attribute
   {
     /// <summary>
-    ///   Initialize the LabelAttribute.
+    ///   Initialize the <see cref="LabelAttribute"/>.
     /// </summary>
     /// <param name="label">The text of the generated label.</param>
     public LabelAttribute(string label) {
@@ -47,7 +47,7 @@ namespace Demo.yFiles.Toolkit.OptionHandler
     }
 
     /// <summary>
-    ///   The text of the generated label.
+    ///   Gets or sets the text of the generated label.
     /// </summary>
     public string Label { get; set; }
   }
@@ -59,7 +59,7 @@ namespace Demo.yFiles.Toolkit.OptionHandler
   public class MinMaxAttribute : Attribute
   {
     /// <summary>
-    ///   Initialize the MinMaxAttribute.
+    ///   Initialize the <see cref="MinMaxAttribute"/>.
     /// </summary>
     public MinMaxAttribute() {
       Min = int.MinValue;
@@ -68,17 +68,17 @@ namespace Demo.yFiles.Toolkit.OptionHandler
     }
 
     /// <summary>
-    ///   The UI component's minimum valid value.
+    ///   Gets or sets the UI component's minimum valid value.
     /// </summary>
     public double Min { get; set; }
 
     /// <summary>
-    ///   The UI component's maximum valid value.
+    ///   Gets or sets the UI component's maximum valid value.
     /// </summary>
     public double Max { get; set; }
 
     /// <summary>
-    ///   The UI component's increment/decrement step (if supported)
+    ///   Gets or sets the UI component's increment/decrement step (if supported)
     /// </summary>
     public double Step { get; set; }
   }
@@ -90,7 +90,7 @@ namespace Demo.yFiles.Toolkit.OptionHandler
   public class OptionGroupAttribute : Attribute
   {
     /// <summary>
-    ///   Initialize the new OptionGroupAttribute.
+    ///   Initialize the new <see cref="OptionGroupAttribute"/>.
     /// </summary>
     /// <param name="name">Name of OptionGroup the UI component belongs to.</param>
     /// <param name="position">The UI component's display position in the OptionGroup.</param>
@@ -100,12 +100,12 @@ namespace Demo.yFiles.Toolkit.OptionHandler
     }
 
     /// <summary>
-    ///   Name of <see cref="OptionGroup"/> the UI component belongs to.
+    ///   Gets the name of <see cref="OptionGroup"/> the UI component belongs to.
     /// </summary>
     public string Name { get; }
 
     /// <summary>
-    ///   The UI component's display position in the <see cref="OptionGroup"/>.
+    ///   Gets or sets the UI component's display position in the <see cref="OptionGroup"/>.
     /// </summary>
     public int Position { get; set; }
   }
@@ -117,7 +117,7 @@ namespace Demo.yFiles.Toolkit.OptionHandler
   public class EnumValueAttribute : Attribute
   {
     /// <summary>
-    ///   Initializes the new EnumValueAttribute.
+    ///   Initializes the new <see cref="EnumValueAttribute"/>.
     /// </summary>
     /// <param name="label">The displayed label of the generated enum value.</param>
     /// <param name="value">The enum value.</param>
@@ -127,12 +127,12 @@ namespace Demo.yFiles.Toolkit.OptionHandler
     }
 
     /// <summary>
-    ///   The displayed label of the generated enum value.
+    ///   Gets or sets the displayed label of the generated enum value.
     /// </summary>
     public string Label { get; set; }
 
     /// <summary>
-    ///   The enum value.
+    ///   Gets or sets the enum value.
     /// </summary>
     public object Value { get; set; }
   }
@@ -143,7 +143,7 @@ namespace Demo.yFiles.Toolkit.OptionHandler
   public class ComponentTypeAttribute : Attribute
   {
     /// <summary>
-    ///   Initialize the ComponentTypeAttribute.
+    ///   Initialize the <see cref="ComponentTypeAttribute"/>.
     /// </summary>
     /// <param name="value">The type of UI component to be generated.</param>
     public ComponentTypeAttribute(ComponentTypes value) {
@@ -151,7 +151,7 @@ namespace Demo.yFiles.Toolkit.OptionHandler
     }
 
     /// <summary>
-    ///   The type of UI component to be generated.
+    ///   Gets the type of UI component to be generated.
     /// </summary>
     public virtual ComponentTypes Value { get; }
   }

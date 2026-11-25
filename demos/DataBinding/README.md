@@ -1,20 +1,27 @@
+<!-- populated by readme-style.js --> Data Binding Demos
+
 
 # Data Binding Demos
-These source code samples demonstrate how to use the `TreeSource` and `GraphSource` classes for binding graph elements to business data in yFiles WPF. 
+These source code samples demonstrate how to use the `GraphBuilder`, `TreeBuilder`, `AdjacencyGraphBuilder`, `TreeSource`, and `GraphSource` classes for binding graph elements to business data in yFiles WPF. 
 
 You will find the following programming samples in this package: 
 
 
 | Name | Description |
 |:---|:---|
-|**AdjacencyGraphBuilder** | Demonstrates data binding using class `AdjacencyGraphBuilder`. |
-|**BusinessModelAdapter** | Shows how to integrate a custom Business Model with yFiles WPF. |
-|**DataSet** | Sample Form that demonstrates data binding using a `TreeSource` to a DataSet. |
-|**Dynamic** | Sample Form that demonstrates data binding using a `TreeSource` to dynamic business data. |
-|**GraphBuilder** | Demonstrates data binding using class `GraphBuilder`. |
-|**GraphSource** | Demonstrates data binding using class `GraphSource`. |
-|**InteractiveEdgesGraphSource** | Demonstrates data binding using class `AdjacentEdgesGraphSource`. Allows interactive changes to the data model and dynamically updates the graph structure accordingly. |
-|**InteractiveNodesGraphSource** | Demonstrates data binding using class `AdjacentNodesGraphSource`. Allows interactive changes to the data model and dynamically updates the graph structure accordingly. |
+|**Adjacency Graph Builder** |Interactively builds and modifies a graph from JSON business data using class AdjacencyGraphBuilder. |
+|**Binding to Dynamic Business Data** |Demonstrates data binding using a TreeSource bound to dynamic business data. |
+|**Graph Builder** |Demonstrates data binding using GraphBuilder. |
+|**Graph Source** | Demonstrates data binding using class `GraphSource`. |
+|**Port-aware Adjacency Graph Builder** | Builds a graph using `AdjacencyGraphBuilder` and connects the items to specific ports. |
+|**Port-aware Graph Builder** | Builds a graph using `GraphBuilder` and connects the items to specific ports. |
+|**Port-aware Tree Builder** | Builds a graph using `TreeBuilder` and connects the items to specific ports. |
+|**Simple Adjacency Graph Builder** | Automatically builds a graph from JSON business data using `AdjacencyGraphBuilder`. |
+|**Simple Adjacency Graph Builder With Ids** | Automatically builds a graph from JSON business data using `AdjacencyGraphBuilder` with node ids. |
+|**Simple Graph Builder** | Automatically builds a graph from JSON business data using `GraphBuilder`. |
+|**Simple Graph Builder With Implicit Groups** | Automatically builds a graph from JSON business data with implicit groups using `GraphBuilder`. |
+|**Simple Tree Builder (Array)** | Automatically builds a graph from an array containing business data using `TreeBuilder`. |
+|**Simple Tree Builder (JSON)** | Automatically builds a graph from JSON business data using `TreeBuilder`. |
 
 ## Running the Demos
 
@@ -24,22 +31,8 @@ You will find the following programming samples in this package:
 * To load a single sample into Visual Studio you can open the project file (.csproj) in the sample's directory. 
 
 
+<!-- populated by readme-style.js --> 
 
 
-#### See also
-[Product Page](https://www.yworks.com/products/yfileswpf)  
-[API Documentation](https://docs.yworks.com/yfileswpf)    
-[Help and Support](https://www.yworks.com/products/yfiles/support)
 
-
-#### Contact
-yWorks GmbH  
-Vor dem Kreuzberg 28  
-72070 Tuebingen  
-Germany  
-Phone: +49 7071 979050
-Email: contact@yworks.com
-
-COPYRIGHT &#x00A9; 2021 yWorks   
-
-
+<script src="../../doc/resources/readme-style.js"></script> 

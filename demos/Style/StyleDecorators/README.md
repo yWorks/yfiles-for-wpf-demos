@@ -1,3 +1,5 @@
-# StyleDecorators
+# Style Decorators
 
-This demo shows how to decorate existing styles by wrapping them.
+![Demo thumbnail](../../DemoBrowser/DemoBrowser/Screenshots/style-decorators.webp "Style Decorators")
+
+Shows how to create styles for nodes, edges, and labels that wrap existing styles and add visual decorators.

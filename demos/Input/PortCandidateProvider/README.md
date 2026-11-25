@@ -1,4 +1,5 @@
-# PortCandidateProvider
+# Port Candidate Provider
 
-Demo code that shows how to customize the port relocation feature by implementing
-      a custom `IPortCandidateProvider`.
+![Demo thumbnail](../../DemoBrowser/DemoBrowser/Screenshots/port-candidate-provider.webp "Port Candidate Provider")
+
+Shows how edge creation can be customized.

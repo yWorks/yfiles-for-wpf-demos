@@ -1,5 +1,6 @@
-# OptionHandler
+# Option Handler
 
-Support project for the [LayoutStyles demo](Demo.yFiles.Layout.LayoutStyles.html)
-        and other demos like the [MazeRouting demo](Demo.yFiles.Layout.MazeRouting.html).
-        It provides an editor for the [layout configurations](Demo.yFiles.Layout.Configurations.html).
+![Demo thumbnail](../../DemoBrowser/DemoBrowser/Screenshots/OptionHandler.webp "Option Handler")
+
+Support project for the `yWorks.Demo.LayoutStyles` demo.
+      It provides an editor for the `yWorks.Demo.Layout.Configurations`.

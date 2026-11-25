@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 4.0.
- ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -36,7 +36,7 @@ using System.ComponentModel;
 using System.Windows.Controls;
 using System.Windows.Media;
 
-namespace Demo.yFiles.Option.Handler
+namespace yWorks.Demo.Option.Handler
 {
   /// <summary>
   ///   Used to classify option items into groups.
@@ -58,13 +58,9 @@ namespace Demo.yFiles.Option.Handler
     //      get { return children; }
     //      set {}
     //    }
-    IEnumerator<IOptionItem> IEnumerable<IOptionItem>.GetEnumerator() {
-      return Items.GetEnumerator();
-    }
+    IEnumerator<IOptionItem> IEnumerable<IOptionItem>.GetEnumerator() => Items.GetEnumerator();
 
-    IEnumerator IEnumerable.GetEnumerator() {
-      return ((IEnumerable<IOptionItem>) this).GetEnumerator();
-    }
+    IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable<IOptionItem>) this).GetEnumerator();
 
 
     /// <inheritdoc/>
@@ -108,7 +104,7 @@ namespace Demo.yFiles.Option.Handler
     /// </summary>
     /// <param name="name">The name of the group</param>
     public OptionGroup(string name) : base(name) {
-      Items = new ObservableCollection<IOptionItem>();
+      Items = [];
       Items.CollectionChanged += ChildrenOnCollectionChanged;
       Type = typeof(object);
       // Option groups don't support both elements
@@ -214,7 +210,10 @@ namespace Demo.yFiles.Option.Handler
     /// <param name="initialValue">The initial value of the item</param>
     /// <returns>A new instance of <see cref="OptionItem"/></returns>
     public IOptionItem AddInt(string itemName, int initialValue) {
-      var newItem = new OptionItem(itemName) { Value = initialValue, Type = typeof(int) };
+      var newItem = new OptionItem(itemName) {
+          Value = initialValue,
+          Type = typeof(int)
+      };
       AddOptionItem(newItem);
       return newItem;
     }
@@ -228,10 +227,12 @@ namespace Demo.yFiles.Option.Handler
     /// <param name="maxValue">The maximum allowed value</param>
     /// <returns>A new instance of <see cref="OptionItem"/></returns>
     public IOptionItem AddInt(string itemName, int initialValue, int minValue, int maxValue) {
-      var newItem = new OptionItem(itemName) { Value = initialValue, Type = typeof(int) };
+      var newItem = new OptionItem(itemName) {
+          Value = initialValue,
+          Type = typeof(int)
+      };
 #if UseDataAnnotations
-      newItem.Attributes[OptionItem.ValidationAttributesAttribute] = new List<ValidationAttribute>()
-                                                                  {new RangeAttribute(minValue, maxValue)};
+      newItem.Attributes[OptionItem.ValidationAttributesAttribute] = new List<ValidationAttribute>() { new RangeAttribute(minValue, maxValue) };
 #else
       newItem.Attributes[ValidationRulesAttribute] =
           new List<ValidationRule> { new RangeValidationRule<int>(minValue, maxValue) };
@@ -247,9 +248,8 @@ namespace Demo.yFiles.Option.Handler
     /// <param name="itemName">The name of the item</param>
     /// <param name="initialValue">The initial value of the item</param>
     /// <returns>A new instance of <see cref="OptionItem"/></returns>
-    public IOptionItem AddNonNegativeInt(string itemName, int initialValue) {
-      return AddInt(itemName, initialValue, 0, int.MaxValue);
-    }
+    public IOptionItem AddNonNegativeInt(string itemName, int initialValue) =>
+        AddInt(itemName, initialValue, 0, int.MaxValue);
 
     /// <summary>
     ///   Convenience method to add an <see cref="OptionItem"/> to this group
@@ -258,7 +258,10 @@ namespace Demo.yFiles.Option.Handler
     /// <param name="initialValue">The initial value of the item</param>
     /// <returns>A new instance of <see cref="OptionItem"/></returns>
     public IOptionItem AddBool(string itemName, bool initialValue) {
-      var newItem = new OptionItem(itemName) { Value = initialValue, Type = typeof(bool) };
+      var newItem = new OptionItem(itemName) {
+          Value = initialValue,
+          Type = typeof(bool)
+      };
       AddOptionItem(newItem);
       return newItem;
     }
@@ -270,7 +273,10 @@ namespace Demo.yFiles.Option.Handler
     /// <param name="initialValue">The initial value of the item</param>
     /// <returns>A new instance of <see cref="OptionItem"/></returns>
     public IOptionItem AddDouble(string itemName, double initialValue) {
-      var newItem = new OptionItem(itemName) { Value = initialValue, Type = typeof(double) };
+      var newItem = new OptionItem(itemName) {
+          Value = initialValue,
+          Type = typeof(double)
+      };
       AddOptionItem(newItem);
       return newItem;
     }
@@ -284,10 +290,12 @@ namespace Demo.yFiles.Option.Handler
     /// <param name="maxValue">The maximum allowed value</param>
     /// <returns>A new instance of <see cref="OptionItem"/></returns>
     public IOptionItem AddDouble(string itemName, double initialValue, double minValue, double maxValue) {
-      var newItem = new OptionItem(itemName) { Value = initialValue, Type = typeof(double) };
+      var newItem = new OptionItem(itemName) {
+          Value = initialValue,
+          Type = typeof(double)
+      };
 #if UseDataAnnotations
-      newItem.Attributes[OptionItem.ValidationAttributesAttribute] = new List<ValidationAttribute>()
-                                                                  {new RangeAttribute(minValue, maxValue)};
+      newItem.Attributes[OptionItem.ValidationAttributesAttribute] = new List<ValidationAttribute>() { new RangeAttribute(minValue, maxValue) };
 #else
       newItem.Attributes[ValidationRulesAttribute] =
           new List<ValidationRule> { new RangeValidationRule<double>(minValue, maxValue) };
@@ -303,9 +311,8 @@ namespace Demo.yFiles.Option.Handler
     /// <param name="itemName">The name of the item</param>
     /// <param name="initialValue">The initial value of the item</param>
     /// <returns>A new instance of <see cref="OptionItem"/></returns>
-    public IOptionItem AddNonNegativeDouble(string itemName, int initialValue) {
-      return AddDouble(itemName, initialValue, 0, double.MaxValue);
-    }
+    public IOptionItem AddNonNegativeDouble(string itemName, int initialValue) =>
+        AddDouble(itemName, initialValue, 0, double.MaxValue);
 
     /// <summary>
     ///   Convenience method to add an <see cref="OptionItem"/> to this group
@@ -314,7 +321,10 @@ namespace Demo.yFiles.Option.Handler
     /// <param name="initialValue">The initial value of the item</param>
     /// <returns>A new instance of <see cref="OptionItem"/></returns>
     public IOptionItem AddString(string itemName, string initialValue) {
-      var newItem = new OptionItem(itemName) { Value = initialValue, Type = typeof(string) };
+      var newItem = new OptionItem(itemName) {
+          Value = initialValue,
+          Type = typeof(string)
+      };
       AddOptionItem(newItem);
       return newItem;
     }
@@ -339,7 +349,10 @@ namespace Demo.yFiles.Option.Handler
     /// <param name="initialValue">The initial value of the item</param>
     /// <returns>A new instance of <see cref="OptionItem"/></returns>
     public IOptionItem AddColor(string itemName, Color initialValue) {
-      var newItem = new OptionItem(itemName) { Value = initialValue, Type = typeof(Color) };
+      var newItem = new OptionItem(itemName) {
+          Value = initialValue,
+          Type = typeof(Color)
+      };
       AddOptionItem(newItem);
       return newItem;
     }
@@ -358,9 +371,11 @@ namespace Demo.yFiles.Option.Handler
       return retval;
     }
 
-    public IOptionItem Add<T>(string name, T value) {
-      return Add(new OptionItem(name) { Value = value, Type = typeof(T) });
-    }
+    public IOptionItem Add<T>(string name, T value) =>
+        Add(new OptionItem(name) {
+            Value = value,
+            Type = typeof(T)
+        });
 
     public IOptionItem Add(IOptionItem optionItem) {
       AddOptionItem(optionItem);

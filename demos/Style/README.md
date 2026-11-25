@@ -1,3 +1,5 @@
+<!-- populated by readme-style.js --> Style Demos
+
 
 # Style Demos
 These source code samples demonstrate how to customize the visual representation of yFiles WPF graph elements. 
@@ -7,22 +9,27 @@ You will find the following programming samples in this package:
 
 | Name | Description |
 |:---|:---|
-|**ArrowNodeStyle** | A demo that shows the features of the ArrowNodeStyle class. |
-|**BezierEdgeStyle** | Shows the `BezierEdgeStyle` and additional customizations to enable interactive editing. |
-|**ControlStyles** | Sample application that demonstrates the usage of NodeControlNodeStyle, PortControlPortStyle, LabelControlLabelStyle, and EdgeSegmentControlEdgeStyle. |
-|**GroupNodeStyle** | This demo shows the group and folder node visualization options offered by the GroupNodeStyle class. |
-|**LabelStyle** | This demo shows the features of the LabelStyle class. |
-|**RectangleNodeStyle** | A demo that shows the different node shapes that can be implemented with the RectangleNodeStyle class. |
-|**SelectionStyling** | Demonstrates customized selecting rendering of nodes, edges and labels by decorating these items with a corresponding style. |
-|**ShapeNodeStyle** | This demo shows the features of the `ShapeNodeStyle` class. |
-|**SimpleArrow** | This demo shows how to create a simple custom arrow. |
-|**SimpleCustomStyle** | This demo shows how to create relatively simple custom styles. |
-|**StyleDecorators** | This demo shows how to decorate existing styles by wrapping them. |
-|**TableNodeStyle** | This demo shows how to implement different styles for `IStripe` instances inside an `ITable` instance. |
-|**TextWrapping** | This demo shows how to configure the text wrapping and trimming feature provided by the LabelStyle. |
-|**ThemeVariants** | This demo shows various interaction visualization themes simultaneously. |
-|**UMLClassStyle** | This demo shows a custom UML diagram style for nodes. |
-|**VisualStateManager** | This demo shows how use the VisualStateManager to apply smooth transitions for selection and highlight visualizations. |
+|**Arrow** |Shows all arrow types of the Arrow class. |
+|**Arrow Edge Style** | The ArrowEdgeStyle provides several properties to customize its shape. There are five basic shapes provided. |
+|**Arrow Node Style** |Shows the features of the ArrowNodeStyle class. |
+|**Bezier Edge Style** | Shows how to use the curved edge style consisting of Bezier splines. |
+|**Clickable Style Decorator** | Illustrates an approach for handling clicks on specific areas of the style. |
+|**Composite Node Style** | Shows how to combine node visualizations from several styles. |
+|**Control Styles** | Demo application that shows how to use the Control based styles for creating complex visualizations using XAML. |
+|**Directed Edge Label Style** |Shows label styles displaying arrows that always point to the source or target port. |
+|**Editable Path Node Style** |Shows a path-based node style whose control points can be moved by users. |
+|**General Path Node Style** |Shows how to create a variety of star, polygon, and other custom node styles with GeneralPathNodeStyle. |
+|**Group Node Style** |Shows the group and folder node visualization options offered by the GroupNodeStyle class. |
+|**Zoom-invariant Label Style** |Shows label styles that are independent of the zoom level. |
+|**Label Style** | Shows the features of the LabelStyle class. |
+|**Level of Detail Style** | Shows a node style that hides details when zooming out. |
+|**Rectangle Node Style** | Shows the different node shapes that can be implemented with the RectangleNodeStyle class. |
+|**Selection Styling** |Shows customized selection painting of nodes, edges and labels by decorating these items with a corresponding style. |
+|**Shape Node Style** |Shows the features of the ShapeNodeStyle class. |
+|**Shape Port Style** |Shows the features of the ShapePortStyle class. |
+|**Simple Arrow Style** |Shows how to create a simple custom arrow for edges. |
+|**Style Decorators** | Shows how to create styles for nodes, edges, and labels that wrap existing styles and add visual decorators. |
+|**Theme Variants** |Shows various interaction visualization themes simultaneously. |
 
 ## Running the Demos
 
@@ -32,22 +39,8 @@ You will find the following programming samples in this package:
 * To load a single sample into Visual Studio you can open the project file (.csproj) in the sample's directory. 
 
 
+<!-- populated by readme-style.js --> 
 
 
-#### See also
-[Product Page](https://www.yworks.com/products/yfileswpf)  
-[API Documentation](https://docs.yworks.com/yfileswpf)    
-[Help and Support](https://www.yworks.com/products/yfiles/support)
 
-
-#### Contact
-yWorks GmbH  
-Vor dem Kreuzberg 28  
-72070 Tuebingen  
-Germany  
-Phone: +49 7071 979050
-Email: contact@yworks.com
-
-COPYRIGHT &#x00A9; 2021 yWorks   
-
-
+<script src="../../doc/resources/readme-style.js"></script> 

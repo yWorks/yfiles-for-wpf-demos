@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 4.0.
- ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -33,8 +33,8 @@ using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Media;
-using Demo.yFiles.Toolkit.OptionHandler;
 using yWorks.Controls;
+using yWorks.Demo.Toolkit.OptionHandler;
 using yWorks.Geometry;
 using yWorks.Graph;
 using yWorks.Graph.Styles;
@@ -42,7 +42,7 @@ using yWorks.Layout;
 using yWorks.Layout.Router;
 using BusDescriptor = yWorks.Layout.Router.BusDescriptor;
 
-namespace Demo.yFiles.Layout.Configurations
+namespace yWorks.Demo.Layout.Configurations
 {
   /// <summary>
   ///   Configuration options for the <see cref="EdgeRouter"/> algorithm.
@@ -224,7 +224,7 @@ namespace Demo.yFiles.Layout.Configurations
               var label = edge.Labels[0].Text;
               List<IEdge> list;
               if (!byLabel.TryGetValue(label, out list)) {
-                list = new List<IEdge>();
+                list = [];
                 byLabel[label] = list;
               }
               list.Add(edge);
@@ -243,7 +243,7 @@ namespace Demo.yFiles.Layout.Configurations
             if (!comparer.Equals(brush, Brushes.Black)) {
               List<IEdge> list;
               if (!byColor.TryGetValue(brush, out list)) {
-                list = new List<IEdge>();
+                list = [];
                 byColor[brush] = list;
               }
               list.Add(edge);
@@ -260,13 +260,12 @@ namespace Demo.yFiles.Layout.Configurations
           LabelPlacementSideOfEdgeItem, LabelPlacementOrientationItem, LabelPlacementDistanceItem));
     }
 
-    private BusDescriptor CreateBusDescriptor() {
-      return new BusDescriptor {
-          AutomaticEdgeGrouping = AutomaticEdgeGroupingItem,
-          MinimumBackboneSegmentLength = MinimumBackboneSegmentLengthItem,
-          MultipleBackboneSegments = AllowMultipleBackboneSegmentsItem
-      };
-    }
+    private BusDescriptor CreateBusDescriptor() =>
+        new() {
+            AutomaticEdgeGrouping = AutomaticEdgeGroupingItem,
+            MinimumBackboneSegmentLength = MinimumBackboneSegmentLengthItem,
+            MultipleBackboneSegments = AllowMultipleBackboneSegmentsItem
+        };
 
     // ReSharper disable UnusedMember.Global
     // ReSharper disable InconsistentNaming
@@ -491,7 +490,7 @@ namespace Demo.yFiles.Layout.Configurations
     [ComponentType(ComponentTypes.Slider)]
     public double GridSpacingItem { get; set; }
 
-    public bool ShouldDisableGridSpacingItem => GridEnabledItem == false;
+    public bool ShouldDisableGridSpacingItem => !GridEnabledItem;
 
     [Label("Routing Style")]
     [OptionGroup("PolylineGroup", 10)]
@@ -674,14 +673,12 @@ namespace Demo.yFiles.Layout.Configurations
       }
     }
 
-    public ILayoutAlgorithm CreateConfiguredLayoutPublic(GraphControl graphControl) {
-      return CreateConfiguredLayout(graphControl);
-    }
+    public ILayoutAlgorithm CreateConfiguredLayoutPublic(GraphControl graphControl) =>
+        CreateConfiguredLayout(graphControl);
 
     public LayoutData<INode, IEdge, ILabel, ILabel> CreateConfiguredLayoutDataPublic(
         GraphControl graphControl,
-        ILayoutAlgorithm layout) {
-      return CreateConfiguredLayoutData(graphControl, layout);
-    }
+        ILayoutAlgorithm layout) =>
+        CreateConfiguredLayoutData(graphControl, layout);
   }
 }

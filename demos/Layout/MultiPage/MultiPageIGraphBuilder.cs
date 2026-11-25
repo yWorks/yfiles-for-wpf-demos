@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 4.0.
- ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -38,7 +38,7 @@ using yWorks.Layout.Graph;
 using yWorks.Layout.Multipage;
 using yWorks.Utils;
 
-namespace Demo.yFiles.Layout.MultiPage
+namespace yWorks.Demo.MultiPage
 {
   public class MultiPageIGraphBuilder
   {
@@ -62,31 +62,67 @@ namespace Demo.yFiles.Layout.MultiPage
         MultiPageLayout.Result result) {
       // initialize the graph item defaults with the null styles
       NormalEdgeDefaults = new EdgeDefaults {
-          Style = NullEdgeStyle, Labels = { Style = NullLabelStyle, LayoutParameter = NullLabelModelParameter }
+          Style = NullEdgeStyle,
+          Labels = {
+              Style = NullLabelStyle,
+              LayoutParameter = NullLabelModelParameter
+          }
       };
       ConnectorEdgeDefaults = new EdgeDefaults {
-          Style = NullEdgeStyle, Labels = { Style = NullLabelStyle, LayoutParameter = NullLabelModelParameter }
+          Style = NullEdgeStyle,
+          Labels = {
+              Style = NullLabelStyle,
+              LayoutParameter = NullLabelModelParameter
+          }
       };
       ProxyEdgeDefaults = new EdgeDefaults {
-          Style = NullEdgeStyle, Labels = { Style = NullLabelStyle, LayoutParameter = NullLabelModelParameter }
+          Style = NullEdgeStyle,
+          Labels = {
+              Style = NullLabelStyle,
+              LayoutParameter = NullLabelModelParameter
+          }
       };
       ProxyReferenceEdgeDefaults = new EdgeDefaults {
-          Style = NullEdgeStyle, Labels = { Style = NullLabelStyle, LayoutParameter = NullLabelModelParameter }
+          Style = NullEdgeStyle,
+          Labels = {
+              Style = NullLabelStyle,
+              LayoutParameter = NullLabelModelParameter
+          }
       };
       NormalNodeDefaults = new NodeDefaults {
-          Style = NullNodeStyle, Labels = { Style = NullLabelStyle, LayoutParameter = NullLabelModelParameter }
+          Style = NullNodeStyle,
+          Labels = {
+              Style = NullLabelStyle,
+              LayoutParameter = NullLabelModelParameter
+          }
       };
       GroupNodeDefaults = new NodeDefaults {
-          Style = NullNodeStyle, Labels = { Style = NullLabelStyle, LayoutParameter = NullLabelModelParameter }
+          Style = NullNodeStyle,
+          Labels = {
+              Style = NullLabelStyle,
+              LayoutParameter = NullLabelModelParameter
+          }
       };
       ConnectorNodeDefaults = new NodeDefaults {
-          Style = NullNodeStyle, Labels = { Style = NullLabelStyle, LayoutParameter = NullLabelModelParameter }
+          Style = NullNodeStyle,
+          Labels = {
+              Style = NullLabelStyle,
+              LayoutParameter = NullLabelModelParameter
+          }
       };
       ProxyNodeDefaults = new NodeDefaults {
-          Style = NullNodeStyle, Labels = { Style = NullLabelStyle, LayoutParameter = NullLabelModelParameter }
+          Style = NullNodeStyle,
+          Labels = {
+              Style = NullLabelStyle,
+              LayoutParameter = NullLabelModelParameter
+          }
       };
       ProxyReferenceNodeDefaults = new NodeDefaults {
-          Style = NullNodeStyle, Labels = { Style = NullLabelStyle, LayoutParameter = NullLabelModelParameter }
+          Style = NullNodeStyle,
+          Labels = {
+              Style = NullLabelStyle,
+              LayoutParameter = NullLabelModelParameter
+          }
       };
       this.layoutData = layoutData;
       this.result = result;
@@ -383,17 +419,13 @@ namespace Demo.yFiles.Layout.MultiPage
     ///   to the provided node of the <see cref="LayoutGraph"/> returned by the
     ///   multi-page layout.
     /// </summary>
-    protected INode GetViewNode(Node layoutNode) {
-      return layoutToViewNode[layoutNode];
-    }
+    protected INode GetViewNode(Node layoutNode) => layoutToViewNode[layoutNode];
 
     /// <summary>
     ///   Returns the layout node that corresponds
     ///   to the provided node of the output graph.
     /// </summary>
-    protected Node GetLayoutNode(INode viewNode) {
-      return viewToLayoutNode[viewNode];
-    }
+    protected Node GetLayoutNode(INode viewNode) => viewToLayoutNode[viewNode];
 
     /// <summary>
     ///   If the provided <see cref="LayoutGraph"/> node has a represented node,
@@ -430,9 +462,7 @@ namespace Demo.yFiles.Layout.MultiPage
     ///   Returns a port of the resulting graph view that corresponds to the
     ///   provided port of the original input graph.
     /// </summary>
-    protected IPort GetViewPort(IPort layoutPort) {
-      return modelToViewPort[layoutPort];
-    }
+    protected IPort GetViewPort(IPort layoutPort) => modelToViewPort[layoutPort];
 
     /// <summary>
     ///   Called by the various edge creation callbacks to create an edge in the resulting graph view
@@ -821,8 +851,6 @@ namespace Demo.yFiles.Layout.MultiPage
       public int PageNumber { get; internal set; }
     }
 
-    public NodeData GetNodeData(INode viewNode) {
-      return mapper[viewNode];
-    }
+    public NodeData GetNodeData(INode viewNode) => mapper[viewNode];
   }
 }

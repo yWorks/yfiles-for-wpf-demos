@@ -1,4 +1,5 @@
-# PartialLayout
+# Partial Layout
 
-This demo shows how to apply `PartialLayout` to orthogonal, organic, hierarchical or
-     circular layouts and the effect of some of its configuration settings.
+![Demo thumbnail](../../DemoBrowser/DemoBrowser/Screenshots/partial-layout.webp "Partial Layout")
+
+Shows how to integrate new graph elements into an existing graph layout.

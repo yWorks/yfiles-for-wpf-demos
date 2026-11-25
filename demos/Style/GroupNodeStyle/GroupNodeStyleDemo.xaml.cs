@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 4.0.
- ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -31,8 +31,6 @@ using System;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media;
-using Demo.yFiles.Option.Handler;
-using Demo.yFiles.Toolkit;
 using yWorks.Controls;
 using yWorks.Controls.Input;
 using yWorks.Geometry;
@@ -40,278 +38,240 @@ using yWorks.Graph;
 using yWorks.Graph.LabelModels;
 using yWorks.Graph.Styles;
 
-namespace Demo.yFiles.Graph.GroupNodes
+namespace yWorks.Demo.GroupNodeStyle
 {
   /// <summary>
-  ///   Shows <see cref="GroupNodeStyle"/>.
+  ///   Shows the group and folder node visualization options offered by the GroupNodeStyle class.
   /// </summary>
-  public partial class GroupNodeStyleDemo
+  [Demo("group-node-style", "style", "Group Node Style",
+      Summary = "Shows the group and folder node visualization options offered by the GroupNodeStyle class.",
+      Tags = ["style", "nodes"], Keywords = ["library style", "style options", "padding", "margin"], RelatedDemos = [
+          "shape-node-style", "rectangle-node-style", "arrow-node-style",
+          "tutorial-style-implementation-node-create-a-rectangle"
+      ])]
+  public sealed partial class GroupNodeStyleDemo
   {
+    private IFoldingView foldingView = null!;
+
     public GroupNodeStyleDemo() {
       InitializeComponent();
-      InitializeFolding();
-      InitializeInputMode();
-      InitializeDefaultStyles();
-      CreateSampleGraph();
-      InitializeGridVisual();
-      InitializeOptionSettings();
     }
 
-    /// <summary>
-    ///   Initializes the visualization of the grid feature.
-    /// </summary>
-    private void InitializeGridVisual() {
-      var grid = new GridRenderer {
-          GridStyle = GridStyle.Lines,
-          Pen = Pens.LightGray, // new Pen(Brushes.DarkGray, 0.1),
-          VisibilityThreshold = 10
-      };
-      var renderTree = graphControl.RenderTree;
-      renderTree.CreateElement(renderTree.BackgroundGroup, new GridInfo(), grid);
-    }
+    private GraphControl GraphControl => graphControl;
 
-    /// <summary>
-    ///   Enables folding and specifies that the label of the group node should
-    ///   also appear on the folder node.
-    /// </summary>
-    private void InitializeFolding() {
-      var foldingManager = new FoldingManager(graphControl.Graph) {
-          FolderNodeConverter = new FolderNodeConverter { FolderNodeDefaults = { CopyLabels = true } }
-      };
-      graphControl.Graph = foldingManager.CreateFoldingView().Graph;
-    }
+    private IGraph Graph => GraphControl.Graph;
 
-    /// <summary>
-    ///   Restricts user interaction to selecting, panning, and zooming.
-    /// </summary>
-    private void InitializeInputMode() {
-      graphControl.FileOperationsEnabled = true;
+    protected override void Initialize() {
+      ConfigureFolding(GraphControl);
+      ConfigureInteraction(GraphControl);
 
-      var geim = new GraphEditorInputMode {
-          AllowCreateNode = false,
-          DeletableItems = GraphItemTypes.All & ~GraphItemTypes.Node,
-          NavigationInputMode = { AutoGroupNodeAlignmentPolicy = NodeAlignmentPolicy.Center }
-      };
+      ConfigureDefaultStyles(Graph);
+      CreateSampleGraph(Graph);
 
-      // provide a way to collapse group nodes or expand folder nodes even if their style does not
-      // show an icon for collapsing or expanding
-      geim.ItemLeftDoubleClicked += (sender, args) => {
-        if (args.Item is INode node) {
-          if (GraphCommands.ToggleExpansionState.CanExecute(node, graphControl)) {
-            GraphCommands.ToggleExpansionState.Execute(node, graphControl);
-            graphControl.Selection.Remove(node);
-            args.Handled = true;
-          }
-        }
-      };
-
-      graphControl.InputMode = geim;
-    }
-
-    /// <summary>
-    ///   Configures the default styles for new nodes, edges, and labels in the given graph.
-    /// </summary>
-    private void InitializeDefaultStyles() {
-      DemoStyles.InitDemoStyles(graphControl.Graph, Themes.Palette58, groupTheme : Themes.Palette58,
-          edgeTheme : Themes.Palette58);
+      // center the sample graph in the visible area
+      GraphControl.FitGraphBounds();
     }
 
     /// <summary>
     ///   Creates a sample graph with several group and folder nodes.
     /// </summary>
-    private void CreateSampleGraph() {
-      var graph = graphControl.Graph;
-      graph.Clear();
-
-      var red = Themes.Palette59;
-      var green = Themes.Palette53;
-      var blue = Themes.Palette56;
-      var orange = Themes.Palette51;
-
+    private void CreateSampleGraph(IGraph graph) {
       // create a couple of GroupNodeStyle instances that demonstrate various tab configuration options
       // for tabs that are placed at the top of the respective node ...
-      GroupNodeStyle[] stylesWithTabAtTop = {
-          // style for red nodes
-          new() {
-              FolderIcon = GroupNodeStyleIconType.None,
-              TabBrush = red.Fill,
-              TabBackgroundBrush = red.Fill,
-              // tab width 0 together with a leading or trailing tab position prevents corner rounding for
-              // the "inner" corners of the tab stroke and the content area
-              TabPosition = GroupNodeStyleTabPosition.TopLeading,
-              TabWidth = 0.0,
-              TabHeight = 24.0,
-              Pen = new Pen(red.Stroke, 1)
-          },
-          // style for green nodes
-          new() {
-              CornerRadius = 0,
-              GroupIcon = GroupNodeStyleIconType.TriangleDown,
-              FolderIcon = GroupNodeStyleIconType.TriangleUp,
-              IconPosition = GroupNodeStyleIconPosition.Leading,
-              IconBackgroundShape = GroupNodeStyleIconBackgroundShape.Square,
-              IconForegroundBrush = Brushes.White,
-              TabBrush = green.Fill,
-              TabPosition = GroupNodeStyleTabPosition.TopLeading,
-              TabSlope = 0,
-              Pen = new Pen(green.Stroke, 1)
-          },
-          // style for blue nodes
-          new() {
-              DrawShadow = true,
-              GroupIcon = GroupNodeStyleIconType.ChevronDown,
-              FolderIcon = GroupNodeStyleIconType.ChevronUp,
-              IconForegroundBrush = blue.Stroke,
-              IconPosition = GroupNodeStyleIconPosition.Trailing,
-              TabPosition = GroupNodeStyleTabPosition.TopLeading,
-              TabBrush = blue.Fill,
-              TabBackgroundBrush = blue.Stroke,
-              TabHeight = 22,
-              TabSlope = 0.5,
-              Pen = new Pen(blue.Stroke, 1)
-          },
-          // style for orange nodes
-          new() {
-              CornerRadius = 8,
-              ContentAreaBrush = orange.EdgeLabelFill,
-              DrawShadow = true,
-              GroupIcon = GroupNodeStyleIconType.Minus,
-              IconBackgroundBrush = orange.NodeLabelFill,
-              IconForegroundBrush = orange.Stroke,
-              IconBackgroundShape = GroupNodeStyleIconBackgroundShape.CircleSolid,
-              TabBrush = orange.Fill,
-              TabHeight = 22,
-              TabPadding = 8.0,
-              Pen = new Pen(orange.Stroke, 1)
-          }
+      var stylesWithTabAtTop = new Graph.Styles.GroupNodeStyle[4];
+
+      // style for red nodes
+      var red = Themes.Palette59;
+      stylesWithTabAtTop[0] = new Graph.Styles.GroupNodeStyle {
+          FolderIcon = GroupNodeStyleIconType.None,
+          TabBrush = red.Fill,
+          TabBackgroundBrush = red.Fill,
+          // tab width 0 together with a leading or trailing tab position prevents corner rounding for
+          // the "inner" corners of the tab stroke and the content area
+          TabPosition = GroupNodeStyleTabPosition.TopLeading,
+          TabWidth = 0.0,
+          TabHeight = 24.0,
+          Pen = new Pen(red.Stroke, 1.0)
       };
 
-      var gold = Themes.Palette510;
-      var gray = Themes.Palette58;
-      var lightGreen = Themes.Palette54;
-      var purple = Themes.Palette55;
+      // style for green nodes
+      var green = Themes.Palette53;
+      stylesWithTabAtTop[1] = new Graph.Styles.GroupNodeStyle {
+          CornerRadius = 0.0,
+          GroupIcon = GroupNodeStyleIconType.TriangleDown,
+          FolderIcon = GroupNodeStyleIconType.TriangleUp,
+          IconPosition = GroupNodeStyleIconPosition.Leading,
+          IconBackgroundShape = GroupNodeStyleIconBackgroundShape.Square,
+          IconForegroundBrush = Brushes.White,
+          TabBrush = green.Fill,
+          TabPosition = GroupNodeStyleTabPosition.TopLeading,
+          TabSlope = 0.0,
+          Pen = new Pen(green.Stroke, 1.0)
+      };
+
+      // style for blue nodes
+      var blue = Themes.Palette56;
+      stylesWithTabAtTop[2] = new Graph.Styles.GroupNodeStyle {
+          DrawShadow = true,
+          GroupIcon = GroupNodeStyleIconType.ChevronDown,
+          FolderIcon = GroupNodeStyleIconType.ChevronUp,
+          IconForegroundBrush = blue.Stroke,
+          IconPosition = GroupNodeStyleIconPosition.Trailing,
+          TabPosition = GroupNodeStyleTabPosition.TopLeading,
+          TabBrush = blue.Fill,
+          TabBackgroundBrush = blue.Stroke,
+          TabHeight = 22.0,
+          TabSlope = 0.5,
+          Pen = new Pen(blue.Stroke, 1.0)
+      };
+
+      // style for orange nodes
+      var orange = Themes.Palette51;
+      stylesWithTabAtTop[3] = new Graph.Styles.GroupNodeStyle {
+          CornerRadius = 8,
+          ContentAreaBrush = orange.NodeLabelFill,
+          DrawShadow = true,
+          GroupIcon = GroupNodeStyleIconType.Minus,
+          IconBackgroundBrush = orange.NodeLabelFill,
+          IconForegroundBrush = orange.Stroke,
+          IconBackgroundShape = GroupNodeStyleIconBackgroundShape.CircleSolid,
+          TabBrush = orange.Fill,
+          TabHeight = 22.0,
+          TabPadding = 8.0,
+          Pen = new Pen(orange.Stroke, 1.0)
+      };
 
       // ... and for tabs at different sides of the respective nodes
-      GroupNodeStyle[] stylesWithTabAtMiscPositions = {
-          // style for gold nodes
-          new() {
-              GroupIcon = GroupNodeStyleIconType.Minus,
-              IconForegroundBrush = gold.Fill,
-              TabBrush = gold.Fill,
-              ContentAreaBrush = Brushes.Transparent,
-              RenderTransparentContentArea = true
-          },
-          // style for gray nodes
-          new() {
-              CornerRadius = 0,
-              GroupIcon = GroupNodeStyleIconType.TriangleLeft,
-              FolderIcon = GroupNodeStyleIconType.TriangleRight,
-              IconPosition = GroupNodeStyleIconPosition.Leading,
-              IconBackgroundShape = GroupNodeStyleIconBackgroundShape.Square,
-              IconForegroundBrush = Brushes.White,
-              TabBrush = gray.Fill,
-              TabSlope = 0,
-              TabPosition = GroupNodeStyleTabPosition.RightLeading,
-              Pen = new Pen(gray.Stroke, 1)
-          },
-          // style for light-green nodes
-          new() {
-              DrawShadow = true,
-              GroupIcon = GroupNodeStyleIconType.ChevronUp,
-              FolderIcon = GroupNodeStyleIconType.ChevronDown,
-              IconForegroundBrush = blue.Stroke,
-              IconPosition = GroupNodeStyleIconPosition.Leading,
-              TabPosition = GroupNodeStyleTabPosition.BottomTrailing,
-              TabBrush = lightGreen.Fill,
-              TabBackgroundBrush = green.Stroke,
-              TabHeight = 22,
-              TabSlope = 0.5,
-              Pen = new Pen(lightGreen.Stroke, 1)
-          },
-          // style for purple nodes
-          new() {
-              CornerRadius = 8,
-              ContentAreaBrush = purple.NodeLabelFill,
-              DrawShadow = true,
-              GroupIcon = GroupNodeStyleIconType.Minus,
-              IconPosition = GroupNodeStyleIconPosition.Leading,
-              IconBackgroundBrush = purple.NodeLabelFill,
-              IconForegroundBrush = purple.Stroke,
-              IconBackgroundShape = GroupNodeStyleIconBackgroundShape.CircleSolid,
-              TabPosition = GroupNodeStyleTabPosition.Left,
-              TabBrush = purple.Fill,
-              TabHeight = 22,
-              TabPadding = 8.0,
-              Pen = new Pen(purple.Stroke, 1)
-          }
+      var stylesWithTabAtMiscPositions = new Graph.Styles.GroupNodeStyle[4];
+
+      // style for gold nodes
+      var gold = Themes.Palette510;
+      stylesWithTabAtMiscPositions[0] = new Graph.Styles.GroupNodeStyle {
+          GroupIcon = GroupNodeStyleIconType.Minus,
+          ContentAreaBrush = null,
+          RenderTransparentContentArea = true,
+          IconForegroundBrush = gold.Fill,
+          TabBrush = gold.Fill
+      };
+
+      // style for gray nodes
+      var gray = Themes.Palette58;
+      stylesWithTabAtMiscPositions[1] = new Graph.Styles.GroupNodeStyle {
+          CornerRadius = 0.0,
+          GroupIcon = GroupNodeStyleIconType.TriangleLeft,
+          FolderIcon = GroupNodeStyleIconType.TriangleRight,
+          IconPosition = GroupNodeStyleIconPosition.Leading,
+          IconBackgroundShape = GroupNodeStyleIconBackgroundShape.Square,
+          IconForegroundBrush = Brushes.White,
+          TabBrush = gray.Fill,
+          TabSlope = 0.0,
+          TabPosition = GroupNodeStyleTabPosition.RightLeading,
+          Pen = new Pen(gray.Stroke, 1.0)
+      };
+
+      // style for light-green nodes
+      var lightGreen = Themes.Palette54;
+      stylesWithTabAtMiscPositions[2] = new Graph.Styles.GroupNodeStyle {
+          DrawShadow = true,
+          GroupIcon = GroupNodeStyleIconType.ChevronUp,
+          FolderIcon = GroupNodeStyleIconType.ChevronDown,
+          IconForegroundBrush = blue.Stroke,
+          IconPosition = GroupNodeStyleIconPosition.Leading,
+          TabPosition = GroupNodeStyleTabPosition.BottomTrailing,
+          TabBrush = lightGreen.Fill,
+          TabBackgroundBrush = green.Stroke,
+          TabHeight = 22.0,
+          TabSlope = 0.5,
+          Pen = new Pen(lightGreen.Stroke, 1.0)
+      };
+
+      // style for purple nodes
+      var purple = Themes.Palette55;
+      stylesWithTabAtMiscPositions[3] = new Graph.Styles.GroupNodeStyle {
+          CornerRadius = 8,
+          ContentAreaBrush = purple.NodeLabelFill,
+          DrawShadow = true,
+          GroupIcon = GroupNodeStyleIconType.Minus,
+          IconPosition = GroupNodeStyleIconPosition.Leading,
+          IconBackgroundBrush = purple.NodeLabelFill,
+          IconForegroundBrush = purple.Stroke,
+          IconBackgroundShape = GroupNodeStyleIconBackgroundShape.CircleSolid,
+          TabPosition = GroupNodeStyleTabPosition.Left,
+          TabBrush = purple.Fill,
+          TabHeight = 22.0,
+          TabPadding = 8.0,
+          Pen = new Pen(purple.Stroke, 1.0)
       };
 
       // create label styles that use the same color sets as the GroupNodeStyle instances created above
-      LabelStyle[] labelStyles = {
-          // style for red nodes
-          new() {
-              VerticalTextAlignment = VerticalAlignment.Center,
-              ClipText = false,
-              TextTrimming = TextTrimming.CharacterEllipsis,
-              TextBrush = red.NodeLabelFill
-          },
-          // style for green nodes
-          new() {
-              VerticalTextAlignment = VerticalAlignment.Center,
-              ClipText = false,
-              TextTrimming = TextTrimming.CharacterEllipsis,
-              TextBrush = green.Text
-          },
-          // style for blue nodes
-          // this style uses centered horizontal text because of the sloped tab in the blue nodes
-          new() {
-              TextAlignment = TextAlignment.Center,
-              VerticalTextAlignment = VerticalAlignment.Center,
-              ClipText = false,
-              TextTrimming = TextTrimming.CharacterEllipsis,
-              TextBrush = blue.NodeLabelFill
-          },
-          // style for orange nodes
-          new() {
-              VerticalTextAlignment = VerticalAlignment.Center,
-              ClipText = false,
-              TextTrimming = TextTrimming.CharacterEllipsis,
-              TextBrush = orange.NodeLabelFill
-          }
+      var labelStyles = new LabelStyle[4];
+
+      // style for red nodes
+      labelStyles[0] = new LabelStyle {
+          VerticalTextAlignment = VerticalAlignment.Top,
+          TextWrapping = TextWrapping.Wrap,
+          TextTrimming = TextTrimming.CharacterEllipsis,
+          TextBrush = red.NodeLabelFill
       };
 
-      LabelStyle[] labelStylesWithTabAtMiscPositions = {
-          // style for gold nodes
-          new() {
-              VerticalTextAlignment = VerticalAlignment.Center,
-              ClipText = false,
-              TextTrimming = TextTrimming.CharacterEllipsis,
-              TextBrush = gold.NodeLabelFill
-          },
-          // style for gray nodes
-          new() {
-              VerticalTextAlignment = VerticalAlignment.Center,
-              ClipText = false,
-              TextTrimming = TextTrimming.CharacterEllipsis
-          },
-          // style for light-green nodes
-          new() {
-              VerticalTextAlignment = VerticalAlignment.Center,
-              ClipText = false,
-              TextTrimming = TextTrimming.CharacterEllipsis,
-              TextBrush = green.NodeLabelFill
-          },
-          // style for purple nodes
-          new() {
-              VerticalTextAlignment = VerticalAlignment.Center,
-              ClipText = false,
-              TextTrimming = TextTrimming.CharacterEllipsis,
-              TextBrush = purple.NodeLabelFill
-          }
+      // style for green nodes
+      labelStyles[1] = new LabelStyle {
+          VerticalTextAlignment = VerticalAlignment.Center,
+          TextWrapping = TextWrapping.Wrap,
+          TextTrimming = TextTrimming.CharacterEllipsis,
+          TextBrush = green.Text
       };
 
-      string[] labelTexts = { "Red", "Green", "Blue", "Orange" };
-      string[] labelTextsWithTabAtMiscPositions = { "Gold", "Gray", "Light green", "Purple" };
+      // style for blue nodes
+      // this style uses centered horizontal text because of the sloped tab in the blue nodes
+      labelStyles[2] = new LabelStyle {
+          TextAlignment = TextAlignment.Center,
+          VerticalTextAlignment = VerticalAlignment.Center,
+          TextWrapping = TextWrapping.Wrap,
+          TextTrimming = TextTrimming.CharacterEllipsis,
+          TextBrush = blue.NodeLabelFill
+      };
+
+      // style for orange nodes
+      labelStyles[3] = new LabelStyle {
+          VerticalTextAlignment = VerticalAlignment.Center,
+          TextWrapping = TextWrapping.Wrap,
+          TextTrimming = TextTrimming.CharacterEllipsis,
+          TextBrush = orange.NodeLabelFill
+      };
+
+      var labelStylesWithTabAtMiscPositions = new LabelStyle[4];
+
+      // style for gold nodes
+      labelStylesWithTabAtMiscPositions[0] = new LabelStyle {
+          VerticalTextAlignment = VerticalAlignment.Center,
+          TextWrapping = TextWrapping.Wrap,
+          TextTrimming = TextTrimming.CharacterEllipsis,
+          TextBrush = gold.NodeLabelFill
+      };
+      // style for gray nodes
+      labelStylesWithTabAtMiscPositions[1] = new LabelStyle {
+          VerticalTextAlignment = VerticalAlignment.Center,
+          TextWrapping = TextWrapping.Wrap,
+          TextTrimming = TextTrimming.CharacterEllipsis
+      };
+      // style for light-green nodes
+      labelStylesWithTabAtMiscPositions[2] = new LabelStyle {
+          VerticalTextAlignment = VerticalAlignment.Center,
+          TextWrapping = TextWrapping.Wrap,
+          TextTrimming = TextTrimming.CharacterEllipsis,
+          TextBrush = green.NodeLabelFill
+      };
+      // style for purple nodes
+      labelStylesWithTabAtMiscPositions[3] = new LabelStyle {
+          VerticalTextAlignment = VerticalAlignment.Center,
+          TextWrapping = TextWrapping.Wrap,
+          TextTrimming = TextTrimming.CharacterEllipsis,
+          TextBrush = purple.NodeLabelFill
+      };
+
+      string[] labelTexts = ["Red", "Green", "Blue", "Orange"];
+      string[] labelTextsWithTabAtMiscPositions = ["Gold", "Gray", "Light green", "Purple"];
 
       // create one group node and one folder node for each of the above GroupNodeStyle instances
       CreateGroupAndFolderNodes(graph, stylesWithTabAtTop, labelStyles, labelTexts, 0, 0);
@@ -381,29 +341,33 @@ namespace Demo.yFiles.Graph.GroupNodes
     /// <param name="y0">The top-left x-coordinate of the first node to create.</param>
     private void CreateGroupAndFolderNodes(
         IGraph graph,
-        GroupNodeStyle[] nodeStyles,
+        Graph.Styles.GroupNodeStyle[] nodeStyles,
         LabelStyle[] labelStyles,
         string[] labelTexts,
-        int x0,
-        int y0) {
+        double x0,
+        double y0) {
       // place the labels of the group and folder nodes into the tab background of their visualizations
       // GroupNodeLabelModel's default parameter can be used to place labels into the tab area instead
       var tabBackgroundParameter = new GroupNodeLabelModel().CreateTabBackgroundParameter();
 
       var y = y0;
-      var width = 200;
-      var height = 150;
+      const double width = 200;
+      const double height = 150;
       for (var j = 0; j < 2; ++j) {
         var x = x0;
         var n = nodeStyles.Length;
         for (var i = 0; i < n; ++i) {
           var node = graph.CreateGroupNode(null, new RectD(x, y, width, height), nodeStyles[i]);
-          graph.AddLabel(node, labelTexts[i] + (j + 1), tabBackgroundParameter, labelStyles[i]);
+
+          graph.AddLabel(node, $"{labelTexts[i]} {j + 1}", tabBackgroundParameter, labelStyles[i]);
+
           if (j > 0) {
             CollapseLast(graph);
           }
+
           x += width + 100;
         }
+
         y += height + 25;
       }
     }
@@ -422,7 +386,7 @@ namespace Demo.yFiles.Graph.GroupNodes
     ///   The distance in y-direction from the new node's top left corner to the parent node's top left
     ///   corner.
     /// </param>
-    private INode CreateChildNode(IGraph graph, INode parent, int xOffset, int yOffset) {
+    private static INode CreateChildNode(IGraph graph, INode parent, double xOffset, double yOffset) {
       var nl = parent.Layout;
       var node = graph.CreateNode(new RectD(nl.X + xOffset, nl.Y + yOffset, 30, 30));
       graph.SetParent(node, parent);
@@ -432,189 +396,69 @@ namespace Demo.yFiles.Graph.GroupNodes
     /// <summary>
     ///   Collapses the last group node in the given graph.
     /// </summary>
-    private static void CollapseLast(IGraph graph) {
-      graph.GetFoldingView().Collapse(graph.Nodes.Last());
+    private void CollapseLast(IGraph graph) {
+      foldingView.Collapse(graph.Nodes.Last());
     }
 
     /// <summary>
-    ///   Center the sample graph in the visible area.
+    ///   Enables folding in the given graph component.
     /// </summary>
-    private void OnLoaded(object source, EventArgs e) {
-      // center the sample graph in the visible area
-      graphControl.FitGraphBounds();
+    private void ConfigureFolding(GraphControl graphControl) {
+      var foldingManager = new FoldingManager(graphControl.Graph) {
+          FolderNodeConverter = new FolderNodeConverter {
+              FolderNodeDefaults = new FolderNodeDefaults { CopyLabels = true }
+          }
+      };
+      foldingView = foldingManager.CreateFoldingView();
+      graphControl.Graph = foldingView.Graph;
     }
 
     /// <summary>
-    ///   Initializes the OptionHandler for changing the node style properties and assigns it to the option panel.
+    ///   Enables basic user interaction for the given graph component.
     /// </summary>
-    private void InitializeOptionSettings() {
-      var handler = new OptionHandler("GroupNodeStyle");
+    private void ConfigureInteraction(GraphControl graphControl) {
+      var editorInputMode = new GraphEditorInputMode {
+          AllowCreateNode = false,
+          DeletableItems = GraphItemTypes.All & ~GraphItemTypes.Node,
+          // give labels a higher priority, so that double-clicking labels will still trigger the label
+          // editing, even though below we handle the double clicks for nodes
+          DoubleClickHitTestOrder = [GraphItemTypes.Label, GraphItemTypes.All]
+      };
+      editorInputMode.NavigationInputMode.AutoGroupNodeAlignmentPolicy = NodeAlignmentPolicy.Center;
 
-      var generalProps = handler.AddGroup("General");
-
-      var pen = generalProps.AddColor("Pen", Colors.Transparent);
-      pen.PropertyChanged += (sender, args) =>
-          ApplyChanges(style => style.Pen = new Pen(new SolidColorBrush((Color) pen.Value), 1));
-
-      var brush = generalProps.AddColor("Content Area Brush", Colors.White);
-      brush.PropertyChanged += (sender, args) =>
-          ApplyChanges(style => style.ContentAreaBrush = ColorToBrush((Color) brush.Value));
-
-      var contentPadding = generalProps.AddDouble("Content Area Padding", 4);
-      contentPadding.PropertyChanged += (sender, args) =>
-          ApplyChanges(style => style.ContentAreaPadding = new InsetsD((double) contentPadding.Value));
-
-      var cornerRadius = generalProps.AddDouble("Corner Radius", 4);
-      cornerRadius.PropertyChanged += (sender, args) =>
-          ApplyChanges(style => style.CornerRadius = (double) cornerRadius.Value);
-
-      var minContentAreaWidth = generalProps.AddDouble("Minimum Content Area Width", 0);
-      minContentAreaWidth.PropertyChanged += (sender, args) => ApplyChanges(style =>
-          style.MinimumContentAreaSize =
-              new SizeD((double) minContentAreaWidth.Value, style.MinimumContentAreaSize.Height));
-
-      var minContentAreaHeight = generalProps.AddDouble("Minimum Content Area Height", 0);
-      minContentAreaHeight.PropertyChanged += (sender, args) => ApplyChanges(style =>
-          style.MinimumContentAreaSize =
-              new SizeD(style.MinimumContentAreaSize.Width, (double) minContentAreaHeight.Value));
-
-      var mouseTransparent = generalProps.AddBool("Hit Transparent Content Area", false);
-      mouseTransparent.PropertyChanged += (sender, args) =>
-          ApplyChanges(style => style.HitTransparentContentArea = (bool) mouseTransparent.Value);
-
-      var renderTransparent = generalProps.AddBool("Render Transparent Content Area", false);
-      renderTransparent.PropertyChanged += (sender, args) =>
-          ApplyChanges(style => style.RenderTransparentContentArea = (bool) renderTransparent.Value);
-
-      var contentBackgroundForFolder = generalProps.AddBool("Show Folder Content Area", false);
-      contentBackgroundForFolder.PropertyChanged += (sender, args) =>
-          ApplyChanges(style => style.ShowFolderContentArea = (bool) contentBackgroundForFolder.Value);
-
-      var drawShadow = generalProps.AddBool("Draw Shadow", false);
-      drawShadow.PropertyChanged += (sender, args) => ApplyChanges(style => style.DrawShadow = (bool) drawShadow.Value);
-
-      var tabProps = handler.AddGroup("Tab");
-
-      var tabBrush = tabProps.AddColor("Brush", Color.FromRgb(170, 170, 170));
-      tabBrush.PropertyChanged += (sender, args) =>
-          ApplyChanges(style => style.TabBrush = ColorToBrush((Color) tabBrush.Value));
-
-      var tabBackgroundBrush = tabProps.AddColor("Background Brush", Colors.Transparent);
-      tabBackgroundBrush.PropertyChanged += (sender, args) =>
-          ApplyChanges(style => style.TabBackgroundBrush = ColorToBrush((Color) tabBackgroundBrush.Value));
-
-      var tabSlope = tabProps.AddDouble("Slope", 0.5);
-      tabSlope.PropertyChanged += (sender, args) => ApplyChanges(style => style.TabSlope = (double) tabSlope.Value);
-
-      var tabWidth = tabProps.AddDouble("Width", 50);
-      tabWidth.PropertyChanged += (sender, args) => ApplyChanges(style => style.TabWidth = (double) tabWidth.Value);
-
-      var tabHeight = tabProps.AddDouble("Height", 18);
-      tabHeight.PropertyChanged += (sender, args) => ApplyChanges(style => style.TabHeight = (double) tabHeight.Value);
-
-      var tabPadding = tabProps.AddDouble("Padding", 18);
-      tabPadding.PropertyChanged += (sender, args) =>
-          ApplyChanges(style => style.TabPadding = (double) tabPadding.Value);
-
-      var tabPosition = tabProps.AddOptionItem(new CollectionOptionItem<GroupNodeStyleTabPosition>("Position",
-          (GroupNodeStyleTabPosition[]) Enum.GetValues(typeof(GroupNodeStyleTabPosition)),
-          GroupNodeStyleTabPosition.Top));
-      tabPosition.PropertyChanged += (sender, args) =>
-          ApplyChanges(style => style.TabPosition = (GroupNodeStyleTabPosition) tabPosition.Value);
-
-      var iconProps = handler.AddGroup("Icon");
-
-      var groupIcon = iconProps.AddOptionItem(new CollectionOptionItem<GroupNodeStyleIconType>("Group Icon",
-          (GroupNodeStyleIconType[]) Enum.GetValues(typeof(GroupNodeStyleIconType)), GroupNodeStyleIconType.None));
-      groupIcon.PropertyChanged += (sender, args) =>
-          ApplyChanges(style => style.GroupIcon = (GroupNodeStyleIconType) groupIcon.Value);
-
-      var folderIcon = iconProps.AddOptionItem(new CollectionOptionItem<GroupNodeStyleIconType>("Folder Icon",
-          (GroupNodeStyleIconType[]) Enum.GetValues(typeof(GroupNodeStyleIconType)), GroupNodeStyleIconType.Plus));
-      folderIcon.PropertyChanged += (sender, args) =>
-          ApplyChanges(style => style.FolderIcon = (GroupNodeStyleIconType) folderIcon.Value);
-
-      var iconPosition = iconProps.AddOptionItem(new CollectionOptionItem<GroupNodeStyleIconPosition>("Position",
-          (GroupNodeStyleIconPosition[]) Enum.GetValues(typeof(GroupNodeStyleIconPosition)),
-          GroupNodeStyleIconPosition.Trailing));
-      iconPosition.PropertyChanged += (sender, args) =>
-          ApplyChanges(style => style.IconPosition = (GroupNodeStyleIconPosition) iconPosition.Value);
-
-      var iconBackgroundShape = iconProps.AddOptionItem(new CollectionOptionItem<GroupNodeStyleIconBackgroundShape>(
-          "Background Shape",
-          (GroupNodeStyleIconBackgroundShape[]) Enum.GetValues(typeof(GroupNodeStyleIconBackgroundShape)),
-          GroupNodeStyleIconBackgroundShape.RoundRectangleSolid));
-      iconBackgroundShape.PropertyChanged += (sender, args) => ApplyChanges(style =>
-          style.IconBackgroundShape = (GroupNodeStyleIconBackgroundShape) iconBackgroundShape.Value);
-
-      var iconBackgroundBrush = iconProps.AddColor("Background Brush", Colors.White);
-      iconBackgroundBrush.PropertyChanged += (sender, args) =>
-          ApplyChanges(style => style.IconBackgroundBrush = ColorToBrush((Color) iconBackgroundBrush.Value));
-
-      var iconForegroundBrush = iconProps.AddColor("Foreground Brush", Color.FromRgb(170, 170, 170));
-      iconForegroundBrush.PropertyChanged += (sender, args) =>
-          ApplyChanges(style => style.IconForegroundBrush = ColorToBrush((Color) iconForegroundBrush.Value));
-
-      var iconSize = iconProps.AddDouble("Size", 14);
-      iconSize.PropertyChanged += (sender, args) => ApplyChanges(style => style.IconSize = (double) iconSize.Value);
-
-      var iconOffset = iconProps.AddDouble("Offset", 0);
-      iconOffset.PropertyChanged += (sender, args) =>
-          ApplyChanges(style => style.IconOffset = (double) iconOffset.Value);
-
-      graphControl.Selection.Nodes.ItemAdded += (sender, e) => {
-        if (e.Item.Style is GroupNodeStyle style) {
-          pen.Value = (style.Pen?.Brush as SolidColorBrush)?.Color ?? Colors.Transparent;
-          brush.Value = BrushToColor(style.ContentAreaBrush);
-          contentPadding.Value = style.ContentAreaPadding.Top;
-          cornerRadius.Value = style.CornerRadius;
-          minContentAreaWidth.Value = style.MinimumContentAreaSize.Width;
-          minContentAreaHeight.Value = style.MinimumContentAreaSize.Height;
-          mouseTransparent.Value = style.HitTransparentContentArea;
-          renderTransparent.Value = style.RenderTransparentContentArea;
-          contentBackgroundForFolder.Value = style.ShowFolderContentArea;
-          drawShadow.Value = style.DrawShadow;
-          tabBrush.Value = BrushToColor(style.TabBrush);
-          tabBackgroundBrush.Value = BrushToColor(style.TabBackgroundBrush);
-          tabSlope.Value = style.TabSlope;
-          tabWidth.Value = style.TabWidth;
-          tabHeight.Value = style.TabHeight;
-          tabPadding.Value = style.TabPadding;
-          tabPosition.Value = style.TabPosition;
-          groupIcon.Value = style.GroupIcon;
-          folderIcon.Value = style.FolderIcon;
-          iconPosition.Value = style.IconPosition;
-          iconBackgroundShape.Value = style.IconBackgroundShape;
-          iconBackgroundBrush.Value = BrushToColor(style.IconBackgroundBrush);
-          iconForegroundBrush.Value = BrushToColor(style.IconForegroundBrush);
-          iconSize.Value = style.IconSize;
-          iconOffset.Value = style.IconOffset;
+      // Provide a way to collapse group nodes or expand folder nodes even if their style does not
+      // show an icon for collapsing or expanding.
+      editorInputMode.ItemLeftDoubleClicked += (_, evt) => {
+        if (evt.Item is INode item) {
+          if (foldingView.Manager.MasterGraph.IsGroupNode(foldingView.GetMasterItem(item))) {
+            if (foldingView.IsExpanded(item)) {
+              editorInputMode.NavigationInputMode.CollapseGroup(item);
+            } else {
+              editorInputMode.NavigationInputMode.ExpandGroup(item);
+            }
+            // we need to make sure that any handles that are present are reevaluated because they
+            // may have different constraints after the expand/collapse operation
+            editorInputMode.RequeryHandles();
+            evt.Handled = true;
+          }
         }
       };
 
-      editorControl.OptionHandler = handler;
+      ToolTipHelper.ConfigureToolTips(editorInputMode);
+
+      graphControl.InputMode = editorInputMode;
     }
 
-    private Color BrushToColor(Brush brush) {
-      var solidBrush = (SolidColorBrush) brush;
-      return solidBrush?.Color ?? Colors.Transparent;
+    /// <summary>
+    ///   Configures the default styles for new nodes, edges, and labels in the given graph.
+    /// </summary>
+    private static void ConfigureDefaultStyles(IGraph graph) {
+      DemoStyles.InitDemoStyles(graph, Themes.Palette58, foldingEnabled: true);
     }
 
-    private Brush ColorToBrush(Color color) {
-      return color != Colors.Transparent ? new SolidColorBrush(color) : null;
-    }
-
-    private void ApplyChanges(Action<GroupNodeStyle> apply) {
-      foreach (var selectedNode in graphControl.Selection.Nodes) {
-        if (selectedNode.Style is GroupNodeStyle groupNodeStyle) {
-          apply(groupNodeStyle);
-        }
-      }
-      graphControl.Invalidate();
-    }
-
-    private void OnResetClicked(object sender, RoutedEventArgs e) {
-      CreateSampleGraph();
+    [STAThread]
+    public static void Main() {
+      Run<GroupNodeStyleDemo>();
     }
   }
 }

@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 4.0.
- ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -30,10 +30,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
-using Demo.yFiles.Option.Handler;
-using Demo.yFiles.Option.View;
+using yWorks.Demo.Option.Handler;
+using yWorks.Demo.Option.View;
 
-namespace Demo.yFiles.Option.Constraint
+namespace yWorks.Demo.Option.Constraint
 {
   /// <summary>
   ///   This is the main class for constraint handling.
@@ -72,7 +72,7 @@ namespace Demo.yFiles.Option.Constraint
   public sealed class ConstraintManager
   {
     private readonly OptionHandler _handler;
-    private readonly List<IConstraint> constraints = new();
+    private readonly List<IConstraint> constraints = [];
     private readonly Dictionary<IModelView, List<IConstraint>> viewConstraints = new();
 
     /// <summary>
@@ -90,7 +90,7 @@ namespace Demo.yFiles.Option.Constraint
       this._handler = _handler;
       _handler.ViewChanged += handler_ViewChanged;
       foreach (var view in _handler.ActiveViews) {
-        viewConstraints[view] = new List<IConstraint>();
+        viewConstraints[view] = [];
       }
     }
 
@@ -159,7 +159,7 @@ namespace Demo.yFiles.Option.Constraint
               viewConstraints.TryGetValue(view, out viewConstraintList);
 
               if (viewConstraintList == null) {
-                viewConstraints[view] = new List<IConstraint>();
+                viewConstraints[view] = [];
               }
               viewConstraints[view].Add(viewConstraint);
             }
@@ -241,9 +241,8 @@ namespace Demo.yFiles.Option.Constraint
     ///   New Condition that is true iff the value in the editor for <paramref name="source"/>
     ///   has the value <paramref name="triggerValue"/>
     /// </returns>
-    public ICondition CreateValueEqualsCondition(IOptionItem source, object triggerValue) {
-      return new ValueEqualsCondition(source, triggerValue);
-    }
+    public ICondition CreateValueEqualsCondition(IOptionItem source, object triggerValue) =>
+        new ValueEqualsCondition(source, triggerValue);
 
     /// <summary>
     ///   Create a new Condition that is true iff the editor for <paramref name="source"/>
@@ -254,18 +253,15 @@ namespace Demo.yFiles.Option.Constraint
     ///   New Condition that is true iff the editor for <paramref name="source"/>
     ///   is enabled.
     /// </returns>
-    public ICondition CreateIsEnabledCondition(IOptionItem source) {
-      return new IsEnabledCondition(source);
-    }
+    public ICondition CreateIsEnabledCondition(IOptionItem source) => new IsEnabledCondition(source);
 
     /// <summary>
     ///   Create a new constraint that executes an action when the condition is triggered.
     /// </summary>
     /// <param name="trigger"></param>
     /// <param name="action"></param>
-    public IConstraint CreateActionConstraint(ICondition trigger, IAction action) {
-      return new ConditionActionConstraint(trigger, action);
-    }
+    public IConstraint CreateActionConstraint(ICondition trigger, IAction action) =>
+        new ConditionActionConstraint(trigger, action);
 
     /// <summary>
     ///   Create a new Condition that is true iff the editor for <paramref name="source"/>
@@ -277,9 +273,8 @@ namespace Demo.yFiles.Option.Constraint
     ///   New Condition that is true iff the editor for <paramref name="source"/>
     ///   has a value that appears in <paramref name="triggerValues"/>
     /// </returns>
-    public ICondition CreateValueIsOneOfCondition(IOptionItem source, IList triggerValues) {
-      return new ValueIsOneOfCondition(source, triggerValues);
-    }
+    public ICondition CreateValueIsOneOfCondition(IOptionItem source, IList triggerValues) =>
+        new ValueIsOneOfCondition(source, triggerValues);
 
     /// <summary>
     ///   Create a new Condition that is true iff the editor for <paramref name="source"/>
@@ -291,9 +286,8 @@ namespace Demo.yFiles.Option.Constraint
     ///   New Condition that is true iff the editor for <paramref name="source"/>
     ///   has a value that appears in <paramref name="triggerValues"/>
     /// </returns>
-    public ICondition CreateValueIsOneOfCondition(IOptionItem source, params object[] triggerValues) {
-      return new ValueIsOneOfCondition(source, triggerValues);
-    }
+    public ICondition CreateValueIsOneOfCondition(IOptionItem source, params object[] triggerValues) =>
+        new ValueIsOneOfCondition(source, triggerValues);
 
     #endregion
 
@@ -307,7 +301,7 @@ namespace Demo.yFiles.Option.Constraint
           if (viewConstraint != null) {
             viewConstraints.TryGetValue(view, out viewConstraintList);
             if (viewConstraintList == null) {
-              viewConstraintList = viewConstraints[view] = new List<IConstraint>();
+              viewConstraintList = viewConstraints[view] = [];
             }
             viewConstraintList.Add(viewConstraint);
           }
@@ -337,9 +331,8 @@ namespace Demo.yFiles.Option.Constraint
         }
       }
 
-      protected override ICondition CreateCopy(params INotifyPropertyChanged[] copiedInput) {
-        return new ValueEqualsCondition((IOptionItem) copiedInput[0], triggerValue);
-      }
+      protected override ICondition CreateCopy(params INotifyPropertyChanged[] copiedInput) =>
+          new ValueEqualsCondition((IOptionItem) copiedInput[0], triggerValue);
     }
 
     private class IsEnabledCondition : ConditionBase
@@ -348,9 +341,8 @@ namespace Demo.yFiles.Option.Constraint
 
       public override bool IsTrue => ((IOptionItem) Inputs[0]).Enabled;
 
-      protected override ICondition CreateCopy(params INotifyPropertyChanged[] copiedInput) {
-        return new IsEnabledCondition((IOptionItem) copiedInput[0]);
-      }
+      protected override ICondition CreateCopy(params INotifyPropertyChanged[] copiedInput) =>
+          new IsEnabledCondition((IOptionItem) copiedInput[0]);
     }
 
     private class ValueIsOneOfCondition : ConditionBase
@@ -363,9 +355,8 @@ namespace Demo.yFiles.Option.Constraint
 
       public override bool IsTrue => validValues.Contains(((IOptionItem) Inputs[0]).Value);
 
-      protected override ICondition CreateCopy(params INotifyPropertyChanged[] copiedInput) {
-        return new ValueIsOneOfCondition((IOptionItem) copiedInput[0], validValues);
-      }
+      protected override ICondition CreateCopy(params INotifyPropertyChanged[] copiedInput) =>
+          new ValueIsOneOfCondition((IOptionItem) copiedInput[0], validValues);
     }
 
     private class SetEnabledAction : IAction
@@ -421,9 +412,7 @@ namespace Demo.yFiles.Option.Constraint
       ///   <see langword="true"/> iff both <paramref name="cond1"/> and
       ///   <paramref name="cond2"/> are <see langword="true"/>
       /// </returns>
-      public static ICondition And(ICondition cond1, ICondition cond2) {
-        return new And(cond1, cond2);
-      }
+      public static ICondition And(ICondition cond1, ICondition cond2) => new And(cond1, cond2);
 
       /// <summary>
       ///   Create a new condition that is <see langword="true"/> iff one or both
@@ -436,9 +425,7 @@ namespace Demo.yFiles.Option.Constraint
       ///   <see langword="true"/> iff one or both of <paramref name="cond1"/> and
       ///   <paramref name="cond2"/> are <see langword="true"/>
       /// </returns>
-      public static ICondition Or(ICondition cond1, ICondition cond2) {
-        return new Or(cond1, cond2);
-      }
+      public static ICondition Or(ICondition cond1, ICondition cond2) => new Or(cond1, cond2);
 
       /// <summary>
       ///   Create a new condition that is <see langword="true"/> iff exactly one of
@@ -452,9 +439,7 @@ namespace Demo.yFiles.Option.Constraint
       ///   <paramref name="cond1"/> and
       ///   <paramref name="cond2"/> is <see langword="true"/>.
       /// </returns>
-      public static ICondition Xor(ICondition cond1, ICondition cond2) {
-        return new Xor(cond1, cond2);
-      }
+      public static ICondition Xor(ICondition cond1, ICondition cond2) => new Xor(cond1, cond2);
 
       /// <summary>
       ///   Create a new condition that is <see langword="true"/>
@@ -465,9 +450,7 @@ namespace Demo.yFiles.Option.Constraint
       ///   <see langword="true"/> iff <paramref name="cond1"/> is
       ///   <see langword="false"/>
       /// </returns>
-      public static ICondition Not(ICondition cond1) {
-        return new Not(cond1);
-      }
+      public static ICondition Not(ICondition cond1) => new Not(cond1);
     }
   }
 }

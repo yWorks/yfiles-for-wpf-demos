@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 4.0.
- ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -29,7 +29,7 @@
 
 using yWorks.Graph;
 
-namespace SankeyLayout
+namespace yWorks.Demo.SankeyLayout
 {
   public class TagUndoUnit : IUndoUnit
   {
@@ -57,13 +57,9 @@ namespace SankeyLayout
       item.Tag = newTag;
     }
 
-    public bool TryMergeUnit(IUndoUnit unit) {
-      return false;
-    }
+    public bool TryMergeUnit(IUndoUnit unit) => false;
 
-    public bool TryReplaceUnit(IUndoUnit unit) {
-      return false;
-    }
+    public bool TryReplaceUnit(IUndoUnit unit) => false;
 
     public void Dispose() { }
   }

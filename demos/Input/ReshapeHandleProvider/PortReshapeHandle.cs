@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 4.0.
- ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -34,51 +34,46 @@ using yWorks.Geometry;
 using yWorks.Graph;
 using yWorks.Graph.Styles;
 
-namespace Demo.yFiles.Graph.Input.ReshapeHandleProvider
+namespace yWorks.Demo.ReshapeHandleProvider
 {
-  /// <summary>
-  ///   An <see cref="IHandle"/> implementation for an <see cref="IPort"/> using a <see cref="NodeStylePortStyleAdapter"/>
-  ///   that can be used to reshape the <see cref="NodeStylePortStyleAdapter.RenderSize"/>.
-  /// </summary>
-  public class PortReshapeHandle : IHandle
+  internal sealed class PortReshapeHandle : IHandle
   {
-    private readonly IInputModeContext context;
-    private readonly IPort port;
-    private readonly NodeStylePortStyleAdapter adapter;
+    private readonly SizeD minimumSize;
     private readonly HandlePositions position;
-
-    // the initial RenderSize used to reset the size on Cancel
-    private SizeD initialRenderSize;
+    private readonly ShapePortStyle portStyle;
+    private readonly IPort port;
+    private readonly IInputModeContext context;
 
     /// <summary>
     ///   The margins the handle is placed from the port visualization bounds.
-    /// </summary>
-    /// <remarks>
     ///   The margins are applied in view coordinates. Default is <c>4</c>.
-    /// </remarks>
+    /// </summary>
     public double Margins { get; set; }
 
     /// <summary>
-    ///   The minimum size the <see cref="NodeStylePortStyleAdapter.RenderSize"/> may have.
+    ///   The initial render size (i.e. the size of the port visualization). Used to reset the visualization size on cancel.
     /// </summary>
-    public SizeD MinimumSize { get; set; }
+    private SizeD initialRenderSize = new(0, 0);
 
     /// <summary>
-    ///   Creates a new instance for <paramref name="port"/> and its <paramref name="adapter"/>.
+    ///   Creates a new instance for port and its style.
     /// </summary>
     /// <param name="context">The context of the reshape gesture.</param>
     /// <param name="port">The port whose visualization shall be resized.</param>
-    /// <param name="adapter">The adapter whose render size shall be changed.</param>
+    /// <param name="portStyle">The style whose render size shall be changed.</param>
     /// <param name="position">The position of the handle.</param>
+    /// <param name="minimumSize">The minimum render size for the given port.</param>
     public PortReshapeHandle(
         IInputModeContext context,
         IPort port,
-        NodeStylePortStyleAdapter adapter,
-        HandlePositions position) {
+        ShapePortStyle portStyle,
+        HandlePositions position,
+        SizeD minimumSize) {
       this.context = context;
-      this.position = position;
-      this.adapter = adapter;
       this.port = port;
+      this.portStyle = portStyle;
+      this.position = position;
+      this.minimumSize = minimumSize;
       Margins = 4;
     }
 
@@ -88,41 +83,37 @@ namespace Demo.yFiles.Graph.Input.ReshapeHandleProvider
     public IPoint Location => CalculateLocation();
 
     /// <summary>
-    ///   Calculates the location of the handle considering the <see cref="GraphExtensions.GetLocation">port location</see>,
-    ///   <see cref="NodeStylePortStyleAdapter.RenderSize"/> and <see cref="Margins"/>.
+    ///   Calculates the location of the handle considering the port location,
+    ///   <see cref="ShapePortStyle.RenderSize" render size/> and <see cref="Margins"/>.
     /// </summary>
     private PointD CalculateLocation() {
       var portLocation = port.GetLocation();
       var handleX = portLocation.X;
       var handleY = portLocation.Y;
       var marginsInViewCoordinates = Margins / context.Zoom;
-      if (position == HandlePositions.TopLeft || position == HandlePositions.Left ||
-          position == HandlePositions.BottomLeft) {
-        handleX -= adapter.RenderSize.Width / 2 + marginsInViewCoordinates;
-      } else if (position == HandlePositions.TopRight || position == HandlePositions.Right ||
-          position == HandlePositions.BottomRight) {
-        handleX += adapter.RenderSize.Width / 2 + marginsInViewCoordinates;
+      if (position is HandlePositions.TopLeft or HandlePositions.Left or HandlePositions.BottomLeft) {
+        handleX -= portStyle.RenderSize.Width / 2 + marginsInViewCoordinates;
+      } else if (position is HandlePositions.TopRight or HandlePositions.Right or HandlePositions.BottomRight) {
+        handleX += portStyle.RenderSize.Width / 2 + marginsInViewCoordinates;
       }
-      if (position == HandlePositions.TopLeft || position == HandlePositions.Top ||
-          position == HandlePositions.TopRight) {
-        handleY -= adapter.RenderSize.Height / 2 + marginsInViewCoordinates;
-      } else if (position == HandlePositions.BottomLeft || position == HandlePositions.Bottom ||
-          position == HandlePositions.BottomRight) {
-        handleY += adapter.RenderSize.Height / 2 + marginsInViewCoordinates;
+      if (position is HandlePositions.TopLeft or HandlePositions.Top or HandlePositions.TopRight) {
+        handleY -= portStyle.RenderSize.Height / 2 + marginsInViewCoordinates;
+      } else if (position is HandlePositions.BottomLeft or HandlePositions.Bottom or HandlePositions.BottomRight) {
+        handleY += portStyle.RenderSize.Height / 2 + marginsInViewCoordinates;
       }
       return new PointD(handleX, handleY);
     }
 
     /// <summary>
-    ///   Stores the initial <see cref="NodeStylePortStyleAdapter.RenderSize"/>.
+    ///   Stores the initial <see cref="ShapePortStyle.RenderSize" render size/>.
     /// </summary>
     /// <param name="context">The context of the reshape gesture.</param>
     public void InitializeDrag(IInputModeContext context) {
-      initialRenderSize = adapter.RenderSize;
+      initialRenderSize = portStyle.RenderSize;
     }
 
     /// <summary>
-    ///   Calculates and applies the new <see cref="NodeStylePortStyleAdapter.RenderSize"/>.
+    ///   Calculates and applies the new <see cref="ShapePortStyle.RenderSize" render size/>.
     /// </summary>
     /// <param name="context">The context of the reshape gesture.</param>
     /// <param name="originalLocation">
@@ -134,42 +125,48 @@ namespace Demo.yFiles.Graph.Input.ReshapeHandleProvider
       // calculate the size delta implied by the originalLocation and newLocation
       var delta = CalculateDelta(originalLocation, newLocation);
       // calculate and apply the new render size
-      adapter.RenderSize = CalculateNewSize(delta);
+      portStyle.RenderSize = CalculateNewSize(delta);
     }
 
+    /// <summary>
+    ///   Calculates the size adjustment for the port's render size from the previous and current
+    ///   mouse location.
+    /// </summary>
+    /// <param name="originalLocation">
+    ///   The value of the <see cref="Location"/> property at the time of
+    ///   <see cref="InitializeDrag"/>.
+    /// </param>
+    /// <param name="newLocation">The coordinates in the world coordinate system that the client wants the handle to be at.</param>
     private SizeD CalculateDelta(PointD originalLocation, PointD newLocation) {
-      // calculate the delta the mouse has been moved since InitializeDrag
+      // calculate the delta the mouse has been moved since initializeDrag
       var mouseDelta = newLocation - originalLocation;
       // depending on the handle position this mouse delta shall increase or decrease the render size
-      switch (position) {
-        case HandlePositions.TopLeft:
-          return new SizeD(-2 * mouseDelta.X, -2 * mouseDelta.Y);
-        case HandlePositions.Top:
-          return new SizeD(0, -2 * mouseDelta.Y);
-        case HandlePositions.TopRight:
-          return new SizeD(2 * mouseDelta.X, -2 * mouseDelta.Y);
-        case HandlePositions.Left:
-          return new SizeD(-2 * mouseDelta.X, 0);
-        case HandlePositions.Right:
-          return new SizeD(2 * mouseDelta.X, 0);
-        case HandlePositions.BottomLeft:
-          return new SizeD(-2 * mouseDelta.X, 2 * mouseDelta.Y);
-        case HandlePositions.Bottom:
-          return new SizeD(0, 2 * mouseDelta.Y);
-        case HandlePositions.BottomRight:
-          return new SizeD(2 * mouseDelta.X, 2 * mouseDelta.Y);
-      }
-      return SizeD.Empty;
+      return position switch {
+          HandlePositions.TopLeft => new SizeD(-2 * mouseDelta.X, -2 * mouseDelta.Y),
+          HandlePositions.Top => new SizeD(0, -2 * mouseDelta.Y),
+          HandlePositions.TopRight => new SizeD(2 * mouseDelta.X, -2 * mouseDelta.Y),
+          HandlePositions.Left => new SizeD(-2 * mouseDelta.X, 0),
+          HandlePositions.Right => new SizeD(2 * mouseDelta.X, 0),
+          HandlePositions.BottomLeft => new SizeD(-2 * mouseDelta.X, 2 * mouseDelta.Y),
+          HandlePositions.Bottom => new SizeD(0, 2 * mouseDelta.Y),
+          HandlePositions.BottomRight => new SizeD(2 * mouseDelta.X, 2 * mouseDelta.Y),
+          _ => new SizeD(0, 0)
+      };
     }
 
+    /// <summary>
+    ///   Calculates the new render size for the port from the current render size and the given
+    ///   size adjustment while respecting the <see cref="minimumSize" minimum size/>.
+    /// </summary>
+    /// <param name="delta">The size adjustment for the port's render size.</param>
     private SizeD CalculateNewSize(SizeD delta) {
-      var newWidth = Math.Max(MinimumSize.Width, initialRenderSize.Width + delta.Width);
-      var newHeight = Math.Max(MinimumSize.Height, initialRenderSize.Height + delta.Height);
+      var newWidth = Math.Max(minimumSize.Width, initialRenderSize.Width + delta.Width);
+      var newHeight = Math.Max(minimumSize.Height, initialRenderSize.Height + delta.Height);
       return new SizeD(newWidth, newHeight);
     }
 
     /// <summary>
-    ///   Resets <see cref="NodeStylePortStyleAdapter.RenderSize"/> to its initial value.
+    ///   Resets the <see cref="ShapePortStyle.RenderSize">render size</see> to its initial value.
     /// </summary>
     /// <param name="context">The context of the reshape gesture.</param>
     /// <param name="originalLocation">
@@ -177,11 +174,11 @@ namespace Demo.yFiles.Graph.Input.ReshapeHandleProvider
     ///   <see cref="InitializeDrag"/>.
     /// </param>
     public void CancelDrag(IInputModeContext context, PointD originalLocation) {
-      adapter.RenderSize = initialRenderSize;
+      portStyle.RenderSize = initialRenderSize;
     }
 
     /// <summary>
-    ///   Calculates and applies the final <see cref="NodeStylePortStyleAdapter.RenderSize"/>.
+    ///   Calculates and applies the final <see cref="ShapePortStyle.RenderSize">render size</see>.
     /// </summary>
     /// <param name="context">The context of the reshape gesture.</param>
     /// <param name="originalLocation">
@@ -191,7 +188,7 @@ namespace Demo.yFiles.Graph.Input.ReshapeHandleProvider
     /// <param name="newLocation">The coordinates in the world coordinate system that the client wants the handle to be at.</param>
     public void DragFinished(IInputModeContext context, PointD originalLocation, PointD newLocation) {
       var delta = CalculateDelta(originalLocation, newLocation);
-      adapter.RenderSize = CalculateNewSize(delta);
+      portStyle.RenderSize = CalculateNewSize(delta);
     }
 
     /// <summary>
@@ -202,37 +199,23 @@ namespace Demo.yFiles.Graph.Input.ReshapeHandleProvider
     /// <summary>
     ///   Gets an optional tag object associated with the handle.
     /// </summary>
-    public object Tag => null;
+    public object? Tag => null;
 
     /// <summary>
     ///   Returns a resize cursor matching the handle position.
     /// </summary>
-    public Cursor Cursor {
-      get {
-        switch (position) {
-          case HandlePositions.Bottom:
-          case HandlePositions.Top:
-            return Cursors.SizeNS;
-          case HandlePositions.Right:
-          case HandlePositions.Left:
-            return Cursors.SizeWE;
-          case HandlePositions.TopLeft:
-          case HandlePositions.BottomRight:
-            return Cursors.SizeNWSE;
-          case HandlePositions.TopRight:
-          case HandlePositions.BottomLeft:
-            return Cursors.SizeNESW;
-        }
-        return Cursors.None;
-      }
-    }
+    public Cursor Cursor =>
+        position switch {
+            HandlePositions.Bottom or HandlePositions.Top => Cursors.SizeNS,
+            HandlePositions.Right or HandlePositions.Left => Cursors.SizeWE,
+            HandlePositions.TopLeft or HandlePositions.BottomRight => Cursors.SizeNWSE,
+            HandlePositions.TopRight or HandlePositions.BottomLeft => Cursors.SizeNESW,
+            _ => Cursors.Arrow
+        };
 
     /// <summary>
-    ///   Ignore clicking the handle.
+    ///   This implementation does nothing special when clicked.
     /// </summary>
-    /// <param name="eventArgs">Arguments describing the click.</param>
-    public void HandleClick(ClickEventArgs eventArgs) {
-      // ignore clicks
-    }
+    public void HandleClick(ClickEventArgs eventArgs) { }
   }
 }

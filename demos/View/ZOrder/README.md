@@ -1,4 +1,5 @@
-# ZOrder
+# Z-Order
 
-This demo shows how to customize editing gestures to keep the z-order of nodes consistent.
-      It also demonstrates how to persist the z-Order when saving and loading a graph as GraphML.
+![Demo thumbnail](../../DemoBrowser/DemoBrowser/Screenshots/z-order.webp "Z-Order")
+
+Shows how to adjust the z-order of graph elements and to keep this z-order consistent.

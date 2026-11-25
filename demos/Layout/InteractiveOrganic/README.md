@@ -1,3 +1,5 @@
-# InteractiveOrganic
+# Interactive Organic Layout
 
-Sample Form that demonstrates the usage of InteractiveOrganicLayout.
+![Demo thumbnail](../../DemoBrowser/DemoBrowser/Screenshots/interactive-organic-layout.webp "Interactive Organic Layout")
+
+Shows the 'interactive organic' layout algorithm.

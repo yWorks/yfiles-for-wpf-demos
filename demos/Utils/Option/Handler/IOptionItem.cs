@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 4.0.
- ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -32,7 +32,7 @@ using System.ComponentModel;
 using System.Reflection;
 using yWorks.Utils;
 
-namespace Demo.yFiles.Option.Handler
+namespace yWorks.Demo.Option.Handler
 {
   /// <summary>
   ///   This implements the basic interface for an atomic item in an <see cref="OptionHandler"/>

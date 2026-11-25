@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 4.0.
- ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -31,7 +31,7 @@ using System;
 using System.Collections;
 using yWorks.Utils;
 
-namespace Demo.yFiles.Option.DataBinding
+namespace yWorks.Demo.Option.DataBinding
 {
   internal class DefaultPropertyBuildContext<TSubject> : IPropertyBuildContext<TSubject> where TSubject : class
   {
@@ -83,28 +83,23 @@ namespace Demo.yFiles.Option.DataBinding
         string virtualPropertyName,
         IValueGetter getter,
         IValueSetter setter,
-        IEqualityComparer comparer) {
-      return map.AddEntry(DefaultOptionBuilderContext<object>.CreatePrefix(prefix, virtualPropertyName), getter, setter,
-          comparer);
-    }
+        IEqualityComparer comparer) =>
+        map.AddEntry(DefaultOptionBuilderContext<object>.CreatePrefix(prefix, virtualPropertyName), getter, setter,
+            comparer);
 
 
     public IPropertyItem AddEntry<TValue>(
         string virtualPropertyName,
         ValueGetterDelegate<TValue> getter,
         ValueSetterDelegate<TValue> setter,
-        IEqualityComparer comparer) {
-      return AddEntry(virtualPropertyName, new DelegateGetter<TValue>(getter), new DelegateSetter<TValue>(setter),
-          comparer);
-    }
+        IEqualityComparer comparer) =>
+        AddEntry(virtualPropertyName, new DelegateGetter<TValue>(getter), new DelegateSetter<TValue>(setter), comparer);
 
     public IPropertyItem AddEntry<TValue>(
         string virtualPropertyName,
         ValueGetterDelegate<TValue> getter,
-        ValueSetterDelegate<TValue> setter) {
-      return AddEntry(virtualPropertyName, new DelegateGetter<TValue>(getter), new DelegateSetter<TValue>(setter),
-          null);
-    }
+        ValueSetterDelegate<TValue> setter) =>
+        AddEntry(virtualPropertyName, new DelegateGetter<TValue>(getter), new DelegateSetter<TValue>(setter), null);
 
     public TSubject CurrentInstance => getInstance();
 
@@ -112,9 +107,8 @@ namespace Demo.yFiles.Option.DataBinding
       setInstance(newInstance);
     }
 
-    public IPropertyItem AddEntry(string virtualPropertyName, IValueGetter getter, IValueSetter setter) {
-      return AddEntry(virtualPropertyName, getter, setter, null);
-    }
+    public IPropertyItem AddEntry(string virtualPropertyName, IValueGetter getter, IValueSetter setter) =>
+        AddEntry(virtualPropertyName, getter, setter, null);
 
     #endregion
 
@@ -143,31 +137,27 @@ namespace Demo.yFiles.Option.DataBinding
       return GetPropertyMapBuilder(subject);
     }
 
-    private IPropertyMapBuilder GetBuilder(Type type) {
-      //      if (typeof(Brush).IsAssignableFrom(type)) {
-      //        return new DefaultBrushPropertyMapBuilder();
-      //      }
-      //      if (type == typeof(Pen)) {
-      //        return new DefaultPenPropertyMapBuilder();
-      //      }
-      //      if(type == typeof(StringFormat)) {
-      //        return new StringFormatPropertyMapBuilder();
-      //      }
-      return ReflectionHelper.GetPropertyBuilderFromAttribute(type);
-    }
+    private IPropertyMapBuilder GetBuilder(Type type) =>
+        //      if (typeof(Brush).IsAssignableFrom(type)) {
+        //        return new DefaultBrushPropertyMapBuilder();
+        //      }
+        //      if (type == typeof(Pen)) {
+        //        return new DefaultPenPropertyMapBuilder();
+        //      }
+        //      if(type == typeof(StringFormat)) {
+        //        return new StringFormatPropertyMapBuilder();
+        //      }
+        ReflectionHelper.GetPropertyBuilderFromAttribute(type);
 
     public IPropertyBuildContext<TChild> CreateChildContext<TChild>(
         string name,
         GetInstanceDelegate<TChild> getHandler,
         SetInstanceDelegate<TChild> setHandler,
-        AssignmentPolicy policy) where TChild : class {
-      return new DecoratedBuildContext<TChild>(innerLookup, contextLookup,
-          DefaultOptionBuilderContext<object>.CreatePrefix(prefix, name), map, getHandler, setHandler, policy);
-    }
+        AssignmentPolicy policy) where TChild : class =>
+        new DecoratedBuildContext<TChild>(innerLookup, contextLookup,
+            DefaultOptionBuilderContext<object>.CreatePrefix(prefix, name), map, getHandler, setHandler, policy);
 
-    public object Lookup(Type type) {
-      return innerLookup.Lookup(type);
-    }
+    public object Lookup(Type type) => innerLookup.Lookup(type);
 
     private class DecoratedBuildContext<TInnerSubject> : DefaultPropertyBuildContext<TInnerSubject>
         where TInnerSubject : class
@@ -222,9 +212,7 @@ namespace Demo.yFiles.Option.DataBinding
           }
         }
 
-        public bool CanSet() {
-          return setter != null && setter.CanSet();
-        }
+        public bool CanSet() => setter != null && setter.CanSet();
       }
     }
   }

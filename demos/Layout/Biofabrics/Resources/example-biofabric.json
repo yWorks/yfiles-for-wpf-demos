@@ -1,0 +1,12 @@
+{
+  "nodes": [
+    { "id": 1, "label": "Node A", "group": "Node Group A" },
+    { "id": 2, "label": "Node B", "group": "Node Group A" },
+    { "id": 3, "label": "Node C", "group": "Node Group A" }
+  ],
+  "links": [
+    { "source": 1, "target": 2, "label": "Edge 1", "group": "Edge Group 1" },
+    { "source": 2, "target": 3, "label": "Edge 2", "group": "Edge Group 1" },
+    { "source": 1, "target": 3, "label": "Edge 3", "group": "Edge Group 1" }
+  ]
+}

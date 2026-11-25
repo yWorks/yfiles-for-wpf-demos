@@ -1,0 +1,120 @@
+{
+  "nodes": [
+    { "id": 0, "layout": { "x": 100, "y": 0, "width": 30, "height": 30 } },
+    { "id": 1, "layout": { "x": 40, "y": 55, "width": 30, "height": 30 } },
+    { "id": 2, "layout": { "x": 100, "y": 55, "width": 30, "height": 30 } },
+    { "id": 3, "layout": { "x": 70, "y": 110, "width": 30, "height": 30 } },
+    { "id": 4, "layout": { "x": 10, "y": 110, "width": 30, "height": 30 } },
+    { "id": 5, "layout": { "x": 100, "y": 165, "width": 30, "height": 30 } },
+    {
+      "id": 6,
+      "layout": { "x": 207, "y": 68.5, "width": 30, "height": 30 },
+      "includeInLayout": true,
+      "cssClass": "highlight"
+    },
+    {
+      "id": 7,
+      "layout": { "x": 245, "y": 156.5, "width": 30, "height": 30 },
+      "includeInLayout": true,
+      "cssClass": "highlight"
+    },
+    {
+      "id": 8,
+      "layout": { "x": 289, "y": 126.5, "width": 30, "height": 30 },
+      "includeInLayout": true,
+      "cssClass": "highlight"
+    },
+    {
+      "id": 9,
+      "layout": { "x": 278, "y": 61.5, "width": 30, "height": 30 },
+      "includeInLayout": true,
+      "cssClass": "highlight"
+    }
+  ],
+  "edges": [
+    {
+      "id": 0,
+      "source": 0,
+      "target": 1,
+      "sourcePort": { "x": 105, "y": 28.612992863885577 },
+      "targetPort": { "x": 55, "y": 55 },
+      "bends": [
+        { "x": 105, "y": 40 },
+        { "x": 55, "y": 40 }
+      ]
+    },
+    {
+      "id": 1,
+      "source": 0,
+      "target": 2,
+      "sourcePort": { "x": 115, "y": 30 },
+      "targetPort": { "x": 115, "y": 55 },
+      "bends": [],
+      "tag": null,
+      "labels": []
+    },
+    {
+      "id": 2,
+      "source": 1,
+      "target": 4,
+      "sourcePort": { "x": 47.5, "y": 84.68245836551854 },
+      "targetPort": { "x": 25, "y": 110 },
+      "bends": [
+        { "x": 47.5, "y": 95 },
+        { "x": 25, "y": 95 }
+      ]
+    },
+    {
+      "id": 3,
+      "source": 1,
+      "target": 3,
+      "sourcePort": { "x": 62.5, "y": 84.68245836551854 },
+      "targetPort": { "x": 85, "y": 110 },
+      "bends": [
+        { "x": 62.5, "y": 95 },
+        { "x": 85, "y": 95 }
+      ]
+    },
+    {
+      "id": 4,
+      "source": 2,
+      "target": 5,
+      "sourcePort": { "x": 115, "y": 85 },
+      "targetPort": { "x": 115, "y": 165 },
+      "bends": [],
+      "tag": null,
+      "labels": []
+    },
+    {
+      "id": 5,
+      "source": 0,
+      "target": 5,
+      "sourcePort": { "x": 125, "y": 28.612992863885577 },
+      "targetPort": { "x": 125, "y": 166.38700713611445 },
+      "bends": [
+        { "x": 125, "y": 40 },
+        { "x": 145, "y": 40 },
+        { "x": 145, "y": 150 },
+        { "x": 125, "y": 150 }
+      ]
+    },
+    {
+      "id": 6,
+      "source": 3,
+      "target": 5,
+      "sourcePort": { "x": 85, "y": 140 },
+      "targetPort": { "x": 105, "y": 166.38700713611445 },
+      "bends": [
+        { "x": 85, "y": 150 },
+        { "x": 105, "y": 150 }
+      ]
+    },
+    { "id": 7, "source": 8, "target": 6 },
+    { "id": 8, "source": 7, "target": 9 },
+    { "id": 9, "source": 6, "target": 3 },
+    { "id": 10, "source": 6, "target": 5 },
+    { "id": 11, "source": 2, "target": 7 },
+    { "id": 12, "source": 2, "target": 8 },
+    { "id": 13, "source": 9, "target": 5 }
+  ]
+}

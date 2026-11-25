@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 4.0.
- ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -27,12 +27,12 @@
  ** 
  ***************************************************************************/
 
-using SankeyLayout;
+using System.Linq;
 using yWorks.Graph;
 using yWorks.Layout;
 using yWorks.Layout.Hierarchical;
 
-namespace Demo.yFiles.Layout.Sankey
+namespace yWorks.Demo.SankeyLayout
 {
   public class SankeyLayout
   {
@@ -46,7 +46,8 @@ namespace Demo.yFiles.Layout.Sankey
               MinimumLastSegmentLength = 120,
               RoutingStyleDescriptor = new RoutingStyleDescriptor(RoutingStyle.Polyline),
               BackLoopRouting = true
-          }
+          },
+          DefaultNodeDescriptor = { BorderToPortGapRatio = 1 }
       };
 
       // a border gap to port gap ratio of zero means that ports can be placed directly on the corners of the nodes
@@ -65,21 +66,41 @@ namespace Demo.yFiles.Layout.Sankey
       return hierarchicalLayout;
     }
 
-    public LayoutData<INode, IEdge, ILabel, ILabel> CreateHierarchicalLayoutData() {
+    public LayoutData<INode, IEdge, ILabel, ILabel> CreateHierarchicalLayoutData(IGraph graph, bool fromSketchMode) {
       // create the layout data
-      return new HierarchicalLayoutData<INode, IEdge, IModelItem, ILabel, ILabel> {
+      var hierarchicalLayoutData = new HierarchicalLayoutData<INode, IEdge, IModelItem, ILabel, ILabel> {
           // maps each edge with its thickness so that the layout algorithm takes the edge thickness under consideration
           EdgeThickness = { MapperFunction = edge => ((CustomTag) edge.Tag).thickness },
           // since orientation is LEFT_TO_RIGHT, we add port constraints so that the edges leave the source node at its
           // right side and enter the target node at its left side
           Ports = {
-              SourcePortCandidates = { MapperFunction = edge => new EdgePortCandidates().AddFreeCandidate(PortSides.Right) },
-              TargetPortCandidates = { MapperFunction = edge => new EdgePortCandidates().AddFreeCandidate(PortSides.Left) }
+              SourcePortCandidates = {
+                  MapperFunction = edge => new EdgePortCandidates().AddFreeCandidate(PortSides.Right)
+              },
+              TargetPortCandidates = {
+                  MapperFunction = edge => new EdgePortCandidates().AddFreeCandidate(PortSides.Left)
+              }
           },
           EdgeLabelPreferredPlacements = {
               Constant = new EdgeLabelPreferredPlacement { PlacementAlongEdge = LabelAlongEdgePlacements.AtSource }
           }
       };
+
+      if (!fromSketchMode) {
+        // In this demo, the nodes are ordered in the layers based on their size to show how the party
+        // strength gets modified along the elections.
+        // From this ordering the non-voters are excluded and are placed at the bottom of the layer
+        hierarchicalLayoutData.SequenceConstraints.ItemComparables.MapperFunction = item =>
+            item is INode node && !IsNonVoter(node)
+                ? graph.EdgesAt(node).Sum(edge => ((CustomTag) edge.Tag).thickness)
+                : 0;
+      }
+      return hierarchicalLayoutData;
     }
+
+    /// <summary>
+    ///   Returns whether the given node represents a non-voter.
+    /// </summary>
+    private static bool IsNonVoter(INode node) => node.Labels.Count > 0 && node.Labels[0]!.Text == "Non-voter";
   }
 }

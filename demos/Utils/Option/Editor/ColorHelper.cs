@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 4.0.
- ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -30,7 +30,7 @@
 using System;
 using System.Windows.Media;
 
-namespace Demo.yFiles.Option.Editor
+namespace yWorks.Demo.Option.Editor
 {
   public static class ColorHelper
   {
@@ -75,7 +75,7 @@ namespace Demo.yFiles.Option.Editor
       hue = Math.Min(1, Math.Max(0, hue));
       brightness = Math.Min(1, Math.Max(0, max));
       alpha = Math.Min(1, Math.Max(0, a));
-      return new[] { hue, saturation, brightness, alpha };
+      return [hue, saturation, brightness, alpha];
     }
 
     /// <summary>

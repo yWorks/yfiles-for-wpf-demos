@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 4.0.
- ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -30,17 +30,16 @@
 using yWorks.Controls.Input;
 using yWorks.Geometry;
 
-namespace SankeyLayout
+namespace yWorks.Demo.SankeyLayout
 {
-    class HorizontallyConstrainedPositionHandler : ConstrainedPositionHandler
-    {
-        public HorizontallyConstrainedPositionHandler(IPositionHandler wrappedHandler) : base(wrappedHandler)
-        {
-        }
+  internal class HorizontallyConstrainedPositionHandler : ConstrainedPositionHandler
+  {
+    public HorizontallyConstrainedPositionHandler(IPositionHandler wrappedHandler) : base(wrappedHandler) { }
 
-        protected override PointD ConstrainNewLocation(IInputModeContext context, PointD originalLocation, PointD newLocation)
-        {
-            return new PointD(originalLocation.X, newLocation.Y);
-        }
-    }
+    protected override PointD ConstrainNewLocation(
+        IInputModeContext context,
+        PointD originalLocation,
+        PointD newLocation) =>
+        new(originalLocation.X, newLocation.Y);
+  }
 }

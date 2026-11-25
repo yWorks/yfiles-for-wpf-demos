@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 4.0.
- ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -40,7 +40,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Xml;
 
-namespace Demo.yFiles.Option.Editor
+namespace yWorks.Demo.Option.Editor
 {
   /// <xamlhelper/>
   [EditorBrowsable(EditorBrowsableState.Never)]
@@ -61,9 +61,8 @@ namespace Demo.yFiles.Option.Editor
     }
 
     /// <xamlhelper/>
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
-      throw new NotImplementedException();
-    }
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) =>
+        throw new NotImplementedException();
   }
 
   /// <xamlhelper/>
@@ -72,14 +71,11 @@ namespace Demo.yFiles.Option.Editor
   public class InverseConverter : IValueConverter
   {
     /// <xamlhelper/>
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
-      return 1 - (double) value;
-    }
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture) => 1 - (double) value;
 
     /// <xamlhelper/>
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
-      return 1 - (double) value;
-    }
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) =>
+        1 - (double) value;
   }
 
   /// <xamlhelper/>
@@ -196,9 +192,8 @@ namespace Demo.yFiles.Option.Editor
     }
 
     /// <xamlhelper/>
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
-      throw new NotImplementedException();
-    }
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) =>
+        throw new NotImplementedException();
   }
 
   /// <xamlhelper/>
@@ -271,9 +266,8 @@ namespace Demo.yFiles.Option.Editor
     }
 
     /// <xamlhelper/>
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
-      throw new NotImplementedException();
-    }
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) =>
+        throw new NotImplementedException();
   }
 
   /// <xamlhelper/>
@@ -309,9 +303,8 @@ namespace Demo.yFiles.Option.Editor
     }
 
     /// <xamlhelper/>
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
-      throw new NotImplementedException();
-    }
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) =>
+        throw new NotImplementedException();
   }
 
   /// <xamlhelper/>
@@ -402,9 +395,7 @@ namespace Demo.yFiles.Option.Editor
       set => SetValue(YProperty, value);
     }
 
-    private static object CoerceValueCallback(DependencyObject d, object baseValue) {
-      return baseValue;
-    }
+    private static object CoerceValueCallback(DependencyObject d, object baseValue) => baseValue;
 
     private static void XPropertyChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e) {
       var thumb = (MyThumb) d;
@@ -788,9 +779,8 @@ namespace Demo.yFiles.Option.Editor
       set => SetValue(AlphaProperty, value);
     }
 
-    private static bool ValidateColorRange(object value) {
-      return value is double && (double) value >= 0.0d && (double) value <= 1.0d;
-    }
+    private static bool ValidateColorRange(object value) =>
+        value is double && (double) value >= 0.0d && (double) value <= 1.0d;
 
 
     public static readonly object NullColorObject = new();

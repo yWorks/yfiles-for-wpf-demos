@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 4.0.
- ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -27,181 +27,205 @@
  ** 
  ***************************************************************************/
 
-using System;
-using System.ComponentModel;
-using System.Reflection;
-using System.Windows.Media.Imaging;
+using System.Windows.Media;
 using yWorks.Controls;
 using yWorks.Controls.Input;
 using yWorks.Geometry;
 using yWorks.Graph;
 using yWorks.Graph.Styles;
 
-namespace Demo.yFiles.Graph.StyleDecorators {
+namespace yWorks.Demo.StyleDecorators
+{
   /// <summary>
-  /// A simple node style decorator that adds an image in the upper right corner
-  /// of a given node style.
+  ///   This node style decorator adds an image in the upper right corner of a given node style.
   /// </summary>
   /// <remarks>
-  /// <para>
-  /// <see cref="ImageNodeStyle"/> is used to render the image decorator.
-  /// </para>
-  /// <para>
-  /// This style overrides <see cref="IVisibilityTestable.IsVisible"/> with a custom implementation
-  /// that also checks the visibility of the image decorator in addition to calling the
-  /// implementation of the decorated style.
-  /// Other checks like <see cref="IHitTestable.IsHit" /> and <see cref="IMarqueeTestable.IsInBox" />
-  /// are simply delegated to the wrapped style in order to not make the node selectable
-  /// by clicking or marquee selecting the image decorator part of the visualization.
-  /// If desired, this feature can be implemented as demonstrated in <see cref="NodeStyleDecorator.IsVisible"/>.
-  /// </para>
+  ///   The <see cref="ImageNodeStyle"/> class is used to render the decoration image.
+  ///   This style overrides <see cref="NodeStyleBase{TVisual}.IsVisible(ICanvasContext, RectD, INode)"/> with a custom
+  ///   implementation that also
+  ///   checks the visibility of the decoration image in addition to calling the implementation of the decorated style.
+  ///   Other checks like <see cref="NodeStyleBase{TVisual}.IsHit(IInputModeContext, PointD, INode)"/> and
+  ///   <see cref="NodeStyleBase{TVisual}.IsInBox(IInputModeContext, RectD, INode)"/>
+  ///   are simply delegated to the base style to prevent the node from being selected by clicking or marquee selecting the
+  ///   decoration image part of the visualization. If desired, this feature can be implemented as demonstrated in
+  ///   <see cref="NodeStyleDecorator.IsVisible"/>.
   /// </remarks>
-  [Obfuscation(StripAfterObfuscation = false, Exclude = true, ApplyToMembers = true)]
-  public class NodeStyleDecorator : NodeStyleBase<VisualGroup>
+  public sealed class NodeStyleDecorator : NodeStyleBase<VisualGroup>
   {
-    // the wrapped style
-    private INodeStyle wrapped;
-    // the url of the decorator image
-    private string imageUrl;
-    // the size of the decorator image
-    private SizeD decoratorSize = new SizeD(32, 32);
-    // create style to render decorator
-    private readonly ImageNodeStyle imageStyle = new ImageNodeStyle();
+    private readonly ImageSource image;
+    private readonly INodeStyle baseStyle;
+    private readonly ImageNodeStyle imageStyle = new() { KeepAspectRatio = true };
+
+    // This dummy node is passed to the image node style to render the decoration image.
+    // Its size is the size of the decoration. Its location is adjusted during each CreateVisual
+    // and UpdateVisual.
+    private readonly SimpleNode dummyDecorationNode = new();
 
     /// <summary>
-    /// Initializes a default instance of this style.
+    ///   Initializes a new instance of this class.
     /// </summary>
-    public NodeStyleDecorator(): this(new ShapeNodeStyle(), null) {}
-
-    /// <summary>
-    /// Initializes an instance of this style.
-    /// </summary>
-    /// <param name="wrapped">the wrapped style</param>
-    /// <param name="imageUrl">the URL of the decorator image</param>
-    public NodeStyleDecorator(INodeStyle wrapped, string imageUrl) {
-      this.wrapped = wrapped;
-      this.imageUrl = imageUrl;
+    /// <param name="baseStyle">The base style.</param>
+    /// <param name="image">The image to use for the decoration.</param>
+    public NodeStyleDecorator(INodeStyle baseStyle, ImageSource image) {
+      this.baseStyle = baseStyle;
+      this.image = image;
+      imageStyle.Image = image;
+      dummyDecorationNode.Layout = new RectD(0, 0, 32, 32);
     }
 
     /// <summary>
-    /// Gets the wrapped node style.
+    ///   Creates a new visual as combination of the base node visualization and the decoration.
     /// </summary>
-    public INodeStyle Wrapped {
-      get { return wrapped; }
-      set { wrapped = value; }
-    }
-
-    /// <summary>
-    /// Gets or sets the decorator image URL.
-    /// </summary>
-    /// <remarks>
-    /// Changes to this property will only apply after the next call of
-    /// <see cref="UpdateVisual"/>.</remarks>
-    public string ImageUrl {
-      get { return imageUrl; }
-      set { imageUrl = value; }
-    }
-
-    /// <summary>
-    /// Gets or sets the size of the decorator image.
-    /// </summary>
-    [DefaultValue(typeof(SizeD), "32,32")]
-    public SizeD DecoratorSize {
-      get { return decoratorSize; }
-      set { decoratorSize = value; }
-    }
-
+    /// <param name="context">The render context.</param>
+    /// <param name="node">The node to which this style instance is assigned.</param>
+    /// <returns>The created visual.</returns>
+    /// <see cref="NodeStyleBase{TVisual}.CreateVisual(IRenderContext, INode)"/>
     protected override VisualGroup CreateVisual(IRenderContext context, INode node) {
       var layout = node.Layout;
-      VisualGroup container = new VisualGroup();
-      // create wrapped visual
-      var wrappedVisual = wrapped.Renderer.GetVisualCreator(node, wrapped).CreateVisual(context);
-      // set ImageSource
-      if (imageUrl != null) {
-        imageStyle.Image = new BitmapImage(new Uri(imageUrl, UriKind.Relative));
-      }
-      // create dummy node to render
-      SimpleNode dummyNode = new SimpleNode
-      {
-        Layout = new RectD(layout.X + layout.Width - decoratorSize.Width * 0.5, layout.Y - decoratorSize.Height * 0.5, decoratorSize.Width, decoratorSize.Height)
-      };
-      var image = imageStyle.Renderer.GetVisualCreator(dummyNode, imageStyle).CreateVisual(context);
-      // add both to the decorator
-      container.Add(wrappedVisual);
-      container.Add(image);
-      // save image url with the visual for later update
-      container.SetRenderDataCache(imageUrl);
-      return container;
+
+      // create the base visualization
+      var baseVisual = baseStyle.Renderer.GetVisualCreator(node, baseStyle).CreateVisual(context);
+
+      // create the decoration
+      imageStyle.Image = image;
+      dummyDecorationNode.Layout = GetDecorationLayout(layout);
+      var decorationRenderer = imageStyle.Renderer.GetVisualCreator(dummyDecorationNode, imageStyle);
+      var decorationVisual = decorationRenderer.CreateVisual(context);
+
+      // add both to a group
+      var group = new VisualGroup();
+      group.Add(baseVisual);
+      group.Add(decorationVisual);
+
+      // save the image with the visual for the update method
+      group.SetRenderDataCache(new NodeVisualCache(image));
+      return group;
     }
 
+    /// <summary>
+    ///   Updates the provided visual.
+    /// </summary>
+    /// <param name="context">The render context.</param>
+    /// <param name="oldVisual">
+    ///   The visual that has been created in the call to
+    ///   <see cref="NodeStyleBase{TVisual}.CreateVisual(IRenderContext, INode)"/>.
+    /// </param>
+    /// <param name="node">The node to which this style instance is assigned.</param>
+    /// <returns>The updated visual.</returns>
+    /// <see cref="NodeStyleBase{TVisual}.UpdateVisual(IRenderContext, TVisual, INode)"/>
     protected override VisualGroup UpdateVisual(IRenderContext context, VisualGroup oldVisual, INode node) {
-      var layout = node.Layout;
       if (oldVisual.Children.Count != 2) {
-        // something's wrong - re-create visual
         return CreateVisual(context, node);
       }
-      // get the child visuals from the container
-      var wrappedVisual = oldVisual.Children[0];
-      var image = oldVisual.Children.Count > 1?oldVisual.Children[1]:null;
 
-      // update wrapped visual - delegate to renderer of wrapped style
-      wrappedVisual = wrapped.Renderer.GetVisualCreator(node, wrapped).UpdateVisual(context, wrappedVisual);
-      if (wrappedVisual != oldVisual.Children[0]) {
-        oldVisual.Children[0] = wrappedVisual;
+      var cache = oldVisual.GetRenderDataCache<NodeVisualCache>();
+      var children = oldVisual.Children;
+
+      // update the base visual
+      var baseVisual = baseStyle.Renderer.GetVisualCreator(node, baseStyle).UpdateVisual(context, children[0]);
+      // Check whether the UpdateVisual method created a new element and replace the old one if needed.
+      if (!ReferenceEquals(baseVisual, children[0])) {
+        children[0] = baseVisual!;
       }
-      var oldImageUrl = oldVisual.GetRenderDataCache<string>();
-      if (imageUrl != oldImageUrl) {
-        // update image
-        imageStyle.Image = new BitmapImage(new Uri(imageUrl, UriKind.Relative));
+
+      // update the decoration visual
+      // first, check whether the image changed
+      if (!ReferenceEquals(image, cache.Image)) {
+        imageStyle.Image = image;
       }
-      SimpleNode dummyNode = new SimpleNode
-      {
-        Layout = new RectD(layout.X + layout.Width - (decoratorSize.Width * 0.5), layout.Y - decoratorSize.Height * 0.5, decoratorSize.Width, decoratorSize.Height)
-      };
-      image = imageStyle.Renderer.GetVisualCreator(dummyNode, imageStyle).UpdateVisual(context, image);
-      if (oldVisual.Children.Count > 1) {
-        if(image == null) {
-          oldVisual.Children.RemoveAt(1);
-        }
-        else if (oldVisual.Children[1] != image) {
-          oldVisual.Children[1] = image;
-        }
+
+      dummyDecorationNode.Layout = GetDecorationLayout(node.Layout);
+      var decorationRenderer = imageStyle.Renderer.GetVisualCreator(dummyDecorationNode, imageStyle);
+      var decorationVisual = decorationRenderer.UpdateVisual(context, children[1]);
+      if (!ReferenceEquals(decorationVisual, children[1])) {
+        // Check whether the UpdateVisual method created a new element and replace the old one if needed.
+        children[1] = decorationVisual!;
       }
-      else if(image != null) {
-        oldVisual.Add(image);
-      }
+
+      // update the stored image for the next UpdateVisual call
+      oldVisual.SetRenderDataCache(new NodeVisualCache(image));
       return oldVisual;
     }
 
-    protected override bool IsVisible(ICanvasContext context, RectD rectangle, INode node) {
-      var layout = node.Layout;
-      // check if wrapped is visible
-      var isWrappedVisible = wrapped.Renderer.GetVisibilityTestable(node, wrapped).IsVisible(context, rectangle);
-      // check if the decorator is visible
-      var isDecoratorVisible =
-        rectangle.Intersects(new RectD(layout.X + layout.Width - (decoratorSize.Width*0.5),
-                                  layout.Y + layout.Height - (decoratorSize.Height*0.5), decoratorSize.Width, decoratorSize.Height));
-      return isWrappedVisible || isDecoratorVisible;
+    /// <summary>
+    ///   Returns the bounds of the node and its decoration.
+    /// </summary>
+    /// <param name="context">The canvas context.</param>
+    /// <param name="node">The node to which this style instance is assigned.</param>
+    /// <returns>The bounds of the visual for the node.</returns>
+    protected override RectD GetBounds(ICanvasContext context, INode node) {
+      var baseBounds = baseStyle.Renderer.GetBoundsProvider(node, baseStyle).GetBounds(context);
+      return RectD.Add(baseBounds, GetDecorationLayout(node.Layout));
     }
 
-    protected override bool IsHit(IInputModeContext context, PointD location, INode node) {
-      // return only hit test of wrapped - we don't want the decorator to be hit testable
-      return wrapped.Renderer.GetHitTestable(node, wrapped).IsHit(context, location);
+    /// <summary>
+    ///   Returns whether at least one of the base visualization and the decoration is visible.
+    /// </summary>
+    /// <param name="context">The canvas context.</param>
+    /// <param name="rectangle">The clipping rectangle.</param>
+    /// <param name="node">The node to which this style instance is assigned.</param>
+    /// <returns><see langword="true"/> if either the base visualization or the decoration is visible.</returns>
+    /// <see cref="NodeStyleBase{TVisual}.IsVisible(ICanvasContext, RectD, INode)"/>
+    protected override bool IsVisible(ICanvasContext context, RectD rectangle, INode node) =>
+        baseStyle.Renderer.GetVisibilityTestable(node, baseStyle).IsVisible(context, rectangle) ||
+        rectangle.Intersects(GetDecorationLayout(node.Layout));
+
+    /// <summary>
+    ///   Returns whether the base visualization is hit, we don't want the decoration to be hit testable.
+    /// </summary>
+    /// <param name="context">The context.</param>
+    /// <param name="location">The point to test.</param>
+    /// <param name="node">The node to which this style instance is assigned.</param>
+    /// <returns><see langword="true"/> if the base visualization is hit.</returns>
+    /// <see cref="NodeStyleBase{TVisual}.IsHit(IInputModeContext, PointD, INode)"/>
+    protected override bool IsHit(IInputModeContext context, PointD location, INode node) =>
+        baseStyle.Renderer.GetHitTestable(node, baseStyle).IsHit(context, location);
+
+    /// <summary>
+    ///   Returns whether the base visualization is in the box, we don't want the decoration to be marquee selectable.
+    /// </summary>
+    /// <param name="context">The input mode context.</param>
+    /// <param name="rectangle">The marquee selection box.</param>
+    /// <param name="node">The node to which this style instance is assigned.</param>
+    /// <returns><see langword="true"/> if the base visualization is in the box.</returns>
+    /// <see cref="NodeStyleBase{TVisual}.IsInBox(IInputModeContext, RectD, INode)"/>
+    protected override bool IsInBox(IInputModeContext context, RectD rectangle, INode node) =>
+        // return only box containment test of baseStyle - we don't want the decoration to be marquee selectable
+        baseStyle.Renderer.GetMarqueeTestable(node, baseStyle).IsInBox(context, rectangle);
+
+    /// <summary>
+    ///   Gets the intersection of a line with the visual representation of the node.
+    /// </summary>
+    /// <param name="node">The node to which this style instance is assigned.</param>
+    /// <param name="inner">The coordinates of a point lying inside the shape.</param>
+    /// <param name="outer">The coordinates of a point lying outside the shape.</param>
+    /// <returns>The intersection point if one has been found; otherwise, <see langword="null"/>.</returns>
+    /// <see cref="NodeStyleBase{TVisual}.GetIntersection(INode, PointD, PointD)"/>
+    protected override PointD? GetIntersection(INode node, PointD inner, PointD outer) =>
+        baseStyle.Renderer.GetShapeGeometry(node, baseStyle).GetIntersection(inner, outer);
+
+    /// <summary>
+    ///   Returns whether the provided point is inside of the base visualization.
+    /// </summary>
+    /// <param name="node">The node to which this style instance is assigned.</param>
+    /// <param name="location">The point to test.</param>
+    /// <returns><see langword="true"/> if the provided location is inside of the base visualization.</returns>
+    /// <see cref="NodeStyleBase{TVisual}.IsInside(INode, PointD)"/>
+    protected override bool IsInside(INode node, PointD location) =>
+        // return only inside test of baseStyle
+        baseStyle.Renderer.GetShapeGeometry(node, baseStyle).IsInside(location);
+
+    /// <summary>
+    ///   Returns the layout of the decoration for the given node layout.
+    /// </summary>
+    /// <param name="nodeLayout">The layout of the node.</param>
+    /// <returns>The layout of the decoration for the given node layout.</returns>
+    private RectD GetDecorationLayout(IRectangle nodeLayout) {
+      var size = dummyDecorationNode.Layout;
+      return new RectD(nodeLayout.X + nodeLayout.Width - size.Width * 0.5, nodeLayout.Y - size.Height * 0.5, size.Width,
+          size.Height);
     }
 
-    protected override bool IsInBox(IInputModeContext context, RectD rectangle, INode node) {
-      // return only box containment test of wrapped - we don't want the decorator to be marquee selectable
-      return wrapped.Renderer.GetMarqueeTestable(node, wrapped).IsInBox(context, rectangle);
-    }
-
-    protected override PointD? GetIntersection(INode node, PointD inner, PointD outer) {
-      // return only intersection with wrapped
-      return wrapped.Renderer.GetShapeGeometry(node, wrapped).GetIntersection(inner, outer);
-    }
-
-    protected override bool IsInside(INode node, PointD location) {
-      // return only inside test of wrapped
-      return wrapped.Renderer.GetShapeGeometry(node, wrapped).IsInside(location);
-    }
+    private readonly record struct NodeVisualCache(ImageSource Image);
   }
 }

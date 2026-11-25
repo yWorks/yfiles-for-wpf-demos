@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 4.0.
- ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -30,7 +30,7 @@
 using System.Collections.Generic;
 using System.Resources;
 
-namespace Demo.yFiles.Option.I18N
+namespace yWorks.Demo.Option.I18N
 {
   /// <summary>
   ///   Interface for classes that support localization of OptionHandler components.
@@ -113,7 +113,7 @@ namespace Demo.yFiles.Option.I18N
     ///   Add a ResourceManager to the given <paramref name="context"/>.
     /// </summary>
     /// <param name="context">
-    ///   The context where this ResourceManager is bound to. Typically
+    ///   The context where this ResourceManager is bound to. Typically,
     ///   the name of an OptionHandler for which the ResourceManager is responsible
     /// </param>
     /// <param name="manager">The new resource manager</param>

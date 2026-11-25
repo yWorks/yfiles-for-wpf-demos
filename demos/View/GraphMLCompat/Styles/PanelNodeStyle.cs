@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 4.0.
- ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -42,7 +42,7 @@ using Pen = System.Windows.Media.Pen;
 using Point = System.Windows.Point;
 using Rectangle = System.Windows.Shapes.Rectangle;
 
-namespace Demo.yFiles.IO.GraphML.Compat.Styles
+namespace yWorks.Demo.GraphMLCompat.Styles
 {
   public class PanelNodeStyle : INodeStyle
   {
@@ -59,9 +59,7 @@ namespace Demo.yFiles.IO.GraphML.Compat.Styles
 
     public INodeStyleRenderer Renderer => renderer;
 
-    public virtual object Clone() {
-      return MemberwiseClone();
-    }
+    public virtual object Clone() => MemberwiseClone();
   }
 
   internal class PanelNodeStyleRenderer : INodeStyleRenderer, IShapeGeometry, IBoundsProvider, IVisibilityTestable,
@@ -192,9 +190,7 @@ namespace Demo.yFiles.IO.GraphML.Compat.Styles
       return padding;
     }
 
-    public virtual RectD GetBounds(ICanvasContext context) {
-      return Layout.ToRectD();
-    }
+    public virtual RectD GetBounds(ICanvasContext context) => Layout.ToRectD();
 
     public virtual GeneralPath GetOutline() {
       var path = new GeneralPath(4);
@@ -214,9 +210,7 @@ namespace Demo.yFiles.IO.GraphML.Compat.Styles
       return l.FindLineIntersection(inner, outer);
     }
 
-    public virtual bool IsInside(PointD location) {
-      return Layout.ToRectD().Contains(location);
-    }
+    public virtual bool IsInside(PointD location) => Layout.ToRectD().Contains(location);
 
     public virtual bool IsHit(IInputModeContext context, PointD location) {
       var layout = Layout;
@@ -241,17 +235,12 @@ namespace Demo.yFiles.IO.GraphML.Compat.Styles
       return true;
     }
 
-    public virtual bool IsInBox(IInputModeContext context, RectD rectangle) {
-      return rectangle.Intersects(Layout.ToRectD());
-    }
+    public virtual bool IsInBox(IInputModeContext context, RectD rectangle) => rectangle.Intersects(Layout.ToRectD());
 
-    public bool IsInPath(IInputModeContext context, GeneralPath lassoPath) {
-      return lassoPath.AreaIntersects(GetOutline()!, context.HitTestRadius);
-    }
+    public bool IsInPath(IInputModeContext context, GeneralPath lassoPath) =>
+        lassoPath.AreaIntersects(GetOutline()!, context.HitTestRadius);
 
-    public virtual bool IsVisible(ICanvasContext context, RectD rectangle) {
-      return rectangle.Intersects(Layout.ToRectD());
-    }
+    public virtual bool IsVisible(ICanvasContext context, RectD rectangle) => rectangle.Intersects(Layout.ToRectD());
 
     /// <inheritdoc/>
     public virtual object Lookup(Type type) {
@@ -275,9 +264,7 @@ namespace Demo.yFiles.IO.GraphML.Compat.Styles
         this.style = style;
       }
 
-      public InsetsD GetPadding() {
-        return style.Insets;
-      }
+      public InsetsD GetPadding() => style.Insets;
     }
 
     internal sealed class PanelNodeStyleVisual : VisualGroup
@@ -326,8 +313,12 @@ namespace Demo.yFiles.IO.GraphML.Compat.Styles
         var pen = new Pen(lineGradient, 1);
         pen.Freeze();
 
-        var rectangle =
-            new Rectangle { AllowDrop = true, Width = layout.Width, Height = layout.Height, Fill = gradient };
+        var rectangle = new Rectangle {
+            AllowDrop = true,
+            Width = layout.Width,
+            Height = layout.Height,
+            Fill = gradient
+        };
 
         const double layoutX = 0.0;
         const double layoutY = 0.0;
@@ -388,7 +379,12 @@ namespace Demo.yFiles.IO.GraphML.Compat.Styles
       }
 
       private void AddRectangle(Brush brush, double x, double y, double w, double h) {
-        var rectangle = new Rectangle { AllowDrop = true, Width = w, Height = h, Fill = brush };
+        var rectangle = new Rectangle {
+            AllowDrop = true,
+            Width = w,
+            Height = h,
+            Fill = brush
+        };
         rectangle.SetCanvasArrangeRect(new Rect(x, y, w, h));
         Add(rectangle);
       }
@@ -398,7 +394,10 @@ namespace Demo.yFiles.IO.GraphML.Compat.Styles
         stop1.Freeze();
         var stop2 = new GradientStop(color2, 1);
         stop2.Freeze();
-        var gradientStops = new GradientStopCollection(2) { stop1, stop2 };
+        var gradientStops = new GradientStopCollection(2) {
+            stop1,
+            stop2
+        };
         gradientStops.Freeze();
         var brush = new LinearGradientBrush(gradientStops, point1, point2);
         brush.Freeze();

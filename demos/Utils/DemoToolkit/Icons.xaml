@@ -1,0 +1,299 @@
+<!-- ************************************************************************ -->
+<!-- This demo file is part of yFiles WPF 4.1.                           -->
+<!-- Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,          -->
+<!-- 72070 Tuebingen, Germany. All rights reserved.                           -->
+<!--                                                                          -->
+<!-- yFiles demo files exhibit yFiles WPF functionalities. Any redistribution  -->
+<!-- of demo resource files, with or without modification, is not permitted.  -->
+<!--                                                                          -->
+<!-- Owners of a valid software license for a yFiles WPF version that this     -->
+<!-- demo is shipped with are allowed to use the resource file as basis for   -->
+<!-- their own yFiles WPF powered applications. Use of such programs is        -->
+<!-- governed by the rights and conditions as set out in the yFiles WPF        -->
+<!-- license agreement.                                                       -->
+<!--                                                                          -->
+<!-- THIS SOFTWARE IS PROVIDED ''AS IS'' AND ANY EXPRESS OR IMPLIED           -->
+<!-- WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF     -->
+<!-- MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN  -->
+<!-- NO EVENT SHALL yWorks BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,    -->
+<!-- SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED -->
+<!-- TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR   -->
+<!-- PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF   -->
+<!-- LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING     -->
+<!-- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS       -->
+<!-- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.             -->
+<!--                                                                          -->
+<!-- ************************************************************************ -->
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Geometry x:Key="IconLayoutHierarchic">M897 449v-17H619V320h53V0H352v320h54v112H128v32 32 208H0v320h320V704H192V496h256 22V320h85v176h64 214v208H704v320h320V704H897z</Geometry>
+    <Geometry x:Key="IconLayoutCircular">M384 228v28h256v-28l128 64v156h96v128h-96v156l-128 64v-28H384v28l-128-64V576h-96V448h96V292zM256 220v-28H0v256h96v128H0v256h256v-28l128 64v156h256V868l128-64v28h256V576h-96V448h96V192H768v28l-128-64V0H384v156z</Geometry>
+    <Geometry x:Key="IconChevronForward">M169 241 440 512 169 783l72 72 343-343-343-343z</Geometry>
+    <Geometry x:Key="IconArrowDropUp">M282 614h460L512 307z</Geometry>
+    <Geometry x:Key="IconArrowDropDown">M282 410 512 717 742 410z</Geometry>
+    <Geometry x:Key="IconAdd">M563 256H461v205H256v102h205v205h102V563h205V461H563z</Geometry>
+    <Geometry x:Key="IconRemove">M256 461v102h512V461z</Geometry>
+    <Geometry x:Key="IconKeyboardArrowUp">M671 650l71-71-230-231-230 231 71 71 159-153z</Geometry>
+    <Geometry x:Key="IconKeyboardArrowDown">M671 374 512 527 353 374l-71 71 230 231 230-231z</Geometry>
+    <Geometry x:Key="IconGroup">M0 0v1024h192v-64H64V64h128V0zM1024 1024V0H832v64h128v896H832v64zM256 128v320h320V128zM448 576v320h320V576z</Geometry>
+    <Geometry x:Key="IconGrid5x5">M128 256h64v128h-64v64h64v128h-64v64h64v128h-64v64h64v64h64v-64h128v64h64v-64h128v64h64v-64h128v64h64v-64h64v-64h-64V640h64v-64h-64V448h64v-64h-64V256h64v-64h-64v-64h-64v64H640v-64h-64v64H448v-64h-64v64H256v-64h-64v64h-64zM384 256v128H256V256zM576 256v128H448V256zM768 256v128H640V256zM384 448v128H256V448zM576 448v128H448V448zM768 448v128H640V448zM384 640v128H256V640zM576 640v128H448V640zM768 640v128H640V640z</Geometry>
+    <Geometry x:Key="IconZoomOutMap">M64 64v320L384 64zM960 64H640l320 320zM960 960V640L640 960zM64 960h320L64 640z</Geometry>
+    <Geometry x:Key="IconImagesMode">M64 64v896h896V64zM896 896H128V128h768zM192 832h640V448L576 704 384 576zM320 448c71 0 128-57 128-128s-57-128-128-128-128 57-128 128 57 128 128 128z</Geometry>
+    <Geometry x:Key="IconPhotoCamera">M704 320V192H320v128H64v576h896V320zM512 730c-85 0-154-69-154-154s69-154 154-154 154 69 154 154-69 154-154 154z</Geometry>
+    <Geometry x:Key="IconExitGroup">M384 384h192v576H0v64h640V384h128v192l256-257L768 64v192H640V0H0v64h576v192H384zM192 896h320V576H192zM0 448h320V129H0z</Geometry>
+    <Geometry x:Key="IconEnterGroup">M0 448h192v576h832v-64H256V448h128v192l256-257-256-255v192H256V64h768V0H192v320H0zM576 896h320V576H576zM704 448h320V129H704z</Geometry>
+    <Geometry x:Key="IconEdgeThickness">M840 720h-59V-3H573v723h-59l163 304zM435 720h-90V-2h-71v722h-90l126 304z</Geometry>
+    <Geometry x:Key="IconEdgeLabel">M704 704h128v-64H704V512h128v-64H640v64 192zM448 640V512h64v128zM512 704h64V512 448H448V320h-64v384h64zM128 576v64 64h128 64V448h-64-128v64h128v64zM448 1024h64V832h512V192H512V0h-64v192H0v640h448zM960 256v512H64V256z</Geometry>
+    <Geometry x:Key="IconNodeLabel">M 127.99986 64.000248 L 127.99986 192.00025 L -0.000135 192.00025 L -0.000135 832.00025 L 127.99986 832.00025 L 127.99986 960.00025 L 895.99986 960.00025 L 895.99986 832.00025 L 1023.9999 832.00025 L 1023.9999 192.00025 L 895.99986 192.00025 L 895.99986 64.000248 L 127.99986 64.000248 z M 63.999865 256.00025 L 127.99986 256.00025 L 895.99986 256.00025 L 959.99986 256.00025 L 959.99986 768.00025 L 895.99986 768.00025 L 127.99986 768.00025 L 63.999865 768.00025 L 63.999865 256.00025 z M 383.99986 320.00025 L 383.99986 704.00025 L 447.99986 704.00025 L 511.99986 704.00025 L 575.99986 704.00025 L 575.99986 512.00025 L 575.99986 448.00025 L 447.99986 448.00025 L 447.99986 320.00025 L 383.99986 320.00025 z M 127.99986 448.00025 L 127.99986 512.00025 L 255.99986 512.00025 L 255.99986 576.00025 L 127.99986 576.00025 L 127.99986 640.00025 L 127.99986 704.00025 L 255.99986 704.00025 L 319.99986 704.00025 L 319.99986 448.00025 L 127.99986 448.00025 z M 639.99986 448.00025 L 639.99986 512.00025 L 639.99986 640.00025 L 639.99986 704.00025 L 703.99986 704.00025 L 831.99986 704.00025 L 831.99986 640.00025 L 703.99986 640.00025 L 703.99986 512.00025 L 831.99986 512.00025 L 831.99986 448.00025 L 639.99986 448.00025 z M 447.99986 512.00025 L 511.99986 512.00025 L 511.99986 640.00025 L 447.99986 640.00025 L 447.99986 512.00025 z</Geometry>
+    <Geometry x:Key="IconEdgeDirection">M714 1024h71V0h-71zM489 720h-90V-2h-70v722h-90l125 304z</Geometry>
+    <Geometry x:Key="IconDownload">M512 792 806 499V320L576 545V0H448v545L218 320v179zM128 832v128h768V832z</Geometry>
+    <Geometry x:Key="IconVerticalDistribute">M128 448v128h768V448zM384 0 128 320h192v64h128v-64h192zM640 1024 896 704H704v-64H576v64H384z</Geometry>
+    <Geometry x:Key="IconHorizontalDistribute">M448 128v768h128V128zM0 640 320 896V704h64V576h-64V384zM1024 384 704 128v192h-64v128h64v192z</Geometry>
+    <Geometry x:Key="IconZoomOut">M640 0C428 0 256 172 256 384c0 67 17 129 47 184L0 871l153 153 303-303c55 30 117 47 184 47 212 0 384-172 384-384S852 0 640 0zM896 448H384V320h512z</Geometry>
+    <Geometry x:Key="IconDelete">M64 128v128h960V128H768L704 0H384l-64 128zM192 320v704h704V320zM384 896h-64V448h64zM576 896h-64V448h64zM768 896h-64V448h64z</Geometry>
+    <Geometry x:Key="IconClose">M602 512 874 240l-91-90-271 271-271-271-91 90 272 272-272 272 91 90 271-272 271 272 91-90z</Geometry>
+    <Geometry x:Key="IconContentCut">M436 836l76-180 76 180 2 6c20 61 61 113 114 141 39 21 87 29 134 15 47-15 82-48 103-87 29-54 34-122 15-186-20-65-62-118-115-147-40-21-88-30-135-15-30 9-55 26-75 47l-50-118 162-384-118-50-113 269L399 58 281 108 442 492 393 610c-20-21-45-38-75-47-47-14-95-6-134 15-54 29-96 82-116 147-19 64-14 132 15 186 21 39 56 72 103 87 47 14 95 6 134-15 53-29 95-81 115-144zM308 710c11 21 16 53 5 89-11 35-32 60-53 71-15 7-27 8-37 5s-20-10-27-25c-11-20-16-53-5-88 11-36 32-60 53-71 15-8 27-9 37-6s19 11 27 25zM764 870c-21-11-42-36-53-71-11-36-6-68 5-89 8-14 18-22 27-25 10-3 23-2 37 6 21 11 43 35 53 71 11 35 6 68-5 88-7 15-17 22-27 25s-22 2-37-5z</Geometry>
+    <Geometry x:Key="IconContentCopy">M320 0v704h704V256H704V0zM1024 192 768 0v192zM704 704v64zM256 192H0v832h704V768H256z</Geometry>
+    <Geometry x:Key="IconCancel">M512 0C229 0 0 229 0 512s229 512 512 512 512-229 512-512S795 0 512 0zM806 670 670 806 512 648 354 806 218 670 376 512 218 354 354 218 512 376 670 218 806 354 648 512z</Geometry>
+    <Geometry x:Key="IconArrowUpwardAlt">M512 104 218 397v179l230-225v545h128V351l230 225V397z</Geometry>
+    <Geometry x:Key="IconSkipPrevious">M80 966c13 1 26-4 35-14 10-9 15-22 14-35V92c1-13-5-26-14-35S93 43 79 43c-13 0-25 5-35 14-9 9-14 22-14 35v825c0 13 5 26 15 35 9 10 22 15 35 14zM892 898c18 15 44 17 65 5 21-10 34-32 34-55V162c0-23-13-45-34-55-21-13-47-11-65 5L396 452c-18 12-28 32-28 53s10 41 28 53zM892 778 492 505 892 231z</Geometry>
+    <Geometry x:Key="IconArrowRightAlt">M921 512 628 219l-179-1 225 230H129v128h545L449 806h179z</Geometry>
+    <Geometry x:Key="IconArrowLeftThick">M614 683h427c85 0 154-52 154-137s-69-153-154-153H597V137c0-35-34-69-68-69-17 0-34 0-51 17L68 495c-34 34-34 68 0 102l427 410c17 17 68 17 102 0 0-17 17-34 17-51z</Geometry>
+    <Geometry x:Key="IconArrowLeftAlt">M104 512 397 806h179L351 576h545V448H351l225-230-179 1z</Geometry>
+    <Geometry x:Key="IconArrowDownwardAlt">M512 920 806 627V448L576 673V128H448v545L218 448v179z</Geometry>
+    <Geometry x:Key="IconAlignVerticalCenter">M128 448v128h768V448zM384 640 128 960h192v64h128v-64h192zM640 384 896 64H704V0H576v64H384z</Geometry>
+    <Geometry x:Key="IconVerticalAlignTop">M128 64v128h768V64zM512 256 256 576h192v384h128V576h192z</Geometry>
+    <Geometry x:Key="IconHorizontalAlignRight">M832 128v768h128V128zM768 512 448 256v192H64v128h384v192z</Geometry>
+    <Geometry x:Key="IconHorizontalAlignLeft">M64 128v768h128V128zM256 512 576 768V576h384V448H576V256z</Geometry>
+    <Geometry x:Key="IconAlignHorizontalCenter">M448 128v768h128V128zM640 640 960 896V704h64V576h-64V384zM384 384 64 128v192H0v128h64v192z</Geometry>
+    <Geometry x:Key="IconVerticalAlignBottom">M128 832v128h768V832zM512 768 768 448H576V64H448v384H256z</Geometry>
+    <Geometry x:Key="IconZOrderUpMid">M832 960h64V224h128L864 64 704 224h128zM459 960 800 704H373L32 960zM395 768h213L437 896H224zM459 320 800 64H373L32 320zM395 128h213L437 256H224zM459 640 800 384H373L32 640z</Geometry>
+    <Geometry x:Key="IconZOrderTopUp">M832 960h64v-64h-64zM832 832h64v-64h-64zM832 704h64V224h128L864 64 704 224h128zM459 640 800 384H373L32 640zM395 448h213L437 576H224zM459 960 800 704H373L32 960zM395 768h213L437 896H224zM459 320 800 64H373L32 320z</Geometry>
+    <Geometry x:Key="IconZOrderDownMid">M896 64h-64v736H704l160 160 160-160H896zM459 960 800 704H373L32 960zM395 768h213L437 896H224zM459 320 800 64H373L32 320zM395 128h213L437 256H224zM459 640 800 384H373L32 640z</Geometry>
+    <Geometry x:Key="IconZOrderDownBottom">M896 64h-64v64h64zM896 192h-64v64h64zM896 320h-64v480H704l160 160 160-160H896zM459 640 800 384H373L32 640zM395 448h213L437 576H224zM459 320 800 64H373L32 320zM395 128h213L437 256H224zM448 928 704 736H384L128 928z</Geometry>
+    <Geometry x:Key="IconViewRealSize">M369 732v-66h-88V284h-60c-14 8-29 16-46 21-16 6-35 11-58 16v50h83v295H100v66zM543 725c10-11 15-24 15-40s-5-29-15-39-22-16-37-16-28 6-38 16-15 23-15 39 5 29 15 40c10 10 23 15 38 15s27-5 37-15zM543 484c10-11 15-24 15-40 0-15-5-29-15-39s-22-15-37-15-28 5-38 15-15 24-15 39c0 16 5 30 15 40s23 15 38 15 27-5 37-15zM655 732h269v-66h-88V284h-60c-14 8-30 16-46 21-16 6-35 11-58 16v50h83v295H655z</Geometry>
+    <Geometry x:Key="IconUngroup">M192 1024V0H0v64h128v896H0v64zM832 0v1024h192v-64H896V64h128V0zM256 128v320h320V128zM448 576v320h320V576z</Geometry>
+    <Geometry x:Key="IconUndo">M574 689 395 586c29-50 86-118 182-131 157-22 287 98 297 270 2 35 1 57-7 96 30-17 66-70 66-162-1-245-182-406-406-406-151 0-283 83-353 205L-13 350 143 757z</Geometry>
+    <Geometry x:Key="IconSunny">M397 627c-63-64-63-167 1-230s167-62 230 2 62 166-2 229c-31 30-72 47-115 47s-84-17-114-48zM347 676c90 91 237 91 329 1 91-90 91-237 1-329-90-91-238-91-329-1-43 43-68 102-69 164s24 121 68 165zM823 876c7 7 15 10 25 10 9 0 18-3 25-10 6-6 10-15 10-25 0-9-4-18-10-24l-82-83c-7-7-16-11-25-11s-18 4-25 11c-7 6-11 15-11 24 0 10 4 18 11 25zM234 280c6 7 15 11 25 11 9 0 18-4 24-11 7-6 11-15 11-24 0-10-4-18-11-25l-82-83c-6-7-15-10-24-10-10 0-19 3-25 10-7 6-11 15-11 25 0 9 4 18 11 24zM744 283c6 7 15 10 24 10 10 0 19-3 25-10l83-82c7-6 10-15 10-25 0-9-3-18-10-24-7-7-15-11-25-11-9 0-18 4-24 10l-83 82c-7 7-11 16-11 25s4 18 11 25zM148 872c7 7 15 11 25 11 9 0 18-4 24-11l83-82c7-6 11-15 11-24 0-10-4-19-11-25-6-7-15-11-24-11-10 0-18 4-25 11l-83 82c-6 6-10 15-10 24 0 10 3 19 10 25zM873 549l93 1c9 0 18-4 24-11 7-6 11-15 11-24 0-20-15-36-35-36h-93c-9 1-17 5-24 11-6 6-10 15-10 23-1 9 3 18 9 24 7 7 15 11 25 12zM58 545l94-1c9 0 17-4 24-11 6-6 10-15 10-24s-3-18-10-24c-6-7-15-10-24-10l-93-1c-10 0-19 3-25 10-7 7-11 16-11 25 0 20 16 36 35 36zM514 186c18 1 34-14 35-33v-1l1-93c0-10-4-19-11-25-6-7-15-11-24-11-20 0-36 16-36 35v93c0 9 4 17 11 23 6 7 15 11 24 12zM509 1001c20 0 36-16 36-35v-93c0-10-3-19-10-25-6-7-15-10-24-10-10 0-19 3-25 10-7 6-11 15-10 24l-2 93c0 10 4 19 11 25 6 7 15 10 24 11z</Geometry>
+    <Geometry x:Key="IconBedtime">M477 1021c113 12 227-16 322-79 91-60 161-147 199-250 13-23 14-52-3-75-20-19-41-21-77-13-19 2-39 5-62 7-24 3-48 3-72 1-1 0-2 0-3 0-197-17-343-190-327-387 2-21 5-43 11-64 5-20 12-41 20-61 14-24 15-53 2-78-12-20-37-26-75-19-111 21-211 78-287 161C54 247 11 351 2 460c-24 286 189 538 475 561zM483 953c-99-8-192-47-265-113C34 675 18 392 183 208 247 135 333 84 428 63c-13 27-23 55-30 84-7 24-11 48-13 73 0 0 0 1 0 2-18 235 158 441 394 459 27 2 54 2 81-1 26-3 52-8 77-16-70 187-256 304-454 289z</Geometry>
+    <Geometry x:Key="IconAsterisk">M576 357V128H448v230L286 195l-91 91 162 162H128v128h229L195 738l45 45 46 46 162-163v230h128V667l162 162 45-46 46-45-163-162h230V448H666l163-162-46-45-45-46z</Geometry>
+    <Geometry x:Key="IconSnap">M544 128H64v256h480c88 0 160 72 160 160s-72 160-160 160H64v256h480c230 0 416-186 416-416S774 128 544 128zM320 320H128V192h192zM320 896H128V768h192z</Geometry>
+    <Geometry x:Key="IconKeyboardDoubleArrowRight">M169 241 440 512 169 783l72 72 343-343-343-343zM476 241 747 512 476 783l72 72 344-343-344-343z</Geometry>
+    <Geometry x:Key="IconKeyboardDoubleArrowLeft">M476 169 132 512 476 855l72-72-271-271 271-271zM783 169 440 512 783 855l72-72-271-271 271-271z</Geometry>
+    <Geometry x:Key="IconRightPanelClose">M568 798H195V272h373c16 0 29-13 29-29s-13-29-29-29H138v641h430c16 0 29-13 29-28 0-16-13-29-29-29zM845 881c8 0 16-7 16-16V175c0-9-8-16-16-16H681c-9 0-16 7-16 16v690c0 9 7 16 16 16zM523 555l1-1c13-14 13-35 0-49l-2-2-152-118c-15-12-37-9-49 6-11 15-8 37 7 48l118 92-120 100c-14 12-16 34-4 49 13 14 34 16 49 4z</Geometry>
+    <Geometry x:Key="IconSidebarRight">M872 209v142h143V209zM872 446v142h143V446zM872 683v142h143V683zM303 209v142h474V209zM303 446v142h474V446zM303 683v142h474V683z</Geometry>
+    <Geometry x:Key="IconSidebarRight2">M808 718c7-11 7-23 0-34-6-10-17-16-29-15H550v-44c-1-18-15-31-32-31s-32 13-33 31v142c0 18 15 32 33 32 17 0 32-14 32-32v-34h229c12 1 23-5 29-15zM808 521c7-10 7-23 0-33-6-10-17-16-29-16H518c-18 1-31 15-31 33 0 17 13 31 31 32h261c12 0 23-6 29-16zM423 718c7-11 7-23 0-34-6-10-17-16-29-15H235c-12-1-23 5-29 15-7 11-7 23 0 34 6 10 17 16 29 15h159c12 1 23-5 29-15zM417 600c6-6 9-14 9-23V435c-1-17-15-31-32-31s-31 14-32 31v38H235c-12 0-23 6-29 16-7 10-7 23 0 33 6 10 17 16 29 16h127v39c0 9 3 17 9 23s15 10 23 10c9 0 17-4 23-10zM671 408c6-6 10-14 9-22v-42h99c18 0 32-15 32-33 0-17-14-32-32-32h-99v-36c1-12-5-23-15-29s-23-6-33 0-16 17-16 29v143c0 8 4 16 10 22s14 10 22 10c9 0 17-4 23-10zM572 311c0-17-14-32-32-32H235c-18 0-32 15-32 32 0 18 14 33 32 33h305c18 0 32-15 32-33z</Geometry>
+    <Geometry x:Key="IconSidebarLeft">M303 209v142h143V209zM303 446v142h143V446zM303 683v142h143V683zM540 209v142h475V209zM540 446v142h475V446zM540 683v142h475V683z</Geometry>
+    <Geometry x:Key="IconLeftPanelOpen">M464 234h373v526H464c-16 0-29 13-29 29s13 29 29 29h430V177H464c-16 0-29 13-29 28 0 16 13 29 29 29zM187 151c-8 0-16 7-16 16v690c0 9 8 16 16 16h164c9 0 16-7 16-16V167c0-9-7-16-16-16zM629 501 511 593c-15 11-17 33-6 48 12 15 34 18 49 6l151-117 1-1c7-7 12-16 12-26 0-11-5-20-12-27L555 348c-15-12-36-10-49 4-12 15-10 37 4 49z</Geometry>
+    <Geometry x:Key="IconSettings">M82 218l99 99c-18 31-32 64-41 99H0v256h163c5 12 12 24 18 35l-99 99 136 136 99-99c30 18 64 32 99 41v140h192V884c35-9 68-23 98-41l100 99 135-135-99-99c19-31 33-64 42-99h140V417H884c-9-36-23-69-41-100l99-99L806 82l-99 99c-31-18-64-32-99-41V0H416v140c-35 9-69 23-99 41l-99-99z</Geometry>
+    <Geometry x:Key="IconBuild">M662 226 868 20C837 7 804 0 768 0 627 0 512 115 512 256c0 35 7 69 20 100L60 828 196 964 668 492c31 13 65 20 100 20 141 0 256-115 256-256 0-35-7-69-20-100L798 362z</Geometry>
+    <Geometry x:Key="IconSearch">M424 721c54 30 117 47 184 47 212 0 384-172 384-384S820 0 608 0 224 172 224 384c0 67 17 130 47 184L-32 871l153 153zM352 384c0-141 115-256 256-256s256 115 256 256-115 256-256 256-256-115-256-256z</Geometry>
+    <Geometry x:Key="IconSave">M0 0v832l192 192h832V0zM256 64h512v256H256zM832 896H320V576h512zM384 640v192h128V640z</Geometry>
+    <Geometry x:Key="IconRefresh">M512 837c-179 0-325-146-325-325s146-325 325-325c87 0 166 34 224 90L603 413l359-1 1-367-134 136C747 102 635 54 512 54 259 54 53 259 53 512s206 458 459 458c188 0 349-114 420-276l-122-54c-49 116-164 197-298 197z</Geometry>
+    <Geometry x:Key="IconRedo">M445 255C221 255 39 416 39 661c0 92 36 145 66 162-8-39-9-62-7-96 10-172 140-292 296-270 96 13 154 80 182 131L398 690l430 68 157-406-188 108c-70-122-201-205-352-205z</Geometry>
+    <Geometry x:Key="IconPrint">M192 1024h640V896h192V512H0v384h192zM768 960H256V832h512zM192 0v448h640V256H576V0zM640 0v192h192z</Geometry>
+    <Geometry x:Key="IconAdd2">M128 576h320v320h128V576h320V448H576V128H448v320H128z</Geometry>
+    <Geometry x:Key="IconAddCircle">M512 0C229 0 0 229 0 512s229 512 512 512 512-229 512-512S795 0 512 0zM832 576H576v256H448V576H192V448h256V192h128v256h256z</Geometry>
+    <Geometry x:Key="IconPlayCircle">M512 0C229 0 0 229 0 512s229 512 512 512 512-229 512-512S795 0 512 0zM384 768V256l384 256z</Geometry>
+    <Geometry x:Key="IconPlayArrow">M256 171v682l597-341z</Geometry>
+    <Geometry x:Key="IconPause">M448 64H128v896h320zM896 64H576v896h320z</Geometry>
+    <Geometry x:Key="IconContentPaste">M448 256v640H128V128h64v64h512v-64h64v128h64V64H576V0H320v64H192 64v896h384v64h576V512H768V256zM832 256v192h192z</Geometry>
+    <Geometry x:Key="IconOrthogonalEditing">M256 545V192h353c-16 187-166 337-353 353zM668 192h36v128h320V0H704v128H192v671H0l224 224 224-224H256V604c220-16 396-192 412-412zM320 384h128V256H320z</Geometry>
+    <Geometry x:Key="IconFolderOpen">M0 957v3h896l128-512H896V256H512L384 128H64L0 320v634l-1 3zM192 448 64 785V330l46-138h248l128 128h346v128z</Geometry>
+    <Geometry x:Key="IconCheckCircle">M512 0C229 0 0 229 0 512s229 512 512 512 512-229 512-512S795 0 512 0zM832 480 448 864 192 608V352l256 256 384-384z</Geometry>
+    <Geometry x:Key="IconCheck">M192 576 448 832 896 320V128L448 640 192 384z</Geometry>
+    <Geometry x:Key="IconNoteAdd">M576 320V0H128v1024h768V320zM768 768H640v128h-64V768H448v-64h128V576h64v128h128zM896 256 640 0v256z</Geometry>
+    <Geometry x:Key="IconMinus">M128 448v128h768V448z</Geometry>
+    <Geometry x:Key="IconDoNotDisturbOn">M512 0C229 0 0 229 0 512s229 512 512 512 512-229 512-512S795 0 512 0zM832 576H192V448h640z</Geometry>
+    <Geometry x:Key="IconZoomIn">M640 0C428 0 256 172 256 384c0 67 17 129 47 184L0 871l153 153 303-303c55 30 117 47 184 47 212 0 384-172 384-384S852 0 640 0zM896 448H704v192H576V448H384V320h192V128h128v192h192z</Geometry>
+    <Geometry x:Key="IconLayoutTree">M480 448H160v256H0v320h320V704h-96V512h256v192H352v320h320V704H544V512h256v192h-96v320h320V704H864V448H544V320h128V0H352v320h128z</Geometry>
+    <Geometry x:Key="IconMap">M975.6164,71.8757c-.1515-20.1388-11.3018-38.5038-29.0983-47.929-17.7986-9.4211-39.2538-8.3277-55.9974,2.8651l-239.2541,159.8969L401.4369,16.3699c-18.7177-12.7592-42.9073-12.7613-61.627.0021L75.8101,196.3725c-14.892,10.1534-23.8214,26.9728-23.8867,44.9892l-2.6805,715.6493c-.0768,20.589,11.2271,39.2694,29.4997,48.7548,18.2706,9.4792,40.0525,7.9771,56.8429-3.9315l229.8112-162.9757,257.6907,175.5835c9.3537,6.3713,20.0745,9.558,30.7964,9.558s21.4459-3.1867,30.8037-9.5601l272.4011-185.6062c15.1015-10.2924,24.034-27.3442,23.8961-45.6179l-5.3682-711.3402ZM406.3707,112.2997l204.7272,139.5872v661.8389l-209.1141-142.4846,4.3869-658.9415ZM125.8823,914.9553l2.4782-661.8468,201.5055-137.3908-4.3785,657.6819-199.6052,141.5557ZM687.5785,919.9231V254.4291l211.8643-141.5912,4.9751,659.3365-216.8394,147.7487Z</Geometry>
+
+    <DrawingImage x:Key="PrinterIcon">
+    <DrawingImage.Drawing>
+      <DrawingGroup>
+        <DrawingGroup.Children>
+          <GeometryDrawing Brush="Transparent" Geometry="M0.0,0.0 L57.0,0.0 L57.0,47.0 L0.0,47.0 Z" />
+          <GeometryDrawing Brush="#afafaf" Geometry="M48.4 21.1c.2 1.3-.8 2.4-2.2 2.4H10.7c-1.4 0-2.3-1.1-2.2-2.4L10 9.7a2.9 2.9 0 0 1 2.8-2.4h31.5c1.4 0 2.6 1.1 2.8 2.4l1.3 11.4z" />
+          <GeometryDrawing Brush="#efefef" Geometry="M42.1 1.6c-.5-1.3-28 .4-28.9-1s0 21 0 21h29.9s-.6-18.7-1-20z" />
+          <GeometryDrawing Brush="#afafaf" Geometry="M51.8 40.7c-.1-.1-.3-.2-.5-.2H4.6c-.2 0-.4.1-.5.2l-2.5 2.7c-.1.1-.1.3 0 .5l1.7 2.8c.1.2.3.3.5.3h48.7c.2 0 .4-.1.5-.3l1.7-2.8c.1-.1.1-.4-.1-.5l-2.8-2.7z" />
+          <GeometryDrawing Brush="#6e6e6e" Geometry="M56.6 39c0 1.4-1.1 2.5-2.5 2.5H2.9C1.5 41.5.4 40.4.4 39V23.7c0-1.4 1.1-2.5 2.5-2.5h51.2c1.4 0 2.5 1.1 2.5 2.5V39z" />
+          <GeometryDrawing Brush="#67B7DC" Geometry="M51.8 38c0 1.4-1 2.5-2.2 2.5H7.5c-1.2 0-2.2-1.1-2.2-2.5V23.7h46.5V38z" />
+          <GeometryDrawing Brush="#c8ff00" Geometry="M54.3 24h2.3v.9h-2.3zm0 2h2.3v.9h-2.3z">
+            <GeometryDrawing.Pen>
+              <Pen Brush="#717171" Thickness=".12" MiterLimit="10" />
+            </GeometryDrawing.Pen>
+          </GeometryDrawing>
+          <GeometryDrawing Brush="{x:Null}" Geometry="M5.2 23.7v-2.4m46.6 2.4v-2.4">
+            <GeometryDrawing.Pen>
+              <Pen Brush="#afafaf" Thickness=".2" MiterLimit="10" />
+            </GeometryDrawing.Pen>
+          </GeometryDrawing>
+          <GeometryDrawing Brush="{x:Null}" Geometry="M51.8 23.7H5.2">
+            <GeometryDrawing.Pen>
+              <Pen Brush="#afafaf" Thickness=".19" MiterLimit="10" />
+            </GeometryDrawing.Pen>
+          </GeometryDrawing>
+        </DrawingGroup.Children>
+      </DrawingGroup>
+    </DrawingImage.Drawing>
+  </DrawingImage>
+  <DrawingImage x:Key="RouterIcon">
+    <DrawingImage.Drawing>
+      <DrawingGroup>
+        <DrawingGroup.Children>
+          <GeometryDrawing Brush="Transparent" Geometry="M0.0,0.0 L70.0,0.0 L70.0,70.0 L0.0,70.0 Z" />
+          <GeometryDrawing Brush="#67B7DC" Geometry="M9.6 45.9C8 42.4 7.2 38.6 7.2 34.6c0-15.2 12.3-27.5 27.5-27.5a27.48 27.48 0 0 1 25.1 38.7l4.4 2C66 43.7 67 39.3 67 34.5A32.4 32.4 0 0 0 34.6 2.1C16.8 2.2 2.3 16.7 2.3 34.6c0 4.7 1 9.2 2.8 13.3l4.5-2z" />
+          <GeometryDrawing Brush="#67B7DC" Geometry="M18.4 41.8a17.84 17.84 0 0 1 16.3-25 17.84 17.84 0 0 1 16.3 25l4.4 2c1.3-2.8 2-5.9 2-9.2 0-12.5-10.2-22.7-22.7-22.7S12 22.1 12 34.6c0 3.3.7 6.4 2 9.2l4.4-2z" />
+          <GeometryDrawing Brush="#67B7DC" Geometry="M27.2 37.7a8.15 8.15 0 0 1 7.5-11.2c4.5 0 8.1 3.6 8.1 8.1 0 1.1-.2 2.2-.6 3.1l4.4 2a12.97 12.97 0 0 0-11.9-18.2 12.97 12.97 0 0 0-11.9 18.2l4.4-2z" />
+          <GeometryDrawing Brush="#afafaf" Geometry="M21.5 52.2c0 .6-.5 1.2-1.2 1.2h-.1c-.6 0-1.2-.5-1.2-1.2V22.4c0-.6.5-1.2 1.2-1.2h.1c.6 0 1.2.5 1.2 1.2v29.8zm29.4 0c0 .6-.5 1.2-1.2 1.2h-.1c-.6 0-1.2-.5-1.2-1.2V22.4c0-.6.5-1.2 1.2-1.2h.1c.6 0 1.2.5 1.2 1.2v29.8z" />
+          <GeometryDrawing Brush="#afafaf" Geometry="M66.2 56.6c-.1 0-.1 0-.1-.1l-10.4-5.2c-1.2-.6-3.2-1.1-4.4-1.2 0 0-4.8-.4-15.9-.4-9.1 0-16.4.4-16.4.4-1.3.1-3.3.6-4.5 1.2l-10.1 5c-1.1.3-1.9 1.3-1.9 2.4v5.9c0 1.3 1.1 2.4 2.3 2.5 0 0 12 1 30.2 1 18.8 0 30.2-1 30.2-1 1.3-.1 2.3-1.3 2.3-2.6v-5.9c0-.7-.5-1.6-1.3-2zm-30.8-1.3h-.3.3zm-1.5 0h-.1.1z" />
+          <GeometryDrawing Brush="#67B7DC" Geometry="M51.6 56.6c0-.1 0-.1 0 0L46 50.8c-.6-.6-1.7-1.1-2.4-1.2 0 0-2.6-.4-8.5-.4-4.8 0-8.7.4-8.7.4-.7.1-1.8.6-2.4 1.2l-5.4 5.5c-.6.3-1 1.3-1 2.4v6.7c0 1.3.6 2.4 1.3 2.5 0 0 6.4 1 16.1 1 10 0 16.1-1 16.1-1 .7-.1 1.3-1.3 1.3-2.6v-6.7c-.1-.7-.4-1.6-.8-2zm-16.4-1.3h-.1.1zm-.8 0z" />
+          <GeometryDrawing Brush="#c8ff00" Geometry="M65 59.9h2.6V61H65zm-25.8 2.6h4v2.3h-4zm-6.3.2h4L37 65h-4zm-6.2-.2h4l.1 2.3h-4zm18.7-.3h4l.1 2.3h-4zm-24.9 0h4l.1 2.3h-4.1z">
+            <GeometryDrawing.Pen>
+              <Pen Brush="#717171" Thickness=".06" MiterLimit="10" />
+            </GeometryDrawing.Pen>
+          </GeometryDrawing>
+        </DrawingGroup.Children>
+      </DrawingGroup>
+    </DrawingImage.Drawing>
+  </DrawingImage>
+  <DrawingImage x:Key="ScannerIcon">
+    <DrawingImage.Drawing>
+      <DrawingGroup>
+        <DrawingGroup.Children>
+          <GeometryDrawing Brush="Transparent" Geometry="M0.0,0.0 L70.0,0.0 L70.0,40.0 L0.0,40.0 Z" />
+          <GeometryDrawing Brush="#afafaf" Geometry="M5.6 5.2l10.9 10H35c9.6 0 16.5.2 18.2 0l10.7-9.8C67.7 2.1 67 1 60.5 1H9.1C2.4 1 2.4 2 5.6 5.2z" />
+          <GeometryDrawing Brush="#c6c6c6" Geometry="M67.9 27.2L56.4 16.4c-.8-.8-3.3-1.2-4.7-1.3 0 0-5.1-.4-16.9-.4-9.6 0-17.3.4-17.3.4-1.4.1-3.8.5-4.7 1.2L2 26.7c-1.3 1.1-2 1.7-2 2.5v6.4c0 1.4 1.1 2.6 2.5 2.7 0 0 12.7 1 32 1 19.9 0 32-1 32-1 1.4-.1 2.5-1.3 2.5-2.7v-6.8c0-1.1-1.1-1.6-1.1-1.6zm-34.6-1.6h-.1.1z" />
+          <DrawingGroup Opacity="0.6">
+            <DrawingGroup.Children>
+              <GeometryDrawing Brush="#afafaf" Geometry="M34.3 33.6c6.9 0 12.6-2.2 12.6-4.9 0 0-3.4-.6-12.3-.6-8.6 0-12.8.6-12.8.6-.1 2.7 5.5 4.9 12.5 4.9z">
+                <GeometryDrawing.Pen>
+                  <Pen Brush="#848484" Thickness=".25" MiterLimit="10" />
+                </GeometryDrawing.Pen>
+              </GeometryDrawing>
+            </DrawingGroup.Children>
+          </DrawingGroup>
+          <GeometryDrawing Brush="#67B7DC" Geometry="M64.5 27.2l-10.1-10c-1-.9-2.2-1.2-4.4-1.2 0 0-4.6-.3-15.3-.3C26 15.6 19 16 19 16c-2.9.1-3.6.5-4.3 1.1L5 27l59.5.2z" />
+          <GeometryDrawing Brush="#c8ff00" Geometry="M64.5 30.5H69v2.3h-4.5z">
+            <GeometryDrawing.Pen>
+              <Pen Brush="#717171" Thickness=".11" MiterLimit="10" />
+            </GeometryDrawing.Pen>
+          </GeometryDrawing>
+        </DrawingGroup.Children>
+      </DrawingGroup>
+    </DrawingImage.Drawing>
+  </DrawingImage>
+  <DrawingImage x:Key="ServerIcon">
+    <DrawingImage.Drawing>
+      <DrawingGroup>
+        <DrawingGroup.Children>
+          <GeometryDrawing Brush="Transparent" Geometry="M0.0,0.0 L35.1,0.0 L35.1,55.65 L0.0,55.65 Z" />
+          <GeometryDrawing Brush="#515151" Geometry="M0 .97h35v53.7H0z" />
+          <GeometryDrawing Brush="#c6c6c6" Geometry="M5.5.97c7.9-1.3 16-1.3 24 0v53.7c-7.9 1.3-16 1.3-24 0V.98z" />
+          <GeometryDrawing Brush="#515151" Geometry="M5.5 14.68h24v40c-7.9 1.3-16 1.3-24 0v-40z" />
+          <DrawingGroup Opacity="0.43">
+            <DrawingGroup.Children>
+              <GeometryDrawing Brush="#afafaf" Geometry="M5.5 4.78c8-.6 16-.6 24 0v8.1h-24v-8.1z" />
+            </DrawingGroup.Children>
+          </DrawingGroup>
+          <DrawingGroup Opacity="0.43">
+            <DrawingGroup.Children>
+              <GeometryDrawing Brush="#4d4d4d" Geometry="M5.5 4.78c8-.6 16-.6 24 0v8.1h-24v-8.1z" />
+            </DrawingGroup.Children>
+          </DrawingGroup>
+          <DrawingGroup Opacity="0.43">
+            <DrawingGroup.Children>
+              <GeometryDrawing Brush="#565656" Geometry="M6.5 5.78l3.4-.2v1.1l-3.4.1z">
+                <GeometryDrawing.Pen>
+                  <Pen Brush="#4d4d4d" Thickness=".01" MiterLimit="10" />
+                </GeometryDrawing.Pen>
+              </GeometryDrawing>
+            </DrawingGroup.Children>
+          </DrawingGroup>
+          <GeometryDrawing Brush="#c8ff00" Geometry="M31.3 2.58H35v1.5h-3.7zm0 3.2H35v1.5h-3.7z">
+            <GeometryDrawing.Pen>
+              <Pen Brush="#717171" Thickness=".19" MiterLimit="10" />
+            </GeometryDrawing.Pen>
+          </GeometryDrawing>
+          <GeometryDrawing Brush="#c6c6c6" Geometry="M5.5 14.88v39.7c7.9 1.3 16 1.3 23.9 0v-39.7H5.5zm22.9 3.8h-2.2v-2.9h2.2v2.9zm-12 23.8v-2.9h2.2v2.9h-2.2zm2.2 1.1v2.9h-2.2v-2.9h2.2zm0-15.8v2.9h-2.2v-2.9h2.2zm-2.2-1.1v-2.9h2.2v2.9h-2.2zm0 7.9v-2.9h2.2v2.9h-2.2zm2.2 1.1v2.9h-2.2v-2.9h2.2zm-3.3-5h-2.2v-2.9h2.2v2.9zm0 1v2.9h-2.2v-2.9h2.2zm0 4v2.9c-.7 0-1.5 0-2.2-.1v-2.9c.7.1 1.5.1 2.2.1zm0 3.9v2.9c-.7 0-1.5 0-2.2-.1v-2.9c.7.1 1.5.1 2.2.1zm4.3 0c.7 0 1.5 0 2.2-.1v2.9c-.7 0-1.5.1-2.2.1v-2.9zm0-1v-2.9h2.2v2.9c-.7-.1-1.4 0-2.2 0zm0-4v-2.9h2.2v2.9h-2.2zm0-3.9v-2.9h2.2v2.9c-.7-.1-1.4-.1-2.2 0zm0-4v-2.9h2.2v2.9h-2.2zm0-3.9v-2.9h2.2v2.9h-2.2zm-1 0h-2.2v-2.9h2.2v2.9zm-3.3 0h-2.2v-2.9h2.2v2.9zm0 1v2.9h-2.2v-2.9h2.2zm-3.3 2.9c-.7 0-1.5 0-2.2-.1v-2.8H12v2.9zm0 1v2.9c-.7 0-1.5 0-2.2-.1v-2.9c.8.1 1.5.1 2.2.1zm0 4v2.9c-.7 0-1.5-.1-2.2-.1v-2.9c.8 0 1.5 0 2.2.1zm0 3.9v2.9c-.7 0-1.5-.1-2.2-.1v-2.9c.7 0 1.5.1 2.2.1zm0 3.9v2.9c-.7 0-1.5-.1-2.2-.1v-2.9c.7.1 1.5.1 2.2.1zm0 4v2.9c-.7 0-1.5-.1-2.2-.1v-2.8c.7-.1 1.5-.1 2.2 0zm1.1 0c.7 0 1.5.1 2.2.1v2.9c-.7 0-1.5 0-2.2-.1v-2.9zm2.2 4v2.9c-.7 0-1.5 0-2.2-.1v-2.9c.7.1 1.5.1 2.2.1zm1.1 0h2.2v2.9h-2.2v-2.9zm3.2 0c.7 0 1.5 0 2.2-.1v2.9c-.7 0-1.5.1-2.2.1v-2.9zm0-1v-2.9c.7 0 1.5 0 2.2-.1v2.9c-.7 0-1.4 0-2.2.1zm3.3-3c.7 0 1.5-.1 2.2-.1v2.8c-.7.1-1.5.1-2.2.2v-2.9zm0-1.1v-2.9c.7 0 1.5-.1 2.2-.1v2.9c-.7 0-1.4.1-2.2.1zm0-3.9v-2.9c.7 0 1.5-.1 2.2-.1v2.9c-.7 0-1.4 0-2.2.1zm0-4v-2.9c.7 0 1.5-.1 2.2-.1v2.9c-.7.1-1.5.1-2.2.1zm0-3.9v-2.9c.7 0 1.5 0 2.2-.1v2.9c-.7.1-1.5.1-2.2.1zm0-3.9v-2.9h2.2v2.8c-.7 0-1.5 0-2.2.1zm0-4v-2.9h2.2v2.9h-2.2zm0-3.9v-2.9h2.2v2.9h-2.2zm-1 0h-2.2v-2.9h2.2v2.9zm-3.3 0h-2.2v-2.9h2.2v2.9zm-3.3 0h-2.2v-2.9h2.2v2.9zm-3.3 0H9.8v-2.9H12v2.9zm0 1.1v2.9H9.8v-2.9H12zm-3.2 2.8c-.7 0-1.5 0-2.2-.1v-2.8h2.2v2.9zm0 1v2.8c-.7 0-1.5-.1-2.2-.1v-2.8c.7.1 1.4.1 2.2.1zm0 3.9v2.8c-.7 0-1.5-.1-2.2-.1v-2.8c.7.1 1.4.1 2.2.1zm0 3.9v2.9c-.7 0-1.5-.1-2.2-.1v-2.8h2.2zm0 3.9v2.9c-.7-.1-1.5-.1-2.2-.2v-2.8c.7.1 1.4.1 2.2.1zm0 4v2.9c-.7-.1-1.5-.1-2.2-.2v-2.8c.7-.1 1.4 0 2.2.1zm0 3.9v2.8c-.7-.1-1.5-.1-2.2-.2v-2.8c.7 0 1.4.1 2.2.2zm0 3.8v2.9l-2.2-.3v-2.8c.7.1 1.4.2 2.2.2zm1 .1c.7.1 1.5.1 2.2.2v2.9c-.7 0-1.5-.1-2.2-.2v-2.9zm2.2 4.1v2.9c-.7-.1-1.5-.1-2.2-.2v-2.9c.7.1 1.5.2 2.2.2zm1.1.1c.7 0 1.5.1 2.2.1v2.9c-.7 0-1.5-.1-2.2-.1v-2.9zm3.3.1h2.2v2.9h-2.2v-2.9zm3.2 0c.7 0 1.5 0 2.2-.1v2.9c-.7 0-1.5.1-2.2.1v-2.9zm3.3-.2c.7 0 1.5-.1 2.2-.2v2.9c-.7.1-1.5.1-2.2.2v-2.9zm0-1v-2.9c.7 0 1.5-.1 2.2-.2v2.9c-.7.1-1.4.1-2.2.2zm3.3-3.2c.7-.1 1.5-.1 2.2-.2v2.8l-2.2.3v-2.9zm0-1v-2.8c.7-.1 1.5-.1 2.2-.2v2.8c-.7.1-1.5.1-2.2.2zm0-3.9v-2.8c.7-.1 1.5-.1 2.2-.2v2.8c-.7.1-1.5.1-2.2.2zm0-3.9v-2.9c.7 0 1.5-.1 2.2-.1v2.8c-.7.1-1.5.1-2.2.2zm0-3.9v-2.9c.7 0 1.5-.1 2.2-.1v2.8c-.7.1-1.5.1-2.2.2zm0-3.9v-2.8c.7 0 1.5-.1 2.2-.1v2.8c-.7 0-1.5 0-2.2.1zm0-3.9v-2.8c.7 0 1.5 0 2.2-.1v2.8c-.7 0-1.5 0-2.2.1zm0-3.9v-2.9h2.2v2.8c-.7 0-1.5.1-2.2.1zm-17.4-6.8v2.9H6.6v-2.8c.7-.1 1.4-.1 2.2-.1zm-2.3 34.9l2.2.3v2.9l-2.2-.3v-2.9zm19.7 3.1v-2.9l2.2-.3v2.8c-.7.2-1.5.3-2.2.4z" />
+        </DrawingGroup.Children>
+      </DrawingGroup>
+    </DrawingImage.Drawing>
+  </DrawingImage>
+  <DrawingImage x:Key="SwitchIcon">
+    <DrawingImage.Drawing>
+      <DrawingGroup>
+        <DrawingGroup.Children>
+          <GeometryDrawing Brush="Transparent" Geometry="M0.0,0.0 L70.0,0.0 L70.0,30.0 L0.0,30.0 Z" />
+          <GeometryDrawing Brush="#6e6e6e" Geometry="M67.6 10.4l-.1-.1-11.1-7.9C55.2 1.5 53.1.7 51.7.5c0 0-5.1-.5-16.9-.5-9.6 0-17.3.6-17.3.6-1.4.1-3.5.9-4.7 1.8L2 10.1c-1.1.5-2 2-2 3.7v9c0 2 1.1 3.7 2.5 3.9 0 0 12.7 1.5 32 1.5 19.9 0 32-1.5 32-1.5 1.4-.2 2.5-1.9 2.5-3.9v-9c0-1.4-.6-2.7-1.4-3.4zM35 8.5h-.3.3zm-1.7 0h-.1.1z" />
+          <GeometryDrawing Brush="#67B7DC" Geometry="M62.8 13.5c-.6-.3-18.2-.3-28.3-.3-8.2 0-27.8.1-27.8.1-1 .4-1.7 1.7-1.7 3.2v5.6c0 1.7 1 3.2 2.1 3.3 0 0 10.8.7 27.4.7 17 0 27.4-.7 27.4-.7 1.2-.1 2.1-1.6 2.1-3.3v-5.6c0-1.3-.6-2.7-1.2-3z">
+            <GeometryDrawing.Pen>
+              <Pen Brush="#afafaf" Thickness=".5" MiterLimit="10" />
+            </GeometryDrawing.Pen>
+          </GeometryDrawing>
+          <GeometryDrawing Brush="#c8ff00" Geometry="M66.4 15.6h2.8v1.6h-2.8z">
+            <GeometryDrawing.Pen>
+              <Pen Brush="#717171" Thickness=".06" MiterLimit="10" />
+            </GeometryDrawing.Pen>
+          </GeometryDrawing>
+          <GeometryDrawing Brush="#4d4d4d" Geometry="M49.3 15.5h-6.8v7.1h2v1h2.8l-.1-1h2.1zm-11.5 0H31v7.1h2v1h2.8l-.1-1h2.1zm-11.5 0h-6.8v7.1h2v1h2.7v-1h2.1zm-11.5 0H8v7.1h2v1h2.7v-1h2.1zm46 0H54v7.1h2v1h2.8l-.1-1h2.1z">
+            <GeometryDrawing.Pen>
+              <Pen Brush="#d9f1ff" Thickness=".37" MiterLimit="10" />
+            </GeometryDrawing.Pen>
+          </GeometryDrawing>
+        </DrawingGroup.Children>
+      </DrawingGroup>
+    </DrawingImage.Drawing>
+  </DrawingImage>
+  <DrawingImage x:Key="WorkstationIcon">
+    <DrawingImage.Drawing>
+      <DrawingGroup>
+        <DrawingGroup.Children>
+          <GeometryDrawing Brush="Transparent" Geometry="M3.0,7.0 L68.0,7.0 L68.0,67.0 L3.0,67.0 Z" />
+          <GeometryDrawing Brush="#afafaf" Geometry="M54.6 59.5c.2.5-.1.8-.6.8H3.9c-.5 0-.6-.3-.2-.6l8-7.2c.4-.3 1.1-.6 1.6-.6h37.3c.5 0 1.1.4 1.3.8l2.7 6.8z" />
+          <GeometryDrawing Brush="{x:Null}" Geometry="M54.6 59.5c.2.5-.1.8-.6.8H3.9c-.5 0-.6-.3-.2-.6l8-7.2c.4-.3 1.1-.6 1.6-.6h37.3c.5 0 1.1.4 1.3.8l2.7 6.8z">
+            <GeometryDrawing.Pen>
+              <Pen Brush="#8d8d8d" Thickness=".25" MiterLimit="10" StartLineCap="Round" EndLineCap="Round" LineJoin="Round" />
+            </GeometryDrawing.Pen>
+          </GeometryDrawing>
+          <GeometryDrawing Brush="#6e6e6e" Geometry="M35.4 58.1c0 .3-.2.5-.5.5H7.3c-.3 0-.3-.1-.1-.3l5.6-5.2c.2-.2.5-.3.8-.3H35c.3 0 .5.2.5.5l-.1 4.8zm8.6.1c.1.2.4.4.6.4h7.5c.3 0 .4-.2.3-.4l-2-4.9c-.1-.2-.4-.4-.6-.4h-7.2c-.3 0-.4.2-.3.4l1.7 4.9zm-7.8-.1c0 .3.2.5.5.5h6.1c.3 0 .4-.2.3-.4l-.2-.4c-.1-.2-.4-.4-.6-.4h-1c-.3 0-.5-.2-.6-.4v-.1c-.1-.2-.3-.4-.6-.4h-1.3c-.3 0-.4.2-.4.5v.1c0 .3-.2.5-.4.5h-1.3c-.3 0-.5.2-.5.5zm0-3.5c0 .3.2.5.5.5h4.8c.3 0 .4-.2.3-.4l-.4-1.3c-.1-.2-.3-.4-.6-.4h-4.2c-.3 0-.5.2-.5.5.1-.2.1 1.1.1 1.1zm14.2-6.5c0 1-6.8 1.4-12.4 1.4-3.9 0-10.9-.3-11.4-1.3v1.7c0 .7 4.8 1.2 11.4 1.2s12.4-.6 12.4-1.4v-1.6z" />
+          <GeometryDrawing Brush="gray" Geometry="M38.5 46.9c6.6 0 11.9.6 11.9 1.3s-5.3 1.4-11.9 1.4c-6.7 0-11.9-.7-11.9-1.4s5.3-1.3 11.9-1.3z" />
+          <GeometryDrawing Brush="#6e6e6e" Geometry="M41 48.5s-1.5.1-2.5.1-2.5-.1-2.5-.1v-9.8h5v9.8z" />
+          <GeometryDrawing Brush="#6e6e6e" Geometry="M12.8 9.7c0-1.1.9-2 2-2H63a2 2 0 0 1 2 2v30.1a2 2 0 0 1-2 2H14.8a2 2 0 0 1-2-2V9.7z" />
+          <GeometryDrawing Brush="{x:Null}" Geometry="M12.8 9.7c0-1.1.9-2 2-2H63a2 2 0 0 1 2 2v30.1a2 2 0 0 1-2 2H14.8a2 2 0 0 1-2-2V9.7z">
+            <GeometryDrawing.Pen>
+              <Pen Brush="#666" Thickness=".24" MiterLimit="10" StartLineCap="Round" EndLineCap="Round" LineJoin="Round" />
+            </GeometryDrawing.Pen>
+          </GeometryDrawing>
+          <GeometryDrawing Brush="#afafaf" Geometry="M13.8 10.7c0-1.1.9-2 2-2h46.4a2 2 0 0 1 2 2v27.8a2 2 0 0 1-2 2H15.8a2 2 0 0 1-2-2V10.7z" />
+          <GeometryDrawing Brush="#67B7DC" Geometry="M14.4 11.2c0-1.1.9-2 2-2h45.3a2 2 0 0 1 2 2v26.9a2 2 0 0 1-2 2H16.4a2 2 0 0 1-2-2V11.2z" />
+          <GeometryDrawing Brush="#c9c9c9" Geometry="M62.1 54.2c-.2-.1-.4-.3-.7-.5.2.1.5.3.7.5z" />
+          <GeometryDrawing Brush="#afafaf" Geometry="M62.1 54.2h.2c.6-.1 1.3-.2 2.2-.1 2 1.5 3.8 4.6 1.2 5.8-2 .9-3.5.8-4.7-.5-.6-.7-1.2-1.5-1.7-2.3.2-1.2.9-2.5 2.8-2.9z" />
+          <GeometryDrawing Brush="#afafaf" Geometry="M59.3 57.1c-.9-1.4-1.4-2.9-.7-3.5.2-.2.5-.4.9-.6.6.1 1.3.3 1.9.7.3.2.5.4.7.5-1.9.4-2.6 1.7-2.8 2.9z" />
+          <GeometryDrawing Brush="#afafaf" Geometry="M59.5 53c1.4-.6 3.3-.3 5 1l.1.1c-.9-.1-1.8 0-2.4.1-.1-.1-.8-.4-.7-.4-.7-.5-1.4-.8-2-.8z" />
+          <GeometryDrawing Brush="{x:Null}" Geometry="M59.5 53c1.4-.6 3.3-.3 5 1l.1.1c2 1.5 3.8 4.6 1.2 5.8-2 .9-3.5.8-4.7-.5-.6-.7-1.2-1.5-1.7-2.3-.9-1.4-1.4-2.9-.7-3.5.2-.3.4-.5.8-.6z">
+            <GeometryDrawing.Pen>
+              <Pen Brush="#717171" Thickness=".11" MiterLimit="4" StartLineCap="Round" EndLineCap="Round" />
+            </GeometryDrawing.Pen>
+          </GeometryDrawing>
+          <GeometryDrawing Brush="{x:Null}" Geometry="M62.1 54.2c.1 0 .2 0 .3-.1.6-.1 1.3-.2 2.2-.1m-5.3 3.1c.3-1.1.9-2.5 2.8-2.9m-.7-.5c-.6-.3-1.3-.6-1.9-.7m2.6 1.2c-.2-.2-.4-.3-.7-.5">
+            <GeometryDrawing.Pen>
+              <Pen Brush="#717171" Thickness=".11" MiterLimit="4" StartLineCap="Round" EndLineCap="Round" />
+            </GeometryDrawing.Pen>
+          </GeometryDrawing>
+          <GeometryDrawing Brush="#4d4d4d" Geometry="M61.6 53.5c.4.3.4.5.5.6-.1 0-.2 0-.3.1-.4-.4-1-.7-1-.7.2-.2.6-.1.8 0z" />
+        </DrawingGroup.Children>
+      </DrawingGroup>
+    </DrawingImage.Drawing>
+  </DrawingImage>
+  <DrawingImage x:Key="yfiles-logo" x:Shared="false">
+    <DrawingImage.Drawing>
+      <DrawingGroup>
+          <GeometryDrawing Brush="#00BFFF" Geometry="M12.39,47.29l.1,19.3a27.74,27.74,0,0,0,13.9,23.8l16.8,9.6a27.32,27.32,0,0,0,27.5-.2L87.39,90A27.44,27.44,0,0,0,101,66.09l-.1-19.4A27.86,27.86,0,0,0,87,22.89l-16.7-9.5a27.32,27.32,0,0,0-27.5.2l-16.7,9.8a27.5,27.5,0,0,0-13.7,23.9"/>
+          <GeometryDrawing Brush="#242265" Geometry="M66.39,75.79a13.53,13.53,0,0,1,2,3.1,5.64,5.64,0,0,1-.9,6.2,5.54,5.54,0,0,1-7.4.7,6,6,0,0,1-2.2-5,10.86,10.86,0,0,1,1.1-3.9,25.54,25.54,0,0,0,1.4-3.5,14.12,14.12,0,0,0,.4-4.6c-.1-1.6-.3-3.1-.5-4.7a11.49,11.49,0,0,0-2.8-6,14.65,14.65,0,0,0-5.2-3.4c-.9-.4-1.7-.8-2.6-1.1a13.45,13.45,0,0,0-6.3-.9c-1.4.1-2.7.4-4.1.4a6.21,6.21,0,0,1-4.4-1.5,5.48,5.48,0,0,1-1.1-7,5.55,5.55,0,0,1,7.8-1.7,8,8,0,0,1,2.3,2.2c.6.8,1.1,1.5,1.7,2.3a12.94,12.94,0,0,0,3.3,3.3,14,14,0,0,0,3,1.5c1,.4,2,.9,3,1.3a11.55,11.55,0,0,0,5.5.8,12.46,12.46,0,0,0,4.6-1.5c1.2-.7,2.3-1.6,3.5-2.4a13.43,13.43,0,0,0,3.2-3.1,14.59,14.59,0,0,0,1.7-3,15.9,15.9,0,0,1,2.1-4.1,6.14,6.14,0,0,1,3.8-2.5,5.2,5.2,0,0,1,5,1.6,5.26,5.26,0,0,1,1.4,4.6,5.74,5.74,0,0,1-3,4.1,13.58,13.58,0,0,1-4.9,1.2,15.19,15.19,0,0,0-5.1,1.2c-.6.3-1.1.6-1.6.9a38.77,38.77,0,0,0-3.3,2.3,14.06,14.06,0,0,0-3.6,3.7,12.57,12.57,0,0,0-1.5,3.8,17,17,0,0,0,0,4.5,22.26,22.26,0,0,0,.5,3.6,13,13,0,0,0,1.8,4.6c.5.7,1,1.4,1.4,2"/>
+          <GeometryDrawing Brush="#242265" Geometry="M71.39,64a13.54,13.54,0,0,1,3.6.8,5.85,5.85,0,0,1,3.8,5,5.39,5.39,0,0,1-4.7,5.7,5.79,5.79,0,0,1-5.1-2,10,10,0,0,1-1.9-3.5,36.83,36.83,0,0,0-1.5-3.5,10.88,10.88,0,0,0-2.9-3.5c-1.2-1-2.4-2-3.7-2.9a11.46,11.46,0,0,0-6.2-2.3,13.93,13.93,0,0,0-6.1,1.3,27.73,27.73,0,0,1-2.6,1A13.93,13.93,0,0,0,39,64c-.9,1.1-1.7,2.2-2.6,3.2a7,7,0,0,1-4.2,2.1,5.47,5.47,0,0,1-5.7-4.2,5.54,5.54,0,0,1,4.3-6.7,8.55,8.55,0,0,1,3.2-.1c.9.1,1.9.3,2.8.4a18.48,18.48,0,0,0,4.7,0,19.66,19.66,0,0,0,3.2-1l3-1.2a12.23,12.23,0,0,0,4.5-3.3,11.72,11.72,0,0,0,2.2-4.3c.3-1.4.5-2.8.7-4.2a17,17,0,0,0,.1-4.5,17.83,17.83,0,0,0-.9-3.3,32.55,32.55,0,0,1-1.5-4.4,6.49,6.49,0,0,1,.9-4.5,5.19,5.19,0,0,1,4.7-2.4,5.36,5.36,0,0,1,4.3,2.3,5.56,5.56,0,0,1,.8,5,12.06,12.06,0,0,1-2.7,4.3,15.66,15.66,0,0,0-2.8,4.4,12.09,12.09,0,0,0-.5,1.8c-.3,1.3-.5,2.6-.7,4a13,13,0,0,0,.1,5.2,12.45,12.45,0,0,0,1.7,3.7,23.45,23.45,0,0,0,3.1,3.2,32.53,32.53,0,0,0,2.9,2.3,13,13,0,0,0,4.5,2,19.53,19.53,0,0,1,2.3.2"/>
+      </DrawingGroup>
+    </DrawingImage.Drawing>
+  </DrawingImage>
+</ResourceDictionary>

@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 4.0.
- ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -27,7 +27,7 @@
  ** 
  ***************************************************************************/
 
-namespace Demo.yFiles.Toolkit.OptionHandler
+namespace yWorks.Demo.Toolkit.OptionHandler
 {
   /// <summary>
   ///   A data holder that represents a single enum value with a display name used for the UI component.
@@ -35,17 +35,17 @@ namespace Demo.yFiles.Toolkit.OptionHandler
   public class EnumValue
   {
     /// <summary>
-    ///   The display name of the enum value.
+    ///   Gets or sets the display name of the enum value.
     /// </summary>
     public string Name { get; }
 
     /// <summary>
-    ///   The enum value.
+    ///   Gets or sets the enum value.
     /// </summary>
     public object Value { get; }
 
     /// <summary>
-    ///   Creates a new EnumValue instance.
+    ///   Creates a new <see cref="EnumValue"/> instance.
     /// </summary>
     /// <param name="name">The display name of the enum value.</param>
     /// <param name="value">The enum value.</param>

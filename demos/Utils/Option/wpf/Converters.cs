@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 4.0.
- ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -42,16 +42,16 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Markup;
 using System.Windows.Media;
-using Demo.yFiles.Option.Editor;
-using Demo.yFiles.Option.Handler;
-using Demo.yFiles.Option.I18N;
-using Demo.yFiles.Option.View;
 using yWorks.Annotations;
+using yWorks.Demo.Option.Editor;
+using yWorks.Demo.Option.Handler;
+using yWorks.Demo.Option.I18N;
+using yWorks.Demo.Option.View;
 using yWorks.Geometry;
 using ArrayList = System.Collections.Generic.List<object>;
 using FrameworkElement = System.Windows.Controls.Control;
 
-namespace Demo.yFiles.Option
+namespace yWorks.Demo.Option
 
 {
   //  public class ToStringConverter : IValueConverter
@@ -85,12 +85,11 @@ namespace Demo.yFiles.Option
       return null;
     }
 
-    internal static TabItem CreateTabItem(IOptionItem item, CultureInfo culture) {
-      return new TabItem {
-          Header = new XamlLocalizingConverter().Convert(item, typeof(string), null, culture),
-          Content = new OptionItemPresenter { Item = item }
-      };
-    }
+    internal static TabItem CreateTabItem(IOptionItem item, CultureInfo culture) =>
+        new() {
+            Header = new XamlLocalizingConverter().Convert(item, typeof(string), null, culture),
+            Content = new OptionItemPresenter { Item = item }
+        };
 
     public class Adapter
     {
@@ -138,9 +137,8 @@ namespace Demo.yFiles.Option
     }
 
 
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
-      throw new NotImplementedException();
-    }
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) =>
+        throw new NotImplementedException();
   }
 
   /// <summary>
@@ -248,9 +246,8 @@ namespace Demo.yFiles.Option
     }
 
     /// <xamlhelper/>
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
-      throw new NotImplementedException();
-    }
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) =>
+        throw new NotImplementedException();
   }
 
   /// <xamlhelper/>
@@ -314,9 +311,7 @@ namespace Demo.yFiles.Option
     }
 
     /// <xamlhelper/>
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
-      return value;
-    }
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => value;
   }
 
   /// <xamlhelper/>
@@ -387,6 +382,7 @@ namespace Demo.yFiles.Option
       return new ValidationResult(false, null);
     }
   }
+
   internal sealed class ColorValueSerializer : ValueSerializer
   {
     private static readonly Dictionary<string, string> colorMap;
@@ -691,14 +687,11 @@ namespace Demo.yFiles.Option
     #region Overrides of ValueSerializer
 
     /// <inheritdoc/>
-    public override bool CanConvertFromString(string value, IValueSerializerContext context) {
-      return true; // Regex.Matches(value, "^#([0-9A-Fa-f]{2}){4}$").Count == 1 || colorMap.ContainsKey(value);
-    }
+    public override bool CanConvertFromString(string value, IValueSerializerContext context) =>
+        true; // Regex.Matches(value, "^#([0-9A-Fa-f]{2}){4}$").Count == 1 || colorMap.ContainsKey(value);
 
     /// <inheritdoc/>
-    public override bool CanConvertToString(object value, IValueSerializerContext context) {
-      return value is Color;
-    }
+    public override bool CanConvertToString(object value, IValueSerializerContext context) => value is Color;
 
     /// <inheritdoc/>
     public override object ConvertFromString(string c, IValueSerializerContext context) {
@@ -767,9 +760,8 @@ namespace Demo.yFiles.Option
       return DependencyProperty.UnsetValue;
     }
 
-    private bool IsAssignmentCompatible(Type targetType, Type type) {
-      return targetType == type || type.IsSubclassOf(targetType);
-    }
+    private bool IsAssignmentCompatible(Type targetType, Type type) =>
+        targetType == type || type.IsSubclassOf(targetType);
   }
 
   public class GenericConverter<TSourceType, TTargetType> : IValueConverter
@@ -850,9 +842,8 @@ namespace Demo.yFiles.Option
     }
 
     /// <xamlhelper/>
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
-      return DependencyProperty.UnsetValue;
-    }
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) =>
+        DependencyProperty.UnsetValue;
   }
 
   /// <xamlhelper/>
@@ -872,9 +863,8 @@ namespace Demo.yFiles.Option
     }
 
     /// <xamlhelper/>
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
-      return DependencyProperty.UnsetValue;
-    }
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) =>
+        DependencyProperty.UnsetValue;
   }
 
   /// <xamlhelper/>
@@ -891,9 +881,8 @@ namespace Demo.yFiles.Option
     }
 
     /// <xamlhelper/>
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
-      throw new NotImplementedException();
-    }
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) =>
+        throw new NotImplementedException();
   }
 
   /// <xamlhelper/>
@@ -913,23 +902,18 @@ namespace Demo.yFiles.Option
 
       if (enumType.IsEnum) {
         var array = GetValues(enumType);
-        var list = new ArrayList();
-        foreach (var o in array) {
-          list.Add(o);
-        }
+        ArrayList list = [.. array];
         return list;
       }
       return DependencyProperty.UnsetValue;
     }
 
-    private Array GetValues(Type enumType) {
-      return (from field in enumType.GetFields() where field.IsLiteral select field.GetValue(enumType)).ToArray();
-    }
+    private Array GetValues(Type enumType) =>
+        (from field in enumType.GetFields() where field.IsLiteral select field.GetValue(enumType)).ToArray();
 
     /// <xamlhelper/>
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
-      throw new NotImplementedException();
-    }
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) =>
+        throw new NotImplementedException();
   }
 
   public class ColorDomain : IEnumerable<object>
@@ -959,13 +943,10 @@ namespace Demo.yFiles.Option
       }
     }
 
-    IEnumerator IEnumerable.GetEnumerator() {
-      return GetEnumerator();
-    }
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-    public IEnumerator<object> GetEnumerator() {
-      return NoColorAllowed ? colorsWithNoColor.GetEnumerator() : colors.GetEnumerator();
-    }
+    public IEnumerator<object> GetEnumerator() =>
+        NoColorAllowed ? colorsWithNoColor.GetEnumerator() : colors.GetEnumerator();
   }
 
   /// <xamlhelper/>
@@ -1007,9 +988,8 @@ namespace Demo.yFiles.Option
     }
 
     /// <xamlhelper/>
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
-      throw new NotImplementedException();
-    }
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) =>
+        throw new NotImplementedException();
   }
 
   /// <xamlhelper/>
@@ -1118,10 +1098,9 @@ namespace Demo.yFiles.Option
       return value;
     }
 
-    private TypeConverter GetConverter() {
-      return XamlOptionItemEditorSelector.GetAttribute<TypeConverter>(Item, OptionItem.CustomTypeConverterAttribute,
-          null) ?? (Item != null ? TypeDescriptor.GetConverter(Item.Type) : null);
-    }
+    private TypeConverter GetConverter() =>
+        XamlOptionItemEditorSelector.GetAttribute<TypeConverter>(Item, OptionItem.CustomTypeConverterAttribute, null) ??
+        (Item != null ? TypeDescriptor.GetConverter(Item.Type) : null);
 
     /// <xamlhelper/>
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
@@ -1179,9 +1158,8 @@ namespace Demo.yFiles.Option
       return presenter.TryFindResource(presenter.Item.Attributes["DynamicContentControl.EditorTemplate"]);
     }
 
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
-      throw new NotImplementedException();
-    }
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) =>
+        throw new NotImplementedException();
   }
 
   /// <xamlhelper/>
@@ -1220,9 +1198,8 @@ namespace Demo.yFiles.Option
     }
 
     /// <xamlhelper/>
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
-      throw new NotImplementedException();
-    }
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) =>
+        throw new NotImplementedException();
   }
 
   /// <xamlhelper/>
@@ -1343,13 +1320,9 @@ namespace Demo.yFiles.Option
   public class BoolConverter : IValueConverter
   {
     /// <xamlhelper/>
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
-      return !(bool) value;
-    }
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture) => !(bool) value;
 
     /// <xamlhelper/>
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
-      return !(bool) value;
-    }
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => !(bool) value;
   }
 }

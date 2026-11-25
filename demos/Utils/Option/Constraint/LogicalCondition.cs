@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 4.0.
- ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -29,9 +29,9 @@
 
 using System;
 using System.ComponentModel;
-using Demo.yFiles.Option.View;
+using yWorks.Demo.Option.View;
 
-namespace Demo.yFiles.Option.Constraint
+namespace yWorks.Demo.Option.Constraint
 {
   internal abstract class BinaryLogicalCondition : ConditionBase
   {
@@ -64,9 +64,8 @@ namespace Demo.yFiles.Option.Constraint
 
     public override bool IsTrue => ((ICondition) Inputs[0]).IsTrue && ((ICondition) Inputs[1]).IsTrue;
 
-    protected override ICondition CreateCopy(params INotifyPropertyChanged[] copiedInput) {
-      return new And((ICondition) copiedInput[0], (ICondition) copiedInput[1]);
-    }
+    protected override ICondition CreateCopy(params INotifyPropertyChanged[] copiedInput) =>
+        new And((ICondition) copiedInput[0], (ICondition) copiedInput[1]);
   }
 
   internal sealed class Or : BinaryLogicalCondition
@@ -75,9 +74,8 @@ namespace Demo.yFiles.Option.Constraint
 
     public override bool IsTrue => ((ICondition) Inputs[0]).IsTrue || ((ICondition) Inputs[1]).IsTrue;
 
-    protected override ICondition CreateCopy(params INotifyPropertyChanged[] copiedInput) {
-      return new Or((ICondition) copiedInput[0], (ICondition) copiedInput[1]);
-    }
+    protected override ICondition CreateCopy(params INotifyPropertyChanged[] copiedInput) =>
+        new Or((ICondition) copiedInput[0], (ICondition) copiedInput[1]);
   }
 
   internal sealed class Xor : BinaryLogicalCondition
@@ -92,9 +90,8 @@ namespace Demo.yFiles.Option.Constraint
       }
     }
 
-    protected override ICondition CreateCopy(params INotifyPropertyChanged[] copiedInput) {
-      return new Xor((ICondition) copiedInput[0], (ICondition) copiedInput[1]);
-    }
+    protected override ICondition CreateCopy(params INotifyPropertyChanged[] copiedInput) =>
+        new Xor((ICondition) copiedInput[0], (ICondition) copiedInput[1]);
   }
 
   internal sealed class Not : ConditionBase
@@ -103,11 +100,10 @@ namespace Demo.yFiles.Option.Constraint
 
     public override bool IsTrue => !((ICondition) Inputs[0]).IsTrue;
 
-    protected override ICondition CreateCopy(params INotifyPropertyChanged[] copiedInput) {
-      return new Not((ICondition) copiedInput[0]);
-      //      throw new NotImplementedException();
-    }
+    protected override ICondition CreateCopy(params INotifyPropertyChanged[] copiedInput) =>
+        new Not((ICondition) copiedInput[0]);
 
+    //      throw new NotImplementedException();
     public override void Dispose() {
       ((ICondition) Inputs[0]).Dispose();
       base.Dispose();

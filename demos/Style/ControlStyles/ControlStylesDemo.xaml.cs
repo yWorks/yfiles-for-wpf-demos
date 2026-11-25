@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 4.0.
- ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -35,92 +35,129 @@ using yWorks.Geometry;
 using yWorks.Graph;
 using yWorks.Graph.Styles;
 
-namespace Demo.yFiles.Graph.ControlStyles
+namespace yWorks.Demo.ControlStyles
 {
   /// <summary>
-  /// A simple form that shows how to use the <see cref="NodeControlNodeStyle"/> and <see cref="LabelControlLabelStyle"/>
-  /// to style a graph that displays business objects appropriately.
+  ///   A simple form that shows how to use the <see cref="NodeControlNodeStyle"/> and <see cref="LabelControlLabelStyle"/>
+  ///   to style a graph that displays business objects appropriately.
   /// </summary>
+  [Demo("control-styles", "style", "Control Styles",
+      Summary =
+          "Sample application that demonstrates the usage of NodeControlNodeStyle, PortControlPortStyle, LabelControlLabelStyle, and EdgeSegmentControlEdgeStyle.",
+      Tags = ["style", "xaml"], Keywords = ["control", "node", "edge", "label", "port", "template"], RelatedDemos = [])]
   public partial class ControlStylesDemo
   {
     /// <summary>
-    /// A reference to the static, shared node style instance that is used for customers.
+    ///   A reference to the static, shared node style instance that is used for customers.
     /// </summary>
-    private NodeControlNodeStyle customerNodeStyle;
+    private NodeControlNodeStyle customerNodeStyle = null!;
+
     /// <summary>
-    /// A reference to the static, shared node style instance that is used for products.
+    ///   A reference to the static, shared node style instance that is used for products.
     /// </summary>
-    private NodeControlNodeStyle productNodeStyle;
+    private NodeControlNodeStyle productNodeStyle = null!;
+
     /// <summary>
-    /// A reference to the static, shared node style instance that is used for the labels of the edges.
+    ///   A reference to the static, shared node style instance that is used for the labels of the edges.
     /// </summary>
-    private LabelControlLabelStyle labelStyle;
+    private LabelControlLabelStyle labelStyle = null!;
+
     /// <summary>
-    /// A reference to the static, shared edge style instance that is used for the edges.
+    ///   A reference to the static, shared edge style instance that is used for the edges.
     /// </summary>
-    private EdgeSegmentControlEdgeStyle edgeStyle;
+    private EdgeSegmentControlEdgeStyle edgeStyle = null!;
+
     /// <summary>
-    /// A reference to the static, shared port style instance that is used for the ports.
+    ///   A reference to the static, shared port style instance that is used for the ports.
     /// </summary>
-    private PortControlPortStyle portStyle;
+    private PortControlPortStyle portStyle = null!;
+
+    private GraphMLSupport graphMLSupport = null!;
 
     public ControlStylesDemo() {
       InitializeComponent();
     }
 
     /// <summary>
-    /// Run the layout after the size of the control has been determined.
+    ///   Initialize the graph and its interaction after the demo has loaded.
     /// </summary>
-    protected virtual void OnLayoutUpdated(object source, EventArgs args) {
-      // avoid double registration
-      LayoutUpdated -= OnLayoutUpdated;
-
+    protected override void Initialize() {
       // disable all default adorners - the style visualize these states themselves
       graphControl.HighlightIndicatorManager.Enabled = false;
       graphControl.SelectionIndicatorManager.Enabled = false;
       graphControl.FocusIndicatorManager.Enabled = false;
 
-
       // Initialize input mode for navigation
       InitializeInputModes();
+      // Initialize GraphML support
+      InitializeGraphML();
       // initialize default style instances.
       InitializeStyles();
 
       // load the sample model from GraphML
-      graphControl.ImportFromGraphML("Resources\\model.graphml");
+      var stream = LoadAssemblyResource("model.graphml");
+      graphMLSupport.ImportFromGraphML(stream);
+      ResizeNodesToPreferredSize();
 
       // alternatively create the sample model in code
       // CreateModel();
     }
 
+    /// <summary>
+    ///   The GraphML sample stores fixed node sizes. Re-measure the control styles so their content,
+    ///   including the product checkbox, is not clipped by those stored sizes.
+    /// </summary>
+    private void ResizeNodesToPreferredSize() {
+      var renderContext = graphControl.CreateRenderContext();
+      foreach (var node in Graph.Nodes) {
+        if (node.Style is NodeControlNodeStyle style) {
+          var measureNode = new SimpleNode {
+              Tag = node.Tag,
+              Style = style
+          };
+          var preferredSize = style.GetPreferredSize(renderContext, measureNode);
+          Graph.SetNodeLayout(node, RectD.FromCenter(node.Layout.GetCenter(), preferredSize));
+        }
+      }
+    }
+
+    [STAThread]
+    private static void Main() => Run<ControlStylesDemo>();
+
 
     /// <summary>
-    /// Initializes the input modes.
+    ///   Initializes the input modes.
     /// </summary>
     protected virtual void InitializeInputModes() {
-      var graphEditorInputMode = new GraphEditorInputMode();
-      graphEditorInputMode.NodeCreator = CreateNode;
-      graphEditorInputMode.LabelEditableItems = GraphItemTypes.Edge | GraphItemTypes.EdgeLabel;
-      graphEditorInputMode.CreateEdgeInputMode.EdgeCreator = CreateEdge;
+      var graphEditorInputMode = new GraphEditorInputMode {
+          NodeCreator = CreateNode,
+          LabelEditableItems = GraphItemTypes.Edge | GraphItemTypes.EdgeLabel,
+          CreateEdgeInputMode = { EdgeCreator = CreateEdge }
+      };
       graphControl.InputMode = graphEditorInputMode;
     }
 
     /// <summary>
-    /// Callback used by <see cref="CreateEdgeInputMode"/> to create an edge.
+    ///   Callback used by <see cref="CreateEdgeInputMode"/> to create an edge.
     /// </summary>
     /// <remarks>
-    /// This implementation adds a label to the newly created edge and sets up the correct business object.
-    /// Note that only edges from Customers to Products are allowed.
+    ///   This implementation adds a label to the newly created edge and sets up the correct business object.
+    ///   Note that only edges from Customers to Products are allowed.
     /// </remarks>
-    private IEdge CreateEdge(IInputModeContext context, IGraph graph, IPortCandidate sourcePortCandidate, IPortCandidate targetPortCandidate, IEdge templateEdge)
-    {
+    private IEdge? CreateEdge(
+        IInputModeContext context,
+        IGraph graph,
+        IPortCandidate sourcePortCandidate,
+        IPortCandidate? targetPortCandidate,
+        IEdge templateEdge) {
       var sourcePort = sourcePortCandidate.Port ?? sourcePortCandidate.CreatePort(context);
-      var targetPort = targetPortCandidate.Port ?? targetPortCandidate.CreatePort(context);
-      var customer = sourcePort.Owner.Tag as Customer;
-      var product  = targetPort.Owner.Tag as Product;
-      if (customer != null && product != null) {
+      var targetPort = targetPortCandidate?.Port ?? targetPortCandidate?.CreatePort(context);
+      if (sourcePort.Owner.Tag is Customer customer && targetPort?.Owner.Tag is Product product) {
         var edge = graph.CreateEdge(sourcePort, targetPort, edgeStyle);
-        var relation = new Relation {Customer = customer, Product = product};
+        var relation = new Relation {
+            Customer = customer,
+            Product = product
+        };
         var label = graph.AddLabel(edge, relation.ToString());
         label.Tag = relation;
         return edge;
@@ -129,26 +166,42 @@ namespace Demo.yFiles.Graph.ControlStyles
     }
 
     /// <summary>
-    /// Callback used by <see cref="GraphEditorInputMode"/> to actually create a node upon a click.
+    ///   Callback used by <see cref="GraphEditorInputMode"/> to actually create a node upon a click.
     /// </summary>
     /// <remarks>
-    /// This method creates a dummy business object and associated it with a newly created node.
+    ///   This method creates a dummy business object and associated it with a newly created node.
     /// </remarks>
-    private INode CreateNode(IInputModeContext context, IGraph graph, PointD location, INode parent) {
-      Customer c = new Customer("Sample Customer", "Your Computer", new Random((int) DateTime.Now.TimeOfDay.TotalMilliseconds).Next(99999));
-      var simpleNode = new SimpleNode { Tag = c, Style = customerNodeStyle, Layout = new MutableRectangle(0, 0, 10, 10) };
+    private INode CreateNode(IInputModeContext context, IGraph graph, PointD location, INode? parent) {
+      var c = new Customer("Sample Customer", "Your Computer",
+          new Random((int) DateTime.Now.TimeOfDay.TotalMilliseconds).Next(99999));
+      var simpleNode = new SimpleNode {
+          Tag = c,
+          Style = customerNodeStyle,
+          Layout = new MutableRectangle(0, 0, 10, 10)
+      };
       var preferredSize = customerNodeStyle.GetPreferredSize(graphControl.CreateRenderContext(), simpleNode);
       return graph.CreateNode(RectD.FromCenter(location, preferredSize), customerNodeStyle, c);
     }
 
     /// <summary>
-    /// Initializes the styles.
+    ///   Initializes the GraphML support and registers command bindings for Open/Save.
+    /// </summary>
+    private void InitializeGraphML() {
+      graphMLSupport = new GraphMLSupport(graphControl);
+      graphMLSupport.RegisterOpenSaveCommandBindings();
+    }
+
+    /// <summary>
+    ///   Initializes the styles.
     /// </summary>
     protected virtual void InitializeStyles() {
       customerNodeStyle = new NodeControlNodeStyle("CustomerNodeTemplate");
       productNodeStyle = new NodeControlNodeStyle("ProductNodeTemplate");
       labelStyle = new LabelControlLabelStyle("LabelTemplate");
-      edgeStyle = new EdgeSegmentControlEdgeStyle("EdgeSegmentTemplate") { SegmentThickness = 5, PathStyle = new PolylineEdgeStyle { Pen = new Pen(Brushes.Black, 5) } };
+      edgeStyle = new EdgeSegmentControlEdgeStyle("EdgeSegmentTemplate") {
+          SegmentThickness = 5,
+          PathStyle = new PolylineEdgeStyle { Pen = new Pen(Brushes.Black, 5) }
+      };
       portStyle = new PortControlPortStyle("PortTemplate") { RenderSize = new SizeD(5, 5) };
 
       // set an initial default size for all nodes
@@ -167,11 +220,10 @@ namespace Demo.yFiles.Graph.ControlStyles
     }
 
     /// <summary>
-    /// Creates a simple model - this method is not used in this demo - instead the graph is loaded from
-    /// the included GraphML file.
+    ///   Creates a simple model - this method is not used in this demo - instead the graph is loaded from
+    ///   the included GraphML file.
     /// </summary>
     private void CreateModel() {
-
       // remember the mapping for each object to the created node
       var objectMapping = new Dictionary<object, INode>();
 
@@ -180,19 +232,21 @@ namespace Demo.yFiles.Graph.ControlStyles
 
       // and create some nodes - and associate them with a tag.
 
-      var customers = new[]
-                        {
-                          new Customer("Lucy Osbourne", "Arizona", 13413),
-                          new Customer("Stephanie Cornwell", "Oregon", 13414),
-                          new Customer("Mark Wright", "Michigan", 13415),
-                          new Customer("Ruby Turner", "South Carolina", 13416),
-                          new Customer("Norman Johnson", "Montana", 13417)
-                        };
-
+      var customers = new[] {
+          new Customer("Lucy Osbourne", "Arizona", 13413),
+          new Customer("Stephanie Cornwell", "Oregon", 13414),
+          new Customer("Mark Wright", "Michigan", 13415),
+          new Customer("Ruby Turner", "South Carolina", 13416),
+          new Customer("Norman Johnson", "Montana", 13417)
+      };
 
       foreach (var c in customers) {
         // calculate the preferred size before creating the node
-        var simpleNode = new SimpleNode { Tag = c, Style = customerNodeStyle, Layout = new MutableRectangle(0, 0, 10, 10) };
+        var simpleNode = new SimpleNode {
+            Tag = c,
+            Style = customerNodeStyle,
+            Layout = new MutableRectangle(0, 0, 10, 10)
+        };
         var preferredSize = customerNodeStyle.GetPreferredSize(graphControl.CreateRenderContext(), simpleNode);
 
         // then create the node
@@ -204,16 +258,19 @@ namespace Demo.yFiles.Graph.ControlStyles
 
       // and the nodes....
 
-      var products = new[]
-                       {
-                         new Product("Donut Maker", 8971, true),
-                         new Product("Snow Boots", 8972, true),
-                         new Product("Cowboy Hat", 8973, false),
-                       };
+      var products = new[] {
+          new Product("Donut Maker", 8971, true),
+          new Product("Snow Boots", 8972, true),
+          new Product("Cowboy Hat", 8973, false)
+      };
 
       foreach (var p in products) {
         // calculate the preferred size before creating the node
-        var simpleNode = new SimpleNode { Tag = p, Style = productNodeStyle, Layout = new MutableRectangle(0, 0, 10, 10) };
+        var simpleNode = new SimpleNode {
+            Tag = p,
+            Style = productNodeStyle,
+            Layout = new MutableRectangle(0, 0, 10, 10)
+        };
         var preferredSize = productNodeStyle.GetPreferredSize(graphControl.CreateRenderContext(), simpleNode);
 
         // then create the node
@@ -221,15 +278,42 @@ namespace Demo.yFiles.Graph.ControlStyles
       }
 
       var relations = new[] {
-        new Relation {Customer = customers[0], Product = products[0]},
-        new Relation {Customer = customers[0], Product = products[1]},
-        new Relation {Customer = customers[0], Product = products[2]},
-        new Relation {Customer = customers[1], Product = products[0]},
-        new Relation {Customer = customers[1], Product = products[2]},
-        new Relation {Customer = customers[2], Product = products[1]},
-        new Relation {Customer = customers[2], Product = products[2]},
-        new Relation {Customer = customers[3], Product = products[1]},
-        new Relation {Customer = customers[4], Product = products[2]},
+          new Relation {
+              Customer = customers[0],
+              Product = products[0]
+          },
+          new Relation {
+              Customer = customers[0],
+              Product = products[1]
+          },
+          new Relation {
+              Customer = customers[0],
+              Product = products[2]
+          },
+          new Relation {
+              Customer = customers[1],
+              Product = products[0]
+          },
+          new Relation {
+              Customer = customers[1],
+              Product = products[2]
+          },
+          new Relation {
+              Customer = customers[2],
+              Product = products[1]
+          },
+          new Relation {
+              Customer = customers[2],
+              Product = products[2]
+          },
+          new Relation {
+              Customer = customers[3],
+              Product = products[1]
+          },
+          new Relation {
+              Customer = customers[4],
+              Product = products[2]
+          }
       };
 
       // now add the edges using the stored mapping between products/customers and INodes
@@ -245,8 +329,6 @@ namespace Demo.yFiles.Graph.ControlStyles
     /// <summary>
     ///   Gets the currently registered <see cref="IGraph"/> instance from the GraphControl.
     /// </summary>
-    public IGraph Graph {
-      get { return graphControl.Graph; }
-    }
+    public IGraph Graph => graphControl.Graph;
   }
 }

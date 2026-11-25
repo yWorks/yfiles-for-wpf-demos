@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 4.0.
- ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -27,6 +27,7 @@
  ** 
  ***************************************************************************/
 
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Markup;
@@ -36,64 +37,89 @@ using yWorks.Geometry;
 using yWorks.Graph;
 using yWorks.Graph.Styles;
 
-[assembly: XmlnsDefinition("http://www.yworks.com/yfiles-wpf/2.1/demos/GraphEditor/Styles", "Demo.yFiles.Graph.Viewer")]
+[assembly: XmlnsDefinition("http://www.yworks.com/yfiles-wpf/2.1/demos/GraphEditor/Styles", "yWorks.Demo.GraphViewer")]
 [assembly: XmlnsPrefix("http://www.yworks.com/yfiles-wpf/2.1/demos/GraphEditor/Styles", "yed")]
-namespace Demo.yFiles.Graph.Viewer
+
+namespace yWorks.Demo.GraphViewer
 {
   public class VectorNodeStyle : NodeStyleBase<VisualGroup>
   {
-    public string TemplateKey { get; set; }
+    public string? TemplateKey { get; set; }
 
     protected override VisualGroup CreateVisual(IRenderContext context, INode node) {
       var container = new VisualGroup();
-      Render(context, container, node);
+      Render(container, node);
       return container;
     }
 
     protected override VisualGroup UpdateVisual(IRenderContext context, VisualGroup oldVisual, INode node) {
-      VisualGroup container = oldVisual;
-      if (container.Transform is MatrixTransform) {
-        RectD layout = node.Layout.ToRectD();
-        ((MatrixTransform)container.Transform).Matrix = new Matrix(layout.Width, 0, 0, layout.Height, layout.X, layout.Y);
-        return container;
+      if (oldVisual.Transform is MatrixTransform transform) {
+        var layout = node.Layout.ToRectD();
+        if (transform.Matrix != Matrix.Identity) {
+          transform.Matrix = new Matrix(layout.Width, 0, 0, layout.Height, layout.X, layout.Y);
+          return oldVisual;
+        }
+        oldVisual.Transform = new MatrixTransform(layout.Width, 0, 0, layout.Height, layout.X, layout.Y);
+        return oldVisual;
       }
       return CreateVisual(context, node);
     }
 
-    private void Render(IRenderContext context, VisualGroup container, INode node) {
-      RectD layout = node.Layout.ToRectD();
-      DataTemplate template = Application.Current.Resources[TemplateKey] as DataTemplate;
+    private void Render(VisualGroup container, INode node) {
+      var layout = node.Layout.ToRectD();
+      if (TemplateKey != null) {
+        var template = FindTemplate(TemplateKey);
 
-      if (template != null) {
-        Canvas child = template.LoadContent() as Canvas;
+        if (template != null) {
+          if (template.LoadContent() is Canvas child) {
+            double oldScaleX = 1, oldScaleY = 1;
 
-        if (child != null) {
-          double oldScaleX = 1, oldScaleY = 1;
-          ScaleTransform oldTransform = child.RenderTransform as ScaleTransform;
+            if (child.RenderTransform is ScaleTransform oldTransform) {
+              oldScaleX = oldTransform.ScaleX;
+              oldScaleY = oldTransform.ScaleY;
+            } else {
+              child.RenderTransform = oldTransform = new ScaleTransform {
+                  ScaleX = 1,
+                  ScaleY = 1
+              };
+            }
+            var width = child.Width;
+            var height = child.Height;
 
-          if (oldTransform != null) {
-            oldScaleX = oldTransform.ScaleX;
-            oldScaleY = oldTransform.ScaleY;
-          } else {
-            child.RenderTransform = oldTransform = new ScaleTransform {ScaleX = 1, ScaleY = 1};
+            var scaleX = 1 / (width / oldScaleX);
+            var scaleY = 1 / (height / oldScaleY);
+
+            container.Add(child);
+
+            if (oldTransform.IsFrozen) {
+              oldTransform = oldTransform.CloneCurrentValue();
+              child.RenderTransform = oldTransform;
+            }
+            oldTransform.ScaleX = scaleX;
+            oldTransform.ScaleY = scaleY;
           }
-          double width = child.Width;
-          double height = child.Height;
-
-          double scaleX = 1/(width/oldScaleX);
-          double scaleY = 1/(height/oldScaleY);
-
-          container.Add(child);
-
-          if (oldTransform.IsFrozen) {
-            oldTransform = oldTransform.CloneCurrentValue();
-            child.RenderTransform = oldTransform;
-          }
-          oldTransform.ScaleX = scaleX;
-          oldTransform.ScaleY = scaleY;
+          container.Transform =
+              new MatrixTransform { Matrix = new Matrix(layout.Width, 0, 0, layout.Height, layout.X, layout.Y) };
         }
-        container.Transform = new MatrixTransform {Matrix = new Matrix(layout.Width, 0, 0, layout.Height, layout.X, layout.Y)};
       }
+    }
+
+    private static DataTemplate? FindTemplate(string templateKey) {
+      var sources = new[] {
+          "pack://application:,,,/GraphViewer;component/Resources/Icons_Computer.xaml",
+          "pack://application:,,,/GraphViewer;component/Resources/Icons_Movies.xaml",
+          "pack://application:,,,/GraphViewer;component/Resources/Icons_People.xaml"
+      };
+
+      foreach (var source in sources) {
+        var dictionary = new ResourceDictionary { Source = new Uri(source, UriKind.Absolute) };
+
+        if (dictionary.Contains(templateKey)) {
+          return dictionary[templateKey] as DataTemplate;
+        }
+      }
+
+      return null;
     }
   }
 }

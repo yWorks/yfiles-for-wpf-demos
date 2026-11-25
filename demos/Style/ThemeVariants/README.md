@@ -1,3 +1,5 @@
-# ThemeVariants
+# Theme Variants
 
-This demo shows various interaction visualization themes simultaneously.
+![Demo thumbnail](../../DemoBrowser/DemoBrowser/Screenshots/theme-variants.webp "Theme Variants")
+
+Shows various interaction visualization themes simultaneously.

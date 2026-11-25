@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 4.0.
- ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -34,16 +34,14 @@ using System.Linq;
 using System.Reflection;
 using yWorks.Annotations;
 
-namespace Demo.yFiles.Option.DataBinding
+namespace yWorks.Demo.Option.DataBinding
 {
   internal static class PropertyInfoExtensions
   {
     private static readonly IDictionary<KeyValuePair<MemberInfo, Type>, Attribute> attributeCache =
         new Dictionary<KeyValuePair<MemberInfo, Type>, Attribute>();
 
-    public static object GetValue(this PropertyInfo p, object o) {
-      return p.GetValue(o, null);
-    }
+    public static object GetValue(this PropertyInfo p, object o) => p.GetValue(o, null);
 
     [CanBeNull]
     public static T GetAttribute<T>([NotNull] this MemberInfo info) where T : Attribute {
@@ -58,11 +56,10 @@ namespace Demo.yFiles.Option.DataBinding
     }
 
     [CanBeNull]
-    public static T GetAttribute<T>([NotNull] this PropertyInfo info) where T : Attribute {
-      return GetAttribute<T>((MemberInfo) info);
-      //return (T)Attribute.GetCustomAttribute(info, typeof(T), true);
-    }
+    public static T GetAttribute<T>([NotNull] this PropertyInfo info) where T : Attribute =>
+        ((MemberInfo) info).GetAttribute<T>();
 
+    //return (T)Attribute.GetCustomAttribute(info, typeof(T), true);
     public static string GetDisplayName(this PropertyInfo info) {
       var displayNameAttribute = info.GetAttribute<DisplayNameAttribute>();
       if (displayNameAttribute != null) {
@@ -130,11 +127,10 @@ namespace Demo.yFiles.Option.DataBinding
         {
           var helperSetInstanceDelegateType =
               typeof(HelperSetInstanceDelegate<,>).MakeGenericType(propertyType, typeof(TSubject));
-          var setterConstructorInfo =
-              helperSetInstanceDelegateType.GetConstructor(new[] {
-                  typeof(PropertyInfo), typeof(IPropertyBuildContext<TSubject>)
-              });
-          var helperSetInstanceDelegateInstance = setterConstructorInfo.Invoke(new object[] { descriptor, context });
+          var setterConstructorInfo = helperSetInstanceDelegateType.GetConstructor([
+              typeof(PropertyInfo), typeof(IPropertyBuildContext<TSubject>)
+          ]);
+          var helperSetInstanceDelegateInstance = setterConstructorInfo.Invoke([descriptor, context]);
 
           var method =
               helperSetInstanceDelegateType.GetMethods(BindingFlags.DeclaredOnly | BindingFlags.Public |
@@ -148,11 +144,10 @@ namespace Demo.yFiles.Option.DataBinding
         {
           var helperInstanceDelegateType =
               typeof(HelperGetInstanceDelegate<,>).MakeGenericType(propertyType, typeof(TSubject));
-          var getterConstructorInfo =
-              helperInstanceDelegateType.GetConstructor(new[] {
-                  typeof(PropertyInfo), typeof(IPropertyBuildContext<TSubject>)
-              });
-          var helperGetInstanceDelegateInstance = getterConstructorInfo.Invoke(new object[] { descriptor, context });
+          var getterConstructorInfo = helperInstanceDelegateType.GetConstructor([
+              typeof(PropertyInfo), typeof(IPropertyBuildContext<TSubject>)
+          ]);
+          var helperGetInstanceDelegateInstance = getterConstructorInfo.Invoke([descriptor, context]);
 
           var method =
               helperInstanceDelegateType.GetMethods(BindingFlags.DeclaredOnly | BindingFlags.Public |
@@ -160,14 +155,15 @@ namespace Demo.yFiles.Option.DataBinding
           getMemberInstanceDelegate = Delegate.CreateDelegate(
               typeof(GetInstanceDelegate<>).MakeGenericType(propertyType), helperGetInstanceDelegateInstance, method);
         }
-        var childContext = buildChildContextMethod.MakeGenericMethod(propertyType).Invoke(context,
-            new object[] { name, getMemberInstanceDelegate, setMemberInstanceDelegate, policy });
+        var childContext = buildChildContextMethod.MakeGenericMethod(propertyType).Invoke(context, [
+            name, getMemberInstanceDelegate, setMemberInstanceDelegate, policy
+        ]);
 
         var buildPropertyMapMethod =
             typeof(IPropertyMapBuilder).GetMethods(BindingFlags.DeclaredOnly | BindingFlags.Public |
                 BindingFlags.Instance)[0];
 
-        buildPropertyMapMethod.MakeGenericMethod(propertyType).Invoke(childbuilder, new[] { childContext });
+        buildPropertyMapMethod.MakeGenericMethod(propertyType).Invoke(childbuilder, [childContext]);
       } else {
         context.AddEntry(name, new ReflectionGetter<TSubject>(descriptor, context),
             new ReflectionSetter<TSubject>(descriptor, context));
@@ -186,13 +182,9 @@ namespace Demo.yFiles.Option.DataBinding
 
       #region IValueGetter Members
 
-      public object GetValue() {
-        return getInstance.GetValue(context.CurrentInstance);
-      }
+      public object GetValue() => getInstance.GetValue(context.CurrentInstance);
 
-      public bool CanGet() {
-        return getInstance != null;
-      }
+      public bool CanGet() => getInstance != null;
 
       #endregion
     }
@@ -209,9 +201,7 @@ namespace Demo.yFiles.Option.DataBinding
 
       #region IValueGetter Members
 
-      public bool CanSet() {
-        return setInstance != null && !(setInstance.CanRead && !setInstance.CanWrite);
-      }
+      public bool CanSet() => setInstance != null && !(setInstance.CanRead && !setInstance.CanWrite);
 
       #endregion
 
@@ -234,9 +224,7 @@ namespace Demo.yFiles.Option.DataBinding
     /// <summary>
     ///   DO NOT REMOVE - USED THROUGH REFLECTION ABOVE!!!
     /// </summary>
-    public TChild GetInstance() {
-      return (TChild) descriptor.GetValue(context.CurrentInstance, null);
-    }
+    public TChild GetInstance() => (TChild) descriptor.GetValue(context.CurrentInstance, null);
   }
 
   internal sealed class HelperSetInstanceDelegate<TChild, TSubject> where TSubject : class

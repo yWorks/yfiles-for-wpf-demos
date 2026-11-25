@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 4.0.
- ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -29,7 +29,7 @@
 
 using System.Windows.Markup;
 
-[assembly : XmlnsDefinition("http://www.yworks.com/yfilesWPF/3.0/demos/optionhandler", "Demo.yFiles.Option.Editor")]
-[assembly : XmlnsDefinition("http://www.yworks.com/yfilesWPF/3.0/demos/optionhandler", "Demo.yFiles.Option.Handler")]
-[assembly : XmlnsDefinition("http://www.yworks.com/yfilesWPF/3.0/demos/optionhandler", "Demo.yFiles.Option.View")]
-[assembly : XmlnsDefinition("http://www.yworks.com/yfilesWPF/3.0/demos/optionhandler", "Demo.yFiles.Option")]
+[assembly: XmlnsDefinition("http://www.yworks.com/yfilesWPF/3.0/demos/optionhandler", "yWorks.Demo.Option.Editor")]
+[assembly: XmlnsDefinition("http://www.yworks.com/yfilesWPF/3.0/demos/optionhandler", "yWorks.Demo.Option.Handler")]
+[assembly: XmlnsDefinition("http://www.yworks.com/yfilesWPF/3.0/demos/optionhandler", "yWorks.Demo.Option.View")]
+[assembly: XmlnsDefinition("http://www.yworks.com/yfilesWPF/3.0/demos/optionhandler", "yWorks.Demo.Option")]

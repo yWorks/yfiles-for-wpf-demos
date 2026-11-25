@@ -1,7 +1,7 @@
 /****************************************************************************
  ** 
- ** This demo file is part of yFiles WPF 4.0.
- ** Copyright (c) 2000-2025 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** This demo file is part of yFiles WPF 4.1.
+ ** Copyright (c) 2000-2026 by yWorks GmbH, Vor dem Kreuzberg 28,
  ** 72070 Tuebingen, Germany. All rights reserved.
  ** 
  ** yFiles demo files exhibit yFiles WPF functionalities. Any redistribution
@@ -32,56 +32,41 @@ using System.ComponentModel;
 using System.Windows.Markup;
 using yWorks.Annotations;
 
-namespace Demo.yFiles.DataBinding.Dynamic
+namespace yWorks.Demo.DataBinding.Dynamic
 {
   /// <summary>
-  /// This class is a simple example of a business object. Each customer has a
-  /// <see cref="CustomerName">name</see> and a list of <see cref="RelatedCustomers"/>.
+  ///   This class is a simple business object. Each customer has a name and related customers.
   /// </summary>
   [ContentProperty("RelatedCustomers")]
   public class Customer
   {
-    private readonly ObservableCollection<Customer> relatedCustomers = new ObservableCollection<Customer>();
-
-    public string CustomerName { get; set; }
+    public string CustomerName { get; set; } = string.Empty;
 
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
-    public ObservableCollection<Customer> RelatedCustomers {
-      get { return relatedCustomers; }
-    }
+    public ObservableCollection<Customer> RelatedCustomers { get; } = [];
   }
 
   /// <summary>
-  /// This class is a container for <see cref="Customer"/>s. It maintains a list of root
-  /// <see cref="Customers"/> and provides methods to <see cref="CreateCustomer">create new customers</see>
-  /// and to <see cref="RemoveCustomer">remove customers</see>.
+  ///   This class contains root customers and provides methods to create and remove customers.
   /// </summary>
   [ContentProperty("Customers")]
   public class CustomerRepository
   {
-    private readonly ObservableCollection<Customer> customers = new ObservableCollection<Customer>();
-
     /// <summary>
-    /// Gets the root customers, i.e. customers which are not related to other customers.
+    ///   Gets the root customers, which are not related to other customers.
     /// </summary>
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
-    public ObservableCollection<Customer> Customers {
-      get { return customers; }
-    }
+    public ObservableCollection<Customer> Customers { get; } = [];
 
     /// <summary>
-    /// Creates the customer and adds it to the root <see cref="Customers"/> or the related
-    /// customers of an existing parent customer.
+    ///   Creates the customer and adds it to the root customers or to an existing parent's related customers.
     /// </summary>
-    /// <param name="name">The name of the new customer.</param>
-    /// <param name="parent">The parent of the new customer.</param>
-    /// <returns>The new customer.</returns>
-    public Customer CreateCustomer([NotNull] string name, [CanBeNull] Customer parent) {
+    public Customer CreateCustomer([NotNull] string name, [CanBeNull] Customer? parent) {
       // Create a new customer business object.
       var newCustomer = new Customer { CustomerName = name };
       if (parent == null) {
         // No parent -> add new customer at the root level.
-        customers.Add(newCustomer);
+        Customers.Add(newCustomer);
       } else {
         // Add new customer as a related customer of an existing customer.
         parent.RelatedCustomers.Add(newCustomer);
@@ -90,21 +75,18 @@ namespace Demo.yFiles.DataBinding.Dynamic
     }
 
     /// <summary>
-    /// Removes a customer from the root <see cref="Customers"/> or the related customers
-    /// reachable from a root customer.
+    ///   Removes a customer from the root customers or from the related customers reachable from a root customer.
     /// </summary>
-    /// <param name="customer">The customer.</param>
-    /// <returns><see langword="true"/> if the customer was found and removed</returns>
     public bool RemoveCustomer([NotNull] Customer customer) {
-      if (customers.Contains(customer)) {
+      if (Customers.Contains(customer)) {
         // Remove customer at root level if possible.
-        customers.Remove(customer);
+        Customers.Remove(customer);
         return true;
       }
       // The customer is not a root customer. Try to remove it from the related
       // customers of one of the root customers.
-      foreach (var rootCustomer in customers) {
-        if(RemoveRelatedCustomer(rootCustomer, customer)) {
+      foreach (var rootCustomer in Customers) {
+        if (RemoveRelatedCustomer(rootCustomer, customer)) {
           return true;
         }
       }

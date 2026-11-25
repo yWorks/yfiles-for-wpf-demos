@@ -1,0 +1,98 @@
+* {
+    line-height: calc(1em + 0.5rem);
+}
+
+body {
+    color: var(--text-primary);
+    font-family: system-ui, sans-serif;
+    hyphens: auto;
+    text-wrap: pretty;
+    font-size: 14px;
+}
+
+h1 {
+    margin-top: 0;
+    font-size: 28px;
+}
+
+h2 {
+    font-size: 20px;
+}
+
+a[data-api] {
+    font-family: monospace;
+    color: var(--accent-text-primary);
+    transition: color linear 0.3s;
+
+    &:hover {
+        color: var(--accent-text-secondary);
+    }
+
+    &:active {
+        color: var(--accent-text-tertiary);
+    }
+}
+a[data-dguide] {
+    font-family: monospace;
+    color: var(--accent-text-primary);
+    transition: color linear 0.3s;
+    text-decoration: underline;
+
+    &:hover {
+        color: var(--accent-text-secondary);
+    }
+
+    &:active {
+        color: var(--accent-text-tertiary);
+    }
+}
+a[data-demo] {
+    font-family: monospace;
+    text-decoration: underline;
+}
+
+/* ── inline code ─────────────────────────────────────────────────────────── */
+code {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.85em;
+    background-color: #e8edf2;
+    color: #2a3e50;
+    padding: 1px 5px;
+    border-radius: 4px;
+    white-space: nowrap;
+}
+
+/* ── code blocks ─────────────────────────────────────────────────────────── */
+pre {
+    background-color: #f0f4f8;
+    border-radius: 6px;
+    padding: 12px 16px;
+    overflow-x: auto;
+    margin: 12px 0;
+}
+
+pre code {
+    background: none;
+    padding: 0;
+    border-radius: 0;
+    white-space: pre;
+    font-size: 0.875em;
+    color: #2a3e50;
+}
+
+/* keyword-like highlighting inside pre blocks */
+pre code .kw  { color: #006680; font-weight: 600; } /* keywords: var, const, new, await */
+pre code .cm  { color: #6b8a9e; font-style: italic; }  /* comments */
+pre code .str { color: #c0392b; }                       /* strings */
+pre code .fn  { color: #0b7189; }                       /* method / function names */
+
+/* ── info / note callout box ─────────────────────────────────────────────── */
+.info-box {
+    background-color: #e6f6f9;
+    border-left: 4px solid rgb(0 173 204);
+    border-radius: 0 6px 6px 0;
+    padding: 12px 16px;
+    margin: 16px 0;
+    font-size: 0.9em;
+    color: #2a3e50;
+}
